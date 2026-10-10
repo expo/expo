@@ -38,3 +38,64 @@ struct LocalizationModuleTests {
     #expect(LocalizationModule.uses24HourClock(locale: Locale(identifier: identifier)))
   }
 }
+
+@Suite("LocalizationModule.resolveRTLPreference")
+struct ResolveRTLPreferenceTests {
+  private let fromConfigKey = "ExpoLocalization_forcesRTLFromConfig"
+
+  // A suite of its own per test, so markers never leak between tests or into the host app's defaults.
+  private func makeUserDefaults() throws -> UserDefaults {
+    try #require(UserDefaults(suiteName: "expo.modules.localization.tests.\(UUID().uuidString)"))
+  }
+
+  @Test(arguments: [true, false])
+  func `applies the value the config sets and records that it came from the config`(configValue: Bool) throws {
+    let userDefaults = try makeUserDefaults()
+
+    #expect(LocalizationModule.resolveRTLPreference(
+      configValue,
+      fromConfigKey: fromConfigKey,
+      default: !configValue,
+      userDefaults: userDefaults
+    ) == configValue)
+
+    #expect(userDefaults.bool(forKey: fromConfigKey))
+  }
+
+  @Test
+  func `restores the default once when the config stops setting the value`() throws {
+    let userDefaults = try makeUserDefaults()
+    userDefaults.set(true, forKey: fromConfigKey)
+
+    #expect(LocalizationModule.resolveRTLPreference(
+      nil,
+      fromConfigKey: fromConfigKey,
+      default: false,
+      userDefaults: userDefaults
+    ) == false)
+
+    #expect(!userDefaults.bool(forKey: fromConfigKey))
+
+    // The next launch leaves the preference to the app's own `I18nManager` calls.
+    #expect(LocalizationModule.resolveRTLPreference(
+      nil,
+      fromConfigKey: fromConfigKey,
+      default: false,
+      userDefaults: userDefaults
+    ) == nil)
+  }
+
+  @Test
+  func `leaves the preference alone when the config never set the value`() throws {
+    let userDefaults = try makeUserDefaults()
+
+    #expect(LocalizationModule.resolveRTLPreference(
+      nil,
+      fromConfigKey: fromConfigKey,
+      default: true,
+      userDefaults: userDefaults
+    ) == nil)
+
+    #expect(!userDefaults.bool(forKey: fromConfigKey))
+  }
+}
