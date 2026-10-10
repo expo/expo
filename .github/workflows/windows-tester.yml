@@ -18,8 +18,9 @@ concurrency:
 env:
   # The `Microsoft.JavaScript.Hermes` version that react-native-windows 0.84.0 uses.
   HERMES_VERSION: '0.0.0-2605.6002-2279da22'
-  # The `expo-modules-macros` branch that builds the macro plugin on Windows.
-  EXPO_MODULES_MACROS_REF: 'tsapeta/windows-ci'
+  # The `expo-modules-macros` ref to build the macro plugin from. Its Windows build is on `main`,
+  # but not published to npm yet.
+  EXPO_MODULES_MACROS_REF: 'main'
 
 jobs:
   run:
@@ -51,7 +52,7 @@ jobs:
           build_arch: amd64
 
       - name: 👀 Checkout expo-modules-macros
-        # The Windows build of the macro plugin isn't published yet (expo/expo-modules-macros#69).
+        # The Windows build of the macro plugin isn't published to npm yet.
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: expo/expo-modules-macros
