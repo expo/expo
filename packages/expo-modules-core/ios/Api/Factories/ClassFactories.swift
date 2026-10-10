@@ -34,7 +34,7 @@ public func Class(
  Creates the definition describing a JavaScript class with an associated native shared object class.
  */
 public func Class<SharedObjectType: SharedObject>(
-  _ name: String = String(describing: SharedObjectType.self),
+  _ name: String = _typeName(SharedObjectType.self, qualified: false),
   _ sharedObjectType: SharedObjectType.Type,
   @ClassDefinitionBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassDefinitionElement]
 ) -> ClassDefinition {

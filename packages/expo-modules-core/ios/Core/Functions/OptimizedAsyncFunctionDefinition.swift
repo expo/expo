@@ -75,3 +75,9 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
     return self
   }
 }
+
+extension OptimizedAsyncFunctionDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.functions.append(self)
+  }
+}

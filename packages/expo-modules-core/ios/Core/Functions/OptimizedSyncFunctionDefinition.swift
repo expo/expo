@@ -126,3 +126,9 @@ public func _createOptimizedFunctionDescriptor(
     block: block
   )
 }
+
+extension OptimizedSyncFunctionDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.functions.append(self)
+  }
+}

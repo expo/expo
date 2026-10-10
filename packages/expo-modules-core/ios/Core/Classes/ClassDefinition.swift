@@ -26,6 +26,10 @@ public final class ClassDefinition: ObjectDefinition {
    */
   let isSharedRef: Bool
 
+  public override func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.classes.append(self)
+  }
+
   private init(_ name: String, associatedType: AnyDynamicType, isSharedRef: Bool, elements: [AnyClassDefinitionElement] = []) {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
@@ -177,5 +181,5 @@ extension SharedObject: ClassAssociatedObject {}
    needs to be filtered out when decorating the prototype.
  */
 private func isConstructor(_ item: AnyDefinition) -> Bool {
-  return (item as? AnySyncFunctionDefinition)?.name == "constructor"
+  return item.__isConstructor
 }

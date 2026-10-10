@@ -71,3 +71,9 @@ internal class IncompatibleViewException: GenericException<(propName: String, vi
     "Tried to set prop '\(param.propName)' on the view that isn't \(param.viewType)"
   }
 }
+
+extension ConcreteViewProp {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.viewProps.append(self)
+  }
+}

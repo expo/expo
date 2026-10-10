@@ -125,3 +125,9 @@ internal final class NativeConstantWithoutGetterException: GenericException<Stri
     return "Native constant '\(param)' doesn't have a getter"
   }
 }
+
+extension ConstantDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.constants.append(self)
+  }
+}

@@ -202,3 +202,9 @@ internal final class NativePropertyUnavailableException: GenericException<String
     return "Native property '\(param)' is no longer available in memory"
   }
 }
+
+extension PropertyDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.properties.append(self)
+  }
+}

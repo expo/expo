@@ -30,24 +30,30 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
    Default initializer receiving children definitions from the result builder.
    */
   init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
-    self.props = elements
-      .compactMap { $0 as? AnyViewProp }
+    var buckets = DefinitionBuckets()
+    for element in elements {
+      element.__collect(into: &buckets)
+    }
 
-    self.name = elements
-      .compactMap { $0 as? ViewNameDefinition }
+    self.props = buckets.viewProps
+
+    self.name = buckets.viewNames
       .last?
-      .name ?? String(describing: viewType)
+      .name ?? _typeName(viewType, qualified: false)
 
     self.eventNames = Array(
-      elements
-        .compactMap { ($0 as? EventsDefinition)?.names }
+      buckets.events
+        .map { $0.names }
         .joined()
     )
 
-    self.lifecycleMethods = elements
-      .compactMap { $0 as? AnyViewLifecycleMethod }
+    self.lifecycleMethods = buckets.lifecycleMethods
 
     super.init(definitions: elements)
+  }
+
+  public override func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.views.append(self)
   }
 
   // MARK: - AnyViewDefinition
@@ -128,4 +134,10 @@ extension UIView: @MainActor AnyArgument {
 
 public struct ViewNameDefinition: AnyViewDefinitionElement {
   let name: String
+}
+
+extension ViewNameDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.viewNames.append(self)
+  }
 }

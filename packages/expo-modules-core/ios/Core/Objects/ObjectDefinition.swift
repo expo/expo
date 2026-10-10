@@ -40,40 +40,41 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
-    self.functions = definitions
-      .compactMap { $0 as? AnyFunctionDefinition }
-      .filter { !($0 is AnyStaticFunctionDefinition) }
+    var buckets = DefinitionBuckets()
+    for definition in definitions {
+      definition.__collect(into: &buckets)
+    }
+
+    self.functions = buckets.functions
       .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
         dict[function.name] = function
       }
 
-    self.staticFunctions = definitions
-      .compactMap { $0 as? AnyStaticFunctionDefinition }
+    self.staticFunctions = buckets.staticFunctions
       .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
         dict[function.name] = function
       }
 
-    self.legacyConstants = definitions
-      .compactMap { $0 as? ConstantsDefinition }
+    self.legacyConstants = buckets.legacyConstants
 
-    self.constants = definitions
-      .compactMap { $0 as? AnyConstantDefinition }
+    self.constants = buckets.constants
       .reduce(into: [String: AnyConstantDefinition]()) { dict, constant in
         dict[constant.name] = constant
       }
 
-    self.properties = definitions
-      .compactMap { $0 as? AnyPropertyDefinition }
+    self.properties = buckets.properties
       .reduce(into: [String: AnyPropertyDefinition]()) { dict, property in
         dict[property.name] = property
       }
 
-    self.classes = definitions
-      .compactMap { $0 as? ClassDefinition }
+    self.classes = buckets.classes
       .reduce(into: [String: ClassDefinition]()) { dict, klass in
         dict[klass.name] = klass
       }
   }
+
+  /// Subclasses that are themselves definition elements (`ClassDefinition`, `ViewDefinition`) override this.
+  public func __collect(into buckets: inout DefinitionBuckets) {}
 
   /**
    Merges all `constants` definitions into one dictionary.
