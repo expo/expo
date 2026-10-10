@@ -45,7 +45,7 @@ it('isolates queue notifications from its parent', async () => {
   await act(() => result.current(actionIntent('TEST')));
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
+  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
 });
 
 it('processes a queued batch in FIFO order', async () => {
@@ -59,9 +59,9 @@ it('processes a queued batch in FIFO order', async () => {
     result.current(actionIntent('THIRD'));
   });
   expect(processIntent).toHaveBeenCalledTimes(3);
-  expect(processIntent).toHaveBeenNthCalledWith(1, actionIntent('FIRST'));
-  expect(processIntent).toHaveBeenNthCalledWith(2, actionIntent('SECOND'));
-  expect(processIntent).toHaveBeenNthCalledWith(3, actionIntent('THIRD'));
+  expect(processIntent).toHaveBeenNthCalledWith(1, actionIntent('FIRST'), false);
+  expect(processIntent).toHaveBeenNthCalledWith(2, actionIntent('SECOND'), false);
+  expect(processIntent).toHaveBeenNthCalledWith(3, actionIntent('THIRD'), false);
 });
 
 it('does not process an intent twice in Strict Mode', async () => {
@@ -85,7 +85,7 @@ it('does not process an intent twice in Strict Mode', async () => {
 
   await act(() => result.current(actionIntent('TEST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
+  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
 
   await rerender(undefined);
   expect(processIntent).toHaveBeenCalledTimes(1);
@@ -98,11 +98,11 @@ it('processes separately enqueued intents', async () => {
 
   await act(() => result.current(actionIntent('FIRST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('FIRST'));
+  expect(processIntent).toHaveBeenCalledWith(actionIntent('FIRST'), false);
 
   await act(() => result.current(actionIntent('SECOND')));
   expect(processIntent).toHaveBeenCalledTimes(2);
-  expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'));
+  expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'), false);
 });
 
 it('continues after processIntent throws synchronously', async () => {
@@ -120,7 +120,7 @@ it('continues after processIntent throws synchronously', async () => {
       result.current(actionIntent('SECOND'));
     });
     expect(processIntent).toHaveBeenCalledTimes(2);
-    expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'));
+    expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'), false);
     expect(warning).toHaveBeenCalledWith(expect.stringContaining('failed'));
   } finally {
     warning.mockRestore();

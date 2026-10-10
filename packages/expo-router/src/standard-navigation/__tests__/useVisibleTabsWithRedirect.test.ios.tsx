@@ -2,6 +2,7 @@ import { renderHook as renderHookWithoutProvider } from '@testing-library/react-
 import { use, type PropsWithChildren } from 'react';
 
 import { useRouteNode } from '../../Route';
+import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import type { RoutingIntent } from '../../global-state/routingQueue';
 import {
   PendingIntentsContext,
@@ -46,13 +47,15 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
-function routeNode(initialRouteName: string) {
-  // Only route names are relevant to this hook test fixture.
+function routeNode(anchor: string) {
   return {
-    initialRouteName,
+    ...node(
+      '_layout',
+      routes.map(({ name }) => node(name)),
+      anchor
+    ),
     contextKey: './_layout.js',
-    children: routes.map(({ name }) => ({ route: name })),
-  } as ReturnType<typeof useRouteNode>;
+  };
 }
 
 let warnSpy: jest.SpyInstance;

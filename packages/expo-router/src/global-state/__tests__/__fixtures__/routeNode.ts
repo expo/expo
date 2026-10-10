@@ -1,17 +1,12 @@
 import type { RouteNode } from '../../../Route';
 
-export function node(
-  route: string,
-  children: RouteNode[] = [],
-  initialRouteName?: string
-): RouteNode {
+export function node(route: string, children: RouteNode[] = [], anchor?: string): RouteNode {
   return {
-    type: 'route',
+    type: anchor ? 'layout' : 'route',
     route,
     children,
-    initialRouteName,
     dynamic: null,
     contextKey: route,
-    loadRoute: () => ({}),
+    loadRoute: () => ({ unstable_settings: { anchor } }),
   };
 }

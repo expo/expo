@@ -7,7 +7,7 @@ import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueCon
 import type { NavigationTransitionMode } from './types';
 
 type Props = {
-  processIntent: (intent: RoutingIntent) => void;
+  processIntent: (intent: RoutingIntent, inTransition: boolean) => void;
 };
 
 export function shouldUseTransition(
@@ -44,12 +44,13 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
     // Dequeue urgently so a later enqueue is not rebased on a stale queue.
     dequeue(intents);
+    const inTransition = shouldUseTransition(intents, transitionMode);
     const process = () => {
       for (const intent of intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
         try {
-          processIntent(intent);
+          processIntent(intent, inTransition);
         } catch (error) {
           const message =
             typeof error === 'object' && error != null && 'message' in error
@@ -62,7 +63,7 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
       }
     };
 
-    if (shouldUseTransition(intents, transitionMode)) {
+    if (inTransition) {
       startTransition(process);
     } else {
       process();

@@ -5,6 +5,7 @@ import {
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
+import { withLoadedLayouts } from '../layoutAnchor';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
@@ -69,11 +70,9 @@ export function useLinking(
 
       const parsedState = path ? getStateFromPath(path, config) : undefined;
       const routeNode = routerConfig?.routeNode;
-      const state = routeNode
-        ? createSeededRootState(parsedState, routeNode)
+      return routeNode
+        ? withLoadedLayouts(() => createSeededRootState(parsedState, routeNode))
         : completeParsedState(parsedState, ROOT_CHAIN);
-
-      return state;
     };
     const url = getInitialURL();
 

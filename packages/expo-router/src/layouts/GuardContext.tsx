@@ -31,15 +31,7 @@ export function GuardContextProvider({
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
-    [
-      node,
-      node?.children,
-      node?.contextKey,
-      node?.initialRouteName,
-      params,
-      parentFallbacks,
-      guardConfigurationKey,
-    ]
+    [node, node?.children, node?.contextKey, params, parentFallbacks, guardConfigurationKey]
   );
 
   return (

@@ -1,6 +1,7 @@
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
+import { getGroupMatchingRouteName } from '../layoutAnchor';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
@@ -13,6 +14,7 @@ import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;
+type SeedRoute = SeedState['routes'][number];
 
 /**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
@@ -30,7 +32,7 @@ export function createSeededRootState(
     targetState,
     routeNames: getRootStackRouteNames(),
     initialRouteName: undefined,
-    targetInitialRouteName: undefined,
+    anchorParams: undefined,
     parentChain: ROOT_CHAIN,
     findChildNode: (routeName) => (routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined),
   });
@@ -80,7 +82,8 @@ export function completeParsedState(
 export function createSeededNavigationState(
   targetState: SeedState | undefined,
   routeNode: RouteNode,
-  parentChain: string
+  parentChain: string,
+  anchorParams?: object
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
   const routeNames = [...routeNode.children]
@@ -88,13 +91,54 @@ export function createSeededNavigationState(
     .map((child) => child.route);
 
   return createSeededState({
-    targetState,
+    targetState: withoutParsedGroupAnchor(
+      targetState,
+      getGroupMatchingRouteName(routeNode),
+      initialRouteName
+    ),
     routeNames,
     initialRouteName,
-    targetInitialRouteName: routeNode.initialRouteName,
+    anchorParams,
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
+}
+
+/**
+ * Removes the anchor that the URL parser added when `unstable_settings.anchor` picks another one.
+ *
+ * ```
+ * (home)/
+ *   _layout.tsx    // unstable_settings = { anchor: 'dashboard' }
+ *   home.tsx       // Anchor added by the URL parser, because it is named like the group
+ *   dashboard.tsx  // Anchor from settings
+ *   details.tsx
+ * ```
+ *
+ * The parser turns `/details` into `[home, details]`. This function returns `[details]`, and
+ * `createSeededState` then adds `dashboard` to make `[dashboard, details]`.
+ */
+function withoutParsedGroupAnchor(
+  state: SeedState | undefined,
+  parsedAnchor: string | undefined,
+  anchor: string | undefined
+): SeedState | undefined {
+  if (
+    // Complete states do not come from the parser.
+    !state ||
+    state.stale === false ||
+    parsedAnchor === anchor ||
+    state.routes.length < 2 ||
+    state.routes[0]!.name !== parsedAnchor ||
+    state.index === 0
+  ) {
+    return state;
+  }
+  return {
+    ...state,
+    routes: state.routes.slice(1),
+    index: state.index === undefined ? undefined : state.index - 1,
+  };
 }
 
 // TODO(@ubax): consider replacing findChildNode here and in other places
@@ -170,7 +214,8 @@ type CreateSeededStateOptions = {
   targetState: SeedState | undefined;
   routeNames: string[];
   initialRouteName: string | undefined;
-  targetInitialRouteName: string | undefined;
+  // The anchor route gets the path params of the route that owns this navigator.
+  anchorParams: object | undefined;
   parentChain: string;
   // Root maps `INTERNAL_SLOT_NAME` to itself; nested levels lazily use `findRouteNodeByName`.
   findChildNode: (routeName: string) => RouteNode | undefined;
@@ -180,26 +225,12 @@ function createSeededState({
   targetState,
   routeNames,
   initialRouteName,
-  targetInitialRouteName,
+  anchorParams,
   parentChain,
   findChildNode,
 }: CreateSeededStateOptions): NavigationState {
   const initialState = createInitialState({ routeNames: [], parentChain });
-  const parsedRoutes = targetState?.routes ?? [];
-  const targetInitialRouteIndex = parsedRoutes.findIndex(
-    (route) => route.name === targetInitialRouteName
-  );
-  const omitTargetInitialRoute =
-    initialRouteName !== targetInitialRouteName &&
-    parsedRoutes.some((route) => route.name === initialRouteName);
-  let targetRoutes = parsedRoutes.flatMap((route, index) => {
-    if (omitTargetInitialRoute && index === targetInitialRouteIndex) {
-      return [];
-    }
-    return initialRouteName && route.name === targetInitialRouteName
-      ? [{ ...route, name: initialRouteName }]
-      : [route];
-  });
+  let targetRoutes = targetState?.routes ?? [];
 
   const unknownRoute = targetRoutes.find((route) => !routeNames.includes(route.name));
   if (unknownRoute) {
@@ -209,13 +240,12 @@ function createSeededState({
     targetRoutes = [];
   }
 
-  const defaultRouteName = initialRouteName ?? routeNames[0];
-  const routesToCreate =
-    targetRoutes.length > 0
-      ? targetRoutes
-      : defaultRouteName === undefined
-        ? []
-        : [{ name: defaultRouteName }];
+  const routesToCreate = getRoutesToCreate(
+    targetRoutes,
+    routeNames,
+    initialRouteName,
+    anchorParams
+  );
   const minter = createRouteKeyMinter(initialState);
   const routes = routesToCreate.map((targetRoute) => {
     const key = minter.mint(targetRoute.name);
@@ -225,7 +255,8 @@ function createSeededState({
         ? createSeededNavigationState(
             'state' in targetRoute ? targetRoute.state : undefined,
             childNode,
-            getChainFromRouteKey(key)
+            getChainFromRouteKey(key),
+            'params' in targetRoute ? targetRoute.params : undefined
           )
         : undefined;
 
@@ -238,17 +269,42 @@ function createSeededState({
     };
   });
 
-  const targetIndex = targetRoutes.length > 0 ? (targetState?.index ?? routes.length - 1) : 0;
+  let index = -1;
+  if (targetRoutes.length > 0) {
+    // The anchor added in front of the target routes moves the focused route by one.
+    const addedAnchorCount = routes.length - targetRoutes.length;
+    index = addedAnchorCount + (targetState?.index ?? targetRoutes.length - 1);
+  } else if (routes.length > 0) {
+    index = 0;
+  }
   return {
     ...initialState,
     routeKeySeq: minter.routeKeySeq,
     routeNames,
-    index:
-      routes.length === 0
-        ? -1
-        : omitTargetInitialRoute && targetInitialRouteIndex <= targetIndex
-          ? targetIndex - 1
-          : targetIndex,
+    index,
     routes,
   };
+}
+
+/**
+ * Returns the target routes with the anchor in front of them, so Back can return to the anchor.
+ * Without target routes, returns only the anchor, or the first route when there is no anchor.
+ */
+function getRoutesToCreate(
+  targetRoutes: SeedRoute[],
+  routeNames: string[],
+  initialRouteName: string | undefined,
+  anchorParams: object | undefined
+): SeedRoute[] {
+  if (targetRoutes.length === 0) {
+    const defaultRouteName = initialRouteName ?? routeNames[0];
+    if (defaultRouteName === undefined) {
+      return [];
+    }
+    return [{ name: defaultRouteName }];
+  }
+  if (initialRouteName && !targetRoutes.some((route) => route.name === initialRouteName)) {
+    return [{ name: initialRouteName, params: anchorParams }, ...targetRoutes];
+  }
+  return targetRoutes;
 }

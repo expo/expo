@@ -1,4 +1,5 @@
 import type { RouteNode } from './Route';
+import { getLayoutAnchor } from './layoutAnchor';
 import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 
 export function findRouteNodeByName(
@@ -29,28 +30,9 @@ export function findRouteNodeAndParamsForState(
   return { routeNode, params };
 }
 
-export function getValidInitialRoute(
-  node: RouteNode | null,
-  initialRouteName = node?.initialRouteName,
-  groupName?: string
-): RouteNode | undefined {
-  if (!node || !initialRouteName) {
-    return undefined;
-  }
-  const route =
-    findRouteNodeByName(node, initialRouteName) ||
-    findRouteNodeByName(node, `${initialRouteName}/index`);
-  if (!route) {
-    throw new Error(
-      `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
-        `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
-        'Set `unstable_settings.anchor` to the name of a route in this layout.'
-    );
-  }
-  return route;
+export function getValidInitialRoute(node: RouteNode | null): RouteNode | undefined {
+  return node ? findRouteNodeByName(node, getLayoutAnchor(node)) : undefined;
 }
 
-export const getValidInitialRouteName = (
-  node: RouteNode | null,
-  initialRouteName = node?.initialRouteName
-) => getValidInitialRoute(node, initialRouteName)?.route;
+export const getValidInitialRouteName = (node: RouteNode | null) =>
+  node ? getLayoutAnchor(node) : undefined;
