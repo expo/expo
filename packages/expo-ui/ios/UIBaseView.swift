@@ -60,6 +60,9 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   _ contentType: Content.Type
 ) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
   let wrappedType = UIBaseView<Content.Props, Content>.self
+  // `_typeName(_:qualified:)` is what `String(describing:)` ends up calling for a metatype, minus three
+  // conformance probes and a Mirror. In `-O` builds the compiler folds it to a constant, which for a
+  // `private` type keeps the file discriminator: registered view types must not be `private`.
   let contentName = _typeName(contentType, qualified: false)
 
   return View(wrappedType) {
