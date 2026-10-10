@@ -42,10 +42,21 @@ public struct HangReport: Codable, Sendable {
   }
 
   /// Stable key so a diagnostic redelivered through `pastDiagnosticPayloads` is stored once.
+  /// Persisted across launches, so it must not depend on `hashValue` (seeded per process).
   var fingerprint: String {
     let end = Int(timestampEnd.timeIntervalSince1970)
     let frames = callStackTree?.render(maxFrames: 4, maxLength: 1024)?.stacktrace ?? ""
-    return "\(kind.rawValue):\(end):\(Int(duration * 1000)):\(frames.hashValue)"
+    return "\(kind.rawValue):\(end):\(Int(duration * 1000)):\(Self.fnv1a(frames))"
+  }
+
+  /// 64-bit FNV-1a, rendered as hex. Deterministic across processes, unlike `Hasher`.
+  static func fnv1a(_ string: String) -> String {
+    var hash: UInt64 = 0xcbf2_9ce4_8422_2325
+    for byte in string.utf8 {
+      hash ^= UInt64(byte)
+      hash = hash &* 0x100_0000_01b3
+    }
+    return String(hash, radix: 16)
   }
 
   /// Builds the `native.hang` / `native.slow_launch` log event.

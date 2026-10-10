@@ -26,7 +26,7 @@ struct MainThreadStall: Codable, Sendable {
   let callStackTree: CrashReport.CallStackTree?
 
   /// Builds the `app_startup.main_thread_stall` log event. `phase` names where in the startup
-  /// sequence the stall happened (`beforeFirstRender`, `beforeInteractive`).
+  /// sequence the stall happened (`beforeFirstRender`, `beforeInteractive`, `afterInteractive`).
   func toLogRecord(phase: String, timestamp: Date) -> LogRecord {
     let rendered = callStackTree?.render(maxFrames: Self.maxLogStackFrames, maxLength: Self.maxLogStacktraceLength)
     var attributes: [String: Any] = [

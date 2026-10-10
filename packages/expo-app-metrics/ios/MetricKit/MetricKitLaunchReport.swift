@@ -144,7 +144,9 @@ import MetricKit
 extension MetricKitHistogram {
   static func buckets(_ histogram: MXHistogram<UnitDuration>) -> [MetricKitHistogramBucket] {
     var result: [MetricKitHistogramBucket] = []
-    while let bucket = histogram.bucketEnumerator.nextObject() as? MXHistogramBucket<UnitDuration> {
+    // Read the enumerator once: a fresh one per access would restart the loop forever.
+    let enumerator = histogram.bucketEnumerator
+    while let bucket = enumerator.nextObject() as? MXHistogramBucket<UnitDuration> {
       result.append(
         MetricKitHistogramBucket(
           start: bucket.bucketStart.converted(to: .seconds).value,

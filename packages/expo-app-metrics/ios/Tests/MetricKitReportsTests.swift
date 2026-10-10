@@ -138,6 +138,14 @@ struct HangReportTests {
     )
     #expect(slowLaunch.toLogRecord().name == "native.slow_launch")
     #expect(hang.fingerprint != slowLaunch.fingerprint)
-    #expect(hang.fingerprint == hang.fingerprint)
+    // Persisted across launches, so the value must be stable, not just equal within one process.
+    let frames = hang.callStackTree?.render(maxFrames: 4, maxLength: 1024)?.stacktrace ?? ""
+    #expect(hang.fingerprint == "hang:60:3000:\(HangReport.fnv1a(frames))")
+  }
+
+  @Test
+  func `fnv1a is deterministic and matches the reference vectors`() {
+    #expect(HangReport.fnv1a("") == "cbf29ce484222325")
+    #expect(HangReport.fnv1a("a") == "af63dc4c8601ec8c")
   }
 }
