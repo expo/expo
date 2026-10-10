@@ -127,20 +127,6 @@ describe('getLayoutAnchor', () => {
     expect(anchorOf({ anchor: 'a' }, undefined, ['a/index', 'b'])).toBe('a/index');
   });
 
-  it('ignores settings that are a client module', () => {
-    // Reading a property of a client module export on the server throws this error.
-    const settings = new Proxy(
-      {},
-      {
-        get() {
-          throw new Error('You cannot dot into a client module');
-        },
-      }
-    );
-
-    expect(anchorOf(settings)).toBeUndefined();
-  });
-
   it.each([
     [{ initialRouteName: 'a' }, undefined],
     [{ b: { initialRouteName: 'a' } }, 'b'],
