@@ -1,7 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import MessageUI
-import MobileCoreServices
+import UniformTypeIdentifiers
 import ExpoModulesCore
 
 internal final class MailComposingSession: NSObject, MFMailComposeViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
@@ -85,9 +85,9 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
 }
 
 private func findMimeType(forAttachment attachment: URL) -> String {
-  if let identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, attachment.pathExtension as CFString, nil)?.takeRetainedValue(),
-     let type = UTTypeCopyPreferredTagWithClass(identifier, kUTTagClassMIMEType)?.takeRetainedValue() {
-    return type as String
+  if let utType = UTType(filenameExtension: attachment.pathExtension),
+     let mimeType = utType.preferredMIMEType {
+    return mimeType
   }
   return "application/octet-stream"
 }
