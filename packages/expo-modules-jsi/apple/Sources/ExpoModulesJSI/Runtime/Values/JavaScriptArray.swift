@@ -174,9 +174,9 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///
   /// - Note: This initializer automatically converts each item to a `JavaScriptValue` using
   ///   its `toJavaScriptValue(in:)` method, providing compile-time type safety.
-  /// - Note: Unlike the `JavaScriptValue` variadic initializer, this version accepts heterogeneous
-  ///   types directly without requiring explicit `JavaScriptValue` wrapping.
-  /// - SeeAlso: `init(_:items:)` for the `JavaScriptValue` array version
+  /// - Note: Parameter packs accept copyable types only, so a non-copyable value goes through its
+  ///   `ref()`. To fill an array from a Swift collection of values, create it with `init(_:length:)`
+  ///   and assign the elements through the subscript.
   public init<each T: JavaScriptRepresentable>(_ runtime: borrowing JavaScriptRuntime, items: repeat each T) {
     var length: Int = 0
     for _ in repeat each items {
@@ -563,6 +563,19 @@ extension JavaScriptArray {
       result.append((offset: index, element: getValueUnchecked(at: index, in: jsiRuntime)))
     }
     return result
+  }
+
+  /// Calls the given closure on each element in the array together with its index, similar to
+  /// iterating `Sequence.enumerated()`. Named apart from `forEach(_:)` so a trailing closure is never
+  /// ambiguous between the two.
+  public func forEachIndexed(_ body: (_ index: Int, _ element: JavaScriptValue) throws -> Void) rethrows {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    for index in 0..<count {
+      try body(index, getValueUnchecked(at: index, in: jsiRuntime))
+    }
   }
 
   /// Calls the given closure on each element in the array.

@@ -64,6 +64,19 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
     return try body(value)
   }
 
+  /// Borrows the referenced value for the duration of `body` when the reference holds one, and
+  /// returns `nil` without calling `body` when it is empty. Prefer this over `withValue(_:)` when
+  /// `body` has nothing to do for an empty reference: a borrowed non-copyable optional cannot be
+  /// unwrapped with `if let` or optional chaining, only with a `switch`.
+  public func withUnwrappedValue<R: ~Copyable>(_ body: (borrowing T) throws -> R) rethrows -> R? {
+    switch value {
+    case .some(let value):
+      return try body(value)
+    case .none:
+      return nil
+    }
+  }
+
   /// Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
   public func asValue() -> JavaScriptValue {
     return take()?.asValue() ?? .undefined
