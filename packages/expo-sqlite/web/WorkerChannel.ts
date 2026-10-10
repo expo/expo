@@ -13,6 +13,7 @@ let messageId = 0;
 const deferredMap = new Map<number, Deferred>();
 const PENDING = 1;
 const RESOLVED = 2;
+const RESULT_LENGTH_HEADER_SIZE = 4;
 
 let hasWarnedSync = false;
 
@@ -37,11 +38,17 @@ export function sendWorkerResult({
     const { lockBuffer, resultBuffer } = syncTrait;
     const lock = new Int32Array(lockBuffer);
     const resultArray = new Uint8Array(resultBuffer);
-    const resultJson = error != null ? serialize({ error }) : serialize({ result });
-    const resultBytes = new TextEncoder().encode(resultJson);
-    const length = resultBytes.length;
-    resultArray.set(new Uint32Array([length]), 0);
-    resultArray.set(resultBytes, 4);
+    let resultJson = error != null ? serialize({ error }) : serialize({ result });
+    let resultBytes = new TextEncoder().encode(resultJson);
+    const resultCapacity = resultArray.byteLength - RESULT_LENGTH_HEADER_SIZE;
+    if (resultBytes.byteLength > resultCapacity) {
+      resultJson = serialize({
+        error: `Sync result too large for shared buffer: ${resultBytes.byteLength} bytes (maximum ${resultCapacity} bytes)`,
+      });
+      resultBytes = new TextEncoder().encode(resultJson);
+    }
+    new DataView(resultBuffer).setUint32(0, resultBytes.byteLength, true);
+    resultArray.set(resultBytes, RESULT_LENGTH_HEADER_SIZE);
     Atomics.store(lock, 0, RESOLVED);
   } else {
     if (result) {
@@ -117,7 +124,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
   });
 
   let i = 0;
-  // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
   const useAtomicsPause = typeof Atomics.pause === 'function';
   while (Atomics.load(lock, 0) === PENDING) {
     ++i;
@@ -126,7 +132,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
       if (i > 1_000_000) {
         throw new Error('Sync operation timeout');
       }
-      // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
       Atomics.pause();
     } else {
       // NOTE(kudo): Unfortunate for the busy loop,
@@ -137,9 +142,12 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
     }
   }
 
-  const length = new Uint32Array(resultArray.buffer, 0, 1)[0];
+  const length = new DataView(resultBuffer).getUint32(0, true);
+  if (length > resultArray.byteLength - RESULT_LENGTH_HEADER_SIZE) {
+    throw new Error(`Invalid sync result length: ${length}`);
+  }
   const resultCopy = new Uint8Array(length);
-  resultCopy.set(new Uint8Array(resultArray.buffer, 4, length));
+  resultCopy.set(new Uint8Array(resultArray.buffer, RESULT_LENGTH_HEADER_SIZE, length));
   const resultJson = new TextDecoder().decode(resultCopy);
   const { result, error } = deserialize<{ result: ResultTypeMap[T]; error?: string }>(resultJson);
   if (error) throw new Error(error);
