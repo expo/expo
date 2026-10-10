@@ -107,7 +107,9 @@ struct MainThreadStallTests {
     #expect(root.subFrames?.first?.address == inner)
     #expect(root.binaryName?.isEmpty == false)
     #expect(root.binaryUUID?.isEmpty == false)
-    #expect(root.subFrames?.first?.symbol == "getpid")
+    // libsystem_kernel exports the syscall stub under more than one name (`getpid`, `__getpid`) and
+    // `dladdr` may hand back either.
+    #expect(root.subFrames?.first?.symbol?.hasSuffix("getpid") == true)
   }
 
   @Test
