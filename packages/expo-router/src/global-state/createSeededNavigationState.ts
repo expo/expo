@@ -1,7 +1,7 @@
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
-import { getRouteNamedLikeGroup } from '../layoutAnchor';
+import { getGroupMatchingRouteName } from '../layoutAnchor';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
@@ -93,7 +93,7 @@ export function createSeededNavigationState(
   return createSeededState({
     targetState: withoutParsedGroupAnchor(
       targetState,
-      getRouteNamedLikeGroup(routeNode),
+      getGroupMatchingRouteName(routeNode),
       initialRouteName
     ),
     routeNames,

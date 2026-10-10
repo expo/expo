@@ -20,7 +20,7 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   }
   // A layout that failed to load keeps the anchor known without loading it.
   if (collector?.skipped.has(node)) {
-    return getRouteNamedLikeGroup(node);
+    return getGroupMatchingRouteName(node);
   }
   const loaded = loadLayout(node);
   if (loaded instanceof Promise) {
@@ -33,7 +33,7 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
 }
 
 /** Returns the child named like the layout's group, which is the anchor unless settings override it. */
-export function getRouteNamedLikeGroup(node: RouteNode): string | undefined {
+export function getGroupMatchingRouteName(node: RouteNode): string | undefined {
   return node.children.find((child) => child.route.replace(/\/index$/, '') === node.groupName)
     ?.route;
 }
@@ -130,7 +130,7 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  let anchor = getRouteNamedLikeGroup(node);
+  let anchor = getGroupMatchingRouteName(node);
   let anchorGroupName: string | undefined;
   if (settings) {
     try {

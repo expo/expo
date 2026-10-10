@@ -1,5 +1,5 @@
 import type { RouteNode } from './Route';
-import { getRouteNamedLikeGroup } from './layoutAnchor';
+import { getGroupMatchingRouteName } from './layoutAnchor';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -70,9 +70,9 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
   // Example: with `(home)/home.tsx` and `(home)/details.tsx`, `/details` parses to `[home, details]`.
   // `unstable_settings.anchor` is not used here because reading it loads the layout.
   // Seeding the navigation state applies it later.
-  const routeNamedLikeGroup = getRouteNamedLikeGroup(node);
-  if (routeNamedLikeGroup) {
-    screen.initialRouteName = routeNamedLikeGroup;
+  const groupMatchingRouteName = getGroupMatchingRouteName(node);
+  if (groupMatchingRouteName) {
+    screen.initialRouteName = groupMatchingRouteName;
   }
 
   if (!metaOnly) {

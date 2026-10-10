@@ -2,7 +2,7 @@ import type { RouteNode } from '../Route';
 import {
   collectMissingLayouts,
   getLayoutAnchor,
-  getRouteNamedLikeGroup,
+  getGroupMatchingRouteName,
   loadLayouts,
   withLoadedLayouts,
 } from '../layoutAnchor';
@@ -157,14 +157,29 @@ describe('getLayoutAnchor', () => {
   });
 });
 
-describe('getRouteNamedLikeGroup', () => {
-  it.each([
-    ['the route named like the group', ['a', 'b'], 'b', 'b'],
-    ['the `index` route of the directory named like the group', ['a', 'b/index'], 'b', 'b/index'],
-    ['undefined without a group', ['a', 'b'], undefined, undefined],
-    ['undefined when no route is named like the group', ['a', 'b'], 'c', undefined],
-  ])('returns %s', (_, routes, groupName, expected) => {
-    expect(getRouteNamedLikeGroup(layoutNode({ routes, groupName }).node)).toBe(expected);
+describe('getGroupMatchingRouteName', () => {
+  it('returns the route named like the group', () => {
+    const { node } = layoutNode({ routes: ['a', 'b'], groupName: 'b' });
+
+    expect(getGroupMatchingRouteName(node)).toBe('b');
+  });
+
+  it('returns the `index` route of the directory named like the group', () => {
+    const { node } = layoutNode({ routes: ['a', 'b/index'], groupName: 'b' });
+
+    expect(getGroupMatchingRouteName(node)).toBe('b/index');
+  });
+
+  it('returns undefined without a group', () => {
+    const { node } = layoutNode({ routes: ['a', 'b'] });
+
+    expect(getGroupMatchingRouteName(node)).toBeUndefined();
+  });
+
+  it('returns undefined when no route is named like the group', () => {
+    const { node } = layoutNode({ routes: ['a', 'b'], groupName: 'c' });
+
+    expect(getGroupMatchingRouteName(node)).toBeUndefined();
   });
 });
 
