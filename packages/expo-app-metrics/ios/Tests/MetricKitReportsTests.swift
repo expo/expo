@@ -62,9 +62,17 @@ struct MetricKitLaunchReportTests {
   @Test
   func `report with only empty histograms is empty`() {
     let empty = MetricKitLaunchReport(
-      timeToFirstDraw: [], optimizedTimeToFirstDraw: nil, applicationResumeTime: nil, extendedLaunch: nil,
-      applicationHangTime: nil, appVersion: "1", includesMultipleAppVersions: false,
-      timestampBegin: .now, timestampEnd: .now, ingestedAt: .now)
+      timeToFirstDraw: [],
+      optimizedTimeToFirstDraw: nil,
+      applicationResumeTime: nil,
+      extendedLaunch: nil,
+      applicationHangTime: nil,
+      appVersion: "1",
+      includesMultipleAppVersions: false,
+      timestampBegin: .now,
+      timestampEnd: .now,
+      ingestedAt: .now
+    )
     #expect(empty.isEmpty)
     #expect(!report.isEmpty)
   }
@@ -79,13 +87,26 @@ struct HangReportTests {
         threadAttributed: true,
         callStackRootFrames: [
           .init(
-            binaryName: "App", binaryUUID: "B", address: 1, offsetIntoBinaryTextSegment: 32, sampleCount: 1,
-            subFrames: nil, symbol: "MIDIClientCreateWithBlock")
-        ])
+            binaryName: "App",
+            binaryUUID: "B",
+            address: 1,
+            offsetIntoBinaryTextSegment: 32,
+            sampleCount: 1,
+            subFrames: nil,
+            symbol: "MIDIClientCreateWithBlock"
+          )
+        ]
+      )
     ])
     let report = HangReport(
-      kind: .hang, duration: 0.645, callStackTree: tree, appVersion: "1.2.0",
-      timestampBegin: Date(timeIntervalSince1970: 0), timestampEnd: Date(timeIntervalSince1970: 60), ingestedAt: .now)
+      kind: .hang,
+      duration: 0.645,
+      callStackTree: tree,
+      appVersion: "1.2.0",
+      timestampBegin: Date(timeIntervalSince1970: 0),
+      timestampEnd: Date(timeIntervalSince1970: 60),
+      ingestedAt: .now
+    )
     let record = report.toLogRecord()
     let attributes = try #require(record.attributes?.value as? [String: Any])
     #expect(record.name == "native.hang")
@@ -98,11 +119,23 @@ struct HangReportTests {
   @Test
   func `slow launch uses its own event name and fingerprint differs by kind`() {
     let hang = HangReport(
-      kind: .hang, duration: 3, callStackTree: nil, appVersion: "1",
-      timestampBegin: Date(timeIntervalSince1970: 0), timestampEnd: Date(timeIntervalSince1970: 60), ingestedAt: .now)
+      kind: .hang,
+      duration: 3,
+      callStackTree: nil,
+      appVersion: "1",
+      timestampBegin: Date(timeIntervalSince1970: 0),
+      timestampEnd: Date(timeIntervalSince1970: 60),
+      ingestedAt: .now
+    )
     let slowLaunch = HangReport(
-      kind: .slowLaunch, duration: 3, callStackTree: nil, appVersion: "1",
-      timestampBegin: Date(timeIntervalSince1970: 0), timestampEnd: Date(timeIntervalSince1970: 60), ingestedAt: .now)
+      kind: .slowLaunch,
+      duration: 3,
+      callStackTree: nil,
+      appVersion: "1",
+      timestampBegin: Date(timeIntervalSince1970: 0),
+      timestampEnd: Date(timeIntervalSince1970: 60),
+      ingestedAt: .now
+    )
     #expect(slowLaunch.toLogRecord().name == "native.slow_launch")
     #expect(hang.fingerprint != slowLaunch.fingerprint)
     #expect(hang.fingerprint == hang.fingerprint)

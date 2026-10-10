@@ -34,7 +34,9 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       do {
         mainSessions = try AppMetrics.database?.getMainSessions() ?? []
       } catch {
-        logger.warn("[AppMetrics] Failed to load main sessions for launch metrics attribution: \(error.localizedDescription)")
+        logger.warn(
+          "[AppMetrics] Failed to load main sessions for launch metrics attribution: \(error.localizedDescription)"
+        )
         return
       }
       for report in reports where AppMetricsUserDefaults.markMetricKitPayloadIngested(report.fingerprint) {

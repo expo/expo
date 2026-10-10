@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import MachO
+
 /// Renders a MetricKit-shaped `CallStackTree` into the flat stack trace string attached to log
 /// events. Shared by crash reports, hang reports and startup stall reports so they all read the
 /// same way and symbolicate with the same tooling.
@@ -30,7 +32,8 @@ extension CrashReport.CallStackTree {
     if totalFrames > frames.count {
       lines.append("… +\(totalFrames - frames.count) more frames")
     }
-    let stacktrace: String? = lines.isEmpty
+    let stacktrace: String? =
+      lines.isEmpty
       ? nil
       : truncateToMaxLength(
         lines.joined(separator: "\n"),
@@ -151,8 +154,6 @@ extension CrashReport.CallStackTree {
     }
   }
 }
-
-import MachO
 
 enum MachOImage {
   /// The `LC_UUID` of the Mach-O image whose header is at `base`, or `nil` for anything that

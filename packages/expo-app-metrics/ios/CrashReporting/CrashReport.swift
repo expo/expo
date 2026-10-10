@@ -52,7 +52,11 @@ public struct CrashReport: Codable, Sendable {
   /// Picks the most likely main session that this crash report belongs to. See
   /// `MetricKitSessionMatcher` for the rules; an unfinished session is the strongest crash signal.
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    return MetricKitSessionMatcher.findMatchingSession(windowBegin: timestampBegin, windowEnd: timestampEnd, in: mainSessions)
+    return MetricKitSessionMatcher.findMatchingSession(
+      windowBegin: timestampBegin,
+      windowEnd: timestampEnd,
+      in: mainSessions
+    )
   }
 
   func toLogRecord() -> LogRecord {

@@ -34,7 +34,11 @@ public struct HangReport: Codable, Sendable {
   public let ingestedAt: Date
 
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    return MetricKitSessionMatcher.findMatchingSession(windowBegin: timestampBegin, windowEnd: timestampEnd, in: mainSessions)
+    return MetricKitSessionMatcher.findMatchingSession(
+      windowBegin: timestampBegin,
+      windowEnd: timestampEnd,
+      in: mainSessions
+    )
   }
 
   /// Stable key so a diagnostic redelivered through `pastDiagnosticPayloads` is stored once.
@@ -53,7 +57,7 @@ public struct HangReport: Codable, Sendable {
       "expo.hang.duration_ms": (duration * 1000).rounded(),
       "expo.hang.app_version": appVersion,
       "expo.hang.window_begin": timestampBegin.ISO8601Format(),
-      "expo.hang.window_end": timestampEnd.ISO8601Format()
+      "expo.hang.window_end": timestampEnd.ISO8601Format(),
     ]
     if let rendered, rendered.renderedFrameCount > 0 {
       attributes["expo.hang.stacktrace"] = rendered.stacktrace as Any

@@ -71,7 +71,11 @@ struct MetricKitLaunchReport: Codable, Sendable {
   }
 
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    return MetricKitSessionMatcher.findMatchingSession(windowBegin: timestampBegin, windowEnd: timestampEnd, in: mainSessions)
+    return MetricKitSessionMatcher.findMatchingSession(
+      windowBegin: timestampBegin,
+      windowEnd: timestampEnd,
+      in: mainSessions
+    )
   }
 
   /// The full histograms as one `metrickit.app_launch` log event, for the detail view.
@@ -80,7 +84,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
       "expo.metrickit.app_version": appVersion,
       "expo.metrickit.includes_multiple_app_versions": includesMultipleAppVersions,
       "expo.metrickit.window_begin": timestampBegin.ISO8601Format(),
-      "expo.metrickit.window_end": timestampEnd.ISO8601Format()
+      "expo.metrickit.window_end": timestampEnd.ISO8601Format(),
     ]
     for (name, buckets) in histograms {
       attributes["expo.metrickit.\(name).histogram"] = buckets.map(\.asParams)
@@ -111,7 +115,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
           "expo.metrickit.sample_count": MetricKitHistogram.sampleCount(buckets),
           "expo.metrickit.histogram": buckets.map(\.asParams),
           "expo.metrickit.window_begin": timestampBegin.ISO8601Format(),
-          "expo.metrickit.window_end": timestampEnd.ISO8601Format()
+          "expo.metrickit.window_end": timestampEnd.ISO8601Format(),
         ]
       )
     }
@@ -123,7 +127,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
       ("optimizedTimeToFirstDraw", optimizedTimeToFirstDraw),
       ("applicationResumeTime", applicationResumeTime),
       ("extendedLaunch", extendedLaunch),
-      ("applicationHangTime", applicationHangTime)
+      ("applicationHangTime", applicationHangTime),
     ]
     return all.compactMap { name, buckets in
       guard let buckets, !buckets.isEmpty else {

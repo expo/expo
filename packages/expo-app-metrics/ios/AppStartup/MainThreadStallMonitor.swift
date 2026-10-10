@@ -34,7 +34,7 @@ struct MainThreadStall: Codable, Sendable {
       "expo.stall.phase": phase,
       "expo.stall.started_at_ms": (startedAt * 1000).rounded(),
       "expo.stall.duration_ms": (duration * 1000).rounded(),
-      "expo.stall.unfinished": unfinished
+      "expo.stall.unfinished": unfinished,
     ]
     if let rendered, rendered.renderedFrameCount > 0 {
       attributes["expo.stall.stacktrace"] = rendered.stacktrace as Any
@@ -218,11 +218,13 @@ final class MainThreadStallMonitor: @unchecked Sendable {
         }
       }
       if shouldCapture {
-        let frameCount = mainThread.map {
-          ThreadBacktrace.capture(thread: $0, into: buffer, capacity: ThreadBacktrace.maxFrames)
-        } ?? 0
+        let frameCount =
+          mainThread.map {
+            ThreadBacktrace.capture(thread: $0, into: buffer, capacity: ThreadBacktrace.maxFrames)
+          } ?? 0
         let addresses = Array(UnsafeBufferPointer(start: buffer, count: frameCount))
-        let tree = addresses.isEmpty
+        let tree =
+          addresses.isEmpty
           ? nil
           : CrashReportSymbolicator.symbolicate(CrashReport.CallStackTree.fromAddresses(addresses))
         lock.lock()

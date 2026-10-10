@@ -12,15 +12,26 @@ struct MainThreadStallTests {
         threadAttributed: true,
         callStackRootFrames: [
           .init(
-            binaryName: "libdispatch.dylib", binaryUUID: "A", address: 100, offsetIntoBinaryTextSegment: 16,
+            binaryName: "libdispatch.dylib",
+            binaryUUID: "A",
+            address: 100,
+            offsetIntoBinaryTextSegment: 16,
             sampleCount: 1,
             subFrames: [
               .init(
-                binaryName: "App", binaryUUID: "B", address: 200, offsetIntoBinaryTextSegment: 32, sampleCount: 1,
-                subFrames: nil, symbol: "MidiManager.setup()")
+                binaryName: "App",
+                binaryUUID: "B",
+                address: 200,
+                offsetIntoBinaryTextSegment: 32,
+                sampleCount: 1,
+                subFrames: nil,
+                symbol: "MidiManager.setup()"
+              )
             ],
-            symbol: "_dispatch_client_callout")
-        ])
+            symbol: "_dispatch_client_callout"
+          )
+        ]
+      )
     ])
     let stall = MainThreadStall(startedAt: 0.2, duration: 0.645, unfinished: false, callStackTree: tree)
     let record = stall.toLogRecord(phase: "beforeFirstRender", timestamp: Date(timeIntervalSince1970: 0))
@@ -41,7 +52,9 @@ struct MainThreadStallTests {
   @Test
   func `log record without a stack has no stack attributes`() throws {
     let stall = MainThreadStall(startedAt: 0, duration: 0.2, unfinished: true, callStackTree: nil)
-    let attributes = try #require(stall.toLogRecord(phase: "beforeInteractive", timestamp: .now).attributes?.value as? [String: Any])
+    let attributes = try #require(
+      stall.toLogRecord(phase: "beforeInteractive", timestamp: .now).attributes?.value as? [String: Any]
+    )
     #expect(attributes["expo.stall.stacktrace"] == nil)
     #expect(attributes["expo.stall.unfinished"] as? Bool == true)
   }
@@ -82,7 +95,8 @@ struct MainThreadStallTests {
   @Test
   func `monitor reports a stall with a backtrace when the main thread blocks`() async throws {
     let monitor = MainThreadStallMonitor(
-      configuration: .init(pingInterval: 0.01, stallThreshold: 0.05, maxMonitoringDuration: 5))
+      configuration: .init(pingInterval: 0.01, stallThreshold: 0.05, maxMonitoringDuration: 5)
+    )
     let stall: MainThreadStall = try await withCheckedThrowingContinuation { continuation in
       monitor.start(anchor: CACurrentMediaTime()) { stall, _ in
         continuation.resume(returning: stall)
