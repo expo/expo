@@ -108,4 +108,10 @@ sealed class DestinationSink(val spec: DestinationSpec) {
       throw UnableToCopyException("Cannot copy to read-only destination")
     }
   }
+
+  class Resource(spec: DestinationSpec) : DestinationSink(spec) {
+    override suspend fun receiveFrom(source: UnifiedFileInterface): Uri {
+      throw UnableToCopyException("Cannot copy to read-only destination")
+    }
+  }
 }
