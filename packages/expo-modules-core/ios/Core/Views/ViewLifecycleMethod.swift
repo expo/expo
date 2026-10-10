@@ -58,3 +58,9 @@ public final class ViewLifecycleMethod<ViewType>: AnyViewLifecycleMethod {
     log.warn("Cannot call lifecycle method '\(type)', given view is not of type '\(ViewType.self)'")
   }
 }
+
+extension ViewLifecycleMethod {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.lifecycleMethods.append(self)
+  }
+}

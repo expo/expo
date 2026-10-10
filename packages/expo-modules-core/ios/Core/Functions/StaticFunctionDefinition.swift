@@ -15,6 +15,10 @@ internal protocol AnyStaticFunctionDefinition: AnyFunctionDefinition {
  */
 public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
   SyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  public override func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.staticFunctions.append(self)
+  }
+
   let isStatic = true
 }
 
@@ -23,6 +27,10 @@ public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
  */
 public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>:
   AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  public override func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.staticFunctions.append(self)
+  }
+
   let isStatic = true
 }
 
@@ -31,5 +39,9 @@ public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>
  */
 public final class StaticConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
   ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  public override func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.staticFunctions.append(self)
+  }
+
   let isStatic = true
 }

@@ -61,3 +61,9 @@ public enum EventName: Equatable, Sendable {
   case appBecomesActive
   case appEntersBackground
 }
+
+extension EventListener {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.eventListeners.append(self)
+  }
+}

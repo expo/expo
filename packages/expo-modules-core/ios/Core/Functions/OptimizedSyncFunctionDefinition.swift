@@ -44,6 +44,8 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
     callback(.failure(GenericException("OptimizedSyncFunctionDefinition cannot be called from native code")))
   }
 
+  public var __isConstructor: Bool { name == "constructor" }
+
   // MARK: - AnySyncFunctionDefinition
 
   public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
@@ -125,4 +127,10 @@ public func _createOptimizedFunctionDescriptor(
     argsCount: argsCount,
     block: block
   )
+}
+
+extension OptimizedSyncFunctionDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.functions.append(self)
+  }
 }

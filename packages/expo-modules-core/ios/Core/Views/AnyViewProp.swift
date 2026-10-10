@@ -12,3 +12,13 @@ public protocol AnyViewProp: AnyViewDefinitionElement {
    */
   func set(value: Any, onView: UIView, appContext: AppContext) throws
 }
+
+extension AnyViewProp {
+  /**
+   Default collection for view props declared outside of this module. Mirrors the `as? AnyViewProp` cast that
+   `ViewDefinition` used to perform, so external conformers keep being registered as props.
+   */
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.viewProps.append(self)
+  }
+}
