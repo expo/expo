@@ -258,14 +258,17 @@ async function closeDatabase(nativeDatabaseId: number) {
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
   if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
 
-  const isConnectionShared = [...databaseIdMap.entries()].some(
-    ([id, entity]) => id !== nativeDatabaseId && entity === dbEntity
-  );
-  if (!isConnectionShared) {
+  databaseIdMap.delete(nativeDatabaseId);
+  if ([...databaseIdMap.values()].includes(dbEntity)) {
+    return;
+  }
+  try {
     await maybeFinalizeAllStatements(sqlite3, dbEntity);
     await sqlite3.close(dbEntity.pointer);
+  } catch (e) {
+    databaseIdMap.set(nativeDatabaseId, dbEntity);
+    throw e;
   }
-  databaseIdMap.delete(nativeDatabaseId);
 }
 
 async function deleteDatabase(databasePath: string): Promise<void> {
