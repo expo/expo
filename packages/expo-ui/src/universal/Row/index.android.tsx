@@ -31,13 +31,15 @@ export function Row({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Row' }
   );
 
   return (
     <ComposeRow
       verticalAlignment={alignmentMap[alignment]}
       horizontalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
+      resolvesChildPercentages
       modifiers={modifiers}>
       {children}
     </ComposeRow>

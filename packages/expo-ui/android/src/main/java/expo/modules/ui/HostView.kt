@@ -121,6 +121,11 @@ internal class HostView(context: Context, appContext: AppContext) :
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
 
+  // The size a child fraction was resolved against, in dp.
+  // matchContents would otherwise publish the percentage result and the next pass divides it again.
+  private var percentageBaseWidthDp: Double? = null
+  private var percentageBaseHeightDp: Double? = null
+
   /**
    * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
    * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
@@ -237,15 +242,54 @@ internal class HostView(context: Context, appContext: AppContext) :
           constraints.maxHeight
         }
       )
-      val placeables = measurables.map { it.measure(boundedConstraints) }
+      // `measure` does not read a child percentage, so apply it here when this host
+      // has a size on that axis. A child with no percentage keeps these constraints.
+      // Compose Row and Column do not read that percentage.
+      val definiteWidth = boundedConstraints.maxWidth.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minWidth == it || useViewportSizeMeasurement)
+      }
+      val definiteHeight = boundedConstraints.maxHeight.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minHeight == it || useViewportSizeMeasurement)
+      }
+      val placeables = measurables.map {
+        measureUniversalChild(it, boundedConstraints, definiteWidth, definiteHeight)
+      }
 
       val contentWidthPx = placeables.maxOfOrNull { it.width } ?: 0
       val contentHeightPx = placeables.maxOfOrNull { it.height } ?: 0
+      // A child percentage is a fraction of the safe area proposed above.
+      // Publishing that result as the view size makes the next pass resolve it again.
+      val widthFromPercentage = definiteWidth != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.widthFraction != null
+      }
+      val heightFromPercentage = definiteHeight != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.heightFraction != null
+      }
+      // setStyleSize replaces the pending setViewSize flush.
+      // Publish this base for a viewport fraction so both updates describe the same size.
+      percentageBaseWidthDp = if (useViewportSizeMeasurement && widthFromPercentage && definiteWidth != null) {
+        with(density) { definiteWidth.toDp().value.toDouble() }
+      } else {
+        null
+      }
+      percentageBaseHeightDp = if (useViewportSizeMeasurement && heightFromPercentage && definiteHeight != null) {
+        with(density) { definiteHeight.toDp().value.toDouble() }
+      } else {
+        null
+      }
 
       if (useViewportSizeMeasurement && (constraints.maxWidth == 0 || constraints.maxHeight == 0)) {
         with(density) {
-          val widthDp = contentWidthPx.toDp().value.toDouble()
-          val heightDp = contentHeightPx.toDp().value.toDouble()
+          val widthDp = if (widthFromPercentage) {
+            safeWidthPx.toDp().value.toDouble()
+          } else {
+            contentWidthPx.toDp().value.toDouble()
+          }
+          val heightDp = if (heightFromPercentage) {
+            safeHeightPx.toDp().value.toDouble()
+          } else {
+            contentHeightPx.toDp().value.toDouble()
+          }
 
           shadowNodeProxy.setViewSize(
             if (constraints.maxWidth == 0) {
@@ -284,17 +328,17 @@ internal class HostView(context: Context, appContext: AppContext) :
       val height = size.height.toDp().value
 
       if (matchContentsHorizontal == true || matchContentsVertical == true) {
-        val styleWidth = if (matchContentsHorizontal == true && width > 0) {
-          width
+        val styleWidth = if (matchContentsHorizontal == true) {
+          percentageBaseWidthDp ?: width.takeIf { it > 0 }?.toDouble()
         } else {
           null
         }
-        val styleHeight = if (matchContentsVertical == true && height > 0) {
-          height
+        val styleHeight = if (matchContentsVertical == true) {
+          percentageBaseHeightDp ?: height.takeIf { it > 0 }?.toDouble()
         } else {
           null
         }
-        shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
+        shadowNodeProxy.setStyleSize(styleWidth, styleHeight)
       }
 
       // `onSizeChanged` runs inside the Compose measure pass. Emitting the event here reaches
