@@ -39,7 +39,7 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
 
     self.name = buckets.viewNames
       .last?
-      .name ?? _typeName(viewType, qualified: false)
+      .name ?? _unqualifiedTypeName(viewType)
 
     self.eventNames = Array(
       buckets.events

@@ -75,7 +75,7 @@ public final class ModuleDefinition: ObjectDefinition {
 
     // Use the type name if the name is not in the definition or was defined empty.
     if name.isEmpty {
-      name = _typeName(type, qualified: false)
+      name = String(describing: type)
     }
     return self
   }

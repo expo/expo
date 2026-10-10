@@ -87,7 +87,7 @@ extension ExpoSwiftUI {
 
     convenience init(_ viewType: ViewType.Type) {
       // We assume SwiftUI views are exported as named views under the class name
-      let nameDefinitionElement = ViewNameDefinition(name: _typeName(viewType, qualified: false))
+      let nameDefinitionElement = ViewNameDefinition(name: _unqualifiedTypeName(viewType))
       self.init(viewType, elements: [nameDefinitionElement])
     }
 
