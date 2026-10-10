@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51037](https://github.com/expo/expo/pull/51037))
+  - expo-modules-core@58.0.16
+  - @expo/cli@58.1.7
+  - @expo/fingerprint@0.21.5
+  - @expo/metro-config@58.0.12
+  - expo-constants@58.0.11
+  - babel-preset-expo@58.0.13
+  - expo-asset@58.0.14
+
 ## 58.0.7
 
 ### Patch Changes

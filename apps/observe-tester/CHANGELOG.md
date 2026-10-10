@@ -1,5 +1,18 @@
 # observe-tester
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies. ([#51319](https://github.com/expo/expo/pull/51319), [#51237](https://github.com/expo/expo/pull/51237), [#51322](https://github.com/expo/expo/pull/51322), [#51351](https://github.com/expo/expo/pull/51351))
+  - @expo/ui@58.0.16
+  - expo@58.0.8
+  - expo-haptics@58.0.5
+  - expo-constants@58.0.11
+  - expo-updates@58.0.16
+  - expo-router@58.0.18
+  - expo-linking@58.0.12
+
 ## 1.0.1
 
 ### Patch Changes

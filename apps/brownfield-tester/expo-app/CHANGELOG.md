@@ -1,5 +1,17 @@
 # expo-app
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.8
+  - expo-brownfield@58.0.13
+  - expo-constants@58.0.11
+  - expo-router@58.0.18
+  - expo-linking@58.0.12
+  - expo-dev-menu@58.0.11
+
 ## 1.0.1
 
 ### Patch Changes

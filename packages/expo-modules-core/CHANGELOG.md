@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Update `expo-modules-macros` to 0.16.0, which supports closure arguments in `@JS` functions and initializers. ([#51037](https://github.com/expo/expo/pull/51037) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51037](https://github.com/expo/expo/pull/51037))
+  - expo-modules-jsi@58.0.11
+
 ## 58.0.15
 
 ### Patch Changes

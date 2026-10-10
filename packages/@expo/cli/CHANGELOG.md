@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.1.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+  - @expo/metro-config@58.0.12
+  - @expo/router-server@58.0.12
+
 ## 58.1.6
 
 ### Patch Changes

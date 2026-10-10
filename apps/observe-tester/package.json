@@ -1,7 +1,7 @@
 {
   "name": "observe-tester",
   "main": "expo-router/entry",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && (cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz) && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
