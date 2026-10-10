@@ -7,6 +7,9 @@ import React
 let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
+private let SUPPORTS_RTL_FROM_CONFIG = "ExpoLocalization_supportsRTLFromConfig"
+private let FORCES_RTL_FROM_CONFIG = "ExpoLocalization_forcesRTLFromConfig"
+
 let OBSERVED_EVENTS: Set<Notification.Name> = [
   // swiftlint:disable legacy_objc_type
   UIApplication.significantTimeChangeNotification,
@@ -50,15 +53,47 @@ public class LocalizationModule: Module {
   }
 
   func setRTLPreferences() {
-    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
-    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
+    // The config plugin writes an Info.plist key only for a non-default value, so a missing key means either
+    // "not configured" or "no longer configured". We remember which values came from the config to tell the
+    // two apart, instead of writing the defaults on every launch and overwriting the app's own
+    // I18nManager.allowRTL / forceRTL calls.
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // Uses required reason API based on the following reason: CA92.1
     if let i18nUtil = RCTI18nUtil.sharedInstance() {
-      i18nUtil.allowRTL(supportsRTL)
-      i18nUtil.forceRTL(forcesRTL)
+      if let allowRTL = Self.resolveRTLPreference(supportsRTL, fromConfigKey: SUPPORTS_RTL_FROM_CONFIG, default: true) {
+        i18nUtil.allowRTL(allowRTL)
+      }
+      if let forceRTL = Self.resolveRTLPreference(forcesRTL, fromConfigKey: FORCES_RTL_FROM_CONFIG, default: false) {
+        i18nUtil.forceRTL(forceRTL)
+      }
     }
+  }
+
+  /**
+   The value to write for an RTL preference, or `nil` to leave the stored preference alone. Whether the value
+   came from the app config is recorded, so that dropping the option restores the React Native default
+   exactly once, on the first launch without it.
+   */
+  static func resolveRTLPreference(
+    _ configValue: Bool?,
+    fromConfigKey: String,
+    default defaultValue: Bool,
+    userDefaults: UserDefaults = .standard
+  ) -> Bool? {
+    let wasFromConfig = userDefaults.bool(forKey: fromConfigKey)
+
+    if wasFromConfig != (configValue != nil) {
+      if configValue != nil {
+        userDefaults.set(true, forKey: fromConfigKey)
+      } else {
+        userDefaults.removeObject(forKey: fromConfigKey)
+      }
+    }
+
+    return configValue ?? (wasFromConfig ? defaultValue : nil)
   }
 
   // If the application isn't manually localized for the device language then the
