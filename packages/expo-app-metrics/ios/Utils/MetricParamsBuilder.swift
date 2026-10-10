@@ -53,7 +53,7 @@ enum MetricParamsBuilder {
         params["expo.network.isConstrained"] = networkPath.isConstrained
       }
     }
-    if let mainThreadStalls, mainThreadStalls.count > 0 {
+    if let mainThreadStalls, !mainThreadStalls.isEmpty {
       params["expo.startup.mainThreadStalls.count"] = mainThreadStalls.count
       params["expo.startup.mainThreadStalls.totalDuration"] = mainThreadStalls.totalDuration
       params["expo.startup.mainThreadStalls.longestDuration"] = mainThreadStalls.longestDuration

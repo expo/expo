@@ -34,7 +34,7 @@ struct MainThreadStall: Codable, Sendable {
       "expo.stall.phase": phase,
       "expo.stall.started_at_ms": (startedAt * 1000).rounded(),
       "expo.stall.duration_ms": (duration * 1000).rounded(),
-      "expo.stall.unfinished": unfinished,
+      "expo.stall.unfinished": unfinished
     ]
     if let rendered, rendered.renderedFrameCount > 0 {
       attributes["expo.stall.stacktrace"] = rendered.stacktrace as Any
@@ -59,6 +59,10 @@ struct MainThreadStallSummary: Sendable, Equatable {
   var count = 0
   var totalDuration: TimeInterval = 0
   var longestDuration: TimeInterval = 0
+
+  var isEmpty: Bool {
+    return count == 0
+  }
 
   mutating func add(_ stall: MainThreadStall) {
     count += 1

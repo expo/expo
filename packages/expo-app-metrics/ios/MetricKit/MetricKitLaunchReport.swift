@@ -22,7 +22,7 @@ enum MetricKitHistogram {
   /// samples, interpolated linearly inside it. MetricKit only hands out the histogram, so this is
   /// as close to "typical launch" as the OS data gets. `nil` for an empty histogram.
   static func estimatedMedian(_ buckets: [MetricKitHistogramBucket]) -> TimeInterval? {
-    let sorted = buckets.filter { $0.count > 0 }.sorted { $0.start < $1.start }
+    let sorted = buckets.filter { $0.count >= 1 }.sorted { $0.start < $1.start }
     let total = sampleCount(sorted)
     guard total > 0 else {
       return nil
@@ -32,7 +32,7 @@ enum MetricKitHistogram {
     for bucket in sorted {
       let next = cumulative + Double(bucket.count)
       if next >= target {
-        let fraction = bucket.count > 0 ? (target - cumulative) / Double(bucket.count) : 0
+        let fraction = bucket.count >= 1 ? (target - cumulative) / Double(bucket.count) : 0
         return bucket.start + (bucket.end - bucket.start) * fraction
       }
       cumulative = next
@@ -80,7 +80,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
       "expo.metrickit.app_version": appVersion,
       "expo.metrickit.includes_multiple_app_versions": includesMultipleAppVersions,
       "expo.metrickit.window_begin": timestampBegin.ISO8601Format(),
-      "expo.metrickit.window_end": timestampEnd.ISO8601Format(),
+      "expo.metrickit.window_end": timestampEnd.ISO8601Format()
     ]
     for (name, buckets) in histograms {
       attributes["expo.metrickit.\(name).histogram"] = buckets.map(\.asParams)
@@ -111,7 +111,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
           "expo.metrickit.sample_count": MetricKitHistogram.sampleCount(buckets),
           "expo.metrickit.histogram": buckets.map(\.asParams),
           "expo.metrickit.window_begin": timestampBegin.ISO8601Format(),
-          "expo.metrickit.window_end": timestampEnd.ISO8601Format(),
+          "expo.metrickit.window_end": timestampEnd.ISO8601Format()
         ]
       )
     }
@@ -123,7 +123,7 @@ struct MetricKitLaunchReport: Codable, Sendable {
       ("optimizedTimeToFirstDraw", optimizedTimeToFirstDraw),
       ("applicationResumeTime", applicationResumeTime),
       ("extendedLaunch", extendedLaunch),
-      ("applicationHangTime", applicationHangTime),
+      ("applicationHangTime", applicationHangTime)
     ]
     return all.compactMap { name, buckets in
       guard let buckets, !buckets.isEmpty else {
