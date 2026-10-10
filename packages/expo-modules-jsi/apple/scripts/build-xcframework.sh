@@ -111,6 +111,11 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    # Xcode releases can share a Swift compiler but ship different SDKs (Xcode
+    # 27.0 and 27.1 both report Swift 6.4). A slice built against the older SDK
+    # makes Swift fall back to its .swiftinterface, which cannot be rebuilt, so
+    # key the cache on the Xcode build as well.
+    echo "XCODE_VERSION=$(xcodebuild -version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -220,7 +225,11 @@ build_slice() {
   # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
   # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
   # .DerivedData. The .swiftinterface and the dSYM are unaffected.
+  #
+  # DEVELOPER_DIR is forwarded so the nested build uses the same Xcode as the app build,
+  # not the one selected with xcode-select.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+    ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
