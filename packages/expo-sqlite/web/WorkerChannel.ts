@@ -33,21 +33,29 @@ export function sendWorkerResult({
     resultBuffer: SharedArrayBuffer;
   };
 }) {
+  // Send the message as a string. An Error doesn't survive JSON, and `String(error)` keeps it non-empty.
+  const errorMessage = error != null ? error.message || String(error) : null;
   if (syncTrait) {
     const { lockBuffer, resultBuffer } = syncTrait;
     const lock = new Int32Array(lockBuffer);
-    const resultArray = new Uint8Array(resultBuffer);
-    const resultJson = error != null ? serialize({ error }) : serialize({ result });
-    const resultBytes = new TextEncoder().encode(resultJson);
-    const length = resultBytes.length;
-    resultArray.set(new Uint32Array([length]), 0);
-    resultArray.set(resultBytes, 4);
+    let resultBytes = new TextEncoder().encode(
+      errorMessage != null ? serialize({ error: errorMessage }) : serialize({ result })
+    );
+    if (resultBytes.length + 4 > resultBuffer.byteLength) {
+      resultBytes = new TextEncoder().encode(
+        serialize({
+          error: `The synchronous result is ${resultBytes.length} bytes, which is more than the ${resultBuffer.byteLength - 4} bytes that synchronous calls can return on web. Use the async API for large results.`,
+        })
+      );
+    }
+    new Uint32Array(resultBuffer, 0, 1)[0] = resultBytes.length;
+    new Uint8Array(resultBuffer).set(resultBytes, 4);
     Atomics.store(lock, 0, RESOLVED);
   } else {
     if (result) {
       self.postMessage({ id, result });
     } else {
-      self.postMessage({ id, error });
+      self.postMessage({ id, error: errorMessage });
     }
   }
 }
