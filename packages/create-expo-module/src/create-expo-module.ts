@@ -16,6 +16,7 @@ import {
   installDependencies,
   formatRunCommand,
   resolvePackageManager,
+  shouldCreatePnpmWorkspace,
   type PackageManagerName,
 } from './packageManager';
 import {
@@ -33,6 +34,7 @@ import { copyFileSnippets } from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import {
   buildAugmentedData,
+  copyPnpmWorkspaceFiles,
   copyTemplateFiles,
   handleSuffix,
   slugToAndroidPackage,
@@ -338,7 +340,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
       await withFileRollback(async (writeFile) => {
         await newStep('Creating the module from template files', async (step) => {
-          await createModuleFromTemplate(templatePath, targetDir, data, writeFile);
+          await createModuleFromTemplate(templatePath, targetDir, data, packageManager, writeFile);
           step.succeed('Created the module from template files');
         });
         if (options.local && options.barrel) {
@@ -447,6 +449,7 @@ async function createModuleFromTemplate(
   templatePath: string,
   targetPath: string,
   data: SubstitutionData | LocalSubstitutionData,
+  packageManager: PackageManagerName,
   writeFile: WriteFile
 ) {
   const snippetsDir = path.join(templatePath, 'snippets');
@@ -463,6 +466,9 @@ async function createModuleFromTemplate(
     writeFile
   );
   await copyFileSnippets(snippetsDir, data.project.features, data, targetPath, writeFile);
+  if (data.type === 'standalone' && shouldCreatePnpmWorkspace(packageManager, targetPath)) {
+    await copyPnpmWorkspaceFiles(templatePath, targetPath, writeFile);
+  }
 }
 
 async function createGitRepositoryAsync(targetDir: string) {

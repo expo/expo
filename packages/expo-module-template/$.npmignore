@@ -12,6 +12,7 @@
 
 # Exclude monorepo build configuration
 /turbo.json
+/pnpm-workspace.yaml
 
 # Exclude test configuration
 **/jest.config.*
