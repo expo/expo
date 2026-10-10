@@ -22,6 +22,15 @@ export const expoCompileAndroid: Command = async (argv) => {
           `--output-dir <dir>       Directory to copy the built app to`,
           `--output-type <apk|aab>  Type of app binary to build`,
           `-h, --help               Usage info`,
+        ].join('\n'),
+        [
+          '',
+          chalk`  Build the app in development mode:`,
+          chalk`    {dim $} npx expo compile:android --dev`,
+          '',
+          chalk`  Copy the built app into a folder in your project:`,
+          chalk`    {dim $} npx expo compile:android --dev --output-dir ./build`,
+          '',
         ].join('\n')
       );
     }
