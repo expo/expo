@@ -110,17 +110,36 @@ describe('getLayoutAnchor', () => {
     expect(loadRoute).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ['no settings', undefined, undefined, undefined],
-    ['the route named like the group', undefined, 'b', 'b'],
-    ['`anchor`', { anchor: 'a' }, 'b', 'a'],
-    ['`initialRouteName`', { initialRouteName: 'a' }, 'b', 'a'],
-    ['`anchor` over `initialRouteName`', { anchor: 'a', initialRouteName: 'b' }, undefined, 'a'],
-    ['the group `anchor`', { anchor: 'a', b: { anchor: 'b' } }, 'b', 'b'],
-    ['the group `initialRouteName`', { anchor: 'a', b: { initialRouteName: 'b' } }, 'b', 'b'],
-    ['`anchor` when the group has no settings', { anchor: 'a', c: { anchor: 'b' } }, 'b', 'a'],
-  ])('uses %s', (_, settings, groupName, expected) => {
-    expect(anchorOf(settings, groupName)).toBe(expected);
+  it('returns undefined without settings or a route named like the group', () => {
+    expect(anchorOf(undefined)).toBeUndefined();
+  });
+
+  it('uses the route named like the group without settings', () => {
+    expect(anchorOf(undefined, 'b')).toBe('b');
+  });
+
+  it('uses `anchor` over the route named like the group', () => {
+    expect(anchorOf({ anchor: 'a' }, 'b')).toBe('a');
+  });
+
+  it('uses `initialRouteName` over the route named like the group', () => {
+    expect(anchorOf({ initialRouteName: 'a' }, 'b')).toBe('a');
+  });
+
+  it('uses `anchor` over `initialRouteName`', () => {
+    expect(anchorOf({ anchor: 'a', initialRouteName: 'b' })).toBe('a');
+  });
+
+  it('uses the group `anchor` over `anchor`', () => {
+    expect(anchorOf({ anchor: 'a', b: { anchor: 'b' } }, 'b')).toBe('b');
+  });
+
+  it('uses the group `initialRouteName` over `anchor`', () => {
+    expect(anchorOf({ anchor: 'a', b: { initialRouteName: 'b' } }, 'b')).toBe('b');
+  });
+
+  it('uses `anchor` when only another group has settings', () => {
+    expect(anchorOf({ anchor: 'a', c: { anchor: 'b' } }, 'b')).toBe('a');
   });
 
   it('returns the `index` route of an anchor directory', () => {
