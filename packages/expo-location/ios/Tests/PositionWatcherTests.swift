@@ -375,11 +375,14 @@ struct PositionWatcherTests {
   }
 }
 
-private func waitUntil(timeout: Duration = .seconds(2), _ condition: () -> Bool) async {
+// The timeout is generous because a loaded CI simulator can take seconds to run main-actor work.
+// It only bounds a failing test; a passing one returns as soon as the condition holds.
+private func waitUntil(timeout: Duration = .seconds(30), _ condition: () -> Bool) async {
   let deadline = ContinuousClock.now + timeout
   while !condition() && ContinuousClock.now < deadline {
     try? await Task.sleep(for: .milliseconds(10))
   }
+  #expect(condition(), "Timed out after \(timeout) waiting for the condition")
 }
 
 private final class PayloadRecorder: @unchecked Sendable {
