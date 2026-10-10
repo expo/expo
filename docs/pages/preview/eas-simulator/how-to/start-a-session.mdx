@@ -1,0 +1,196 @@
+---
+title: Start a remote Android Emulator or iOS Simulator session
+sidebar_title: Start a session
+description: Start an EAS Simulator session from EAS CLI, the REST API, or expo.dev, then confirm that the remote device is ready to use.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+An EAS Simulator **session** is one remote Android Emulator or iOS Simulator that runs on EAS infrastructure for a limited time. To start a session, run `eas simulator:start` with a platform and a session type. The command waits until the device is ready, then writes the connection details to **.env.eas-simulator**.
+
+This page shows the four ways to start a session and how to confirm that the session is ready. For a first-time walkthrough that includes account setup, see [Get started with EAS Simulator](/preview/eas-simulator/get-started/).
+
+## Choose how to start the session
+
+| Start from                                                                                           | Use it when                                                                              |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [EAS CLI](/preview/eas-simulator/reference/cli/)                                                     | You work in a terminal, or an agent works in a project directory.                        |
+| [REST API](/preview/eas-simulator/reference/rest-api/)                                               | Your own service or CI system creates sessions over HTTP, without EAS CLI.               |
+| [Create session link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link) | A person starts a browser preview from a pull request, CI result, or internal tool.      |
+| [expo.dev](#start-a-session-on-expodev)                                                              | You want to start a session from the project's **Simulator sessions** page in a browser. |
+
+## Start a session with EAS CLI
+
+Run the command from the project directory. Pass the platform, the [session type](/preview/eas-simulator/reference/session-types/), and a name that describes the purpose of the session:
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform android --type agent-device --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+EAS CLI shows a warning when you start an Android session. Android Emulator support is still in development, and some features that work on iOS may not work on Android yet.
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
+
+The start command does these steps:
+
+1. It creates the session and prints the session page URL on expo.dev.
+2. It waits while the session is in the queue. Queue time does not count toward the startup timeout.
+3. It waits up to 15 minutes for the device and controller to start.
+4. It writes **.env.eas-simulator** and prints the connection instructions.
+
+If the session stops or fails before it is ready, the command reports the failure and links to the session page. If the startup timeout expires, EAS CLI stops the session.
+
+> **warning** `--non-interactive` does not stop the session when the command returns. The remote device keeps running until you stop it, it reaches its maximum duration, or it reaches its idle limit, if you set one. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+### Stay attached or return immediately
+
+| Mode                | Behavior                                                                                                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Interactive         | The command stays attached until the session ends. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session. This is the default in an interactive terminal. |
+| `--non-interactive` | The command returns when the session is ready. Stop the session later with `eas simulator:stop`. This is the default when `CI` is set or there is no terminal.    |
+| `--json`            | Same as `--non-interactive`, and the output is a JSON object for scripts and agents.                                                                              |
+
+### Add an app, a device, or limits
+
+You can add more flags to the same command:
+
+| Goal                                               | Flags                                                                                   | More information                                                              |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Install and launch an app during startup           | One of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go` | [Install your app](/preview/eas-simulator/how-to/install-your-app/)           |
+| Select a device model                              | `--device <avd-profile>` on Android, or `--device "<name-or-UDID>"` on iOS              | [Devices](/preview/eas-simulator/reference/devices/)                          |
+| Stop the session automatically                     | `--max-duration-minutes <minutes>`, `--max-idle-time-minutes <minutes>`                 | [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/)     |
+| Group the session with others                      | `--tag <tag>`, repeated for each tag                                                    | [Organize sessions](/preview/eas-simulator/how-to/organize-sessions/)         |
+| Route device network traffic through your computer | `--egress local`                                                                        | [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/) |
+
+## Start a session with the REST API
+
+Send a `POST` request with an [Expo access token](/accounts/programmatic-access/). The response returns before the device is ready:
+
+<Terminal
+  cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions" -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"<project-id>","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","maxDurationMinutes":30}'`}
+  cmd={[
+    `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN" \\`,
+    `    -H "Content-Type: application/json" \\`,
+    `    -d '{"appId":"<project-id>","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","maxDurationMinutes":30}'`,
+  ]}
+/>
+
+Save `data.id` from the response. Then poll the session every five seconds until it is ready. See [Get a session](/preview/eas-simulator/reference/rest-api/#get-a-session).
+
+## Start a session on expo.dev
+
+Open the project's **Simulator sessions** page and select **New simulator**. The **Create new simulator** dialog has these fields:
+
+| Field            | Options                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| Session name     | Optional. Up to 255 characters.                                                           |
+| Platform         | Android or iOS. The default is iOS.                                                       |
+| Controller       | **Agent Device**, **Argent**, or **Appium**. The default is **Agent Device**.             |
+| Build source     | Optional. **Latest app build**, **Expo Go**, **From URL**, or **Upload build file**.      |
+| Device           | Optional. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/).         |
+| Metro URL        | Optional. A tunneled Metro URL, from `EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel`. |
+| Advanced options | Launch arguments and tags.                                                                |
+
+An uploaded build file must be 1 GB or smaller. Upload an APK for Android or an iOS Simulator **.tar.gz** archive for iOS. The dialog does not set a maximum duration or an idle limit, so the maximum duration is your account limit. You need the Developer role or higher to start a session.
+
+## Confirm that the session is ready
+
+A session is ready when its status is in progress and its connection details are present. Check both values:
+
+<Tabs>
+
+<Tab label="EAS CLI">
+
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
+
+Continue when `status` is `IN_PROGRESS` and `remoteConfig` is present.
+
+</Tab>
+
+<Tab label="REST API">
+
+<Terminal
+  cmd={[
+    '$ curl "https://api.expo.dev/v2/device-run-sessions/$SESSION_ID" -H "Authorization: Bearer $EXPO_TOKEN"',
+  ]}
+/>
+
+Continue when `data.status` is `in-progress` and `data.remoteConfig` is not `null`.
+
+</Tab>
+
+</Tabs>
+
+EAS CLI shows status values in uppercase, such as `IN_PROGRESS`. The REST API returns lowercase values, such as `in-progress`.
+
+Do not use the **.env.eas-simulator** file alone as proof that the device is live. The file can contain the ID of a session that has already stopped.
+
+## Start a second session safely
+
+`eas simulator:start` creates a new session by default, even when **.env.eas-simulator** already contains a session ID. The command replaces the file, but it does not stop the earlier remote session. EAS CLI prints a warning with the stop command for the earlier session.
+
+To make the start command fail instead of creating a second session, pass `--no-force`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --no-force --non-interactive',
+  ]}
+/>
+
+To run more than one session at the same time from one directory, see [How EAS CLI and agents select an EAS Simulator session](/preview/eas-simulator/how-it-works/agent-targeting/).
+
+## Stop the session
+
+Stop each session when you finish:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+The command stops the session in **.env.eas-simulator**. Pass `--id <session-id>` to stop a different session. Running `simulator:stop` on a session that already stopped succeeds, so you can run it again safely.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="How long does a session take to start?">
+
+Startup time varies with capacity. A session can wait in a queue, then take time to start the device. EAS CLI shows when the session is in the queue. The 15-minute startup timeout starts after the session leaves the queue.
+
+</Collapsible>
+
+<Collapsible summary="Can I start a session without an Expo project?">
+
+Yes. You need an EAS project, but not a local Expo project directory. The REST API, expo.dev, and create session links need only the EAS project. EAS CLI needs a project directory with **package.json** and an app config that contains the EAS project ID. See [Run a native Android or iOS app on EAS Simulator](/preview/eas-simulator/works-with/native-ios-and-android/).
+
+</Collapsible>
+
+<Collapsible summary="Does closing the terminal stop the session?">
+
+No. Closing the terminal does not stop the session, even when EAS CLI is attached. The session runs until you stop it or until it reaches its maximum duration or idle limit.
+
+</Collapsible>
+
+</FAQ>

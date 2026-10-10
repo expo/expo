@@ -1,0 +1,104 @@
+---
+title: Test your project in Expo Go on a remote simulator
+sidebar_title: Expo Go
+description: Install Expo Go on an EAS Simulator session, connect it to Metro through a tunnel, and test a project that has no custom native code without creating a build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Expo Go on EAS Simulator lets you test your project without a build. Pass `--expo-go` to `eas simulator:start`. EAS CLI selects the Expo Go version that matches the Expo SDK of your project, and EAS installs it. Then Expo Go opens your project from Metro through a tunnel.
+
+Expo Go works only for projects that have no custom native code. For other projects, use a [development build](/develop/development-builds/introduction/). See [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/).
+
+## Connect Expo Go to Metro
+
+<Step label="1">
+
+### Start Metro with a tunnel
+
+The remote device must reach Metro over the internet. Start Metro first, because EAS opens the Metro URL while the session starts:
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+`EXPO_UNSTABLE_TUNNEL_V2=1` selects a tunnel that is signed for your Expo account. From SDK 58, `npx expo start --tunnel` uses this tunnel by default and ignores the variable.
+
+</Step>
+
+<Step label="2">
+
+### Start the session with Expo Go
+
+<Terminal
+  cmdCopy={`eas simulator:start --platform ios --type agent-device --expo-go --open-url "exp://<metro-host>" --name "Expo Go live preview" --non-interactive`}
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --expo-go \\',
+    '    --open-url "exp://<metro-host>" \\',
+    '    --name "Expo Go live preview" --non-interactive',
+  ]}
+/>
+
+Replace `<metro-host>` with the host of the tunnel URL, without a port. Use an `exp://` URL.
+
+On iOS, EAS starts Expo Go with launch arguments that skip the developer menu onboarding screen and hide the floating developer menu button. You do not need to pass them.
+
+</Step>
+
+<Step label="3">
+
+### Check the result
+
+Open the browser preview URL (`webPreviewUrl`) in a desktop browser, or take a screenshot through the controller. Edit a source file to see the change with Fast Refresh.
+
+</Step>
+
+## Select an Expo Go version
+
+EAS CLI reads the Expo SDK version from the project. To use a different version, pass `--sdk-version` together with `--expo-go`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --expo-go --sdk-version <version> --name "Expo Go SDK check" --non-interactive',
+  ]}
+/>
+
+`--sdk-version` works only with `--expo-go`.
+
+## Start Expo Go from a link
+
+A create session link can also start Expo Go. Set these parameters:
+
+- `expoGo=true`
+- `platform=android` or `platform=ios`. Android support is still in development.
+- `sdkVersion`: the Expo SDK version of your project, such as `58`
+- `openUrl`: the Metro URL
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/create?expoGo=true&platform=ios&sdkVersion=<version>&openUrl=exp%3A%2F%2F<metro-host>
+```
+
+A link does not read the SDK version from your project. Without `sdkVersion`, the session installs the current Expo Go release.
+
+See [Start a session from a link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Expo Go cannot find the SDK version. What do I do?">
+
+Run the command from an Expo project with a valid app config, or pass `--sdk-version <version>` with `--expo-go`.
+
+</Collapsible>
+
+<Collapsible summary="Why does my project not load?">
+
+The usual causes are that Metro was not running when the session started, or that the `--open-url` value does not use the `exp://` scheme. Start Metro first, and pass an `exp://` URL. Do not pass the `webPreviewUrl` to `--open-url`. See [Troubleshoot EAS Simulator](/preview/eas-simulator/troubleshooting/).
+
+</Collapsible>
+
+</FAQ>

@@ -1,0 +1,294 @@
+---
+title: EAS Simulator CLI reference
+sidebar_title: CLI
+description: Reference for the experimental eas simulator commands that create, inspect, monitor, control, list, route network traffic for, and stop remote simulator sessions.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+The `simulator:*` commands are experimental. They appear in `eas --help` from EAS CLI 24.8.0. Install or update [EAS CLI](/eas/cli/) before running them:
+
+<Terminal cmd={['$ eas simulator:start --help']} />
+
+The `--help` flag displays the available options for `simulator:start`.
+
+The start command is also available as `eas simulator`, `eas sim:start`, and the hidden alias `eas sim`. The other commands have matching `eas sim:*` aliases, such as `eas sim:list` and `eas sim:stop`.
+
+To manage sessions without EAS CLI, use the [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
+
+## Commands
+
+| Command                                            | Purpose                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use EAS Simulator        |
+| [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
+| [`simulator`](#simulatorstart)                     | Same command as `simulator:start`                                        |
+| [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
+| [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
+| [`simulator:egress`](#simulatoregress)             | Run the local egress client for a session started with `--egress local`  |
+| [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
+| [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
+| [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
+
+## `simulator:availability`
+
+<Terminal cmd={['$ eas simulator:availability --json']} />
+
+The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. When the account does not have access, it also contains `waitlistUrl`. This command does not create a session or consume simulator usage.
+
+## `simulator:start`
+
+The session type determines which interface EAS provisions with the remote device. Every type includes a browser preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the browser preview only:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+Use [agent-device](/agents/agent-device/) for accessibility-driven device actions and app installation.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Argent">
+
+Use [Argent](/agents/argent/) to run its remote device tools through the session.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type argent --name "Checkout flow screenshots" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Appium">
+
+Use Appium when you want to connect an existing Appium client or test suite.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Browser preview only">
+
+Use the browser preview without provisioning a programmatic controller.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type web-preview-only --name "Design review" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
+
+Important flags:
+
+| Flag                        | Description                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --platform`            | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                                                                                                                                                                                                                                                  |
+| `--name`                    | Human-readable session name shown by `simulator:list`, `simulator:get`, and expo.dev                                                                                                                                                                                                                                                                           |
+| `--tag`                     | Label that groups sessions, such as one tag for each app variant. Repeat the flag for multiple tags. Stored in lowercase                                                                                                                                                                                                                                       |
+| `--device`                  | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted                                                                                                                                                                                                                    |
+| `--build-id`                | EAS Build to install and launch before the session is ready                                                                                                                                                                                                                                                                                                    |
+| `--build-fingerprint`       | Fingerprint hash of an EAS Build. Installs the most recent finished build with this fingerprint that the simulator can install                                                                                                                                                                                                                                 |
+| `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                                                                                                                                                                                                                                               |
+| `--expo-go`                 | Install and launch the Expo Go version that matches the current project's Expo SDK                                                                                                                                                                                                                                                                             |
+| `--sdk-version`             | Expo SDK used to select Expo Go. Only valid with `--expo-go`; defaults to the current project SDK                                                                                                                                                                                                                                                              |
+| `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                                                                                                                                                                                                                                                  |
+| `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                                                                                                                                                                                                                                       |
+| `--type`                    | Session type. Defaults to `agent-device`. Every type includes a browser preview. Use `agent-device`, `appium`, or `argent` to add programmatic control, or `web-preview-only` for the browser preview only                                                                                                                                                     |
+| `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                                                                                                                                                                                                           |
+| `--max-duration-minutes`    | Automatic session stop time, up to the plan limit: 40 minutes on the Free plan and 115 minutes on paid plans. Defaults to the plan limit                                                                                                                                                                                                                       |
+| `--egress`                  | `local` routes the device's network traffic through this machine. On Android, all TCP traffic from the emulator. On iOS, HTTP(S) and WebSocket traffic that honors the system proxy or proxy environment variables, such as gRPC and libcurl. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/) |
+| `--egress-allow`            | Exact `host:port` on this machine or its network that the simulator can reach through local egress, such as `localhost:3000`. Repeat for multiple destinations. Requires `--egress local`                                                                                                                                                                      |
+| `--network-capture`         | Record HTTP(S) traffic from apps on an iOS device as an HTTP Archive (HAR). iOS only. Not compatible with `--egress local`. See [Record network traffic](/preview/eas-simulator/how-it-works/network-inspection/#record-network-traffic)                                                                                                                       |
+| `--network-capture-field`   | What a recording also keeps: `header`, `query`, `request-body`, or `response-body`. Repeat the flag or pass a comma-separated list. Requires `--network-capture`                                                                                                                                                                                               |
+| `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration. Not supported for `web-preview-only`                                                                                                                                                                                 |
+| `--out-config-type`         | `dotenv` (default) to write **.env.eas-simulator**, or `env` to print shell exports                                                                                                                                                                                                                                                                            |
+| `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                                                                                                                                                                                                        |
+| `--non-interactive`         | Return after the session is ready instead of staying attached                                                                                                                                                                                                                                                                                                  |
+| `--json`                    | Print machine-readable output and imply non-interactive mode                                                                                                                                                                                                                                                                                                   |
+
+`--build-id`, `--build-fingerprint`, `--application-archive-url`, and `--expo-go` are mutually exclusive application sources. `--launch-arg` and `--open-url` require one of those sources because the start command needs an installed application to launch.
+
+The default `dotenv` output writes configuration even when you pass `--json`. Use `--out-config-type env` when you explicitly do not want the file. The `env` output does not export `EAS_SIMULATOR_SESSION_ID`, so pass `--id <session-id>` to `simulator:get`, `simulator:stop`, and `simulator:events`.
+
+Common JSON output fields have this shape. The fields inside `remoteConfig` depend on the selected controller:
+
+```json
+{
+  "id": "<session-id>",
+  "name": "Checkout flow screenshots",
+  "type": "<controller-type>",
+  "deviceRunSessionUrl": "https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>",
+  "remoteConfig": {
+    "<controller-specific-key>": "<value>"
+  }
+}
+```
+
+Treat `remoteConfig` as secret because it includes controller credentials. In `--json` output, the browser preview URL already includes its token. It is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session.
+
+### Interactive and non-interactive behavior
+
+Without `--non-interactive` or `--json`, the start command stays attached in an interactive terminal and polls the session. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended. When `CI` is set or standard input is not a terminal, such as in an agent shell, the command runs non-interactively even without the flag.
+
+With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
+
+## `simulator:exec`
+
+`simulator:exec` is controller-agnostic. It loads the connection variables for the active session from **.env.eas-simulator**, then spawns the command and arguments that follow.
+
+Use the command pattern for the controller selected when the session started:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest <command> [args...]']} />
+
+</Tab>
+
+<Tab label="Argent">
+
+<Terminal cmd={['$ eas simulator:exec argent run <tool> [args...]']} />
+
+</Tab>
+
+<Tab label="Appium">
+
+<Terminal cmd={['$ eas simulator:exec <appium-client> [args...]']} />
+
+</Tab>
+
+</Tabs>
+
+`simulator:exec` does not implement device actions. It only supplies the active session's connection environment and runs the command that follows. The available actions and argument syntax come from [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or your Appium client. For Appium, `simulator:exec` sets `APPIUM_URL` and `APPIUM_CAPS` for your client.
+
+## `simulator:events`
+
+Show a snapshot of the activity recorded for the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:events']} />
+
+Pass a session ID to inspect another session:
+
+<Terminal cmd={['$ eas simulator:events --id <session-id>']} />
+
+The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device, Argent, or Appium, not application runtime logs.
+
+Follow new activity while a session is running:
+
+<Terminal cmd={['$ eas simulator:events --follow']} />
+
+The `-f` short flag is equivalent to `--follow`. The command stops following when the session ends. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop following earlier.
+
+For agents and automation, request the raw event records as JSON:
+
+<Terminal cmd={['$ eas simulator:events --json']} />
+
+The JSON object contains `deviceRunSessionId` and an `events` array. Common event fields include `eventId`, `ts`, `producer`, `type`, and `summary`, with operation ID, outcome, duration, and controller-specific data when available. `--json` cannot be combined with `--follow`.
+
+## `simulator:egress`
+
+Run the local egress client for the session in **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:egress']} />
+
+The session must have started with `--egress local`. In interactive mode, `simulator:start` runs the egress client in the same terminal, so you do not need this command. With `--non-interactive`, run `simulator:egress` in another terminal and keep it running for the life of the session.
+
+Use `--config-type env` to read the session credentials from the shell environment instead of **.env.eas-simulator**. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop the egress client. The session keeps running, and proxied requests fail until the client connects again.
+
+## `simulator:get`
+
+Get the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
+
+Get another session explicitly:
+
+<Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
+
+The response includes:
+
+- ID, name, tags, type, status, and platform
+- Created, started, finished, and updated timestamps
+- The expo.dev simulator session URL
+- Controller connection configuration
+- Session artifacts, when present, with each artifact's `id`, `name`, `filename`, `fileSizeBytes`, `metadata`, and `downloadUrl`. `fileSizeBytes` appears only after the session stops
+
+## `simulator:list`
+
+<Terminal
+  cmd={['$ eas simulator:list --platform ios --status in-progress --json --non-interactive']}
+/>
+
+Filters can be repeated:
+
+| Filter       | Values                                                                        |
+| ------------ | ----------------------------------------------------------------------------- |
+| `--platform` | `android`, `ios`                                                              |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only`                        |
+| `--status`   | `new`, `queued`, `starting`, `in-progress`, `stopped`, `errored`              |
+| `--name`     | Text that the session name starts with. Case does not matter. Takes one value |
+| `--tag`      | Tag. A session must have every listed tag                                     |
+
+Use `--limit` to control page size (10 by default, 100 at most) and `--after` with the previous response's `endCursor` for pagination.
+
+## `simulator:stop`
+
+Stop the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+Stop a specific session:
+
+<Terminal cmd={['$ eas simulator:stop --id <session-id>']} />
+
+Running `simulator:stop` on a session that already stopped succeeds.
+
+Use `--json` for a machine-readable object containing the session `id` and final `status`.
+
+## **.env.eas-simulator**
+
+While a session is active, the managed file contains its session ID:
+
+```sh .env.eas-simulator
+EAS_SIMULATOR_SESSION_ID='<session-id>'
+```
+
+After the session stops and EAS CLI resets the file, only the comment header remains.
+
+Controller connection variables depend on the selected type:
+
+| Controller   | Connection variables                                             |
+| ------------ | ---------------------------------------------------------------- |
+| agent-device | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` |
+| Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       |
+| Appium       | `APPIUM_URL`, `APPIUM_CAPS`                                      |
+
+A session started with `--egress local` also adds `EAS_SIMULATOR_EGRESS_URL`, `EAS_SIMULATOR_EGRESS_TOKEN`, `EAS_SIMULATOR_EGRESS_FINGERPRINT`, `EAS_SIMULATOR_EGRESS_PORT`, `EAS_SIMULATOR_EGRESS_PLATFORM`, and `EAS_SIMULATOR_EGRESS_ALLOW`.
+
+When the file contains a session ID, its values replace the same variables in your shell environment for `simulator:start`, `simulator:exec`, `simulator:get`, `simulator:stop`, `simulator:events`, and `simulator:egress`. The only exception is `simulator:egress --config-type env`, which does not read the file. When the file has no session ID and you do not pass `--id`, `simulator:get`, `simulator:stop`, and `simulator:events` use `EAS_SIMULATOR_SESSION_ID` from your shell environment.
+
+Add the file to **.gitignore**:
+
+```sh .gitignore
+.env.eas-simulator
+```
+
+Do not modify its values while the session is running.

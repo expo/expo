@@ -1,0 +1,166 @@
+---
+title: Network traffic and local egress in EAS Simulator
+sidebar_title: Network traffic
+description: Learn where network traffic from a remote EAS Simulator device exits, how local egress routes device traffic through your computer, and how to inspect and record requests.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+By default, network traffic from an EAS Simulator device exits from EAS infrastructure. Third-party servers see an EAS IP address, and the device cannot reach servers on your computer or private network. With **local egress**, an iOS Simulator session sends its proxied traffic through your computer instead. Your servers then see your IP address, and the simulator can reach destinations that you allow on your network.
+
+## Default network path
+
+| Traffic                                 | Exits from         |
+| --------------------------------------- | ------------------ |
+| All traffic from the device, by default | EAS infrastructure |
+
+To reach Metro on your computer without local egress, start Metro with a public tunnel. See [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/).
+
+## How local egress works
+
+Local egress is an experimental feature for Android and iOS sessions. On Android, it requires EAS CLI 24.9.0 or later. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
+
+When you start a session with `--egress local`, these steps occur:
+
+1. On Android, the emulator sends all of its TCP traffic to a proxy on the EAS machine. On iOS, the EAS machine points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
+2. A reverse tunnel connects that port to the egress client on your computer.
+3. The egress client sends each request to the internet from your computer.
+4. The response returns through the tunnel to the simulator.
+
+The egress client runs on the computer that runs EAS CLI. It must keep running for the life of the session. While the client is disconnected, proxied requests fail and the session continues to run. The client tries to reconnect automatically. If the client that `simulator:start` runs in interactive mode exits with an error, EAS CLI stops the session. If `eas simulator:egress` exits, the session continues to run.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --egress local --name "Staging API checks"',
+  ]}
+/>
+
+In interactive mode, the start command runs the egress client in the same terminal. With `--non-interactive`, run `eas simulator:egress` in another terminal. See [`simulator:egress`](/preview/eas-simulator/reference/cli/#simulatoregress).
+
+## Which traffic local egress covers
+
+On Android, all TCP traffic from the emulator exits from your computer. Traffic that cannot use the proxy, such as UDP and QUIC, is refused. DNS for apps that ignore the system proxy resolves on the EAS machine.
+
+On iOS, coverage depends on the client:
+
+| Client type                                                             | Behavior with local egress    |
+| ----------------------------------------------------------------------- | ----------------------------- |
+| Clients that honor the system proxy, such as WebKit and URLSession      | Exit from your computer.      |
+| Clients that read proxy environment variables, such as gRPC and libcurl | Exit from your computer.      |
+| HTTP and HTTPS requests, WebSocket connections                          | Supported through the proxy.  |
+| Connections that ignore both the system proxy and the variables         | Refused inside the simulator. |
+
+The session log lists refused connections, once for each destination in each process, with the function that tried to connect.
+
+## Reach a server on your computer
+
+The egress client refuses connections to local, private, link-local, and multicast addresses. This keeps code in the remote simulator out of your network. To allow a destination, pass `--egress-allow` with an exact `host:port`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --egress local --egress-allow localhost:3000 --name "Local API checks"',
+  ]}
+/>
+
+Repeat the flag for each destination. `--egress-allow` does not accept ranges. A `localhost` or `127.0.0.1` entry also forwards that port from the simulator's machine to your computer, in the same way as `adb reverse`. Then a development server URL that uses `127.0.0.1:3000` works in the remote simulator. On Android, the entry also covers `10.0.2.2` on the same port. EAS CLI does not forward ports below 1024 or the port of the egress proxy. The simulator can reach those destinations only by host name.
+
+## Inspect requests
+
+agent-device can list recent HTTP and HTTPS requests that it reads from the app log. Run the `network` command through `simulator:exec`. Read the options for your installed version:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest help network']} />
+
+For iOS sessions, the browser preview on expo.dev also shows performance charts, including network use.
+
+## Record network traffic
+
+On iOS, a session can record the HTTP and HTTPS requests that apps on the device make. Add `--network-capture` when you start the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type web-preview-only --build-id <build-id> --network-capture --non-interactive',
+  ]}
+/>
+
+While the session runs, the browser preview lists each request under **Network requests** in its **Tools** panel.
+
+> **warning** Network capture decrypts HTTPS. It does not redact the bodies and query values that you keep, so they can contain credentials in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret. Apps that pin certificates fail to connect while capture is active.
+
+### What gets recorded
+
+Capture records HTTP and HTTPS requests that an app sends through a `URLSession` that it creates. React Native `fetch` and image loading send requests this way. Capture also records requests from libraries and SDKs that create their own `URLSession`, such as update checks from `expo-updates`.
+
+- Relaunch an app that was already running to record its traffic. In agent-device and Argent sessions, capture can start after the installed app's initial launch. In that case, capture misses requests that the app sends only at startup. Relaunching the app might not send them again.
+- Capture does not record traffic from Apple system apps, such as Safari, or requests that use `URLSession.shared`.
+- Network capture is not available on Android, or when the session sends its traffic through your machine with `--egress local`. If you pass both `--network-capture` and `--egress local`, `eas simulator:start` fails with an error.
+
+### Choose what to keep
+
+By default, a recording keeps only the method, URL, status, timing, and size of each request, and redacts query values in URLs. Use `--network-capture-field` to keep more:
+
+| Field           | What the recording also keeps                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `header`        | Request and response headers. Headers that usually hold credentials, such as `Authorization`, are redacted |
+| `query`         | Query values in URLs                                                                                       |
+| `request-body`  | Request bodies                                                                                             |
+| `response-body` | Response bodies                                                                                            |
+
+Repeat the flag, or pass a comma-separated list:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type web-preview-only --expo-go --network-capture --network-capture-field header,response-body --non-interactive',
+  ]}
+/>
+
+### Download the recording
+
+The recording exists only while capture is on. EAS does not save it as a session artifact. Download it before you stop the session or select **Turn off and restart** under **Network requests**, because both actions delete it. The download is an HTTP Archive (HAR) file, which browser developer tools and HTTP debugging tools can open.
+
+To download it in the browser, open the **Tools** panel in the browser preview. Under **Network requests**, select the download icon, whose tooltip reads **Download session as HAR**.
+
+To download it from the command line, get the session's preview API URL:
+
+<Terminal cmd={['$ eas simulator:get --json']} />
+
+Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -H "Authorization: Bearer <token>" -o capture.har "https://<preview-host>/network-capture.har"',
+  ]}
+/>
+
+Each entry in the file has the request and response, the status, and timings, plus the headers and bodies that you chose to keep.
+
+### Troubleshoot apps that fail during capture
+
+Capture sends the app's traffic through a proxy on the session's machine and decrypts it. Some apps react to that: apps that pin their server certificates cannot connect, and other requests can fail or time out. If the app behaves in an unexpected way while capture is on, start a new session without `--network-capture` to check whether capture causes it. Leave capture off when you do not need it.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Does local egress work on Android?">
+
+Yes, with EAS CLI 24.9.0 or later. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. Earlier EAS CLI versions fail with `--egress local is only supported with --platform ios`.
+
+</Collapsible>
+
+<Collapsible summary="Why does a request fail when the egress client stops?">
+
+The simulator sends proxied traffic to the egress client. Without the client, the traffic has no exit. Restart the client with `eas simulator:egress`, or stop the session.
+
+</Collapsible>
+
+<Collapsible summary="Can I see the traffic in a proxy tool on my computer?">
+
+No. `eas simulator:egress` has no option to send requests through another proxy on your computer. To inspect requests, use the agent-device `network` command or, on iOS, record them with `--network-capture` and open the HAR file in your tool. See [Inspect requests](#inspect-requests) and [Record network traffic](#record-network-traffic).
+
+</Collapsible>
+
+</FAQ>

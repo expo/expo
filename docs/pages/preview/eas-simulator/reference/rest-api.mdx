@@ -44,33 +44,36 @@ Creates a session and queues the remote device. The request returns before the d
 
 UUID means universally unique identifier.
 
-| Field                   | Type          | Required | Description                                                                                                                                                                                                                        |
-| ----------------------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                          |
-| `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                |
-| `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                               |
-| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                 |
-| `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                             |
-| `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
-| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The 115-minute limit excludes five minutes reserved for cleanup. Omit to use the account default.            |
-| `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `web-preview-only`. |
-| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                  |
-| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters.                                                                                                                                               |
-| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                       |
-| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                 |
-| `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                            |
-| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                  |
+| Field                   | Type          | Required | Description                                                                                                                                                                                                                            |
+| ----------------------- | ------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                              |
+| `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                    |
+| `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                                   |
+| `tags`                  | string[]      | No       | Labels that group sessions, such as one tag for each app variant. Up to 16 tags of 1 to 64 characters each. EAS stores tags in lowercase, trims whitespace, and removes duplicate tags.                                                |
+| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                     |
+| `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                                 |
+| `deviceIdentifier`      | string        | No       | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted.                                                                                           |
+| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The job that runs the session has a hard limit of this value plus five minutes. Omit to use the account maximum. |
+| `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `web-preview-only`.     |
+| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                      |
+| `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters. On iOS, use a **.tar.gz** or **.tgz** file that contains the **.app**. On Android, use an **.apk**.                                               |
+| `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                           |
+| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"58"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                     |
+| `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                                |
+| `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                      |
 
-The application source options install and launch the app for `agent-device`, `argent`, and `web-preview-only` sessions. For `appium`, install and launch the app through your Appium client.
+The application source options install and launch the app for every session type, including `appium`.
 
-A `web-preview-only` session provides the web preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a web preview. Sessions created before `serve-sim` was removed still return `"type": "serve-sim"`.
+The REST API ignores fields that it does not list here. Build fingerprint matching, local egress, and network capture are available only through EAS CLI: `--build-fingerprint`, `--egress local`, and `--network-capture`.
+
+A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before EAS removed `serve-sim` still return `"type": "serve-sim"`.
 
 ### Example
 
 Replace `appId` and `buildId` with your EAS project ID and a compatible build ID:
 
 <Terminal
-  cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions" -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"a415eac6-231a-4b38-b481-3255a59f13b8","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","buildId":"f9609423-5072-4ea2-a0a5-c345eedf2c2a","maxDurationMinutes":30,"maxIdleTimeMinutes":5}'`}
+  cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions" -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"a415eac6-231a-4b38-b481-3255a59f13b8","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","tags":["checkout"],"buildId":"f9609423-5072-4ea2-a0a5-c345eedf2c2a","maxDurationMinutes":30,"maxIdleTimeMinutes":5}'`}
   cmd={[
     `$ curl -X POST "https://api.expo.dev/v2/device-run-sessions" \\`,
     `    -H "Authorization: Bearer $EXPO_TOKEN" \\`,
@@ -80,6 +83,7 @@ Replace `appId` and `buildId` with your EAS project ID and a compatible build ID
     `      "platform": "ios",`,
     `      "type": "agent-device",`,
     `      "name": "Checkout flow screenshots",`,
+    `      "tags": ["checkout"],`,
     `      "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",`,
     `      "maxDurationMinutes": 30,`,
     `      "maxIdleTimeMinutes": 5`,
@@ -99,6 +103,7 @@ Returns `200 OK` with the new session's metadata:
     "url": "https://expo.dev/accounts/acme/projects/example/simulator-sessions/019d9d17-013a-7e05-89aa-4aa83ff68c32",
     "jobRunId": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
     "name": "Checkout flow screenshots",
+    "tags": ["checkout"],
     "type": "agent-device",
     "packageVersion": null,
     "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
@@ -122,7 +127,9 @@ Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` link
 
 The response's `maxDurationMinutes` matches the requested session duration. A request for 30 minutes returns `30`.
 
-`remoteConfig` is `null` while the session is starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
+The account's duration limit depends on its plan: 40 minutes on the Free plan and 115 minutes on paid plans. When you omit `maxDurationMinutes`, the session gets the plan maximum. See [Session duration limits](/preview/eas-simulator/reference/usage-and-billing/#session-duration-limits).
+
+`remoteConfig` is `null` while the session is new, queued, or starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
 ## Get a session
 
@@ -154,6 +161,7 @@ An agent-device session that is ready returns connection details alongside its m
     "url": "https://expo.dev/accounts/acme/projects/example/simulator-sessions/019d9d17-013a-7e05-89aa-4aa83ff68c32",
     "jobRunId": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
     "name": "Checkout flow screenshots",
+    "tags": ["checkout"],
     "type": "agent-device",
     "packageVersion": null,
     "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
@@ -163,7 +171,8 @@ An agent-device session that is ready returns connection details alongside its m
     "remoteConfig": {
       "agentDeviceRemoteSessionUrl": "https://controller.example.com",
       "agentDeviceRemoteSessionToken": "<session-token>",
-      "webPreviewUrl": "https://preview.example.com"
+      "webPreviewUrl": "https://preview.example.com",
+      "webPreviewToken": "<preview-token>"
     },
     "maxDurationMinutes": 30,
     "maxIdleTimeMinutes": 5,
@@ -179,12 +188,14 @@ An agent-device session that is ready returns connection details alongside its m
 
 The REST API returns lowercase status values:
 
-| Value         | Meaning                                                                                 |
-| ------------- | --------------------------------------------------------------------------------------- |
-| `new`         | The session is queued or preparing the device and controller. `remoteConfig` is `null`. |
-| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                      |
-| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                            |
-| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.                    |
+| Value         | Meaning                                                                           |
+| ------------- | --------------------------------------------------------------------------------- |
+| `new`         | EAS created the session and has not queued its job yet. `remoteConfig` is `null`. |
+| `queued`      | The session's job waits in the queue for a worker. `remoteConfig` is `null`.      |
+| `starting`    | A worker prepares the device and the controller. `remoteConfig` is `null`.        |
+| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                |
+| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                      |
+| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.              |
 
 Poll this endpoint every five seconds until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
 
@@ -192,16 +203,29 @@ Poll this endpoint every five seconds until `status` is `in-progress` and `remot
 
 The fields in `remoteConfig` depend on the session type. Connection details are only returned while the session is `in-progress`. After it stops or errors, the session response returns `remoteConfig: null` even if the session previously had connection details.
 
-| Session type       | Connection fields                                                                            |
-| ------------------ | -------------------------------------------------------------------------------------------- |
-| `agent-device`     | `agentDeviceRemoteSessionUrl` and `agentDeviceRemoteSessionToken`. Optional `webPreviewUrl`. |
-| `argent`           | `toolsUrl`, optional `toolsAuthToken`, and optional `webPreviewUrl`.                         |
-| `appium`           | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl`.                          |
-| `web-preview-only` | `webPreviewUrl`. This session type has no controller.                                        |
+| Session type       | Connection fields                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `agent-device`     | `agentDeviceRemoteSessionUrl` and `agentDeviceRemoteSessionToken`. Optional `webPreviewUrl` and `webPreviewToken`. |
+| `argent`           | `toolsUrl`, optional `toolsAuthToken`, and optional `webPreviewUrl` and `webPreviewToken`.                         |
+| `appium`           | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl` and `webPreviewToken`.                          |
+| `web-preview-only` | `webPreviewUrl` and optional `webPreviewToken`. This session type has no controller.                               |
 
-For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/run-and-control/) for controller usage.
+Every session type can also include `previewApiUrl`, the URL of the preview server's API.
 
-Open `webPreviewUrl` in a desktop browser to view the live iOS Simulator or Android Emulator. Do not open it on the remote device.
+For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/) for controller usage.
+
+### Open the browser preview
+
+Open the browser preview URL in a desktop browser. Do not open it on the remote device.
+
+When `webPreviewToken` is present, the preview is gated, and `webPreviewUrl` does not work without the token. Add the token to the URL:
+
+- When the response includes `previewApiUrl`, `webPreviewUrl` is a page on expo.dev. Add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`.
+- Otherwise, add the token as a `token` query parameter: `<webPreviewUrl>?token=<webPreviewToken>`.
+
+To call `previewApiUrl`, add the token as a `token` query parameter. URL-encode the token in each case. EAS CLI builds these URLs for you in `eas simulator:get --json` output.
+
+Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 ## Stop a session
 
@@ -241,8 +265,8 @@ Use the returned error message to identify which option or permission needs atte
 ## Next step
 
 <BoxLink
-  title="Run and control your app"
+  title="Install an app on a remote Android Emulator or iOS Simulator"
   description="Choose a compatible build, connect a controller, and interact with the remote device."
-  href="/preview/eas-simulator/run-and-control/"
+  href="/preview/eas-simulator/how-to/install-your-app/"
   Icon={Cloud01Icon}
 />

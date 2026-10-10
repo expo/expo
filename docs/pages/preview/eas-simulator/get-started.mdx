@@ -22,9 +22,9 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
     run `eas init` first.
   </Requirement>
   <Requirement title="A recent EAS CLI">
-    The `simulator:*` commands are experimental and hidden. [Install or update EAS CLI](/eas/cli/)
-    before using them. Since the preview changes quickly, use `eas simulator:start --help` to check
-    the flags supported by your installed version.
+    The `simulator:*` commands are experimental. [Install or update EAS CLI](/eas/cli/) before using
+    them. Since the preview changes quickly, use `eas simulator:start --help` to check the flags
+    supported by your installed version.
   </Requirement>
 </Prerequisites>
 
@@ -36,7 +36,7 @@ If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the EA
 
 ## Start a session manually
 
-The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/preview/eas-simulator/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Create session links](/preview/eas-simulator/create-session-links/).
+The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/preview/eas-simulator/reference/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Start a session from a link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
 
 <Step label="1">
 
@@ -93,7 +93,7 @@ Do not commit or share this file. It includes the token that lets a controller r
 
 ### Choose a session type and start a remote device
 
-Choose the controller you plan to use for installation and device actions. On iOS, each controller-backed session also includes a web preview. If you only need the web preview, use `web-preview-only` without a controller. Pass the session type explicitly when you start the session.
+Choose the controller you plan to use for installation and device actions. Each controller-backed session also includes a browser preview. If you only need the browser preview, use `web-preview-only` without a controller. Pass the session type explicitly when you start the session.
 
 <Tabs>
 
@@ -133,9 +133,9 @@ Use an Appium client when you already have Appium tests or automation. EAS CLI w
 
 </Tab>
 
-<Tab label="Web preview only">
+<Tab label="Browser preview only">
 
-Use the iOS web preview without provisioning a programmatic controller.
+Use the browser preview without provisioning a programmatic controller.
 
 <Terminal
   cmd={[
@@ -149,19 +149,21 @@ Use the iOS web preview without provisioning a programmatic controller.
 
 Give each session a short name that describes its purpose. The name appears in `simulator:list`, `simulator:get`, and on expo.dev, which makes parallel and historical sessions easier to identify.
 
-Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview. Use `--device` to select a specific iOS Simulator name or unique device identifier (UDID), or an Android virtual device hardware profile. If the flag is omitted, the remote runner chooses a device.
+Use `--platform android` for an Android Emulator. The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
-For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. You can also use `--max-idle-time-minutes` to stop after a period without session activity. A custom maximum duration is available on paid plans.
+Use `--device` to select an Android virtual device hardware profile, or a specific iOS Simulator name or unique device identifier (UDID). If you omit the flag, the remote runner uses `medium_phone` on Android and `iPhone 17` on iOS. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/).
+
+For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. Any plan can set a value up to the account limit. The limit is 40 minutes on the Free plan and 115 minutes on paid plans. A value above the limit returns an error. Without the flag, the maximum duration is the account limit. You can also use `--max-idle-time-minutes` to stop after a period without session activity.
 
 When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
 
 The start command waits for the session to become ready, then writes **.env.eas-simulator**. It also prints:
 
 - A direct simulator session page on expo.dev
-- A temporary `webPreviewUrl` for supported iOS sessions
+- A temporary browser preview URL
 - The command pattern for controlling the device
 
-To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Run and control an app](/preview/eas-simulator/run-and-control/) for complete examples.
+To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/how-to/install-your-app/) for complete examples.
 
 > **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
 
@@ -195,7 +197,7 @@ The project-level session list is:
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
 ```
 
-For supported iOS sessions, open `webPreviewUrl` in a desktop browser to view and interact with the live simulator. The preview URL is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
+Open the browser preview URL in a desktop browser to view the live device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. The preview URL is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
 
 </Step>
 
@@ -207,6 +209,6 @@ When you finish, stop the current session:
 
 <Terminal cmd={['$ eas simulator:stop']} />
 
-If you started EAS CLI without `--non-interactive`, it remains attached. Press Ctrl+C once to stop the session and let EAS CLI reset **.env.eas-simulator**.
+If EAS CLI is still attached, press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session and let EAS CLI reset **.env.eas-simulator**. EAS CLI stays attached only in an interactive terminal without `--non-interactive`.
 
 </Step>

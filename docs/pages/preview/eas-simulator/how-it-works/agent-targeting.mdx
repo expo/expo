@@ -1,0 +1,95 @@
+---
+title: How EAS CLI and agents select an EAS Simulator session
+sidebar_title: Agent targeting
+description: Learn how simulator commands find the active session through .env.eas-simulator, how to run parallel sessions safely, and how to confirm that an agent controls the remote device.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Each EAS Simulator command must know which session to use. By default, the commands read the session from **.env.eas-simulator** in the project directory. This file holds one session at a time. For one session, you do not need to pass an ID. For more than one session, select each session explicitly, because a second start command replaces the file.
+
+## How a command selects its session
+
+| Command                                               | How it selects the session                                                                                                   |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `simulator:get`, `simulator:stop`, `simulator:events` | `--id <session-id>`, the ID in **.env.eas-simulator**, or `EAS_SIMULATOR_SESSION_ID` in the shell environment, in that order |
+| `simulator:exec`                                      | Only the connection details in the environment. It takes no ID.                                                              |
+| `simulator:egress`                                    | **.env.eas-simulator**, or the shell environment with `--config-type env`                                                    |
+| Controller commands, such as agent-device             | The variables that `simulator:exec` loads                                                                                    |
+
+`simulator:exec` loads values in this order:
+
+1. It loads the project's environment files.
+2. If **.env.eas-simulator** contains a session ID, the values in the file replace the same variables in your shell. `simulator:exec` also removes the connection variables that the file does not contain, so values from an older session do not mix with the current session.
+3. If the file does not contain a session ID, the variables that you exported in your shell apply.
+
+## Run parallel sessions
+
+**.env.eas-simulator** is one file, so it is not safe for concurrent sessions in one directory. When a second `simulator:start` runs, it replaces the file. The first session continues to run, but `simulator:exec` now reaches the second session.
+
+To run parallel sessions, use one of these methods:
+
+- **One directory for each session.** Run each session from its own checkout of the project.
+- **Shell variables for each session.** Start each session with `--out-config-type env`. The command prints shell exports and does not write the file. Export the values in a separate shell for each session, and make sure that **.env.eas-simulator** in the project has no session ID.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --name "Checkout run A" --out-config-type env --non-interactive',
+  ]}
+/>
+
+The printed exports do not include `EAS_SIMULATOR_SESSION_ID`. Use `--id` with `simulator:get`, `simulator:stop`, and `simulator:events` for each session.
+
+## Confirm that the agent controls the remote device
+
+If the environment has no remote connection details, agent-device uses a local simulator. It does not show an error. The screenshots look correct but come from the wrong device.
+
+To confirm the remote device:
+
+1. Run `eas simulator:get --json` and check that the ID matches the ID that the start command printed.
+2. Check that the status is `IN_PROGRESS`.
+3. Run `eas simulator:exec npx agent-device@latest open <app>`, and check that the **Session state** path starts with **/home/expo/** on Android or **/Users/expo/** on iOS. A path under your own home directory means that the agent controls a local device. The `agent-device session state-dir` command prints a local path, so do not use it for this check.
+
+## Control more than one simulator in one session
+
+An iOS session can boot more than one iOS Simulator. At start, the session boots one device. The default agent-device session is bound to that device, so `--device` in the default session returns `INVALID_ARGS`. To boot and control another device, use a separate named agent-device session. Pass `--session <name>` and `--device "<name>"` when you boot it. Then pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its unique device identifier (UDID), use `--udid <UDID>`.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest devices --platform ios',
+    '$ eas simulator:exec npx agent-device@latest boot --platform ios --session ipad --device "iPad mini (A17 Pro)"',
+    '$ eas simulator:exec npx agent-device@latest open com.apple.Preferences --platform ios --session ipad --device "iPad mini (A17 Pro)"',
+  ]}
+/>
+
+## Agent identifiers
+
+When an agent creates a session, EAS can record where the request came from and an agent ID. The request can come from the website, EAS CLI, or the Expo Model Context Protocol (MCP) server. EAS uses these values for analytics only. They do not grant access or select a session.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="How do I know that a screenshot came from the remote device?">
+
+Run `eas simulator:get --json` and check that it returns the session ID that the start command printed and the status `IN_PROGRESS`. If **.env.eas-simulator** has no connection details, agent-device falls back to a local simulator without an error. See [Confirm that the agent controls the remote device](#confirm-that-the-agent-controls-the-remote-device).
+
+</Collapsible>
+
+<Collapsible summary="Why does a new session show the previous session ID?">
+
+**.env.eas-simulator** contained an earlier session. EAS CLI prints `Overwriting previous simulator session` with the stop command for that session. Replacing the file does not stop the earlier session.
+
+</Collapsible>
+
+<Collapsible summary="Can two agents share one session?">
+
+Yes. Both agents can use the same connection details. Keep state-changing commands in one session sequential, because two controllers that act at the same time can conflict.
+
+</Collapsible>
+
+</FAQ>
