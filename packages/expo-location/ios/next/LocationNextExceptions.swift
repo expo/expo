@@ -36,14 +36,6 @@ final class LocationAuthorizationRestricted: Exception, @unchecked Sendable {
   }
 }
 
-final class LocationServiceSessionRequired: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Location updates stopped because this app sets 'CLRequireExplicitServiceSession' in its " +
-    "Info.plist, which makes the system refuse updates unless the app holds a CLServiceSession. " +
-    "'expo-location' does not create one. Remove that key from your Info.plist, or manage the session " +
-    "yourself and use CoreLocation directly"
-  }
-}
 
 final class LocationUpdatesEndedUnexpectedly: Exception, @unchecked Sendable {
   override var reason: String {
