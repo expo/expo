@@ -1,0 +1,329 @@
+---
+title: Using Neon Auth
+description: Learn how to add Neon Auth for authentication in your Expo and React Native projects.
+platforms: ['android', 'ios', 'web']
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+[Neon Auth](https://neon.com/docs/auth/overview) is a managed authentication service built on [Better Auth](https://www.better-auth.com/), the TypeScript-first, framework-agnostic authentication library. Neon Auth provides zero-config managed authentication that syncs users directly to your Neon Postgres database, giving you full ownership of your user data.
+
+This guide shows you how to integrate Neon Auth with your Expo app using the `@neondatabase/auth` package.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Create a Neon account and project">
+    Sign up at [neon.com](https://neon.com) and create a project. Your authentication tables will be automatically created.
+  </Requirement>
+  <Requirement title="Enable Neon Auth">
+    In your Neon project dashboard, navigate to the Auth section and enable Neon Auth.
+  </Requirement>
+  <Requirement title="Use Expo SDK 53 or later">
+    Neon Auth works with Expo SDK 53 and later.
+  </Requirement>
+</Prerequisites>
+
+## Install and configure Neon Auth
+
+<Step label="1">
+
+### Install the Neon Auth package
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install @neondatabase/auth'],
+    yarn: ['$ yarn add @neondatabase/auth'],
+    pnpm: ['$ pnpm add @neondatabase/auth'],
+    bun: ['$ bun add @neondatabase/auth'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Add your Neon connection string
+
+Add your Neon database URL to a **.env** file in your project root:
+
+```bash .env
+EXPO_PUBLIC_NEON_AUTH_URL=https://your-project.neon.com/auth
+DATABASE_URL=<your-neon-connection-string>
+```
+
+> **info** The `EXPO_PUBLIC_` prefix is required because [Expo inlines these values at build time](/guides/environment-variables/#reading-environment-variables-from-env-files) so they are available in your JavaScript bundle. The auth URL is safe to expose as it's a public API endpoint. **Do not** add the `EXPO_PUBLIC_` prefix to `DATABASE_URL` as it contains credentials and is only used server-side.
+
+</Step>
+
+<Step label="3">
+
+### Create your auth configuration
+
+Create a file to configure Neon Auth with your preferred authentication methods:
+
+```tsx src/lib/auth.ts
+import { neonAuth } from "@neondatabase/auth";
+
+export const auth = neonAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+});
+
+export type Auth = typeof auth;
+```
+
+</Step>
+
+<Step label="4">
+
+### Wrap your app with the auth provider
+
+In your root layout file, wrap your app with the Neon Auth provider:
+
+```tsx src/app/_layout.tsx
+import { NeonAuthProvider } from "@neondatabase/auth/react";
+import { Slot } from "expo-router";
+
+const authUrl = process.env.EXPO_PUBLIC_NEON_AUTH_URL!;
+
+export default function RootLayout() {
+  return (
+    <NeonAuthProvider authUrl={authUrl}>
+      <Slot />
+    </NeonAuthProvider>
+  );
+}
+```
+
+</Step>
+
+## Add authentication UI
+
+Use Neon Auth hooks to build your authentication screens:
+
+<Tabs tabs={['Email/Password', 'Social Login']}>
+
+<Tab>
+
+```tsx src/app/sign-in.tsx
+import { useAuth } from "@neondatabase/auth/react";
+import { useState } from "react";
+import { Button, Text, TextInput, View } from "react-native";
+
+export default function SignInScreen() {
+  const { signIn, isLoading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    try {
+      await signIn.email({ email, password });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign in failed");
+    }
+  };
+
+  return (
+    <View style={{ padding: 20 }}>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+      />
+      {error && <Text style={{ color: "red" }}>{error}</Text>}
+      <Button
+        title={isLoading ? "Signing in..." : "Sign In"}
+        onPress={handleSignIn}
+        disabled={isLoading}
+      />
+    </View>
+  );
+}
+```
+
+</Tab>
+
+<Tab>
+
+```tsx src/app/sign-in.tsx
+import { useAuth } from "@neondatabase/auth/react";
+import { Button, View } from "react-native";
+
+export default function SignInScreen() {
+  const { signIn } = useAuth();
+
+  return (
+    <View style={{ padding: 20, gap: 10 }}>
+      <Button
+        title="Continue with GitHub"
+        onPress={() => signIn.social({ provider: "github" })}
+      />
+      <Button
+        title="Continue with Google"
+        onPress={() => signIn.social({ provider: "google" })}
+      />
+    </View>
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+## Access user data
+
+Use the `useSession` hook to access the authenticated user:
+
+```tsx src/app/index.tsx
+import { useSession, useAuth } from "@neondatabase/auth/react";
+import { Button, Text, View } from "react-native";
+
+export default function HomeScreen() {
+  const { session, user, isLoading } = useSession();
+  const { signOut } = useAuth();
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (!session) {
+    return <Text>Please sign in</Text>;
+  }
+
+  return (
+    <View style={{ padding: 20 }}>
+      <Text>Welcome, {user?.name ?? user?.email}!</Text>
+      <Button title="Sign Out" onPress={() => signOut()} />
+    </View>
+  );
+}
+```
+
+## Query users in your database
+
+Since Neon Auth syncs users directly to your Postgres database, you can query them alongside your app data:
+
+```sql
+-- Users are stored in the auth.users table
+SELECT * FROM auth.users WHERE email = 'user@example.com';
+
+-- Join with your app tables
+SELECT 
+  posts.*,
+  auth.users.name as author_name
+FROM posts
+JOIN auth.users ON posts.author_id = auth.users.id;
+```
+
+## Run the app
+
+<Tabs tabs={['Expo Go', 'Android', 'iOS']}>
+
+<Tab>
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Tab>
+
+<Tab>
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
+
+</Tab>
+
+<Tab>
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
+
+</Tab>
+
+</Tabs>
+
+## Supported plugins
+
+Neon Auth is a managed Better Auth service, so you don't install plugins yourself. A supported subset is exposed through the Neon SDK. See the [plugins guide](https://neon.com/docs/auth/guides/plugins) for configuration details.
+
+| Plugin | Status |
+| ------ | ------ |
+| [Admin](https://neon.com/docs/auth/guides/plugins/admin) | Supported |
+| [Email OTP](https://neon.com/docs/auth/guides/plugins/email-otp) | Supported |
+| [JWT](https://neon.com/docs/auth/guides/plugins/jwt) | Supported |
+| [Magic Link](https://neon.com/docs/auth/guides/plugins/magic-link) | Supported |
+| [Organization](https://neon.com/docs/auth/guides/plugins/organization) | Partial |
+| [Open API](https://neon.com/docs/auth/guides/plugins/openapi) | Supported |
+| [Phone Number](https://neon.com/docs/auth/guides/plugins/phone-number) | Supported |
+
+> **info** MFA and additional plugins are on the [Neon Auth roadmap](https://neon.com/docs/auth/roadmap).
+
+## Next steps
+
+<BoxLink
+  title="Neon Auth documentation"
+  description="Complete guide to Neon Auth features including plugins, RBAC, and advanced configuration."
+  href="https://neon.com/docs/auth/overview"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Supported plugins"
+  description="See which Better Auth plugins Neon Auth supports, including Admin, Email OTP, JWT, Magic Link, Organization, and Phone Number."
+  href="https://neon.com/docs/auth/guides/plugins"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Neon Postgres"
+  description="Learn about Neon's serverless Postgres platform and features like branching and autoscaling."
+  href="https://neon.com/docs"
+  Icon={BookOpen02Icon}
+/>
