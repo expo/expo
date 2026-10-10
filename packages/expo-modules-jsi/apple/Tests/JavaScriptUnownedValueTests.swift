@@ -88,4 +88,19 @@ struct JavaScriptUnownedValueTests {
     #expect(view.isObject() == true)
     #expect(view.isNumber() == false)
   }
+
+  @Test
+  func `asArray(in:) accepts only arrays`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("[1, 2]").ref(),
+      try runtime.eval("({ length: 2 })").ref()
+    )
+
+    #expect(try buffer.unownedValue(at: 0).asArray(in: runtime).length == 2)
+    #expect(try buffer.unownedValue(at: 1).asObject(in: runtime).getProperty("length").getInt() == 2)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try buffer.unownedValue(at: 1).asArray(in: runtime)
+    }
+  }
 }

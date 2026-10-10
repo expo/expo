@@ -524,3 +524,43 @@ extension JavaScriptArray {
     return result
   }
 }
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptArray` argument receives the JS value unconverted, like `JavaScriptValue`, but checked for
+// its kind: decoding anything else throws a `TypeError`. The typed wrapper is what the macros steer to
+// in place of a free-form `[Any]`.
+//
+// The unowned overload is the one a host function argument takes: it reads the kind off the borrowed
+// `jsi::Value` and clones it straight into the wrapper, where the default would first clone it into an
+// owning `JavaScriptValue` and then again into the wrapper.
+extension JavaScriptArray: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArray
+  {
+    return try value.asArray()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArray
+  {
+    return try value.asArray(in: copy runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptArray, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.asValue()
+  }
+}

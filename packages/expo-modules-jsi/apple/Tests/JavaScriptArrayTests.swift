@@ -563,4 +563,37 @@ struct JavaScriptArrayTests {
     let arrayConstructor = try runtime.global().getPropertyAsFunction("Array")
     #expect(array.asValue().getObject().instanceOf(arrayConstructor) == true)
   }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let value = try runtime.eval("[1, 2, 3]")
+    let array = try JavaScriptArray.decode(value, in: runtime)
+    #expect(array.length == 3)
+    let encoded = try JavaScriptArray.encode(array, in: runtime)
+    #expect(encoded.getArray().length == 3)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("[1, 2, 3]").ref(),
+      try runtime.eval("({ length: 3 })").ref()
+    )
+    let array = try JavaScriptArray.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(array.length == 3)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArray.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects an object that is not an array`() throws {
+    let value = try runtime.eval("({ length: 3 })")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArray.decode(value, in: runtime)
+    }
+  }
 }

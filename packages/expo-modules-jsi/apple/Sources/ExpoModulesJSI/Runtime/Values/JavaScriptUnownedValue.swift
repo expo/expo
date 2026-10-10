@@ -189,4 +189,13 @@ public struct JavaScriptUnownedValue: ~Copyable {
     }
     return getObject(in: runtime)
   }
+
+  /// Returns the value as a ``JavaScriptArray``, or throws `TypeError` if it is not an array. The
+  /// zero-copy counterpart of ``JavaScriptValue/asArray()``; see ``getArray(in:)``.
+  public func asArray(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptArray {
+    guard isArray() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptArray.self)
+    }
+    return getArray(in: runtime)
+  }
 }

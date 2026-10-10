@@ -630,4 +630,33 @@ struct JavaScriptObjectTests {
       #expect(object.getProperty("value").getInt() == 42)
     }
   }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let value = try runtime.eval("({ answer: 42 })")
+    let object = try JavaScriptObject.decode(value, in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    let encoded = try JavaScriptObject.encode(object, in: runtime)
+    #expect(encoded.getObject().getProperty("answer").getInt() == 42)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("({ answer: 42 })").ref(), 42)
+    let object = try JavaScriptObject.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not an object`() throws {
+    let value = try runtime.eval("42")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(value, in: runtime)
+    }
+  }
 }
