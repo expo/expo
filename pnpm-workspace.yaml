@@ -1,6 +1,9 @@
 packages:
   - templates/*
   - apps/*
+  # react-native-windows needs an older react-native than the workspace, so this app has its own
+  # npm lockfile.
+  - '!apps/windows-tester'
   - packages/*
   - packages/@expo/*
   - tools

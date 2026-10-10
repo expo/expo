@@ -1,0 +1,6 @@
+# The react-native-windows autolinking check compares the generated files byte by byte, and writes
+# them with CRLF line endings, like Visual Studio does for the other project files.
+windows/** text eol=crlf
+*.png binary
+*.ico binary
+*.rc binary
