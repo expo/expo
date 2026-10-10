@@ -125,6 +125,11 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
         subscriptions.forEach { it.stopObserving() }
       }
       currentFrameCallback.stop()
+      accelerationEvent = null
+      accelerationIncludingGravityEvent = null
+      rotationEvent = null
+      rotationRateEvent = null
+      gravityEvent = null
     }
 
     AsyncFunction<Boolean>("isAvailableAsync") {
