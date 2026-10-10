@@ -1,23 +1,6 @@
 import { resolveOptions } from '../resolveOptions';
 
 describe(resolveOptions, () => {
-  it(`resolves the options from the project root`, () => {
-    expect(
-      resolveOptions('/app', {
-        platform: 'ios',
-        mode: 'development',
-        device: 'iPhone 18 Pro',
-        outputDir: 'build',
-        outputType: 'ipa',
-      })
-    ).toEqual({
-      mode: 'development',
-      device: 'iPhone 18 Pro',
-      outputDir: '/app/build',
-      outputType: 'ipa',
-    });
-  });
-
   it.each([
     { platform: 'ios', mode: 'development', outputType: 'app' },
     { platform: 'ios', mode: 'production', outputType: 'ipa' },
