@@ -34,6 +34,8 @@ Run focused package scripts from `packages/expo-router` as needed:
 
 - Keep functions short. Add inline comments when they explain non-obvious behavior. Every `as` cast needs a nearby comment explaining why the cast is sound or necessary.
 - Avoid `useRef` unless necessary. For latest-value callbacks in effects, consider React's `useEffectEvent`; for stable callback identity, consider [`useLatestCallback`](src/utils/useLatestCallback.ts). Check each call site's constraints; retain a ref when mutable identity is required.
+- Prefer `if` over ternaries. Use a ternary only when it is more readable and both the condition and results are simple. Extract a complex condition to a `const`.
+- Do not assign a `let` inside `if` branches. Extract the logic to a function and assign its result to a `const`.
 - Keep code working with and without React Compiler. Prefer `unknown` and narrow it where practical instead of adding `any`.
 
 ## App verification
