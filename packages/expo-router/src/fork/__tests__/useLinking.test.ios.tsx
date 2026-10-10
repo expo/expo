@@ -1,5 +1,6 @@
 import { expect, jest, test } from '@jest/globals';
 import { act, type RenderResult } from '@testing-library/react-native';
+import { Component, type ReactNode } from 'react';
 import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
@@ -273,6 +274,61 @@ test('shows fallback then content for an async initial URL', async () => {
   expect(element.getByTestId('loading')).toBeTruthy();
   await act(async () => resolveInitialURL?.('example://home'));
   expect(element.getByTestId('content')).toBeTruthy();
+});
+
+test('sets the ref and devtools linking after an async initial URL resolves', async () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  let resolveInitialURL: ((url: string) => void) | undefined;
+  const initialURL = new Promise<string>((resolve) => {
+    resolveInitialURL = resolve;
+  });
+  await render(
+    <NavigationContainer
+      ref={ref}
+      linking={{
+        prefixes: ['example://'],
+        getInitialURL: () => initialURL,
+        getStateFromPath: getParsedHomeState,
+      }}>
+      {null}
+    </NavigationContainer>
+  );
+
+  expect(ref.current).toBeNull();
+  await act(async () => resolveInitialURL?.('example://home'));
+
+  expect(getRouteInfoFromState(ref.getRootState()).pathname).toBe('/home');
+  expect(REACT_NAVIGATION_DEVTOOLS.get(ref.current!)?.linking.prefixes).toEqual(['example://']);
+});
+
+test('passes a rejected async initial URL to the error boundary', async () => {
+  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const error = new Error('Initial URL failed');
+  const initialURL = Promise.reject(error);
+  initialURL.catch(() => {});
+  const onError = jest.fn();
+  class ErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+    state = { failed: false };
+    static getDerivedStateFromError() {
+      return { failed: true };
+    }
+    componentDidCatch(error: Error) {
+      onError(error);
+    }
+    render() {
+      return this.state.failed ? null : this.props.children;
+    }
+  }
+
+  await render(
+    <ErrorBoundary>
+      <NavigationContainer linking={{ prefixes: [], getInitialURL: () => initialURL }}>
+        {null}
+      </NavigationContainer>
+    </ErrorBoundary>
+  );
+
+  expect(onError).toHaveBeenCalledWith(error);
 });
 
 test('seeds navigation state when a synchronous initial URL is absent', async () => {
