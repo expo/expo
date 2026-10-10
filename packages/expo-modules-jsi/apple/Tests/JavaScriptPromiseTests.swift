@@ -116,7 +116,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     promise.resolve(Int64(42))
     let result = try await promise.await()
-    #expect(result.isNumber())
+    #expect(result.isNumber() == true)
     #expect(result.getInt() == 42)
   }
 
@@ -141,7 +141,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     promise.resolve(FailingEncodable())
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -166,7 +166,7 @@ struct JavaScriptPromiseTests {
     promise.resolve(obj.asValue())
 
     let result = try await promise.await()
-    #expect(result.isObject())
+    #expect(result.isObject() == true)
     #expect(result.getObject().getProperty("value").getInt() == 42)
   }
 
@@ -182,7 +182,7 @@ struct JavaScriptPromiseTests {
     promise.reject(TestError())
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -201,7 +201,7 @@ struct JavaScriptPromiseTests {
     let rejectedPromise = try runtime.eval("Promise.reject(new Error('test error'))").getPromise()
 
     await #expect(throws: Error.self) {
-      try await rejectedPromise.await()
+      _ = try await rejectedPromise.await()
     }
   }
 
@@ -239,7 +239,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     let value = promise.asValue()
 
-    #expect(value.isObject())
+    #expect(value.isObject() == true)
   }
 
   @Test
@@ -289,10 +289,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.null)
+    promise.resolve(JavaScriptValue.null())
 
     let result = try await promise.await()
-    #expect(result.isNull())
+    #expect(result.isNull() == true)
   }
 
   @Test
@@ -300,10 +300,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.undefined)
+    promise.resolve(JavaScriptValue.undefined())
 
     let result = try await promise.await()
-    #expect(result.isUndefined())
+    #expect(result.isUndefined() == true)
   }
 
   @Test
@@ -376,7 +376,7 @@ struct JavaScriptPromiseTests {
       .getPromise()
 
     await #expect(throws: Error.self) {
-      return try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -410,7 +410,7 @@ struct JavaScriptPromiseTests {
     }
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 

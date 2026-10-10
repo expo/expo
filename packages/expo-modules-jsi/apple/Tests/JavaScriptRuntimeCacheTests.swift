@@ -90,14 +90,18 @@ struct JavaScriptRuntimeCacheTests {
   }
 
   @Test
-  func `caches JavaScript values`() throws {
-    let key = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
+  func `caches non-copyable values through refs`() throws {
+    let key = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptObject>>()
 
-    let first = try runtime.cached(key) { try runtime.eval("({ answer: 42 })") }
-    let second = try runtime.cached(key) { try runtime.eval("({ answer: 0 })") }
+    let makeFirst = { try runtime.eval("({ answer: 42 })").getObject() }
+    let makeSecond = { try runtime.eval("({ answer: 0 })").getObject() }
+    let readAnswer = { (object: borrowing JavaScriptObject) in object.getProperty("answer").getInt() }
 
-    #expect(first === second)
-    #expect(second.getObject().getProperty("answer").getInt() == 42)
+    let first = try runtime.withCached(key, makeFirst, readAnswer)
+    let second = try runtime.withCached(key, makeSecond, readAnswer)
+
+    #expect(first == 42)
+    #expect(second == 42)
   }
 
   @Test

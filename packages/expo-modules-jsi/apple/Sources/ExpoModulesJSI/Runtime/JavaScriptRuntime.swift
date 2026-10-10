@@ -189,7 +189,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// writable. `getPropertyNames` and `dealloc` default to no-ops.
   public func createHostObject(
     get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
-    set: (@JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) throws -> Void)? = nil,
+    set: (@JavaScriptActor (_ propertyName: String, _ value: borrowing JavaScriptValue) throws -> Void)? = nil,
     getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
     dealloc: @escaping @JavaScriptActor () -> Void = {}
   ) -> JavaScriptObject {
@@ -204,8 +204,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
-            var result = try context.get(propertyName)
-            JavaScriptValue.write(&result, to: resultPtr.value)
+            JavaScriptValue.write(try context.get(propertyName), to: resultPtr.value)
           }
         }
       }
@@ -312,7 +311,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Type of the closure that is passed to the `createFunction` function.
   public typealias SyncFunctionClosure =
     @JavaScriptActor (
-      _ this: JavaScriptValue,
+      _ this: consuming JavaScriptValue,
       _ arguments: consuming JavaScriptValuesBuffer
     ) throws -> JavaScriptValue
 
@@ -600,6 +599,21 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
   }
 
+  /// Asynchronously executes an async closure that produces a `JavaScriptValue` on the JavaScript
+  /// runtime thread. The generic `execute` carries its result through a `Task` and a continuation,
+  /// which take copyable results only, so the value crosses the hop in a `JavaScriptValue.Ref`.
+  /// Disfavored so a multi-statement closure without a return keeps resolving to the generic overload.
+  @_disfavoredOverload
+  @discardableResult
+  public func execute(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> JavaScriptValue
+  ) async throws -> sending JavaScriptValue {
+    let ref = try await execute {
+      return try await closure().ref()
+    }
+    return ref.asValue()
+  }
+
   /// Runs a closure synchronously when already on the JavaScript thread, or schedules it
   /// asynchronously otherwise. Unlike ``schedule(priority:_:)``, this can reenter the caller.
   public func runOrSchedule(
@@ -677,12 +691,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
     // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
     // scheduler and thus no other thread to go to.
-    // The result is boxed because `execute` needs a `Sendable` result and `JavaScriptValue` is not one.
-    let result = try await execute { () async throws -> NonisolatedUnsafeVar<JavaScriptValue> in
+    return try await execute { () async throws -> JavaScriptValue in
       let value = try self.eval(label: label, source)
-      return NonisolatedUnsafeVar(value.is("Promise") ? try await value.getPromise().await() : value)
+      return value.is("Promise") ? try await value.getPromise().await() : value
     }
-    return result.value
   }
 
   // MARK: - Garbage collection
@@ -874,8 +886,7 @@ private func createFunctionClosure(
           let this = UnsafeMutablePointer(mutating: thisPtr.value).move()
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
-          var result = try context.call(thisValue, consume arguments)
-          JavaScriptValue.write(&result, to: resultPtr.value)
+          JavaScriptValue.write(try context.call(thisValue, consume arguments), to: resultPtr.value)
         }
       }
     }
@@ -918,8 +929,7 @@ private func createFunctionClosure(
         return forwardingSwiftErrorsToJS(runtime: runtime) {
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
           let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
-          var result = try context.call(thisValue, consume arguments)
-          JavaScriptValue.write(&result, to: resultPtr.value)
+          JavaScriptValue.write(try context.call(thisValue, consume arguments), to: resultPtr.value)
         }
       }
     }
@@ -1011,5 +1021,17 @@ private final class ThreadWaiter: @unchecked Sendable {
         semaphore.wait()
       }
     }
+  }
+}
+
+// MARK: - Reflection
+
+extension JavaScriptRuntime: CustomReflectable {
+  /// A mirror without children. The runtime stores non-copyable values (such as the cached deferred
+  /// promise factory), and the default mirror copies every stored property it visits, which traps at
+  /// runtime for a non-copyable one. Reflection reaches the runtime through any `JavaScriptError`, for
+  /// example when Swift Testing records a thrown error.
+  public var customMirror: Mirror {
+    return Mirror(self, children: [], displayStyle: .class)
   }
 }

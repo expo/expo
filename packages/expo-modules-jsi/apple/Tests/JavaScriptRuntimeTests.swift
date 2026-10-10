@@ -29,7 +29,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `create function`() {
     let fn = runtime.createFunction("function name") { this, arguments in
-      return .undefined
+      return .undefined()
     }
     #expect(fn.asValue().isFunction() == true)
   }
@@ -49,7 +49,7 @@ struct JavaScriptRuntimeTests {
     // instead of moving it out: the captured value has to stay valid for the next call.
     let shared = JavaScriptValue(runtime, "shared")
     let fn = runtime.createFunction("shared") { _, _ in
-      return shared
+      return shared.copy()
     }
     runtime.global().setProperty("shared", value: fn)
     #expect(try runtime.eval("shared() + ' ' + shared()").getString() == "shared shared")
@@ -318,13 +318,13 @@ struct JavaScriptRuntimeTests {
         if name == "foo" {
           return JavaScriptValue(self.runtime, 42)
         }
-        return .undefined
+        return .undefined()
       },
       getPropertyNames: { ["foo"] }
     )
 
     #expect(hostObject.getProperty("foo").getInt() == 42)
-    #expect(hostObject.getProperty("unknown").isUndefined())
+    #expect(hostObject.getProperty("unknown").isUndefined() == true)
   }
 
   @Test
@@ -338,9 +338,9 @@ struct JavaScriptRuntimeTests {
         case "fresh":
           return JavaScriptValue(runtime, "fresh")
         case "shared":
-          return shared
+          return shared.copy()
         default:
-          return .undefined
+          return .undefined()
         }
       },
       getPropertyNames: { ["fresh", "shared"] }
@@ -361,7 +361,7 @@ struct JavaScriptRuntimeTests {
         if name == "value", let storedValue {
           return JavaScriptValue(self.runtime, storedValue)
         }
-        return .undefined
+        return .undefined()
       },
       set: { name, value in
         if name == "value" {
@@ -383,7 +383,7 @@ struct JavaScriptRuntimeTests {
         switch name {
         case "a": return JavaScriptValue(self.runtime, 1)
         case "b": return JavaScriptValue(self.runtime, 2)
-        default: return .undefined
+        default: return .undefined()
         }
       },
       getPropertyNames: { ["a", "b"] }
@@ -404,7 +404,7 @@ struct JavaScriptRuntimeTests {
         if name == "greeting" {
           return JavaScriptValue(self.runtime, "hello")
         }
-        return .undefined
+        return .undefined()
       },
       getPropertyNames: { ["greeting"] }
     )
@@ -423,7 +423,7 @@ struct JavaScriptRuntimeTests {
     let hostObject = runtime.createHostObject(
       get: { name in
         receivedNames.append(name)
-        return .undefined
+        return .undefined()
       },
       set: { name, _ in
         setNames.append(name)
@@ -445,7 +445,7 @@ struct JavaScriptRuntimeTests {
     let hostObject = runtime.createHostObject(
       get: { name in
         receivedName = name
-        return .undefined
+        return .undefined()
       }
     )
 
@@ -458,7 +458,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `isHostObject distinguishes host objects from plain ones`() {
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined }
+      get: { _ in .undefined() }
     )
     let plainObject = runtime.createObject()
 
@@ -469,7 +469,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `host object default getPropertyNames returns no keys in JavaScript`() throws {
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined }
+      get: { _ in .undefined() }
     )
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
@@ -487,7 +487,7 @@ struct JavaScriptRuntimeTests {
     }
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in throw TestError() }
     )
 
@@ -510,7 +510,7 @@ struct JavaScriptRuntimeTests {
     }
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in throw TypedError() }
     )
 
@@ -621,7 +621,7 @@ struct JavaScriptRuntimeTests {
         if name == "ok" {
           return JavaScriptValue(self.runtime, 123)
         }
-        return .undefined
+        return .undefined()
       },
       set: { _, _ in throw TestError() },
       getPropertyNames: { ["ok"] }
@@ -700,7 +700,7 @@ struct JavaScriptRuntimeTests {
         // Calling JS that throws surfaces an `expo.CppError` wrapping the original
         // `jsi::JSError`. Letting it propagate exercises the CppError relay path.
         _ = try throwTagged.call()
-        return .undefined
+        return .undefined()
       }
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
@@ -729,7 +729,7 @@ struct JavaScriptRuntimeTests {
     let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in
         _ = try throwTagged.call()
       }
@@ -811,7 +811,7 @@ struct JavaScriptRuntimeTests {
   func `host function results of primitive kinds reach JavaScript unchanged`() throws {
     runtime.global().setProperty("yes", value: runtime.createFunction("yes") { _, _ in .true() }.asValue())
     runtime.global().setProperty("no", value: runtime.createFunction("no") { _, _ in .false() }.asValue())
-    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null }.asValue())
+    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null() }.asValue())
     runtime.global().setProperty("half", value: runtime.createFunction("half") { _, _ in .number(0.5) }.asValue())
     let result = try runtime.eval("[yes() === true, no() === false, nothing() === null, half() === 0.5]").getArray()
     #expect(result[0].getBool() == true)
@@ -831,8 +831,8 @@ struct JavaScriptRuntimeTests {
     }
     let result = try fn.call()
 
-    #expect(result.isObject())
-    #expect(result.is("Promise"))
+    #expect(result.isObject() == true)
+    #expect(result.is("Promise") == true)
   }
 
   @Test
@@ -890,7 +890,7 @@ struct JavaScriptRuntimeTests {
     }
 
     await #expect(throws: Error.self) {
-      try await fn.call().getPromise().await()
+      _ = try await fn.call().getPromise().await()
     }
   }
 
@@ -908,7 +908,7 @@ struct JavaScriptRuntimeTests {
     // matching JavaScript's async-function semantics, the returned promise rejects instead.
     let promise = try fn.call().getPromise()
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -952,11 +952,11 @@ struct JavaScriptRuntimeTests {
       // memory — a separate, pre-existing hazard of wrappers outliving their runtime.
       let fn = schedulerRuntime.createAsyncFunction("asyncFn") { this, arguments in
         return {
-          return .undefined
+          return .undefined()
         }
       }
       // Call with a JS object argument — the kind whose destruction after teardown crashes.
-      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue().ref())
       // The decode phase ran synchronously within the call; the async body is queued on the
       // scheduler, emulating a task that React never gets to run before the reload.
       #expect(heldSchedulerTasks.count == 1)

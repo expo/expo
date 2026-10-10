@@ -75,74 +75,6 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     self.pointee = pointee
   }
 
-  /// Creates a new JavaScript array initialized with the provided array of values.
-  ///
-  /// This initializer allows you to create a JavaScript array from a Swift array of
-  /// `JavaScriptValue` elements. This is particularly useful when you already have
-  /// a collection of values and want to avoid the syntactic overhead of spreading them
-  /// as variadic arguments.
-  ///
-  /// - Parameters:
-  ///   - runtime: The JavaScript runtime in which to create the array
-  ///   - items: A Swift array of `JavaScriptValue` elements to populate the array with
-  ///
-  /// ## Examples
-  ///
-  /// ```swift
-  /// // Create from an existing array
-  /// let values = [JavaScriptValue.number(1), .number(2), .number(3)]
-  /// let array = JavaScriptArray(runtime, items: values)
-  ///
-  /// // Create from a mapped collection
-  /// let numbers = [1, 2, 3, 4, 5]
-  /// let jsValues = numbers.map { JavaScriptValue.number(Double($0)) }
-  /// let array = JavaScriptArray(runtime, items: jsValues)
-  /// ```
-  ///
-  /// - Note: Due to limitations in Swift/C++ interop with `std::initializer_list`, this
-  ///   implementation creates an empty array first and then populates it element by element,
-  ///   rather than using JSI's `createWithElements` method directly.
-  /// - SeeAlso: `init(_:items:)` for the variadic argument version
-  public init(_ runtime: borrowing JavaScriptRuntime, items: [JavaScriptValue]) {
-    self.init(runtime, length: items.count)
-
-    for (i, item) in items.enumerated() {
-      self[i] = item
-    }
-  }
-
-  /// Creates a new JavaScript array initialized with the provided values.
-  ///
-  /// This convenience initializer allows you to create a JavaScript array from a variable
-  /// number of `JavaScriptValue` arguments. The array is created with the appropriate length
-  /// and populated with the provided values in order.
-  ///
-  /// - Parameters:
-  ///   - runtime: The JavaScript runtime in which to create the array
-  ///   - items: A variadic list of `JavaScriptValue` elements to populate the array with
-  ///
-  /// ## Examples
-  ///
-  /// ```swift
-  /// // Create an empty array
-  /// let empty = JavaScriptArray(runtime, items: )
-  ///
-  /// // Create an array with values
-  /// let numbers = JavaScriptArray(runtime, items: .number(1), .number(2), .number(3))
-  ///
-  /// // Mix different value types
-  /// let mixed = JavaScriptArray(runtime,
-  ///   items: .string("hello"), .number(42), .bool(true))
-  /// ```
-  ///
-  /// - Note: This variadic version internally creates a Swift array and delegates to the
-  ///   array-based initializer. If you already have an array of values, consider using
-  ///   `init(_:items:)` directly for cleaner syntax.
-  /// - SeeAlso: `init(_:items:)` for the array version
-  public init(_ runtime: borrowing JavaScriptRuntime, items: JavaScriptValue...) {
-    self.init(runtime, items: items)
-  }
-
   /// Creates a new JavaScript array from variadic arguments of any types conforming to `JavaScriptRepresentable`.
   ///
   /// This generic initializer uses Swift's parameter pack feature to accept a variable number of
@@ -320,7 +252,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   are filled with `undefined`, matching JavaScript's behavior.
   public subscript(index: Int) -> JavaScriptValue {
     get {
-      return (try? self.getValue(at: index)) ?? .undefined
+      return (try? self.getValue(at: index)) ?? .undefined()
     }
     nonmutating set {
       guard let jsiRuntime else {
@@ -446,7 +378,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Throws: Any error thrown by the `transform` closure.
   /// - Note: This method uses Swift's standard `map` semantics and follows the `rethrows`
   ///   pattern, meaning it only throws if the transform closure throws.
-  public func map<T>(_ transform: (_ value: JavaScriptValue) throws -> T) rethrows -> [T] {
+  public func map<T>(_ transform: (_ value: borrowing JavaScriptValue) throws -> T) rethrows -> [T] {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -549,26 +481,10 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
 // equivalent functionality without requiring protocol conformance.
 
 extension JavaScriptArray {
-  /// Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
-  ///
-  /// - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
-  public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
-    guard let jsiRuntime else {
-      FatalError.runtimeLost()
-    }
-    let count = self.length
-    var result: [(offset: Int, element: JavaScriptValue)] = []
-    result.reserveCapacity(count)
-    for index in 0..<count {
-      result.append((offset: index, element: getValueUnchecked(at: index, in: jsiRuntime)))
-    }
-    return result
-  }
-
   /// Calls the given closure on each element in the array together with its index, similar to
   /// iterating `Sequence.enumerated()`. Named apart from `forEach(_:)` so a trailing closure is never
   /// ambiguous between the two.
-  public func forEachIndexed(_ body: (_ index: Int, _ element: JavaScriptValue) throws -> Void) rethrows {
+  public func forEachIndexed(_ body: (_ index: Int, _ element: borrowing JavaScriptValue) throws -> Void) rethrows {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -579,7 +495,7 @@ extension JavaScriptArray {
   }
 
   /// Calls the given closure on each element in the array.
-  public func forEach(_ body: (JavaScriptValue) throws -> Void) rethrows {
+  public func forEach(_ body: (borrowing JavaScriptValue) throws -> Void) rethrows {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -589,24 +505,11 @@ extension JavaScriptArray {
     }
   }
 
-  /// Returns an array of elements satisfying the given predicate.
-  public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
-    guard let jsiRuntime else {
-      FatalError.runtimeLost()
-    }
-    let count = self.length
-    var result: [JavaScriptValue] = []
-    for index in 0..<count {
-      let value = getValueUnchecked(at: index, in: jsiRuntime)
-      if try isIncluded(value) {
-        result.append(value)
-      }
-    }
-    return result
-  }
-
   /// Returns the result of combining the elements using the given closure.
-  public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, JavaScriptValue) throws -> Result)
+  public func reduce<Result>(
+    _ initialResult: Result,
+    _ nextPartialResult: (Result, borrowing JavaScriptValue) throws -> Result
+  )
     rethrows -> Result
   {
     guard let jsiRuntime else {

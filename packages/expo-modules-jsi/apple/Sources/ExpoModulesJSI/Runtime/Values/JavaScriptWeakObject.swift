@@ -31,6 +31,6 @@ public struct JavaScriptWeakObject: JavaScriptType, ~Copyable {
   }
 
   public func asValue() -> JavaScriptValue {
-    return lock()?.asValue() ?? .undefined
+    return lock()?.asValue() ?? .undefined()
   }
 }

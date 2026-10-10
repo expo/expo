@@ -56,7 +56,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
-  public func instanceOf(_ constructor: JavaScriptValue) -> Bool {
+  public func instanceOf(_ constructor: borrowing JavaScriptValue) -> Bool {
     return instanceOf(constructor.getFunction())
   }
 
@@ -266,7 +266,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
-  public func setPrototype(_ prototype: JavaScriptValue) {
+  public func setPrototype(_ prototype: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -275,7 +275,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Modifying object properties
 
-  public func setProperty(_ name: String, value: JavaScriptValue) {
+  public func setProperty(_ name: String, value: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -632,7 +632,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       configurable: Bool = false,
       enumerable: Bool = false,
       writable: Bool = false,
-      value: JavaScriptValue? = nil
+      value: consuming JavaScriptValue? = nil
     ) {
       self.configurable = configurable
       self.enumerable = enumerable
@@ -657,8 +657,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       if writable {
         object.setProperty("writable", value: true)
       }
-      if let value {
+      switch value {
+      case .some(let value):
         object.setProperty("value", value: value)
+      case .none:
+        break
       }
       return object
     }

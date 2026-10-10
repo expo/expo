@@ -18,7 +18,7 @@ struct JavaScriptCodableTaskTests {
         return 42
       }
       let encoded = try Task.encode(task, in: runtime.runtime)
-      #expect(encoded.isObject())
+      #expect(encoded.isObject() == true)
       return UncheckedSendable(value: try encoded.getPromise())
     }
     _ = try await promise.value.await()
@@ -62,7 +62,7 @@ struct JavaScriptCodableTaskTests {
       return UncheckedSendable(value: try Task.encode(task, in: runtime.runtime).getPromise())
     }
     await #expect(throws: Error.self) {
-      try await promise.value.await()
+      _ = try await promise.value.await()
     }
   }
 

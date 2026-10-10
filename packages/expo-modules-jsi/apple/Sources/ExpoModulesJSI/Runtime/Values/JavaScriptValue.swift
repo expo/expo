@@ -3,17 +3,18 @@ import Foundation
 internal import jsi
 
 /// Represents any JS value (undefined, null, boolean, number, bigint, symbol, string, or object).
-/// As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
-/// this one is a reference type so can be safely captured in closures, passed to other isolation context,
-/// and stored in containers that don't support non-copyable types etc.
-public final class JavaScriptValue: JavaScriptType, Escapable {
+///
+/// Like the other value wrappers (`JavaScriptObject`, `JavaScriptFunction`, ...), this is a non-copyable
+/// struct that owns its `jsi::Value`: creating one costs no heap allocation, and moving it is a copy of
+/// a few words. It cannot be duplicated implicitly; `copy()` asks the engine to clone the handle. To
+/// capture a value in an escaping closure, send it to another isolation context, or store it in a
+/// container that takes copyable elements only, promote it to a `JavaScriptValue.Ref`.
+public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   /// Handle to the runtime the value belongs to. `nil` only for runtime-free values (undefined, null,
   /// booleans and numbers).
   internal let runtimeHandle: JavaScriptRuntimeHandle?
-  /// Mutable only so that ``write(_:to:)`` can move the engine value out of a uniquely referenced
-  /// instance on the JS thread, right before it is deallocated. Unchecked exclusivity keeps reads of
-  /// a mutable class property free of the dynamic exclusivity check.
-  @exclusivity(unchecked) nonisolated(unsafe) internal var pointee: facebook.jsi.Value
+  /// Mutable so that ``write(_:to:)`` can move the engine value out of a consumed value.
+  internal var pointee: facebook.jsi.Value
 
   /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
   /// Prefer ``jsiRuntime`` on hot paths: it costs no reference counting.
@@ -104,9 +105,9 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
     // Some simple value kinds do not require the runtime.
     switch kind {
     case .undefined:
-      return .undefined
+      return .undefined()
     case .null:
-      return .null
+      return .null()
     case .bool:
       return .init(facebook.jsi.Value(getBool()))
     case .number:
@@ -138,7 +139,7 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
   /// Inlinable, so the closure and `R` specialize in the caller; only `borrowUnownedValue(in:)` is a
   /// call into this module.
   @inlinable
-  public func withUnownedValue<R>(
+  public func withUnownedValue<R: ~Copyable>(
     in runtime: borrowing JavaScriptRuntime,
     _ body: (borrowing JavaScriptUnownedValue) throws -> R
   ) rethrows -> R {
@@ -564,7 +565,9 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
   ///   `JSON.stringify()`.
   ///
   /// - SeeAlso: [MDN: JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
-  public func jsonStringify(replacer: JavaScriptValue? = nil, space: JavaScriptValue? = nil) throws -> String? {
+  public func jsonStringify(replacer: consuming JavaScriptValue? = nil, space: consuming JavaScriptValue? = nil) throws
+    -> String?
+  {
     guard let runtime else {
       // Some types do not need the runtime. Handle them before crashing due to missing runtime.
       switch kind {
@@ -580,12 +583,22 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
         FatalError.runtimeLost()
       }
     }
-    let value =
-      try runtime
-      .global()
-      .getPropertyAsObject("JSON")
-      .getPropertyAsFunction("stringify")
-      .call(arguments: self, replacer, space)
+    let stringify = try runtime.global().getPropertyAsObject("JSON").getPropertyAsFunction("stringify")
+    let value: JavaScriptValue
+    if replacer == nil && space == nil {
+      // Pass the borrowed `jsi::Value` straight to the call, rather than cloning it into an arguments buffer.
+      value = try withUnsafePointer(to: pointee) { argument in
+        return try capturingCppErrors {
+          return JavaScriptValue(runtime, expo.callFunction(runtime.pointee, stringify.pointee, argument, 1))
+        }
+      }
+    } else {
+      var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
+      arguments = arguments.set(value: self, atIndex: 0)
+      arguments = arguments.set(value: replacer ?? .undefined(), atIndex: 1)
+      arguments = arguments.set(value: space ?? .undefined(), atIndex: 2)
+      value = try stringify.call(arguments: arguments)
+    }
     return value.isString() ? value.getString() : nil
   }
 
@@ -596,11 +609,11 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
     return copy()
   }
 
-  /// Writes `value` into a host callback's result slot. A uniquely referenced instance, the normal
-  /// case for a value the callback just created, has its engine value moved out instead of cloned,
-  /// since the instance is deallocated right after. Shared instances go through ``writeJSIValue(to:)``.
-  internal static func write(_ value: inout JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
-    if value.runtimeHandle != nil, isKnownUniquelyReferenced(&value) {
+  /// Writes `value` into a host callback's result slot. The value is consumed, so its engine value is
+  /// moved out instead of cloned; the runtime-free kinds are emplaced with the engine's inline
+  /// constructors through ``writeJSIValue(to:)``.
+  internal static func write(_ value: consuming JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if value.runtimeHandle != nil {
       expo.emplaceMovedValue(slot, &value.pointee)
     } else {
       value.writeJSIValue(to: slot)
@@ -722,31 +735,26 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
 
   // MARK: - Runtime-free initializers
 
-  // Shared immortal instances for the runtime-free `undefined`/`null` kinds. The class is fully
-  // immutable and these carry no runtime and a trivial `jsi::Value`, so one instance can be safely
-  // handed out from any isolation context. Every void-returning `@JS` function returns `.undefined`,
-  // so a computed getter here would allocate on every host call.
+  // The runtime-free kinds are plain initializations with a trivial `jsi::Value` and no runtime
+  // handle: no allocation, no reference counting, usable from any isolation context.
   //
-  // The instances live in the module-level globals below rather than in static properties: the
-  // `undefined` and `null` accessors are `@inlinable`, and an inlined body reaches a global through its
-  // addressor alone, whereas a class static, even a `@usableFromInline` one, goes through a getter
-  // that takes the class metatype, which costs the caller a metadata accessor call (`objc_opt_self`)
-  // on every access. Every void host function call accesses `undefined`.
+  // They are functions, like `true()`, `false()` and `number(_:)`, rather than static properties: a
+  // client module compiled against the resilient library cannot take ownership of a non-copyable value
+  // read from a static property or a subscript (Swift 6.4 reports "'unknown' is borrowed and cannot be
+  // consumed"), and `return .undefined()` is the most common statement in host functions.
 
   /// This is a lightweight way to create an undefined value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value can be passed to
   /// JavaScript functions or used in comparisons.
-  @inlinable
-  public static var undefined: JavaScriptValue {
-    return sharedUndefinedValue
+  public static func undefined() -> JavaScriptValue {
+    return JavaScriptValue(facebook.jsi.Value.undefined())
   }
 
   /// This is a lightweight way to create a null value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value represents
   /// JavaScript's `null`, which is distinct from `undefined`.
-  @inlinable
-  public static var null: JavaScriptValue {
-    return sharedNullValue
+  public static func null() -> JavaScriptValue {
+    return JavaScriptValue(facebook.jsi.Value.null())
   }
 
   /// This is a lightweight way to create a boolean true value that can be used in contexts
@@ -777,7 +785,7 @@ public final class JavaScriptValue: JavaScriptType, Escapable {
     if let value = value as? JavaScriptRepresentable {
       return value.toJavaScriptValue(in: runtime)
     }
-    return .undefined
+    return .undefined()
   }
 }
 
@@ -823,10 +831,3 @@ extension JavaScriptValue {
     }
   }
 }
-
-// Shared instances behind `JavaScriptValue.undefined` and `JavaScriptValue.null`; see the comment on
-// those accessors for why these are globals.
-@usableFromInline
-internal let sharedUndefinedValue = JavaScriptValue(facebook.jsi.Value.undefined())
-@usableFromInline
-internal let sharedNullValue = JavaScriptValue(facebook.jsi.Value.null())

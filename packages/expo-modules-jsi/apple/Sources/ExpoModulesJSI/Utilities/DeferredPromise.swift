@@ -71,7 +71,7 @@ internal actor DeferredPromise {
   /// stored state; a `getValue()` that finds it empty is a programmer error, like awaiting a pending
   /// promise twice.
   private func takeValue(from ref: JavaScriptValue.Ref) -> sending JavaScriptValue {
-    guard let value = ref.withValue({ (value: borrowing JavaScriptValue?) in copy value }) else {
+    guard let value = ref.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.copy() }) else {
       preconditionFailure("Promise awaited more than once")
     }
     return value

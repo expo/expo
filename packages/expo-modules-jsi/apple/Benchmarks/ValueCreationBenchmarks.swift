@@ -47,9 +47,9 @@ extension JSIBenchmarks {
   @Test
   func `undefined value`() async throws {
     try await benchmarkCase { runtime in
-      try benchmark("JavaScriptValue.undefined", runtime: runtime) { iterations in
+      try benchmark("JavaScriptValue.undefined()", runtime: runtime) { iterations in
         for _ in 0..<iterations {
-          _ = JavaScriptValue.undefined
+          _ = JavaScriptValue.undefined()
         }
       }
     }

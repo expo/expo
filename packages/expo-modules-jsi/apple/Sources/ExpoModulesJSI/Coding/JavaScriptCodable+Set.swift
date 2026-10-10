@@ -32,8 +32,10 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
     -> JavaScriptValue
   {
     // Constructing from an array fills the set in a single call, rather than one `add` call per element.
-    let entries = try [Element].encode(Array(value), in: runtime)
-    return try runtime.setConstructor().callAsConstructor(entries)
+    let entries = try [Element].encode(Array(value), in: runtime).ref()
+    return try runtime.withSetConstructor { constructor in
+      return try constructor.callAsConstructor(entries)
+    }
   }
 }
 
@@ -45,35 +47,36 @@ extension JavaScriptRuntime {
   @usableFromInline
   @JavaScriptActor
   func setEntries(of value: borrowing JavaScriptValue) throws -> JavaScriptValue? {
-    let function = try cached(setEntriesFunctionKey) {
-      return try eval(
+    let makeSetEntries = {
+      return try self.eval(
         label: "expo-modules-jsi/set-entries.js",
         "(function (value) { return value instanceof Set ? Array.from(value) : undefined; })"
-      )
+      ).getFunction()
     }
-    let setEntries = function.getFunction()
     // Pass the borrowed `jsi::Value` straight to the call, rather than copying it into an owned value
     // and again into an arguments buffer.
-    let entries = try withUnsafePointer(to: value.pointee) { argument in
-      return try capturingCppErrors {
-        return JavaScriptValue(self, expo.callFunction(pointee, setEntries.pointee, argument, 1))
+    let entries = try withCached(setEntriesFunctionKey, makeSetEntries) { (setEntries: borrowing JavaScriptFunction) in
+      return try withUnsafePointer(to: value.pointee) { argument in
+        return try capturingCppErrors {
+          return JavaScriptValue(self, expo.callFunction(pointee, setEntries.pointee, argument, 1))
+        }
       }
     }
-    return entries.isUndefined() ? nil : entries
+    if entries.isUndefined() {
+      return nil
+    }
+    return entries
   }
 
-  /// Returns the global `Set` constructor, looked up once and cached, so an encode doesn't pay for
-  /// the global property lookup.
+  /// Calls `body` with the global `Set` constructor, looked up once and cached, so an encode doesn't
+  /// pay for the global property lookup.
   @usableFromInline
   @JavaScriptActor
-  func setConstructor() throws -> JavaScriptFunction {
-    let constructor = try cached(setConstructorKey) {
-      return try global().getPropertyAsFunction("Set").asValue()
-    }
-    return constructor.getFunction()
+  func withSetConstructor<R: ~Copyable>(_ body: (borrowing JavaScriptFunction) throws -> R) throws -> R {
+    return try withCached(setConstructorKey, { try global().getPropertyAsFunction("Set") }, body)
   }
 }
 
 /// Keys of the `Set` entries function and the `Set` constructor in each runtime's cache.
-private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
-private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
+private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptFunction>>()
+private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptFunction>>()

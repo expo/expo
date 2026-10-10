@@ -155,11 +155,11 @@ extension JavaScriptValue {
       return try encodeAnyArray(array, in: runtime)
     }
     if value is NSNull {
-      return .null
+      return .null()
     }
     if let optional = value as? any FreeFormOptional {
       guard let wrapped = optional.freeFormWrappedValue else {
-        return .null
+        return .null()
       }
       return try encodeAny(wrapped, in: runtime)
     }
@@ -287,7 +287,7 @@ extension JavaScriptValue {
         let elements = try runtime.global()
           .getPropertyAsObject("Array")
           .getPropertyAsFunction("from")
-          .call(arguments: value)
+          .call(arguments: value.refToValue())
         return try freeFormElements(of: elements.asArray(), depth: depth, in: runtime)
       }
       if value.is("Map") {
@@ -296,7 +296,7 @@ extension JavaScriptValue {
         let entries = try runtime.global()
           .getPropertyAsObject("Array")
           .getPropertyAsFunction("from")
-          .call(arguments: value)
+          .call(arguments: value.refToValue())
         return try freeFormMapEntries(of: entries.asArray(), depth: depth, in: runtime)
       }
       if value.is("WeakMap") || value.is("WeakSet") {

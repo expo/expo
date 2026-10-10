@@ -52,7 +52,7 @@ struct JavaScriptCodableSetTests {
   @Test
   func `encodes a set to a JS Set`() throws {
     let encoded = try Set<Int>.encode([1, 2, 3], in: runtime)
-    #expect(encoded.is("Set"))
+    #expect(encoded.is("Set") == true)
     let object = encoded.getObject()
     #expect(object.getProperty("size").getInt() == 3)
     #expect(try object.callFunction("has", arguments: 2).getBool() == true)
@@ -70,7 +70,7 @@ struct JavaScriptCodableSetTests {
   func `round-trips an empty set`() throws {
     #expect(try Set<Int>.decode(runtime.eval("new Set()"), in: runtime) == [])
     let encoded = try Set<Int>.encode([], in: runtime)
-    #expect(encoded.is("Set"))
+    #expect(encoded.is("Set") == true)
     #expect(encoded.getObject().getProperty("size").getInt() == 0)
   }
 

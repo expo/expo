@@ -66,6 +66,22 @@ extension JavaScriptRuntime {
     cache.store(value, for: key)
     return value
   }
+
+  /// Like ``cached(_:_:)`` for a non-copyable value such as a `JavaScriptFunction`, which can't be a
+  /// cache value itself: the value is kept in a `JavaScriptRef` under `key` and `body` borrows it.
+  /// Returns what `body` returns.
+  @JavaScriptActor
+  public func withCached<Value: JavaScriptType & ~Copyable, R: ~Copyable>(
+    _ key: Cache.Key<JavaScriptRef<Value>>,
+    _ make: () throws -> Value,
+    _ body: (borrowing Value) throws -> R
+  ) rethrows -> R {
+    let ref = try cached(key) {
+      return JavaScriptRef(try make())
+    }
+    // The ref is created holding a value and nothing takes it out, so the unwrap can't fail.
+    return try ref.withUnwrappedValue(body)!
+  }
 }
 
 /// The index for the next created ``JavaScriptRuntime/Cache/Key``. Keys can be created on any thread,

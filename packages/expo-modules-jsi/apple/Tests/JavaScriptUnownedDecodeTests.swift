@@ -13,7 +13,7 @@ struct JavaScriptUnownedDecodeTests {
 
   private func unowned<T: JavaScriptDecodable>(_ type: T.Type, from source: String) throws -> T {
     let value = try runtime.eval(source)
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value)
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value.ref())
     return try T.decode(buffer.unownedValue(at: 0), in: runtime)
   }
 

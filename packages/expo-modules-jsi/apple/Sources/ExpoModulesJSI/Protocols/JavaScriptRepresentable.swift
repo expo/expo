@@ -20,7 +20,7 @@ extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentab
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     guard let self else {
-      return .null
+      return .null()
     }
     return self.toJavaScriptValue(in: runtime)
   }

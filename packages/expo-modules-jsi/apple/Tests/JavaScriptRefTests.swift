@@ -72,14 +72,16 @@ struct JavaScriptRefTests {
     let ref = JavaScriptRef(JavaScriptValue.number(1))
     let _: JavaScriptValue? = ref.take()
     let second: JavaScriptValue? = ref.take()
-    #expect(second == nil)
+    let isTaken = second == nil
+    #expect(isTaken)
   }
 
   @Test
   func `optional take returns nil on empty ref`() {
     let ref = JavaScriptRef<JavaScriptValue>()
     let value: JavaScriptValue? = ref.take()
-    #expect(value == nil)
+    let isEmpty = value == nil
+    #expect(isEmpty)
   }
 
   // MARK: - reset

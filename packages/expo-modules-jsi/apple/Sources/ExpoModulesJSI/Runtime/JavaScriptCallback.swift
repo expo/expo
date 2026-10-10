@@ -62,7 +62,7 @@ public final class JavaScriptCallback: Sendable {
   }
 
   @JavaScriptActor
-  private init(_ function: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) {
+  private init(_ function: consuming JavaScriptValue, in runtime: borrowing JavaScriptRuntime) {
     self.runtime = copy runtime
     self.longLivedState = LongLivedState()
     longLivedState.function.reset(function)
@@ -96,8 +96,9 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     runDetached { runtime in
       let arguments = box.value
-      var values = ContiguousArray<JavaScriptValue>()
-      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      // Encoded values travel as refs: an array takes copyable elements only.
+      var values: [JavaScriptValue.Ref] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
       return values
     }
   }
@@ -111,8 +112,9 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
       let arguments = box.value
-      var values = ContiguousArray<JavaScriptValue>()
-      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      // Encoded values travel as refs: an array takes copyable elements only.
+      var values: [JavaScriptValue.Ref] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
       return values
     } decodeResult: { _, _ in
       UncheckedSendableBox(())
@@ -131,8 +133,9 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try runBlocking { runtime in
       let arguments = box.value
-      var values = ContiguousArray<JavaScriptValue>()
-      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      // Encoded values travel as refs: an array takes copyable elements only.
+      var values: [JavaScriptValue.Ref] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
       return values
     } decodeResult: { result, runtime in
       UncheckedSendableBox(try R.decode(result, in: runtime))
@@ -146,8 +149,9 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try await runAsync { runtime in
       let arguments = box.value
-      var values = ContiguousArray<JavaScriptValue>()
-      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      // Encoded values travel as refs: an array takes copyable elements only.
+      var values: [JavaScriptValue.Ref] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
       return values
     } decodeResult: { _, _ in
       UncheckedSendableBox(())
@@ -164,8 +168,9 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try await runAsync { runtime in
       let arguments = box.value
-      var values = ContiguousArray<JavaScriptValue>()
-      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      // Encoded values travel as refs: an array takes copyable elements only.
+      var values: [JavaScriptValue.Ref] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
       return values
     } decodeResult: { result, runtime in
       UncheckedSendableBox(try R.decode(result, in: runtime))
@@ -192,7 +197,7 @@ public final class JavaScriptCallback: Sendable {
 
   @usableFromInline
   internal func runDetached(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue.Ref]
   ) {
     guard let runtime else {
       print("Error in a JavaScript callback: \(RuntimeLostError())")
@@ -209,8 +214,8 @@ public final class JavaScriptCallback: Sendable {
 
   @usableFromInline
   internal func runBlocking<R: Sendable>(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
-    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue.Ref],
+    decodeResult: @escaping @JavaScriptActor (borrowing JavaScriptValue, JavaScriptRuntime) throws -> R
   ) throws -> R {
     let runtime = try liveRuntime()
     return try runtime.execute {
@@ -220,8 +225,8 @@ public final class JavaScriptCallback: Sendable {
 
   @usableFromInline
   internal func runAsync<R: Sendable>(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
-    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue.Ref],
+    decodeResult: @escaping @JavaScriptActor (borrowing JavaScriptValue, JavaScriptRuntime) throws -> R
   ) async throws -> R {
     let outcome = try await callForAsync(encodeArguments: encodeArguments, decodeResult: decodeResult)
     switch outcome.value {
@@ -229,13 +234,16 @@ public final class JavaScriptCallback: Sendable {
       return value
     case .promise(let promiseRef):
       let promise: JavaScriptPromise = try promiseRef.take()
-      let settled = UncheckedSendableBox(try await promise.await())
+      // Taken out of the ref on the JavaScript thread below, so the awaiting task never owns the
+      // settled value itself.
+      let settled = try await promise.await().ref()
       // The runtime is looked up again instead of being held across the await, which may never
       // resume if the promise is pending when the runtime goes away. The await may also resume on
       // another thread, so decode back on the JavaScript thread.
       let runtime = try liveRuntime()
       return try await runtime.execute {
-        try decodeResult(settled.value, runtime)
+        let value: JavaScriptValue = try settled.take()
+        return try decodeResult(value, runtime)
       }
     }
   }
@@ -243,8 +251,8 @@ public final class JavaScriptCallback: Sendable {
   /// Calls the function and decodes a result that isn't a promise. Holds the runtime only for the
   /// duration of the call.
   private func callForAsync<R: Sendable>(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
-    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue.Ref],
+    decodeResult: @escaping @JavaScriptActor (borrowing JavaScriptValue, JavaScriptRuntime) throws -> R
   ) async throws -> UncheckedSendableBox<AsyncOutcome<R>> {
     let runtime = try liveRuntime()
     return try await runtime.execute { () throws -> UncheckedSendableBox<AsyncOutcome<R>> in
@@ -272,17 +280,21 @@ public final class JavaScriptCallback: Sendable {
   /// sweep released it.
   @JavaScriptActor
   private func call(
-    _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
+    _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue.Ref],
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptValue {
-    guard let function = longLivedState.function.withValue({ $0 }) else {
+    guard
+      let function = longLivedState.function.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
+        value.getFunction()
+      })
+    else {
       throw RuntimeLostError()
     }
     let values = try encodeArguments(runtime)
     if values.isEmpty {
-      return try function.getFunction().call()
+      return try function.call()
     }
-    return try function.getFunction().call(arguments: JavaScriptValuesBuffer.copying(in: runtime, values: values))
+    return try function.call(arguments: JavaScriptValuesBuffer.copying(in: runtime, values: values))
   }
 
   @JavaScriptActor
@@ -311,7 +323,7 @@ public final class JavaScriptCallback: Sendable {
     _ global: borrowing JavaScriptObject,
     object objectName: String,
     method methodName: String,
-    argument: JavaScriptValue
+    argument: consuming JavaScriptValue
   ) -> Bool {
     // `isFunction()` requires an object, so check that first.
     let object = global.getProperty(objectName)
@@ -323,7 +335,7 @@ public final class JavaScriptCallback: Sendable {
       return false
     }
     do {
-      try method.getFunction().call(this: object.getObject(), arguments: argument)
+      try method.getFunction().call(this: object.getObject(), arguments: argument.ref())
       return true
     } catch {
       return false

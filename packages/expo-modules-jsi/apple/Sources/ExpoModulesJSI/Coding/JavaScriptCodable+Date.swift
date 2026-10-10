@@ -38,7 +38,7 @@ extension Date: JavaScriptCodable {
     }
     if value.isString() {
       let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-      let constructed = try dateConstructor.callAsConstructor(value.copied(in: runtime)).asObject()
+      let constructed = try dateConstructor.callAsConstructor(value.copied(in: runtime).ref()).asObject()
       return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
     }
     if value.isObject() {
@@ -56,9 +56,7 @@ extension Date: JavaScriptCodable {
   public static func encode(_ value: Date, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     let milliseconds = value.timeIntervalSince1970 * 1000.0
     let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-    // Typed explicitly so the variadic `callAsConstructor` overload is chosen over the `JavaScriptValuesBuffer?` one.
-    let millisecondsValue: JavaScriptValue = .number(milliseconds)
-    return try dateConstructor.callAsConstructor(millisecondsValue)
+    return try dateConstructor.callAsConstructor(milliseconds)
   }
 }
 

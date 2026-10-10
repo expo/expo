@@ -43,7 +43,7 @@ extension Data: JavaScriptCodable {
       }
     }
     let uint8ArrayConstructor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayConstructor.callAsConstructor(arrayBuffer.asValue())
+    return try uint8ArrayConstructor.callAsConstructor(arrayBuffer.asValue().ref())
   }
 }
 

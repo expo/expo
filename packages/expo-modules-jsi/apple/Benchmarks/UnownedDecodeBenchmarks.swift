@@ -11,7 +11,10 @@ extension JSIBenchmarks {
   @Test
   func `unowned decode of an array`() async throws {
     try await benchmarkCase { runtime in
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("[1, 2, 3, 4, 5, 6, 7, 8]"))
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("[1, 2, 3, 4, 5, 6, 7, 8]").ref()
+      )
       try benchmark("[Double].decode(unowned): 8 elements", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try [Double].decode(buffer.unownedValue(at: 0), in: runtime)
@@ -23,7 +26,10 @@ extension JSIBenchmarks {
   @Test
   func `unowned decode of a dictionary`() async throws {
     try await benchmarkCase { runtime in
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("({ a: 1, b: 2, c: 3, d: 4 })"))
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("({ a: 1, b: 2, c: 3, d: 4 })").ref()
+      )
       try benchmark("[String: Double].decode(unowned): 4 entries", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try [String: Double].decode(buffer.unownedValue(at: 0), in: runtime)
@@ -35,7 +41,7 @@ extension JSIBenchmarks {
   @Test
   func `unowned decode of a date`() async throws {
     try await benchmarkCase { runtime in
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("1700000000000"))
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("1700000000000").ref())
       try benchmark("Date.decode(unowned): number", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
@@ -85,7 +91,7 @@ extension JSIBenchmarks {
     try await benchmarkCase { runtime in
       let buffer = JavaScriptValuesBuffer.allocate(
         in: runtime,
-        with: try runtime.eval("[[1, 2], [3, 4], [5, 6], [7, 8]]")
+        with: try runtime.eval("[[1, 2], [3, 4], [5, 6], [7, 8]]").ref()
       )
       try benchmark("[[Double]].decode(unowned): 4 x 2 elements", runtime: runtime) { iterations in
         for _ in 0..<iterations {
@@ -98,7 +104,7 @@ extension JSIBenchmarks {
   @Test
   func `unowned decode of a date string`() async throws {
     try await benchmarkCase { runtime in
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'2026-10-02T12:00:00Z'"))
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'2026-10-02T12:00:00Z'").ref())
       try benchmark("Date.decode(unowned): ISO string", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
@@ -110,7 +116,7 @@ extension JSIBenchmarks {
   @Test
   func `unowned decode of a date object`() async throws {
     try await benchmarkCase { runtime in
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("new Date(1700000000000)"))
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("new Date(1700000000000)").ref())
       try benchmark("Date.decode(unowned): Date object", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try Date.decode(buffer.unownedValue(at: 0), in: runtime)

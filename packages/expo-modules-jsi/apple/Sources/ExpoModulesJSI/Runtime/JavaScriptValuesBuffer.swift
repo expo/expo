@@ -113,7 +113,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   @JavaScriptActor
-  public func map<T>(_ transform: @JavaScriptActor (_ value: JavaScriptValue, _ index: Int) throws -> T) rethrows -> [T]
+  public func map<T>(_ transform: @JavaScriptActor (_ value: borrowing JavaScriptValue, _ index: Int) throws -> T)
+    rethrows -> [T]
   {
     var result: [T] = []
     result.reserveCapacity(count)
@@ -187,44 +188,6 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       copy.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, buffer[index]))
     }
     return copy
-  }
-
-  /// Allocates a new owning buffer holding a runtime-aware copy of each value's
-  /// underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
-  /// to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI.
-  @JavaScriptActor
-  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
-    let buffer = values.withUnsafeBufferPointer { values in
-      copyingPointees(in: runtime, values: values)
-    }
-    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
-  }
-
-  /// The `ContiguousArray` variant of ``copying(in:values:)``.
-  @JavaScriptActor
-  internal static func copying(in runtime: JavaScriptRuntime, values: ContiguousArray<JavaScriptValue>)
-    -> JavaScriptValuesBuffer
-  {
-    let buffer = values.withUnsafeBufferPointer { values in
-      copyingPointees(in: runtime, values: values)
-    }
-    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
-  }
-
-  @JavaScriptActor
-  private static func copyingPointees(in runtime: JavaScriptRuntime, values: UnsafeBufferPointer<JavaScriptValue>)
-    -> UnsafeMutableBufferPointer<facebook.jsi.Value>
-  {
-    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
-    for (index, value) in values.enumerated() {
-      // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
-      assert(
-        value.belongs(to: runtime),
-        "JavaScriptValue belongs to a different runtime than the buffer being initialized"
-      )
-      buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
-    }
-    return buffer
   }
 
   /// Allocates a new owning buffer holding a runtime-aware copy of each referenced value's
