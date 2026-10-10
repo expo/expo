@@ -17,6 +17,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
     }
 
     self.rootView = rootView
+    RCTRegisterReloadCommandListener(self)
     showSplashScreen()
     NotificationCenter.default.addObserver(
       self,
@@ -86,7 +87,9 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   func didReceiveReloadCommand() {
-    showSplashScreen()
+    if options.showOnReload {
+      showSplashScreen()
+    }
   }
 
   private func isLoadingViewVisible() -> Bool {

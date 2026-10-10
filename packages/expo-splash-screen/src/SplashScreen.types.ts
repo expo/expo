@@ -12,6 +12,14 @@ export type SplashScreenOptions = {
    * @default false
    */
   fade?: boolean;
+  /**
+   * Whether to show the splash screen when React Native reloads the app.
+   * Set this option before triggering a reload. Use `preventAutoHideAsync()` and
+   * `hide()` to control when the splash screen is hidden after the reload.
+   * @platform ios
+   * @default false
+   */
+  showOnReload?: boolean;
 };
 
 export interface SplashScreenNativeModule extends NativeModule {
