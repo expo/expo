@@ -790,6 +790,15 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       await db.closeAsync();
     });
 
+    it('should report whether a transaction is active', async () => {
+      db = await SQLite.openDatabaseAsync(':memory:');
+      expect(await db.isInTransactionAsync()).toBe(false);
+      await db.withTransactionAsync(async () => {
+        expect(await db.isInTransactionAsync()).toBe(true);
+      });
+      expect(await db.isInTransactionAsync()).toBe(false);
+    });
+
     it('should support async transaction', async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
