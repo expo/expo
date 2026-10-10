@@ -37,10 +37,21 @@ private final class DynamicTypeKindCache: @unchecked Sendable {
     } else {
       kind = .raw
     }
+    // A conformance to `AnyArgument` can be isolated to the main actor (e.g. `UIView`),
+    // in which case the cast above only succeeds on the main thread. A positive answer
+    // holds everywhere; remember a negative one only when it was computed on main.
+    if case .anyArgument = kind {
+      remember(kind, for: key)
+    } else if Thread.isMainThread {
+      remember(kind, for: key)
+    }
+    return kind
+  }
+
+  private func remember(_ kind: DynamicTypeKind, for key: ObjectIdentifier) {
     lock.lock()
     kinds[key] = kind
     lock.unlock()
-    return kind
   }
 }
 
