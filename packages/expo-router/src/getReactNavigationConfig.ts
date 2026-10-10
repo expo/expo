@@ -66,10 +66,8 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     screens,
   };
 
-  // The URL parser puts `initialRouteName` in front of the target, so Back can return to it.
-  // Example: with `(home)/home.tsx` and `(home)/details.tsx`, `/details` parses to `[home, details]`.
-  // `unstable_settings.anchor` is not used here because reading it loads the layout.
-  // Seeding the navigation state applies it later.
+  // When several routes match a URL equally well, the URL parser prefers the layout's initial route.
+  // The anchor from `unstable_settings` is not used, because reading it loads the layout.
   const groupMatchingRouteName = getGroupMatchingRouteName(node);
   if (groupMatchingRouteName) {
     screen.initialRouteName = groupMatchingRouteName;
