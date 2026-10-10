@@ -289,6 +289,8 @@ async function testAsync(
     } finally {
       console.timeEnd(TEST_DURATION_LABEL);
     }
+    // Not reached when maestro fails without results, so a driver that failed to start gets
+    // reinstalled by the retry.
     reinstallMaestroDriver = false;
 
     if (failedFlows.length > 0) {
