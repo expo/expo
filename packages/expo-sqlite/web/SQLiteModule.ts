@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import { registerWebModule, NativeModule, UnavailabilityError } from 'expo';
+import { registerWebModule, NativeModule } from 'expo';
 
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
 import { type Changeset, type NativeChangeset } from '../src/NativeSession';
@@ -40,6 +40,12 @@ function convertChangesetInput(changeset: Changeset | NativeChangeset): Changese
 
 class NativeDatabase {
   public readonly id: number;
+  // The worker runs queries synchronously, so it can only see an interrupt through shared memory.
+  // Pages without cross-origin isolation have no SharedArrayBuffer and can still use async APIs.
+  private readonly interruptFlag =
+    typeof SharedArrayBuffer !== 'undefined' ? new Int32Array(new SharedArrayBuffer(4)) : null;
+  private isClosing = false;
+  private isClosed = false;
 
   constructor(
     public readonly databasePath: string,
@@ -55,6 +61,7 @@ class NativeDatabase {
       databasePath: this.databasePath,
       options: this.options ?? {},
       serializedData: this.serializedData,
+      interruptBuffer: this.interruptFlag?.buffer as SharedArrayBuffer | undefined,
     });
   }
   initSync(): void {
@@ -63,6 +70,7 @@ class NativeDatabase {
       databasePath: this.databasePath,
       options: this.options ?? {},
       serializedData: this.serializedData,
+      interruptBuffer: this.interruptFlag?.buffer as SharedArrayBuffer | undefined,
     });
   }
 
@@ -78,18 +86,38 @@ class NativeDatabase {
   }
 
   async closeAsync(): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'close', {
-      nativeDatabaseId: this.id,
-    });
+    this.isClosing = true;
+    try {
+      await invokeWorkerAsync(getWorker(), 'close', {
+        nativeDatabaseId: this.id,
+      });
+      this.isClosed = true;
+    } finally {
+      this.isClosing = false;
+    }
   }
   interruptSync(): void {
-    throw new UnavailabilityError('expo-sqlite', 'interruptSync');
+    if (this.isClosing) {
+      throw new Error(
+        'Cannot interrupt while the database is closing. Interrupt pending operations before closing.'
+      );
+    }
+    if (this.isClosed) {
+      throw new Error('Access to closed resource');
+    }
+    if (!this.interruptFlag) {
+      throw new Error(
+        'Cannot interrupt because SharedArrayBuffer is not available. Serve the page with the Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy headers to enable it.'
+      );
+    }
+    Atomics.store(this.interruptFlag, 0, 1);
   }
 
   closeSync(): void {
     invokeWorkerSync(getWorker(), 'close', {
       nativeDatabaseId: this.id,
     });
+    this.isClosed = true;
   }
 
   async execAsync(source: string): Promise<void> {

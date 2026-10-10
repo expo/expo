@@ -134,6 +134,7 @@ type OpenMessage = BaseWorkerMessage & {
     databasePath: string;
     options: SQLiteOpenOptions;
     serializedData?: Uint8Array;
+    interruptBuffer?: SharedArrayBuffer;
   };
 };
 

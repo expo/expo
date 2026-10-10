@@ -228,6 +228,7 @@ export class SQLiteDatabase {
    * @platform ios
    * @platform macos
    * @platform tvos
+   * @platform web
    */
   public interruptSync(): void {
     return this.nativeDatabase.interruptSync();

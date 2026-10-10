@@ -1073,7 +1073,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     }, 10000);
   });
 
-  nativeDescribe('Interrupt', () => {
+  describe('Interrupt', () => {
     const longQuery = `WITH RECURSIVE numbers(n) AS (
       VALUES(1) UNION ALL SELECT n + 1 FROM numbers WHERE n < 10000000
     ) SELECT sum(n) FROM numbers`;
@@ -1125,7 +1125,8 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
     });
 
-    for (const exclusive of [false, true]) {
+    // Web has no `withExclusiveTransactionAsync()`.
+    for (const exclusive of process.env.EXPO_OS === 'web' ? [false] : [false, true]) {
       it(`preserves interruption errors in ${exclusive ? 'exclusive' : 'regular'} transaction helpers`, async () => {
         // The exclusive helper opens another connection, so both must use the same file.
         const databaseName = `interrupt-transaction-${exclusive}.db`;

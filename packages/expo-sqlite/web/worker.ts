@@ -37,6 +37,8 @@ interface DatabaseEntity {
   pointer: DatabasePointer;
   databasePath: string;
   openOptions: SQLiteOptions;
+  // One flag per `NativeDatabase` sharing this connection, like a shared native handle.
+  interruptFlags: Int32Array[];
 }
 interface StatementEntity {
   pointer: StatementPointer;
@@ -47,6 +49,8 @@ interface SessionEntity {
 
 const VFS_NAME_PERSISTENT = 'expo-sqlite';
 const VFS_NAME_MEMORY = 'expo-sqlite-memfs';
+
+const INTERRUPT_CHECK_INTERVAL_OPS = 1000;
 
 const MAX_INT32 = 0x7fffffff;
 const MIN_INT32 = -0x80000000;
@@ -147,7 +151,8 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
         data.nativeDatabaseId,
         data.databasePath,
         new SQLiteOptions(data.options),
-        data.serializedData
+        data.serializedData,
+        data.interruptBuffer
       );
       break;
     }
@@ -286,7 +291,7 @@ async function exec(nativeDatabaseId: number, source: string) {
   const { sqlite3 } = await maybeInitAsync();
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
   if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
-  await sqlite3.exec(dbEntity.pointer, source);
+  await withInterruptHandler(sqlite3, dbEntity, () => sqlite3.exec(dbEntity.pointer, source));
 }
 
 async function finalize(nativeDatabaseId: number, nativeStatementId: number): Promise<void> {
@@ -312,18 +317,20 @@ async function getAllRows(
   const stmt = statementIdMap.get(nativeStatementId);
   if (!stmt) throw new Error(`Statement not found - nativeStatementId[${nativeStatementId}]`);
 
-  const rows: SQLiteColumnValues[] = [];
-  while (true) {
-    const ret = await sqlite3.step(stmt.pointer);
-    if (ret === SQLITE_ROW) {
-      rows.push(getColumnValues(sqlite3, stmt.pointer));
-      continue;
-    } else if (ret === SQLITE_DONE) {
-      break;
+  return withInterruptHandler(sqlite3, dbEntity, async () => {
+    const rows: SQLiteColumnValues[] = [];
+    while (true) {
+      const ret = await sqlite3.step(stmt.pointer);
+      if (ret === SQLITE_ROW) {
+        rows.push(getColumnValues(sqlite3, stmt.pointer));
+        continue;
+      } else if (ret === SQLITE_DONE) {
+        break;
+      }
+      throw new Error('Error executing statement');
     }
-    throw new Error('Error executing statement');
-  }
-  return rows;
+    return rows;
+  });
 }
 
 async function getColumnNames(nativeStatementId: number): Promise<SQLiteColumnNames> {
@@ -381,10 +388,12 @@ async function openDatabase(
   nativeDatabaseId: number,
   databasePath: string,
   options: SQLiteOptions,
-  serializedData?: Uint8Array
+  serializedData?: Uint8Array,
+  interruptBuffer?: SharedArrayBuffer
 ) {
   const { sqlite3 } = await maybeInitAsync();
   let pointer: DatabasePointer;
+  const interruptFlags = interruptBuffer ? [new Int32Array(interruptBuffer)] : [];
 
   if (serializedData) {
     pointer = await deserializeDatabase(sqlite3, serializedData);
@@ -396,6 +405,7 @@ async function openDatabase(
         !options.useNewConnection
     );
     if (dbEntity) {
+      dbEntity.interruptFlags.push(...interruptFlags);
       databaseIdMap.set(nativeDatabaseId, dbEntity);
       await initDb(sqlite3, dbEntity);
       return;
@@ -410,6 +420,7 @@ async function openDatabase(
     pointer,
     databasePath,
     openOptions: options,
+    interruptFlags,
   };
   databaseIdMap.set(nativeDatabaseId, dbEntity);
   await initDb(sqlite3, dbEntity);
@@ -460,7 +471,7 @@ async function run(
     }
   }
 
-  const ret = await sqlite3.step(stmt.pointer);
+  const ret = await withInterruptHandler(sqlite3, dbEntity, () => sqlite3.step(stmt.pointer));
   if (ret !== SQLITE_ROW && ret !== SQLITE_DONE) {
     throw new SQLiteErrorException('Error executing statement');
   }
@@ -505,7 +516,7 @@ async function step(
   const stmt = statementIdMap.get(nativeStatementId);
   if (!stmt) throw new Error(`Statement not found - nativeStatementId[${nativeStatementId}]`);
 
-  const ret = await sqlite3.step(stmt.pointer);
+  const ret = await withInterruptHandler(sqlite3, dbEntity, () => sqlite3.step(stmt.pointer));
   if (ret === SQLITE_ROW) {
     return getColumnValues(sqlite3, stmt.pointer);
   }
@@ -770,6 +781,38 @@ async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
   }
 
   if (error) throw error;
+}
+
+/**
+ * Runs `operation` with a progress handler that aborts it once `interruptSync()` sets a flag.
+ */
+async function withInterruptHandler<T>(
+  sqlite3: SQLiteAPI,
+  dbEntity: DatabaseEntity,
+  operation: () => Promise<T>
+): Promise<T> {
+  const flags = dbEntity.interruptFlags;
+  if (flags.length === 0) {
+    return operation();
+  }
+  // An interrupt that arrives while idle does nothing, like `sqlite3_interrupt()`.
+  for (const flag of flags) {
+    Atomics.store(flag, 0, 0);
+  }
+  // wa-sqlite keeps one progress handler callback for the whole module.
+  // Registering it on another connection would replace this one, so only keep it during the operation.
+  sqlite3.progress_handler(
+    dbEntity.pointer,
+    INTERRUPT_CHECK_INTERVAL_OPS,
+    () => (flags.some((flag) => Atomics.load(flag, 0) !== 0) ? 1 : 0),
+    null
+  );
+  try {
+    return await operation();
+  } finally {
+    // @ts-expect-error: wa-sqlite removes the handler when it is null, but its types do not allow null.
+    sqlite3.progress_handler(dbEntity.pointer, 0, null, null);
+  }
 }
 
 async function maybeInitAsync(): Promise<{
