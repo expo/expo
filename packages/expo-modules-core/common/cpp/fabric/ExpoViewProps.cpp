@@ -32,13 +32,35 @@ ExpoViewProps::ExpoViewProps(
   const react::PropsParserContext &context,
   const ExpoViewProps &sourceProps,
   const react::RawProps &rawProps,
-  [[maybe_unused]] const std::function<bool(const std::string &)> &filterObjectKeys
+  const std::function<bool(const std::string &)> &filterObjectKeys
+) : ExpoViewProps(context, sourceProps, rawProps, filterObjectKeys, /* buildPropsMap */ true) {}
+
+ExpoViewProps::ExpoViewProps(
+  const react::PropsParserContext &context,
+  const ExpoViewProps &sourceProps,
+  const react::RawProps &rawProps,
+  [[maybe_unused]] const std::function<bool(const std::string &)> &filterObjectKeys,
+  bool buildPropsMap
 )
 #if EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS
-  : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+  : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys)
 #else
-  : react::ViewProps(context, sourceProps, rawProps),
+  : react::ViewProps(context, sourceProps, rawProps)
 #endif
-    propsMap(propsMapFromProps(sourceProps, rawProps)) {}
+{
+  if (buildPropsMap) {
+    // Legacy path: lower the raw props into `propsMap` (via the dynamic representation) and read
+    // `disableForceFlatten` from there. We must not also parse it with `convertRawProp` below,
+    // because the parser path and the `folly::dynamic` cast can't both consume the same `RawProps`.
+    propsMap = propsMapFromProps(sourceProps, rawProps);
+
+    const auto it = propsMap.find("disableForceFlatten");
+    disableForceFlatten = (it != propsMap.end()) && it->second.isBool() && it->second.getBool();
+  } else {
+    // JSI path: there's no `propsMap`, so parse `disableForceFlatten` straight from the raw props.
+    disableForceFlatten = react::convertRawProp(
+      context, rawProps, "disableForceFlatten", sourceProps.disableForceFlatten, false);
+  }
+}
 
 } // namespace expo

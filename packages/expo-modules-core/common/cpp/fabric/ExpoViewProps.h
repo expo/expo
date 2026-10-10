@@ -32,13 +32,47 @@ public:
     const std::function<bool(const std::string &)> &filterObjectKeys = nullptr
   );
 
+protected:
+  /**
+   Designated constructor. When `buildPropsMap` is `false`, the `folly::dynamic` lowering into
+   `propsMap` is skipped. Used by `ExpoJSIViewProps`, which decodes props straight from their
+   JavaScript values and never reads `propsMap`. The public constructor builds it (the classic
+   `folly::dynamic` path used by SwiftUI and Android).
+   */
+  ExpoViewProps(
+    const facebook::react::PropsParserContext &context,
+    const ExpoViewProps &sourceProps,
+    const facebook::react::RawProps &rawProps,
+    const std::function<bool(const std::string &)> &filterObjectKeys,
+    bool buildPropsMap
+  );
+
+public:
 #pragma mark - Props
 
   /**
-   A map with props stored as `folly::dynamic` objects.
+   Typed prop read by `ExpoViewShadowNode` during layout to decide view flattening. Parsed as a
+   first-class `bool` (via `convertRawProp`) rather than looked up in `propsMap`, so the shadow
+   node doesn't depend on `propsMap` being materialized.
    */
-  std::unordered_map<std::string, folly::dynamic> propsMap;
+  bool disableForceFlatten = false;
+
+  /**
+   A map with props stored as `folly::dynamic` objects.
+
+   `mutable` because the JSI component descriptor populates it in `cloneProps` after the props
+   object is already held as `const`, for views that fall back to the dictionary path.
+   */
+  mutable std::unordered_map<std::string, folly::dynamic> propsMap;
 };
+
+/**
+ Borrows the props map from the source props and applies the update given in the raw props.
+ */
+std::unordered_map<std::string, folly::dynamic> propsMapFromProps(
+  const ExpoViewProps &sourceProps,
+  const facebook::react::RawProps &rawProps
+);
 
 } // namespace expo
 
