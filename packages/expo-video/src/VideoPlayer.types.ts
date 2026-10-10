@@ -447,6 +447,12 @@ export type VideoMetadata = {
    */
   artist?: string;
   /**
+   * The album title of the video.
+   * @platform android
+   * @platform ios
+   */
+  album?: string;
+  /**
    * The uri of the video artwork.
    * @platform android
    * @platform ios
