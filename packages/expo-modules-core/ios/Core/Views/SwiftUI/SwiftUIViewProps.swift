@@ -19,6 +19,15 @@ extension ExpoSwiftUI {
   }
 
   /**
+   Protocol for view props whose hosting view may register the hosted SwiftUI scroll view (a `List`, `ScrollView` or
+   `Form` filling the view) as the content scroll view of the view controller it's in. A navigation bar then tracks it
+   as it would a UIKit scroll view: the large title collapses and the bar switches to its scrolled appearance.
+   */
+  public protocol ContentScrollViewProviding {
+    var providesContentScrollView: Bool { get }
+  }
+
+  /**
    Protocol for view props that receive the view hosting their SwiftUI view, so they can resolve
    their own window. Declare the property `weak`.
    */
