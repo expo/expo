@@ -13,6 +13,7 @@ Observe.configure({
       oversizeThreshold: 1.5,
       includeUrlParams: false,
     },
+    'react-native-reanimated': true,
   },
 });
 

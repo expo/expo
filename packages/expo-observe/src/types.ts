@@ -150,7 +150,40 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+  /**
+   * Enables the `react-native-reanimated` integration, which reports Reanimated errors as
+   * `reanimated.error` errors and Reanimated warnings as `reanimated.warning` events. Reanimated
+   * still prints them to the console. Each distinct message is reported at most once per minute,
+   * and at most 100 distinct errors and 100 distinct warnings are reported in any one-minute
+   * period.
+   *
+   * Requires `react-native-reanimated` 4.7.0 or later to be installed.
+   *
+   * The integration configures Reanimated's logger with `configureReanimatedLogger`. Pass an
+   * object to set the logger's `level` and `strict` options here, and don't call
+   * `configureReanimatedLogger` in your app: a later call removes the integration's callback.
+   *
+   * @default false
+   */
+  'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
 }
+
+export type ObserveReanimatedIntegrationConfig = {
+  /**
+   * The minimum log level that Reanimated prints and reports. Pass a `ReanimatedLogLevel` value
+   * from `react-native-reanimated`: `ReanimatedLogLevel.warn` (`1`) or `ReanimatedLogLevel.error`
+   * (`2`).
+   *
+   * @default ReanimatedLogLevel.warn
+   */
+  level?: 1 | 2;
+  /**
+   * Whether Reanimated also prints and reports its strict-mode warnings.
+   *
+   * @default true
+   */
+  strict?: boolean;
+};
 
 /**
  * Events emitted by the native `ExpoObserve` module.
