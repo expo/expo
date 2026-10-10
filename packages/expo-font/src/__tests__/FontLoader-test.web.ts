@@ -1,9 +1,8 @@
 import { Asset } from 'expo-asset';
-import * as AssetRegistry from 'react-native/asset-registry';
+import { AssetRegistry } from 'react-native';
 
 import * as Font from '../Font';
 import * as FontLoader from '../FontLoader';
-jest.mock('react-native/asset-registry');
 
 describe('loadSingleFontAsync', () => {
   it(`only excepts FontResource`, async () => {
