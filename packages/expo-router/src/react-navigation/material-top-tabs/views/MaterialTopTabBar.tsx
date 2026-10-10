@@ -44,7 +44,8 @@ export function MaterialTopTabBar({
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
 
-  const focusedOptions = descriptors[state.routes[state.index].key].options;
+  const focusedRoute = state.routes[state.index]!;
+  const focusedOptions = descriptors[focusedRoute.key]!.options;
 
   const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
   const inactiveColor: ColorValue =
@@ -54,7 +55,7 @@ export function MaterialTopTabBar({
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route: any) => {
-      const { options } = descriptors[route.key];
+      const { options } = descriptors[route.key]!;
 
       const {
         title,
@@ -83,7 +84,7 @@ export function MaterialTopTabBar({
               : typeof tabBarLabel === 'function'
                 ? ({ labelText, color }: any) =>
                     tabBarLabel({
-                      focused: state.routes[state.index].key === route.key,
+                      focused: focusedRoute.key === route.key,
                       color,
                       children: labelText ?? route.name,
                     })
