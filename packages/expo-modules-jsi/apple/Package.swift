@@ -21,7 +21,7 @@ let reactNative =
   ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
-let headerSearchPaths = [
+let podsHeaderSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
   "\(publicHeaders)/hermes-engine",
@@ -47,6 +47,12 @@ let headerSearchPaths = [
   "\(podsRoot)/glog/src",
   "\(podsRoot)/DoubleConversion",
 ]
+
+// Outside Apple platforms there are no Pods. `JSI_INCLUDE_DIR` names a directory with `jsi/jsi.h`
+// instead, for example with the headers from react-native-windows' `Microsoft.ReactNative.Cxx`
+// NuGet package, and it's the only header root.
+let headerSearchPaths =
+  ProcessInfo.processInfo.environment["JSI_INCLUDE_DIR"].map({ [$0] }) ?? podsHeaderSearchPaths
 
 // Path to the generated module map for the `jsi` Clang module. The
 // `scripts/generate-modulemap.sh` script writes this file at build time so
@@ -92,10 +98,16 @@ let package = Package(
         // https://github.com/swiftlang/swift-evolution/blob/main/proposals/0470-isolated-conformances.md
         .enableUpcomingFeature("InferIsolatedConformances"),
 
+        // Library evolution keeps the xcframework usable across Swift compiler versions, and hides
+        // the C++ dependencies (imported with `internal import`) from client modules, so they don't
+        // need C++ interoperability.
         .unsafeFlags([
           "-enable-library-evolution",
           "-emit-module-interface",
           "-no-verify-emitted-module-interface",
+        ]),
+
+        .unsafeFlags([
           "-Xfrontend",
           "-clang-header-expose-decls=has-expose-attr",
 
@@ -120,9 +132,12 @@ let package = Package(
         // React, ReactCommon, hermes, and JSI symbols are provided by the host
         // app at final link time. Defer their resolution so the xcframework
         // builds without those static libs being available here.
-        .unsafeFlags([
-          "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
-        ])
+        .unsafeFlags(
+          [
+            "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
+          ],
+          .when(platforms: [.iOS, .tvOS, .macOS, .macCatalyst])
+        )
       ],
     ),
 
@@ -137,6 +152,9 @@ let package = Package(
         // matches how external consumers import them via `<ExpoModulesJSI/NativeState.h>`.
         .headerSearchPath("include/Public"),
         .unsafeFlags(cxxIncludeFlags),
+        // The react-native-windows API loaders that the Windows workflow stages into this target
+        // use `offsetof` on their API tables, which Clang warns about once per function.
+        .unsafeFlags(["-Wno-invalid-offsetof"], .when(platforms: [.windows])),
       ],
     ),
 

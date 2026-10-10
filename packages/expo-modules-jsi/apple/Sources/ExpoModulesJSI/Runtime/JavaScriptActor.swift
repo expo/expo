@@ -58,12 +58,16 @@ public actor JavaScriptActor: GlobalActor {
     // Using `assert` instead of `precondition` because this check is a heuristic based on
     // thread name, not a precise isolation guarantee. Worklet runtimes legitimately run on
     // the UI thread, which would cause a false-positive crash with `precondition`.
+    // The thread and process names are the ones React Native and XCTest use on Apple platforms,
+    // so other platforms skip the check.
+    #if canImport(Darwin)
     assert(
       // JavaScript thread name copied from `RCTJSThreadManager.mm`.
       Thread.current.name == "com.facebook.react.runtime.JavaScript" || !Thread.isMultiThreaded()
         || ProcessInfo.processInfo.processName == "xctest",
       "JavaScriptActor operations must be run on the JavaScript thread"
     )
+    #endif
   }
 
   @JavaScriptActor

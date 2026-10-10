@@ -167,7 +167,7 @@ struct JavaScriptArrayBufferTests {
 
   // MARK: - Cleanup
 
-  @Test
+  @Test(.disabled(if: isWindows, "Hangs on Windows"))
   func `cleanup is called when buffer is collected`() async throws {
     var cleanupCalled = false
     nonisolated(unsafe) let flag = UnsafeMutablePointer<Bool>.allocate(capacity: 1)

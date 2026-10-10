@@ -1,6 +1,11 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+#if canImport(CoreGraphics)
 import CoreGraphics
+#else
+// `CGFloat` is part of Foundation outside Apple platforms.
+import Foundation
+#endif
 
 // `JavaScriptCodable` conformances for leaf primitive types — `Bool`, `String`, and the integer
 // and floating-point families. Each reads a JavaScript value directly via the corresponding

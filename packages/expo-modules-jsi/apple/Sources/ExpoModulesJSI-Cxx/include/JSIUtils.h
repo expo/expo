@@ -4,8 +4,11 @@
 
 #ifdef __cplusplus
 
+#include <cstddef>
 #include <new>
+#if __APPLE__
 #include <TargetConditionals.h>
+#endif
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
 #include <jsi/instrumentation.h>
@@ -55,7 +58,8 @@ inline void setValueAtIndex(jsi::IRuntime &runtime, const jsi::Array &array, siz
   array.setValueAtIndex(runtime, index, value);
 }
 
-inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long length) {
+// `ptrdiff_t` rather than `long`, which is 32 bits wide on Windows: Swift imports it as `Int` everywhere.
+inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, ptrdiff_t length) {
   auto oldLength = (int)array.size(runtime);
   auto newLength = (int)length;
 
@@ -75,7 +79,7 @@ inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Array &array, c
   return array.getProperty(runtime, name);
 }
 
-#if TARGET_OS_OSX
+#if __APPLE__ && TARGET_OS_OSX
 // react-native-macos (RN 0.81) lacks `jsi::Object::getProperty(Runtime&, const Value&)`,
 // so Swift can't look up a property by a JS Value. Provide a `const char*`-keyed wrapper
 // to use when iterating own property names.

@@ -1,6 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+#if canImport(os)
 import os
+#else
+import Synchronization
+#endif
 
 extension JavaScriptRuntime {
   /// Values cached by a runtime, stored by their keys' indices. Isolated to the JavaScript thread
@@ -71,4 +75,8 @@ extension JavaScriptRuntime {
 /// The index for the next created ``JavaScriptRuntime/Cache/Key``. Keys can be created on any thread,
 /// for example by initializing a `static let`, so the counter is behind a lock. That costs nothing on
 /// the lookup path, since each key takes an index only once.
+#if canImport(os)
 private let nextCacheKeyIndex = OSAllocatedUnfairLock(initialState: 0)
+#else
+private let nextCacheKeyIndex = Mutex(0)
+#endif

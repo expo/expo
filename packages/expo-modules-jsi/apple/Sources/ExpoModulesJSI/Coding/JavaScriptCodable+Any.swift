@@ -167,7 +167,14 @@ extension JavaScriptValue {
       return try encode(opening: encodable, in: runtime)
     }
     if let number = value as? NSNumber {
-      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+      #if canImport(Darwin)
+      let isBoolean = CFGetTypeID(number) == CFBooleanGetTypeID()
+      #else
+      // swift-corelibs-foundation also represents booleans as the two `CFBoolean` instances, but
+      // doesn't expose CoreFoundation to compare type IDs.
+      let isBoolean = number === (true as NSNumber) || number === (false as NSNumber)
+      #endif
+      if isBoolean {
         return number.boolValue ? .true() : .false()
       }
       return .number(number.doubleValue)

@@ -3,7 +3,15 @@
 internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
+
+#if canImport(os)
 import os
+#else
+import Synchronization
+#endif
+#if os(Windows)
+import WinSDK
+#endif
 
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
@@ -52,11 +60,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Thread ID of the JavaScript thread, captured at construction time. Used by `isOnJavaScriptThread()`
   /// for a fast integer comparison instead of `Thread.current.name == "..."`.
   /// Assumes runtime initializers always run on the JS thread.
-  private let jsThreadID: UInt64 = {
-    var id: UInt64 = 0
-    pthread_threadid_np(nil, &id)
-    return id
-  }()
+  private let jsThreadID: UInt64 = currentThreadID()
 
   /// Actor for running runtime work.
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
@@ -436,6 +440,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func createAsyncFunction(_ name: String, _ function: sending @escaping AsyncFunctionClosure)
     -> JavaScriptFunction
   {
+    // Captures a local copy instead of the `sending` parameter itself. When the closure below
+    // captures the parameter, the SIL ownership verifier in Swift 6.4 reports that the closure's
+    // `consuming` arguments buffer has no lifetime-ending use, and compilers built with assertions,
+    // such as the toolchain for Windows, crash on it.
+    let function = function
+
     // The explicitly typed `this` selects the unowned-`this` overload of `createFunction`,
     // skipping the per-call owning-value allocation (see ``UnownedThisSyncFunctionClosure``).
     return createFunction(name) {
@@ -616,9 +626,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Checks whether the function is called on the JavaScript thread.
   @inline(__always)
   public final func isOnJavaScriptThread() -> Bool {
-    var current: UInt64 = 0
-    pthread_threadid_np(nil, &current)
-    return current == jsThreadID
+    return currentThreadID() == jsThreadID
   }
 
   /// Asserts whether we are on the JavaScript thread. Helpful for debugging threading issues.
@@ -947,19 +955,37 @@ extension JavaScriptRuntime {
   }
 }
 
+/// The ID of the calling thread, unique among the threads alive in the process.
+private func currentThreadID() -> UInt64 {
+  #if os(Windows)
+  return UInt64(GetCurrentThreadId())
+  #else
+  var id: UInt64 = 0
+  pthread_threadid_np(nil, &id)
+  return id
+  #endif
+}
+
 /// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
 private final class ThreadWaiter: @unchecked Sendable {
   private enum Sleep {
+    #if canImport(Darwin)
     case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
+    #endif
     case semaphore(DispatchSemaphore)
   }
 
   private static let spinNanoseconds: UInt64 = 20_000
 
+  #if canImport(os)
   private let isWoken = OSAllocatedUnfairLock(initialState: false)
+  #else
+  private let isWoken = Mutex(false)
+  #endif
   private let sleep: Sleep
 
   init() {
+    #if canImport(Darwin)
     // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
     // it during the wait, in the same mode: the work the caller waits for may be delivered through
     // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
@@ -974,6 +1000,11 @@ private final class ThreadWaiter: @unchecked Sendable {
     let source: CFRunLoopSource = CFRunLoopSourceCreate(nil, 0, &context)
     CFRunLoopAddSource(runLoop, source, mode)
     sleep = .runLoop(runLoop, source, mode)
+    #else
+    // Outside Apple platforms there is no run loop to keep running, so every thread waits on a
+    // semaphore.
+    sleep = .semaphore(DispatchSemaphore(value: 0))
+    #endif
   }
 
   func wake() {
@@ -981,9 +1012,11 @@ private final class ThreadWaiter: @unchecked Sendable {
       isWoken = true
     }
     switch sleep {
+    #if canImport(Darwin)
     case .runLoop(let runLoop, let source, _):
       CFRunLoopSourceSignal(source)
       CFRunLoopWakeUp(runLoop)
+    #endif
     case .semaphore(let semaphore):
       // Makes a system call only when the caller already sleeps in `wait`.
       semaphore.signal()
@@ -991,12 +1024,13 @@ private final class ThreadWaiter: @unchecked Sendable {
   }
 
   func wait(until isFinished: () -> Bool) {
-    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
-    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
+    let spinDeadline = Self.uptimeNanoseconds() + Self.spinNanoseconds
+    while !isWoken.withLock({ $0 }) && Self.uptimeNanoseconds() < spinDeadline {
       // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
       // thread wakes up. After the deadline, the thread sleeps below.
     }
     switch sleep {
+    #if canImport(Darwin)
     case .runLoop(_, let source, let mode):
       defer {
         // Also removes the source from the run loop. A later `wake()` does nothing.
@@ -1006,10 +1040,19 @@ private final class ThreadWaiter: @unchecked Sendable {
       while !isFinished() {
         CFRunLoopRunInMode(mode, 0.1, true)
       }
+    #endif
     case .semaphore(let semaphore):
       if !isFinished() {
         semaphore.wait()
       }
     }
+  }
+
+  private static func uptimeNanoseconds() -> UInt64 {
+    #if canImport(Darwin)
+    return clock_gettime_nsec_np(CLOCK_UPTIME_RAW)
+    #else
+    return DispatchTime.now().uptimeNanoseconds
+    #endif
   }
 }

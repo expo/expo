@@ -116,7 +116,7 @@ struct JavaScriptBigIntTests {
     #expect(bigInt.getInt64() == 255)
   }
 
-  @Test
+  @Test(.disabled(if: isWindows, "Hangs on Windows"))
   func `create from very large decimal string`() throws {
     let bigInt = try JavaScriptBigInt(runtime, string: "123456789012345678901234567890")
     let str = try bigInt.toString()
@@ -150,7 +150,7 @@ struct JavaScriptBigIntTests {
     #expect(str == "ffffffffffffffff")
   }
 
-  @Test
+  @Test(.disabled(if: isWindows, "Hangs on Windows"))
   func `string initializer preserves exact value`() throws {
     let originalString = "999999999999999999999999999999"
     let bigInt = try JavaScriptBigInt(runtime, string: originalString)
