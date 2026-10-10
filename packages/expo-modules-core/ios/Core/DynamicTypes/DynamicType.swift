@@ -6,14 +6,6 @@
 
 import Foundation
 
-/**
- Factory creating an instance of the dynamic type wrapper conforming to `AnyDynamicType`.
- Depending on the given type, it may return one of `DynamicArrayType`, `DynamicOptionalType`, `DynamicConvertibleType`, etc.
- It does some type checks in runtime when the type's conformance/inheritance is unknown for the compiler.
- See the `~` prefix operator overloads that are used for types known for the compiler.
- You can add more type checks for types that don't conform to `AnyArgument`, but are allowed to be used as return types.
- `Void` is a good example as it cannot conform to anything or language protocols that cannot be extended to implement `AnyArgument`.
- */
 private enum DynamicTypeKind {
   case anyArgument(AnyArgument.Type)
   case void
@@ -73,6 +65,14 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
  Handy prefix operator that makes the dynamic type from the static type.
  */
 prefix operator ~
+/**
+ Factory creating an instance of the dynamic type wrapper conforming to `AnyDynamicType`.
+ Depending on the given type, it may return one of `DynamicArrayType`, `DynamicOptionalType`, `DynamicConvertibleType`, etc.
+ It does some type checks in runtime when the type's conformance/inheritance is unknown for the compiler.
+ See the `~` prefix operator overloads that are used for types known for the compiler.
+ You can add more type checks for types that don't conform to `AnyArgument`, but are allowed to be used as return types.
+ `Void` is a good example as it cannot conform to anything or language protocols that cannot be extended to implement `AnyArgument`.
+ */
 internal prefix func ~ <T>(type: T.Type) -> AnyDynamicType {
   return DynamicType(type)
 }
