@@ -33,8 +33,14 @@ struct MainThreadStallTests {
         ]
       )
     ])
-    let stall = MainThreadStall(startedAt: 0.2, duration: 0.645, unfinished: false, callStackTree: tree)
-    let record = stall.toLogRecord(phase: "beforeFirstRender", timestamp: Date(timeIntervalSince1970: 0))
+    let stall = MainThreadStall(
+      phase: "beforeFirstRender",
+      startedAt: 0.2,
+      duration: 0.645,
+      unfinished: false,
+      callStackTree: tree
+    )
+    let record = stall.toLogRecord(timestamp: Date(timeIntervalSince1970: 0))
     let attributes = try #require(record.attributes?.value as? [String: Any])
 
     #expect(record.name == "app_startup.main_thread_stall")
@@ -51,9 +57,15 @@ struct MainThreadStallTests {
 
   @Test
   func `log record without a stack has no stack attributes`() throws {
-    let stall = MainThreadStall(startedAt: 0, duration: 0.2, unfinished: true, callStackTree: nil)
+    let stall = MainThreadStall(
+      phase: "beforeInteractive",
+      startedAt: 0,
+      duration: 0.2,
+      unfinished: true,
+      callStackTree: nil
+    )
     let attributes = try #require(
-      stall.toLogRecord(phase: "beforeInteractive", timestamp: .now).attributes?.value as? [String: Any]
+      stall.toLogRecord(timestamp: .now).attributes?.value as? [String: Any]
     )
     #expect(attributes["expo.stall.stacktrace"] == nil)
     #expect(attributes["expo.stall.unfinished"] as? Bool == true)
@@ -62,8 +74,12 @@ struct MainThreadStallTests {
   @Test
   func `summary accumulates count, total and longest`() {
     var summary = MainThreadStallSummary()
-    summary.add(MainThreadStall(startedAt: 0, duration: 0.2, unfinished: false, callStackTree: nil))
-    summary.add(MainThreadStall(startedAt: 1, duration: 0.6, unfinished: false, callStackTree: nil))
+    summary.add(
+      MainThreadStall(phase: "beforeFirstRender", startedAt: 0, duration: 0.2, unfinished: false, callStackTree: nil)
+    )
+    summary.add(
+      MainThreadStall(phase: "beforeFirstRender", startedAt: 1, duration: 0.6, unfinished: false, callStackTree: nil)
+    )
     #expect(summary.count == 2)
     #expect(abs(summary.totalDuration - 0.8) < 0.0001)
     #expect(summary.longestDuration == 0.6)
@@ -73,7 +89,9 @@ struct MainThreadStallTests {
   func `params builder attaches stall totals only when there were stalls`() {
     #expect(MetricParamsBuilder.build(mainThreadStalls: MainThreadStallSummary()).isEmpty)
     var summary = MainThreadStallSummary()
-    summary.add(MainThreadStall(startedAt: 0, duration: 0.5, unfinished: false, callStackTree: nil))
+    summary.add(
+      MainThreadStall(phase: "beforeFirstRender", startedAt: 0, duration: 0.5, unfinished: false, callStackTree: nil)
+    )
     let params = MetricParamsBuilder.build(mainThreadStalls: summary)
     #expect(params["expo.startup.mainThreadStalls.count"] as? Int == 1)
     #expect(params["expo.startup.mainThreadStalls.longestDuration"] as? Double == 0.5)
@@ -98,7 +116,16 @@ struct MainThreadStallTests {
       configuration: .init(pingInterval: 0.01, stallThreshold: 0.05, maxMonitoringDuration: 5)
     )
     let stall: MainThreadStall = try await withCheckedThrowingContinuation { continuation in
-      monitor.start(anchor: CACurrentMediaTime()) { stall, _ in
+      // The phase provider flips once the stall has been detected: the stall must keep the value it
+      // started in, not the value at the time it ended.
+      let phaseFlipped = LockIsolated(false)
+      monitor.start(
+        anchor: CACurrentMediaTime(),
+        phase: {
+          defer { phaseFlipped.setValue(true) }
+          return phaseFlipped.value ? "afterInteractive" : "beforeFirstRender"
+        }
+      ) { stall, _ in
         continuation.resume(returning: stall)
       }
       DispatchQueue.main.async {
@@ -108,6 +135,28 @@ struct MainThreadStallTests {
     monitor.stop()
     #expect(stall.duration >= 0.2)
     #expect(stall.unfinished == false)
+    #expect(stall.phase == "beforeFirstRender")
     #expect(stall.callStackTree?.callStacks?.first?.callStackRootFrames?.isEmpty == false)
+  }
+}
+
+private final class LockIsolated<T>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var storage: T
+
+  init(_ value: T) {
+    storage = value
+  }
+
+  var value: T {
+    lock.lock()
+    defer { lock.unlock() }
+    return storage
+  }
+
+  func setValue(_ value: T) {
+    lock.lock()
+    storage = value
+    lock.unlock()
   }
 }

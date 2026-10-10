@@ -22,6 +22,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
   /// Watches the main thread over the TTI window and reports each stall with its backtrace.
   let stallMonitor = MainThreadStallMonitor()
+  /// Read from the stall monitor's thread when a stall is detected, so it lives outside the actor.
+  private let startupPhase = LockedValue("beforeFirstRender")
 
   lazy var appLaunchState = AppLaunchState()
 
@@ -58,7 +60,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
       frameMetricsRecorder.start()
-      stallMonitor.start(anchor: currentTime) { [weak self] stall, endedAt in
+      stallMonitor.start(anchor: currentTime, phase: { [weak self] in self?.startupPhase.value ?? "unknown" }) {
+        [weak self] stall, endedAt in
         AppMetricsActor.isolated {
           self?.reportStall(stall, endedAt: endedAt)
         }
@@ -84,6 +87,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToFirstRender = currentTime
+      startupPhase.value = "beforeInteractive"
 
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
@@ -111,6 +115,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToInteractive = currentTime
+      startupPhase.value = "afterInteractive"
 
       if let tti = markers.getTTI() {
         let frameMetrics = frameMetricsRecorder.stop()
@@ -146,15 +151,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
   @AppMetricsActor
   private func reportStall(_ stall: MainThreadStall, endedAt: Date) {
-    let phase: String
-    if markers.timeToFirstRender == nil {
-      phase = "beforeFirstRender"
-    } else if markers.timeToInteractive == nil {
-      phase = "beforeInteractive"
-    } else {
-      phase = "afterInteractive"
-    }
-    reportLog(stall.toLogRecord(phase: phase, timestamp: endedAt))
+    reportLog(stall.toLogRecord(timestamp: endedAt))
   }
 
   @AppMetricsActor
@@ -217,5 +214,28 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return .warm
     }
     return .cold
+  }
+}
+
+/// A value guarded by a lock, for state shared with threads that can't hop onto the actor.
+private final class LockedValue<T>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var storage: T
+
+  init(_ value: T) {
+    storage = value
+  }
+
+  var value: T {
+    get {
+      lock.lock()
+      defer { lock.unlock() }
+      return storage
+    }
+    set {
+      lock.lock()
+      storage = newValue
+      lock.unlock()
+    }
   }
 }

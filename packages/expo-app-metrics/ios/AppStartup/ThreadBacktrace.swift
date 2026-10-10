@@ -28,10 +28,11 @@ enum ThreadBacktrace {
       return 0
     }
     var count = 0
-    buffer[count] = pc
+    buffer[count] = stripPointerAuthentication(pc)
     count += 1
     // On arm64 a leaf function may not have pushed its return address yet; the link register holds
     // it. When the frame chain later yields the same address it's dropped as a duplicate.
+    lr = stripPointerAuthentication(lr)
     if lr != 0, count < capacity {
       buffer[count] = lr
       count += 1
@@ -43,6 +44,7 @@ enum ThreadBacktrace {
       guard readWord(at: frame, into: &next), readWord(at: frame &+ 8, into: &returnAddress) else {
         break
       }
+      returnAddress = stripPointerAuthentication(returnAddress)
       if returnAddress == 0 {
         break
       }
@@ -57,6 +59,17 @@ enum ThreadBacktrace {
       frame = next
     }
     return count
+  }
+
+  /// On arm64e hardware (A12+) system frameworks sign their return addresses, so `lr` and the
+  /// saved return addresses read off the stack carry pointer-authentication bits in the high bits.
+  /// `dladdr` can't resolve a signed pointer; drop everything above the 36-bit user address space.
+  static func stripPointerAuthentication(_ address: UInt64) -> UInt64 {
+    #if arch(arm64)
+    return address & 0x0000_000F_FFFF_FFFF
+    #else
+    return address
+    #endif
   }
 
   private static func readRegisters(thread: thread_t, pc: inout UInt64, lr: inout UInt64, fp: inout UInt64) -> Bool {

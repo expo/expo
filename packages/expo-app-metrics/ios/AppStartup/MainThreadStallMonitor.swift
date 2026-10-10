@@ -14,6 +14,9 @@ struct MainThreadStall: Codable, Sendable {
   private static let maxLogStackFrames = 50
   private static let maxLogStacktraceLength = 16_384
 
+  /// Where in the startup sequence the stall *began* (`beforeFirstRender`, `beforeInteractive`,
+  /// `afterInteractive`), sampled when the threshold was crossed, not when the stall ended.
+  let phase: String
   /// Seconds between the monitor's anchor (`didFinishLaunching`) and the start of the stall.
   let startedAt: TimeInterval
   /// Seconds the main thread was unresponsive. Measured from the ping that went unanswered, so it
@@ -25,9 +28,8 @@ struct MainThreadStall: Codable, Sendable {
   /// Main-thread call stack sampled once the threshold was crossed, symbolicated on device.
   let callStackTree: CrashReport.CallStackTree?
 
-  /// Builds the `app_startup.main_thread_stall` log event. `phase` names where in the startup
-  /// sequence the stall happened (`beforeFirstRender`, `beforeInteractive`, `afterInteractive`).
-  func toLogRecord(phase: String, timestamp: Date) -> LogRecord {
+  /// Builds the `app_startup.main_thread_stall` log event.
+  func toLogRecord(timestamp: Date) -> LogRecord {
     let rendered = callStackTree?.render(maxFrames: Self.maxLogStackFrames, maxLength: Self.maxLogStacktraceLength)
     var attributes: [String: Any] = [
       "expo.stall.thread": "main",
@@ -89,6 +91,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
 
   private struct OpenStall {
     let startedAt: CFTimeInterval
+    let phase: String
     let callStackTree: CrashReport.CallStackTree?
   }
 
@@ -98,6 +101,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
   private var running = false
   private var anchor: CFTimeInterval = 0
   private var onStall: (@Sendable (MainThreadStall, Date) -> Void)?
+  private var phaseProvider: (@Sendable () -> String)?
   private var summary = MainThreadStallSummary()
   private var pingSentAt: CFTimeInterval?
   private var openStall: OpenStall?
@@ -123,8 +127,14 @@ final class MainThreadStallMonitor: @unchecked Sendable {
   }
 
   /// Starts watching. `anchor` is the `CACurrentMediaTime()` the stall offsets are relative to.
-  /// `onStall` is called from the monitor thread once per stall, with the wall-clock time it ended.
-  func start(anchor: CFTimeInterval, onStall: @escaping @Sendable (MainThreadStall, Date) -> Void) {
+  /// `phase` is read on the monitor thread the moment a stall is detected, so the event names the
+  /// startup phase the stall began in. `onStall` is called from the monitor thread once per stall,
+  /// with the wall-clock time it ended.
+  func start(
+    anchor: CFTimeInterval,
+    phase: @escaping @Sendable () -> String,
+    onStall: @escaping @Sendable (MainThreadStall, Date) -> Void
+  ) {
     lock.lock()
     if running {
       lock.unlock()
@@ -134,6 +144,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
     generation += 1
     self.anchor = anchor
     self.onStall = onStall
+    self.phaseProvider = phase
     summary = MainThreadStallSummary()
     pingSentAt = nil
     openStall = nil
@@ -161,6 +172,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
     running = false
     let unfinished = openStall.map { open in
       MainThreadStall(
+        phase: open.phase,
         startedAt: open.startedAt - anchor,
         duration: CACurrentMediaTime() - open.startedAt,
         unfinished: true,
@@ -175,6 +187,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
     let summary = summary
     let callback = onStall
     onStall = nil
+    phaseProvider = nil
     lock.unlock()
     if let unfinished {
       callback?(unfinished, Date.now)
@@ -218,6 +231,9 @@ final class MainThreadStallMonitor: @unchecked Sendable {
         }
       }
       if shouldCapture {
+        lock.lock()
+        let phase = phaseProvider?() ?? "unknown"
+        lock.unlock()
         let frameCount =
           mainThread.map {
             ThreadBacktrace.capture(thread: $0, into: buffer, capacity: ThreadBacktrace.maxFrames)
@@ -229,7 +245,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
           : CrashReportSymbolicator.symbolicate(CrashReport.CallStackTree.fromAddresses(addresses))
         lock.lock()
         if running, self.generation == generation, openStall == nil, let sentAt = pingSentAt {
-          openStall = OpenStall(startedAt: sentAt, callStackTree: tree)
+          openStall = OpenStall(startedAt: sentAt, phase: phase, callStackTree: tree)
         }
         lock.unlock()
       }
@@ -253,6 +269,7 @@ final class MainThreadStallMonitor: @unchecked Sendable {
     }
     openStall = nil
     let stall = MainThreadStall(
+      phase: open.phase,
       startedAt: open.startedAt - anchor,
       duration: now - open.startedAt,
       unfinished: false,
