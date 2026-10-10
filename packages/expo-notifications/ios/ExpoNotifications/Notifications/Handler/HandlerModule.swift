@@ -34,6 +34,7 @@ open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandle
         promise.reject("ERR_NOTIFICATION_RESPONSE_TIMEOUT", "Notification has already been handled. Most probably the request has timed out.")
       }
     }
+    .runOnQueue(.main)
   }
 
   // MARK: - NotificationDelegate
