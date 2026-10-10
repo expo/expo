@@ -187,10 +187,16 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    guard let pathUrl = URL(string: path) else {
+    guard let pathUrl = DatabaseFileUtils.fileURL(fromDatabasePath: path) else {
       throw DatabaseInvalidPathException(path)
     }
+    let filePath = pathUrl.toFilePath()
     fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
+
+    // Installs made on iOS 17+ before this resolution opened a percent-encoded file name.
+    if let legacyPath = DatabaseFileUtils.legacyEncodedPath(forDatabasePath: path, resolvedPath: filePath) {
+      try DatabaseFileUtils.migrateLegacyDatabaseFiles(fromPath: legacyPath, toPath: filePath)
+    }
 
     return pathUrl
   }
@@ -285,7 +291,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       fileManager.fileExists(atPath: assetPath) else {
       throw DatabaseNotFoundException(assetDatabasePath)
     }
-    try? fileManager.removeItem(atPath: path.absoluteString)
+    DatabaseFileUtils.removeDatabaseFiles(atPath: path.toFilePath())
     try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
   }
 
