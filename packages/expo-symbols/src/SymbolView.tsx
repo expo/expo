@@ -27,24 +27,34 @@ export function SymbolView({
   const font = useMemo(() => getFont(weight), [weight]);
   const name =
     typeof nameProp === 'object' ? nameProp[Platform.OS === 'android' ? 'android' : 'web'] : null;
-  const [loaded, setLoaded] = useState(false);
+  // Until the font of a new weight loads, the symbol keeps the previous weight's font instead of
+  // disappearing.
+  const [loadedFontName, setLoadedFontName] = useState<string | null>(null);
   useEffect(() => {
+    let isCurrentFont = true;
     loadAsync({
       [font.name]: {
         uri: font.font,
       } as FontSource,
     })
-      .then(() => setLoaded(true))
+      .then(() => {
+        if (isCurrentFont) {
+          setLoadedFontName(font.name);
+        }
+      })
       .catch(() => {
         /* noop */
       });
-  }, []);
+    return () => {
+      isCurrentFont = false;
+    };
+  }, [font.name, font.font]);
   if (!name) {
     return <>{fallback}</>;
   }
   const size = sizeProp ?? 24;
   const style = [{ width: size, height: size }, styleProp];
-  if (!loaded) {
+  if (!loadedFontName) {
     return <View collapsable={false} {...viewProps} style={style} />;
   }
   return (
@@ -52,7 +62,7 @@ export function SymbolView({
       <Text
         aria-hidden
         style={{
-          fontFamily: font.name,
+          fontFamily: loadedFontName,
           color: tintColor ?? DEFAULT_SYMBOL_COLOR,
           fontSize: size,
           lineHeight: size,
