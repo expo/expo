@@ -49,6 +49,22 @@ public struct RedBoxView: ExpoSwiftUI.View {
       .padding(12)
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
+    .modifier(RedBoxContainerBackground(kind: props.kind))
+  }
+}
+
+// On iOS 17+, WidgetKit replaces any widget without a container background with
+// its "Please adopt containerBackground API" placeholder, which would hide the error.
+private struct RedBoxContainerBackground: ViewModifier {
+  let kind: WidgetsKind
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, *), kind == .widget {
+      content.containerBackground(Color.red, for: .widget)
+    } else {
+      content
+    }
   }
 }
 
