@@ -4,6 +4,8 @@
 // we want it to be uppercase as we treat it more like a generic class.
 // swiftlint:disable identifier_name
 
+import Foundation
+
 /**
  Factory creating an instance of the dynamic type wrapper conforming to `AnyDynamicType`.
  Depending on the given type, it may return one of `DynamicArrayType`, `DynamicOptionalType`, `DynamicConvertibleType`, etc.
@@ -12,19 +14,59 @@
  You can add more type checks for types that don't conform to `AnyArgument`, but are allowed to be used as return types.
  `Void` is a good example as it cannot conform to anything or language protocols that cannot be extended to implement `AnyArgument`.
  */
+private enum DynamicTypeKind {
+  case anyArgument(AnyArgument.Type)
+  case void
+  case codable
+  case raw
+}
+
+private final class DynamicTypeKindCache: @unchecked Sendable {
+  static let shared = DynamicTypeKindCache()
+  private var kinds = [ObjectIdentifier: DynamicTypeKind]()
+  private let lock = NSLock()
+
+  func kind<T>(of type: T.Type) -> DynamicTypeKind {
+    let key = ObjectIdentifier(T.self)
+    lock.lock()
+    if let kind = kinds[key] {
+      lock.unlock()
+      return kind
+    }
+    lock.unlock()
+
+    let kind: DynamicTypeKind
+    if let AnyArgumentType = T.self as? AnyArgument.Type {
+      kind = .anyArgument(AnyArgumentType)
+    } else if T.self == Void.self {
+      kind = .void
+    } else if T.self is Encodable.Type || T.self is Decodable.Type {
+      kind = .codable
+    } else {
+      kind = .raw
+    }
+    lock.lock()
+    kinds[key] = kind
+    lock.unlock()
+    return kind
+  }
+}
+
 private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
-  if let AnyArgumentType = T.self as? AnyArgument.Type {
+  // The protocol-conformance checks below are full conformance-table scans per (type, protocol);
+  // the answer is a property of the type, so remember it and keep creating fresh instances.
+  switch DynamicTypeKindCache.shared.kind(of: type) {
+  case .anyArgument(let AnyArgumentType):
     return AnyArgumentType.getDynamicType()
-  }
-  if T.self == Void.self {
+  case .void:
     return DynamicVoidType.shared
-  }
-  if T.self is Encodable.Type || T.self is Decodable.Type {
+  case .codable:
     // There is no dedicated `~` operator overload for Codable types to avoid ambiguity
     // when the type is both `AnyArgument` and `Encodable`/`Decodable` (e.g. strings, numeric types).
     return DynamicCodableType<T>()
+  case .raw:
+    return DynamicRawType(innerType: T.self)
   }
-  return DynamicRawType(innerType: T.self)
 }
 
 /**

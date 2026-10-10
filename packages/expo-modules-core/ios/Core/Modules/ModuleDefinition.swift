@@ -40,26 +40,28 @@ public final class ModuleDefinition: ObjectDefinition {
   override init(definitions: [AnyDefinition]) {
     self.rawDefinitions = definitions
 
-    self.name = definitions
-      .compactMap { $0 as? ModuleNameDefinition }
+    var buckets = DefinitionBuckets()
+    for definition in definitions {
+      definition.__collect(into: &buckets)
+    }
+
+    self.name = buckets.moduleNames
       .last?
       .name ?? ""
 
-    self.eventListeners = definitions.compactMap { $0 as? EventListener }
+    self.eventListeners = buckets.eventListeners
 
-    let viewDefinitions: [AnyViewDefinition] = definitions
-      .compactMap { $0 as? AnyViewDefinition }
+    let viewDefinitions: [AnyViewDefinition] = buckets.views
     var viewsDict = Dictionary(uniqueKeysWithValues: viewDefinitions.map { ($0.name, $0) })
     viewsDict[DEFAULT_MODULE_VIEW] = viewDefinitions.first
     self.views = viewsDict
     self.eventNames = Array(
-      definitions
-        .compactMap { ($0 as? EventsDefinition)?.names }
+      buckets.events
+        .map { $0.names }
         .joined()
     )
 
-    self.eventObservers = definitions
-      .compactMap { $0 as? AnyEventObservingDefinition }
+    self.eventObservers = buckets.eventObservers
 
     super.init(definitions: definitions)
   }
@@ -73,7 +75,7 @@ public final class ModuleDefinition: ObjectDefinition {
 
     // Use the type name if the name is not in the definition or was defined empty.
     if name.isEmpty {
-      name = String(describing: type)
+      name = _typeName(type, qualified: false)
     }
     return self
   }
@@ -124,4 +126,22 @@ internal struct ConstantsDefinition: AnyDefinition {
  */
 public struct EventsDefinition: AnyDefinition {
   let names: [String]
+}
+
+extension ModuleNameDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.moduleNames.append(self)
+  }
+}
+
+extension ConstantsDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.legacyConstants.append(self)
+  }
+}
+
+extension EventsDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.events.append(self)
+  }
 }

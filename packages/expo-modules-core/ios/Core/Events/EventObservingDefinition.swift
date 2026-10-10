@@ -80,3 +80,9 @@ public struct EventObservingDecorator: JavaScriptObjectDecorator {
     object.setProperty(stopObserving.name, value: try stopObserving.build(appContext: appContext))
   }
 }
+
+extension EventObservingDefinition {
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.eventObservers.append(self)
+  }
+}
