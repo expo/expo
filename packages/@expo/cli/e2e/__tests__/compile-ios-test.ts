@@ -22,6 +22,7 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/compile/ios').expoCompileIos`
   );
   expect(modules).toStrictEqual([
+    '@expo/cli/build/src/compile/args.js',
     '@expo/cli/build/src/compile/ios/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
