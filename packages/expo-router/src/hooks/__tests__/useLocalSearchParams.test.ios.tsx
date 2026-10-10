@@ -3,8 +3,13 @@ import { expectTypeOf } from 'expect-type';
 
 import { router, Slot } from '../../exports';
 import { renderRouter } from '../../testing-library';
+import type { UnknownOutputParams } from '../../types';
 import { useLocalSearchParams } from '../useLocalSearchParams';
 import { renderHook, renderHookOnce } from './renderHook';
+
+interface SearchParamsWithOmittedId extends UnknownOutputParams {
+  id?: string;
+}
 
 describe(useLocalSearchParams, () => {
   it(`return styles of deeply nested routes`, async () => {
@@ -72,6 +77,11 @@ describe(useLocalSearchParams, () => {
     const params = await renderHookOnce(() => useLocalSearchParams<{ a: string }>());
     expectTypeOf(params).toExtend<{ a?: string }>();
     expectTypeOf(params.a).toExtend<string | undefined>();
+  });
+  it(`allows an interface extending UnknownOutputParams to declare an optional param`, async () => {
+    const params = await renderHookOnce(() => useLocalSearchParams<SearchParamsWithOmittedId>());
+    expectTypeOf(params).toExtend<{ id?: string }>();
+    expectTypeOf(params.id).toEqualTypeOf<string | undefined>();
   });
 
   it('does not return undefined search params', async () => {

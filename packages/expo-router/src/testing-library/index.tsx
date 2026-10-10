@@ -8,6 +8,7 @@ import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { navigationRef } from '../global-state/navigationRef';
 import type { ReactNavigationState } from '../global-state/types';
 import { router } from '../imperative-api';
+import type { UnknownOutputParams } from '../types';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
 export { type MockContextConfig, getMockConfig, getMockContext } from './mock-config';
@@ -65,7 +66,7 @@ export type RenderRouterResult = RenderResult & {
   getPathname(): string;
   getPathnameWithParams(): string;
   getSegments(): string[];
-  getSearchParams(): Record<string, string | string[]>;
+  getSearchParams(): UnknownOutputParams;
   getRouterState(): ReactNavigationState | undefined;
 };
 
@@ -99,7 +100,7 @@ export async function renderRouter(
     getSegments(this: RenderResult): string[] {
       return getRouteInfoFromState(navigationRef.getRootState()).segments;
     },
-    getSearchParams(this: RenderResult): Record<string, string | string[]> {
+    getSearchParams(this: RenderResult): UnknownOutputParams {
       return getRouteInfoFromState(navigationRef.getRootState()).params;
     },
     getPathnameWithParams(this: RenderResult): string {
