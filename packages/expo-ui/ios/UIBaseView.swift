@@ -60,8 +60,7 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   _ contentType: Content.Type
 ) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
   let wrappedType = UIBaseView<Content.Props, Content>.self
-  // Same result as `String(describing: contentType)`, without its three conformance probes and `Mirror`.
-  let contentName = _unqualifiedTypeName(contentType)
+  let contentName = unqualifiedTypeName(contentType)
 
   return View(wrappedType) {
     ViewName(contentName)
@@ -77,7 +76,18 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   @ExpoSwiftUI.ViewDefinitionBuilder<Content> _ elements: @escaping () -> [AnyViewDefinitionElement]
 ) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
   let wrappedType = UIBaseView<Content.Props, Content>.self
-  let contentName = _unqualifiedTypeName(contentType)
+  let contentName = unqualifiedTypeName(contentType)
 
   return ExpoSwiftUI.ViewDefinition(wrappedType, name: contentName, elements: elements())
+}
+
+/**
+ The same name `String(describing: type)` returns for a metatype, without its three conformance
+ probes and `Mirror`. Deliberately not inlinable and taking an opaque `Any.Type`: with a statically
+ known metatype the optimizer folds `_typeName` to a constant, and for a `private`/`fileprivate` type
+ that constant keeps the file discriminator (`(Foo in _ABC123…)`) where `String(describing:)` yields `Foo`.
+ */
+@inline(never)
+private func unqualifiedTypeName(_ type: Any.Type) -> String {
+  return _typeName(type, qualified: false)
 }
