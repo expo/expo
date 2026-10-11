@@ -232,14 +232,32 @@ export function annotate(
 export const runCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform: 'android' | 'ios',
-  runFlowsAsync: RunMaestroFlowsFunction
+  runFlowsAsync: RunMaestroFlowsFunction,
+  retryDelayMs: number = 5000
 ) => {
   const maxAttempts = 3;
 
   let flows = await getCustomMaestroFlowsAsync(e2eDir, platform);
   for (let attempt = 1; flows.length > 0; ++attempt) {
     console.log(`Custom e2e flows attempt ${attempt} of ${maxAttempts}: ${flows.join(', ')}`);
-    const failedFlows = await runFlowsAsync(flows, { attempt });
+    let failedFlows: string[];
+    try {
+      failedFlows = await runFlowsAsync(flows, { attempt });
+    } catch (error) {
+      if (!(error instanceof MaestroNoResultsError) || attempt >= maxAttempts) {
+        throw error;
+      }
+      // maestro failed before reporting any flow results (e.g. its iOS driver didn't start in
+      // time), which says nothing about the flows themselves, so run all of them again.
+      annotate(
+        'warning',
+        'Maestro failed to run the flows',
+        `attempt ${attempt} of ${maxAttempts}: ${error.message}`
+      );
+      console.warn(`⚠️ Retrying all flows, maestro produced no results: ${error.message}`);
+      await delayAsync(retryDelayMs);
+      continue;
+    }
     if (failedFlows.length === 0) {
       return;
     }
@@ -266,9 +284,17 @@ export const runCustomMaestroFlowsAsync = async (
     }
     console.warn(`⚠️ Retrying failed flows: ${failedFlows.join(', ')}`);
     flows = failedFlows;
-    await delayAsync(5000);
+    await delayAsync(retryDelayMs);
   }
 };
+
+/**
+ * Thrown when maestro exits with an error before reporting any flow results, for example when
+ * its driver fails to start. The flows never ran, so it's safe to retry them.
+ */
+export class MaestroNoResultsError extends Error {
+  name = 'MaestroNoResultsError';
+}
 
 export interface RunMaestroOptions {
   /** Global maestro CLI arguments selecting the device, e.g. `['--device', deviceId]`. */
@@ -289,7 +315,8 @@ export interface RunMaestroOptions {
 /**
  * Runs the given flows in a single maestro invocation (flows execute in the given order and
  * a failed flow doesn't stop the following ones) and returns the relative paths of failed flows.
- * Throws if maestro fails without producing flow results, e.g. when it can't reach the device.
+ * Throws `MaestroNoResultsError` if maestro fails without producing flow results, e.g. when it
+ * can't reach the device.
  *
  * Maestro writes the JUnit report only after all flows have finished, so a process that
  * outlives the report is just wedged on exit (Maestro 2.4.0 can crash its main thread while
@@ -376,7 +403,10 @@ export async function runMaestroAsync({
           { cause: error }
         );
       }
-      throw error;
+      throw new MaestroNoResultsError(
+        `maestro failed without producing any flow results: ${(error as Error).message}`,
+        { cause: error }
+      );
     }
     const failedFlows = getFailedFlowsFromJUnitReport(reportContents, flowRelativePaths);
     if (failedFlows.length === 0) {
