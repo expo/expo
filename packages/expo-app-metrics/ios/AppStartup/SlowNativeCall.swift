@@ -40,7 +40,15 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
     duration = call.duration
   }
 
-  init(module: String, function: String, kind: String, thread: String, phase: String, startedAt: TimeInterval, duration: TimeInterval) {
+  init(
+    module: String,
+    function: String,
+    kind: String,
+    thread: String,
+    phase: String,
+    startedAt: TimeInterval,
+    duration: TimeInterval
+  ) {
     self.module = module
     self.function = function
     self.kind = kind

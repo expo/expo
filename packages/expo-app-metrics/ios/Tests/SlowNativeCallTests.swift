@@ -1,6 +1,6 @@
+import ExpoModulesCore
 import Foundation
 import Testing
-import ExpoModulesCore
 
 @testable import ExpoAppMetrics
 
@@ -55,9 +55,11 @@ struct SlowNativeCallTests {
     var summary = SlowNativeCallSummary()
     #expect(summary.isEmpty)
 
-    summary.add(SlowNativeCall(call: slowSyncCall(name: "getInputs", duration: 0.06), phase: "beforeFirstRender", anchor: 0))
-    summary.add(SlowNativeCall(call: slowSyncCall(name: "getOutputs", duration: 0.23), phase: "beforeFirstRender", anchor: 0))
-    summary.add(SlowNativeCall(call: slowSyncCall(owner: "Other", name: "read", duration: 0.07), phase: "beforeInteractive", anchor: 0))
+    let phase = "beforeFirstRender"
+    summary.add(SlowNativeCall(call: slowSyncCall(name: "getInputs", duration: 0.06), phase: phase, anchor: 0))
+    summary.add(SlowNativeCall(call: slowSyncCall(name: "getOutputs", duration: 0.23), phase: phase, anchor: 0))
+    let other = slowSyncCall(owner: "Other", name: "read", duration: 0.07)
+    summary.add(SlowNativeCall(call: other, phase: phase, anchor: 0))
 
     #expect(summary.count == 3)
     #expect(abs(summary.totalDuration - 0.36) < 0.0001)
@@ -95,9 +97,11 @@ struct SlowNativeCallTests {
     monitoring.markers.finishedLaunching = 1.0
     monitoring.addReceiver(receiver)
 
-    monitoring.recordSlowNativeCall(slowSyncCall(startedAt: 1.3, duration: 0.23), phase: "beforeFirstRender", endedAt: Date())
+    let startupCall = slowSyncCall(startedAt: 1.3, duration: 0.23)
+    monitoring.recordSlowNativeCall(startupCall, phase: "beforeFirstRender", endedAt: Date())
     monitoring.startupState = .launched
-    monitoring.recordSlowNativeCall(slowSyncCall(name: "later", startedAt: 5, duration: 0.12), phase: "afterInteractive", endedAt: Date())
+    let laterCall = slowSyncCall(name: "later", startedAt: 5, duration: 0.12)
+    monitoring.recordSlowNativeCall(laterCall, phase: "afterInteractive", endedAt: Date())
 
     #expect(monitoring.slowNativeCalls.count == 1)
     #expect(monitoring.slowNativeCalls.slowest == "MidiModule.getOutputs")
