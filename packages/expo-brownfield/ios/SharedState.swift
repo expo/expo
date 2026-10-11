@@ -27,7 +27,7 @@ public final class SharedState: SharedObject {
     BrownfieldStateInternal.shared.maybeNotifyKeyRecreated(key)
   }
 
-  @JS("set")
+  @JS
   func set(fromJS value: JavaScriptValue) {
     set(value.isUndefined() || value.isNull() ? nil : value.getAny())
   }
