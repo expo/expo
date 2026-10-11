@@ -72,7 +72,7 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
       "expo.native_call.kind": kind,
       "expo.native_call.thread": thread,
       "expo.native_call.phase": phase,
-      "expo.native_call.duration_ms": (duration * 1000).rounded()
+      "expo.native_call.duration_ms": (duration * 1000).rounded(),
     ]
     if let startedAt {
       attributes["expo.native_call.started_at_ms"] = (startedAt * 1000).rounded()
