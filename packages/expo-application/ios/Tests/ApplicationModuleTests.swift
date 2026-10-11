@@ -41,7 +41,7 @@ struct ApplicationModuleTests {
     if let displayName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String {
       #expect(try result.asString() == displayName)
     } else {
-      #expect(result.isNull())
+      #expect(result.isNull() == true)
     }
   }
 
@@ -77,7 +77,7 @@ struct ApplicationModuleTests {
     if let expected {
       #expect(try result.asString() == expected)
     } else {
-      #expect(result.isNull())
+      #expect(result.isNull() == true)
     }
   }
 
@@ -114,6 +114,6 @@ struct ApplicationModuleTests {
       "expo.modules.ExpoApplication.getPushNotificationServiceEnvironmentAsync()"
     )
 
-    #expect(result.isNull())
+    #expect(result.isNull() == true)
   }
 }
