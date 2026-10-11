@@ -17,10 +17,6 @@ public class ExpoBrownfieldStateModule: Module {
 
   public func definition() -> ModuleDefinition {
     Class(SharedState.self) {
-      Constructor { (key: String) in
-        return SharedState(key)
-      }
-
       Function("get") { (state: SharedState) -> Any? in
         return state.get()
       }

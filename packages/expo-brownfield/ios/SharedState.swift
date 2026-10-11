@@ -6,7 +6,8 @@ public final class SharedState: SharedObject {
   private let key: String
   private var value: Any?
 
-  public init(_ key: String) {
+  @JS
+  nonisolated public init(_ key: String) {
     self.key = key
     super.init()
   }
