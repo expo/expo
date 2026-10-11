@@ -40,6 +40,7 @@ open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandle
   // MARK: - NotificationDelegate
 
   open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+    dispatchPrecondition(condition: .onQueue(.main))
     let task = SingleNotificationHandlerTask(notification: notification, completionHandler: completionHandler, delegate: self)
     tasksMap[task.identifier] = task
     task.start()
