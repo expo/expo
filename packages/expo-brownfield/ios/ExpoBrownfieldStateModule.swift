@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 // MARK: - ExpoBrownfieldStateModule
 
-@ExpoModule("ExpoBrownfieldStateModule")
+@ExpoModule
 public class ExpoBrownfieldStateModule: Module {
   @Event("onKeyRecreated")
   var onKeyRecreated: ([String: String]) -> Void

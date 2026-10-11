@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 // MARK: - ExpoBrownfieldModule
 
-@ExpoModule("ExpoBrownfieldModule")
+@ExpoModule
 public class ExpoBrownfieldModule: Module {
   @Event("onMessage")
   var onMessage: (BrownfieldMessage) -> Void
