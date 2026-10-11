@@ -21,7 +21,7 @@ struct SyncFunctionCallProfilerTests {
   }
 
   let appContext: AppContext
-  let recorder = Recorder()
+  private let recorder = Recorder()
 
   init() {
     appContext = AppContext.create()
