@@ -11,6 +11,180 @@ describe(serialAssetsToStaticContentAssets, () => {
   const js = (filename: string, metadata: any): SerialAsset =>
     ({ filename, originFilename: filename, type: 'js', metadata, source: '' }) as any;
 
+  const granularJs = (filename: string, metadata: SerialAsset['metadata'] = {}) =>
+    js(filename, {
+      chunkingStrategy: 'granular',
+      entryPaths: [],
+      modulePaths: [],
+      requires: [],
+      isAsync: true,
+      ...metadata,
+    });
+
+  function granularAssets() {
+    return [
+      granularJs('dist/entry.js', {
+        isAsync: false,
+        entryPaths: ['/entry.js', '/app/inlined.tsx'],
+        entryChunks: {
+          '/entry.js': [],
+          '/app/inlined.tsx': [],
+          '/app/_layout.tsx': ['dist/layout.js', 'dist/shared.js'],
+          '/app/nested/page.tsx': ['dist/page.js', 'dist/shared.js'],
+        },
+        requires: ['dist/runtime.js'],
+      }),
+      granularJs('dist/page.js', {
+        entryPaths: ['/app/nested/page.tsx'],
+        requires: ['dist/runtime.js', 'dist/shared.js'],
+      }),
+      granularJs('dist/unrelated.js'),
+      granularJs('dist/layout.js', {
+        entryPaths: ['/app/_layout.tsx'],
+        requires: ['dist/runtime.js', 'dist/shared.js'],
+      }),
+      granularJs('dist/worker.js'),
+      granularJs('dist/shared.js', {
+        modulePaths: ['/app/_layout.tsx'],
+        requires: ['dist/runtime.js'],
+      }),
+      granularJs('dist/runtime.js', { isAsync: false }),
+    ];
+  }
+
+  it('expands semantic roots before the initial bundle without re-sorting prerequisites', () => {
+    const result = serialAssetsToStaticContentAssets(granularAssets(), {
+      isExporting: true,
+      baseUrl: '/sub/',
+      route: {
+        contextKey: './nested/page.tsx',
+        entryPoints: ['/app/_layout.tsx', '/app/nested/page.tsx'],
+      } as any,
+    });
+    expect(result.js).toEqual([
+      '/sub/dist/runtime.js',
+      '/sub/dist/shared.js',
+      '/sub/dist/layout.js',
+      '/sub/dist/page.js',
+      '/sub/dist/entry.js',
+    ]);
+    expect(new URL(result.js[1]!, 'https://example.com/sub/nested/page').pathname).toBe(
+      '/sub/dist/shared.js'
+    );
+  });
+
+  it('does not preload unrelated shared chunks, workers, or aliases owned by the initial bundle', () => {
+    const assets = granularAssets();
+    for (const route of [undefined, { entryPoints: ['/app/inlined.tsx'] } as any]) {
+      expect(
+        serialAssetsToStaticContentAssets(assets, { isExporting: true, baseUrl: '', route }).js
+      ).toEqual(['/dist/runtime.js', '/dist/entry.js']);
+    }
+  });
+
+  it('loads an entry from its owner without an empty facade', () => {
+    const assets = [
+      granularJs('entry.js', {
+        isAsync: false,
+        requires: ['runtime.js'],
+        entryChunks: { '/app/a.tsx': ['a.js'], '/app/b.tsx': ['a.js'] },
+      }),
+      granularJs('a.js', {
+        entryPaths: ['/app/a.tsx'],
+        modulePaths: ['/app/a.tsx', '/app/b.tsx'],
+        requires: ['runtime.js'],
+      }),
+      granularJs('runtime.js', { isAsync: false }),
+    ];
+    expect(
+      serialAssetsToStaticContentAssets(assets, {
+        isExporting: true,
+        baseUrl: '',
+        route: { entryPoints: ['/app/b.tsx'] } as any,
+      }).js
+    ).toEqual(['/runtime.js', '/a.js', '/entry.js']);
+  });
+
+  it.each(['a', 'b'])('loads only the required owner for /%s/index without a facade', (route) => {
+    const assets = [
+      granularJs('entry.js', {
+        isAsync: false,
+        requires: ['runtime.js'],
+        entryChunks: {
+          '/app/a/index.tsx': ['shared-a.js'],
+          '/app/b/index.tsx': ['shared-b.js'],
+        },
+      }),
+      granularJs('shared-a.js', { requires: ['runtime.js'] }),
+      granularJs('shared-b.js', { requires: ['runtime.js'] }),
+      granularJs('runtime.js', { isAsync: false }),
+    ];
+    expect(
+      serialAssetsToStaticContentAssets(assets, {
+        isExporting: true,
+        baseUrl: '/sub/',
+        route: { entryPoints: [`/app/${route}/index.tsx`] } as any,
+      }).js
+    ).toEqual(['/sub/runtime.js', `/sub/shared-${route}.js`, '/sub/entry.js']);
+  });
+
+  it('rejects missing or duplicated entry-to-chunks mappings', () => {
+    const missing = granularJs('entry.js', { isAsync: false });
+    expect(() =>
+      serialAssetsToStaticContentAssets([missing], { isExporting: true, baseUrl: '' })
+    ).toThrow(/entry-to-chunks mapping/);
+    expect(() =>
+      serialAssetsToStaticContentAssets(
+        [granularJs('a.js', { entryChunks: {} }), granularJs('b.js', { entryChunks: {} })],
+        { isExporting: true, baseUrl: '' }
+      )
+    ).toThrow(/entry-to-chunks mapping/);
+  });
+
+  it('rejects a missing file referenced by an entry', () => {
+    const entry = granularJs('entry.js', {
+      isAsync: false,
+      entryChunks: { '/app/page.tsx': ['missing.js'] },
+    });
+    expect(() =>
+      serialAssetsToStaticContentAssets([entry], {
+        isExporting: true,
+        baseUrl: '',
+        route: { entryPoints: ['/app/page.tsx'] } as any,
+      })
+    ).toThrow('Asset not found for entry /app/page.tsx: missing.js');
+  });
+
+  it('rejects incomplete or mixed provenance instead of using legacy matching', () => {
+    const invalid = granularJs('bad.js', { entryPaths: undefined });
+    expect(() =>
+      serialAssetsToStaticContentAssets([invalid], { isExporting: true, baseUrl: '' })
+    ).toThrow(/entryPaths/);
+    expect(() =>
+      serialAssetsToStaticContentAssets([granularJs('new.js'), js('legacy.js', {})], {
+        isExporting: true,
+        baseUrl: '',
+      })
+    ).toThrow(/strategy/);
+  });
+
+  it('walks only the selected roots, but still rejects missing requirements and cycles', () => {
+    const a = js('a.js', { requires: ['shared.js'] });
+    const shared = js('shared.js', { requires: [] });
+    const unrelated = js('unrelated.js', { requires: ['missing.js'] });
+    expect(assetsRequiresSort([a, unrelated, shared], [a]).map((a) => a.filename)).toEqual([
+      'shared.js',
+      'a.js',
+    ]);
+    expect(assetsRequiresSort([a, unrelated, shared], [])).toEqual([]);
+    expect(() => assetsRequiresSort([a, unrelated, shared], [unrelated])).toThrow(
+      'Asset not found: missing.js'
+    );
+    expect(() => assetsRequiresSort([a, js('shared.js', { requires: ['a.js'] })], [a])).toThrow(
+      /Circular dependencies/
+    );
+  });
+
   it('builds linked CSS and dependency-ordered, route-scoped JS when exporting', () => {
     const resources: SerialAsset[] = [
       {

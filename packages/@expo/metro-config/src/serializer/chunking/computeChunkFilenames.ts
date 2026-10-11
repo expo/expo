@@ -1,6 +1,6 @@
 import type { SerializerConfigT } from '@expo/metro/metro-config';
 
-import type { Chunk } from './serializeChunks';
+import type { Chunk } from './Chunk';
 
 interface TopologicalSet {
   getReachable(chunk: Chunk): Set<Chunk>;

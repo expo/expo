@@ -1,6 +1,72 @@
+import type { ExpoConfig } from '@expo/config';
 import { env } from 'node:process';
 
-import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
+import {
+  createBundleUrlPath,
+  getAsyncRoutesFromExpoConfig,
+  getChunkingStrategyFromExpoConfig,
+  getMetroDirectBundleOptions,
+  getMetroDirectBundleOptionsForExpoConfig,
+} from '../metroOptions';
+
+describe('chunking options', () => {
+  it.each([
+    { experiments: undefined, expectedStrategy: 'legacy' },
+    { experiments: {}, expectedStrategy: 'legacy' },
+    { experiments: { chunking: { mode: 'legacy' } }, expectedStrategy: 'legacy' },
+    { experiments: { chunking: { mode: 'granular' } }, expectedStrategy: 'granular' },
+    {
+      experiments: { chunking: { mode: 'granular' }, reactServerComponentRoutes: true },
+      expectedStrategy: 'legacy',
+    },
+    {
+      experiments: { chunking: { mode: 'granular' }, reactServerFunctions: true },
+      expectedStrategy: 'legacy',
+    },
+    {
+      experiments: {
+        chunking: { mode: 'granular' },
+        reactServerComponentRoutes: true,
+        reactServerFunctions: true,
+      },
+      expectedStrategy: 'legacy',
+    },
+  ] as const)('selects $expectedStrategy for $experiments', ({ experiments, expectedStrategy }) => {
+    const result = getMetroDirectBundleOptionsForExpoConfig(
+      '/app',
+      {
+        name: 'test',
+        slug: 'test',
+        experiments,
+      },
+      {
+        mainModuleName: '/app/index.js',
+        mode: 'production',
+        platform: 'web',
+        isExporting: true,
+        splitChunks: true,
+      }
+    );
+    expect(result.serializerOptions).toMatchObject({
+      chunkingStrategy: expectedStrategy,
+      splitChunks: true,
+    });
+  });
+
+  it.each(['legacy', 'granular'] as const)(
+    'keeps %s chunking independent of the async routes setting',
+    (mode) => {
+      const config = {
+        name: 'test',
+        slug: 'test',
+        experiments: { chunking: { mode } } as ExpoConfig['experiments'],
+        extra: { router: { asyncRoutes: false } },
+      };
+      expect(getChunkingStrategyFromExpoConfig(config)).toBe(mode);
+      expect(getAsyncRoutesFromExpoConfig(config, 'production', 'web')).toBe(false);
+    }
+  );
+});
 
 describe(getMetroDirectBundleOptions, () => {
   it(`asserts unsupported options: using bytecode on web`, () => {
