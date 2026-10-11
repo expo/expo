@@ -4,10 +4,9 @@ let KEY_RECREATED_EVENT_NAME = "onKeyRecreated"
 
 // MARK: - ExpoBrownfieldStateModule
 
-public class ExpoBrownfieldStateModule: Module {
+@ExpoModule("ExpoBrownfieldStateModule")
+public final class ExpoBrownfieldStateModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoBrownfieldStateModule")
-
     Events(KEY_RECREATED_EVENT_NAME)
 
     Class(SharedState.self) {
@@ -27,14 +26,16 @@ public class ExpoBrownfieldStateModule: Module {
     OnDestroy {
       BrownfieldStateInternal.shared.clearExpoModule(self)
     }
+  }
 
-    Function("getSharedState") { (key: String) -> SharedState in
-      return BrownfieldStateInternal.shared.getOrCreate(key)
-    }
+  @JS
+  func getSharedState(_ key: String) -> SharedState {
+    return BrownfieldStateInternal.shared.getOrCreate(key)
+  }
 
-    Function("deleteSharedState") { (key: String) in
-      BrownfieldStateInternal.shared.delete(key)
-    }
+  @JS
+  func deleteSharedState(_ key: String) {
+    _ = BrownfieldStateInternal.shared.delete(key)
   }
 
   public func notifyKeyRecreated(_ key: String) {

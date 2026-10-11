@@ -4,10 +4,9 @@ let NATIVE_MESSAGE_EVENT_NAME = "onMessage"
 
 // MARK: - ExpoBrownfieldModule
 
-public class ExpoBrownfieldModule: Module {
+@ExpoModule("ExpoBrownfieldModule")
+public final class ExpoBrownfieldModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoBrownfieldModule")
-
     Events(NATIVE_MESSAGE_EVENT_NAME)
 
     OnStartObserving {
@@ -17,30 +16,45 @@ public class ExpoBrownfieldModule: Module {
     OnStopObserving {
       BrownfieldMessagingInternal.shared.clearExpoModule(self)
     }
+  }
 
-    Function("popToNative") { (animated: Bool) in
-      DispatchQueue.main.async {
-        NotificationCenter.default.post(
-          name: Notification.Name("popToNative"),
-          object: nil,
-          userInfo: ["animated": animated]
-        )
+  @JS
+  func popToNative(_ animated: Bool) {
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: Notification.Name("popToNative"),
+        object: nil,
+        userInfo: ["animated": animated]
+      )
+    }
+  }
+
+  @JS
+  func setNativeBackEnabled(_ enabled: Bool) {
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: Notification.Name("setNativeBackEnabled"),
+        object: nil,
+        userInfo: ["enabled": enabled]
+      )
+    }
+  }
+
+  @JS("sendMessage")
+  func receiveMessage(_ message: JavaScriptValue) throws {
+    let object = try message.asObject()
+    var result: BrownfieldMessage = [:]
+
+    // Same conversion as the `[String: Any?]` DSL argument: `undefined` properties are dropped
+    // and `null` ones are kept as `nil`.
+    for key in object.getPropertyNames() {
+      let property = object.getProperty(key)
+      if property.isUndefined() {
+        continue
       }
+      result.updateValue(property.isNull() ? nil : property.getAny(), forKey: key)
     }
-
-    Function("setNativeBackEnabled") { (enabled: Bool) in
-      DispatchQueue.main.async {
-        NotificationCenter.default.post(
-          name: Notification.Name("setNativeBackEnabled"),
-          object: nil,
-          userInfo: ["enabled": enabled]
-        )
-      }
-    }
-
-    Function("sendMessage") { (message: BrownfieldMessage) in
-      BrownfieldMessagingInternal.shared.emit(message)
-    }
+    BrownfieldMessagingInternal.shared.emit(result)
   }
 
   public func sendMessage(_ message: BrownfieldMessage) {
