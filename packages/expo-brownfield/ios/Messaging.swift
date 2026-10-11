@@ -32,7 +32,7 @@ public class BrownfieldMessagingInternal {
     let module = expoModule
     lock.unlock()
 
-    module?.sendMessage(message)
+    module?.onMessage(message)
   }
 
   func emit(_ message: BrownfieldMessage) {

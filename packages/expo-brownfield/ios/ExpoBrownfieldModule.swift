@@ -1,49 +1,56 @@
 import ExpoModulesCore
 
-let NATIVE_MESSAGE_EVENT_NAME = "onMessage"
-
 // MARK: - ExpoBrownfieldModule
 
+@ExpoModule
 public class ExpoBrownfieldModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoBrownfieldModule")
+  @Event("onMessage")
+  var onMessage: (BrownfieldMessage) -> Void
 
-    Events(NATIVE_MESSAGE_EVENT_NAME)
+  public override func didStartListening(event: String) {
+    BrownfieldMessagingInternal.shared.setExpoModule(self)
+  }
 
-    OnStartObserving {
-      BrownfieldMessagingInternal.shared.setExpoModule(self)
-    }
+  public override func didStopListening(event: String) {
+    BrownfieldMessagingInternal.shared.clearExpoModule(self)
+  }
 
-    OnStopObserving {
-      BrownfieldMessagingInternal.shared.clearExpoModule(self)
-    }
-
-    Function("popToNative") { (animated: Bool) in
-      DispatchQueue.main.async {
-        NotificationCenter.default.post(
-          name: Notification.Name("popToNative"),
-          object: nil,
-          userInfo: ["animated": animated]
-        )
-      }
-    }
-
-    Function("setNativeBackEnabled") { (enabled: Bool) in
-      DispatchQueue.main.async {
-        NotificationCenter.default.post(
-          name: Notification.Name("setNativeBackEnabled"),
-          object: nil,
-          userInfo: ["enabled": enabled]
-        )
-      }
-    }
-
-    Function("sendMessage") { (message: BrownfieldMessage) in
-      BrownfieldMessagingInternal.shared.emit(message)
+  @JS
+  func popToNative(_ animated: Bool) {
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: Notification.Name("popToNative"),
+        object: nil,
+        userInfo: ["animated": animated]
+      )
     }
   }
 
-  public func sendMessage(_ message: BrownfieldMessage) {
-    sendEvent(NATIVE_MESSAGE_EVENT_NAME, message)
+  @JS
+  func setNativeBackEnabled(_ enabled: Bool) {
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: Notification.Name("setNativeBackEnabled"),
+        object: nil,
+        userInfo: ["enabled": enabled]
+      )
+    }
+  }
+
+  @JS
+  func sendMessage(_ message: JavaScriptValue) throws {
+    let object = try message.asObject()
+    var result: BrownfieldMessage = [:]
+
+    // Same conversion as the `[String: Any?]` DSL argument: `undefined` properties are dropped
+    // and `null` ones are kept as `nil`.
+    for key in object.getPropertyNames() {
+      let property = object.getProperty(key)
+      if property.isUndefined() {
+        continue
+      }
+      result.updateValue(property.isNull() ? nil : property.getAny(), forKey: key)
+    }
+    BrownfieldMessagingInternal.shared.emit(result)
   }
 }

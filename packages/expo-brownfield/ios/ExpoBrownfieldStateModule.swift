@@ -1,47 +1,35 @@
 import ExpoModulesCore
 
-let KEY_RECREATED_EVENT_NAME = "onKeyRecreated"
-
 // MARK: - ExpoBrownfieldStateModule
 
+@ExpoModule
 public class ExpoBrownfieldStateModule: Module {
+  @Event("onKeyRecreated")
+  var onKeyRecreated: ([String: String]) -> Void
+
+  public override func didCreate() {
+    BrownfieldStateInternal.shared.setExpoModule(self)
+  }
+
+  public override func willDestroy() {
+    BrownfieldStateInternal.shared.clearExpoModule(self)
+  }
+
   public func definition() -> ModuleDefinition {
-    Name("ExpoBrownfieldStateModule")
-
-    Events(KEY_RECREATED_EVENT_NAME)
-
     Class(SharedState.self) {
-      Constructor { (key: String) in
-        return SharedState(key)
-      }
-
       Function("get") { (state: SharedState) -> Any? in
         return state.get()
       }
-      
-      Function("set") { (state: SharedState, value: JavaScriptValue?) in
-        state.set(value?.getAny())
-      }
-    }
-
-    OnCreate {
-      BrownfieldStateInternal.shared.setExpoModule(self)
-    }
-
-    OnDestroy {
-      BrownfieldStateInternal.shared.clearExpoModule(self)
-    }
-
-    Function("getSharedState") { (key: String) -> SharedState in
-      return BrownfieldStateInternal.shared.getOrCreate(key)
-    }
-
-    Function("deleteSharedState") { (key: String) in
-      BrownfieldStateInternal.shared.delete(key)
     }
   }
 
-  public func notifyKeyRecreated(_ key: String) {
-    sendEvent(KEY_RECREATED_EVENT_NAME, ["key": key])
+  @JS
+  func getSharedState(_ key: String) -> SharedState {
+    return BrownfieldStateInternal.shared.getOrCreate(key)
+  }
+
+  @JS
+  func deleteSharedState(_ key: String) {
+    _ = BrownfieldStateInternal.shared.delete(key)
   }
 }

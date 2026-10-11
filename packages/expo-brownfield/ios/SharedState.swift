@@ -1,11 +1,13 @@
 import ExpoModulesCore
 
+@SharedObject
 public final class SharedState: SharedObject {
   private let lock = NSLock()
   private let key: String
   private var value: Any?
 
-  public init(_ key: String) {
+  @JS
+  nonisolated public init(_ key: String) {
     self.key = key
     super.init()
   }
@@ -24,5 +26,10 @@ public final class SharedState: SharedObject {
     emit(event: "change", payload: ["value": newValue])
     BrownfieldStateInternal.shared.notifySubscribers(key, newValue)
     BrownfieldStateInternal.shared.maybeNotifyKeyRecreated(key)
+  }
+
+  @JS
+  func set(fromJS value: JavaScriptValue) {
+    set(value.isUndefined() || value.isNull() ? nil : value.getAny())
   }
 }
