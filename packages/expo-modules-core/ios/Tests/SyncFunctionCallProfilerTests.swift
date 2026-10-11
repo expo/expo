@@ -14,8 +14,9 @@ struct SyncFunctionCallProfilerTests {
       calls.withLock { $0.append(call) }
     }
 
+    /// Only this suite's module: the observer is process-wide and other suites run in parallel.
     var all: [SlowSyncCall] {
-      calls.withLock { $0 }
+      calls.withLock { $0 }.filter { $0.identity.ownerName.hasPrefix("ProfiledModule") }
     }
   }
 
