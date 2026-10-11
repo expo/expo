@@ -140,7 +140,7 @@ Every config plugin follows the same pattern: receives configuration and paramet
 <Tab label="Index file">
 
 ```ts plugin/src/index.ts|collapseHeight=480
-import { type ConfigPlugin, withAndroidManifest, withInfoPlist } from 'expo/config-plugins';
+import { type ConfigPlugin, withAndroidManifest, withIosConfiguration } from 'expo/config-plugins';
 
 export interface YourLibraryPluginProps {
   customProperty?: string;
