@@ -2,4 +2,4 @@
 'expo-brownfield': patch
 ---
 
-[iOS][Internal] Bind the functions of `ExpoBrownfieldModule`, `ExpoBrownfieldStateModule` and `SharedState.set` with the `@ExpoModule`, `@SharedObject` and `@JS` macros instead of the `Function` DSL.
+[iOS][Internal] Define `ExpoBrownfieldModule` and `ExpoBrownfieldStateModule` with the `@ExpoModule`, `@SharedObject`, `@JS` and `@Event` macros instead of the module definition DSL.

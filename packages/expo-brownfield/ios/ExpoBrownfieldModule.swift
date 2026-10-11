@@ -1,21 +1,18 @@
 import ExpoModulesCore
 
-let NATIVE_MESSAGE_EVENT_NAME = "onMessage"
-
 // MARK: - ExpoBrownfieldModule
 
 @ExpoModule("ExpoBrownfieldModule")
-public final class ExpoBrownfieldModule: Module {
-  public func definition() -> ModuleDefinition {
-    Events(NATIVE_MESSAGE_EVENT_NAME)
+public class ExpoBrownfieldModule: Module {
+  @Event("onMessage")
+  var onMessage: (BrownfieldMessage) -> Void
 
-    OnStartObserving {
-      BrownfieldMessagingInternal.shared.setExpoModule(self)
-    }
+  public override func didStartListening(event: String) {
+    BrownfieldMessagingInternal.shared.setExpoModule(self)
+  }
 
-    OnStopObserving {
-      BrownfieldMessagingInternal.shared.clearExpoModule(self)
-    }
+  public override func didStopListening(event: String) {
+    BrownfieldMessagingInternal.shared.clearExpoModule(self)
   }
 
   @JS
@@ -58,6 +55,6 @@ public final class ExpoBrownfieldModule: Module {
   }
 
   public func sendMessage(_ message: BrownfieldMessage) {
-    sendEvent(NATIVE_MESSAGE_EVENT_NAME, message)
+    onMessage(message)
   }
 }

@@ -1,14 +1,21 @@
 import ExpoModulesCore
 
-let KEY_RECREATED_EVENT_NAME = "onKeyRecreated"
-
 // MARK: - ExpoBrownfieldStateModule
 
 @ExpoModule("ExpoBrownfieldStateModule")
-public final class ExpoBrownfieldStateModule: Module {
-  public func definition() -> ModuleDefinition {
-    Events(KEY_RECREATED_EVENT_NAME)
+public class ExpoBrownfieldStateModule: Module {
+  @Event("onKeyRecreated")
+  var onKeyRecreated: ([String: String]) -> Void
 
+  public override func didCreate() {
+    BrownfieldStateInternal.shared.setExpoModule(self)
+  }
+
+  public override func willDestroy() {
+    BrownfieldStateInternal.shared.clearExpoModule(self)
+  }
+
+  public func definition() -> ModuleDefinition {
     Class(SharedState.self) {
       Constructor { (key: String) in
         return SharedState(key)
@@ -17,14 +24,6 @@ public final class ExpoBrownfieldStateModule: Module {
       Function("get") { (state: SharedState) -> Any? in
         return state.get()
       }
-    }
-
-    OnCreate {
-      BrownfieldStateInternal.shared.setExpoModule(self)
-    }
-
-    OnDestroy {
-      BrownfieldStateInternal.shared.clearExpoModule(self)
     }
   }
 
@@ -39,6 +38,6 @@ public final class ExpoBrownfieldStateModule: Module {
   }
 
   public func notifyKeyRecreated(_ key: String) {
-    sendEvent(KEY_RECREATED_EVENT_NAME, ["key": key])
+    onKeyRecreated(["key": key])
   }
 }
