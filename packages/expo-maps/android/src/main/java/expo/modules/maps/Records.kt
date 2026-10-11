@@ -187,7 +187,9 @@ data class MapUiSettingsRecord(
   @Field
   val zoomControlsEnabled: Boolean = true,
   @Field
-  val zoomGesturesEnabled: Boolean = true
+  val zoomGesturesEnabled: Boolean = true,
+  @Field
+  val scaleBarEnabled: Boolean = false
 ) : Record {
   fun toMapUiSettings(): MapUiSettings {
     return MapUiSettings(
