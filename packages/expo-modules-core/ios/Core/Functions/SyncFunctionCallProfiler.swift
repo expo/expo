@@ -42,6 +42,13 @@ public struct SlowSyncCall: Sendable, Equatable {
   public let duration: TimeInterval
   /// `true` when the runtime thread was the main thread (e.g. the UI worklet runtime).
   public let onMainThread: Bool
+
+  public init(identity: SyncCallIdentity, startedAt: TimeInterval, duration: TimeInterval, onMainThread: Bool) {
+    self.identity = identity
+    self.startedAt = startedAt
+    self.duration = duration
+    self.onMainThread = onMainThread
+  }
 }
 
 /**
