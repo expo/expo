@@ -18,10 +18,6 @@ public class ExpoBrownfieldStateModule: Module {
       Function("get") { (state: SharedState) -> Any? in
         return state.get()
       }
-      
-      Function("set") { (state: SharedState, value: JavaScriptValue?) in
-        state.set(value?.getAny())
-      }
     }
 
     OnCreate {
