@@ -37,8 +37,8 @@ public class ExpoBrownfieldModule: Module {
     }
   }
 
-  @JS("sendMessage")
-  func receiveMessage(_ message: JavaScriptValue) throws {
+  @JS
+  func sendMessage(_ message: JavaScriptValue) throws {
     let object = try message.asObject()
     var result: BrownfieldMessage = [:]
 
@@ -52,9 +52,5 @@ public class ExpoBrownfieldModule: Module {
       result.updateValue(property.isNull() ? nil : property.getAny(), forKey: key)
     }
     BrownfieldMessagingInternal.shared.emit(result)
-  }
-
-  public func sendMessage(_ message: BrownfieldMessage) {
-    onMessage(message)
   }
 }

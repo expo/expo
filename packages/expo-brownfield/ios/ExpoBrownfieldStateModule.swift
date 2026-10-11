@@ -32,8 +32,4 @@ public class ExpoBrownfieldStateModule: Module {
   func deleteSharedState(_ key: String) {
     _ = BrownfieldStateInternal.shared.delete(key)
   }
-
-  public func notifyKeyRecreated(_ key: String) {
-    onKeyRecreated(["key": key])
-  }
 }
