@@ -16,6 +16,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       if startupState == .interrupted {
         frameMetricsRecorder.stop()
         stallMonitor.stop()
+        startupPhase.value = AppStartupMonitoring.steadyStatePhase
       }
     }
   }
@@ -26,6 +27,16 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   let stallMonitor = MainThreadStallMonitor()
   /// Read from the stall monitor's thread when a stall is detected, so it lives outside the actor.
   private let startupPhase = LockedValue("beforeFirstRender")
+  /// Phase reported once the measured launch window is over: TTI reached, launch interrupted,
+  /// prewarmed launch, or no TTI within `launchWindowTimeout`.
+  static let steadyStatePhase = "afterInteractive"
+  /// A launch that hasn't reached TTI this long after `didFinishLaunching` stops being treated as
+  /// startup for slow-call thresholds (mirrors `MainThreadStallMonitor.maxMonitoringDuration`).
+  static let launchWindowTimeout: TimeInterval = 10
+
+  nonisolated var currentStartupPhase: String {
+    return startupPhase.value
+  }
 
   /// Slow synchronous native calls seen before TTI; attached to the `timeToInteractive` metric.
   @AppMetricsActor
@@ -38,6 +49,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   nonisolated func markMain() {
     startObservingSlowNativeCalls()
     if launchType == .prewarmed {
+      startupPhase.value = AppStartupMonitoring.steadyStatePhase
       return
     }
     let currentTime = CACurrentMediaTime()
@@ -77,6 +89,18 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       if let launchTime = markers.getLaunchTime() {
         reportMetric(category: .appStartup, name: "\(launchType.rawValue)LaunchTime", value: launchTime)
       }
+
+      Task { [weak self] in
+        try? await Task.sleep(for: .seconds(AppStartupMonitoring.launchWindowTimeout))
+        await self?.closeLaunchWindowIfStillLaunching()
+      }
+    }
+  }
+
+  @AppMetricsActor
+  private func closeLaunchWindowIfStillLaunching() {
+    if startupState == .launching {
+      startupPhase.value = AppStartupMonitoring.steadyStatePhase
     }
   }
 
@@ -166,13 +190,18 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   /// session: during startup every call over `SlowNativeCall.startupThreshold` is reported, afterwards
   /// only those over `steadyStateThreshold`. The observer runs on the calling runtime thread, so it
   /// only reads the phase and hops to the actor.
+  ///
+  /// The phase is `afterInteractive` for anything outside the measured launch window, including
+  /// prewarmed and interrupted launches and launches that never report TTI (after
+  /// `launchWindowTimeout`), so those sessions use the steady-state threshold too.
   nonisolated func startObservingSlowNativeCalls() {
     SyncFunctionCallProfiler.setObserver(threshold: SlowNativeCall.startupThreshold) { [weak self] call in
       guard let self else {
         return
       }
       let phase = self.startupPhase.value
-      if phase == "afterInteractive" && call.duration < SlowNativeCall.steadyStateThreshold {
+      let isSteadyState = phase == AppStartupMonitoring.steadyStatePhase
+      if isSteadyState && call.duration < SlowNativeCall.steadyStateThreshold {
         return
       }
       let endedAt = Date()

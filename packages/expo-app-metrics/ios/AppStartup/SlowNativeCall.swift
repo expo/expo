@@ -23,10 +23,12 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
   /// `js` for the JavaScript runtime thread, `main` when the call ran on the main thread
   /// (the UI worklet runtime).
   let thread: String
-  /// Startup phase the call ended in (`beforeFirstRender`, `beforeInteractive`, `afterInteractive`).
+  /// Startup phase the call ended in: `beforeFirstRender`, `beforeInteractive`, or `afterInteractive`
+  /// for anything outside the measured launch window (TTI reached, interrupted or prewarmed launch).
   let phase: String
   /// Seconds between `didFinishLaunching` (or `main` before that) and the start of the call.
-  let startedAt: TimeInterval
+  /// `nil` when the launch has no marker to anchor to (prewarmed launches).
+  let startedAt: TimeInterval?
   /// Seconds the call blocked its thread.
   let duration: TimeInterval
 
@@ -36,7 +38,7 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
     kind = call.identity.kind.rawValue
     thread = call.onMainThread ? "main" : "js"
     self.phase = phase
-    startedAt = call.startedAt - (anchor ?? call.startedAt)
+    startedAt = anchor.map { call.startedAt - $0 }
     duration = call.duration
   }
 
@@ -46,7 +48,7 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
     kind: String,
     thread: String,
     phase: String,
-    startedAt: TimeInterval,
+    startedAt: TimeInterval?,
     duration: TimeInterval
   ) {
     self.module = module
@@ -64,17 +66,20 @@ struct SlowNativeCall: Codable, Sendable, Equatable {
 
   /// Builds the `native_module.slow_sync_call` log event.
   func toLogRecord(timestamp: Date) -> LogRecord {
+    var attributes: [String: Any] = [
+      "expo.native_call.module": module,
+      "expo.native_call.function": function,
+      "expo.native_call.kind": kind,
+      "expo.native_call.thread": thread,
+      "expo.native_call.phase": phase,
+      "expo.native_call.duration_ms": (duration * 1000).rounded()
+    ]
+    if let startedAt {
+      attributes["expo.native_call.started_at_ms"] = (startedAt * 1000).rounded()
+    }
     return LogRecord(
       name: "native_module.slow_sync_call",
-      attributes: [
-        "expo.native_call.module": module,
-        "expo.native_call.function": function,
-        "expo.native_call.kind": kind,
-        "expo.native_call.thread": thread,
-        "expo.native_call.phase": phase,
-        "expo.native_call.started_at_ms": (startedAt * 1000).rounded(),
-        "expo.native_call.duration_ms": (duration * 1000).rounded(),
-      ],
+      attributes: attributes,
       severity: .warn,
       timestamp: timestamp.ISO8601Format(.init(includingFractionalSeconds: true))
     )

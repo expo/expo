@@ -60,8 +60,8 @@ public struct SlowSyncCall: Sendable, Equatable {
  first render — invisible to main-thread watchdogs and to MetricKit. Performance tooling such as
  `expo-app-metrics` registers an observer here to surface those calls by name.
 
- When no observer is set the per-call cost is one lock-free load; with an observer it is two
- `mach_absolute_time` reads per call. The observer runs on the calling runtime thread and must be
+ The per-call cost is one uncontended lock acquisition to load the configuration (tens of
+ nanoseconds), plus two `mach_absolute_time` reads when an observer is installed. The observer runs on the calling runtime thread and must be
  cheap and `Sendable`: hand the record off to your own queue instead of doing work inline.
  */
 public enum SyncFunctionCallProfiler {

@@ -114,4 +114,25 @@ struct SlowNativeCallTests {
     let attributes = try #require(receiver.logs.first?.attributes?.value as? [String: Any])
     #expect(attributes["expo.native_call.started_at_ms"] as? Double == 300)
   }
+
+  @Test
+  func `call without a launch anchor omits started_at`() throws {
+    let call = SlowNativeCall(call: slowSyncCall(), phase: "afterInteractive", anchor: nil)
+    let attributes = try #require(call.toLogRecord(timestamp: Date()).attributes?.value as? [String: Any])
+
+    #expect(call.startedAt == nil)
+    #expect(attributes["expo.native_call.started_at_ms"] == nil)
+    #expect(attributes["expo.native_call.duration_ms"] as? Double == 230)
+  }
+
+  @Test
+  @AppMetricsActor
+  func `interrupting the launch switches slow calls to the steady-state phase`() {
+    let monitoring = AppStartupMonitoring()
+    #expect(monitoring.currentStartupPhase == "beforeFirstRender")
+
+    monitoring.startupState = .interrupted
+
+    #expect(monitoring.currentStartupPhase == AppStartupMonitoring.steadyStatePhase)
+  }
 }
