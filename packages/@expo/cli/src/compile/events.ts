@@ -20,6 +20,12 @@ declare module '2g' {
       outputType: OutputType;
       outputPath: string;
     };
+    'compile:ios:build_props': {
+      scheme: string;
+      configuration: string;
+      osType: string;
+      xcodeProject: string;
+    };
   }
 }
 
