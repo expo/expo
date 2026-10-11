@@ -19,7 +19,6 @@
     "expo-module": "bin/expo-module.js"
   },
   "type": "module",
-  "main": "index.js",
   "exports": {
     "./package.json": "./package.json",
     "./oxlint.config.base": {
@@ -52,35 +51,9 @@
       "import": "./jest-preset.cjs",
       "require": "./jest-preset.cjs"
     },
-    "./*/jest-preset": {
-      "import": "./*/jest-preset.cjs",
-      "require": "./*/jest-preset.cjs"
-    },
-    "./*/jest-preset.js": {
-      "import": "./*/jest-preset.cjs",
-      "require": "./*/jest-preset.cjs"
-    },
     "./types/*": "./types/*",
     "./tsconfig.*": "./tsconfig.*.json",
     "./tsconfig": "./tsconfig.json"
-  },
-  "publishConfig": {
-    "executableFiles": [
-      "./bin/expo-module-build",
-      "./bin/expo-module-clean",
-      "./bin/expo-module-configure",
-      "./bin/expo-module-depscheck",
-      "./bin/expo-module-format",
-      "./bin/expo-module-jest",
-      "./bin/expo-module-prepare",
-      "./bin/expo-module-prepack",
-      "./bin/expo-module-prepublishOnly",
-      "./bin/expo-module-readme",
-      "./bin/expo-module-test",
-      "./bin/expo-module-tsc",
-      "./bin/expo-module-typecheck",
-      "./bin/expo-module.js"
-    ]
   },
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
