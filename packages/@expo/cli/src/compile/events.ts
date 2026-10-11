@@ -20,6 +20,9 @@ declare module '2g' {
       outputType: OutputType;
       outputPath: string;
     };
+    'compile:android:build_props': {
+      variant: string;
+    };
     'compile:ios:build_props': {
       scheme: string;
       configuration: string;
