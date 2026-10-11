@@ -18,10 +18,10 @@ import { SwiftPMUnsupportedError } from './error';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
-import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
+  formatSelfCommand,
   installDependenciesAsync,
   resolvePackageManager,
 } from './resolvePackageManager';
@@ -157,14 +157,20 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
 
-  resolvedTemplate = await applySdkVersionToTemplateAsync(
-    resolvedTemplate ?? 'expo-template-default',
-    {
-      yes: props.yes,
-      showAlternatives: !props.template,
-      projectName: path.basename(projectRoot),
-    }
+  console.log(
+    chalk`Creating {cyan ${path.basename(projectRoot)}} using the {cyan ${resolvedTemplate ?? 'default'}} example.\n`
   );
+  if (!resolvedTemplate) {
+    const cmd = formatSelfCommand();
+    console.log(
+      [
+        chalk.dim('Tip:'),
+        chalk`  {dim $ ${cmd} {cyan --template} to use different templates}`,
+        chalk`  {dim $ ${cmd} {cyan --example} to explore {underline https://github.com/expo/examples}}`,
+        '',
+      ].join('\n')
+    );
+  }
 
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
