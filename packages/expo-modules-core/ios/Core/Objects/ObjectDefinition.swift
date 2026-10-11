@@ -115,6 +115,25 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     }
   }
 
+  /**
+   Gives every synchronous function and property accessor reachable from this object (including
+   those of nested classes, as `Owner.Class`) the name `SyncFunctionCallProfiler` reports it under.
+   */
+  internal func setProfilingOwner(_ ownerName: String) {
+    for function in functions.values {
+      function.setProfilingIdentity(SyncCallIdentity(ownerName: ownerName, name: function.name, kind: .function))
+    }
+    for function in staticFunctions.values {
+      function.setProfilingIdentity(SyncCallIdentity(ownerName: ownerName, name: function.name, kind: .function))
+    }
+    for property in properties.values {
+      property.setProfilingOwner(ownerName)
+    }
+    for klass in classes.values {
+      klass.setProfilingOwner("\(ownerName).\(klass.name)")
+    }
+  }
+
   @JavaScriptActor
   internal func decorateWithFunctions(object: borrowing JavaScriptObject, appContext: AppContext) throws {
     for fn in functions.values {

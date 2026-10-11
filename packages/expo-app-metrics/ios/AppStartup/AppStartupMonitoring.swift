@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   enum StartupState {
     case launching, launched, interrupted
@@ -25,11 +27,16 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   /// Read from the stall monitor's thread when a stall is detected, so it lives outside the actor.
   private let startupPhase = LockedValue("beforeFirstRender")
 
+  /// Slow synchronous native calls seen before TTI; attached to the `timeToInteractive` metric.
+  @AppMetricsActor
+  private(set) var slowNativeCalls = SlowNativeCallSummary()
+
   lazy var appLaunchState = AppLaunchState()
 
   lazy var launchType: AppLaunchType = getAppLaunchType()
 
   nonisolated func markMain() {
+    startObservingSlowNativeCalls()
     if launchType == .prewarmed {
       return
     }
@@ -134,7 +141,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
           deviceState: deviceState,
           networkPath: networkPath,
           networkRequests: networkRequests,
-          mainThreadStalls: mainThreadStalls
+          mainThreadStalls: mainThreadStalls,
+          slowNativeCalls: slowNativeCalls
         )
         let metric = Metric(
           category: .appStartup,
@@ -152,6 +160,35 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   @AppMetricsActor
   private func reportStall(_ stall: MainThreadStall, endedAt: Date) {
     reportLog(stall.toLogRecord(timestamp: endedAt))
+  }
+
+  /// Installs the process-wide `SyncFunctionCallProfiler` observer. Stays installed for the whole
+  /// session: during startup every call over `SlowNativeCall.startupThreshold` is reported, afterwards
+  /// only those over `steadyStateThreshold`. The observer runs on the calling runtime thread, so it
+  /// only reads the phase and hops to the actor.
+  nonisolated func startObservingSlowNativeCalls() {
+    SyncFunctionCallProfiler.setObserver(threshold: SlowNativeCall.startupThreshold) { [weak self] call in
+      guard let self else {
+        return
+      }
+      let phase = self.startupPhase.value
+      if phase == "afterInteractive" && call.duration < SlowNativeCall.steadyStateThreshold {
+        return
+      }
+      let endedAt = Date()
+      AppMetricsActor.isolated {
+        self.recordSlowNativeCall(call, phase: phase, endedAt: endedAt)
+      }
+    }
+  }
+
+  @AppMetricsActor
+  func recordSlowNativeCall(_ call: SlowSyncCall, phase: String, endedAt: Date) {
+    let slowCall = SlowNativeCall(call: call, phase: phase, anchor: markers.finishedLaunching ?? markers.main)
+    reportLog(slowCall.toLogRecord(timestamp: endedAt))
+    if startupState == .launching {
+      slowNativeCalls.add(slowCall)
+    }
   }
 
   @AppMetricsActor

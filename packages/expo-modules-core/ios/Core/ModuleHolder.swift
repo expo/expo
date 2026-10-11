@@ -80,6 +80,7 @@ public final class ModuleHolder {
     if definition.name.isEmpty {
       definition.name = type(of: module)._jsName
     }
+    definition.setProfilingOwner(definition.name)
     return definition
   }
 

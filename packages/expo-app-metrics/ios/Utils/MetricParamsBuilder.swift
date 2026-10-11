@@ -18,7 +18,8 @@ enum MetricParamsBuilder {
     deviceState: DeviceState? = nil,
     networkPath: NetworkPath? = nil,
     networkRequests: NetworkRequestSummary? = nil,
-    mainThreadStalls: MainThreadStallSummary? = nil
+    mainThreadStalls: MainThreadStallSummary? = nil,
+    slowNativeCalls: SlowNativeCallSummary? = nil
   ) -> [String: Any] {
     var params: [String: Any] = userParams
     if let frameMetrics, frameMetrics.expectedFrames > 0 {
@@ -57,6 +58,14 @@ enum MetricParamsBuilder {
       params["expo.startup.mainThreadStalls.count"] = mainThreadStalls.count
       params["expo.startup.mainThreadStalls.totalDuration"] = mainThreadStalls.totalDuration
       params["expo.startup.mainThreadStalls.longestDuration"] = mainThreadStalls.longestDuration
+    }
+    if let slowNativeCalls, !slowNativeCalls.isEmpty {
+      params["expo.startup.slowNativeCalls.count"] = slowNativeCalls.count
+      params["expo.startup.slowNativeCalls.totalDuration"] = slowNativeCalls.totalDuration
+      params["expo.startup.slowNativeCalls.longestDuration"] = slowNativeCalls.longestDuration
+      if let slowest = slowNativeCalls.slowest {
+        params["expo.startup.slowNativeCalls.slowest"] = slowest
+      }
     }
     if let networkRequests, !networkRequests.isEmpty {
       params["expo.network.requests.count"] = networkRequests.count
