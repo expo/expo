@@ -22,6 +22,7 @@ import * as XcodeBuild from './XcodeBuild';
 import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeProject } from './options/resolveXcodeProject';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
@@ -32,9 +33,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
-    await maybePromptToSyncPodsAsync(projectRoot);
-  }
+  // Defer installing CocoaPods until the device is selected and the build cache is checked.
+  await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install, skipPodInstall: true });
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
@@ -60,6 +60,12 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     if (localPath) {
       options.binary = localPath;
     }
+  }
+
+  if (install && !options.binary) {
+    await maybePromptToSyncPodsAsync(projectRoot);
+    // Pod install may have created a workspace, which now needs to be built instead of the project.
+    props.xcodeProject = resolveXcodeProject(projectRoot);
   }
 
   if (options.rebundle) {

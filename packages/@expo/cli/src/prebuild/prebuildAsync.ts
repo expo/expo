@@ -50,6 +50,8 @@ export async function prebuildAsync(
   options: {
     /** Should install node modules and cocoapods. */
     install?: boolean;
+    /** Skip installing CocoaPods when `install` is set, for callers that install them later. */
+    skipPodInstall?: boolean;
     /** List of platforms to prebuild. */
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
@@ -184,7 +186,12 @@ export async function prebuildAsync(
   // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (
+    options.platforms.includes('ios') &&
+    options.install &&
+    !options.skipPodInstall &&
+    needsPodInstall
+  ) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();
