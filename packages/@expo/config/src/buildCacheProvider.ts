@@ -34,11 +34,24 @@ type IosRunOptions = {
 
 export type RunOptions = AndroidRunOptions | IosRunOptions;
 
+/** The device the cached build will be installed on. */
+export type BuildCacheDevice = {
+  /** Device identifier. On iOS, this is the UDID of the simulator or physical device. */
+  id: string;
+  /** Whether the device is a simulator or a physical device. */
+  type: 'simulator' | 'device';
+};
+
 export type ResolveBuildCacheProps = {
   projectRoot: string;
   platform: 'android' | 'ios';
   runOptions: RunOptions;
   fingerprintHash: string;
+  /**
+   * The device the build will be installed on. Only set when targeting a specific iOS device,
+   * not for generic builds (`--device generic`).
+   */
+  device?: BuildCacheDevice;
 };
 
 /**
@@ -74,6 +87,17 @@ export type BuildCacheProviderPlugin<T = any> = {
     props: CalculateFingerprintHashProps,
     options: T
   ) => Promise<string | null>;
+  /**
+   * Set to `true` to let `npx expo run:ios` resolve cached builds for physical iOS devices.
+   * By default, only iOS Simulator builds are resolved from the cache.
+   *
+   * When enabled, `resolveBuildCache` receives the target device in `props.device`. Return a build
+   * only if its provisioning profile includes `props.device.id`, otherwise return `null` so the
+   * project is built locally. The returned build is installed on the device just like `--binary`.
+   *
+   * Builds for physical iOS devices are never uploaded with `uploadBuildCache`.
+   */
+  supportsIosPhysicalDevices?: boolean;
 } & (
   | {
       resolveBuildCache(props: ResolveBuildCacheProps, options: T): Promise<string | null>;

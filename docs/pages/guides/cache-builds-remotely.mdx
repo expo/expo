@@ -77,6 +77,11 @@ type BuildCacheProviderPlugin<T = any> = {
     props: CalculateFingerprintHashProps,
     options: T
   ) => Promise<string | null>;
+
+  /**
+   * (Optional) Set to also resolve builds for physical iOS devices, not just iOS Simulators.
+   */
+  supportsIosPhysicalDevices?: boolean;
 };
 
 type ResolveBuildCacheProps = {
@@ -84,6 +89,10 @@ type ResolveBuildCacheProps = {
   platform: 'android' | 'ios';
   runOptions: RunOptions;
   fingerprintHash: string;
+  /**
+   * The iOS device the build will be installed on. Not set on Android or for `--device generic`.
+   */
+  device?: { id: string; type: 'simulator' | 'device' };
 };
 type UploadBuildCacheProps = {
   projectRoot: string;
@@ -107,7 +116,7 @@ The build cache provider is consulted only by local `npx expo run:[android|ios]`
 
 Some local builds are also skipped:
 
-- **iOS physical device builds.** A device build is only valid on devices that match its provisioning profile, so reusing one across machines or devices is unsafe. `npx expo run:ios` therefore skips both the cache lookup and the post-build upload when the target is a physical device. Only iOS Simulator builds participate in caching.
+- **iOS physical device builds.** A device build is only valid on devices that match its provisioning profile, so reusing one across machines or devices is unsafe. By default, `npx expo run:ios` skips both the cache lookup and the post-build upload when the target is a physical device. Only iOS Simulator builds participate in caching, unless the provider [opts in to physical iOS devices](#physical-ios-devices). Builds for physical devices are never uploaded.
 
 If you're using `appVersionSource: "remote"` in **eas.json**, note that the `versionCode` (Android) and `buildNumber` (iOS) live on EAS servers rather than in your project source, so they are not part of the fingerprint inputs. This is fine for normal development iteration. Local `npx expo run:*` invocations don't auto-increment those values, but be aware that a cached artifact retains whatever build number was embedded when it was originally built.
 
@@ -207,6 +216,31 @@ When you run the `npx expo run` command inside your **example** directory, you s
 That's it! You now have a remote build cache provider to speed up your builds.
 
 </Step>
+
+### Physical iOS devices
+
+A provider can also serve builds for physical iOS devices, for example ad hoc or development builds made on CI for a team's registered devices. Set `supportsIosPhysicalDevices` to `true` on the plugin to opt in:
+
+```ts provider/src/index.ts
+import { type BuildCacheProviderPlugin } from '@expo/config';
+
+const plugin: BuildCacheProviderPlugin = {
+  supportsIosPhysicalDevices: true,
+  resolveBuildCache: async ({ platform, device }) => {
+    if (platform === 'ios' && device?.type === 'device') {
+      // Return a build only if its provisioning profile includes `device.id`.
+    }
+    return null;
+  },
+  uploadBuildCache: async () => null,
+};
+
+export default plugin;
+```
+
+When the target is a physical device, `resolveBuildCache` receives the device's UDID in `device.id`. The provider must only return a build that is signed with a provisioning profile that includes this device, and otherwise return `null` so that the project is built locally. Expo CLI installs the returned **.app** or **.ipa** the same way as `npx expo run:ios --binary`.
+
+When a provider is configured, `npx expo run:ios` waits until the cache lookup misses before installing CocoaPods, so that a cached build launches without running `pod install`.
 
 ### Passing custom options
 

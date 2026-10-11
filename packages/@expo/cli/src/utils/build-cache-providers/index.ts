@@ -1,5 +1,6 @@
 import type {
   ExpoConfig,
+  BuildCacheDevice,
   BuildCacheProviderPlugin,
   BuildCacheProvider,
   RunOptions,
@@ -64,16 +65,29 @@ export const resolveBuildCacheProvider = async (
   throw new Error('Invalid build cache provider');
 };
 
+/**
+ * Returns `true` if the provider can serve an iOS build for the target. Simulators are always
+ * supported; physical devices require the provider to opt in with `supportsIosPhysicalDevices`.
+ */
+export function canResolveIosBuildCache(
+  provider: BuildCacheProvider,
+  { isSimulator }: { isSimulator: boolean }
+): boolean {
+  return isSimulator || provider.plugin.supportsIosPhysicalDevices === true;
+}
+
 export async function resolveBuildCache({
   projectRoot,
   platform,
   provider,
   runOptions,
+  device,
 }: {
   projectRoot: string;
   platform: 'android' | 'ios';
   provider: BuildCacheProvider;
   runOptions: RunOptions;
+  device?: BuildCacheDevice;
 }): Promise<string | null> {
   const fingerprintHash = await calculateFingerprintHashAsync({
     projectRoot,
@@ -88,12 +102,12 @@ export async function resolveBuildCache({
   if ('resolveRemoteBuildCache' in provider.plugin) {
     Log.warn('The resolveRemoteBuildCache function is deprecated. Use resolveBuildCache instead.');
     return await provider.plugin.resolveRemoteBuildCache(
-      { fingerprintHash, platform, runOptions, projectRoot },
+      { fingerprintHash, platform, runOptions, projectRoot, device },
       provider.options
     );
   }
   return await provider.plugin.resolveBuildCache(
-    { fingerprintHash, platform, runOptions, projectRoot },
+    { fingerprintHash, platform, runOptions, projectRoot, device },
     provider.options
   );
 }
