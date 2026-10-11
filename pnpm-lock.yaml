@@ -5455,8 +5455,8 @@ importers:
         specifier: workspace:~
         version: link:../expo-modules-jsi
       expo-modules-macros:
-        specifier: 0.16.0
-        version: 0.16.0
+        specifier: 0.19.0
+        version: 0.19.0
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -8422,6 +8422,16 @@ packages:
 
   '@expo/metro@58.0.0-rc.0':
     resolution: {integrity: sha512-9ZXNH/rppKQcoW0ycTSQqnKcjuYnutWf/6YkfAh1PBeWs+W1Nuc2uMTRM0qWNc9btbD4iHZKovru3gJqMgFzFQ==}
+
+  '@expo/modules-macros-win32-arm64@0.19.0':
+    resolution: {integrity: sha512-I1qNDJqnmSptXVQiu7zeGp17rsVcOqIh51TAjqlvWmeUGru3p6Pzcmaudlk27ixOc7aX3tM1cHRRrJCkIUwYOQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@expo/modules-macros-win32-x64@0.19.0':
+    resolution: {integrity: sha512-vYGYUteGbJWPLDep5W7k62gk1dR0AXtRM+Nn1r/QAegr403coALHeXAayekRMIYng+9GAYFMdw+DnnGGZGEGqA==}
+    cpu: [x64]
+    os: [win32]
 
   '@expo/multipart-body-parser@1.1.0':
     resolution: {integrity: sha512-XOaS79wFIJgx0J7oUzRb+kZsnZmFqGpisu0r8RPO3b0wjbW7xpWgiXmRR4RavKeGiVAPauZOi4vad7cJ3KCspg==}
@@ -12268,6 +12278,9 @@ packages:
 
   expo-modules-macros@0.16.0:
     resolution: {integrity: sha512-O8F67o4smrGT2l6G2MKmJUdg/x0gfAOGrXD3Cy1MtQwnOPLSgdKk8eXx21sEPUSMXkfHLcvFcdIbl1May09VBg==}
+
+  expo-modules-macros@0.19.0:
+    resolution: {integrity: sha512-Rga6UBVicoEk2adgcea2TeQC6rNubLTvQNs56pRtfH0INnCQHhH3FqquKAxiVfFLkZd22pw8n+gBnvvwkgZ1/w==}
 
   expo-three@7.0.1:
     resolution: {integrity: sha512-B8OyGwjQZ+NbGBMT3zqe2ngV7mI147yJL8eR56y9SQLrsEkv8+DiMpm3f88r7/LJoFXKGg8mmMrK09hMvRqGHg==}
@@ -17537,6 +17550,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  '@expo/modules-macros-win32-arm64@0.19.0':
+    optional: true
+
+  '@expo/modules-macros-win32-x64@0.19.0':
+    optional: true
+
   '@expo/multipart-body-parser@1.1.0':
     dependencies:
       dicer: 0.3.1
@@ -21624,6 +21643,11 @@ snapshots:
       stream-json: 1.9.1
 
   expo-modules-macros@0.16.0: {}
+
+  expo-modules-macros@0.19.0:
+    optionalDependencies:
+      '@expo/modules-macros-win32-arm64': 0.19.0
+      '@expo/modules-macros-win32-x64': 0.19.0
 
   expo-three@7.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(expo-font@packages+expo-font)(expo-modules-core@packages+expo-modules-core)(react-native@0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(three@0.137.5):
     dependencies:
