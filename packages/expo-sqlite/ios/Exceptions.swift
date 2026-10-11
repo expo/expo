@@ -74,6 +74,12 @@ internal final class DatabaseClosingException: Exception {
   }
 }
 
+internal final class SQLiteModuleLostException: Exception {
+  override var reason: String {
+    "The module that opened this database is no longer available"
+  }
+}
+
 internal final class AccessClosedResourceException: Exception {
   override var reason: String {
     "Access to closed resource"

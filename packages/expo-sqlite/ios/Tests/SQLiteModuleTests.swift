@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -49,7 +50,7 @@ struct SQLiteModuleTests {
 
   @Test
   func `database change event encodes a row id above 2^53 as a number`() throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     let event = DatabaseChangeEvent(
       databaseName: "main",

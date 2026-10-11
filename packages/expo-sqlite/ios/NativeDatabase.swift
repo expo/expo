@@ -17,11 +17,14 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   var statements: [NativeStatement] = []
   var extraPointer: OpaquePointer?
   private var refCount = AtomicInteger(1)
+  // The module that opened the connection. It owns the connection cache and the update hook context.
+  private weak var module: SQLiteModule?
 
-  init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions) {
+  init(_ pointer: OpaquePointer?, databasePath: String, openOptions: OpenDatabaseOptions, module: SQLiteModule? = nil) {
     self.pointer = pointer
     self.databasePath = databasePath
     self.openOptions = openOptions
+    self.module = module
   }
 
   @discardableResult
@@ -47,6 +50,38 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   }
 
   // MARK: - JavaScript members
+
+  @JS(.concurrent)
+  func initAsync() async throws {
+    try requireModule().initDb(database: self)
+  }
+
+  @JS
+  func initSync() throws {
+    try requireModule().initDb(database: self)
+  }
+
+  @JS(.concurrent)
+  func closeAsync() async throws {
+    try requireModule().closeDatabaseIfNeeded(self)
+  }
+
+  @JS
+  func closeSync() throws {
+    try requireModule().closeDatabaseIfNeeded(self)
+  }
+
+  // Interrupt must reach SQLite immediately, without waiting for the running query.
+  @JS
+  func interruptSync() throws {
+    // Do not block the JS thread or touch a connection being closed on another thread.
+    guard closeLock.try() else {
+      throw DatabaseClosingException()
+    }
+    defer { closeLock.unlock() }
+    try ensureOpen()
+    exsqlite3_interrupt(pointer)
+  }
 
   @JS(.concurrent)
   func isInTransactionAsync() async throws -> Bool {
@@ -109,6 +144,13 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   }
 
   // MARK: - Implementation shared by the sync and async members
+
+  private func requireModule() throws -> SQLiteModule {
+    guard let module else {
+      throw SQLiteModuleLostException()
+    }
+    return module
+  }
 
   private func isInTransaction() throws -> Bool {
     try ensureOpen()

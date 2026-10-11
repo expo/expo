@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -14,7 +15,7 @@ struct NativeStatementJavaScriptTests {
   let runtime: ExpoRuntime
 
   init() throws {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(appContext: appContext, module: SQLiteModule(appContext: appContext), name: "ExpoSQLite")
@@ -22,7 +23,7 @@ struct NativeStatementJavaScriptTests {
     _ = try runtime.eval(
       """
       var NativeStatement = expo.modules.ExpoSQLite.NativeStatement;
-      var db = new expo.modules.ExpoSQLite.NativeDatabase(':memory:', { useNewConnection: true });
+      var db = expo.modules.ExpoSQLite.createNativeDatabase(':memory:', { useNewConnection: true });
       db.initSync();
       db.execSync('CREATE TABLE t (id INTEGER PRIMARY KEY NOT NULL, value TEXT)');
       function prepare(source) {

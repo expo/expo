@@ -163,6 +163,14 @@ export class SQLiteModule extends NativeModule {
   async deleteDatabaseAsync(databasePath: string): Promise<void> {}
   deleteDatabaseSync(databasePath: string): void {}
 
+  createNativeDatabase(
+    databasePath: string,
+    options?: SQLiteOpenOptions,
+    serializedData?: Uint8Array
+  ): NativeDatabase {
+    return new NativeDatabase(databasePath, options, serializedData);
+  }
+
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {}
   ensureDatabasePathExistsSync(databasePath: string): void {}
 
@@ -185,7 +193,6 @@ export class SQLiteModule extends NativeModule {
     forceOverwrite: boolean
   ): Promise<void> {}
 
-  readonly NativeDatabase: typeof NativeDatabase = NativeDatabase;
   readonly NativeStatement: typeof NativeStatement = NativeStatement;
   readonly NativeSession: typeof NativeSession = NativeSession;
 }

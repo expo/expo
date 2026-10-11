@@ -26,7 +26,7 @@ export default {
   ensureDatabasePathExistsAsync: jest.fn().mockImplementation(async (databasePath: string) => {}),
   ensureDatabasePathExistsSync: jest.fn().mockImplementation((databasePath: string) => {}),
 
-  NativeDatabase: jest
+  createNativeDatabase: jest
     .fn()
     .mockImplementation(
       (databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) =>
