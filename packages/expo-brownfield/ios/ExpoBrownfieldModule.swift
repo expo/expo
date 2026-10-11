@@ -38,7 +38,7 @@ public class ExpoBrownfieldModule: Module {
   }
 
   @JS
-  func sendMessage(_ message: JavaScriptValue) throws {
+  func sendMessage(_ message: borrowing JavaScriptValue) throws {
     let object = try message.asObject()
     var result: BrownfieldMessage = [:]
 
