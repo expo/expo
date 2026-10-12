@@ -1,6 +1,7 @@
 import { render, renderHook, within } from '@testing-library/react-native';
 import { Platform, View } from 'react-native';
 
+import { DarkTheme } from '../../native/theming/DarkTheme';
 import type { NativeStackHeaderItem } from '../types';
 import { useHeaderConfigProps } from '../views/useHeaderConfigProps';
 import {
@@ -147,8 +148,54 @@ describe('titleColor', () => {
 // ─── backgroundColor ────────────────────────────────────────────────────────────
 
 describe('backgroundColor', () => {
-  test('defaults to colors.card', async () => {
+  test('is undefined with the default theme, so the system bar background is used', async () => {
     const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBeUndefined();
+  });
+
+  test('uses colors.card from a custom theme', async () => {
+    mockedUseTheme.mockReturnValue({
+      dark: false,
+      colors: { ...DEFAULT_COLORS, card: 'rgb(10, 20, 30)' },
+      fonts: DEFAULT_FONTS,
+    } as any);
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBe('rgb(10, 20, 30)');
+  });
+
+  test('pairs the system background with a light bar and the theme text color for the default theme', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBeUndefined();
+    expect(result.current.experimental_userInterfaceStyle).toBe('light');
+    expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
+  });
+
+  test('pairs the system background with a dark bar and the theme text color for DarkTheme', async () => {
+    mockedUseTheme.mockReturnValue({
+      dark: true,
+      colors: DarkTheme.colors,
+      fonts: DEFAULT_FONTS,
+    } as any);
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBeUndefined();
+    expect(result.current.experimental_userInterfaceStyle).toBe('dark');
+    expect(result.current.titleColor).toBe(DarkTheme.colors.text);
+  });
+
+  test('uses the system background for a theme spread from the default that keeps its card color', async () => {
+    mockedUseTheme.mockReturnValue({
+      dark: false,
+      colors: { ...DEFAULT_COLORS, primary: 'red' },
+      fonts: DEFAULT_FONTS,
+    } as any);
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBeUndefined();
+  });
+
+  test('keeps an explicit headerStyle.backgroundColor that equals the default card color', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerStyle: { backgroundColor: DEFAULT_COLORS.card } }))
+    );
     expect(result.current.backgroundColor).toBe(DEFAULT_COLORS.card);
   });
 
