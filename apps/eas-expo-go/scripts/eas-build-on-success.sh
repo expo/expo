@@ -37,6 +37,10 @@ upload_crashlytics_symbols() {
   popd
 }
 
+if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  df -h /
+fi
+
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     upload_crashlytics_symbols
