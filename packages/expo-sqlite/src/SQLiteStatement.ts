@@ -477,6 +477,9 @@ function createSQLiteExecuteSyncResult<T>(
 class SQLiteExecuteAsyncResultImpl<T> {
   private columnNames: string[] | null = null;
   private isStepCalled = false;
+  // Whether the run returned no rows. SQLite runs a statement again when it is stepped after it
+  // returned SQLITE_DONE, so such a result must not step it.
+  private isDone = false;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
@@ -504,6 +507,9 @@ class SQLiteExecuteAsyncResultImpl<T> {
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
       return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
+    }
+    if (this.isDone) {
+      return null;
     }
     this.assertCursorOwner();
     const firstRow = await this.statement.stepAsync(this.database);
@@ -544,6 +550,9 @@ class SQLiteExecuteAsyncResultImpl<T> {
     if (firstRowValues != null) {
       yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
     }
+    if (this.isDone) {
+      return;
+    }
 
     let result;
     do {
@@ -560,13 +569,17 @@ class SQLiteExecuteAsyncResultImpl<T> {
     this.assertCursorOwner();
     await this.statement.resetAsync(this.database);
     this.isStepCalled = false;
+    this.isDone = false;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
     if (this.firstRowValues != null) {
       const firstRowValues = this.firstRowValues;
       this.firstRowValues = null;
-      return firstRowValues.length > 0 ? firstRowValues : null;
+      if (firstRowValues.length > 0) {
+        return firstRowValues;
+      }
+      this.isDone = true;
     }
     return null;
   }
@@ -582,6 +595,9 @@ class SQLiteExecuteAsyncResultImpl<T> {
 class SQLiteExecuteSyncResultImpl<T> {
   private columnNames: string[] | null = null;
   private isStepCalled = false;
+  // Whether the run returned no rows. SQLite runs a statement again when it is stepped after it
+  // returned SQLITE_DONE, so such a result must not step it.
+  private isDone = false;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
@@ -608,6 +624,9 @@ class SQLiteExecuteSyncResultImpl<T> {
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
       return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
+    }
+    if (this.isDone) {
+      return null;
     }
     this.assertCursorOwner();
     const firstRow = this.statement.stepSync(this.database);
@@ -646,6 +665,9 @@ class SQLiteExecuteSyncResultImpl<T> {
     if (firstRowValues != null) {
       yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
     }
+    if (this.isDone) {
+      return;
+    }
     let result;
     do {
       this.assertCursorOwner();
@@ -661,13 +683,17 @@ class SQLiteExecuteSyncResultImpl<T> {
     this.assertCursorOwner();
     this.statement.resetSync(this.database);
     this.isStepCalled = false;
+    this.isDone = false;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
     if (this.firstRowValues != null) {
       const firstRowValues = this.firstRowValues;
       this.firstRowValues = null;
-      return firstRowValues.length > 0 ? firstRowValues : null;
+      if (firstRowValues.length > 0) {
+        return firstRowValues;
+      }
+      this.isDone = true;
     }
     return null;
   }
