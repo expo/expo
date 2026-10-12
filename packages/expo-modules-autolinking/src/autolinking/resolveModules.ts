@@ -23,13 +23,19 @@ export type ResolveModulesParams = {
    * whose classes went missing because the scan didn't run.
    */
   onScanResult?: (succeeded: boolean) => void;
+  /**
+   * The concrete platform the scanned classes are linked for, when it's narrower than the platform
+   * being resolved (the umbrella `apple`). Only the scan depends on it: it decides which
+   * conditionally compiled classes exist.
+   */
+  scanPlatform?: SupportedPlatform;
 };
 
 /** Resolves search results to a list of platform-specific configuration. */
 export async function resolveModulesAsync(
   searchResults: SearchResults,
   autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform },
-  { scanNativeModules = false, onScanResult }: ResolveModulesParams = {}
+  { scanNativeModules = false, onScanResult, scanPlatform }: ResolveModulesParams = {}
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
   // A platform implementation can scan all packages' native sources upfront (one pass for the
@@ -41,11 +47,11 @@ export async function resolveModulesAsync(
     try {
       scannedModules = await platformLinking.scanNativeModulesAsync(
         searchResults,
-        autolinkingOptions.platform
+        scanPlatform ?? autolinkingOptions.platform
       );
     } catch (error: any) {
       console.warn(
-        `⚠️  Scanning for native modules failed, only modules declared in the module config will be linked: ${error.message ?? error}`
+        `warning: Scanning for native modules failed, only modules declared in the module config will be linked: ${error.message ?? error}`
       );
     }
     onScanResult?.(scannedModules != null);

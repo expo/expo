@@ -4,6 +4,7 @@ import { vol } from 'memfs';
 import {
   collectPackageRoots,
   groupScannedModules,
+  hasModuleAnnotations,
   satisfiesMinimumVersion,
   scanExpoModulesAsync,
   type ScannerPluginInfo,
@@ -526,5 +527,38 @@ describe(satisfiesMinimumVersion, () => {
     ['', false],
   ])('%s -> %s', (version, expected) => {
     expect(satisfiesMinimumVersion(version, [0, 14, 0])).toBe(expected);
+  });
+});
+
+describe(hasModuleAnnotations, () => {
+  it('finds an @ExpoModule attribute in a nested Swift source', () => {
+    vol.fromJSON({
+      '/app/node_modules/expo-haptics/ios/Sources/HapticsModule.swift':
+        'import ExpoModulesCore\n\n@ExpoModule("ExpoHaptics")\npublic class HapticsModule: Module {}\n',
+    });
+    expect(hasModuleAnnotations('/app/node_modules/expo-haptics')).toBe(true);
+  });
+
+  it('ignores mentions in comments and non-Swift files', () => {
+    vol.fromJSON({
+      '/app/node_modules/expo-modules-core/ios/ModuleHolder.swift':
+        '/// Set by the `@ExpoModule` macro.\nlet name = "x"\n',
+      '/app/node_modules/expo-modules-core/README.md': '@ExpoModule\n',
+    });
+    expect(hasModuleAnnotations('/app/node_modules/expo-modules-core')).toBe(false);
+  });
+
+  it('skips the directories the scanner prunes', () => {
+    vol.fromJSON({
+      '/app/node_modules/expo-foo/ios/Tests/FooTests.swift': '@ExpoModule\nclass FooModule {}\n',
+      '/app/node_modules/expo-foo/example/ios/App.swift': '@ExpoModule\nclass AppModule {}\n',
+      '/app/node_modules/expo-foo/node_modules/expo-bar/ios/Bar.swift':
+        '@ExpoModule\npublic class BarModule {}\n',
+    });
+    expect(hasModuleAnnotations('/app/node_modules/expo-foo')).toBe(false);
+  });
+
+  it('returns false for a missing directory', () => {
+    expect(hasModuleAnnotations('/nonexistent')).toBe(false);
   });
 });

@@ -87,6 +87,9 @@ export async function scanNativeModulesAsync(
   }
   const pluginInfo = resolveScannerPlugin(coreRevision.path);
   if (!pluginInfo) {
+    console.warn(
+      `warning: Couldn't find the Expo modules scanner, which ships with expo-modules-macros 0.14.0 or newer, from ${coreRevision.path}. Only modules declared in expo-module.config.json will be linked.`
+    );
     return null;
   }
 

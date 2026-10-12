@@ -42,6 +42,22 @@ describe(resolveModulesAsync, () => {
     );
   });
 
+  it('scans for the scan platform while resolving for the umbrella platform', async () => {
+    const scanNativeModulesAsync = jest.fn().mockResolvedValue({});
+    mockGetLinkingImplementation.mockReturnValue({
+      scanNativeModulesAsync,
+      resolveModuleAsync: jest.fn().mockResolvedValue({ packageName: 'expo-clipboard' }),
+    } as any);
+
+    await resolveModulesAsync(searchResults, autolinkingOptions, {
+      scanNativeModules: true,
+      scanPlatform: 'tvos',
+    });
+
+    expect(mockGetLinkingImplementation).toHaveBeenCalledWith('apple');
+    expect(scanNativeModulesAsync).toHaveBeenCalledWith(searchResults, 'tvos');
+  });
+
   it('does not scan unless the caller asks for it', async () => {
     // Resolution at pod install must not scan: its result is baked into the generated build phase,
     // where a scan that failed once would keep a package unlinked until the next pod install.

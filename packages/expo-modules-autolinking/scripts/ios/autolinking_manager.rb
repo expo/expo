@@ -260,6 +260,8 @@ module Expo
 
     public def generate_modules_provider_command_args(target_name, target_path)
       command_args = ['--target', target_path, '--target-name', target_name, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
+      # Match the build phase, which links only the module classes that compile for this platform.
+      command_args.concat(['--target-platform', platform_name.downcase])
 
       if !custom_app_root.nil?
         command_args.concat(['--app-root', custom_app_root])

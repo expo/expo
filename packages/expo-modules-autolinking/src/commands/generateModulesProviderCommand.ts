@@ -1,10 +1,12 @@
 import type commander from 'commander';
+import { Option } from 'commander';
 import fs from 'fs';
 
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
-import type { SupportedPlatform } from '../types';
+import { hasModuleAnnotations } from '../platforms/apple/moduleScanner';
+import type { SearchResults, SupportedPlatform } from '../types';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
@@ -24,39 +26,45 @@ type PartialPodfileProperties = {
 };
 
 /**
- * Warns about packages integrated at pod install that the generated provider won't link. A package
- * resolving with nothing to link is only worth reporting when the scan failed: the packages passed
- * here are every package whose pods support the target, so the ones that carry no modules at all
- * are expected to be among them, but a failed scan silently empties the ones whose classes it
- * would have found.
+ * Reports packages integrated at pod install that the generated provider won't link, and returns
+ * the ones whose module classes went missing because the scan for `@ExpoModule` classes didn't
+ * complete. The packages passed here are every package whose pods support the target, so the ones
+ * carrying no modules at all are expected to resolve empty. A failed scan empties the others too,
+ * so a package left empty counts as missing its classes only when it doesn't declare its modules in
+ * the config (a declared list opts it out of scanning) and its sources have an `@ExpoModule`
+ * attribute.
  */
-export function warnAboutUnresolvedPackages(
+export function findPackagesMissingScannedModules(
   expectedPackageNames: string[],
   resolvedModules: { packageName: string; modules?: unknown[] }[],
-  scanSucceeded: boolean
-): void {
+  scanSucceeded: boolean,
+  searchResults: SearchResults
+): string[] {
   const modulesByName = new Map(resolvedModules.map((module) => [module.packageName, module]));
-  const emptyPackages: string[] = [];
+  const packagesMissingModules: string[] = [];
 
   for (const packageName of expectedPackageNames) {
     const resolvedModule = modulesByName.get(packageName);
     if (!resolvedModule) {
       console.warn(
-        `⚠️  Package '${packageName}' was integrated at pod install but is missing from the current resolution. Run pod install if it should still be linked.`
+        `warning: Package '${packageName}' was integrated at pod install but is missing from the current resolution. Run pod install if it should still be linked.`
       );
-    } else if (!scanSucceeded && !resolvedModule.modules?.length) {
-      emptyPackages.push(packageName);
+      continue;
+    }
+    const revision = searchResults[packageName];
+    if (
+      !scanSucceeded &&
+      !resolvedModule.modules?.length &&
+      revision &&
+      !revision.config?.declaresAppleModules() &&
+      hasModuleAnnotations(revision.path)
+    ) {
+      packagesMissingModules.push(packageName);
     }
   }
-
-  if (emptyPackages.length > 0) {
-    console.warn(
-      `⚠️  Scanning for @ExpoModule classes didn't run to completion (see the warnings above), so these packages are linked with only what their module config declares: ${emptyPackages.join(', ')}. Any class that relies on being detected automatically is missing from this build.`
-    );
-  }
+  return packagesMissingModules;
 }
 
-/** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
     .option(
@@ -72,19 +80,17 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
       '-p, --packages <packages...>',
       'Names of the packages to include in the generated modules provider.'
     )
-    .option(
-      '--target-platform <platform>',
-      'The concrete Apple platform the target builds for (ios, macos or tvos). Decides which conditionally compiled module classes are linked; without it every scanned class is linked.'
+    .addOption(
+      new Option(
+        '--target-platform <platform>',
+        'The concrete Apple platform the target builds for. Decides which conditionally compiled module classes are linked; without it every scanned class is linked.'
+      ).choices(['ios', 'macos', 'tvos'])
     )
     .option('--app-root <path>', 'Path to the app root directory.')
     .option('--podfile-properties-file-path <path>', 'Path to the Podfile properties file.')
     .action(
       async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
         const platform = commandArguments.platform ?? 'apple';
-        // Pods are resolved for the umbrella `apple` platform, but the modules provider is built
-        // for one concrete target, which is what decides whether a conditionally compiled class
-        // exists. Fall back to the umbrella when the caller doesn't say, linking every scanned class.
-        const targetPlatform = commandArguments.targetPlatform ?? platform;
         const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
           ...commandArguments,
           searchPaths,
@@ -99,12 +105,16 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         let scanSucceeded = false;
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
-          { ...autolinkingOptions, platform: targetPlatform },
+          { ...autolinkingOptions, platform },
           // The provider generated here is the only consumer of the scanned classes, and it runs on
           // every build, so a scan that fails once is repaired by the next build rather than
           // persisting until the next pod install.
           {
             scanNativeModules: true,
+            // Pods are resolved for the umbrella `apple` platform, but the modules provider is built
+            // for one concrete target, which is what decides whether a conditionally compiled class
+            // exists. Without it the scan links every class it finds.
+            scanPlatform: commandArguments.targetPlatform,
             onScanResult: (succeeded) => (scanSucceeded = succeeded),
           }
         );
@@ -114,10 +124,11 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           includeModules.has(module.packageName)
         );
 
-        warnAboutUnresolvedPackages(
+        const packagesMissingModules = findPackagesMissingScannedModules(
           commandArguments.packages ?? [],
           filteredModules,
-          scanSucceeded
+          scanSucceeded,
+          expoModulesSearchResults
         );
 
         const podfileProperties: PartialPodfileProperties = await fs.promises
@@ -144,6 +155,16 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           inlineModulesTargets,
           appRoot,
         });
+
+        // These classes are referenced from JavaScript but missing from the provider, so the app
+        // would build fine and then fail at runtime with a missing native module. Fail the build
+        // instead; Xcode lists an `error:` line in the issue navigator.
+        if (packagesMissingModules.length > 0) {
+          console.error(
+            `error: Scanning for @ExpoModule classes didn't complete (see the warnings above), so the module classes of these packages are missing from the modules provider: ${packagesMissingModules.join(', ')}. Build again to retry the scan, or declare the classes in the package's expo-module.config.json.`
+          );
+          process.exitCode = 1;
+        }
       }
     );
 }

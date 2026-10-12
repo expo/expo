@@ -78,6 +78,10 @@ function generateModulesProvider({
       appRoot,
       '--platform',
       'apple',
+      // The generated SwiftPM manifests target iOS only, so only the module classes that compile
+      // for iOS can be linked.
+      '--target-platform',
+      'ios',
       ...(targetName != null ? ['--target-name', targetName] : []),
       ...(entitlementPath != null ? ['--entitlement', entitlementPath] : []),
       ...(podfilePropertiesPath != null

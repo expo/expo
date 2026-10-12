@@ -128,6 +128,56 @@ export function satisfiesMinimumVersion(version: string, minimum: number[]): boo
 }
 
 /**
+ * The directories the scanner prunes from its walk (`prunedDirectoryNames` in its `SourceScan.swift`),
+ * so `hasModuleAnnotations` looks at the same sources.
+ */
+const PRUNED_DIRECTORY_NAMES = new Set([
+  '.build',
+  'Pods',
+  '.git',
+  'node_modules',
+  'Tests',
+  'UITests',
+  '__tests__',
+  '__mocks__',
+  'example',
+  'examples',
+  'e2e',
+]);
+
+/** An `@ExpoModule` attribute at the start of a line, which leaves out mentions in comments. */
+const MODULE_ANNOTATION_PATTERN = /^\s*@ExpoModule\b/m;
+
+/**
+ * Whether any Swift source in the package has an `@ExpoModule` attribute, by a plain text search.
+ * It stands in for the scanner when the scan didn't complete, to tell a package that has nothing to
+ * link apart from one whose annotated classes went missing with the scan.
+ */
+export function hasModuleAnnotations(packageRoot: string): boolean {
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(packageRoot, { withFileTypes: true });
+  } catch {
+    return false;
+  }
+  for (const entry of entries) {
+    const entryPath = path.join(packageRoot, entry.name);
+    if (entry.isDirectory()) {
+      if (!PRUNED_DIRECTORY_NAMES.has(entry.name) && hasModuleAnnotations(entryPath)) {
+        return true;
+      }
+    } else if (entry.isFile() && entry.name.endsWith('.swift')) {
+      try {
+        if (MODULE_ANNOTATION_PATTERN.test(fs.readFileSync(entryPath, 'utf8'))) {
+          return true;
+        }
+      } catch {}
+    }
+  }
+  return false;
+}
+
+/**
  * The directories to scan, one per package. Each path is realpath-resolved: the scanner reports
  * fully resolved absolute file paths, so the roots used for the path-prefix grouping must be
  * resolved the same way, or a symlinked package (pnpm stores, local development links) would match
@@ -192,14 +242,14 @@ export async function scanExpoModulesAsync(
     const stderr =
       typeof error.stderr === 'string' && error.stderr.trim() ? `\n${error.stderr.trim()}` : '';
     console.warn(
-      `⚠️  Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}${stderr}`
+      `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}${stderr}`
     );
     return null;
   }
 
   if (!(output.schemaVersion >= MINIMUM_SUPPORTED_SCHEMA_VERSION)) {
     console.warn(
-      `⚠️  The Expo modules scanner reported schema version ${output.schemaVersion}, but this version of expo-modules-autolinking requires at least ${MINIMUM_SUPPORTED_SCHEMA_VERSION}. Update expo-modules-macros; only modules declared in expo-module.config.json will be linked.`
+      `warning: The Expo modules scanner reported schema version ${output.schemaVersion}, but this version of expo-modules-autolinking requires at least ${MINIMUM_SUPPORTED_SCHEMA_VERSION}. Update expo-modules-macros; only modules declared in expo-module.config.json will be linked.`
     );
     return null;
   }
@@ -207,11 +257,11 @@ export async function scanExpoModulesAsync(
   // A successful run can still report diagnostics on stderr (e.g. an unreadable source file that
   // may hide a module); don't let them disappear.
   if (runStderr.trim()) {
-    console.warn(`⚠️  The Expo modules scanner reported:\n${runStderr.trim()}`);
+    console.warn(`warning: The Expo modules scanner reported:\n${runStderr.trim()}`);
   }
   for (const warning of output.warnings) {
     console.warn(
-      `⚠️  ${warning.file}:${warning.line}: ${warning.message}. If a module class is declared inside this conditional compilation block, declare it in expo-module.config.json to link it.`
+      `${warning.file}:${warning.line}: warning: ${warning.message}. If a module class is declared inside this conditional compilation block, declare it in expo-module.config.json to link it.`
     );
   }
   return output;
@@ -267,7 +317,7 @@ export function groupScannedModules(
       // can't distinguish written `internal` from no modifier, so the warning covers both.
       if (module.accessLevel === 'internal' && !warnedClasses.has(module.file + module.name)) {
         console.warn(
-          `⚠️  The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
+          `warning: The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
         );
         warnedClasses.add(module.file + module.name);
       }
