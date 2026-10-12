@@ -165,6 +165,62 @@ The following example shows a nested context menu on iOS:
 
 To explore all available customization options, see the API documentation for [`Link.MenuAction`](/versions/latest/sdk/router/link/#linkmenuaction).
 
+## Rounded corners on the trigger
+
+When you press and hold a link, iOS lifts the direct child of `Link.Trigger` out of the screen. iOS uses the corner radius of that child to shape the lifted view. If only a nested view has a `borderRadius`, iOS applies its own default corner radius, which can be much larger than your design.
+
+The following example shows a trigger where only the inner view has a `borderRadius`. The lifted card gets larger top corners than at rest:
+
+<ContentSpotlight
+  alt="A card at rest with small corners, and the same card lifted with much larger top corners."
+  src="/static/images/expo-router/link-preview-corner-radius-1.webp"
+/>
+
+To keep the corners when the view is lifted, set `borderRadius` on the direct child of `Link.Trigger`.
+
+### Trigger with a background
+
+If the trigger draws its own background, set `borderRadius` on the trigger itself:
+
+```tsx
+<Link href="/about" asChild>
+  <Link.Trigger>
+    <Pressable style={{ width: 200, height: 120, borderRadius: 8, backgroundColor: '#ff6a00' }} />
+  </Link.Trigger>
+  <Link.Menu>
+    <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
+  </Link.Menu>
+</Link>
+```
+
+<ContentSpotlight
+  alt="A card with a background and a corner radius on the Pressable, at rest and lifted with the same corners."
+  src="/static/images/expo-router/link-preview-corner-radius-2.webp"
+/>
+
+### Trigger without a background
+
+If the trigger has no background and a nested view draws the rounded shape, set the same `borderRadius` on both the trigger and the nested view:
+
+```tsx
+<Link href="/about" asChild>
+  <Link.Trigger>
+    <Pressable style={{ alignSelf: 'flex-start', borderRadius: 8 }}>
+      <View style={{ width: 200, height: 120, borderRadius: 8, backgroundColor: '#ff6a00' }} />
+      <Text>Caption</Text>
+    </Pressable>
+  </Link.Trigger>
+  <Link.Menu>
+    <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
+  </Link.Menu>
+</Link>
+```
+
+<ContentSpotlight
+  alt="A card with a caption and a corner radius on the Pressable and the inner view, at rest and lifted with the same corners."
+  src="/static/images/expo-router/link-preview-corner-radius-3.webp"
+/>
+
 ## Detecting if component is in preview
 
 If you're building a component that might be rendered inside a preview, you can use the [`useIsPreview()`](/versions/latest/sdk/router/link/#useispreview) hook to adjust its behavior accordingly:
