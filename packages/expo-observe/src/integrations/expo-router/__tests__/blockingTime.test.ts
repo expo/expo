@@ -1,95 +1,172 @@
-import { startBlockingTimeMeasurement } from '../blockingTime';
+import { createBlockingTimeObserver } from '../blockingTime';
 
-let now = 0;
-let frameCallbacks = new Map<number, FrameRequestCallback>();
-let nextFrameId = 1;
-const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
-const originalCancelAnimationFrame = globalThis.cancelAnimationFrame;
+let now = 1000;
+const originalObserver = globalThis.PerformanceObserver;
+
+class MockPerformanceObserver {
+  static latest: MockPerformanceObserver;
+  static supportedEntryTypes = ['longtask'];
+  callback: PerformanceObserverCallback;
+  observe = jest.fn();
+  disconnect = jest.fn();
+  takeRecords = jest.fn<PerformanceEntry[], []>(() => []);
+
+  constructor(callback: PerformanceObserverCallback) {
+    this.callback = callback;
+    MockPerformanceObserver.latest = this;
+  }
+
+  emit(...entries: PerformanceEntry[]) {
+    // Only getEntries is used by the measurement callback.
+    this.callback({ getEntries: () => entries } as PerformanceObserverEntryList, this);
+  }
+}
+
+function longTask(startTime: number, duration: number): PerformanceEntry {
+  // The measurement uses these three fields of a native longtask entry.
+  return { entryType: 'longtask', startTime, duration } as PerformanceEntry;
+}
 
 beforeEach(() => {
+  jest.useFakeTimers();
   now = 1000;
-  frameCallbacks = new Map();
+  MockPerformanceObserver.supportedEntryTypes = ['longtask'];
   jest.spyOn(performance, 'now').mockImplementation(() => now);
-  // The Node test environment has no animation frame API.
-  globalThis.requestAnimationFrame = (cb) => {
-    const id = nextFrameId++;
-    frameCallbacks.set(id, cb);
-    return id;
-  };
-  globalThis.cancelAnimationFrame = (id) => {
-    if (id != null) frameCallbacks.delete(id);
-  };
+  Object.defineProperty(globalThis, 'PerformanceObserver', {
+    configurable: true,
+    value: MockPerformanceObserver,
+  });
 });
 
 afterEach(() => {
   jest.restoreAllMocks();
-  globalThis.requestAnimationFrame = originalRequestAnimationFrame;
-  globalThis.cancelAnimationFrame = originalCancelAnimationFrame;
+  jest.useRealTimers();
+  Object.defineProperty(globalThis, 'PerformanceObserver', {
+    configurable: true,
+    value: originalObserver,
+  });
 });
 
-function frameAt(time: number) {
-  now = time;
-  const callbacks = [...frameCallbacks.values()];
-  frameCallbacks.clear();
-  callbacks.forEach((cb) => cb(time));
-}
+describe('createBlockingTimeObserver', () => {
+  it('does not create an observer when the API is absent', () => {
+    Object.defineProperty(globalThis, 'PerformanceObserver', {
+      configurable: true,
+      value: undefined,
+    });
+    expect(createBlockingTimeObserver()).toBeUndefined();
+  });
 
-describe('startBlockingTimeMeasurement', () => {
-  it('reports zero when every frame arrives on time', () => {
+  it('does not create an observer when longtask entries are unsupported', () => {
+    MockPerformanceObserver.supportedEntryTypes = ['mark'];
+    expect(createBlockingTimeObserver()).toBeUndefined();
+  });
+
+  it('uses one observer for successive navigation windows', () => {
+    const measurement = createBlockingTimeObserver()!;
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledWith({ type: 'longtask' });
+
+    measurement.start(jest.fn()).finish();
+    measurement.start(jest.fn()).finish();
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
+  });
+
+  it('sums blocking portions of long tasks inside the two-second window', () => {
     const onComplete = jest.fn();
-    startBlockingTimeMeasurement(onComplete);
-    for (let t = 1016; t <= 3016; t += 16) {
-      frameAt(t);
-    }
+    createBlockingTimeObserver()!.start(onComplete);
+    MockPerformanceObserver.latest.emit(
+      longTask(1010, 120),
+      longTask(1200, 40),
+      longTask(1400, 100)
+    );
+
+    now = 3000;
+    jest.advanceTimersByTime(2000);
+    jest.runOnlyPendingTimers();
     expect(onComplete).toHaveBeenCalledTimes(1);
-    expect(onComplete).toHaveBeenCalledWith(0);
+    expect(onComplete).toHaveBeenCalledWith(120);
   });
 
-  it('sums the part of each frame gap above 50ms', () => {
+  it('counts only the blocking portion that overlaps the window', () => {
     const onComplete = jest.fn();
-    startBlockingTimeMeasurement(onComplete);
-    frameAt(1120); // 120ms gap -> 70ms blocking
-    frameAt(1160); // 40ms gap -> not blocking
-    frameAt(1260); // 100ms gap -> 50ms blocking
-    frameAt(3000);
-    frameAt(3016);
-    // The 1740ms gap before 3000 adds 1690ms of blocking.
-    expect(onComplete).toHaveBeenCalledWith(70 + 50 + 1690);
+    createBlockingTimeObserver()!.start(onComplete);
+    MockPerformanceObserver.latest.emit(
+      longTask(900, 200),
+      longTask(2950, 200),
+      longTask(2900, 200),
+      longTask(700, 100),
+      longTask(3100, 100)
+    );
+
+    now = 3000;
+    jest.advanceTimersByTime(2000);
+    jest.runOnlyPendingTimers();
+    expect(onComplete).toHaveBeenCalledWith(150);
   });
 
-  it('clips the last gap to the 2s window', () => {
+  it('flushes queued entries before the timer reports and reports once', () => {
     const onComplete = jest.fn();
-    startBlockingTimeMeasurement(onComplete);
-    frameAt(2900);
-    frameAt(3500);
-    expect(onComplete).toHaveBeenCalledWith(1850 + 50);
+    createBlockingTimeObserver()!.start(onComplete);
+    MockPerformanceObserver.latest.takeRecords.mockReturnValueOnce([longTask(1100, 110)]);
+
+    now = 3000;
+    jest.advanceTimersByTime(2000);
+    jest.runOnlyPendingTimers();
+    expect(MockPerformanceObserver.latest.takeRecords).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith(60);
+    jest.advanceTimersByTime(2000);
+    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
-  it('stops requesting frames once the window ends', () => {
-    startBlockingTimeMeasurement(jest.fn());
-    frameAt(3000);
-    expect(frameCallbacks.size).toBe(0);
-  });
+  it('keeps a finished window open until the running native task is reported', () => {
+    const first = jest.fn();
+    const second = jest.fn();
+    const measurement = createBlockingTimeObserver()!;
+    const initial = measurement.start(first);
+    now = 1200;
+    initial.finish();
+    expect(first).not.toHaveBeenCalled();
 
-  it('finish() reports the blocking time so far and stops the measurement', () => {
-    const onComplete = jest.fn();
-    const measurement = startBlockingTimeMeasurement(onComplete);
-    frameAt(1100);
+    measurement.start(second);
     now = 1300;
-    measurement.finish();
-    expect(onComplete).toHaveBeenCalledWith(50 + 150);
-    expect(frameCallbacks.size).toBe(0);
-    measurement.finish();
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    MockPerformanceObserver.latest.emit(longTask(1100, 200));
+    jest.advanceTimersToNextTimer();
+    expect(first).toHaveBeenCalledWith(50);
+
+    MockPerformanceObserver.latest.emit(longTask(1350, 100));
+    now = 3200;
+    jest.advanceTimersByTime(2000);
+    jest.runOnlyPendingTimers();
+    expect(second).toHaveBeenCalledWith(150);
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
   });
 
-  it('cancel() stops the measurement without reporting', () => {
+  it('cancels without reporting and disconnects on cleanup', () => {
     const onComplete = jest.fn();
-    const measurement = startBlockingTimeMeasurement(onComplete);
-    measurement.cancel();
-    frameAt(3000);
-    measurement.finish();
+    const measurement = createBlockingTimeObserver()!;
+    const current = measurement.start(onComplete);
+    current.cancel();
+    MockPerformanceObserver.latest.emit(longTask(1100, 120));
+    now = 3000;
+    jest.advanceTimersByTime(2000);
+    current.finish();
     expect(onComplete).not.toHaveBeenCalled();
-    expect(frameCallbacks.size).toBe(0);
+
+    measurement.disconnect();
+    expect(MockPerformanceObserver.latest.disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it('re-observes the same observer after backgrounding', () => {
+    const measurement = createBlockingTimeObserver()!;
+    measurement.disconnect();
+    measurement.observe();
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not observe until requested when created inactive', () => {
+    const measurement = createBlockingTimeObserver(false)!;
+    expect(MockPerformanceObserver.latest.observe).not.toHaveBeenCalled();
+    measurement.observe();
+    expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
   });
 });

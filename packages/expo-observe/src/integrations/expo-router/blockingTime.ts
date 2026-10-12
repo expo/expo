@@ -1,60 +1,81 @@
 const WINDOW_MS = 2000;
-// Same long-task threshold as the Web Vitals Total Blocking Time.
 const LONG_TASK_THRESHOLD_MS = 50;
 
 export interface BlockingTimeMeasurement {
-  /** Ends the measurement early and reports the blocking time collected so far. */
+  readonly deadline: number;
   finish(): void;
-  /** Ends the measurement without reporting. */
   cancel(): void;
 }
 
-/**
- * Measures how long the JS thread is blocked during the next 2 seconds.
- *
- * Animation frame callbacks run on the JS thread, so a long gap between two
- * of them means the thread was busy. Every gap above 50ms adds the part above
- * 50ms to the total.
- */
-export function startBlockingTimeMeasurement(
-  onComplete: (blockingTimeMs: number) => void
-): BlockingTimeMeasurement {
-  let lastFrameTime = performance.now();
-  const end = lastFrameTime + WINDOW_MS;
-  let blockingTimeMs = 0;
-  let frameId: number | undefined;
-  let done = false;
+export function createBlockingTimeObserver(observeImmediately = true) {
+  if (
+    typeof PerformanceObserver === 'undefined' ||
+    !PerformanceObserver.supportedEntryTypes?.includes('longtask')
+  ) {
+    return;
+  }
 
-  const addGapUntil = (time: number) => {
-    const until = Math.min(time, end);
-    blockingTimeMs += Math.max(0, until - lastFrameTime - LONG_TASK_THRESHOLD_MS);
-    lastFrameTime = until;
+  type Window = {
+    start: number;
+    end: number;
+    blockingTimeMs: number;
+    timer?: ReturnType<typeof setTimeout>;
   };
+  const windows = new Set<Window>();
 
-  const cancel = () => {
-    done = true;
-    if (frameId != null) {
-      cancelAnimationFrame(frameId);
+  const addEntries = (entries: PerformanceEntry[]) => {
+    for (const current of windows) {
+      for (const entry of entries) {
+        // Only the part after a task's first 50ms contributes to TBT.
+        current.blockingTimeMs += Math.max(
+          0,
+          Math.min(entry.startTime + entry.duration, current.end) -
+            Math.max(entry.startTime + LONG_TASK_THRESHOLD_MS, current.start)
+        );
+      }
     }
   };
 
-  const finish = () => {
-    if (done) return;
-    cancel();
-    addGapUntil(performance.now());
-    onComplete(blockingTimeMs);
-  };
+  const observer = new PerformanceObserver((list) => addEntries(list.getEntries()));
+  const observe = () => observer.observe({ type: 'longtask' });
+  if (observeImmediately) observe();
 
-  const onFrame = () => {
-    const now = performance.now();
-    if (now >= end) {
-      finish();
-      return;
-    }
-    addGapUntil(now);
-    frameId = requestAnimationFrame(onFrame);
+  return {
+    start(onComplete: (blockingTimeMs: number) => void): BlockingTimeMeasurement {
+      const start = performance.now();
+      const current: Window = {
+        start,
+        end: start + WINDOW_MS,
+        blockingTimeMs: 0,
+      };
+      const cancel = () => {
+        if (!windows.delete(current)) return;
+        if (current.timer !== undefined) clearTimeout(current.timer);
+      };
+      const complete = () => {
+        if (!windows.has(current)) return;
+        addEntries(observer.takeRecords());
+        const value = current.blockingTimeMs;
+        cancel();
+        onComplete(value);
+      };
+      const finish = () => {
+        if (!windows.has(current)) return;
+        current.end = Math.min(current.end, performance.now());
+        if (current.timer !== undefined) clearTimeout(current.timer);
+        current.timer = setTimeout(complete, 0);
+      };
+      current.timer = setTimeout(finish, WINDOW_MS);
+      windows.add(current);
+      return { deadline: current.end, finish, cancel };
+    },
+    observe,
+    disconnect() {
+      for (const current of windows) {
+        if (current.timer !== undefined) clearTimeout(current.timer);
+      }
+      windows.clear();
+      observer.disconnect();
+    },
   };
-
-  frameId = requestAnimationFrame(onFrame);
-  return { finish, cancel };
 }
