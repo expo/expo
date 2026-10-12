@@ -28,7 +28,7 @@ struct JavaScriptDecodableKindsTests {
       let value = try runtime.eval(source)
       #expect(JavaScriptValueKinds(of: value) == expected[source], "owning \(source)")
 
-      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value)
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value.ref())
       let unownedKind = JavaScriptValueKinds(of: buffer.unownedValue(at: 0))
       #expect(unownedKind == expected[source], "unowned \(source)")
     }
@@ -39,7 +39,7 @@ struct JavaScriptDecodableKindsTests {
   /// Checks that `decodableKinds` contains the kind of exactly the `accepted` samples, and that `decode`
   /// throws for every rejected one. A rejection must be definitive, because a union skips the case
   /// without trying to decode it.
-  private func expectDecodableKinds<T: JavaScriptDecodable>(
+  private func expectDecodableKinds<T: JavaScriptDecodable & ~Copyable>(
     _ type: T.Type,
     accept accepted: Set<String>,
     sourceLocation: SourceLocation = #_sourceLocation

@@ -92,7 +92,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   public typealias UIRuntimeFactory = (
     _ appContext: AppContext,
-    _ pointerValue: JavaScriptValue,
+    _ pointerValue: borrowing JavaScriptValue,
     _ runtime: JavaScriptRuntime
   ) throws -> JavaScriptRuntime
 
@@ -495,6 +495,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
+    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    try coreModule._decorateModule(object: coreObject, in: runtime)
+
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()
 
@@ -580,8 +583,10 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       let typeId = ObjectIdentifier(type(of: nativeObject))
       let instance: JavaScriptObject
 
-      if let cachedPrototype = prototypeCache.store[typeId]?.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.getObject() }) {
-        instance = runtime.createObject(prototype: cachedPrototype)
+      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+        runtime.createObject(prototype: prototype)
+      }) {
+        instance = cachedInstance
       } else {
         guard let classDefinition = self.findClassDefinition(for: typeId) else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
@@ -591,8 +596,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
           appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        prototypeCache.store[typeId] = built.refToValue()
         instance = runtime.createObject(prototype: built)
+        prototypeCache.store[typeId] = built.ref()
       }
 
       instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
@@ -825,7 +830,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
  */
 @JavaScriptActor
 private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptValue.Ref] = [:]
+  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
 
 // MARK: - Public exceptions

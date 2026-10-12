@@ -79,7 +79,7 @@ struct JavaScriptArrayTests {
   func `get value at negative index throws`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
     #expect(throws: JavaScriptArray.Errors.indexOutOfRange(index: -1, length: 3)) {
-      try array.getValue(at: -1)
+      _ = try array.getValue(at: -1)
     }
   }
 
@@ -87,7 +87,7 @@ struct JavaScriptArrayTests {
   func `get value at out of range index throws`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
     #expect(throws: JavaScriptArray.Errors.indexOutOfRange(index: 5, length: 3)) {
-      try array.getValue(at: 5)
+      _ = try array.getValue(at: 5)
     }
   }
 
@@ -95,7 +95,7 @@ struct JavaScriptArrayTests {
   func `get value at length index throws`() throws {
     let array = try runtime.eval("[10, 20, 30]").getArray()
     #expect(throws: JavaScriptArray.Errors.indexOutOfRange(index: 3, length: 3)) {
-      try array.getValue(at: 3)
+      _ = try array.getValue(at: 3)
     }
   }
 
@@ -103,7 +103,7 @@ struct JavaScriptArrayTests {
   func `get value from empty array throws`() throws {
     let array = try runtime.eval("[]").getArray()
     #expect(throws: JavaScriptArray.Errors.indexOutOfRange(index: 0, length: 0)) {
-      try array.getValue(at: 0)
+      _ = try array.getValue(at: 0)
     }
   }
 
@@ -132,8 +132,8 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
     try array.set(value: JavaScriptValue(runtime, "hello"), at: 0)
     try array.set(value: JavaScriptValue(runtime, true), at: 1)
-    try array.set(value: JavaScriptValue.null, at: 2)
-    try array.set(value: JavaScriptValue.undefined, at: 3)
+    try array.set(value: JavaScriptValue.null(), at: 2)
+    try array.set(value: JavaScriptValue.undefined(), at: 3)
 
     #expect(try array.getValue(at: 0).getString() == "hello")
     #expect(try array.getValue(at: 1).getBool() == true)
@@ -374,7 +374,7 @@ struct JavaScriptArrayTests {
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
 
-    let json = try stringify.call(arguments: array.asValue())
+    let json = try stringify.call(arguments: array.asValue().ref())
     #expect(json.getString() == "[1,2,3]")
   }
 
@@ -397,7 +397,8 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[]").getArray()
     let object = array.toObject()
 
-    #expect(array.asValue() == object.asValue())
+    let sameObject = array.asValue() == object.asValue()
+    #expect(sameObject)
   }
 
   // MARK: - Iteration Tests
@@ -441,11 +442,8 @@ struct JavaScriptArrayTests {
   @Test
   func `filter elements`() throws {
     let array = try runtime.eval("[1, 2, 3, 4, 5, 6]").getArray()
-    let evens = array.filter { $0.getInt() % 2 == 0 }
-    #expect(evens.count == 3)
-    #expect(evens[0].getInt() == 2)
-    #expect(evens[1].getInt() == 4)
-    #expect(evens[2].getInt() == 6)
+    let evens = array.map { $0.getInt() }.filter { $0 % 2 == 0 }
+    #expect(evens == [2, 4, 6])
   }
 
   @Test
@@ -537,8 +535,7 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("Array(100).fill(42)").getArray()
 
     for i in 0..<array.length {
-      let value: JavaScriptValue = array[i]
-      #expect(value.getInt() == 42)
+      #expect(array[i].getInt() == 42)
     }
   }
 

@@ -15,7 +15,7 @@ internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     let types = eitherType.dynamicTypes()
 
     for type in types {

@@ -37,7 +37,11 @@ struct JavaScriptUnownedValueTests {
 
   @Test
   func `recognizes null and undefined`() {
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: JavaScriptValue.null, JavaScriptValue.undefined)
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: JavaScriptValue.null().ref(),
+      JavaScriptValue.undefined().ref()
+    )
 
     let null = buffer.unownedValue(at: 0)
     #expect(null.isNull() == true)
@@ -78,7 +82,7 @@ struct JavaScriptUnownedValueTests {
   @Test
   func `recognizes objects`() {
     let object = runtime.createObject()
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue().ref())
 
     let view = buffer.unownedValue(at: 0)
     #expect(view.isObject() == true)

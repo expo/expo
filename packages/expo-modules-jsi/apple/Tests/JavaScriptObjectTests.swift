@@ -193,24 +193,21 @@ struct JavaScriptObjectTests {
     func `subscript with single key`() throws {
       let obj = try runtime.eval("({ name: 'Alice' })")
       let jsObject = obj.getObject()
-      let value = jsObject["name"]
-      #expect(value.getString() == "Alice")
+      #expect(jsObject["name"].getString() == "Alice")
     }
 
     @Test
     func `subscript with two nested keys`() throws {
       let obj = try runtime.eval("({ user: { name: 'Bob' } })")
       let jsObject = obj.getObject()
-      let value = jsObject["user", "name"]
-      #expect(value.getString() == "Bob")
+      #expect(jsObject["user", "name"].getString() == "Bob")
     }
 
     @Test
     func `subscript with three nested keys`() throws {
       let obj = try runtime.eval("({ data: { user: { age: 25 } } })")
       let jsObject = obj.getObject()
-      let value = jsObject["data", "user", "age"]
-      #expect(value.getInt() == 25)
+      #expect(jsObject["data", "user", "age"].getInt() == 25)
     }
 
     @Test
@@ -219,26 +216,22 @@ struct JavaScriptObjectTests {
       let nested = runtime.createObject()
       nested.setProperty("value", value: 42.0)
       root.setProperty("nested", nested)
-      let value = root["nested", "value"]
-      #expect(value.getInt() == 42)
+      #expect(root["nested", "value"].getInt() == 42)
     }
 
     @Test
     func `subscript returns undefined for non-existent property`() throws {
       let obj = try runtime.eval("({ a: 1 })")
       let jsObject = obj.getObject()
-      let value = jsObject["nonexistent"]
-      #expect(value.isUndefined() == true)
+      #expect(jsObject["nonexistent"].isUndefined() == true)
     }
 
     @Test
     func `nested subscript with mixed types`() throws {
       let obj = try runtime.eval("({ settings: { enabled: true, count: 10 } })")
       let jsObject = obj.getObject()
-      let enabled = jsObject["settings", "enabled"]
-      let count = jsObject["settings", "count"]
-      #expect(enabled.getBool() == true)
-      #expect(count.getInt() == 10)
+      #expect(jsObject["settings", "enabled"].getBool() == true)
+      #expect(jsObject["settings", "count"].getInt() == 10)
     }
   }
 

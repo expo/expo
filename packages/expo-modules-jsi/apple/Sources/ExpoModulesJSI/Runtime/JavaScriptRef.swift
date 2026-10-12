@@ -79,7 +79,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 
   /// Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
   public func asValue() -> JavaScriptValue {
-    return take()?.asValue() ?? .undefined
+    return take()?.asValue() ?? .undefined()
   }
 
   /// An error thrown when attempting to `take()` a value from a ref that has already been taken, released, or was never set.
@@ -93,12 +93,12 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 }
 
 extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentable & ~Copyable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptRef<T> {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptRef<T> {
     return JavaScriptRef(T.fromJavaScriptValue(value))
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return take()?.toJavaScriptValue(in: runtime) ?? .undefined
+    return take()?.toJavaScriptValue(in: runtime) ?? .undefined()
   }
 }
 

@@ -56,7 +56,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
-  public func instanceOf(_ constructor: JavaScriptValue) -> Bool {
+  public func instanceOf(_ constructor: borrowing JavaScriptValue) -> Bool {
     return instanceOf(constructor.getFunction())
   }
 
@@ -266,7 +266,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
-  public func setPrototype(_ prototype: JavaScriptValue) {
+  public func setPrototype(_ prototype: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -275,7 +275,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Modifying object properties
 
-  public func setProperty(_ name: String, value: JavaScriptValue) {
+  public func setProperty(_ name: String, value: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -375,9 +375,13 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // Filled with borrowed values, rather than passed as a pack, which takes copyable refs only.
+    var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
+    arguments = arguments.set(value: self, atIndex: 0)
+    arguments = arguments.set(value: name, atIndex: 1)
+    arguments = arguments.set(value: descriptor, atIndex: 2)
     do {
-      try definePropertyFunction(in: runtime).function
-        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+      try definePropertyFunction(in: runtime).function.call(arguments: arguments)
     } catch {
       FatalError.definePropertyFailed(name, error)
     }
@@ -465,6 +469,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
@@ -632,7 +637,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       configurable: Bool = false,
       enumerable: Bool = false,
       writable: Bool = false,
-      value: JavaScriptValue? = nil
+      value: consuming JavaScriptValue? = nil
     ) {
       self.configurable = configurable
       self.enumerable = enumerable
@@ -657,8 +662,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       if writable {
         object.setProperty("writable", value: true)
       }
-      if let value {
+      switch value {
+      case .some(let value):
         object.setProperty("value", value: value)
+      case .none:
+        break
       }
       return object
     }
@@ -666,7 +674,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 }
 
 extension JavaScriptObject: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptObject {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptObject {
     return value.getObject()
   }
 

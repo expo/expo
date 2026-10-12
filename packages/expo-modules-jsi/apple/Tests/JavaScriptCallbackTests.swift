@@ -288,7 +288,7 @@ struct JavaScriptCallbackThreadingTests {
       runtimes.weakRuntime = runtime
       runtime.global().setProperty("onSubscribe") { _, _ in
         subscriptionsContinuation.yield()
-        return .undefined
+        return .undefined()
       }
       // The promise never settles, so the call stays suspended for good. Its `then` reports when
       // `invokeAsync` subscribes to it, the last step the call runs on the JavaScript thread.

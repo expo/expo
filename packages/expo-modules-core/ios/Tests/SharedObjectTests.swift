@@ -267,7 +267,7 @@ struct SharedObjectTests {
     // defensive branches in the public `emit` overloads should log and return cleanly.
     detached.emit(event: "ignored")
     detached.emit(event: "ignored", payload: ["key": "value"])
-    detached.emit(event: "ignored", payload: .undefined)
+    detached.emit(event: "ignored", payload: .undefined())
   }
 
   // MARK: - native(from:)

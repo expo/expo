@@ -26,9 +26,10 @@ struct JavaScriptErrorTests {
     // JavaScript can throw any value, not only `Error` instances. Wrapping such a value must
     // preserve it unchanged rather than minting a new `Error` object.
     let thrown = JavaScriptValue(runtime, "just a string")
-    let error = JavaScriptError(runtime, value: thrown)
+    let error = JavaScriptError(runtime, value: thrown.copy())
 
-    #expect(error.toValue() == thrown)
+    let wrapsThrown = error.toValue() == thrown
+    #expect(wrapsThrown)
     #expect(error.toValue().getString() == "just a string")
   }
 
@@ -131,7 +132,8 @@ struct JavaScriptErrorTests {
       """
     )
     // Compare from Swift too: `==` is backed by `jsi::Value::strictEquals`, i.e. object identity.
-    #expect(caught == thrown)
+    let caughtThrown = caught == thrown
+    #expect(caughtThrown)
     #expect(caught.getObject().getProperty("marker").getString() == "unique")
   }
 
@@ -158,7 +160,7 @@ struct JavaScriptErrorTests {
     promise.reject(JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string")))
 
     let error = await #expect(throws: JavaScriptError.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
     #expect(error?.toValue().getString() == "just a string")
   }
@@ -172,9 +174,9 @@ struct JavaScriptErrorTests {
     promise.reject(TestError())
 
     let error = await #expect(throws: JavaScriptError.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
-    let caught = try #require(error?.toValue())
+    let caught = try #require(error).toValue()
     #expect(caught.isObject() == true)
     #expect(caught.getObject().getProperty("message").getString() == "native failure")
   }

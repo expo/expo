@@ -18,7 +18,7 @@ extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
     // The cheap tag checks come first: an array takes the `Array` path directly, and a primitive
     // can't be a JS `Set`, so both skip the JS call below. Any other value that is not a JS `Set` is
     // arrayized, as in `Array`. Duplicates in an array collapse without an error.
-    guard !value.isArray(), value.isObject(), let entries = try runtime.setEntries(of: value) else {
+    guard !value.isArray(), value.isObject(), let entries = try javaScriptSetEntries(of: value, in: runtime) else {
       return Set(try [Element].decode(value, in: runtime))
     }
     return Set(try [Element].decode(entries, in: runtime))
@@ -33,47 +33,55 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
   {
     // Constructing from an array fills the set in a single call, rather than one `add` call per element.
     let entries = try [Element].encode(Array(value), in: runtime)
-    return try runtime.setConstructor().callAsConstructor(entries)
+    return try makeJavaScriptSet(from: entries, in: runtime)
   }
 }
 
-extension JavaScriptRuntime {
-  /// Copies the entries of a JS `Set` out into a JS array, or returns `nil` when the value is not a
-  /// JS `Set`. The instance check and the copy run in a single call to a cached JS function, which
-  /// saves the global lookups and the separate `instanceof` call of `value.is("Set")` followed by
-  /// `Array.from`. For a small `Set` those fixed costs are most of the decode time.
-  @usableFromInline
-  @JavaScriptActor
-  func setEntries(of value: borrowing JavaScriptValue) throws -> JavaScriptValue? {
-    let function = try cached(setEntriesFunctionKey) {
-      return try eval(
+/// Copies the entries of a JS `Set` out into a JS array, or returns `nil` when the value is not a JS
+/// `Set`. The instance check and the copy run in a single call to a cached JS function, which saves the
+/// global lookups and the separate `instanceof` call of `value.is("Set")` followed by `Array.from`. For
+/// a small `Set` those fixed costs are most of the decode time.
+@usableFromInline
+@JavaScriptActor
+internal func javaScriptSetEntries(
+  of value: borrowing JavaScriptValue,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> JavaScriptValue? {
+  let entries = try runtime.withCached(
+    setEntriesFunctionKey,
+    {
+      return try runtime.eval(
         label: "expo-modules-jsi/set-entries.js",
         "(function (value) { return value instanceof Set ? Array.from(value) : undefined; })"
-      )
+      ).getFunction()
+    },
+    { (setEntries: borrowing JavaScriptFunction) in
+      return try setEntries.call(argument: value)
     }
-    let setEntries = function.getFunction()
-    // Pass the borrowed `jsi::Value` straight to the call, rather than copying it into an owned value
-    // and again into an arguments buffer.
-    let entries = try withUnsafePointer(to: value.pointee) { argument in
-      return try capturingCppErrors {
-        return JavaScriptValue(self, expo.callFunction(pointee, setEntries.pointee, argument, 1))
-      }
-    }
-    return entries.isUndefined() ? nil : entries
+  )
+  if entries.isUndefined() {
+    return nil
   }
+  return entries
+}
 
-  /// Returns the global `Set` constructor, looked up once and cached, so an encode doesn't pay for
-  /// the global property lookup.
-  @usableFromInline
-  @JavaScriptActor
-  func setConstructor() throws -> JavaScriptFunction {
-    let constructor = try cached(setConstructorKey) {
-      return try global().getPropertyAsFunction("Set").asValue()
+/// Creates a JS `Set` from a JS array of its entries with the global `Set` constructor, which is
+/// looked up once and cached, so an encode doesn't pay for the global property lookup.
+@usableFromInline
+@JavaScriptActor
+internal func makeJavaScriptSet(
+  from entries: borrowing JavaScriptValue,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> JavaScriptValue {
+  return try runtime.withCached(
+    setConstructorKey,
+    { try runtime.global().getPropertyAsFunction("Set") },
+    { (constructor: borrowing JavaScriptFunction) in
+      return try constructor.callAsConstructor(argument: entries)
     }
-    return constructor.getFunction()
-  }
+  )
 }
 
 /// Keys of the `Set` entries function and the `Set` constructor in each runtime's cache.
-private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
-private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
+private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
+private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()

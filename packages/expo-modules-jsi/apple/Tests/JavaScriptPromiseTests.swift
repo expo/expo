@@ -116,7 +116,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     promise.resolve(Int64(42))
     let result = try await promise.await()
-    #expect(result.isNumber())
+    #expect(result.isNumber() == true)
     #expect(result.getInt() == 42)
   }
 
@@ -141,7 +141,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     promise.resolve(FailingEncodable())
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -166,8 +166,26 @@ struct JavaScriptPromiseTests {
     promise.resolve(obj.asValue())
 
     let result = try await promise.await()
-    #expect(result.isObject())
+    #expect(result.isObject() == true)
     #expect(result.getObject().getProperty("value").getInt() == 42)
+  }
+
+  @Test
+  func `awaiting a settled promise again delivers the value again`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+
+    let obj = runtime.createObject()
+    obj.setProperty("value", value: 42)
+    promise.resolve(obj.asValue())
+
+    let first = try await promise.await()
+    let second = try await promise.await()
+    #expect(first.getObject().getProperty("value").getInt() == 42)
+    #expect(second.getObject().getProperty("value").getInt() == 42)
+    // Both reads clone the same settled object.
+    let isSameObject = first.isEqual(to: second)
+    #expect(isSameObject)
   }
 
   @Test
@@ -182,7 +200,7 @@ struct JavaScriptPromiseTests {
     promise.reject(TestError())
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -201,7 +219,7 @@ struct JavaScriptPromiseTests {
     let rejectedPromise = try runtime.eval("Promise.reject(new Error('test error'))").getPromise()
 
     await #expect(throws: Error.self) {
-      try await rejectedPromise.await()
+      _ = try await rejectedPromise.await()
     }
   }
 
@@ -239,7 +257,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     let value = promise.asValue()
 
-    #expect(value.isObject())
+    #expect(value.isObject() == true)
   }
 
   @Test
@@ -289,10 +307,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.null)
+    promise.resolve(JavaScriptValue.null())
 
     let result = try await promise.await()
-    #expect(result.isNull())
+    #expect(result.isNull() == true)
   }
 
   @Test
@@ -300,10 +318,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.undefined)
+    promise.resolve(JavaScriptValue.undefined())
 
     let result = try await promise.await()
-    #expect(result.isUndefined())
+    #expect(result.isUndefined() == true)
   }
 
   @Test
@@ -376,7 +394,7 @@ struct JavaScriptPromiseTests {
       .getPromise()
 
     await #expect(throws: Error.self) {
-      return try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -410,7 +428,7 @@ struct JavaScriptPromiseTests {
     }
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -636,5 +654,33 @@ struct JavaScriptPromiseTests {
     // Dropping the promise wrapper here must not touch a freed runtime. This is the crash point in
     // #47454; reaching the end of the test without a crash is the assertion.
     promise = nil
+  }
+
+  @Test
+  func `the teardown sweep releases the value of an awaited promise`() async throws {
+    // The receiver keeps the settled value so a later `await()` can read it again. It must not keep
+    // it past the runtime's teardown sweep: a value destroyed after its runtime is a use-after-free.
+    // The runtime work stays on the scheduler's thread, which owns the runtime.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      let weakObject = object.createWeak()
+      promise.resolve(object.asValue())
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakObject))
+    }
+    // Moved into a ref, so the awaited value is released on the runtime's thread below.
+    let awaited = try await promise.value.await().ref()
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      awaited.release()
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakObject.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
   }
 }

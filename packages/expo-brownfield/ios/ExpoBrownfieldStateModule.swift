@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 // MARK: - ExpoBrownfieldStateModule
 
-@ExpoModule
+@ExpoModule(classes: [SharedState.self])
 public class ExpoBrownfieldStateModule: Module {
   @Event("onKeyRecreated")
   var onKeyRecreated: ([String: String]) -> Void
@@ -13,14 +13,6 @@ public class ExpoBrownfieldStateModule: Module {
 
   public override func willDestroy() {
     BrownfieldStateInternal.shared.clearExpoModule(self)
-  }
-
-  public func definition() -> ModuleDefinition {
-    Class(SharedState.self) {
-      Function("get") { (state: SharedState) -> Any? in
-        return state.get()
-      }
-    }
   }
 
   @JS

@@ -145,7 +145,7 @@ private struct MacroSharedObjectTests {
         }
       })()
       """)
-    #expect(try threw.asBool())
+    #expect(try threw.asBool() == true)
   }
 
   @Test

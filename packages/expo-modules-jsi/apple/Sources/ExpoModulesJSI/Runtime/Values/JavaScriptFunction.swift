@@ -47,6 +47,38 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
   }
 
+  /// Calls the function with a single borrowed argument. The argument's `jsi::Value` is passed
+  /// straight to the call, without copying it into an owned value or an arguments buffer.
+  internal func call(argument: borrowing JavaScriptValue) throws -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+    return try withUnsafeBytes(of: argument.pointee) { bytes in
+      let jsiArgument = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try capturingCppErrors {
+        return JavaScriptValue(runtime, expo.callFunction(runtime.pointee, pointee, jsiArgument, 1))
+      }
+    }
+  }
+
+  /// Calls the function with the given `this` object and a single borrowed argument, passed the same
+  /// way as in ``call(argument:)``.
+  internal func call(this: borrowing JavaScriptObject, argument: borrowing JavaScriptValue) throws -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try withUnsafeBytes(of: argument.pointee) { bytes in
+      let jsiArgument = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try capturingCppErrors {
+        return JavaScriptValue(
+          runtime,
+          expo.callFunctionWithThis(runtime.pointee, pointee, this.pointee, jsiArgument, 1)
+        )
+      }
+    }
+  }
+
   /// Calls the function with the given `this` object and JS-representable arguments.
   @discardableResult
   public func call<each T: JavaScriptRepresentable>(this: borrowing JavaScriptObject, arguments: repeat each T) throws
@@ -80,6 +112,22 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
   }
 
+  /// Calls the function as a constructor with a single borrowed argument, passed the same way as in
+  /// ``call(argument:)``.
+  @usableFromInline
+  internal func callAsConstructor(argument: borrowing JavaScriptValue) throws -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+    return try withUnsafeBytes(of: argument.pointee) { bytes in
+      let jsiArgument = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try capturingCppErrors {
+        return JavaScriptValue(runtime, expo.callAsConstructor(runtime.pointee, pointee, jsiArgument, 1))
+      }
+    }
+  }
+
   /// Calls the function as a constructor with the given arguments. It's like calling a function with the `new` keyword.
   public func callAsConstructor<each T: JavaScriptRepresentable>(_ arguments: repeat each T) throws -> JavaScriptValue {
     guard let runtime else {
@@ -95,6 +143,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    assert(runtime.isOnOwningThread(), "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtime, expo.valueFromFunction(runtime.pointee, pointee))
   }
 
@@ -116,7 +165,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
 }
 
 extension JavaScriptFunction: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptFunction {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptFunction {
     return value.getFunction()
   }
 

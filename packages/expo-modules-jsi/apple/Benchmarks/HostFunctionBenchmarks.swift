@@ -24,7 +24,7 @@ extension JSIBenchmarks {
   func `noop host function`() async throws {
     try await benchmarkCase { runtime in
       let fn = runtime.createFunction("noop") { _, _ in
-        return .undefined
+        return .undefined()
       }
       runtime.global().setProperty("benchFn", value: fn)
       let driver = try runtime.eval("(function(n) { for (var i = 0; i < n; i++) benchFn(); })").getFunction()
@@ -41,7 +41,7 @@ extension JSIBenchmarks {
     try await benchmarkCase { runtime in
       let fn = runtime.createFunction("noop") {
         (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
-        return .undefined
+        return .undefined()
       }
       runtime.global().setProperty("benchFn", value: fn)
       let driver = try runtime.eval("(function(n) { for (var i = 0; i < n; i++) benchFn(); })").getFunction()

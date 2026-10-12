@@ -20,13 +20,13 @@ struct JavaScriptValuesBufferTests {
     let buffer = JavaScriptValuesBuffer.copying(
       in: runtime,
       values: [
-        JavaScriptValue.Ref(.undefined), JavaScriptValue.Ref(.null), JavaScriptValue.Ref(.number(1)),
+        JavaScriptValue.Ref(.undefined()), JavaScriptValue.Ref(.null()), JavaScriptValue.Ref(.number(1)),
         JavaScriptValue.Ref(.true()), JavaScriptValue.Ref(JavaScriptValue(runtime, "four")),
       ]
     )
     #expect(buffer.count == 5)
-    #expect(buffer[0].isUndefined())
-    #expect(buffer[1].isNull())
+    #expect(buffer[0].isUndefined() == true)
+    #expect(buffer[1].isNull() == true)
     #expect(try buffer[2].asInt() == 1)
     #expect(try buffer[3].asBool() == true)
     #expect(try buffer[4].asString() == "four")
@@ -69,7 +69,7 @@ struct JavaScriptValuesBufferTests {
     // discarded and `deinit` runs at the end of this statement. If `deinit` skipped
     // `deinitialize`, the contained `jsi::Value` would still hold a strong ref and
     // the weak handle would survive the collection below.
-    _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
+    _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue().ref())
     _ = consume object
 
     runtime.collectGarbage { weak.lock() == nil }

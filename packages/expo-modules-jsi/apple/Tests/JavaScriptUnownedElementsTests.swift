@@ -61,10 +61,10 @@ struct JavaScriptUnownedElementsTests {
   func `an unowned value tells arrays apart and reads them`() throws {
     let buffer = JavaScriptValuesBuffer.allocate(
       in: runtime,
-      with: try runtime.eval("[1, 2, 3]"),
-      try runtime.eval("({ length: 3 })"),
-      try runtime.eval("new Uint8Array(3)"),
-      try runtime.eval("3")
+      with: try runtime.eval("[1, 2, 3]").ref(),
+      try runtime.eval("({ length: 3 })").ref(),
+      try runtime.eval("new Uint8Array(3)").ref(),
+      try runtime.eval("3").ref()
     )
     // `#expect` can't capture the `~Copyable` value, so compare the results instead.
     let isArray = (0..<4).map { buffer.unownedValue(at: $0).isArray() }

@@ -270,7 +270,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
 }
 
 extension JavaScriptBigInt: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptBigInt {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptBigInt {
     return value.getBigInt()
   }
 

@@ -100,7 +100,7 @@ extension Optional: JavaScriptEncodable where Wrapped: JavaScriptEncodable {
   {
     guard let value else {
       // `nil` maps to `null`; mapping to `undefined` is the job of `ValueOrUndefined`.
-      return .null
+      return .null()
     }
     return try Wrapped.encode(value, in: runtime)
   }

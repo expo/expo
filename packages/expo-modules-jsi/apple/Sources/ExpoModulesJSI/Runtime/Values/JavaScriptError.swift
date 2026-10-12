@@ -28,12 +28,10 @@ public final class JavaScriptError: Error, Sendable {
   /// Creates a JavaScript error referring to an arbitrary JS value. Unlike the message-based
   /// initializers, this does not mint a new `Error` instance: the value is thrown as-is, which
   /// matches JavaScript semantics where any value (not only an `Error`) can be thrown.
-  public init(_ runtime: JavaScriptRuntime, value: borrowing JavaScriptValue) {
+  public init(_ runtime: JavaScriptRuntime, value: consuming JavaScriptValue) {
     self.runtime = runtime
-    // The underlying `jsi::Value` is copied because `JavaScriptValue` is a reference type that may
-    // be aliased. Once it becomes non-copyable, switch to `consuming` and move `pointee` straight
-    // into the error to avoid this copy.
-    self.pointee = expo.errorFromValue(runtime.pointee, facebook.jsi.Value(runtime.pointee, value.pointee))
+    // The value is consumed, so its `jsi::Value` moves straight into the error without a clone.
+    self.pointee = expo.errorFromValue(runtime.pointee, value.pointee)
   }
 
   /// Creates a JavaScript error from a native error conforming to `JavaScriptThrowable`.

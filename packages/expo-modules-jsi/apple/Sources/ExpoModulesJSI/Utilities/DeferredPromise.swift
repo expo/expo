@@ -1,31 +1,42 @@
 internal actor DeferredPromise {
-  // The settled value travels through a `JavaScriptValue.Ref`: the continuation and the stored state
-  // both need to hold it, and the reference gives a non-copyable value a shareable owner. The state
-  // keeps the value until the promise is released on the JavaScript thread, so the value handed to the
-  // awaiting caller is never the last owner of the engine handle: destroying a `jsi::Value` off the
-  // JavaScript thread is not safe.
+  /// The value a promise was fulfilled with, in two refs made on the JavaScript thread when the
+  /// promise settles. `handOut` holds the value itself and goes to the first `await()`, which moves it
+  /// out without touching the runtime. `kept` holds a copy for any later `await()`, which clones it on
+  /// the JavaScript thread. Refs give the non-copyable value a shareable owner that can cross to this
+  /// actor and back.
+  internal struct SettledValue: Sendable {
+    let handOut: JavaScriptValue.Ref
+    let kept: JavaScriptValue.Ref
+  }
+
   internal enum State {
-    case pending(CheckedContinuation<JavaScriptValue.Ref, any Error>?)
-    case fulfilled(JavaScriptValue.Ref)
+    case pending(CheckedContinuation<SettledValue, any Error>?)
+    case fulfilled(SettledValue)
     case rejected(JavaScriptError)
   }
 
   internal var state: State = .pending(nil)
 
-  public func getValue() async throws(JavaScriptError) -> sending JavaScriptValue {
+  /// Whether the first `await()` has taken `handOut`.
+  private var isHandedOut = false
+
+  /// Returns the ref to read the settled value from, and whether the caller owns it. An owned ref is
+  /// the first read and can be taken as is; otherwise the caller has to clone the value on the
+  /// JavaScript thread.
+  public func getValue() async throws(JavaScriptError) -> (ref: JavaScriptValue.Ref, isOwned: Bool) {
     switch state {
-    case .fulfilled(let ref):
-      return takeValue(from: ref)
+    case .fulfilled(let settled):
+      return read(settled)
 
     case .rejected(let error):
       throw error
 
     case .pending(nil):
       do {
-        let ref = try await withCheckedThrowingContinuation { continuation in
+        let settled = try await withCheckedThrowingContinuation { continuation in
           state = .pending(continuation)
         }
-        return takeValue(from: ref)
+        return read(settled)
       } catch let error as JavaScriptError {
         throw error
       } catch {
@@ -38,14 +49,14 @@ internal actor DeferredPromise {
     }
   }
 
-  internal func resolve(_ ref: JavaScriptValue.Ref) {
+  internal func resolve(_ settled: SettledValue) {
     switch state {
     case .pending(let continuation?):
-      continuation.resume(returning: ref)
-      state = .fulfilled(ref)
+      continuation.resume(returning: settled)
+      state = .fulfilled(settled)
 
     case .pending(nil):
-      state = .fulfilled(ref)
+      state = .fulfilled(settled)
 
     default:
       break
@@ -66,14 +77,11 @@ internal actor DeferredPromise {
     }
   }
 
-  /// Reads the value out of the reference without emptying it, so the stored state keeps owning the
-  /// engine handle (see the note on `State`). The reference is shared between the continuation and the
-  /// stored state; a `getValue()` that finds it empty is a programmer error, like awaiting a pending
-  /// promise twice.
-  private func takeValue(from ref: JavaScriptValue.Ref) -> sending JavaScriptValue {
-    guard let value = ref.withValue({ (value: borrowing JavaScriptValue?) in copy value }) else {
-      preconditionFailure("Promise awaited more than once")
+  private func read(_ settled: SettledValue) -> (ref: JavaScriptValue.Ref, isOwned: Bool) {
+    if isHandedOut {
+      return (settled.kept, false)
     }
-    return value
+    isHandedOut = true
+    return (settled.handOut, true)
   }
 }

@@ -157,7 +157,7 @@ extension JavaScriptObject: ClassAssociatedObject, AnyArgument {
     return DynamicJavaScriptType.shared
   }
 
-  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: borrowing JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
       throw Conversions.UnexpectedValueType((received: value.kind, expected: .object))
     }

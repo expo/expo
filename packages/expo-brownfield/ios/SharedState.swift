@@ -12,7 +12,8 @@ public final class SharedState: SharedObject {
     super.init()
   }
 
-  public func get() -> Any? {
+  @JS
+  nonisolated public func get() -> Any? {
     lock.lock()
     defer { lock.unlock() }
     return value
@@ -29,7 +30,7 @@ public final class SharedState: SharedObject {
   }
 
   @JS
-  func set(fromJS value: JavaScriptValue) {
+  func set(fromJS value: borrowing JavaScriptValue) {
     set(value.isUndefined() || value.isNull() ? nil : value.getAny())
   }
 }

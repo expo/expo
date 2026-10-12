@@ -86,7 +86,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
   var takesOwner: Bool = false
 
   @JavaScriptActor
-  func call(_ appContext: AppContext, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer, callback: @Sendable @escaping (consuming FunctionCallResult) -> Void) {
+  func call(_ appContext: AppContext, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer, callback: @Sendable @escaping (consuming FunctionCallResult) -> Void) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(value))
     } rejecter: { exception in
@@ -190,7 +190,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       let promiseValue = promise.asValue()
 
       self.call(appContext, this: this, arguments: arguments) { [promise] result in
-        switch result {
+        switch consume result {
         case .success(let value):
           promise.resolve(value)
         case .failure(let error as any Error):

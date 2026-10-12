@@ -255,7 +255,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableBinary.decode(value, in: runtime)
     let encoded = try CodableBinary.encode(decoded, in: runtime)
     runtime.global().setProperty("encodedBinary", value: encoded)
-    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool())
-    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool())
+    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool() == true)
+    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool() == true)
   }
 }
