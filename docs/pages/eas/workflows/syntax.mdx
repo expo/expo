@@ -381,6 +381,8 @@ on:
 
 ### `on.schedule.cron`
 
+> **info** Scheduled workflows are available on paid plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+
 Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
 
 - Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
