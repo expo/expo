@@ -556,7 +556,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   /// try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
   ///
   /// // Undefined returns nil
-  /// let undefined = JavaScriptValue.undefined
+  /// let undefined = JavaScriptValue.undefined()
   /// try undefined.jsonStringify() // nil
   /// ```
   ///
@@ -698,8 +698,8 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Equality
 
-  // The type does not conform to `Equatable`: that protocol requires `Copyable`, and the value is on
-  // its way to becoming non-copyable. The operators below provide the same syntax on borrowed operands.
+  // The type does not conform to `Equatable`: that protocol requires `Copyable`, and the value is
+  // non-copyable. The operators below provide the same syntax on borrowed operands.
 
   /// Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   public func isEqual(to another: borrowing JavaScriptValue) -> Bool {

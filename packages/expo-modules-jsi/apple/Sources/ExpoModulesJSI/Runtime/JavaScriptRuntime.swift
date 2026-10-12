@@ -1029,7 +1029,7 @@ private final class ThreadWaiter: @unchecked Sendable {
 // MARK: - Reflection
 
 extension JavaScriptRuntime: CustomReflectable {
-  /// A mirror without children. The runtime stores non-copyable values (such as the cached deferred
+  /// A mirror without children. The runtime stores non-copyable values in `cache` (such as the deferred
   /// promise factory), and the default mirror copies every stored property it visits, which traps at
   /// runtime for a non-copyable one. Reflection reaches the runtime through any `JavaScriptError`, for
   /// example when Swift Testing records a thrown error.
