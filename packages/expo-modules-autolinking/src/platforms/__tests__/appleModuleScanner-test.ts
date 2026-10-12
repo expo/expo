@@ -246,6 +246,7 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({});
+    expect(groupScannedModules(output, packageRoots, 'apple')).toEqual({});
   });
 
   it('links every reported class for the umbrella apple platform', () => {
@@ -443,6 +444,18 @@ describe(hasModuleAnnotations, () => {
         'import ExpoModulesCore\n\n@ExpoModule("ExpoHaptics")\npublic class HapticsModule: Module {}\n',
     });
     expect(hasModuleAnnotations('/app/node_modules/expo-haptics')).toBe(true);
+  });
+
+  it('finds an @ExpoModule attribute that follows other attributes on the line', () => {
+    vol.fromJSON({
+      '/app/node_modules/expo-a/ios/A.swift':
+        '@MainActor @ExpoModule("A")\npublic class AModule {}\n',
+      '/app/node_modules/expo-b/ios/B.swift': '@objc(B) @ExpoModule\npublic class BModule {}\n',
+      '/app/node_modules/expo-c/ios/C.swift': '// @MainActor @ExpoModule\nclass C {}\n',
+    });
+    expect(hasModuleAnnotations('/app/node_modules/expo-a')).toBe(true);
+    expect(hasModuleAnnotations('/app/node_modules/expo-b')).toBe(true);
+    expect(hasModuleAnnotations('/app/node_modules/expo-c')).toBe(false);
   });
 
   it('ignores mentions in comments and non-Swift files', () => {

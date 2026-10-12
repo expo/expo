@@ -195,6 +195,38 @@ describe(resolveModuleAsync, () => {
     ]);
   });
 
+  it('orders scanned modules by code unit, independent of the host locale', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'] }),
+      },
+      {
+        scannedModules: {
+          [name]: [
+            { name: null, class: 'bModule' },
+            { name: null, class: 'aModule' },
+            { name: null, class: 'BModule' },
+          ],
+        },
+      }
+    );
+
+    expect(result?.modules?.map((module) => module.class)).toEqual([
+      'BModule',
+      'aModule',
+      'bModule',
+    ]);
+  });
+
   it('ignores scanned modules when the config declares an empty list, as an opt-out', async () => {
     const name = 'expo-clipboard';
     const pkgDir = path.join('node_modules', name);

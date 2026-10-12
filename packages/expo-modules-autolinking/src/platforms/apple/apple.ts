@@ -93,7 +93,7 @@ export async function scanNativeModulesAsync(
 
 /**
  * The declared modules when the config declares the list (even an empty one), otherwise the scanned
- * classes in alphabetical order.
+ * classes sorted by code unit.
  */
 function pickModules(
   declaredModules: ModuleIosConfig[] | null,
@@ -102,7 +102,7 @@ function pickModules(
   if (declaredModules) {
     return declaredModules;
   }
-  return [...scannedModules].sort((a, b) => a.class.localeCompare(b.class));
+  return [...scannedModules].sort((a, b) => (a.class < b.class ? -1 : a.class > b.class ? 1 : 0));
 }
 
 /** Resolves module search result with additional details required for iOS platform. */

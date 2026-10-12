@@ -81,8 +81,8 @@ const PRUNED_DIRECTORY_NAMES = new Set([
   'e2e',
 ]);
 
-/** An `@ExpoModule` attribute at the start of a line, so comments don't match. */
-const MODULE_ANNOTATION_PATTERN = /^\s*@ExpoModule\b/m;
+/** An `@ExpoModule` attribute, possibly after other attributes, at the start of a line. */
+const MODULE_ANNOTATION_PATTERN = /^[ \t]*(?:@\w+(?:\([^)\n]*\))?[ \t]+)*@ExpoModule\b/m;
 
 /**
  * Whether any Swift source in the package has an `@ExpoModule` attribute. A plain text search, used
@@ -189,8 +189,12 @@ export function groupScannedModules(
     if (typeof module.file !== 'string' || typeof module.name !== 'string') {
       continue;
     }
-    if (targetPlatformName && !module.platforms?.includes(targetPlatformName)) {
-      // The scanner already warned about conditions it couldn't evaluate.
+    // An empty list is a condition the scanner couldn't evaluate (it already warned), so skip it
+    // for the umbrella platform too.
+    if (
+      !module.platforms?.length ||
+      (targetPlatformName && !module.platforms.includes(targetPlatformName))
+    ) {
       continue;
     }
     if (module.accessLevel !== 'public' && module.accessLevel !== 'open') {
