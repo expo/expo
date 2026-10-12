@@ -60,6 +60,14 @@ extension ExpoSwiftUI {
      */
     private let hostingController: UIHostingController<AnyView>
 
+    #if os(iOS) || os(tvOS)
+    /**
+     The hosted scroll view registered as the parent view controller's content scroll view, and that controller.
+     */
+    private weak var registeredContentScrollView: UIScrollView?
+    private weak var contentScrollViewController: UIViewController?
+    #endif
+
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
@@ -150,6 +158,13 @@ extension ExpoSwiftUI {
       super.layoutSubviews()
       // TODO: Use updateLayoutMetrics from RN. Add support in ExpoFabricView.
       setupHostingViewConstraints()
+      #if os(iOS) || os(tvOS)
+      // SwiftUI creates the platform views of its content while the hosting controller lays out, which can be after
+      // this pass, so look for the scroll view once that has happened.
+      DispatchQueue.main.async { [weak self] in
+        self?.updateContentScrollView()
+      }
+      #endif
     }
 
     /**
@@ -224,6 +239,9 @@ extension ExpoSwiftUI {
       #endif
 
       guard window != nil else {
+        #if os(iOS) || os(tvOS)
+        unregisterContentScrollView()
+        #endif
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
         return
@@ -253,6 +271,75 @@ extension ExpoSwiftUI {
       #endif
       setupHostingViewConstraints()
     }
+
+#if os(iOS) || os(tvOS)
+    // MARK: - Content scroll view
+
+    /**
+     Registers the hosted scroll view as the parent view controller's content scroll view, for both the top and bottom
+     edges. UIKit looks for it to drive the navigation bar (large title collapse, scroll edge vs standard appearance,
+     scroll edge effects) and the toolbar. Without this it only finds scroll views along the first-subview chain of the
+     controller's view, which never reaches into the hosting controller.
+
+     It only registers a scroll view that fills this view, and never replaces a content scroll view registered by
+     something else, so a `Host` that isn't the screen's main scrolling content (a carousel, a matchContents `Host`
+     inside a React Native `ScrollView`) changes nothing.
+     */
+    private func updateContentScrollView() {
+      guard #available(iOS 15.0, tvOS 15.0, *) else {
+        return
+      }
+      guard
+        window != nil,
+        (props as? ContentScrollViewProviding)?.providesContentScrollView == true,
+        let controller = hostingController.parent,
+        let scrollView = findFillingScrollView(in: hostingController.view)
+      else {
+        return
+      }
+      let current = controller.contentScrollView(for: .top)
+      if current === scrollView {
+        return
+      }
+      if current != nil && current !== registeredContentScrollView {
+        return
+      }
+      controller.setContentScrollView(scrollView, for: [.top, .bottom])
+      registeredContentScrollView = scrollView
+      contentScrollViewController = controller
+    }
+
+    private func unregisterContentScrollView() {
+      guard #available(iOS 15.0, tvOS 15.0, *) else {
+        return
+      }
+      if let controller = contentScrollViewController,
+        let scrollView = registeredContentScrollView,
+        controller.contentScrollView(for: .top) === scrollView {
+        controller.setContentScrollView(nil, for: [.top, .bottom])
+      }
+      registeredContentScrollView = nil
+      contentScrollViewController = nil
+    }
+
+    /**
+     Finds the first scrollable scroll view in the hosted view hierarchy whose frame matches this view's bounds.
+     */
+    private func findFillingScrollView(in view: UIView) -> UIScrollView? {
+      if let scrollView = view as? UIScrollView,
+        scrollView.isScrollEnabled,
+        scrollView.convert(scrollView.bounds, to: self).insetBy(dx: -1, dy: -1).contains(bounds),
+        bounds.insetBy(dx: -1, dy: -1).contains(scrollView.convert(scrollView.bounds, to: self)) {
+        return scrollView
+      }
+      for subview in view.subviews {
+        if let scrollView = findFillingScrollView(in: subview) {
+          return scrollView
+        }
+      }
+      return nil
+    }
+#endif
 
 #if os(macOS)
     public override func reactViewController() -> NSViewController? {

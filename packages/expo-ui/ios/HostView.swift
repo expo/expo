@@ -36,7 +36,8 @@ internal enum ExpoLayoutDirection: String, Enumerable {
   }
 }
 
-internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable, ExpoSwiftUI.HostingViewAware {
+internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable, ExpoSwiftUI.HostingViewAware,
+  ExpoSwiftUI.ContentScrollViewProviding {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
   @Field var seedColor: Color?
@@ -47,6 +48,12 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
   weak var hostingView: UIView?
+
+  /// A `Host` that fills its height can be a screen's main content, so its hosted `List` or `ScrollView` may be the
+  /// screen's content scroll view. A `Host` sized to its content can't.
+  var providesContentScrollView: Bool {
+    !matchContentsVertical && !useViewportSizeMeasurement
+  }
 }
 
 struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
