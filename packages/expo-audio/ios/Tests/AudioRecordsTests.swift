@@ -16,6 +16,24 @@ struct AudioRecordsTests {
   }
 
   @Test(arguments: [
+    (IOSAudioMode.default, AVAudioSession.Mode.default),
+    (.spokenAudio, .spokenAudio),
+    (.measurement, .measurement),
+    (.voiceChat, .voiceChat),
+    (.videoChat, .videoChat),
+    (.videoRecording, .videoRecording),
+    (.gameChat, .gameChat),
+    (.moviePlayback, .moviePlayback),
+    (.voicePrompt, .voicePrompt),
+  ] as [(IOSAudioMode, AVAudioSession.Mode)])
+  func `maps the iOS audio mode to the AVAudioSession mode`(
+    mode: IOSAudioMode,
+    expected: AVAudioSession.Mode
+  ) {
+    #expect(mode.toAVMode() == expected)
+  }
+
+  @Test(arguments: [
     (PitchCorrectionQuality.low, AVAudioTimePitchAlgorithm.varispeed),
     (.medium, .timeDomain),
     (.high, .spectral),
