@@ -1,4 +1,5 @@
 import { evalModule } from '@expo/require-utils';
+import path from 'node:path';
 
 import { evalMetroNoHandling } from '../getStaticRenderFunctions';
 
@@ -51,4 +52,10 @@ test('passes a flat source map through unchanged', () => {
 test('evaluates without a source map', () => {
   evalMetroNoHandling('/app', 'a;', '/app/bundle.js');
   expect(evaluatedSourceMap()).toBeUndefined();
+});
+
+test('resolves external modules from the project root before the bundle directory', () => {
+  evalMetroNoHandling('/app', 'a;', '/elsewhere/node_modules/pkg/bundle.js');
+  const options = jest.mocked(evalModule).mock.calls.at(-1)?.[2];
+  expect(options?.paths?.[0]).toBe(path.join('/app', 'node_modules'));
 });
