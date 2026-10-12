@@ -328,4 +328,4 @@ extension JavaScriptRuntime {
 }
 
 /// Key of the deferred promise factory in each runtime's cache.
-private let deferredPromiseFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptFunction>>()
+private let deferredPromiseFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()

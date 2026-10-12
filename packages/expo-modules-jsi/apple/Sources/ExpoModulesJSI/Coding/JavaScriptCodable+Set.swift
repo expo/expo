@@ -72,5 +72,5 @@ extension JavaScriptRuntime {
 }
 
 /// Keys of the `Set` entries function and the `Set` constructor in each runtime's cache.
-private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptFunction>>()
-private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptFunction>>()
+private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
+private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()

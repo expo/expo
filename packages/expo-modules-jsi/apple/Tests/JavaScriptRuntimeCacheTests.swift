@@ -91,7 +91,7 @@ struct JavaScriptRuntimeCacheTests {
 
   @Test
   func `caches non-copyable values through refs`() throws {
-    let key = JavaScriptRuntime.Cache.Key<JavaScriptRef<JavaScriptObject>>()
+    let key = JavaScriptRuntime.Cache.Key<JavaScriptObject.Ref>()
 
     let makeFirst = { try runtime.eval("({ answer: 42 })").getObject() }
     let makeSecond = { try runtime.eval("({ answer: 0 })").getObject() }
