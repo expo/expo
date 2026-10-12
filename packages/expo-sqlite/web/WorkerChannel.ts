@@ -44,10 +44,10 @@ export function sendWorkerResult({
     resultArray.set(resultBytes, 4);
     Atomics.store(lock, 0, RESOLVED);
   } else {
-    if (result) {
-      self.postMessage({ id, result });
-    } else {
+    if (error != null) {
       self.postMessage({ id, error });
+    } else {
+      self.postMessage({ id, result });
     }
   }
 }
