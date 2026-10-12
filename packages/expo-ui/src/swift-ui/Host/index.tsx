@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
+import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -81,10 +82,12 @@ export function Host(props: HostProps) {
     layoutDirection,
     seedColor,
     ref,
+    children,
     ...restProps
   } = props;
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
+  useWarnIfNestedHost('SwiftUI');
 
   return (
     <TextInputHostProvider hostRef={hostRef}>
@@ -104,8 +107,9 @@ export function Host(props: HostProps) {
         ignoreSafeArea={ignoreSafeArea}
         seedColor={seedColor}
         {...restProps}
-        ref={mergedRef}
-      />
+        ref={mergedRef}>
+        <NativeTreeContext.Provider value>{children}</NativeTreeContext.Provider>
+      </HostNativeView>
     </TextInputHostProvider>
   );
 }

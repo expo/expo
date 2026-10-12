@@ -319,6 +319,87 @@ export async function test(
       expect(second.pageY - host.pageY).toBeCloseTo(PADDING, 0);
     });
 
+    // A `Host` inside Compose goes in an `RNHostView`, which reports where Compose placed it. The
+    // nested `Host` then measures from that position, including the outer column's padding.
+    it('measures a hosted view in a Host nested through an RNHostView below a hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ padding: PADDING }}>
+                  <Host matchContents>
+                    <RNHostView matchContents>
+                      <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                    </RNHostView>
+                  </Host>
+                </View>
+              </RNHostView>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, nested } = await measureWhenSettled({
+        host: hostWrapperRef,
+        nested: nestedRef,
+      });
+
+      expect(nested.pageX - host.pageX).toBeCloseTo(PADDING * 2, 0);
+      expect(nested.pageY - host.pageY).toBeCloseTo(PADDING * 2 + SHORT, 0);
+    });
+
+    // The inner column holds a hosted view and the `RNHostView` around the nested `Host`. Both report
+    // their own position, so the column's zero content origin is right for both.
+    it('measures a hosted view in a nested Host beside a hosted view in the same column', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const siblingRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={siblingRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+                <RNHostView matchContents>
+                  <View collapsable={false} style={{ padding: PADDING }}>
+                    <Host matchContents>
+                      <RNHostView matchContents>
+                        <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                      </RNHostView>
+                    </Host>
+                  </View>
+                </RNHostView>
+              </Column>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, sibling, nested } = await measureWhenSettled({
+        host: hostWrapperRef,
+        sibling: siblingRef,
+        nested: nestedRef,
+      });
+
+      expect(sibling.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(sibling.pageY - host.pageY).toBeCloseTo(PADDING + SHORT, 0);
+      expect(nested.pageX - host.pageX).toBeCloseTo(PADDING * 2, 0);
+      expect(nested.pageY - host.pageY).toBeCloseTo(PADDING * 2 + SHORT + BOX, 0);
+    });
+
     it('measures a hosted view when the Host is inside a React Native ScrollView', async () => {
       const scrollRef = React.createRef<ScrollViewRef>();
       // Anchored outside the `ScrollView` so it does not move with the content. A difference between
