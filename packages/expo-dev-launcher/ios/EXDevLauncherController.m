@@ -747,11 +747,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return nil;
   }
 
-  NSDateFormatter *formatter = [NSDateFormatter new];
-  formatter.dateStyle = NSDateFormatterMediumStyle;
-  formatter.timeStyle = NSDateFormatterNoStyle;
-  NSString *formattedDate = [formatter stringFromDate:expiration];
- 
   NSCalendar *calendar = [NSCalendar currentCalendar];
   NSDate *today = [calendar startOfDayForDate:[NSDate date]];
   NSDate *expirationDay = [calendar startOfDayForDate:expiration];
