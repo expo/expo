@@ -8,8 +8,8 @@
 ///
 /// The conversion runs on the JavaScript thread; conformers are called under `@JavaScriptActor`.
 /// The `value` and `runtime` are `borrowing` because the conversions only read them; borrowing the
-/// reference-typed `JavaScriptValue` also avoids a retain/release on every decode. A conversion that
-/// needs to store or escape the runtime makes an owned copy with `copy runtime`.
+/// non-copyable `JavaScriptValue` also avoids cloning its engine value on every decode. A conversion
+/// that needs to store or escape the runtime makes an owned copy with `copy runtime`.
 public protocol JavaScriptDecodable: ~Copyable {
   /// Decodes an owning `JavaScriptValue` into `Self`.
   ///

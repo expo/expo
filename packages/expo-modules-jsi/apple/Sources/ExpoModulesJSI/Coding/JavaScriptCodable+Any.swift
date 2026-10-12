@@ -287,7 +287,7 @@ extension JavaScriptValue {
         let elements = try runtime.global()
           .getPropertyAsObject("Array")
           .getPropertyAsFunction("from")
-          .call(arguments: value.refToValue())
+          .call(argument: value)
         return try freeFormElements(of: elements.asArray(), depth: depth, in: runtime)
       }
       if value.is("Map") {
@@ -296,7 +296,7 @@ extension JavaScriptValue {
         let entries = try runtime.global()
           .getPropertyAsObject("Array")
           .getPropertyAsFunction("from")
-          .call(arguments: value.refToValue())
+          .call(argument: value)
         return try freeFormMapEntries(of: entries.asArray(), depth: depth, in: runtime)
       }
       if value.is("WeakMap") || value.is("WeakSet") {

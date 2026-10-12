@@ -96,10 +96,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     runDetached { runtime in
       let arguments = box.value
-      // Encoded values travel as refs: an array takes copyable elements only.
-      var values: [JavaScriptValue.Ref] = []
-      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
-      return values
+      return try Self.encodeArguments(repeat each arguments, in: runtime)
     }
   }
 
@@ -112,10 +109,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
       let arguments = box.value
-      // Encoded values travel as refs: an array takes copyable elements only.
-      var values: [JavaScriptValue.Ref] = []
-      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
-      return values
+      return try Self.encodeArguments(repeat each arguments, in: runtime)
     } decodeResult: { _, _ in
       UncheckedSendableBox(())
     }
@@ -133,10 +127,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try runBlocking { runtime in
       let arguments = box.value
-      // Encoded values travel as refs: an array takes copyable elements only.
-      var values: [JavaScriptValue.Ref] = []
-      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
-      return values
+      return try Self.encodeArguments(repeat each arguments, in: runtime)
     } decodeResult: { result, runtime in
       UncheckedSendableBox(try R.decode(result, in: runtime))
     }
@@ -149,10 +140,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try await runAsync { runtime in
       let arguments = box.value
-      // Encoded values travel as refs: an array takes copyable elements only.
-      var values: [JavaScriptValue.Ref] = []
-      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
-      return values
+      return try Self.encodeArguments(repeat each arguments, in: runtime)
     } decodeResult: { _, _ in
       UncheckedSendableBox(())
     }
@@ -168,14 +156,24 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try await runAsync { runtime in
       let arguments = box.value
-      // Encoded values travel as refs: an array takes copyable elements only.
-      var values: [JavaScriptValue.Ref] = []
-      repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
-      return values
+      return try Self.encodeArguments(repeat each arguments, in: runtime)
     } decodeResult: { result, runtime in
       UncheckedSendableBox(try R.decode(result, in: runtime))
     }
     return result.value
+  }
+
+  /// Encodes the arguments of a call on the JavaScript thread. The encoded values travel as refs,
+  /// because an array takes copyable elements only.
+  @inlinable
+  @JavaScriptActor
+  internal static func encodeArguments<each A: JavaScriptEncodable>(
+    _ arguments: repeat each A,
+    in runtime: JavaScriptRuntime
+  ) throws -> [JavaScriptValue.Ref] {
+    var values: [JavaScriptValue.Ref] = []
+    repeat values.append(try (each A).encode(each arguments, in: runtime).ref())
+    return values
   }
 
   /// Reports an error from a closure that can't throw it: to React Native's `ErrorUtils.reportError`,
@@ -234,8 +232,7 @@ public final class JavaScriptCallback: Sendable {
       return value
     case .promise(let promiseRef):
       let promise: JavaScriptPromise = try promiseRef.take()
-      // Taken out of the ref on the JavaScript thread below, so the awaiting task never owns the
-      // settled value itself.
+      // Wrapped in a ref, because the closure below escapes and can't capture a non-copyable value.
       let settled = try await promise.await().ref()
       // The runtime is looked up again instead of being held across the await, which may never
       // resume if the promise is pending when the runtime goes away. The await may also resume on
@@ -335,7 +332,7 @@ public final class JavaScriptCallback: Sendable {
       return false
     }
     do {
-      try method.getFunction().call(this: object.getObject(), arguments: argument.ref())
+      try method.getFunction().call(this: object.getObject(), argument: argument)
       return true
     } catch {
       return false

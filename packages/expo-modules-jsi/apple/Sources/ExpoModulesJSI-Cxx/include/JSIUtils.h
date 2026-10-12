@@ -163,10 +163,9 @@ inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
 //
 // Placement new does not destroy the slot's previous contents, so the slot must hold a value that
 // owns nothing; an object or string there would leak its engine handle. Both callers,
-// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
-// the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
-// `JavaScriptValue.write(_:to:)` moves a uniquely referenced value's handle into the slot the same
-// way, through `emplaceMovedValue`.
+// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side,
+// `JavaScriptValue.write(_:to:)`, picks the helper by kind for a value without a runtime and moves
+// any other value's handle into the slot the same way, through `emplaceMovedValue`.
 inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
   ::new (slot) jsi::Value();
 }

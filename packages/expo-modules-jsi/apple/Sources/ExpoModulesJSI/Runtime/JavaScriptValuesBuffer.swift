@@ -191,10 +191,9 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   /// Allocates a new owning buffer holding a runtime-aware copy of each referenced value's
-  /// underlying `facebook.jsi.Value`. The values are passed through `JavaScriptValue.Ref`, so the
-  /// overload also serves values that cannot be Swift array elements themselves. They must
-  /// all belong to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI. An empty
-  /// reference yields `undefined`.
+  /// underlying `facebook.jsi.Value`. The values are passed through `JavaScriptValue.Ref`, because a
+  /// non-copyable value cannot be a Swift array element. They must all belong to `runtime` or be
+  /// runtime-free; mixing runtimes will crash deep inside JSI. An empty reference yields `undefined`.
   @JavaScriptActor
   public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue.Ref]) -> JavaScriptValuesBuffer {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)

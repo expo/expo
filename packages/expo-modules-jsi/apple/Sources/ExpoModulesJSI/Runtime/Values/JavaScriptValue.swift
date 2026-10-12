@@ -586,12 +586,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     let stringify = try runtime.global().getPropertyAsObject("JSON").getPropertyAsFunction("stringify")
     let value: JavaScriptValue
     if replacer == nil && space == nil {
-      // Pass the borrowed `jsi::Value` straight to the call, rather than cloning it into an arguments buffer.
-      value = try withUnsafePointer(to: pointee) { argument in
-        return try capturingCppErrors {
-          return JavaScriptValue(runtime, expo.callFunction(runtime.pointee, stringify.pointee, argument, 1))
-        }
-      }
+      value = try stringify.call(argument: self)
     } else {
       var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
       arguments = arguments.set(value: self, atIndex: 0)
@@ -610,31 +605,23 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Writes `value` into a host callback's result slot. The value is consumed, so its engine value is
-  /// moved out instead of cloned; the runtime-free kinds are emplaced with the engine's inline
-  /// constructors through ``writeJSIValue(to:)``.
+  /// moved out instead of cloned. A value without a runtime (undefined, null, a boolean or a number)
+  /// is emplaced with the engine's inline constructors, so the common results skip the out-of-line
+  /// `jsi::Value` move and destroy. The slot must hold a value with nothing to release (see
+  /// `emplaceUndefined`).
   internal static func write(_ value: consuming JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
     if value.runtimeHandle != nil {
       expo.emplaceMovedValue(slot, &value.pointee)
-    } else {
-      value.writeJSIValue(to: slot)
-    }
-  }
-
-  /// Writes this value into a host callback's result slot. Undefined, null, booleans and numbers are
-  /// emplaced with the engine's inline constructors, so the common results skip the out-of-line
-  /// `jsi::Value` move and destroy that assigning to the slot would cost; everything else is copied
-  /// through ``asJSIValue()``. The slot must hold a value with nothing to release (see `emplaceUndefined`).
-  internal func writeJSIValue(to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
-    if pointee.isUndefined() {
+    } else if value.pointee.isUndefined() {
       expo.emplaceUndefined(slot)
-    } else if pointee.isNumber() {
-      expo.emplaceNumber(slot, pointee.getNumber())
-    } else if pointee.isBool() {
-      expo.emplaceBool(slot, pointee.getBool())
-    } else if pointee.isNull() {
+    } else if value.pointee.isNumber() {
+      expo.emplaceNumber(slot, value.pointee.getNumber())
+    } else if value.pointee.isBool() {
+      expo.emplaceBool(slot, value.pointee.getBool())
+    } else if value.pointee.isNull() {
       expo.emplaceNull(slot)
     } else {
-      slot.pointee = asJSIValue()
+      FatalError.runtimeLost()
     }
   }
 

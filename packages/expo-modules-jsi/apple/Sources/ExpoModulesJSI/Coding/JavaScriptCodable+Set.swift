@@ -53,14 +53,8 @@ extension JavaScriptRuntime {
         "(function (value) { return value instanceof Set ? Array.from(value) : undefined; })"
       ).getFunction()
     }
-    // Pass the borrowed `jsi::Value` straight to the call, rather than copying it into an owned value
-    // and again into an arguments buffer.
     let entries = try withCached(setEntriesFunctionKey, makeSetEntries) { (setEntries: borrowing JavaScriptFunction) in
-      return try withUnsafePointer(to: value.pointee) { argument in
-        return try capturingCppErrors {
-          return JavaScriptValue(self, expo.callFunction(pointee, setEntries.pointee, argument, 1))
-        }
-      }
+      return try setEntries.call(argument: value)
     }
     if entries.isUndefined() {
       return nil

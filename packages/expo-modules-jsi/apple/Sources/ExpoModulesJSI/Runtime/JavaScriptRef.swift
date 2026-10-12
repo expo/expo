@@ -27,17 +27,6 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
     self.value = consume value
   }
 
-  /// Makes a reference to the wrapped value, or `nil` when the optional is empty. Handy for passing an
-  /// optional non-copyable value where only copyable types are accepted, such as a parameter pack.
-  public convenience init?(optional value: consuming sending T?) {
-    switch consume value {
-    case .some(let value):
-      self.init(value)
-    case .none:
-      return nil
-    }
-  }
-
   /// Replaces the referenced value with a new value.
   public func reset(_ value: consuming sending T) {
     self.value = consume value

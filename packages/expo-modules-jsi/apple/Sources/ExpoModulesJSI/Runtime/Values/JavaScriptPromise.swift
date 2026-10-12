@@ -29,8 +29,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// functions, which can no longer be called and are the bulk of a deferred promise's held state.
   @JavaScriptActor
   private final class LongLivedState: LongLivedObject {
-    // Stored as `JavaScriptValue` (a reference type), not `JavaScriptObject`: a `Copyable` value read
-    // back through `JavaScriptRef.withValue` avoids the copy a borrowed `~Copyable` object would trap on.
+    // Stored as values, not as `JavaScriptObject` and `JavaScriptFunction`: the deferred promise's
+    // triple hands out values, and converting each one when the promise is created would clone it in
+    // the engine. Only the function that actually gets called is converted, when it is called.
     let object = JavaScriptValue.Ref()
     let resolveFunction = JavaScriptValue.Ref()
     let rejectFunction = JavaScriptValue.Ref()
@@ -170,7 +171,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         // realistically only throw when the runtime is being torn down, where dropping the settle
         // is harmless because the JS world is going away.
         let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue.ref())
+        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
         longLivedState.resolveFunction.release()
       }
     }
@@ -199,7 +200,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         let encoded = try V.encode(value, in: runtime)
         // Call the actual resolver. If `await()` has installed the `then` callbacks, they forward
         // the settlement to `deferredPromise`.
-        _ = try resolver.getFunction().call(arguments: encoded.ref())
+        _ = try resolver.getFunction().call(argument: encoded)
         // The state stays registered so it keeps owning the object until the wrapper is dropped.
         longLivedState.rejectFunction.release()
       } catch {
@@ -207,7 +208,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         // itself can realistically only throw when the runtime is being torn down, where dropping
         // the settle is harmless because the JS world is going away.
         let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue.ref())
+        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
         longLivedState.resolveFunction.release()
       }
     }
@@ -234,7 +235,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // settlement to `deferredPromise`.
       // The call can realistically only throw when the runtime is being torn down, where dropping
       // the settle is harmless because the JS world is going away.
-      _ = try? rejecter.getFunction().call(arguments: errorValue.ref())
+      _ = try? rejecter.getFunction().call(argument: errorValue)
 
       // The resolver can't be called anymore. The state stays registered so it keeps owning the
       // object until the wrapper is dropped (or the teardown sweep runs).
