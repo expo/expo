@@ -1,12 +1,11 @@
 import JsonFile from '@expo/json-file';
-import resolveFrom from 'resolve-from';
-
-import { findUpPackageJsonPath } from './findUpPackageJsonPath';
+import { resolveFrom } from '@expo/require-utils';
 
 export function getPkgVersion(projectRoot: string, pkgName: string): string | null {
-  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
-  const targetPkgJson = findUpPackageJsonPath(targetPkg);
+  // The copy in `node_modules` is the one Metro bundles, whatever the package's `exports` expose
+  const targetPkgJson = resolveFrom(projectRoot, `${pkgName}/package.json`, {
+    skipNodePath: true,
+  });
   if (!targetPkgJson) return null;
   const pkg = JsonFile.read(targetPkgJson);
   const pkgVersion = pkg.version;
