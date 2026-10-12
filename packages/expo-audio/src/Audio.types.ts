@@ -153,6 +153,17 @@ export type AudioPlayerOptions = {
    * @platform ios
    */
   allowsExternalPlayback?: boolean;
+  /**
+   * A Boolean value that indicates whether the player should automatically delay playback in order to minimize stalling.
+   *
+   * Set to `false` to start playback of remote or live streams as soon as media data is available.
+   * Playback can then stall if the network cannot keep up.
+   *
+   * Equivalent to [`AVPlayer.automaticallyWaitsToMinimizeStalling`](https://developer.apple.com/documentation/avfoundation/avplayer/1643482-automaticallywaitstominimizestal).
+   * @default true
+   * @platform ios
+   */
+  automaticallyWaitsToMinimizeStalling?: boolean;
 };
 
 /**

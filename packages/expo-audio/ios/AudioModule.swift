@@ -130,7 +130,7 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double, allowsExternalPlayback: Bool) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double, allowsExternalPlayback: Bool, automaticallyWaitsToMinimizeStalling: Bool?) -> AudioPlayer in
         let avPlayer: AVPlayer
         if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           avPlayer = cachedPlayer
@@ -144,6 +144,7 @@ public class AudioModule: Module {
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
+        player.automaticallyWaitsToMinimizeStalling = automaticallyWaitsToMinimizeStalling
         let playerId = player.id
         player.onRelease = { [weak audioModule = self] in
           audioModule?.unregisterAudioSessionActivityKeeper(playerId)
