@@ -10,8 +10,11 @@
 
 - [Android] Fix the community `MenuView` opening detached above its anchor near the bottom of the screen, and add a `properties` prop to the Jetpack Compose `DropdownMenu`. ([#51412](https://github.com/expo/expo/pull/51412) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix the universal `ListItem` ignoring `testID`. The prop was never passed to Compose, so end-to-end tools such as Maestro could not find list rows on Android. It is now applied as the `testID` modifier, like the universal `Button` and `Checkbox` do. ([#51480](https://github.com/expo/expo/pull/51480) by [@devonik](https://github.com/devonik))
+- [iOS][Android] Fix `measure()` of views hosted in `RNHostView` inside SwiftUI and Jetpack Compose containers. ([#50715](https://github.com/expo/expo/pull/50715) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
+
+- Add a development warning when a `Host` renders directly inside another `Host` without an `RNHostView`. The universal `BottomSheet` no longer adds its own `Host` when it renders inside one. ([#50715](https://github.com/expo/expo/pull/50715) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 57.0.23 — 2026-10-12
 
