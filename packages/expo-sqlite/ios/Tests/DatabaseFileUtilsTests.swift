@@ -107,7 +107,7 @@ final class DatabaseFileUtilsTests {
   }
 
   @Test
-  func `reports the legacy percent-encoded path only for a plain path that was encoded`() {
+  func `reports the legacy percent-encoded path only when it decodes to the resolved path`() {
     guard #available(iOS 17, tvOS 17, macOS 14, *) else {
       return
     }
@@ -116,7 +116,11 @@ final class DatabaseFileUtilsTests {
 
     #expect(legacyPath == "/tmp/My%20Dir/a.db")
     #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "/tmp/dir/a.db", resolvedPath: "/tmp/dir/a.db") == nil)
+    #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "/tmp/dir/a#b.db", resolvedPath: "/tmp/dir/a#b.db") == nil)
     #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "file:///tmp/My Dir/a.db", resolvedPath: plainPath) == nil)
+    #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "file:///tmp/My%20Dir/my data.db", resolvedPath: "/tmp/My Dir/my data.db") == "/tmp/My%20Dir/my data.db")
+    #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "file:///tmp/dir/a#b.db", resolvedPath: "/tmp/dir/a#b.db") == nil)
+    #expect(DatabaseFileUtils.legacyEncodedPath(forDatabasePath: "/tmp/a/../My Dir/n.db", resolvedPath: "/tmp/My Dir/n.db") == "/tmp/My%20Dir/n.db")
   }
 
   @Test

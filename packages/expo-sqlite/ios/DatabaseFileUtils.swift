@@ -34,15 +34,16 @@ internal enum DatabaseFileUtils {
   }
 
   /**
-   Returns the path that earlier releases opened for a plain path on iOS 17 and later, where
-   `URL(string:)` percent-encoded the string and the encoded form was used as the file name on disk.
-   Returns `nil` for `file:` URIs, when the encoded form equals `resolvedPath`, or when the string
-   does not parse (older OS versions threw there, so nothing was written).
+   Returns the path earlier releases passed to SQLite, where `URL(string:)` percent-encoded the input
+   on iOS 17 and later. Returns `nil` when it equals `resolvedPath` or is not just its encoded form,
+   so a name truncated at `#` or `?` is left alone.
    */
   static func legacyEncodedPath(forDatabasePath path: String, resolvedPath: String) -> String? {
-    guard !path.hasPrefix("file:"),
-      let legacyPath = URL(string: path)?.absoluteString,
-      legacyPath != resolvedPath else {
+    guard let oldPath = URL(string: path)?.toFilePath() else {
+      return nil
+    }
+    let legacyPath = URL(fileURLWithPath: oldPath).standardizedFileURL.path
+    guard legacyPath != resolvedPath, legacyPath.removingPercentEncoding == resolvedPath else {
       return nil
     }
     return legacyPath
