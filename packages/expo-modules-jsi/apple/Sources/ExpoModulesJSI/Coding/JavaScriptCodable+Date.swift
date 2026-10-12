@@ -38,7 +38,7 @@ extension Date: JavaScriptCodable {
     }
     if value.isString() {
       let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-      let constructed = try dateConstructor.callAsConstructor(value.copied(in: runtime).ref()).asObject()
+      let constructed = try dateConstructor.callAsConstructor(argument: value.copied(in: runtime)).asObject()
       return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
     }
     if value.isObject() {

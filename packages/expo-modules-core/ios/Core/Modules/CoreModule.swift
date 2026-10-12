@@ -90,7 +90,7 @@ internal final class CoreModule: Module {
    `global.expo.installOnUIRuntime`.
    */
   @JS
-  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: consuming JavaScriptValue) throws {
+  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: borrowing JavaScriptValue) throws {
     guard let appContext else {
       throw Exceptions.AppContextLost()
     }
@@ -109,35 +109,14 @@ internal final class CoreModule: Module {
       throw WorkletUIRuntimeException()
     }
 
-    // Use a Sendable box to safely capture error across isolation boundaries
-    final class ErrorHolder: @unchecked Sendable {
-      var error: (any Error)?
-    }
-    let errorHolder = ErrorHolder()
-    // The block below captures the holder, which a non-copyable value can't be, so it travels in a ref.
-    let holderRef = uiRuntimeHolder.ref()
-
-    let block = {
-      do {
-        let uiRuntime = try holderRef.withUnwrappedValue { (holder: borrowing JavaScriptValue) in
-          return try factory(appContext, holder, runtime)
-        }
-        appContext._uiRuntime = uiRuntime
-      } catch {
-        errorHolder.error = error
-      }
-    }
-
+    // `DispatchQueue.main.sync` doesn't escape its closure and rethrows, so the closure can borrow the
+    // holder and the error reaches the caller directly.
     if Thread.isMainThread {
-      block()
+      appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
     } else {
-      DispatchQueue.main.sync {
-        block()
+      appContext._uiRuntime = try DispatchQueue.main.sync {
+        try factory(appContext, uiRuntimeHolder, runtime)
       }
-    }
-
-    if let error = errorHolder.error {
-      throw error
     }
   }
 }

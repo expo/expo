@@ -175,7 +175,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return try! global()
       .getPropertyAsObject("Object")
       .getPropertyAsFunction("create")
-      .call(arguments: prototype.refToValue())
+      .call(argument: prototype.asValue())
       .getObject()
   }
 

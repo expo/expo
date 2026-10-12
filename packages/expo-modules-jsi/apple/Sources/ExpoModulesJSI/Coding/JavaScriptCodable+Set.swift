@@ -32,9 +32,9 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
     -> JavaScriptValue
   {
     // Constructing from an array fills the set in a single call, rather than one `add` call per element.
-    let entries = try [Element].encode(Array(value), in: runtime).ref()
+    let entries = try [Element].encode(Array(value), in: runtime)
     return try runtime.withSetConstructor { constructor in
-      return try constructor.callAsConstructor(entries)
+      return try constructor.callAsConstructor(argument: entries)
     }
   }
 }

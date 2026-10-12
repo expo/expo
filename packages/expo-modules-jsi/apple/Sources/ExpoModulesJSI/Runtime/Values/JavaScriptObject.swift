@@ -375,9 +375,13 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // Filled with borrowed values, rather than passed as a pack, which takes copyable refs only.
+    var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
+    arguments = arguments.set(value: self, atIndex: 0)
+    arguments = arguments.set(value: name, atIndex: 1)
+    arguments = arguments.set(value: descriptor, atIndex: 2)
     do {
-      try definePropertyFunction(in: runtime).function
-        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+      try definePropertyFunction(in: runtime).function.call(arguments: arguments)
     } catch {
       FatalError.definePropertyFailed(name, error)
     }
