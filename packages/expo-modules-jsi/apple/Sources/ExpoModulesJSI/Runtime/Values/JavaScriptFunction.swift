@@ -143,6 +143,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    assert(isOnOwningThread(of: runtime), "A JavaScript object was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtime, expo.valueFromFunction(runtime.pointee, pointee))
   }
 

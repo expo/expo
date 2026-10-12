@@ -97,15 +97,10 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
-  /// Whether the calling thread may touch this value's runtime: its JavaScript thread, or any thread
-  /// for a runtime-free value or a runtime without a scheduler (which runs its work inline wherever it
-  /// is called). Only used in `assert`s, so release builds never evaluate it. Copying a value with a
-  /// runtime clones it in the engine, which is only safe on the runtime's thread.
+  /// Whether the calling thread may touch this value's runtime; see `isOnOwningThread(of:)`. Always
+  /// `true` for a runtime-free value.
   internal func isOnOwningThread() -> Bool {
-    guard let runtime, runtime.supportsAsyncScheduling else {
-      return true
-    }
-    return runtime.isOnJavaScriptThread()
+    return ExpoModulesJSI.isOnOwningThread(of: runtime)
   }
 
   /// Copies the value.
@@ -372,6 +367,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isObject(), "Value is not an object")
+    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
     return JavaScriptObject(runtimeHandle, pointee.getObject(jsiRuntime))
   }
 
@@ -381,6 +377,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Value is not an array")
+    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
     return JavaScriptArray(runtimeHandle, pointee.getObject(jsiRuntime).getArray(jsiRuntime))
   }
 
@@ -390,6 +387,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Value is not a function")
+    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
     return JavaScriptFunction(runtime, pointee.getObject(runtime.pointee).getFunction(runtime.pointee))
   }
 
@@ -408,6 +406,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Value is not an array buffer")
+    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
     return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
   }
 

@@ -428,6 +428,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
+    assert(isOnOwningThread(of: runtime), "A JavaScript object was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtimeHandle, expo.valueFromArray(jsiRuntime, pointee))
   }
 

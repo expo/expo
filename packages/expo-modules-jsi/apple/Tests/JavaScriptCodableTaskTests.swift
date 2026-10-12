@@ -88,8 +88,12 @@ struct JavaScriptCodableTaskTests {
       }
       return UncheckedSendable(value: try Task.encode(task, in: runtime.runtime).getPromise())
     }
-    let result = try await promise.value.await()
-    #expect(result.getObject().getProperty("answer").getInt() == 42)
+    // Reading the object touches the runtime, so it happens on the runtime's thread.
+    let result = try await promise.value.await().ref()
+    let answer = try await runtime.scheduler.runIsolated {
+      try result.take().getObject().getProperty("answer").getInt()
+    }
+    #expect(answer == 42)
   }
 
   @Test
