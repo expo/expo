@@ -25,7 +25,7 @@ In this chapter, we'll learn how EAS Build automatically manages the developer-f
 An app version is composed of two values:
 
 - Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
-- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) **app.config.js**.
+- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) in **app.config.js**.
 
 Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of user-facing and developer-facing values), we cannot submit another build to the app stores with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
@@ -44,13 +44,13 @@ An example demonstration of manually managing developer-facing values is shown b
 }
 ```
 
-> **Note**: The [user-facing version number](/build-reference/app-versions/#user-facing-version) is not handled by EAS. Instead, we define that in the app store developer portals before submitting our production app for review.
+> **info** The [user-facing version number](/build-reference/app-versions/#user-facing-version) is not handled by EAS. Instead, we update the `version` property in app config before we submit a production build to the app stores.
 
 ## Automatic app version management with EAS Build
 
 By default, EAS Build assists in automating developer-facing values. It utilizes the [remote version source](/build-reference/app-versions/#remote-version-source) to automatically increment developer-facing values whenever a new production release is made.
 
-When we initialized the project with `eas init` command, the EAS CLI automatically added the following properties in **eas.json**:
+When we configured the project with the `eas build:configure` command, the EAS CLI automatically added the following properties in **eas.json**:
 
 - `cli.appVersionSource` which is set to `remote`
 - [`build.production.autoIncrement`](/eas/json/#autoincrement-1) which is set to `true`
