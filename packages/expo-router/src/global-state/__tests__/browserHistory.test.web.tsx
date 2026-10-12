@@ -23,7 +23,7 @@ jest.mock('../getRouteInfoFromState', () => {
   );
   return {
     ...actual,
-    // The simple legacy stack fixtures have no `__root` slot.
+    // The simple test states below have no `__root` slot.
     getRouteSegmentsFromState: (state: NavigationState) =>
       state.routes[0]!.name === '__root'
         ? actual.getRouteSegmentsFromState(state)
