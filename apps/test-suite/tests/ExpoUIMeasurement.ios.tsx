@@ -145,6 +145,48 @@ export async function test(
       expect(second.pageY - host.pageY).toBe(host.height - PADDING - BOX);
     });
 
+    it('measures hosted views in stacks placed beside each other in a row', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      let onLaidOut: () => void;
+      const laidOut = new Promise<void>((resolve) => {
+        onLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onLaidOut()}>
+            <HStack modifiers={[padding({ all: PADDING })]}>
+              <VStack>
+                <RNHostView matchContents>
+                  <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+                </RNHostView>
+              </VStack>
+              <VStack>
+                <RNHostView matchContents>
+                  <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </VStack>
+            </HStack>
+          </Host>
+        </View>
+      );
+
+      await laidOut;
+
+      const host = await measureAsync(hostWrapperRef);
+      const first = await measureAsync(firstRef);
+      const second = await measureAsync(secondRef);
+
+      const rowHeight = Math.max(SHORT, BOX);
+      expect(first.pageX - host.pageX).toBe(PADDING);
+      expect(first.pageY - host.pageY).toBe(PADDING + (rowHeight - SHORT) / 2);
+      expect(second.pageX - host.pageX).toBe(host.width - PADDING - BOX);
+      expect(second.pageY - host.pageY).toBe(PADDING + (rowHeight - BOX) / 2);
+    });
+
     it('measures a hosted view in a row, beside a SwiftUI-only sibling', async () => {
       const hostWrapperRef = React.createRef<ViewRef>();
       const hostedRef = React.createRef<ViewRef>();
@@ -211,6 +253,105 @@ export async function test(
       expect(first.pageY - host.pageY).toBe(PADDING + (rowHeight - SHORT) / 2);
       expect(second.pageX - host.pageX).toBe(host.width - PADDING - BOX);
       expect(second.pageY - host.pageY).toBe(PADDING + (rowHeight - BOX) / 2);
+    });
+
+    // A `Host` inside SwiftUI goes in an `RNHostView`, which reports where SwiftUI placed it. The
+    // nested `Host` then measures from that position, including the outer stack's padding.
+    it('measures a hosted view in a Host nested through an RNHostView below a hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      let onOuterLaidOut: () => void;
+      const outerLaidOut = new Promise<void>((resolve) => {
+        onOuterLaidOut = resolve;
+      });
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onOuterLaidOut()}>
+            <VStack spacing={0} alignment="leading" modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ padding: PADDING }}>
+                  <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                    <RNHostView matchContents>
+                      <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                    </RNHostView>
+                  </Host>
+                </View>
+              </RNHostView>
+            </VStack>
+          </Host>
+        </View>
+      );
+
+      await Promise.all([outerLaidOut, nestedLaidOut]);
+
+      const host = await measureAsync(hostWrapperRef);
+      const nested = await measureAsync(nestedRef);
+
+      expect(nested.pageX - host.pageX).toBe(PADDING * 2);
+      expect(nested.pageY - host.pageY).toBe(PADDING * 2 + SHORT);
+    });
+
+    // The inner stack holds a hosted view and the `RNHostView` around the nested `Host`. Both report
+    // their own position, so the stack's zero content origin is right for both.
+    it('measures a hosted view in a nested Host beside a hosted view in the same stack', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const siblingRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      let onOuterLaidOut: () => void;
+      const outerLaidOut = new Promise<void>((resolve) => {
+        onOuterLaidOut = resolve;
+      });
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onOuterLaidOut()}>
+            <VStack spacing={0} alignment="leading" modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <VStack spacing={0} alignment="leading">
+                <RNHostView matchContents>
+                  <View ref={siblingRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+                <RNHostView matchContents>
+                  <View collapsable={false} style={{ padding: PADDING }}>
+                    <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                      <RNHostView matchContents>
+                        <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                      </RNHostView>
+                    </Host>
+                  </View>
+                </RNHostView>
+              </VStack>
+            </VStack>
+          </Host>
+        </View>
+      );
+
+      await Promise.all([outerLaidOut, nestedLaidOut]);
+
+      const host = await measureAsync(hostWrapperRef);
+      const sibling = await measureAsync(siblingRef);
+      const nested = await measureAsync(nestedRef);
+
+      expect(sibling.pageX - host.pageX).toBe(PADDING);
+      expect(sibling.pageY - host.pageY).toBe(PADDING + SHORT);
+      expect(nested.pageX - host.pageX).toBe(PADDING * 2);
+      expect(nested.pageY - host.pageY).toBe(PADDING * 2 + SHORT + BOX);
     });
 
     it('measures a hosted view when the Host is inside a React Native ScrollView', async () => {

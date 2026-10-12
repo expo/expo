@@ -21,6 +21,7 @@ internal struct NamespaceView: ExpoSwiftUI.View {
     NamespaceRegistry.shared.registerNamespace(namespace, forKey: props.id)
 
     return Children()
+      .publishZeroContentOrigin(props.shadowNodeProxy)
       .onDisappear {
         NamespaceRegistry.shared.unregisterNamespace(forKey: props.id)
       }

@@ -9,6 +9,7 @@ import {
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
+import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
 import { getMaterialColors, HostPaletteContext } from '../colors';
@@ -93,6 +94,7 @@ export function Host(props: HostProps) {
     colorScheme,
     seedColor,
     ref,
+    children,
     ...restProps
   } = props;
   const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
@@ -105,6 +107,7 @@ export function Host(props: HostProps) {
   );
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
+  useWarnIfNestedHost('Jetpack Compose');
 
   return (
     <HostPaletteContext.Provider value={palette}>
@@ -124,8 +127,9 @@ export function Host(props: HostProps) {
           layoutDirection={
             layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
           }
-          ref={mergedRef}
-        />
+          ref={mergedRef}>
+          <NativeTreeContext.Provider value>{children}</NativeTreeContext.Provider>
+        </HostNativeView>
       </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );

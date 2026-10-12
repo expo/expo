@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.FrameLayout
+import androidx.annotation.UiThread
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,7 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
+import java.util.WeakHashMap
 
 @OptimizedComposeProps
 internal data class RNHostViewProps(
@@ -150,6 +152,25 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     lastContentOriginX = Double.NaN
     lastContentOriginY = Double.NaN
     shadowNodeProxy.clearContentOrigin()
+  }
+
+  // Compose places the views between this view and its `Host`, so `measure()` must skip their Yoga
+  // origins. A zero content origin on each one does that while this view is attached.
+  private var composeAncestors: List<ExpoComposeView<*>> = emptyList()
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    composeAncestors = generateSequence(parent) { it.parent }
+      .takeWhile { it is ExpoComposeView<*> && !it.shouldUseAndroidLayout }
+      .filterIsInstance<ExpoComposeView<*>>()
+      .toList()
+    composeAncestors.forEach(ZeroContentOrigins::acquire)
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    composeAncestors.forEach(ZeroContentOrigins::release)
+    composeAncestors = emptyList()
   }
 
   @Composable
@@ -292,6 +313,44 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         )
       }
     }
+  }
+}
+
+/**
+ * Counts, for each Compose ancestor, the attached `RNHostView`s below it. Several can share an
+ * ancestor, so the ancestor's zero content origin is set when its count becomes 1 and cleared when
+ * it returns to 0.
+ */
+internal object ZeroContentOrigins {
+  private val counts = WeakHashMap<ExpoComposeView<*>, Int>()
+
+  @UiThread
+  fun acquire(view: ExpoComposeView<*>) {
+    val count = counts[view] ?: 0
+    if (count == 0) {
+      view.shadowNodeProxy.setContentOrigin(0.0, 0.0)
+    }
+    counts[view] = count + 1
+  }
+
+  @UiThread
+  fun release(view: ExpoComposeView<*>) {
+    val count = counts[view] ?: return
+    if (count > 1) {
+      counts[view] = count - 1
+      return
+    }
+    counts.remove(view)
+    view.shadowNodeProxy.clearContentOrigin()
+  }
+
+  /**
+   * Called on reload, after the content origins themselves are cleared. A late `release` from the
+   * old app context then finds no count and can't clear an entry for a reused tag.
+   */
+  @UiThread
+  fun clear() {
+    counts.clear()
   }
 }
 
