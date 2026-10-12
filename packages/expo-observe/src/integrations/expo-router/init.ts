@@ -1,9 +1,8 @@
-import AppMetrics, { type MetricInput } from 'expo-app-metrics';
-import { AppState } from 'react-native';
+import AppMetrics from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
-import { type BlockingTimeMeasurement, createBlockingTimeObserver } from './blockingTime';
+import { createNavigationBlockingTime } from './blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -34,44 +33,10 @@ export function initListeners(
 ): () => void {
   const appLaunchTime = performance.now();
   const cleanup = new Set<() => void>();
-  let isForeground = AppState.currentState === 'active';
-  const blockingTimeObserver = createBlockingTimeObserver(isForeground);
-
-  // Blocking time of the latest navigation. `metric` is set when the
-  // destination screen is focused, and nothing is recorded without it.
-  let blockingTime:
-    | { measurement: BlockingTimeMeasurement; metric?: Omit<MetricInput, 'value'> }
-    | undefined;
-
-  const startNavigationBlockingTime = () => {
-    if (!blockingTimeObserver || !isForeground) return;
-    const current: NonNullable<typeof blockingTime> = {
-      measurement: blockingTimeObserver.start((blockingTimeMs) => {
-        if (blockingTime === current) blockingTime = undefined;
-        if (!current.metric) return;
-        AppMetrics.getMainSession().addMetric({ ...current.metric, value: blockingTimeMs / 1000 });
-      }),
-    };
-    blockingTime = current;
-  };
-
-  const cancelNavigationBlockingTime = () => {
-    blockingTime?.measurement.cancel();
-    blockingTime = undefined;
-  };
-  cleanup.add(cancelNavigationBlockingTime);
-  cleanup.add(() => blockingTimeObserver?.disconnect());
-
-  const appStateSubscription = AppState.addEventListener('change', (state) => {
-    isForeground = state === 'active';
-    if (isForeground) {
-      blockingTimeObserver?.observe();
-    } else {
-      cancelNavigationBlockingTime();
-      blockingTimeObserver?.disconnect();
-    }
-  });
-  cleanup.add(() => appStateSubscription.remove());
+  const blockingTime = createNavigationBlockingTime((metric) =>
+    AppMetrics.getMainSession().addMetric(metric)
+  );
+  if (blockingTime) cleanup.add(blockingTime.dispose);
 
   const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
     // PRELOAD comes from router.prefetch() — a route warm-up, not a user
@@ -82,10 +47,7 @@ export function initListeners(
       dispatchTime: performance.now(),
     });
     // Navigations before the first screen is focused are part of app launch.
-    if (storage.hasRecordedInitialTtr) {
-      blockingTime?.measurement.finish();
-      startNavigationBlockingTime();
-    }
+    if (storage.hasRecordedInitialTtr) blockingTime?.start();
   });
   cleanup.add(unsubscribeAction);
 
@@ -165,19 +127,14 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
-    if (
-      !isAppLaunch &&
-      blockingTime &&
-      !blockingTime.metric &&
-      now <= blockingTime.measurement.deadline
-    ) {
-      blockingTime.metric = {
+    if (!isAppLaunch) {
+      blockingTime?.setMetric({
         timestamp,
         category: 'navigation',
         name: 'tbt',
         routeName: routePattern,
         params: navigationParams,
-      };
+      });
     }
     if (hasPendingInteractive) {
       await emitTTI({

@@ -1,13 +1,25 @@
+import type { MetricInput } from 'expo-app-metrics';
+import { AppState } from 'react-native';
+
+// Navigation Total Blocking Time follows Coinbase's Performance Vitals definition: blocking time
+// in the 2 seconds after a user navigates.
+// https://www.coinbase.com/blog/performance-vitals-a-unified-scoring-system-to-guide-performance-health-and-prioritization
 const WINDOW_MS = 2000;
+// Same threshold as the Long Tasks API and web TBT. To respond to input within 100ms (the RAIL
+// model), the thread can't stay busy longer than 50ms at a time. Only the time past 50ms counts.
 const LONG_TASK_THRESHOLD_MS = 50;
 
-export interface BlockingTimeMeasurement {
-  readonly deadline: number;
-  finish(): void;
-  cancel(): void;
-}
+type NavigationMetric = Omit<MetricInput, 'value'>;
 
-export function createBlockingTimeObserver(observeImmediately = true) {
+type Window = {
+  start: number;
+  end: number;
+  blockingTimeMs: number;
+  timer: ReturnType<typeof setTimeout>;
+  metric?: NavigationMetric;
+};
+
+export function createNavigationBlockingTime(onMeasured: (metric: MetricInput) => void) {
   if (
     typeof PerformanceObserver === 'undefined' ||
     !PerformanceObserver.supportedEntryTypes?.includes('longtask')
@@ -15,22 +27,17 @@ export function createBlockingTimeObserver(observeImmediately = true) {
     return;
   }
 
-  type Window = {
-    start: number;
-    end: number;
-    blockingTimeMs: number;
-    timer?: ReturnType<typeof setTimeout>;
-  };
+  // Open windows in start order. The last one belongs to the latest navigation.
   const windows = new Set<Window>();
+  const latestWindow = () => [...windows].pop();
 
   const addEntries = (entries: PerformanceEntry[]) => {
-    for (const current of windows) {
+    for (const window of windows) {
       for (const entry of entries) {
-        // Only the part after a task's first 50ms contributes to TBT.
-        current.blockingTimeMs += Math.max(
+        window.blockingTimeMs += Math.max(
           0,
-          Math.min(entry.startTime + entry.duration, current.end) -
-            Math.max(entry.startTime + LONG_TASK_THRESHOLD_MS, current.start)
+          Math.min(entry.startTime + entry.duration, window.end) -
+            Math.max(entry.startTime + LONG_TASK_THRESHOLD_MS, window.start)
         );
       }
     }
@@ -38,44 +45,62 @@ export function createBlockingTimeObserver(observeImmediately = true) {
 
   const observer = new PerformanceObserver((list) => addEntries(list.getEntries()));
   const observe = () => observer.observe({ type: 'longtask' });
-  if (observeImmediately) observe();
+
+  const remove = (window: Window) => {
+    clearTimeout(window.timer);
+    windows.delete(window);
+  };
+
+  const complete = (window: Window) => {
+    addEntries(observer.takeRecords());
+    remove(window);
+    if (window.metric) {
+      onMeasured({ ...window.metric, value: window.blockingTimeMs / 1000 });
+    }
+  };
+
+  // Reports on the next tick, so the long task that is running now is included.
+  const finish = (window: Window) => {
+    window.end = Math.min(window.end, performance.now());
+    clearTimeout(window.timer);
+    window.timer = setTimeout(() => complete(window), 0);
+  };
+
+  const stop = () => {
+    windows.forEach(remove);
+    observer.disconnect();
+  };
+
+  if (AppState.currentState === 'active') observe();
+  const appStateSubscription = AppState.addEventListener('change', (state) =>
+    state === 'active' ? observe() : stop()
+  );
 
   return {
-    start(onComplete: (blockingTimeMs: number) => void): BlockingTimeMeasurement {
+    // Starts a window for a new navigation and ends the previous one early.
+    start() {
+      if (AppState.currentState !== 'active') return;
+      const previous = latestWindow();
+      if (previous) finish(previous);
       const start = performance.now();
-      const current: Window = {
+      const window: Window = {
         start,
         end: start + WINDOW_MS,
         blockingTimeMs: 0,
+        timer: setTimeout(() => finish(window), WINDOW_MS),
       };
-      const cancel = () => {
-        if (!windows.delete(current)) return;
-        if (current.timer !== undefined) clearTimeout(current.timer);
-      };
-      const complete = () => {
-        if (!windows.has(current)) return;
-        addEntries(observer.takeRecords());
-        const value = current.blockingTimeMs;
-        cancel();
-        onComplete(value);
-      };
-      const finish = () => {
-        if (!windows.has(current)) return;
-        current.end = Math.min(current.end, performance.now());
-        if (current.timer !== undefined) clearTimeout(current.timer);
-        current.timer = setTimeout(complete, 0);
-      };
-      current.timer = setTimeout(finish, WINDOW_MS);
-      windows.add(current);
-      return { deadline: current.end, finish, cancel };
+      windows.add(window);
     },
-    observe,
-    disconnect() {
-      for (const current of windows) {
-        if (current.timer !== undefined) clearTimeout(current.timer);
+    // Sets the metric of the latest navigation. Navigations without a metric are not reported.
+    setMetric(metric: NavigationMetric) {
+      const window = latestWindow();
+      if (window && !window.metric && performance.now() <= window.end) {
+        window.metric = metric;
       }
-      windows.clear();
-      observer.disconnect();
+    },
+    dispose() {
+      stop();
+      appStateSubscription.remove();
     },
   };
 }

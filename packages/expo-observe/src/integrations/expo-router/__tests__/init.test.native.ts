@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
-import { AppState } from 'react-native';
 
-import { createBlockingTimeObserver } from '../blockingTime';
+import { createNavigationBlockingTime } from '../blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
@@ -33,42 +32,19 @@ jest.mock('expo-app-metrics', () => {
 
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
 jest.mock('../blockingTime', () => ({
-  createBlockingTimeObserver: jest.fn(() => ({
-    start: jest.fn(() => ({
-      deadline: performance.now() + 2000,
-      finish: jest.fn(),
-      cancel: jest.fn(),
-    })),
-    observe: jest.fn(),
-    disconnect: jest.fn(),
+  createNavigationBlockingTime: jest.fn(() => ({
+    start: jest.fn(),
+    setMetric: jest.fn(),
+    dispose: jest.fn(),
   })),
 }));
 
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
-const mockCreateBlockingTimeObserver = createBlockingTimeObserver as jest.Mock;
-const originalAppStateCurrentState = Object.getOwnPropertyDescriptor(AppState, 'currentState');
+const mockCreateNavigationBlockingTime = createNavigationBlockingTime as jest.Mock;
 
-function lastBlockingTimeObserver() {
-  return mockCreateBlockingTimeObserver.mock.results[
-    mockCreateBlockingTimeObserver.mock.results.length - 1
-  ]!.value;
-}
-
-function lastBlockingTimeMeasurement() {
-  const { lastCall, results } = lastBlockingTimeObserver().start.mock;
-  return {
-    complete: lastCall![0] as (blockingTimeMs: number) => void,
-    ...(results[results.length - 1]!.value as {
-      deadline: number;
-      finish: jest.Mock;
-      cancel: jest.Mock;
-    }),
-  };
-}
-
-function blockingTimeMetrics() {
-  return mockAddMetric.mock.calls.map((c) => c[0]).filter((m) => m.name === 'tbt');
+function lastBlockingTime() {
+  return mockCreateNavigationBlockingTime.mock.results.at(-1)!.value;
 }
 
 type Listener<T> = (event: T) => void;
@@ -142,7 +118,6 @@ let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  Object.defineProperty(AppState, 'currentState', { configurable: true, value: 'active' });
   initRouterIntegration(undefined);
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -162,9 +137,6 @@ afterEach(() => {
   expect(logSpy).not.toHaveBeenCalled();
   expect(warnSpy).not.toHaveBeenCalled();
   jest.clearAllMocks();
-  if (originalAppStateCurrentState) {
-    Object.defineProperty(AppState, 'currentState', originalAppStateCurrentState);
-  }
 });
 
 describe('initListeners', () => {
@@ -510,27 +482,27 @@ describe('navigation total blocking time', () => {
   beforeEach(async () => {
     focus(events, 'a');
     await flushAsync();
-    mockAddMetric.mockClear();
   });
 
-  it('records tbt for the destination route when the measurement completes', async () => {
+  it('sets the tbt metric for the destination route', async () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'b', { pathname: '/b?q=1', params: { q: '1' } });
     await flushAsync();
-    expect(blockingTimeMetrics()).toEqual([]);
 
-    lastBlockingTimeMeasurement().complete(120);
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith({
+      timestamp: expect.any(String),
+      category: 'navigation',
+      name: 'tbt',
+      routeName: '/b',
+      params: { routeParams: { q: '1' }, url: '/b?q=1' },
+    });
+  });
 
-    expect(blockingTimeMetrics()).toEqual([
-      {
-        timestamp: expect.any(String),
-        category: 'navigation',
-        name: 'tbt',
-        routeName: '/b',
-        value: 0.12,
-        params: { routeParams: { q: '1' }, url: '/b?q=1' },
-      },
-    ]);
+  it('records the measured tbt in the main session', () => {
+    const metric = { category: 'navigation', name: 'tbt', routeName: '/b', value: 0.12 };
+    mockCreateNavigationBlockingTime.mock.lastCall![0](metric);
+    expect(mockAddMetric).toHaveBeenLastCalledWith(metric);
   });
 
   it('filters route params from tbt', async () => {
@@ -538,81 +510,32 @@ describe('navigation total blocking time', () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
     await flushAsync();
-    lastBlockingTimeMeasurement().complete(0);
 
-    expect(blockingTimeMetrics()[0].params).toEqual({ routeParams: {}, urlHidden: true });
+    expect(lastBlockingTime().setMetric.mock.lastCall[0].params).toEqual({
+      routeParams: {},
+      urlHidden: true,
+    });
   });
 
   it('does not measure the initial app launch', () => {
-    expect(lastBlockingTimeObserver().start).not.toHaveBeenCalled();
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
+    expect(lastBlockingTime().setMetric).not.toHaveBeenCalled();
   });
 
   it('does not measure PRELOAD actions', () => {
     dispatch(events, 'PRELOAD');
-    expect(lastBlockingTimeObserver().start).not.toHaveBeenCalled();
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
   });
 
-  it('does not record tbt when no screen was focused during the window', () => {
+  it('starts a measurement for every navigation action', () => {
+    dispatch(events, 'NAVIGATE');
     dispatch(events, 'SET_PARAMS');
-    lastBlockingTimeMeasurement().complete(120);
-    expect(blockingTimeMetrics()).toEqual([]);
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(2);
   });
 
-  it('does not attach destination metadata after the measurement deadline', () => {
-    dispatch(events, 'NAVIGATE');
-    const measurement = lastBlockingTimeObserver().start.mock.results[0].value;
-    measurement.deadline = performance.now() - 1;
-    focus(events, 'b');
-    lastBlockingTimeMeasurement().complete(120);
-    expect(blockingTimeMetrics()).toEqual([]);
-  });
-
-  it('finishes the previous measurement early when a new navigation starts', async () => {
-    dispatch(events, 'NAVIGATE');
-    focus(events, 'b');
-    await flushAsync();
-    const first = lastBlockingTimeMeasurement();
-
-    dispatch(events, 'NAVIGATE');
-
-    expect(first.finish).toHaveBeenCalledTimes(1);
-    expect(lastBlockingTimeObserver().start).toHaveBeenCalledTimes(2);
-  });
-
-  it('cancels the measurement when the app leaves the foreground', () => {
-    const addEventListener = jest.spyOn(AppState, 'addEventListener');
-    setRouterConfig(undefined);
-    const onAppStateChange = addEventListener.mock.lastCall![1];
-
-    dispatch(events, 'NAVIGATE');
-    onAppStateChange('background');
-
-    expect(lastBlockingTimeMeasurement().cancel).toHaveBeenCalledTimes(1);
-    expect(lastBlockingTimeObserver().disconnect).toHaveBeenCalledTimes(1);
-    onAppStateChange('active');
-    expect(lastBlockingTimeObserver().observe).toHaveBeenCalledTimes(1);
-  });
-
-  it('cancels the measurement on cleanup', () => {
-    dispatch(events, 'NAVIGATE');
+  it('disposes the measurement on cleanup', () => {
     cleanup();
-    expect(lastBlockingTimeMeasurement().cancel).toHaveBeenCalledTimes(1);
-    expect(lastBlockingTimeObserver().disconnect).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not observe or measure when initialized in the background', () => {
-    Object.defineProperty(AppState, 'currentState', { configurable: true, value: 'background' });
-    setRouterConfig(undefined);
-
-    expect(mockCreateBlockingTimeObserver).toHaveBeenLastCalledWith(false);
-    dispatch(events, 'NAVIGATE');
-    expect(lastBlockingTimeObserver().start).not.toHaveBeenCalled();
-
-    const addEventListener = jest.mocked(AppState.addEventListener);
-    addEventListener.mock.lastCall![1]('active');
-    dispatch(events, 'NAVIGATE');
-    expect(lastBlockingTimeObserver().observe).toHaveBeenCalledTimes(1);
-    expect(lastBlockingTimeObserver().start).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().dispose).toHaveBeenCalledTimes(1);
   });
 });
 
