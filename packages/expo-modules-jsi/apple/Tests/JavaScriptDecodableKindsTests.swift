@@ -126,6 +126,12 @@ struct JavaScriptDecodableKindsTests {
   }
 
   @Test
+  func `JavaScriptObject and JavaScriptArray accept only objects`() throws {
+    try expectDecodableKinds(JavaScriptObject.self, accept: Self.objects)
+    try expectDecodableKinds(JavaScriptArray.self, accept: Self.objects)
+  }
+
+  @Test
   func `JavaScriptValue accepts every value`() throws {
     try expectDecodableKinds(JavaScriptValue.self, accept: Set(Self.samples))
   }

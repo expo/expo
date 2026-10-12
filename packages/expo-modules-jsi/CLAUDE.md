@@ -100,6 +100,15 @@ JavaScript driver function to measure a full JS-to-native round trip (see
 results against). Expect run-to-run medians to agree within roughly ±10-25% on a workstation;
 compare medians, and treat anything within that band as noise.
 
+## Naming: moving and copying values
+
+`JavaScriptValue` and the other wrappers are non-copyable, so an API either moves an engine value or clones it. The name says which:
+
+- `take…` moves. It consumes the receiver (or empties a ref) and transfers the engine value without a clone, so it doesn't touch the runtime: `JavaScriptRef.take()`, `JavaScriptObject.takeValue()`.
+- `copy()`, `as…` and `get…` borrow the receiver. When they return an owned wrapper, they clone the engine value, which touches the runtime and must run on the JavaScript thread: `asValue()`, `getObject()`.
+
+Use a `take…` API when the source isn't needed afterwards, for example a temporary or a consumed parameter.
+
 ## Formatting
 
 Swift sources are formatted with swift-format. From the package root, `pnpm swift:format` rewrites files in place and `pnpm swift:lint` checks without modifying; both delegate to the repo-root `scripts/swift-format.sh`, which reads the repo-root `.swift-format` config and only touches tracked `.swift` files. CI enforces this via `.github/workflows/swift-format.yml`, which pins a specific swift-format version &mdash; mismatched local versions can produce different output, so prefer the pinned one. Style conventions beyond what the formatter enforces live in [`guides/Swift Style Guide.md`](../../guides/Swift%20Style%20Guide.md) at the repo root.
