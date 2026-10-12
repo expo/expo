@@ -114,7 +114,7 @@ This command prompts us with the following questions when we create the build fo
 
 - **What would you like your iOS bundle identifier to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) in **app.json** if it isn't already defined.
 - **Do you want to log in to your Apple account?**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd> both times.
-- **Select a device for ad hoc build**. This is the key part, which is why we had to register a provisioning profile before. We can select one or all of our registered devices here and then press return to install that build on those devices later.
+- **Select devices for the ad hoc build**. This is the key part, which is why we had to register a provisioning profile before. We can select one or all of our registered devices here and then press <kbd>Return</kbd> to install that build on those devices later.
 
 > **warning** **On a new or recently renewed Apple Developer Program membership, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to Apple only when it's first included in a build. For such a membership, Apple can then take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing the device before it can be added to a provisioning profile, so a build may fail the first time you include a newly registered device. If that happens, wait for Apple to finish processing and then run the build again.
 
@@ -123,14 +123,14 @@ This command prompts us with the following questions when we create the build fo
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
 
 <ContentSpotlight
-  alt="iOS preview build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/ios-build.png"
+  alt="iOS development build details and progress in EAS dashboard"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-details.webp"
   className="max-w-[800px]"
 />
 
 <Collapsible summary="What does a build details page contain?">
 
-The build details page displays the build type, profile, Expo SDK version, app version, build number, last commit hash, and the identity of the developer or account owner who initiated the build.
+The build details page displays the build type, profile, environment, Expo SDK version, app version, and build number. It also displays the fingerprint, the last commit hash, and the identity of the developer or account owner who initiated the build.
 
 In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the iOS build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [iOS build process](/build-reference/ios-builds/).
 
@@ -154,7 +154,7 @@ Once the build finishes, the Build artifact section gets updated, indicating tha
 
 <ContentSpotlight
   alt="Build artifact gives the option to download development build for iOS devices and emulators"
-  src="/static/images/tutorial/eas/ios-build-artifact.png"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-artifact.webp"
 />
 
 This section provides the methods available for running the development build on an iOS device: Expo Orbit and Install button.
@@ -183,7 +183,7 @@ The **Install** button in the **Build artifact** section generates a QR code for
 
 <ContentSpotlight
   alt="Install button generates a QR code for easy installation on iOS devices and emulators"
-  src="/static/images/tutorial/eas/ios-qr-code.png"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-qr-code.webp"
   className="max-w-[480px]"
 />
 
@@ -212,7 +212,7 @@ Start the development server by running the `npx expo start` command from the pr
 
 <ContentSpotlight
   alt="Development build's launcher UI on iOS device"
-  src="/static/images/tutorial/eas/ios-dev-build-01.jpg"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-launcher.webp"
   className="max-w-[240px]"
 />
 
@@ -220,15 +220,15 @@ Start the development server by running the `npx expo start` command from the pr
 
 <ContentSpotlight
   alt="Modal to login to Expo account on iOS device"
-  src="/static/images/tutorial/eas/ios-dev-build-02.jpg"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-login.webp"
   className="max-w-[240px]"
 />
 
-- Tap **Fetch development servers** and select the server running from the list under Development servers.
+- Select the server running from the list under Development servers.
 
 <ContentSpotlight
-  alt="Fetching development servers to connect"
-  src="/static/images/tutorial/eas/ios-dev-build-03.jpg"
+  alt="Development server in the list under Development servers"
+  src="/static/images/tutorial/eas/ios-development-build-for-devices-dev-servers.webp"
   className="max-w-[240px]"
 />
 
