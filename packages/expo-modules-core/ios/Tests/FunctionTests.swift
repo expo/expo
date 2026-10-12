@@ -543,7 +543,7 @@ struct FunctionTests {
       #expect(object.getObject().hasProperty("length") == true)
 
       let result = object.getArray()
-      for (index, element) in result.enumerated() {
+      try result.forEachIndexed { index, element in
         #expect(element.kind == .object)
         #expect(element.getObject().hasProperty("value") == true)
         let value = try runtime.eval("object[\(index)].value")

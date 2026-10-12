@@ -41,6 +41,8 @@ public extension EventEmitter {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
+    // The payload is moved into a `JavaScriptRef` so the scheduled closure can capture it.
+    let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
     // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
     // Sendable` box is safe here because the scheduled closure only calls `withEventTarget`, which touches
@@ -50,6 +52,10 @@ public extension EventEmitter {
 
     runtime.schedule {
       guard let emitter = emitter.value else {
+        return
+      }
+      // The event is dispatched once, so the payload can be moved out of the ref.
+      guard let payload = payload.take() else {
         return
       }
       let dispatched = emitter.withEventTarget { target in

@@ -355,7 +355,7 @@ struct SharedObjectTests {
     let result = try resultValue.asObject()
     let dataProperty = result.getProperty("data")
 
-    #expect(dataProperty.isArrayBuffer())
+    #expect(dataProperty.isArrayBuffer() == true)
     #expect(try result.getProperty("length").asInt() == 16)
 
     let firstByte = try runtime.eval("new Uint8Array(result.data)[0]").asInt()
