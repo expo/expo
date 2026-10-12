@@ -19,6 +19,7 @@ private fun resolveNotificationIcon(context: Context): Int {
   val metaData = runCatching {
     context.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
   }.getOrNull()
+
   return metaData?.getInt(META_DATA_LOCATION_FOREGROUND_SERVICE_ICON, 0)?.takeIf { it != 0 }
     ?: context.resources.getIdentifier("notification_icon", "drawable", packageName).takeIf { it != 0 }
     ?: context.applicationInfo.icon.takeIf { it != 0 }

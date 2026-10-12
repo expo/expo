@@ -25,7 +25,7 @@ class BackgroundSessionOptions(
       context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
     fun persist(context: Context, options: BackgroundSessionOptions) {
-      preferences(context).edit {
+      preferences(context).edit(commit = true) {
         putBoolean(KEY_REQUESTED, true)
         putString(KEY_TITLE, options.notificationTitle)
         putString(KEY_BODY, options.notificationBody)
@@ -39,7 +39,7 @@ class BackgroundSessionOptions(
     }
 
     fun clearPersisted(context: Context) {
-      preferences(context).edit { clear() }
+      preferences(context).edit(commit = true) { clear() }
     }
 
     fun readPersisted(context: Context): BackgroundSessionOptions? {
