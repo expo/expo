@@ -33,6 +33,47 @@ export default function Layout() {
 
 Now when the user changes routes, the analytics provider will be notified.
 
+## Track screen focus with a custom analytics provider
+
+If your provider needs an event when a screen becomes focused, use Expo Router's experimental performance marks. Unlike a URL change, a focus event also fires when a previously mounted screen regains focus. A preloaded screen does not produce a focus event until the user navigates to it.
+
+Enable the integration before the root layout mounts. Then observe `expo-router:page-focused` marks and send their details to your provider:
+
+```tsx src/app/_layout.tsx
+import { useEffect } from 'react';
+import {
+  Slot,
+  unstable_enablePerformanceIntegration,
+  unstable_PerformanceObserver,
+  type RouterPageFocusedMark,
+} from 'expo-router';
+
+unstable_enablePerformanceIntegration();
+
+export default function Layout() {
+  useEffect(() => {
+    const observer = new unstable_PerformanceObserver(list => {
+      for (const entry of list.getEntriesByName('expo-router:page-focused')) {
+        // The mark name determines the type of its detail.
+        const { detail } = entry as RouterPageFocusedMark;
+        analytics.track({
+          pathname: detail.pathname,
+          params: detail.params,
+          screenId: detail.screenId,
+        });
+      }
+    });
+
+    observer.observe({ type: 'mark', buffered: true });
+    return () => observer.disconnect();
+  }, []);
+
+  return <Slot />;
+}
+```
+
+Replace `analytics.track` with your provider's event method. The `buffered` option includes marks recorded before the observer starts, including the initial screen. Each mark also has a `startTime` you can send when your provider accepts a timestamp. Expo Router records `page-preloaded`, `page-blurred`, `page-removed`, and `action-dispatched` marks if you need more navigation events. The performance API is experimental and its names may change.
+
 ## Migrating from React Navigation
 
 React Navigation's [screen tracking guide](https://reactnavigation.org/docs/screen-tracking/) cannot make the same assumptions about the navigation state that Expo Router can. As a result, the implementation requires the use of `onReady` and `onStateChange` callbacks. Avoid using these methods if possible as the root `<NavigationContainer />` is not directly exposed and allows cascading in Expo Router.
