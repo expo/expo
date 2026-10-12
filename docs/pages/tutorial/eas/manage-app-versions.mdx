@@ -25,7 +25,7 @@ In this chapter, we'll learn how EAS Build automatically manages the developer-f
 An app version is composed of two values:
 
 - Developer-facing value: Represented by [`versionCode`](/versions/latest/config/app/#versioncode) for Android and [`buildNumber`](/versions/latest/config/app/#buildnumber) for iOS.
-- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) in **app.config.js**.
+- User-facing value: Represented by [`version`](/versions/latest/config/app/#version) in [app config](/workflow/configuration/).
 
 Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of user-facing and developer-facing values), we cannot submit another build to the app stores with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
@@ -44,7 +44,7 @@ An example demonstration of manually managing developer-facing values is shown b
 }
 ```
 
-> **info** The [user-facing version number](/build-reference/app-versions/#user-facing-version) is not handled by EAS. Instead, we update the `version` property in app config before we submit a production build to the app stores.
+> **info** EAS does not handle the [user-facing version number](/build-reference/app-versions/#user-facing-version). Instead, we update the `version` property in app config before we create a production build.
 
 ## Automatic app version management with EAS Build
 
