@@ -1,6 +1,6 @@
 {
   "name": "@expo/local-build-cache-provider",
-  "version": "57.0.8",
+  "version": "57.0.9",
   "description": "Local build cache provider for Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",

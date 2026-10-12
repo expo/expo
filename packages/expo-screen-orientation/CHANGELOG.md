@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed a data race on `ScreenOrientationRegistry.currentTraitCollection` that could crash with `EXC_BAD_ACCESS` in libobjc. ([#51232](https://github.com/expo/expo/pull/51232) by [@stumbaumr](https://github.com/stumbaumr))
-
 ### 💡 Others
+
+## 57.0.3 — 2026-10-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a data race on `ScreenOrientationRegistry.currentTraitCollection` that could crash with `EXC_BAD_ACCESS` in libobjc. ([#51232](https://github.com/expo/expo/pull/51232) by [@stumbaumr](https://github.com/stumbaumr))
 
 ## 57.0.2 — 2026-08-26
 

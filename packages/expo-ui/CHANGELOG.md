@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.23 — 2026-10-12
+
+### 🎉 New features
+
 - [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
 - [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
 - [iOS][Android] `RNHostView` `matchContents` accepts `{ horizontal, vertical }`, so hosted content can take its width from the parent and its height from the content. ([#50674](https://github.com/expo/expo/pull/50674) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -19,8 +27,6 @@
 - [Android] Fix a numeric `width()` modifier crashing the app on launch with `FieldCastException: Cannot cast value for field 'width'` since the `IntrinsicSize` support added in 57.0.22 / 58.0.9. JS numbers reach the modifier record as `Double`, which matched neither branch of `Either<Int, IntrinsicSizeType>`; the field is now `Either<Double, IntrinsicSizeType>`, so numeric widths convert again and `width(IntrinsicSize.Min|Max)` keeps working. ([#51322](https://github.com/expo/expo/pull/51322) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix the community `BottomSheet` clipping its content when the sheet is narrower than the window, as on iPhone Duo. When the sheet sized itself to its content, the content was pinned to the window width and centered in the sheet, so its leading edge was cut off. The content now takes its width from the sheet and its height from the content. `presentationSizing` takes a `fitted` option (`{ horizontal, vertical }`) to fit a sheet to its content on one axis only. ([#51319](https://github.com/expo/expo/pull/51319) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix an `RNHostView` that ignores touches when a Compose button with a ripple in the same `Host` was pressed earlier. The ripple container that Compose adds was found first during React Native's touch-target search, so the touch went to the `Host` instead of the hosted view. ([#51237](https://github.com/expo/expo/pull/51237) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 57.0.22 — 2026-10-06
 
