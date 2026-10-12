@@ -316,7 +316,6 @@ export const general = [
       makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
-      makePage('router/reference/custom-analytics.mdx'),
       makePage('router/reference/focus-handling.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
