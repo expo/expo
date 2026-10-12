@@ -45,10 +45,10 @@ Run the `eas credentials` command in the terminal and then answer the following 
 - **Select platform** iOS.
 - **Which build profile do you want to configure?** Select production.
 - **Do you want to log in to your Apple account?** Press <kbd>Y</kbd>. This will log in to our Apple Developer account.
-- **What do you want to do?** Select **Build credentials** and choose **All: Set up all the required credentials to build your project**.
+- **What do you want to do?** Select **Build Credentials** and choose **All: Set up all the required credentials to build your project**.
 - Now, it will prompt whether we want to re-use the previous Distribution Certificate. Press <kbd>Y</kbd>.
 - **Generate a new Apple Provisioning Profile?** Press <kbd>Y</kbd>. This will be the provisioning profile for the production app.
-- Once the profiles are created, press any <kbd>Ctrl</kbd> + <kbd>C</kbd> to exit the EAS CLI.
+- Once the profiles are created, press <kbd>Ctrl</kbd> + <kbd>C</kbd> to exit the EAS CLI.
 
 </Step>
 
@@ -60,7 +60,9 @@ To create an iOS production build using the default `production` profile, open y
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-The command will queue the build. Notice on the EAS dashboard that the **Build Number** is auto-incremented.
+> **info** **Only if you have skipped the [iOS Simulator](/tutorial/eas/ios-development-build-for-simulators/) and [iOS device](/tutorial/eas/ios-development-build-for-devices/) chapters:** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
+
+The command queues the build. Notice on the EAS dashboard that the **Version** column shows the auto-incremented build number in parentheses, for example, `1.0.0 (2)`.
 
 </Step>
 
@@ -89,9 +91,6 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 - Click **[Apps](https://appstoreconnect.apple.com/apps),** and see the app icon.
 - Click the app name, and from the navigation tab menu, click **TestFlight**. If the build was just submitted, it may take a few minutes for Apple to process the build before it is available to distribute with TestFlight.
-
-> **info** **Only if you have skipped [iOS development build for devices chapter](/tutorial/eas/ios-development-build-for-devices/):** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
-
 - In App Store Connect, under **Internal Testing**, and create a test group. This will allow us to invite test users.
 
 <ContentSpotlight
@@ -118,7 +117,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 After that, the app will download on our device so that we can test it.
 
-> **Note**: Similar to internal testing, we can also create a group for inviting external testers using TestFlight. Where internal testing has a limit of 100 users, TestFlight allows sharing a test release version externally with up to 10,000 testers and provides a publicly shareable link. For step-by-step instructions, see [Distribute an iOS app with TestFlight](/submit/testflight/).
+> **info** Similar to internal testing, we can also create a group for inviting external testers using TestFlight. Where internal testing has a limit of 100 users, TestFlight allows sharing a test release version externally with up to 10,000 testers and provides a publicly shareable link. For step-by-step instructions, see [Distribute an iOS app with TestFlight](/submit/testflight/).
 
 </Step>
 
@@ -164,7 +163,7 @@ For future releases, we can streamline the process by combining build creation a
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 
-> **Note:** This command will automatically upload your build to TestFlight for internal testing, but it will not automatically submit your app for App Store review. You'll still need to manually promote the build from TestFlight to the App Store when you're ready for public release. For more information, see [Default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores).
+> **info** This command will automatically upload your build to TestFlight for internal testing, but it will not automatically submit your app for App Store review. You'll still need to manually promote the build from TestFlight to the App Store when you're ready for public release. For more information, see [Default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores).
 
 </Step>
 
