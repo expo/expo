@@ -122,7 +122,7 @@ abstract class LocationTaskConsumer(
     }
   }
   abstract fun decodeBatchedPositions(intent: Intent?): BatchedPositions
-  
+
   final override fun didExecuteJob(jobService: JobService?, params: JobParameters?): Boolean {
     val currentTask = task ?: return false
     val locationData = taskManagerUtils.extractDataFromJobParams(params).toBatchedPositions()
