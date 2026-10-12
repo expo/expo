@@ -137,7 +137,7 @@ Emitted at most once per screen instance within a session.
 
 ### Per-route total blocking time (`tbt`)
 
-**What it measures:** Time the JS thread is blocked during the 2 seconds after a navigation action is dispatched. Every gap between two animation frames longer than 50 ms adds the part above 50 ms to the total. The value is reported in seconds for the destination screen.
+**What it measures:** Time the JS thread is blocked during the 2 seconds after a navigation action is dispatched. Every JS long task adds the part above 50 ms that falls within this window to the total. The value is reported in seconds for the destination screen.
 
 The first screen after app launch is not measured. The measurement stops early when another navigation action is dispatched, and it is dropped when the app leaves the foreground or when no screen is focused during the window.
 

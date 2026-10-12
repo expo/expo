@@ -3,7 +3,7 @@ import { AppState } from 'react-native';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
-import { type BlockingTimeMeasurement, startBlockingTimeMeasurement } from './blockingTime';
+import { type BlockingTimeMeasurement, createBlockingTimeObserver } from './blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -34,6 +34,8 @@ export function initListeners(
 ): () => void {
   const appLaunchTime = performance.now();
   const cleanup = new Set<() => void>();
+  let isForeground = AppState.currentState === 'active';
+  const blockingTimeObserver = createBlockingTimeObserver(isForeground);
 
   // Blocking time of the latest navigation. `metric` is set when the
   // destination screen is focused, and nothing is recorded without it.
@@ -42,8 +44,9 @@ export function initListeners(
     | undefined;
 
   const startNavigationBlockingTime = () => {
+    if (!blockingTimeObserver || !isForeground) return;
     const current: NonNullable<typeof blockingTime> = {
-      measurement: startBlockingTimeMeasurement((blockingTimeMs) => {
+      measurement: blockingTimeObserver.start((blockingTimeMs) => {
         if (blockingTime === current) blockingTime = undefined;
         if (!current.metric) return;
         AppMetrics.getMainSession().addMetric({ ...current.metric, value: blockingTimeMs / 1000 });
@@ -57,10 +60,16 @@ export function initListeners(
     blockingTime = undefined;
   };
   cleanup.add(cancelNavigationBlockingTime);
+  cleanup.add(() => blockingTimeObserver?.disconnect());
 
-  // Animation frames pause in the background, which would count as blocking.
   const appStateSubscription = AppState.addEventListener('change', (state) => {
-    if (state !== 'active') cancelNavigationBlockingTime();
+    isForeground = state === 'active';
+    if (isForeground) {
+      blockingTimeObserver?.observe();
+    } else {
+      cancelNavigationBlockingTime();
+      blockingTimeObserver?.disconnect();
+    }
   });
   cleanup.add(() => appStateSubscription.remove());
 
@@ -156,7 +165,12 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
-    if (!isAppLaunch && blockingTime && !blockingTime.metric) {
+    if (
+      !isAppLaunch &&
+      blockingTime &&
+      !blockingTime.metric &&
+      now <= blockingTime.measurement.deadline
+    ) {
       blockingTime.metric = {
         timestamp,
         category: 'navigation',
