@@ -97,9 +97,21 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
+  /// Whether the calling thread may touch this value's runtime: its JavaScript thread, or any thread
+  /// for a runtime-free value or a runtime without a scheduler (which runs its work inline wherever it
+  /// is called). Only used in `assert`s, so release builds never evaluate it. Copying a value with a
+  /// runtime clones it in the engine, which is only safe on the runtime's thread.
+  internal func isOnOwningThread() -> Bool {
+    guard let runtime, runtime.supportsAsyncScheduling else {
+      return true
+    }
+    return runtime.isOnJavaScriptThread()
+  }
+
   /// Copies the value.
   public func copy() -> JavaScriptValue {
     if let runtimeHandle, let jsiRuntime = runtimeHandle.pointee {
+      assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
       return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
     }
     // Some simple value kinds do not require the runtime.
@@ -627,6 +639,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   internal func asJSIValue() -> facebook.jsi.Value {
     if let jsiRuntime {
+      assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
       return facebook.jsi.Value(jsiRuntime, pointee)
     }
     // Some simple value kinds do not require the runtime.
@@ -794,6 +807,7 @@ extension JavaScriptValue: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
+    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
     return facebook.jsi.Value(runtime, pointee)
   }
 }
