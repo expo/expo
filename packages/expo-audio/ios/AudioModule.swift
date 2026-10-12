@@ -136,14 +136,13 @@ public class AudioModule: Module {
           avPlayer = cachedPlayer
         } else {
           avPlayer = AudioUtils.createAVPlayer(from: source)
-          if preferredForwardBufferDuration > 0 {
-            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
-          }
         }
         avPlayer.allowsExternalPlayback = allowsExternalPlayback
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
+        // Store the preference so it is re-applied whenever the item is replaced.
+        player.preferredForwardBufferDuration = preferredForwardBufferDuration
         let playerId = player.id
         player.onRelease = { [weak audioModule = self] in
           audioModule?.unregisterAudioSessionActivityKeeper(playerId)
