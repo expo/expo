@@ -5,6 +5,7 @@ import Foundation
 import ExpoModulesJSI
 
 // The core module that describes the `global.expo` object.
+@ExpoModule
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
     Constant("expoModulesCoreVersion") {
@@ -83,22 +84,13 @@ internal final class CoreModule: Module {
 
     return viewName
   }
-}
 
-internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot find UI worklet runtime"
-  }
-}
-
-extension CoreModule {
   /**
    Installs the worklet UI runtime from the holder object that the worklets JS code passes to
-   `global.expo.installOnUIRuntime`. Bound as a plain host function in `AppContext.prepareRuntime`
-   rather than declared in the definition: the DSL carries arguments as `Any`, which the non-copyable
-   `JavaScriptValue` cannot be.
+   `global.expo.installOnUIRuntime`.
    */
-  internal func installOnUIRuntime(_ uiRuntimeHolder: consuming JavaScriptValue) throws {
+  @JS
+  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: consuming JavaScriptValue) throws {
     guard let appContext else {
       throw Exceptions.AppContextLost()
     }
@@ -147,5 +139,11 @@ extension CoreModule {
     if let error = errorHolder.error {
       throw error
     }
+  }
+}
+
+internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot find UI worklet runtime"
   }
 }
