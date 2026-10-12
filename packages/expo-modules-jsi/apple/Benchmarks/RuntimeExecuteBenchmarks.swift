@@ -44,6 +44,73 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `await settled promises once from another task`() async throws {
+    // Each promise is awaited once, which is the common case. The promises are created and settled
+    // on the JavaScript thread before the clock starts, so only the `await()` calls are measured.
+    try await withRunLoopThreadRuntime { runtime in
+      try await printSamples("JavaScriptPromise.await(): async caller, settled promise, first await") { iterations in
+        let boxes = try await runtime.execute { @JavaScriptActor in
+          return try (0..<iterations).map { _ in
+            let promise = try JavaScriptPromise(runtime)
+            promise.resolve(42.0)
+            return PromiseBox(promise)
+          }
+        }
+        let wall = try await Task.detached(priority: .high) {
+          let wallStart = DispatchTime.now().uptimeNanoseconds
+          for box in boxes {
+            _ = try await box.promise?.await()
+          }
+          return DispatchTime.now().uptimeNanoseconds - wallStart
+        }.value
+        // Released on the JavaScript thread, before `withRunLoopThreadRuntime` releases the runtimes.
+        try await runtime.execute { @JavaScriptActor in
+          for box in boxes {
+            box.promise = nil
+          }
+        }
+        return (Double(wall), nil)
+      }
+    }
+  }
+
+  @Test
+  func `await a settled promise again from another task`() async throws {
+    // Awaits the same fulfilled promise over and over, so after the first call each one reads the kept
+    // copy: the hop to the JavaScript thread that clones it and the hop back.
+    try await withRunLoopThreadRuntime { runtime in
+      let box = try await runtime.execute { @JavaScriptActor in
+        let promise = try JavaScriptPromise(runtime)
+        promise.resolve(42.0)
+        return PromiseBox(promise)
+      }
+      try await printSamples("JavaScriptPromise.await(): async caller, settled promise, later await") { iterations in
+        return try await Task.detached(priority: .high) {
+          let wallStart = DispatchTime.now().uptimeNanoseconds
+          for _ in 0..<iterations {
+            _ = try await box.promise?.await()
+          }
+          let wall = DispatchTime.now().uptimeNanoseconds - wallStart
+          return (Double(wall), nil)
+        }.value
+      }
+      // Released on the JavaScript thread, before `withRunLoopThreadRuntime` releases the runtimes.
+      try await runtime.execute { @JavaScriptActor in
+        box.promise = nil
+      }
+    }
+  }
+}
+
+/// Holds a promise for a benchmark that awaits it from another task.
+private final class PromiseBox: @unchecked Sendable {
+  var promise: JavaScriptPromise?
+
+  init(_ promise: consuming JavaScriptPromise) {
+    self.promise = consume promise
+  }
 }
 
 /// Calls `call` repeatedly from a new thread without run loop sources and prints the wall and caller
