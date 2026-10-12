@@ -194,6 +194,19 @@ struct JavaScriptCallbackThreadingTests {
     await testRuntime.scheduler.run {}
   }
 
+  /// Polls `condition` until it holds, or returns `false` after `timeout`. For state that another
+  /// thread settles at a point the test can't observe.
+  private func waitUntil(timeout: Duration = .seconds(10), _ condition: () -> Bool) async throws -> Bool {
+    let deadline = ContinuousClock.now + timeout
+    while !condition() {
+      if ContinuousClock.now >= deadline {
+        return false
+      }
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    return true
+  }
+
   /// Wraps a function that records whether it ran on the JavaScript thread.
   private func makeRecordingCallback(_ testRuntime: TestRuntime, flag: ThreadFlag) async throws -> JavaScriptCallback {
     return try await testRuntime.scheduler.runIsolated {
@@ -256,10 +269,11 @@ struct JavaScriptCallbackThreadingTests {
     await drain(testRuntime)
   }
 
-  @Test
+  @Test(.timeLimit(.minutes(1)))
   func `invokeAsync doesn't keep the runtime alive while it awaits a promise`() async throws {
     let scheduler = TestRuntimeScheduler()
     let runtimes = RuntimesBox()
+    let (subscriptions, subscriptionsContinuation) = AsyncStream<Void>.makeStream()
     let callback = try await scheduler.runIsolated {
       let owningRuntime = JavaScriptRuntime()
       let runtime = owningRuntime.withUnsafePointee { runtimePointer in
@@ -272,21 +286,42 @@ struct JavaScriptCallbackThreadingTests {
       runtimes.owningRuntime = owningRuntime
       runtimes.runtime = runtime
       runtimes.weakRuntime = runtime
-      return try runtime.eval("() => new Promise(() => {})").withUnownedValue(in: runtime) { unownedValue in
+      runtime.global().setProperty("onSubscribe") { _, _ in
+        subscriptionsContinuation.yield()
+        return .undefined
+      }
+      // The promise never settles, so the call stays suspended for good. Its `then` reports when
+      // `invokeAsync` subscribes to it, the last step the call runs on the JavaScript thread.
+      let source = """
+        () => {
+          const promise = new Promise(() => {});
+          promise.then = function (...args) {
+            onSubscribe();
+            return Promise.prototype.then.apply(this, args);
+          };
+          return promise;
+        }
+        """
+      return try runtime.eval(source).withUnownedValue(in: runtime) { unownedValue in
         try JavaScriptCallback.decode(unownedValue, in: runtime)
       }
     }
+
     // The promise never settles, so this call stays suspended for good.
     _ = Task {
       try await callback.invokeAsync()
     }
-    try await Task.sleep(for: .milliseconds(200))
+
+    var subscriptionsIterator = subscriptions.makeAsyncIterator()
+    _ = await subscriptionsIterator.next()
+
     // Drops the test's references and destroys the runtime, as a reload does.
     await scheduler.run {
       runtimes.runtime = nil
       runtimes.owningRuntime = nil
     }
-    #expect(runtimes.weakRuntime == nil)
+
+    #expect(try await waitUntil { runtimes.weakRuntime == nil })
   }
 }
 
