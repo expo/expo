@@ -45,24 +45,6 @@ react::Props::Shared AndroidExpoViewComponentDescriptor::cloneProps(
   shadowNodeProps->initializeDynamicProps(sourceProps, rawProps, filterObjectKeys_);
 #endif
 
-  // TODO(@lukmccall): We probably can remove this loop
-  if (react::ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-#ifdef RN_SERIALIZABLE_STATE
-    const auto &dynamic = shadowNodeProps->rawProps;
-#else
-    const auto &dynamic = static_cast<folly::dynamic>(rawProps);
-#endif
-    for (const auto &pair: dynamic.items()) {
-      const auto &name = pair.first.getString();
-      shadowNodeProps->setProp(
-        context,
-        RAW_PROPS_KEY_HASH(name),
-        name.c_str(),
-        react::RawValue(pair.second)
-      );
-    }
-  }
-
   if (!stateProps_.empty()) {
     JNIEnv *env = jni::Environment::current();
     const auto &rawPropsAccessor = *((RawPropsAccessor *) &rawProps);
