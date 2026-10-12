@@ -55,7 +55,7 @@ type Action =
 type Budget = { calls: number; maximum: number };
 const MAX_RESPONSE_CHARACTERS = 65_536;
 // Gemini Nano wraps otherwise valid JSON in a Markdown fence when no responseConstraint is sent.
-const FENCED_JSON = /^```(?:json)?\n([\s\S]*)\n```$/;
+const FENCED_JSON = /^```(?:json)?[ \t]*\r?\n([\s\S]*)\r?\n```$/i;
 const hasOwn = (value: object, key: PropertyKey) =>
   Object.prototype.hasOwnProperty.call(value, key);
 

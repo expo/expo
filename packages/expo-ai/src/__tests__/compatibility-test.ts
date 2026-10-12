@@ -65,6 +65,9 @@ describe('validated generation', () => {
     '```json\n{"ready":true}\n```',
     '```\n{"ready":true}\n```',
     '\n```json\n{"ready":true}\n```\n',
+    '```json\r\n{"ready":true}\r\n```',
+    '```JSON\n{"ready":true}\n```',
+    '```json \n{"ready":true}\n```',
   ])('accepts JSON in a single Markdown fence: %j', async (fenced) => {
     const { options, complete } = setup([fenced]);
     const schema: ModelSchema = {
