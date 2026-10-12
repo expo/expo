@@ -1,5 +1,5 @@
 ---
-title: Focus handling
+title: Handle screen focus
 description: Run effects, render UI, and respond to navigation events when an Expo Router screen is focused.
 ---
 
@@ -57,7 +57,7 @@ useFocusEffect(
 
 Use `useIsFocused` when the rendered UI depends on whether the screen is focused. It returns a boolean and re-renders the component when focus changes.
 
-```tsx
+```tsx src/app/profile.tsx
 import { useIsFocused } from 'expo-router';
 
 export default function Profile() {
@@ -69,11 +69,11 @@ export default function Profile() {
 
 ## Listen for focus and blur events
 
-> **Note:** Prefer `useFocusEffect` whenever possible. Use `useNavigation().addListener` only when you cannot express the work as an effect tied to screen focus.
+> **info** Prefer `useFocusEffect` whenever possible. Use `useNavigation().addListener` only when you cannot express the work as an effect tied to screen focus.
 
 Use `useNavigation` to run code for a specific `focus` or `blur` event. Subscribe in an effect and remove both listeners in its cleanup:
 
-```tsx
+```tsx src/app/profile.tsx
 import { useEffect } from 'react';
 import { useNavigation } from 'expo-router';
 
