@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import type { ModifierConfig } from '../../types';
+import type { ModifierConfig, PopupProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
@@ -60,6 +60,13 @@ export interface DropdownMenuProps {
   shadowElevation?: number;
 
   /**
+   * Properties for the popup window of the dropdown menu.
+   *
+   * @platform android
+   */
+  properties?: PopupProperties;
+
+  /**
    * Optional styles to apply to the `DropdownMenu`.
    */
   style?: StyleProp<ViewStyle>;
@@ -76,6 +83,7 @@ type NativeMenuProps = {
   color?: ColorValue;
   cornerRadius?: number;
   shadowElevation?: number;
+  properties?: PopupProperties;
   style?: StyleProp<ViewStyle>;
   modifiers?: ModifierConfig[];
   children?: ReactNode;
@@ -129,3 +137,6 @@ DropdownMenu.Items = Items;
 
 export { DropdownMenu };
 export { DropdownMenuItem } from './DropdownMenuItem';
+
+// Re-exported so the docs generator includes PopupProperties on the DropdownMenu API page.
+export type { PopupProperties };
