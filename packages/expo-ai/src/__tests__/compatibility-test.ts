@@ -61,6 +61,40 @@ describe('validated generation', () => {
     }
   });
 
+  it.each([
+    '```json\n{"ready":true}\n```',
+    '```\n{"ready":true}\n```',
+    '\n```json\n{"ready":true}\n```\n',
+  ])('accepts JSON in a single Markdown fence: %j', async (fenced) => {
+    const { options, complete } = setup([fenced]);
+    const schema: ModelSchema = {
+      type: 'object',
+      properties: { ready: { type: 'boolean' } },
+      required: ['ready'],
+      additionalProperties: false,
+    };
+    await expect(generateValidated({ ...options, schema })).resolves.toEqual({
+      value: { ready: true },
+      modelCalls: 1,
+      toolCalls: 0,
+    });
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    'not json',
+    '```json\nnot json\n```',
+    'Here you go:\n```json\n"ready"\n```',
+    '```json\n"ready"\n```\n```json\n"ready"\n```',
+    '```json "ready" ```',
+  ])('rejects text that is not exactly one fenced JSON block: %j', async (invalid) => {
+    const { options } = setup([invalid]);
+    await expect(generateValidated({ ...options, maximumRetries: 0 })).rejects.toMatchObject({
+      code: 'ERR_VALIDATION_RETRIES_EXHAUSTED',
+      cause: { code: 'ERR_RESPONSE_INVALID' },
+    });
+  });
+
   it.each([0, 1, 2, 3])(
     'makes at most retries + 1 completions when maximumRetries is %i',
     async (maximumRetries) => {
@@ -72,6 +106,14 @@ describe('validated generation', () => {
       expect(complete).toHaveBeenCalledTimes(maximumRetries + 1);
     }
   );
+
+  it('asks for raw JSON without Markdown fences', async () => {
+    const { options, complete } = setup(['"ready"']);
+    await generateValidated(options);
+    expect(JSON.parse(complete.mock.calls[0]![0]).instruction).toContain(
+      'Respond with the raw JSON value only: no Markdown, no code fences, no prose.'
+    );
+  });
 
   it('checks every numeric bound before completing', async () => {
     const { options, complete } = setup([]);
@@ -136,6 +178,14 @@ describe('validated tool loop', () => {
       '"calls":{"registered-tool"'
     );
     expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks for raw JSON actions without Markdown fences', async () => {
+    const { options, tool, complete } = setup([result('done')]);
+    await runValidatedTools({ ...options, tools: [tool] });
+    expect(JSON.parse(complete.mock.calls[0]![0]).instruction).toContain(
+      'Respond with the raw JSON value only: no Markdown, no code fences, no prose.'
+    );
   });
 
   it('rejects the previous unconstrained name-and-arguments action shape', async () => {

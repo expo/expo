@@ -624,6 +624,80 @@ it('uses browser constraints for tool protocol turns while preserving approval a
   expect(completions[1]![0]).toContain('local-receipt');
 });
 
+const boundedSchema: ModelSchema = {
+  type: 'object',
+  properties: {
+    score: { type: 'number', minimum: 0, maximum: 1 },
+    counts: { type: 'array', items: { type: 'integer', minimum: 1 } },
+    detail: {
+      type: 'object',
+      properties: { level: { type: 'integer', maximum: 5 } },
+      required: ['level'],
+      additionalProperties: false,
+    },
+  },
+  required: ['score', 'counts', 'detail'],
+  additionalProperties: false,
+};
+
+it('constrains bounded schemas with their bounds', async () => {
+  const reply = { score: 0.5, counts: [1, 2], detail: { level: 5 } };
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(JSON.stringify(reply));
+  await expect(generateAsync('Rate this', { schema: boundedSchema })).resolves.toMatchObject({
+    value: reply,
+    format: 'constrained',
+    provider: 'browser-prompt-api',
+  });
+  const completions = models.flatMap((model) => model.prompt.mock.calls);
+  expect(completions).toHaveLength(1);
+  expect(completions[0]![1].responseConstraint).toEqual(boundedSchema);
+});
+
+it('rejects a browser reply that breaks a numeric bound', async () => {
+  const outOfBounds = JSON.stringify({ score: 1.5, counts: [1], detail: { level: 1 } });
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(outOfBounds);
+  await expect(generateAsync('Rate this', { schema: boundedSchema })).rejects.toMatchObject({
+    code: 'ERR_RESPONSE_INVALID',
+  });
+
+  const session = await open();
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(outOfBounds);
+  await expect(generate(session, 'bounded', { schema: boundedSchema })).rejects.toMatchObject({
+    code: 'ERR_RESPONSE_INVALID',
+  });
+  expect(session.acceptResult('bounded')).toBe(false);
+  session.dispose();
+});
+
+it('constrains bounded tool arguments with their bounds and rejects out-of-bound arguments', async () => {
+  const execute = jest.fn().mockResolvedValue('saved');
+  const outOfBounds = { type: 'tool', id: 'save-1', calls: { save: { amount: 99 } } };
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(JSON.stringify(outOfBounds));
+  await expect(
+    generateAsync('Save an amount', {
+      tools: [
+        {
+          name: 'save',
+          description: 'Save an amount.',
+          inputSchema: {
+            type: 'object',
+            properties: { amount: { type: 'integer', minimum: 1, maximum: 10 } },
+            required: ['amount'],
+            additionalProperties: false,
+          },
+          execute,
+        },
+      ],
+    })
+  ).rejects.toMatchObject({ code: 'ERR_RESPONSE_INVALID' });
+  expect(execute).not.toHaveBeenCalled();
+  const completions = models.flatMap((model) => model.prompt.mock.calls);
+  expect(completions).toHaveLength(1);
+  expect(JSON.stringify(completions[0]![1].responseConstraint)).toContain(
+    '"amount":{"type":"integer","minimum":1,"maximum":10}'
+  );
+});
+
 it('routes public preparation cancellation and ignores late download progress', async () => {
   api.availability.mockResolvedValue('downloadable');
   const pending = deferred<BrowserLanguageModel>();
