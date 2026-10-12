@@ -27,12 +27,11 @@ import { requireNativeModule } from './requireNativeModule';
  */
 const nativeComponentsCache = new Map<string, HostComponent<any>>();
 
-// TODO(@kitten): Optimally, this is defined on ExpoGlobal, but we treat `__expo_app_identifier__` as internal
+// TODO(@kitten): Optimally, this is defined on ExpoGlobal
 declare namespace globalThis {
   const expo:
     | undefined
     | {
-        __expo_app_identifier__?: string;
         getViewConfig(
           moduleName: string,
           viewName?: string
@@ -50,12 +49,9 @@ function requireNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
-  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
-  const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
-
   const nativeViewName = viewName
-    ? `ViewManagerAdapter_${moduleName}_${viewName}${viewNameSuffix}`
-    : `ViewManagerAdapter_${moduleName}${viewNameSuffix}`;
+    ? `ViewManagerAdapter_${moduleName}_${viewName}`
+    : `ViewManagerAdapter_${moduleName}`;
 
   return NativeComponentRegistry.get<Props>(nativeViewName, () => {
     const expoViewConfig = globalThis.expo?.getViewConfig(moduleName, viewName);
