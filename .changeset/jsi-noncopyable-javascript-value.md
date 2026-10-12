@@ -1,5 +1,5 @@
 ---
-'expo-modules-jsi': minor
+'expo-modules-jsi': patch
 'expo-modules-core': patch
 'expo-brownfield': patch
 ---
