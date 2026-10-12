@@ -75,7 +75,7 @@ As discussed in the previous chapters, for non-app store builds, Android require
 
 Creating an internal distribution build requires [app signing credentials](/app-signing/app-credentials/).
 
-Android app signing is non-restrictive and allows installing any compatible **.apk** file. When a development build was created, a new Android Keystore was generated for it. Hence, there is no need to generate a new keystore for preview builds.
+Android app signing is non-restrictive and allows installing any compatible **.apk** file.
 
 On the other hand, Apple has stricter rules for app distribution on iOS devices. We need an ad hoc provisioning profile that explicitly lists the devices allowed to run the app. Some organizations whose apps meet specific requirements may be able to use the [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/) to distribute apps internally to a larger audience.
 
@@ -87,11 +87,12 @@ On the other hand, Apple has stricter rules for app distribution on iOS devices.
 
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
+- Since our preview build uses its own Android Application ID from the previous chapter, EAS CLI prompts us to **Generate a new Android Keystore**. Press <kbd>Y</kbd>.
 - This command triggers the EAS Build, and on the EAS dashboard, we can see the build's progress:
 
 <ContentSpotlight
   alt="Android preview build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/android-preview-build.png"
+  src="/static/images/tutorial/eas/internal-distribution-builds-android-preview-build.webp"
   className="max-w-[800px]"
 />
 
@@ -119,7 +120,7 @@ Apps signed with an ad hoc provisioning profile can be installed by an iOS devic
 
 <ContentSpotlight
   alt="iOS preview build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/ios-preview-build.png"
+  src="/static/images/tutorial/eas/internal-distribution-builds-ios-preview-build.webp"
   className="max-w-[800px]"
 />
 
@@ -158,7 +159,7 @@ If so, make sure to point your **credentials.json** to an ad hoc or enterprise p
 
 ### Install
 
-Once the build finishes, the Build artifact section gets updated, indicating that the build is complete. This section provides the methods available for running the development build on an iOS device: Expo Orbit and Install button.
+Once the build finishes, the Build artifact section shows that the build is complete. This section provides the methods available for running the preview build on an Android or iOS device: Expo Orbit and the Install button.
 
 - Open the build's detail page. If you are sharing the build with someone else, you can send them the link to the build. They'll be able to open the build's detail page or build artifact details which include Expo Orbit.
 - Connect the Android or iOS device to your machine using USB.
@@ -193,7 +194,7 @@ Since we have already set up multiple app variants, we can see both the developm
 - On Android:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in EAS dashboard for Android"
+  alt="Development and preview variants installed on an Android device"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
   className="max-w-[270px]"
 />
@@ -201,7 +202,7 @@ Since we have already set up multiple app variants, we can see both the developm
 - On iOS:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in EAS dashboard for iOS"
+  alt="Development and preview variants installed on an iOS device"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.webp"
   className="max-w-[250px]"
 />
