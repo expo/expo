@@ -98,6 +98,7 @@ export function useLinking(
 
     const path = extractExpoPathFromURL(prefixes, url);
     if (path !== undefined) {
+      // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
       const segments = getRouteSegmentsFromState(ref.current?.getRootState());
       return getStateFromPath(path, config, segments);
     }
