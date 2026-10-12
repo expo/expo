@@ -677,12 +677,7 @@ struct JavaScriptPromiseTests {
       let runtime = testRuntime.runtime
       awaited.release()
       runtime.longLivedObjects.clear()
-      let isCollected = {
-        if let _ = weakObject.value.lock() {
-          return false
-        }
-        return true
-      }
+      let isCollected = { weakObject.value.lock() == nil }
       runtime.collectGarbage(until: isCollected)
       return isCollected()
     }
