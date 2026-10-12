@@ -40,16 +40,17 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     /// JavaScript and settled from Swift never needs it, and the callbacks are two host functions plus
     /// a `then` call per promise. Its presence is what marks the callbacks as installed.
     var deferredPromise: DeferredPromise?
-    /// The value the promise was fulfilled with, shared with `deferredPromise`, which keeps it for
-    /// later `await()` calls. Held here too, so the teardown sweep can release it on the JavaScript
-    /// thread before the runtime goes away; the actor's copy is the same reference.
-    var settledValue: JavaScriptValue.Ref?
+    /// The value the promise was fulfilled with, shared with `deferredPromise`, which keeps it for the
+    /// `await()` calls. Held here too, so the teardown sweep can release it on the JavaScript thread
+    /// before the runtime goes away; the actor's refs are the same references.
+    var settledValue: DeferredPromise.SettledValue?
 
     func allowRelease() {
       object.release()
       resolveFunction.release()
       rejectFunction.release()
-      settledValue?.release()
+      settledValue?.handOut.release()
+      settledValue?.kept.release()
     }
   }
 
@@ -117,12 +118,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
     let deferredPromise = try await deferredPromiseForAwait()
-    let ref = try await deferredPromise.getValue()
+    let (ref, isOwned) = try await deferredPromise.getValue()
+    if isOwned {
+      // The first read takes the value itself: a move, which doesn't touch the runtime.
+      return try ref.take()
+    }
     guard let runtime else {
       throw JavaScriptCallback.RuntimeLostError()
     }
-    // The settled value stays in the receiver, so a later `await()` can read it again. Cloning it
-    // touches the runtime, so it happens on the JavaScript thread and the clone is moved back.
+    // A later read clones the kept copy. Cloning touches the runtime, so it happens on the JavaScript
+    // thread and the clone is moved back.
     return try await runtime.execute {
       guard let value = ref.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.copy() }) else {
         preconditionFailure("The settled promise value was released before it was read")
@@ -269,11 +274,14 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     try await runtime.execute { [longLivedState, deferredPromise] in
       let onFulfilled = runtime.createFunction { [weak longLivedState, weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined() }
-        // Moved into a `JavaScriptRef` so the task can carry the value off the JavaScript thread.
-        let value = arguments[0].ref()
-        longLivedState?.settledValue = value
+        // Both refs are made here, on the JavaScript thread: the copy for later `await()` calls clones
+        // the value, and the refs let the task carry it off the JavaScript thread.
+        let value = arguments[0]
+        let kept = value.copy().ref()
+        let settled = DeferredPromise.SettledValue(handOut: value.ref(), kept: kept)
+        longLivedState?.settledValue = settled
         Task.immediate_polyfill {
-          await deferredPromise.resolve(value)
+          await deferredPromise.resolve(settled)
         }
         return .undefined()
       }
