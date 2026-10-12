@@ -124,8 +124,19 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('resolves a pending render after the context is released', async () => {
-        const context = ImageManipulator.manipulate(assetUri).resize({ width: 100, height: 100 });
+        // Upscaling first keeps the pipeline busy long enough for the release to land mid-render.
+        const context = ImageManipulator.manipulate(assetUri)
+          .resize({ width: 4000 })
+          .rotate(90)
+          .rotate(90)
+          .rotate(90)
+          .resize({ width: 100, height: 100 });
         const pending = context.renderAsync();
+
+        // On Android, async functions convert their arguments on the serial modules queue after
+        // the JS call returns. A call queued after `renderAsync` resolves only once `renderAsync`
+        // has converted the context, so the release below can't reject it during conversion.
+        await FileSystem.getInfoAsync(assetUri);
 
         // `useImageManipulator` releases the context on unmount, which can land while a render
         // started in an effect is still in flight. Releasing means JS is done with the object,
