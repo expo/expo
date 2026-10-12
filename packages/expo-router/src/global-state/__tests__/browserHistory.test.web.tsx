@@ -17,9 +17,9 @@ jest.mock('../getPathForState', () => ({
   ...jest.requireActual<typeof import('../getPathForState')>('../getPathForState'),
   getPathForState: (state: NavigationState) => `/${state.routes[state.index]!.name}`,
 }));
-jest.mock('../getRouteSegmentsFromState', () => {
-  const actual = jest.requireActual<typeof import('../getRouteSegmentsFromState')>(
-    '../getRouteSegmentsFromState'
+jest.mock('../getRouteInfoFromState', () => {
+  const actual = jest.requireActual<typeof import('../getRouteInfoFromState')>(
+    '../getRouteInfoFromState'
   );
   return {
     ...actual,

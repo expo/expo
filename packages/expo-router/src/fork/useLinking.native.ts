@@ -5,7 +5,7 @@ import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
-import { getRouteSegmentsFromState } from '../global-state/getRouteSegmentsFromState';
+import { getRouteSegmentsFromState } from '../global-state/getRouteInfoFromState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { withLoadedLayouts } from '../layoutAnchor';

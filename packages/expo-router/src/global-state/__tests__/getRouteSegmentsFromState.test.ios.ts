@@ -1,14 +1,10 @@
-import * as routeInfo from '../getRouteInfoFromState';
-import { getRouteSegmentsFromState } from '../getRouteSegmentsFromState';
+import { getRouteInfoFromState, getRouteSegmentsFromState } from '../getRouteInfoFromState';
 
-let routeInfoSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
 beforeEach(() => {
-  routeInfoSpy = jest.spyOn(routeInfo, 'getRouteInfoFromState');
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 afterEach(() => {
-  routeInfoSpy.mockRestore();
   warnSpy.mockRestore();
 });
 
@@ -37,7 +33,7 @@ test.each([
   ],
 ])('collects focused segments from %j', (state, segments) => {
   expect(getRouteSegmentsFromState(state)).toEqual(segments);
-  expect(routeInfoSpy).not.toHaveBeenCalled();
+  expect(getRouteInfoFromState(state).segments).toEqual(segments);
 });
 
 test('follows active indices and leaves route state and params untouched', () => {
@@ -69,9 +65,24 @@ test('follows active indices and leaves route state and params untouched', () =>
   const original = JSON.parse(JSON.stringify(state));
 
   expect(getRouteSegmentsFromState(state)).toEqual(['(b)', '[id]', '[...rest]']);
+  expect(getRouteInfoFromState(state).segments).toEqual(['(b)', '[id]', '[...rest]']);
   expect(state).toEqual(original);
   expect(warnSpy).not.toHaveBeenCalled();
-  expect(routeInfoSpy).not.toHaveBeenCalled();
+});
+
+test('collects segments without serializing params', () => {
+  // Function params are serialized by the full route-info path, unlike nested objects.
+  const value = Object.assign(() => {}, {
+    toString() {
+      throw new Error('Param was serialized');
+    },
+  });
+  const state = {
+    routes: [{ name: '__root', state: { routes: [{ name: 'page', params: { q: value } }] } }],
+  };
+
+  expect(getRouteSegmentsFromState(state)).toEqual(['page']);
+  expect(() => getRouteInfoFromState(state)).toThrow('Param was serialized');
 });
 
 test('rejects an invalid root after preserving its nested-param warning', () => {

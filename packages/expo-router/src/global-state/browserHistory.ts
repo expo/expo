@@ -12,7 +12,7 @@ import type {
 } from './browserHistory.types';
 import { completeParsedState, createSeededRootState } from './createSeededNavigationState';
 import { getPathForState, resolvePathLinking } from './getPathForState';
-import { getRouteSegmentsFromState } from './getRouteSegmentsFromState';
+import { getRouteSegmentsFromState } from './getRouteInfoFromState';
 import { getRootStackRouteNames } from './utils';
 
 type Reduce<Result> = (result: Result, intent: ReducibleIntent) => Result;

@@ -5,7 +5,7 @@ import { appendBaseUrl, getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationState } from '../react-navigation/routers';
-import { getRouteSegmentsFromState } from './getRouteSegmentsFromState';
+import { getRouteSegmentsFromState } from './getRouteInfoFromState';
 
 export type PathLinking = Pick<
   ExpoLinkingOptions,
