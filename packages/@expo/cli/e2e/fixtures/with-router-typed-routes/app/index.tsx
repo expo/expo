@@ -27,8 +27,8 @@ function useLocalSearchParamsTest() {
   useLocalSearchParams<'/invalid'>();
 
   // They always can accept a string-index
-  const anyValue: string | string[] = anyParams['string-index'];
-  const aboutAnyValue: string | string[] = aboutParams['string-index'];
+  const anyValue: string | string[] | undefined = anyParams['string-index'];
+  const aboutAnyValue: string | string[] | undefined = aboutParams['string-index'];
 
   // @ts-expect-error - This is not a valid route
   useLocalSearchParams<'/invalid/route'>();
@@ -54,8 +54,8 @@ function useGlobalSearchParamsTest() {
   useGlobalSearchParams<'/invalid'>();
 
   // They always can accept a string-index
-  const anyValue: string | string[] = anyParams['string-index'];
-  const aboutAnyValue: string | string[] = aboutParams['string-index'];
+  const anyValue: string | string[] | undefined = anyParams['string-index'];
+  const aboutAnyValue: string | string[] | undefined = aboutParams['string-index'];
 
   // @ts-expect-error - This is not a valid route
   useGlobalSearchParams<'/invalid/fruit'>();

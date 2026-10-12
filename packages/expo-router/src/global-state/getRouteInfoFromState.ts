@@ -5,13 +5,14 @@ import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { warnIfNestedParams } from '../navigationParams';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import type { UnknownOutputParams } from '../types';
 import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
   unstable_globalHref: string;
   pathname: string;
-  readonly params: Record<string, string | string[]>;
+  readonly params: UnknownOutputParams;
   searchParams: URLSearchParams;
   segments: string[];
   pathnameWithParams: string;

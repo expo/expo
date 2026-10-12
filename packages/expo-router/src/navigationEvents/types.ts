@@ -1,9 +1,10 @@
 import type { ReactNavigationState } from '../global-state/types';
 import type { NavigationAction, NavigationState } from '../react-navigation';
+import type { UnknownOutputParams } from '../types';
 
 export interface BasePageEvent {
   pathname: string;
-  params: Record<string, string | string[]>;
+  params: UnknownOutputParams;
   screenId: string;
   segments: string[];
 }

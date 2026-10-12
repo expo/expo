@@ -116,11 +116,11 @@ export type UnknownInputParams = Record<
 
 /**
  * Routes can have unknown outputs (e.g query params).
- * Unlike inputs, outputs can't be undefined or null.
+ * Unlike inputs, outputs can't be `null`.
  *
  * @hidden
  */
-export type UnknownOutputParams = Record<string, string | string[]>;
+export type UnknownOutputParams = Record<string, string | string[] | undefined>;
 
 /**
  * Return only the RoutePart of a string. If the string has multiple parts return never
