@@ -269,7 +269,13 @@ export default function BottomSheetBackgroundColorExample() {
 
 A sheet follows the device's light or dark appearance by default. To use your app's appearance instead, add the [`preferredColorScheme`](modifiers/#preferredcolorschemecolorscheme) modifier to the `Group`. The `Host` `colorScheme` prop changes the sheet's content but not its background.
 
-```tsx BottomSheetColorSchemeExample.tsx
+<ComponentExample
+  title="BottomSheetColorSchemeExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-color-scheme-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-color-scheme-ios-dark.webp"
+  alt="A bottom sheet with white text in the dark color scheme at the medium detent">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -316,6 +322,8 @@ export default function BottomSheetColorSchemeExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Bottom sheet with presentation detents
 
