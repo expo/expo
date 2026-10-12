@@ -65,14 +65,3 @@ internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
     return jsiRuntime
   }
 }
-
-/// Whether the calling thread may touch `runtime`: its JavaScript thread, or any thread when the
-/// runtime is gone or has no scheduler (it then runs its work inline wherever it is called). Only used
-/// in `assert`s, so release builds never evaluate it. Copying a JavaScript value clones it in the
-/// engine, which is only safe on the runtime's thread.
-internal func isOnOwningThread(of runtime: JavaScriptRuntime?) -> Bool {
-  guard let runtime, runtime.supportsAsyncScheduling else {
-    return true
-  }
-  return runtime.isOnJavaScriptThread()
-}

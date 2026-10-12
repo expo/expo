@@ -97,16 +97,10 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
-  /// Whether the calling thread may touch this value's runtime; see `isOnOwningThread(of:)`. Always
-  /// `true` for a runtime-free value.
-  internal func isOnOwningThread() -> Bool {
-    return ExpoModulesJSI.isOnOwningThread(of: runtime)
-  }
-
   /// Copies the value.
   public func copy() -> JavaScriptValue {
     if let runtimeHandle, let jsiRuntime = runtimeHandle.pointee {
-      assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+      assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
       return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
     }
     // Some simple value kinds do not require the runtime.
@@ -367,7 +361,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isObject(), "Value is not an object")
-    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptObject(runtimeHandle, pointee.getObject(jsiRuntime))
   }
 
@@ -377,7 +371,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Value is not an array")
-    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptArray(runtimeHandle, pointee.getObject(jsiRuntime).getArray(jsiRuntime))
   }
 
@@ -387,7 +381,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Value is not a function")
-    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+    assert(runtime.isOnOwningThread(), "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptFunction(runtime, pointee.getObject(runtime.pointee).getFunction(runtime.pointee))
   }
 
@@ -406,7 +400,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Value is not an array buffer")
-    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+    assert(runtime.isOnOwningThread(), "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
   }
 
@@ -638,7 +632,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   internal func asJSIValue() -> facebook.jsi.Value {
     if let jsiRuntime {
-      assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+      assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
       return facebook.jsi.Value(jsiRuntime, pointee)
     }
     // Some simple value kinds do not require the runtime.
@@ -806,7 +800,10 @@ extension JavaScriptValue: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
-    assert(isOnOwningThread(), "A JavaScriptValue was copied off its runtime's JavaScript thread")
+    assert(
+      self.runtime?.isOnOwningThread() ?? true,
+      "A JavaScript value was copied off its runtime's JavaScript thread"
+    )
     return facebook.jsi.Value(runtime, pointee)
   }
 }

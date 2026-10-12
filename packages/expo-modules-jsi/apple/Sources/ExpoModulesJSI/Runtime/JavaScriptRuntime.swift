@@ -637,6 +637,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return current == jsThreadID
   }
 
+  /// Whether the calling thread may use the runtime: its JavaScript thread, or any thread when the
+  /// runtime has no scheduler (it then runs its work inline wherever it's called).
+  internal final func isOnOwningThread() -> Bool {
+    return !supportsAsyncScheduling || isOnJavaScriptThread()
+  }
+
   /// Asserts whether we are on the JavaScript thread. Helpful for debugging threading issues.
   @inline(__always)
   public final func assertThread(file: String = #file, function: String = #function, line: Int = #line) {

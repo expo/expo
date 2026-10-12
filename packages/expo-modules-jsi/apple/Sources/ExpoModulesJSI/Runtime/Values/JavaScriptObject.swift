@@ -469,7 +469,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    assert(isOnOwningThread(of: runtime), "A JavaScript object was copied off its runtime's JavaScript thread")
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
