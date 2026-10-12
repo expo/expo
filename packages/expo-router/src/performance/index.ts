@@ -62,8 +62,10 @@ export function mark<Name extends RouterPerformanceMarkName>(
 
 /**
  * Reads the performance marks that Expo Router records during navigation. It has the
- * mark-related methods of the global [`performance`](https://developer.mozilla.org/en-US/docs/Web/API/Performance)
- * object. On web, it is the global `performance` object.
+ * mark-related methods of the global
+ * [`performance`](https://developer.mozilla.org/en-US/docs/Web/API/Performance) object. On web,
+ * it is the global `performance` object, so `getEntries()` also returns entries that Expo Router
+ * did not record.
  *
  * On native, Expo Router keeps the latest 250 marks. It also passes each mark to the global
  * `performance.mark()`, so the marks show in the React Native DevTools timeline.
@@ -85,7 +87,8 @@ export const unstable_performance: Pick<
 /**
  * Observes the performance marks that Expo Router records during navigation. On web, it is the
  * global [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver).
- * On native, it implements the same API for `mark` entries, and the entries keep `detail`.
+ * On native, it implements the same API for `mark` entries. Unlike the React Native
+ * `PerformanceObserver`, it keeps the `detail` of each mark.
  *
  * Check the `name` of an entry and cast it to the matching mark type, for example
  * `RouterPageFocusedMark`, to read its `detail`.

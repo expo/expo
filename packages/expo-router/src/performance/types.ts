@@ -34,7 +34,8 @@ export interface RouterActionMarkDetail {
 
 /**
  * A performance mark recorded by Expo Router.
- * Check its `name` and cast it to this type to read `detail`.
+ * To read `detail`, check its `name` and cast it to the matching mark type, such as
+ * `RouterPageFocusedMark`.
  */
 export interface BaseRouterPerformanceMark<Name extends string, Detail> extends PerformanceMark {
   readonly entryType: 'mark';
@@ -50,7 +51,7 @@ export interface BaseRouterPerformanceMark<Name extends string, Detail> extends 
 
 /**
  * A screen that rendered as part of a preload (for example, `router.prefetch()`) and is not
- * focused. If the user later navigates to it, `expo-router:page-focused` is marked then.
+ * focused. If the user later navigates to it, Expo Router records `expo-router:page-focused`.
  */
 export type RouterPagePreloadedMark = BaseRouterPerformanceMark<
   'expo-router:page-preloaded',
