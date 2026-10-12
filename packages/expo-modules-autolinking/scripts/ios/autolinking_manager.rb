@@ -84,10 +84,8 @@ module Expo
             # `pod install` may fail if there is no `use_modular_headers!` declaration or
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
-            # Not gated on having something to link: the classes found by scanning the sources
-            # aren't known yet at this point, since that scan runs when the provider is generated.
-            # A package that resolves with nothing here may still contribute a module class to the
-            # build, and by then it is too late to enable modular headers for its dependencies.
+            # Not gated on having something to link: scanned classes are only known when the
+            # provider is generated.
             use_modular_headers_for_dependencies(pod.spec.all_dependencies)
 
             debug_configurations = @target_definition.build_configurations ? @target_definition.build_configurations.select { |config| config.include?('Debug') }.keys : ['Debug']
@@ -160,11 +158,8 @@ module Expo
       platform = @target_definition.platform
 
       @packages.select do |package|
-        # Only the target's platform is checked here. Whether a package has anything to link is
-        # decided when the provider is generated, which is also where the sources are scanned for
-        # annotated module classes: a package whose modules come only from that scan has nothing to
-        # link yet at pod install, and gating on it here would leave the package out of the
-        # generated build phase for good.
+        # Not gated on having something to link: scanned classes are only known when the
+        # provider is generated.
         package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
     end
@@ -260,7 +255,6 @@ module Expo
 
     public def generate_modules_provider_command_args(target_name, target_path)
       command_args = ['--target', target_path, '--target-name', target_name, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
-      # Match the build phase, which links only the module classes that compile for this platform.
       command_args.concat(['--target-platform', platform_name.downcase])
 
       if !custom_app_root.nil?

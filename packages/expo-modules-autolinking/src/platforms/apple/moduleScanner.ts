@@ -1,4 +1,3 @@
-import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
@@ -6,25 +5,8 @@ import type { ModuleIosConfig, SearchResults, SupportedPlatform } from '../../ty
 import { isPathInside } from '../../utils';
 
 /**
- * The oldest scan output schema this consumer understands. When the scanner reports an older
- * version, its output is not trusted and autolinking falls back to config-declared modules.
- * Newer versions are accepted: `expo-modules-core` pins the plugin version exactly, so a scanner
- * ahead of autolinking doesn't occur in a consistent install, and schema bumps are consumed here
- * by branching on the reported version.
- */
-const MINIMUM_SUPPORTED_SCHEMA_VERSION = 1;
-
-/**
- * The schema version from which the scanner reports each module's `platforms`. Below it the report
- * carries no platform information and every reported module is linked unconditionally, which is
- * what the scanner guaranteed back then by skipping conditional modules entirely.
- */
-const PLATFORMS_SCHEMA_VERSION = 2;
-
-/**
- * Apple platform names as the scanner spells them, keyed by the platform autolinking resolves for.
- * The umbrella `apple` platform has no single target to match, so it links every module the scan
- * reports, exactly as it does for config-declared classes.
+ * Scanner platform names by autolinking platform. The umbrella `apple` platform isn't listed, so it
+ * links every scanned module.
  */
 const SCANNER_PLATFORM_NAMES: Record<string, string> = {
   ios: 'iOS',
@@ -32,26 +14,12 @@ const SCANNER_PLATFORM_NAMES: Record<string, string> = {
   tvos: 'tvOS',
 };
 
-/**
- * The prebuilt binary inside `expo-modules-macros` that runs the scanner CLI.
- * The same executable serves as the Swift compiler's macro plugin; with arguments it dispatches
- * to the scanner instead of the plugin server.
- */
-const SCANNER_BINARY_RELATIVE_PATH = 'apple/ExpoModulesMacros';
-
-export interface ScannerPluginInfo {
-  binaryPath: string;
-  version: string;
-}
-
 interface ScannedModule {
   /** The Swift class name the module is declared as. */
   name: string;
   /**
-   * The resolved JS module name: the `@ExpoModule("Foo")` override, or the class name.
-   * Deliberately unused: this is the same value the class exposes as `_jsName` at runtime, which
-   * is the last resort in `ModuleHolder.name`. Passing it as the registration name instead would
-   * promote it above the module's own `Name(...)` DSL entry and change which name wins.
+   * The `@ExpoModule("Foo")` name, or the class name. Unused: it equals the runtime `_jsName`,
+   * which must stay below the module's own `Name(...)` in `ModuleHolder.name`.
    */
   jsName: string;
   /** The spelled access modifier, or `internal` when none is written. */
@@ -59,11 +27,10 @@ interface ScannedModule {
   /** Absolute path of the source file the module was found in. */
   file: string;
   /**
-   * The Apple platforms the class compiles on, as resolved from the conditional compilation blocks
-   * around it. Absent below schema version 2. Empty when the scan couldn't evaluate the condition
-   * (`#if DEBUG`, `canImport(...)`), in which case the module is left to the module config.
+   * The Apple platforms the class compiles on. Empty when the condition can't be evaluated
+   * statically (`#if DEBUG`, `canImport(...)`).
    */
-  platforms?: string[];
+  platforms: string[];
 }
 
 interface ScanWarning {
@@ -79,58 +46,27 @@ export interface ScanModulesOutput {
   stats: { filesScanned: number; filesParsed: number; durationMs: number };
 }
 
-/**
- * Resolves the macros plugin package (from the given resolution base, usually the installed
- * `expo-modules-core` directory, which depends on it) and returns the scanner binary path and the
- * plugin version. Returns null when the package is not installed, or is too old to ship a binary
- * that understands scanner subcommands.
- */
-export function resolveScannerPlugin(resolutionBasePath: string): ScannerPluginInfo | null {
-  let packageJsonPath: string;
-  try {
-    packageJsonPath = require.resolve('expo-modules-macros/package.json', {
-      paths: [resolutionBasePath],
-    });
-  } catch {
-    return null;
-  }
-  const binaryPath = path.join(path.dirname(packageJsonPath), SCANNER_BINARY_RELATIVE_PATH);
-  if (!fs.existsSync(binaryPath)) {
-    return null;
-  }
-  let version: unknown;
-  try {
-    version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).version;
-  } catch {
-    return null;
-  }
-  // 0.14.0 is the first real release under this name (0.0.1 is a placeholder), and every release
-  // since ships the binary with the scanner CLI.
-  if (typeof version !== 'string' || !satisfiesMinimumVersion(version, [0, 14, 0])) {
-    return null;
-  }
-  return { binaryPath, version };
-}
-
-export function satisfiesMinimumVersion(version: string, minimum: number[]): boolean {
-  const components = version.split('-')[0]!.split('.').map(Number);
-  for (let i = 0; i < minimum.length; i++) {
-    const component = components[i] ?? 0;
-    const minimumComponent = minimum[i]!;
-    if (Number.isNaN(component)) {
-      return false;
-    }
-    if (component !== minimumComponent) {
-      return component > minimumComponent;
-    }
-  }
-  return true;
+/** The part of the `expo-modules-macros` API used here. */
+export interface ModulesScanner {
+  scanModules(paths: string[]): Promise<ScanModulesOutput>;
 }
 
 /**
- * The directories the scanner prunes from its walk (`prunedDirectoryNames` in its `SourceScan.swift`),
- * so `hasModuleAnnotations` looks at the same sources.
+ * Loads `expo-modules-macros`, a dependency of the installed `expo-modules-core` at the given
+ * path. Returns null when it's missing.
  */
+export function loadModulesScanner(resolutionBasePath: string): ModulesScanner | null {
+  try {
+    const scanner = require(
+      require.resolve('expo-modules-macros', { paths: [resolutionBasePath] })
+    );
+    return typeof scanner?.scanModules === 'function' ? scanner : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Mirrors `prunedDirectoryNames` in the scanner's `SourceScan.swift`. */
 const PRUNED_DIRECTORY_NAMES = new Set([
   '.build',
   'Pods',
@@ -145,13 +81,12 @@ const PRUNED_DIRECTORY_NAMES = new Set([
   'e2e',
 ]);
 
-/** An `@ExpoModule` attribute at the start of a line, which leaves out mentions in comments. */
+/** An `@ExpoModule` attribute at the start of a line, so comments don't match. */
 const MODULE_ANNOTATION_PATTERN = /^\s*@ExpoModule\b/m;
 
 /**
- * Whether any Swift source in the package has an `@ExpoModule` attribute, by a plain text search.
- * It stands in for the scanner when the scan didn't complete, to tell a package that has nothing to
- * link apart from one whose annotated classes went missing with the scan.
+ * Whether any Swift source in the package has an `@ExpoModule` attribute. A plain text search, used
+ * when the scan didn't complete.
  */
 export function hasModuleAnnotations(packageRoot: string): boolean {
   let entries: fs.Dirent[];
@@ -178,12 +113,8 @@ export function hasModuleAnnotations(packageRoot: string): boolean {
 }
 
 /**
- * The directories to scan, one per package. Each path is realpath-resolved: the scanner reports
- * fully resolved absolute file paths, so the roots used for the path-prefix grouping must be
- * resolved the same way, or a symlinked package (pnpm stores, local development links) would match
- * nothing. Two package names sharing one directory (an npm alias) are deduplicated to the first,
- * so a module can't be attributed to one of them nondeterministically. A package whose path can't
- * be resolved is skipped; it still resolves through its config as usual.
+ * The directory to scan for each package. Paths are realpath-resolved to match the scanner's
+ * output, and a directory shared by two package names (an npm alias) is kept for the first one.
  */
 export function collectPackageRoots(searchResults: SearchResults): Record<string, string> {
   const packageRoots: Record<string, string> = {};
@@ -205,14 +136,11 @@ export function collectPackageRoots(searchResults: SearchResults): Record<string
 }
 
 /**
- * Runs the scanner once over all package roots and returns the parsed output. The scan runs without
- * a platform, so it reports the unconditional `@ExpoModule` classes; a module inside a conditional
- * compilation block it cannot resolve is skipped and lands in `warnings`, which are printed with
- * their source locations. Returns null, after printing a warning, when the scanner fails or reports
- * an unsupported schema version, so the caller falls back to config-declared modules.
+ * Scans all package roots in one run and prints the scanner's warnings. Returns null, with a
+ * warning, when the scan fails.
  */
 export async function scanExpoModulesAsync(
-  pluginInfo: ScannerPluginInfo,
+  scanner: ModulesScanner,
   packageRoots: Record<string, string>
 ): Promise<ScanModulesOutput | null> {
   const roots = Object.values(packageRoots);
@@ -221,44 +149,15 @@ export async function scanExpoModulesAsync(
   }
 
   let output: ScanModulesOutput;
-  let runStderr = '';
   try {
-    const result = await spawnAsync(pluginInfo.binaryPath, ['scan-modules', ...roots], {
-      // stdin must be closed: given scanner arguments, a pre-CLI binary (or a prerelease that
-      // passes the version gate) starts the compiler plugin server and reads stdin forever, which
-      // would hang pod install. With no stdin it exits right away and the empty output lands in
-      // the JSON parsing failure below. The timeout is a second line of defense.
-      stdio: ['ignore', 'pipe', 'pipe'],
-      timeout: 30000,
-    });
-    runStderr = result.stderr ?? '';
-    output = JSON.parse(result.stdout);
-    if (!Array.isArray(output?.modules) || !Array.isArray(output?.warnings)) {
-      throw new Error('the report is missing the modules or warnings list');
-    }
+    output = await scanner.scanModules(roots);
   } catch (error: any) {
-    // A crashing scanner reports the cause on stderr; carry it into the warning so the failure is
-    // diagnosable straight from the pod install log.
-    const stderr =
-      typeof error.stderr === 'string' && error.stderr.trim() ? `\n${error.stderr.trim()}` : '';
     console.warn(
-      `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}${stderr}`
+      `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}`
     );
     return null;
   }
 
-  if (!(output.schemaVersion >= MINIMUM_SUPPORTED_SCHEMA_VERSION)) {
-    console.warn(
-      `warning: The Expo modules scanner reported schema version ${output.schemaVersion}, but this version of expo-modules-autolinking requires at least ${MINIMUM_SUPPORTED_SCHEMA_VERSION}. Update expo-modules-macros; only modules declared in expo-module.config.json will be linked.`
-    );
-    return null;
-  }
-
-  // A successful run can still report diagnostics on stderr (e.g. an unreadable source file that
-  // may hide a module); don't let them disappear.
-  if (runStderr.trim()) {
-    console.warn(`warning: The Expo modules scanner reported:\n${runStderr.trim()}`);
-  }
   for (const warning of output.warnings) {
     console.warn(
       `${warning.file}:${warning.line}: warning: ${warning.message}. If a module class is declared inside this conditional compilation block, declare it in expo-module.config.json to link it.`
@@ -268,17 +167,9 @@ export async function scanExpoModulesAsync(
 }
 
 /**
- * Groups the scanned modules by the package owning their source file (the package with the longest
- * root path containing it) and maps them to the module config shape used by the modules provider.
- * Classes that aren't `public` or `open` can't be referenced by the generated provider, so they're
- * excluded: with a warning for the (likely unintentional) default `internal`, silently for an
- * explicitly spelled lower access level, which reads as a deliberate opt-out (e.g. a test fixture).
- * Each class is linked once per package. The generated provider references a module by name, so one
- * tuple is all a class can contribute however many times the scan reports it, whether from repeated
- * walks of one directory (a package nested inside another one under a hoisted install layout) or
- * from several declarations of the same name behind conditional compilation.
- * A class that doesn't compile for the platform being linked is left out: the provider references it
- * by name, so emitting one the target can't see fails the build.
+ * Groups the scanned modules by the package with the longest root containing their source file.
+ * Leaves out classes that aren't `public` or `open` or don't compile for the platform, and lists
+ * each class once per package.
  */
 export function groupScannedModules(
   output: ScanModulesOutput,
@@ -286,8 +177,6 @@ export function groupScannedModules(
   platform: SupportedPlatform
 ): Record<string, ModuleIosConfig[]> {
   const targetPlatformName = SCANNER_PLATFORM_NAMES[platform];
-  const filtersByPlatform =
-    output.schemaVersion >= PLATFORMS_SCHEMA_VERSION && targetPlatformName != null;
   const rootEntries = Object.entries(packageRoots).sort(
     ([, rootA], [, rootB]) => rootB.length - rootA.length
   );
@@ -296,25 +185,16 @@ export function groupScannedModules(
   const warnedClasses = new Set<string>();
 
   for (const module of output.modules) {
-    // A report entry missing either field can't be attributed or referenced, and `isPathInside`
-    // throws on a non-string path, so drop it here rather than fail the whole scan over it.
+    // Skip a malformed entry instead of failing the whole scan.
     if (typeof module.file !== 'string' || typeof module.name !== 'string') {
       continue;
     }
-    if (
-      filtersByPlatform &&
-      module.platforms != null &&
-      !module.platforms.includes(targetPlatformName!)
-    ) {
-      // An empty list means the scanner couldn't evaluate the condition (`#if DEBUG`,
-      // `canImport(...)`); it already warns about those, and the module config remains the way to
-      // link such a class.
+    if (targetPlatformName && !module.platforms?.includes(targetPlatformName)) {
+      // The scanner already warned about conditions it couldn't evaluate.
       continue;
     }
     if (module.accessLevel !== 'public' && module.accessLevel !== 'open') {
-      // `internal` is the default and usually unintentional; an explicitly spelled lower access
-      // level reads as a deliberate opt-out (e.g. a test fixture) and stays quiet. The scanner
-      // can't distinguish written `internal` from no modifier, so the warning covers both.
+      // Only `internal` warns: it's the default, so likely a mistake. A lower level is an opt-out.
       if (module.accessLevel === 'internal' && !warnedClasses.has(module.file + module.name)) {
         console.warn(
           `warning: The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
@@ -328,16 +208,13 @@ export function groupScannedModules(
       continue;
     }
     const packageName = owner[0];
-    // The provider refers to the class by name, so repeated reports of one class add nothing.
     seenClassesByPackage[packageName] ??= new Set<string>();
     const seenClasses = seenClassesByPackage[packageName];
     if (seenClasses.has(module.name)) {
       continue;
     }
     seenClasses.add(module.name);
-    // The registration name stays null so the module's own `Name(...)` DSL entry and the macro's
-    // `_jsName` keep precedence (see `ModuleHolder.name`), exactly as for config-declared string
-    // entries. The scanner's `jsName` is `_jsName`, which must stay the last resort.
+    // A null name keeps the module's own name, as for config-declared string entries.
     (grouped[packageName] ??= []).push({ name: null, class: module.name });
   }
   return grouped;

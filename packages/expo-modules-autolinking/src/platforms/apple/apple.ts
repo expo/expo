@@ -21,7 +21,7 @@ import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 import {
   collectPackageRoots,
   groupScannedModules,
-  resolveScannerPlugin,
+  loadModulesScanner,
   scanExpoModulesAsync,
 } from './moduleScanner';
 
@@ -62,47 +62,38 @@ export function getSwiftModuleNames(
 }
 
 /**
- * Scans all packages' Swift sources for classes annotated with the `@ExpoModule` macro, in one
- * scanner invocation for the whole dependency tree, and keeps the classes that compile for the
- * platform being linked. A class whose conditional compilation block the scanner can't evaluate
- * (`#if DEBUG`, `canImport(...)`) is skipped with a warning and needs to be declared in the config
- * instead. Returns the found modules per package name, or null when scanning is unavailable
- * (non-macOS host, or no installed macros plugin with a scanner) so resolution falls back to the
- * modules declared in each `expo-module.config.json`.
+ * Scans all packages for `@ExpoModule` classes that compile for the given platform, in one scanner
+ * run. Returns the classes by package name, or null when the scan is unavailable or fails.
  */
 export async function scanNativeModulesAsync(
   searchResults: SearchResults,
   platform: SupportedPlatform
 ): Promise<Record<string, ModuleIosConfig[]> | null> {
-  // The scanner ships as a macOS binary. Resolution on other hosts (e.g. prebuild on CI) quietly
-  // skips scanning; the modules provider itself is only ever generated on macOS.
+  // The scanner is a macOS binary.
   if (process.platform !== 'darwin') {
     return null;
   }
-  // The macros plugin is resolved the way a module's build resolves it: as a dependency of the
-  // installed expo-modules-core. No expo-modules-core also means nothing consumes the macro.
+  // Without expo-modules-core nothing can use the macro.
   const coreRevision = searchResults['expo-modules-core'];
   if (!coreRevision) {
     return null;
   }
-  const pluginInfo = resolveScannerPlugin(coreRevision.path);
-  if (!pluginInfo) {
+  const scanner = loadModulesScanner(coreRevision.path);
+  if (!scanner) {
     console.warn(
-      `warning: Couldn't find the Expo modules scanner, which ships with expo-modules-macros 0.14.0 or newer, from ${coreRevision.path}. Only modules declared in expo-module.config.json will be linked.`
+      `warning: Couldn't load expo-modules-macros from ${coreRevision.path}, so only modules declared in expo-module.config.json will be linked. Reinstall your JavaScript dependencies to restore it.`
     );
     return null;
   }
 
   const packageRoots = collectPackageRoots(searchResults);
-  const output = await scanExpoModulesAsync(pluginInfo, packageRoots);
+  const output = await scanExpoModulesAsync(scanner, packageRoots);
   return output ? groupScannedModules(output, packageRoots, platform) : null;
 }
 
 /**
- * The modules to put into the generated provider: the declared config list when
- * `expo-module.config.json` declares one at all (declaring the list, even empty, is a full
- * override that opts the package out of scanning, so a class the config deliberately leaves out is
- * never linked), otherwise the scanned `@ExpoModule` classes, in a stable alphabetical order.
+ * The declared modules when the config declares the list (even an empty one), otherwise the scanned
+ * classes in alphabetical order.
  */
 function pickModules(
   declaredModules: ModuleIosConfig[] | null,

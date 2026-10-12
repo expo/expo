@@ -10,24 +10,13 @@ import type {
 
 export type ResolveModulesParams = {
   /**
-   * Whether to scan the packages' native sources for annotated module classes, for the platforms
-   * that support it. Only the modules provider generation needs the scanned classes, and it is the
-   * step whose output they end up in, so it is the one place that asks for the scan. Resolution at
-   * pod install deliberately skips it: its result would be baked into the generated build phase,
-   * where a scan that failed once would keep a package unlinked until the next pod install.
+   * Whether to scan native sources for annotated module classes, on platforms that support it.
+   * Only the modules provider generation asks for it.
    */
   scanNativeModules?: boolean;
-  /**
-   * Called with whether the scan produced a result, when one was asked for. A caller that expects
-   * scanned classes uses it to tell a package that genuinely has nothing to link apart from one
-   * whose classes went missing because the scan didn't run.
-   */
+  /** Called with whether the requested scan produced a result. */
   onScanResult?: (succeeded: boolean) => void;
-  /**
-   * The concrete platform the scanned classes are linked for, when it's narrower than the platform
-   * being resolved (the umbrella `apple`). Only the scan depends on it: it decides which
-   * conditionally compiled classes exist.
-   */
+  /** The platform to scan for, when narrower than the resolved one (the umbrella `apple`). */
   scanPlatform?: SupportedPlatform;
 };
 
@@ -38,10 +27,8 @@ export async function resolveModulesAsync(
   { scanNativeModules = false, onScanResult, scanPlatform }: ResolveModulesParams = {}
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
-  // A platform implementation can scan all packages' native sources upfront (one pass for the
-  // whole dependency tree); the per-package results are handed down through `extraOutput`.
-  // Scanning is an enhancement over the config-declared modules, so a failure inside the scan must
-  // never fail resolution itself.
+  // One scan for all packages, passed down through `extraOutput`. A failed scan never fails
+  // resolution.
   let scannedModules = null;
   if (scanNativeModules && 'scanNativeModulesAsync' in platformLinking) {
     try {

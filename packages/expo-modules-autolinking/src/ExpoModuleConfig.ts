@@ -85,10 +85,7 @@ export class ExpoModuleConfig {
     return appleConfig?.modules ?? [];
   }
 
-  /**
-   * Whether the config declares the list of Apple modules at all. A declared list, even an empty
-   * one, is a full override that opts the package out of `@ExpoModule` scanning.
-   */
+  /** Whether the config declares the Apple modules list. Even an empty list disables scanning. */
   declaresAppleModules(): boolean {
     return this.getAppleConfig()?.modules != null;
   }

@@ -1,28 +1,19 @@
-import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import {
   collectPackageRoots,
   groupScannedModules,
   hasModuleAnnotations,
-  satisfiesMinimumVersion,
   scanExpoModulesAsync,
-  type ScannerPluginInfo,
+  type ModulesScanner,
   type ScanModulesOutput,
 } from '../apple/moduleScanner';
-
-jest.mock('@expo/spawn-async');
 
 afterEach(() => {
   vol.reset();
 });
 
-const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-
-const pluginInfo: ScannerPluginInfo = {
-  binaryPath: '/app/node_modules/expo-modules-macros/apple/ExpoModulesMacros',
-  version: '0.16.0',
-};
+const ALL_PLATFORMS = ['iOS', 'macOS', 'tvOS'];
 
 const packageRoots: Record<string, string> = {
   'expo-clipboard': '/app/node_modules/expo-clipboard',
@@ -31,7 +22,7 @@ const packageRoots: Record<string, string> = {
 
 function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     modules: [],
     warnings: [],
     stats: { filesScanned: 0, filesParsed: 0, durationMs: 0 },
@@ -39,150 +30,89 @@ function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
   };
 }
 
-function mockScannerResult(output: ScanModulesOutput) {
-  mockSpawnAsync.mockResolvedValueOnce({
-    stdout: JSON.stringify(output),
-  } as any);
+function mockScanner(result: ScanModulesOutput | Error): ModulesScanner {
+  return {
+    scanModules: jest.fn(() =>
+      result instanceof Error ? Promise.reject(result) : Promise.resolve(result)
+    ),
+  };
 }
 
 describe(scanExpoModulesAsync, () => {
-  it('invokes the scanner binary with every package root', async () => {
-    mockScannerResult(scannerOutput({}));
+  it('scans every package root', async () => {
+    const scanner = mockScanner(scannerOutput({}));
 
-    await scanExpoModulesAsync(pluginInfo, packageRoots);
+    await scanExpoModulesAsync(scanner, packageRoots);
 
-    expect(mockSpawnAsync).toHaveBeenCalledWith(
-      pluginInfo.binaryPath,
-      ['scan-modules', '/app/node_modules/expo-clipboard', '/app/node_modules/expo-camera'],
-      // stdin must be closed: given scanner arguments, a pre-CLI binary starts the compiler plugin
-      // server and reads stdin forever, which would hang pod install. With no stdin it exits
-      // immediately and falls into the JSON parsing failure path instead.
-      expect.objectContaining({ stdio: ['ignore', 'pipe', 'pipe'] })
-    );
+    expect(scanner.scanModules).toHaveBeenCalledWith([
+      '/app/node_modules/expo-clipboard',
+      '/app/node_modules/expo-camera',
+    ]);
   });
 
   it('never writes to stdout, which must stay parseable for resolve --json', async () => {
     const log = jest.spyOn(console, 'log').mockImplementation();
     jest.spyOn(console, 'warn').mockImplementation();
-    mockSpawnAsync.mockRejectedValueOnce(new Error('spawn failure'));
-    await scanExpoModulesAsync(pluginInfo, packageRoots);
 
-    mockScannerResult(scannerOutput({}));
-    await scanExpoModulesAsync(pluginInfo, packageRoots);
+    await scanExpoModulesAsync(mockScanner(new Error('scan failure')), packageRoots);
+    await scanExpoModulesAsync(mockScanner(scannerOutput({})), packageRoots);
 
     expect(log).not.toHaveBeenCalled();
   });
 
-  it('parses the scanner JSON output', async () => {
-    mockScannerResult(
-      scannerOutput({
-        modules: [
-          {
-            name: 'ClipboardModule',
-            jsName: 'Clipboard',
-            accessLevel: 'public',
-            file: '/app/node_modules/expo-clipboard/ios/ClipboardModule.swift',
-          },
-        ],
-      })
-    );
+  it('returns the scan result', async () => {
+    const output = scannerOutput({
+      modules: [
+        {
+          name: 'ClipboardModule',
+          jsName: 'Clipboard',
+          accessLevel: 'public',
+          file: '/app/node_modules/expo-clipboard/ios/ClipboardModule.swift',
+          platforms: ALL_PLATFORMS,
+        },
+      ],
+    });
 
-    const output = await scanExpoModulesAsync(pluginInfo, packageRoots);
-
-    expect(output?.modules).toHaveLength(1);
-    expect(output?.modules[0]?.name).toBe('ClipboardModule');
+    expect(await scanExpoModulesAsync(mockScanner(output), packageRoots)).toBe(output);
   });
 
-  it('returns null and warns when the schema version is older than supported', async () => {
+  it('returns null and warns when the scan fails', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockScannerResult(scannerOutput({ schemaVersion: 0 }));
 
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).toBeNull();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('schema version'));
-  });
-
-  it('accepts output with a newer schema version', async () => {
-    mockScannerResult(scannerOutput({ schemaVersion: 1000 }));
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).not.toBeNull();
-  });
-
-  it('returns null and warns when the scanner fails to run', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockSpawnAsync.mockRejectedValueOnce(new Error('spawn failure'));
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).toBeNull();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('spawn failure'));
-  });
-
-  it('returns null and warns when the output is not JSON', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockSpawnAsync.mockResolvedValueOnce({ stdout: '' } as any);
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).toBeNull();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('only modules declared'));
-  });
-
-  it('returns null and warns when the report is malformed', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockScannerResult({
-      schemaVersion: 1,
-      modules: 'nope',
-      warnings: null,
-    } as any);
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).toBeNull();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('only modules declared'));
-  });
-
-  it('forwards the scanner stderr of a successful run', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockSpawnAsync.mockResolvedValueOnce({
-      stdout: JSON.stringify(scannerOutput({})),
-      stderr: 'warning: could not read /app/node_modules/expo-camera/ios/Broken.swift\n',
-    } as any);
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).not.toBeNull();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('could not read'));
-  });
-
-  it('includes the scanner stderr in the failure warning', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockSpawnAsync.mockRejectedValueOnce(
-      Object.assign(new Error('exited with non-zero code: 2'), {
-        stderr: "error: unknown subcommand 'scan-everything'\n",
-      })
-    );
-
-    expect(await scanExpoModulesAsync(pluginInfo, packageRoots)).toBeNull();
+    expect(
+      await scanExpoModulesAsync(
+        mockScanner(new Error('`scan-modules` returned schema version 3')),
+        packageRoots
+      )
+    ).toBeNull();
     expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining("unknown subcommand 'scan-everything'")
+      expect.stringMatching(/^warning: .*only modules declared.*schema version 3/)
     );
   });
 
   it('returns null without scanning when there are no package roots', async () => {
-    expect(await scanExpoModulesAsync(pluginInfo, {})).toBeNull();
-    expect(mockSpawnAsync).not.toHaveBeenCalled();
+    const scanner = mockScanner(scannerOutput({}));
+
+    expect(await scanExpoModulesAsync(scanner, {})).toBeNull();
+    expect(scanner.scanModules).not.toHaveBeenCalled();
   });
 
   it('prints the scanner warnings with their locations', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation();
-    mockScannerResult(
-      scannerOutput({
-        warnings: [
-          {
-            message: "cannot evaluate 'canImport(SomeSDK)' in a static scan",
-            file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
-            line: 3,
-          },
-        ],
-      })
-    );
+    const output = scannerOutput({
+      warnings: [
+        {
+          message: "cannot evaluate 'canImport(SomeSDK)' in a static scan",
+          file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
+          line: 3,
+        },
+      ],
+    });
 
-    await scanExpoModulesAsync(pluginInfo, packageRoots);
+    await scanExpoModulesAsync(mockScanner(output), packageRoots);
 
     expect(warn).toHaveBeenCalledWith(
-      expect.stringMatching(/CameraModule\.swift:3.+canImport\(SomeSDK\)/)
+      expect.stringMatching(/CameraModule\.swift:3: warning: .+canImport\(SomeSDK\)/)
     );
   });
 });
@@ -196,12 +126,14 @@ describe(groupScannedModules, () => {
           jsName: 'Clipboard',
           accessLevel: 'public',
           file: '/app/node_modules/expo-clipboard/ios/ClipboardModule.swift',
+          platforms: ALL_PLATFORMS,
         },
         {
           name: 'CameraModule',
           jsName: 'CameraModule',
           accessLevel: 'open',
           file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ],
     });
@@ -225,12 +157,14 @@ describe(groupScannedModules, () => {
           jsName: 'InternalModule',
           accessLevel: 'internal',
           file: '/app/node_modules/expo-clipboard/ios/InternalModule.swift',
+          platforms: ALL_PLATFORMS,
         },
         {
           name: 'PrivateModule',
           jsName: 'PrivateModule',
           accessLevel: 'private',
           file: '/app/node_modules/expo-clipboard/ios/Tests/PrivateModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ],
     });
@@ -252,6 +186,7 @@ describe(groupScannedModules, () => {
           jsName: 'StrayModule',
           accessLevel: 'public',
           file: '/somewhere/else/StrayModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ],
     });
@@ -333,24 +268,6 @@ describe(groupScannedModules, () => {
     });
   });
 
-  it('links every reported class when the report predates platform information', () => {
-    const output = scannerOutput({
-      schemaVersion: 1,
-      modules: [
-        {
-          name: 'CameraModule',
-          jsName: 'CameraModule',
-          accessLevel: 'public',
-          file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
-        },
-      ],
-    });
-
-    expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
-    });
-  });
-
   it('skips malformed entries instead of failing the whole report', () => {
     // `isPathInside` throws on a non-string path, which would escape the scan's error handling.
     const output = scannerOutput({
@@ -360,12 +277,14 @@ describe(groupScannedModules, () => {
           jsName: 'NoName',
           accessLevel: 'public',
           file: '/app/node_modules/expo-camera/ios/A.swift',
+          platforms: ALL_PLATFORMS,
         },
         {
           name: 'CameraModule',
           jsName: 'CameraModule',
           accessLevel: 'public',
           file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ] as any,
     });
@@ -388,6 +307,7 @@ describe(groupScannedModules, () => {
       jsName: 'NextCameraModule',
       accessLevel: 'public',
       file: '/app/node_modules/expo-camera/node_modules/expo-camera-next/ios/NextCameraModule.swift',
+      platforms: ALL_PLATFORMS,
     } as const;
     const output = scannerOutput({ modules: [scannedModule, scannedModule] });
 
@@ -405,6 +325,7 @@ describe(groupScannedModules, () => {
       jsName: 'InternalModule',
       accessLevel: 'internal',
       file: '/app/node_modules/expo-clipboard/ios/InternalModule.swift',
+      platforms: ALL_PLATFORMS,
     } as const;
     const output = scannerOutput({ modules: [scannedModule, scannedModule] });
 
@@ -424,12 +345,14 @@ describe(groupScannedModules, () => {
           jsName: 'CameraModule',
           accessLevel: 'public',
           file: '/app/node_modules/expo-camera/ios/CameraModule.swift',
+          platforms: ALL_PLATFORMS,
         },
         {
           name: 'CameraModule',
           jsName: 'CameraModule',
           accessLevel: 'public',
           file: '/app/node_modules/expo-camera/tvos/CameraModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ],
     });
@@ -453,6 +376,7 @@ describe(groupScannedModules, () => {
           jsName: 'NextCameraModule',
           accessLevel: 'public',
           file: '/app/node_modules/expo-camera/next/ios/NextCameraModule.swift',
+          platforms: ALL_PLATFORMS,
         },
       ],
     });
@@ -509,24 +433,6 @@ describe(collectPackageRoots, () => {
         gone: { name: 'gone', path: '/nonexistent/gone', version: '1.0.0' },
       })
     ).toEqual({});
-  });
-});
-
-describe(satisfiesMinimumVersion, () => {
-  it.each([
-    ['0.0.1', false],
-    ['0.13.0', false],
-    ['0.14.0', true],
-    ['0.16.0', true],
-    ['1.0.0', true],
-    // Accepted as a documented choice: a prerelease of the minimum version is assumed to carry
-    // the capability. A prerelease published before the capability landed is handled by the
-    // closed-stdin spawn, which makes such a binary exit instead of hanging.
-    ['0.14.0-rc.1', true],
-    ['garbage', false],
-    ['', false],
-  ])('%s -> %s', (version, expected) => {
-    expect(satisfiesMinimumVersion(version, [0, 14, 0])).toBe(expected);
   });
 });
 

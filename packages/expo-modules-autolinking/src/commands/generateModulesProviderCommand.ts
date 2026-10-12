@@ -26,13 +26,8 @@ type PartialPodfileProperties = {
 };
 
 /**
- * Reports packages integrated at pod install that the generated provider won't link, and returns
- * the ones whose module classes went missing because the scan for `@ExpoModule` classes didn't
- * complete. The packages passed here are every package whose pods support the target, so the ones
- * carrying no modules at all are expected to resolve empty. A failed scan empties the others too,
- * so a package left empty counts as missing its classes only when it doesn't declare its modules in
- * the config (a declared list opts it out of scanning) and its sources have an `@ExpoModule`
- * attribute.
+ * Warns about expected packages missing from the resolution. When the scan failed, returns the
+ * packages left empty that don't declare their modules but have `@ExpoModule` in their sources.
  */
 export function findPackagesMissingScannedModules(
   expectedPackageNames: string[],
@@ -106,14 +101,9 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
           { ...autolinkingOptions, platform },
-          // The provider generated here is the only consumer of the scanned classes, and it runs on
-          // every build, so a scan that fails once is repaired by the next build rather than
-          // persisting until the next pod install.
+          // Runs on every build, so a failed scan is retried by the next one.
           {
             scanNativeModules: true,
-            // Pods are resolved for the umbrella `apple` platform, but the modules provider is built
-            // for one concrete target, which is what decides whether a conditionally compiled class
-            // exists. Without it the scan links every class it finds.
             scanPlatform: commandArguments.targetPlatform,
             onScanResult: (succeeded) => (scanSucceeded = succeeded),
           }
@@ -156,9 +146,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           appRoot,
         });
 
-        // These classes are referenced from JavaScript but missing from the provider, so the app
-        // would build fine and then fail at runtime with a missing native module. Fail the build
-        // instead; Xcode lists an `error:` line in the issue navigator.
+        // Otherwise the app would fail at runtime with a missing native module.
         if (packagesMissingModules.length > 0) {
           console.error(
             `error: Scanning for @ExpoModule classes didn't complete (see the warnings above), so the module classes of these packages are missing from the modules provider: ${packagesMissingModules.join(', ')}. Build again to retry the scan, or declare the classes in the package's expo-module.config.json.`
