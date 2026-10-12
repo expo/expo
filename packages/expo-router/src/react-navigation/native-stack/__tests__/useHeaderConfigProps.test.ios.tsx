@@ -143,22 +143,22 @@ describe('titleColor', () => {
     expect(result.current.titleColor).toBe('orange');
   });
 
-  test('undefined when headerTransparent is true, so iOS 26 Liquid Glass can adapt it to content underneath', () => {
-    const { result } = renderHook(() =>
+  test('undefined when headerTransparent is true, so iOS 26 Liquid Glass can adapt it to content underneath', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true }))
     );
     expect(result.current.titleColor).toBeUndefined();
   });
 
-  test('undefined when headerLargeTitleEnabled makes the background transparent, even without headerTransparent', () => {
-    const { result } = renderHook(() =>
+  test('undefined when headerLargeTitleEnabled makes the background transparent, even without headerTransparent', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true }))
     );
     expect(result.current.titleColor).toBeUndefined();
   });
 
-  test('headerTitleStyle.color still overrides when headerTransparent is true', () => {
-    const { result } = renderHook(() =>
+  test('headerTitleStyle.color still overrides when headerTransparent is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({ headerTransparent: true, headerTitleStyle: { color: 'orange' } })
       )
@@ -166,8 +166,8 @@ describe('titleColor', () => {
     expect(result.current.titleColor).toBe('orange');
   });
 
-  test('headerTintColor is respected even when headerTransparent is true', () => {
-    const { result } = renderHook(() =>
+  test('headerTintColor is respected even when headerTransparent is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true, headerTintColor: 'purple' }))
     );
     expect(result.current.titleColor).toBe('purple');
