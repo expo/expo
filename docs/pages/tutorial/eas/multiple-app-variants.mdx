@@ -27,13 +27,13 @@ Each variant requires a unique Android Application ID and iOS Bundle Identifier 
 {
   "ios": {
     /* @info */
-    "bundleIdentifier": "com.yourname.eastutorial"
+    "bundleIdentifier": "com.yourname.stickersmash"
     /* @end */
     /* @hide ... */ /* @end */
   },
   "android": {
     /* @info */
-    "package": "com.yourname.eastutorial"
+    "package": "com.yourname.stickersmash"
     /* @end */
     /* @hide ... */ /* @end */
   }
@@ -75,26 +75,26 @@ Then, add two functions that dynamically change the app name, Android Applicatio
 ```js app.config.js
 const getUniqueIdentifier = () => {
   if (IS_DEV) {
-    return 'com.yourname.eastutorial.dev';
+    return 'com.yourname.stickersmash.dev';
   }
 
   if (IS_PREVIEW) {
-    return 'com.yourname.eastutorial.preview';
+    return 'com.yourname.stickersmash.preview';
   }
 
-  return 'com.yourname.eastutorial';
+  return 'com.yourname.stickersmash';
 };
 
 const getAppName = () => {
   if (IS_DEV) {
-    return 'eas-tutorial (Dev)';
+    return 'StickerSmash (Dev)';
   }
 
   if (IS_PREVIEW) {
-    return 'eas-tutorial (Preview)';
+    return 'StickerSmash (Preview)';
   }
 
-  return 'eas-tutorial';
+  return 'StickerSmash: Emoji Stickers';
 };
 ```
 
@@ -195,7 +195,7 @@ Run the `npm run dev` command to start the development server:
 
 This script will evaluate **app.config.js** locally and load the environment variable for the `development` profile.
 
-Now, our development build runs on both Android and iOS. It displays the modified app name from **app.config.js**. For example, the below development build is running on an iOS Simulator. See that the app name is **eas-tutorial (Dev)**:
+Now, our development build runs on both Android and iOS. It displays the modified app name from **app.config.js**. For example, the below development build is running on an iOS Simulator. See that the app name is **StickerSmash (Dev)**:
 
 <ContentSpotlight
   alt="Development variant running on iOS Simulator."
