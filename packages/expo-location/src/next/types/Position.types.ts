@@ -1,9 +1,9 @@
 /**
  * A use case that each platform turns into an accuracy, an update interval, and a power budget.
  *
- * On Android it maps to a `LocationRequest` priority, interval, batching and a minimum distance
+ * On Android it maps to a `LocationRequest` priority, interval, batching, and a minimum distance
  * between updates. The mapping differs between the position watcher and background location
- * updates, which update less often.
+ * updates, which use longer intervals for most profiles.
  *
  * On iOS 17 and later it maps to a `CLLocationUpdate.LiveConfiguration`; on earlier versions to a
  * `CLLocationManager` activity type with the best available accuracy.
@@ -53,7 +53,8 @@ export enum LocationProfile {
    * Coarse position at the lowest power use.
    *
    * On Android, low-power priority with the least frequent updates, which the provider can delay
-   * and deliver in batches. The Android provider only uses `NETWORK_PROVIDER` to perform the request.
+   * and deliver in batches. The Android provider requests it from `NETWORK_PROVIDER`, or from
+   * `PASSIVE_PROVIDER` when `NETWORK_PROVIDER` is not available.
    *
    * On iOS, kilometer accuracy with a 3 km distance filter, on every iOS version.
    */
@@ -252,7 +253,7 @@ export type PositionWatchStatus = {
   areUpdatesAllowed?: boolean;
   /**
    * Whether the app is in the foreground. On Android, the watcher holds the system request only
-   * while it is `true` or when a location foreground service is started and promoted.
+   * while it is `true` or while a location foreground service is running.
    */
   isInForeground: boolean;
 };

@@ -152,7 +152,7 @@ async function ensureForegroundPermission() {
 
 <Collapsible summary="Request the background permission">
 
-On Android, the background permission requires the foreground permission first — the request throws when it is not granted. Receiving positions in the background also needs the background permission declared on Android and the background mode on iOS. Enable both in the config plugin:
+On Android, the background permission requires the foreground permission first. The request throws when the foreground permission is not granted. Receiving positions in the background also needs the background permission declared on Android and the background mode on iOS. Enable both in the config plugin:
 
 ```json app.json
 {
@@ -172,7 +172,7 @@ On Android, the background permission requires the foreground permission first �
 
 On Android 11 and later, the system opens the app's settings page instead of a dialog. The request resolves when the user comes back.
 
-`isAndroidBackgroundLocationEnabled` adds five permissions: `ACCESS_BACKGROUND_LOCATION`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION` and `POST_NOTIFICATIONS`. The last three are for the location foreground service; set `isAndroidForegroundServiceEnabled` to `false` to leave them out.
+`isAndroidBackgroundLocationEnabled` adds five permissions: `ACCESS_BACKGROUND_LOCATION`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION`, and `POST_NOTIFICATIONS`. The last three are for the location foreground service; set `isAndroidForegroundServiceEnabled` to `false` to leave them out.
 
 On iOS, the request shows the **Change to Always Allow** dialog. Answering **Keep Only While Using** resolves with `status: "denied"` and `scope: "whenInUse"`, because the foreground permission stays granted.
 
@@ -230,7 +230,7 @@ export default function LiveMapScreen() {
 
 <Collapsible summary="Handle location services turned off">
 
-Location services are a device-wide switch, separate from the app's permission. With services off, no app receives a position. On Android, `enableLocationServices` asks the user to turn them on: Google Play services shows an in-app prompt, and the Android provider opens the system settings — both require the app to be in the foreground with a current Activity. On iOS, only the user can turn them on in Settings.
+Location services are a device-wide switch, separate from the app's permission. With services off, no app receives a position. On Android, `enableLocationServices` asks the user to turn them on: Google Play services shows an in-app prompt, and the Android provider opens the system settings. Both require the app to be in the foreground with a current Activity. On iOS, only the user can turn them on in Settings.
 
 ```tsx
 import { Location } from 'expo-location/next';
@@ -255,7 +255,7 @@ async function ensureLocationServices() {
 
 <Collapsible summary="Receive positions in the background">
 
-To receive positions while the app is in the background, define a task with `defineLocationTask` at the top level of a module. Then start the delivery with `LocationUpdatesHandle`. This requires `expo-task-manager`, the background permission, `ACCESS_BACKGROUND_LOCATION` and `RECEIVE_BOOT_COMPLETED` declared on Android, and the `location` background mode on iOS. Enable them in the config plugin:
+To receive positions while the app is in the background, define a task with `defineLocationTask` at the top level of a module. Then start the delivery with `LocationUpdatesHandle`. This requires `expo-task-manager`, the background permission, `ACCESS_BACKGROUND_LOCATION` and `RECEIVE_BOOT_COMPLETED` declared on Android, and the `location` background mode on iOS. Enable the last two in the config plugin:
 
 ```json app.json
 {
@@ -273,7 +273,7 @@ To receive positions while the app is in the background, define a task with `def
 }
 ```
 
-Positions keep arriving after the app process has ended; the system starts the app in the background to deliver them. While the app is in the background, Android throttles delivery to roughly one position every ten minutes.
+Positions keep arriving after the app process has ended; the system starts the app in the background to deliver them. While the app is in the background, Android delivers positions only a few times each hour.
 
 ```ts locationTask.ts
 import { defineLocationTask } from 'expo-location/next';
@@ -344,7 +344,7 @@ export default function TrackingScreen() {
 }
 ```
 
-For a background task a profile means something different than for a watcher: `LOW_POWER` waits much longer between positions, batches them, and skips positions close to the last one, so a device that stays put may produce none at all. `AUTOMOTIVE_NAVIGATION` delivers as often as the system allows, with no batching and no distance filter.
+On Android, a profile means something different for a background task than for a watcher. `LOW_POWER` waits much longer between positions, batches them, and skips positions close to the last one, so a device that stays put may produce none. `AUTOMOTIVE_NAVIGATION` delivers as often as the system allows, with no batching and no distance filter.
 
 Both sides default to the same task name, so you can omit it. To run several tasks, give each task its own name and pass that name to both `defineLocationTask` and the `LocationUpdatesHandle` constructor.
 
@@ -400,9 +400,9 @@ import { Location } from 'expo-location/next';
 
 ### Android
 
-`ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are added automatically.
+Installing `expo-location` adds `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION`.
 
-The config plugin adds the rest when `isAndroidBackgroundLocationEnabled` is `true`. Enabling `ACCESS_BACKGROUND_LOCATION` or the location foreground service in a new build requires submitting the app for review — [background location](https://support.google.com/googleplay/android-developer/answer/9799150) and [foreground service types](https://support.google.com/googleplay/android-developer/answer/13392821).
+The config plugin adds the rest when `isAndroidBackgroundLocationEnabled` is `true`. Enabling `ACCESS_BACKGROUND_LOCATION` or the location foreground service in a new build requires submitting the app for review. See Google Play's requirements for [background location permissions](https://support.google.com/googleplay/android-developer/answer/9799150) and [foreground services](https://support.google.com/googleplay/android-developer/answer/13392821).
 
 <AndroidPermissions
   permissions={[

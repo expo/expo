@@ -4,16 +4,16 @@ import { NativeLocationModuleNext, NativeLocationProvider } from '../native';
 import type { LocationProviderRefType } from '../types';
 
 /**
- * Location provider is a backend to which expo-location delegates the location requests.
- * A `LocationProvider` interface is defined on Android and multiple implementations are exposed
- * as static methods in this class. The default tries Google Play services first and falls back to
- * the Android framework, so most apps never need this.
+ * A location provider is the backend that serves location requests on Android. Each static method
+ * returns a provider to pass to `setLocationProvider`. The default tries Google Play services first
+ * and falls back to the Android framework, so most apps never need this.
  *
  * @platform android
  */
 export class LocationProvider {
   /**
-   * The fused location provider from Google Play services. When the play services are absent, all calls throw.
+   * The fused location provider from Google Play services. When Google Play services are absent,
+   * location requests that use this provider throw.
    *
    * @platform android
    */
