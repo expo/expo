@@ -37,9 +37,6 @@ internal struct DynamicConvertibleType: AnyDynamicType {
     if let directJSValue = try directJSValueIfPossible(value, appContext: appContext) {
       return directJSValue
     }
-    if let converted = value as? ConvertedJavaScriptValue {
-      return converted.takeValue()
-    }
     if value is AnyArgument {
       return try convertOriginalValueToJS(value, appContext: appContext)
     }
@@ -97,9 +94,6 @@ internal struct DynamicConvertibleType: AnyDynamicType {
   }
 
   private func serializeConvertedValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
-    if let converted = value as? ConvertedJavaScriptValue {
-      return converted.takeValue()
-    }
     if let result = value as? AnyArgument {
       let dynamicType = type(of: result).getDynamicType()
       // A `Convertible` that keeps the default `convertResult` returns the value unchanged,

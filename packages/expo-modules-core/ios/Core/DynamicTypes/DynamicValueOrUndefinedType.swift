@@ -33,7 +33,7 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     let value = result as! ValueOrUndefined<InnerType>
     if case .undefined = value {
-      // `JavaScriptValue.undefined()` is not runtime specific, so it's safe to return here, even if it's not on the JS thread.
+      // The shared box holds no engine value and creates `undefined` when read, so it is safe to return here, even off the JS thread.
       return ConvertedJavaScriptValue.undefined
     }
     return try dynamicInnerType.convertResult(value.optional, appContext: appContext)

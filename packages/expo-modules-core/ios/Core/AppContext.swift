@@ -496,7 +496,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
     // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
-    try coreModule._decorateModule(object: coreObject, in: try runtime)
+    try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()

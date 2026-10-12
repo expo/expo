@@ -17,7 +17,9 @@ import ExpoModulesJSI
 internal final class JSValueDecoder: Decoder {
   private let appContext: AppContext
   private let runtime: JavaScriptRuntime
-  private let value: JavaScriptValue
+  // Behind a ref, so a single value container can share it instead of cloning the value. Nothing
+  // takes the value out of the reference, so it is always there.
+  private let value: JavaScriptValue.Ref
 
   /**
    Initializes the decoder with the given JS value and app context.
@@ -42,7 +44,7 @@ internal final class JSValueDecoder: Decoder {
     runtime: JavaScriptRuntime,
     codingPath: [any CodingKey]
   ) {
-    self.value = value
+    self.value = value.ref()
     self.appContext = appContext
     self.runtime = runtime
     self.codingPath = codingPath
@@ -54,6 +56,15 @@ internal final class JSValueDecoder: Decoder {
   let userInfo: [CodingUserInfoKey: Any] = [:]
 
   func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
+    return try value.withUnwrappedValue { (value: borrowing JavaScriptValue) in
+      try keyedContainer(of: value, keyedBy: type)
+    }!
+  }
+
+  private func keyedContainer<Key>(
+    of value: borrowing JavaScriptValue,
+    keyedBy type: Key.Type
+  ) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
     guard value.isObject() else {
       throw DecodingError.typeMismatch(
         [String: Any].self,
@@ -73,6 +84,12 @@ internal final class JSValueDecoder: Decoder {
   }
 
   func unkeyedContainer() throws -> any UnkeyedDecodingContainer {
+    return try value.withUnwrappedValue { (value: borrowing JavaScriptValue) in
+      try unkeyedContainer(of: value)
+    }!
+  }
+
+  private func unkeyedContainer(of value: borrowing JavaScriptValue) throws -> any UnkeyedDecodingContainer {
     guard value.isArray() else {
       throw DecodingError.typeMismatch(
         [Any].self,
@@ -91,9 +108,8 @@ internal final class JSValueDecoder: Decoder {
   }
 
   func singleValueContainer() throws -> any SingleValueDecodingContainer {
-    // The decoder keeps its value, so the container gets a copy.
     return JSValueDecodingContainer(
-      value: value.copy(),
+      value: value,
       appContext: appContext,
       runtime: runtime,
       codingPath: codingPath
@@ -163,24 +179,21 @@ private struct JSValueDecodingContainer: SingleValueDecodingContainer {
   private let value: JavaScriptValue.Ref
   let codingPath: [any CodingKey]
 
-  init(value: consuming JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
-    self.value = value.ref()
+  init(value: JavaScriptValue.Ref, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
+    self.value = value
     self.appContext = appContext
     self.runtime = runtime
     self.codingPath = codingPath
   }
 
   func decodeNil() -> Bool {
-    return value.withUnwrappedValue { (value: borrowing JavaScriptValue) in value.isNull() || value.isUndefined() } ?? true
+    return value.withUnwrappedValue { (value: borrowing JavaScriptValue) in value.isNull() || value.isUndefined() }!
   }
 
   func decode<ValueType: Decodable>(_ type: ValueType.Type) throws -> ValueType {
-    guard let decoded = try value.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
+    return try value.withUnwrappedValue { (value: borrowing JavaScriptValue) in
       try decodeUsingDynamicType(type, from: value, appContext: appContext, runtime: runtime, codingPath: codingPath)
-    }) else {
-      throw DecodingError.valueNotFound(type, DecodingError.Context(codingPath: codingPath, debugDescription: "The JavaScript value has already been consumed"))
-    }
-    return decoded
+    }!
   }
 }
 
