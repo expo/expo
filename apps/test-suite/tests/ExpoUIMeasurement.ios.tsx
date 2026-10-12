@@ -166,7 +166,11 @@ async function mountInsetHost(setPortalChild: any, safeArea: boolean) {
       const host = await measureInWindowAsync(hostWrapperRef);
       const hosted = await measureInWindowAsync(hostedRef);
       result = { host, hosted, drawn, ...geometryRef.current };
-      if (Math.abs(hosted.y - drawn.y) < 0.5 || attempt >= 40) {
+      // `SafeAreaProvider` can render with a zero inset before it publishes the real one, so with the
+      // safe area on, a frame is ready only once the inset is in and the wrapper has moved to it.
+      const insetReady =
+        !safeArea || (result.insetTop > 0 && Math.abs(host.y - result.wrapperTop) < 0.5);
+      if ((insetReady && Math.abs(hosted.y - drawn.y) < 0.5) || attempt >= 40) {
         return result;
       }
     } else if (attempt >= 40) {
@@ -211,7 +215,7 @@ function ScrolledHostProbe({
 }
 
 export async function test(
-  { it, describe, expect, afterEach }: any,
+  { it, describe, expect, afterEach, pending }: any,
   { setPortalChild, cleanupPortal }: any
 ) {
   afterEach(async () => {
@@ -589,7 +593,8 @@ export async function test(
         true
       );
       if (insetTop === 0) {
-        return;
+        // `pending` throws to abort the spec, so nothing below it runs.
+        pending('the screen has no top safe-area inset to put the Host under');
       }
       // Proves that SwiftUI inset the content by the part of the status bar the Host is under.
       expect(drawn.y - host.y).toBeCloseTo(insetTop - wrapperTop, 0);
@@ -604,7 +609,6 @@ export async function test(
       expect(hosted.y).toBeCloseTo(drawn.y, 0);
     });
 
-    // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
     it('measures a hosted view after a SwiftUI layout that follows a scroll', async () => {
       const scrollRef = React.createRef<ScrollViewRef>();
       const viewportRef = React.createRef<ViewRef>();
@@ -647,6 +651,7 @@ export async function test(
       expect(hosted.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
     });
 
+    // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
     it('measures a hosted view in a sheet relative to itself', async () => {
       const hostedRef = React.createRef<ViewRef>();
 

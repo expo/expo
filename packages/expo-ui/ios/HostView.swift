@@ -3,12 +3,13 @@
 import SwiftUI
 import ExpoModulesCore
 
-/// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
-/// actually placed them. Name it last in the chain: Yoga measures a hosted view from the `Host`
-/// component view, so any `Host` inset or alignment has to be inside this space, not outside it.
+/// Coordinate space anchored at the `Host`'s SwiftUI root, which macOS measures hosted React Native
+/// views from. iOS uses `HostingViewReference` instead, because this space starts after the
+/// safe-area inset that `UIHostingController` applies to the root.
 internal let expoHostCoordinateSpace = "expo.ui.host"
 
-/// The enclosing `Host`'s UIKit view, which Yoga laid out.
+/// The enclosing `Host`'s UIKit view, which Yoga laid out. iOS measures hosted React Native views
+/// from it.
 internal final class HostingViewReference {
   weak var view: UIView?
 }
