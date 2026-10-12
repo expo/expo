@@ -100,6 +100,10 @@ JavaScript driver function to measure a full JS-to-native round trip (see
 results against). Expect run-to-run medians to agree within roughly ±10-25% on a workstation;
 compare medians, and treat anything within that band as noise.
 
+## Windows
+
+The sources also build on Windows (see the README). Keep Apple-only APIs behind `#if canImport(Darwin)` / `#if canImport(os)` / `#if __APPLE__` with a portable alternative, and prefer C++ types with the same width everywhere (`ptrdiff_t`, not `long`, which is 32 bits on Windows). The swift.org Windows toolchain is built with assertions, so it also runs the SIL verifiers that Xcode's compiler skips; `-Xfrontend -sil-verify-all` reproduces them on macOS.
+
 ## Formatting
 
 Swift sources are formatted with swift-format. From the package root, `pnpm swift:format` rewrites files in place and `pnpm swift:lint` checks without modifying; both delegate to the repo-root `scripts/swift-format.sh`, which reads the repo-root `.swift-format` config and only touches tracked `.swift` files. CI enforces this via `.github/workflows/swift-format.yml`, which pins a specific swift-format version &mdash; mismatched local versions can produce different output, so prefer the pinned one. Style conventions beyond what the formatter enforces live in [`guides/Swift Style Guide.md`](../../guides/Swift%20Style%20Guide.md) at the repo root.

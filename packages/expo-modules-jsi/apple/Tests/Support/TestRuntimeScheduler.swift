@@ -33,7 +33,7 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     return Unmanaged.passUnretained(self).toOpaque()
   }
 
-  func schedule(_ operation: @escaping @convention(block) () -> Void) {
+  func schedule(_ operation: @escaping () -> Void) {
     state.schedule(operation)
   }
 
@@ -77,10 +77,12 @@ final class TestRuntimeScheduler: @unchecked Sendable {
   private final class State: @unchecked Sendable {
     private let condition = NSCondition()
     private let ready = DispatchSemaphore(value: 0)
-    private var operations: [@convention(block) () -> Void] = []
+    // Swift closures rather than the blocks the runtime passes in: on Windows, initializing an array
+    // of blocks crashes in the Swift runtime.
+    private var operations: [() -> Void] = []
     private var isStopped = false
 
-    func schedule(_ operation: @escaping @convention(block) () -> Void) {
+    func schedule(_ operation: @escaping () -> Void) {
       condition.lock()
       operations.append(operation)
       condition.signal()

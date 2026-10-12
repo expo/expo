@@ -14,3 +14,6 @@
 
 # Built xcframework output
 Products
+
+# Sources from react-native-windows' `Microsoft.ReactNative.Cxx` NuGet package, staged by the Windows workflow
+Sources/ExpoModulesJSI-Cxx/react-native-windows

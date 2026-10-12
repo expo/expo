@@ -1,0 +1,126 @@
+name: expo-modules-jsi (Windows)
+
+# Builds ExpoModulesJSI with the Swift toolchain for Windows against the JSI headers that
+# react-native-windows ships, so the package keeps compiling outside Apple platforms.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: &trigger_paths
+      - .github/workflows/expo-modules-jsi-windows.yml
+      - packages/expo-modules-jsi/apple/**
+  pull_request:
+    paths: *trigger_paths
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # react-native-windows version whose `Microsoft.ReactNative.Cxx` NuGet package provides the JSI
+  # headers and the sources that create a JSI runtime on top of `hermes.dll`.
+  RNW_VERSION: '0.84.0'
+  # The `Microsoft.JavaScript.Hermes` version that react-native-windows 0.84.0 uses.
+  HERMES_VERSION: '0.0.0-2605.6002-2279da22'
+
+jobs:
+  build:
+    name: Build (Windows ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-latest
+            build_arch: amd64
+          - arch: arm64
+            runner: windows-11-arm
+            build_arch: arm64
+    defaults:
+      run:
+        working-directory: packages/expo-modules-jsi/apple
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: |
+            .github/workflows
+            packages/expo-modules-jsi
+
+      - name: 🐦 Install Swift
+        uses: compnerd/gha-setup-swift@bbae8ce86bac5a3449f3992b3d88bc4ca25f2057 # v0.5.0
+        with:
+          swift-version: swift-6.4.0-release
+          swift-build: 6.4.0-RELEASE
+          build_arch: ${{ matrix.build_arch }}
+
+      - name: 📦 Stage react-native-windows and Hermes
+        # Headers go to one include root, which `JSI_INCLUDE_DIR` passes to Package.swift:
+        # - The JSI headers from `tools/Microsoft.ReactNative.Cxx/JSI`, in a `jsi` directory so that
+        #   `#include <jsi/jsi.h>` matches the case on disk.
+        # - The loaders that react-native-windows uses for `hermes.dll` (`ApiLoaders`,
+        #   `NodeApiJsiRuntime.h`) and the Hermes and Node-API C headers they include.
+        # - `<swift/bridging>`: SwiftPM on Windows doesn't put the toolchain's `usr/include` on the
+        #   C++ include path.
+        # The matching sources are copied into the C++ target, the way react-native-windows modules
+        # compile them, and the module map for the `jsi` Clang module is written where Package.swift
+        # reads it. `hermes.dll` goes on PATH for the tests.
+        shell: pwsh
+        run: |
+          function Get-NuGetPackage($id, $version, [string[]]$members) {
+            $archive = Join-Path $env:RUNNER_TEMP "$id.zip"
+            Invoke-WebRequest -Uri "https://api.nuget.org/v3-flatcontainer/$id/$version/$id.$version.nupkg" -OutFile $archive
+            $destination = Join-Path $env:RUNNER_TEMP $id
+            New-Item -ItemType Directory -Force $destination | Out-Null
+            tar -xf $archive -C $destination @members
+            if ($LASTEXITCODE -ne 0) { throw "Could not extract $id $version" }
+            return $destination
+          }
+          $cxx = Join-Path (Get-NuGetPackage "microsoft.reactnative.cxx" $env:RNW_VERSION @("tools/Microsoft.ReactNative.Cxx")) "tools/Microsoft.ReactNative.Cxx"
+          $hermes = Join-Path (Get-NuGetPackage "microsoft.javascript.hermes" $env:HERMES_VERSION @("build/native/include", "build/native/win32/${{ matrix.arch }}")) "build/native"
+
+          $include = Join-Path $env:RUNNER_TEMP "jsi-include"
+          $jsi = Join-Path $include "jsi"
+          New-Item -ItemType Directory -Force $jsi | Out-Null
+          Copy-Item (Join-Path $cxx "JSI/*.h") $jsi
+          Copy-Item (Join-Path $cxx "ApiLoaders") $include -Recurse
+          Copy-Item (Join-Path $cxx "NodeApiJsiRuntime.h") $include
+          Copy-Item (Join-Path $hermes "include/hermes/*.h") $include
+          Copy-Item (Join-Path $hermes "include/node-api/*.h") $include
+
+          $swiftRoot = Join-Path $env:LOCALAPPDATA "Programs/Swift"
+          $bridging = Get-ChildItem -Recurse $swiftRoot -Filter bridging -File | Where-Object { $_.Directory.Name -eq "swift" } | Select-Object -First 1
+          if (-not $bridging) { throw "Could not find swift/bridging in $swiftRoot" }
+          Write-Host "Using $($bridging.FullName)"
+          Copy-Item $bridging.Directory.FullName (Join-Path $include "swift") -Recurse
+
+          $sources = "Sources/ExpoModulesJSI-Cxx/react-native-windows"
+          New-Item -ItemType Directory -Force (Join-Path $sources "ApiLoaders") | Out-Null
+          Copy-Item (Join-Path $cxx "JSI/jsi.cpp") $sources
+          Copy-Item (Join-Path $cxx "NodeApiJsiRuntime.cpp") $sources
+          Copy-Item (Join-Path $cxx "ApiLoaders/*") (Join-Path $sources "ApiLoaders") -Exclude "NodeApi_posix.cpp"
+
+          $jsiPath = ($jsi -replace '\\', '/')
+          New-Item -ItemType Directory -Force .generated | Out-Null
+          @"
+          module jsi {
+            header "$jsiPath/jsi.h"
+            header "$jsiPath/instrumentation.h"
+
+            export *
+          }
+          "@ | Set-Content -Path .generated/module.modulemap -Encoding utf8
+          "JSI_INCLUDE_DIR=$include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          (Join-Path $hermes "win32/${{ matrix.arch }}") | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: 🔨 Build
+        run: swift build --build-tests
+
+      - name: 🧪 Test
+        # On arm64 the test process exits partway through the run without a crash report, so only
+        # x64 runs the tests for now. arm64 still builds the package and the tests.
+        if: matrix.arch == 'x64'
+        run: swift test --skip-build

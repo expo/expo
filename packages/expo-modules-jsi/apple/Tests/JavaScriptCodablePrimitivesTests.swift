@@ -1,8 +1,14 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import CoreGraphics
 import ExpoModulesJSI
 import Testing
+
+#if canImport(CoreGraphics)
+import CoreGraphics
+#else
+// `CGFloat` is part of Foundation outside Apple platforms.
+import Foundation
+#endif
 
 @Suite("JavaScriptCodable+Primitives")
 @JavaScriptActor

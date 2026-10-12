@@ -1,5 +1,8 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+// The JavaScript thread here is a Core Foundation run loop, like React Native's on Apple platforms.
+#if canImport(Darwin)
+
 import ExpoModulesJSI
 import Foundation
 import Testing
@@ -223,3 +226,5 @@ private func onCallerThread<R: Sendable>(_ body: @escaping @Sendable () throws -
 private func threadCPUNanoseconds() -> UInt64 {
   return clock_gettime_nsec_np(CLOCK_THREAD_CPUTIME_ID)
 }
+
+#endif

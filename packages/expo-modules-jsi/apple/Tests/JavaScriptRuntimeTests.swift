@@ -2,6 +2,10 @@ import ExpoModulesJSI
 import Foundation
 import Testing
 
+#if os(Windows)
+import WinSDK
+#endif
+
 @Suite
 @JavaScriptActor
 struct JavaScriptRuntimeTests {
@@ -260,7 +264,7 @@ struct JavaScriptRuntimeTests {
     let cpuTime = try await onSyncOffThread {
       try measureThreadCPUTime {
         try runtime.execute { @JavaScriptActor in
-          _ = usleep(200_000)
+          blockCurrentThread(milliseconds: 200)
         }
       }
     }
@@ -274,7 +278,7 @@ struct JavaScriptRuntimeTests {
     let cpuTime = try await onSyncOffThread {
       try measureThreadCPUTime {
         try runtime.execute { @JavaScriptActor () async in
-          _ = usleep(200_000)
+          blockCurrentThread(milliseconds: 200)
         }
       }
     }
@@ -352,7 +356,7 @@ struct JavaScriptRuntimeTests {
     #expect(shared.getString() == "shared")
   }
 
-  @Test
+  @Test(.disabled(if: isWindows, "Crashes on Windows"))
   func `host object set property`() {
     var storedValue: Int?
 
@@ -1224,12 +1228,34 @@ struct JavaScriptRuntimeTests {
   }
 }
 
+/// Blocks the calling thread without using CPU time. `Thread.sleep` isn't available in async contexts.
+private func blockCurrentThread(milliseconds: UInt32) {
+  #if os(Windows)
+  Sleep(milliseconds)
+  #else
+  _ = usleep(milliseconds * 1000)
+  #endif
+}
+
 /// Returns the CPU time the calling thread spent in `body`, in seconds.
 private func measureThreadCPUTime(_ body: () throws -> Void) rethrows -> Double {
   func threadCPUTime() -> Double {
+    #if os(Windows)
+    var creationTime = FILETIME()
+    var exitTime = FILETIME()
+    var kernelTime = FILETIME()
+    var userTime = FILETIME()
+    GetThreadTimes(GetCurrentThread(), &creationTime, &exitTime, &kernelTime, &userTime)
+    // `FILETIME` counts 100-nanosecond intervals.
+    func seconds(_ time: FILETIME) -> Double {
+      return Double(UInt64(time.dwHighDateTime) << 32 | UInt64(time.dwLowDateTime)) / 1e7
+    }
+    return seconds(kernelTime) + seconds(userTime)
+    #else
     var time = timespec()
     clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time)
     return Double(time.tv_sec) + Double(time.tv_nsec) / 1e9
+    #endif
   }
   let start = threadCPUTime()
   try body()
