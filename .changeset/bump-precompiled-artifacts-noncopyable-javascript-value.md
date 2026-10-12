@@ -1,5 +1,6 @@
 ---
 "@expo/ui": patch
+"expo-application": patch
 "expo-brownfield": patch
 "expo-camera": patch
 "expo-contacts": patch
