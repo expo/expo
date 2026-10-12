@@ -35,11 +35,11 @@ class CellularModule : Module() {
     }
 
     AsyncFunction<String?>("getMobileCountryCodeAsync") {
-      telephonyManager()?.simOperator?.substring(0, 3)
+      validSimOperator()?.substring(0, 3)
     }
 
     AsyncFunction<String?>("getMobileNetworkCodeAsync") {
-      telephonyManager()?.simOperator?.substring(3)
+      validSimOperator()?.substring(3)
     }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
@@ -58,6 +58,13 @@ class CellularModule : Module() {
       )
     }
   }
+
+  /**
+   * The SIM operator as MCC (3 digits) followed by MNC (2 or 3 digits), or `null` if it isn't available.
+   * `getSimOperator()` can return an empty string even when the SIM state is `SIM_STATE_READY`.
+   */
+  private fun validSimOperator(): String? =
+    telephonyManager()?.simOperator?.takeIf { it.length >= 5 }
 
   private fun telephonyManager() =
     (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
