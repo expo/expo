@@ -18,7 +18,8 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
-  internal let pointee: facebook.jsi.Array
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed array.
+  internal var pointee: facebook.jsi.Array
 
   /// Creates a new JavaScript array with the specified length.
   ///
@@ -432,6 +433,12 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtimeHandle, expo.valueFromArray(jsiRuntime, pointee))
   }
 
+  /// Moves the array into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  @usableFromInline
+  internal consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromArray(&pointee))
+  }
+
   /// Converts the array to a `JavaScriptObject`.
   ///
   /// Since JavaScript arrays are also objects, this method allows you to access the array
@@ -561,6 +568,6 @@ extension JavaScriptArray: JavaScriptCodable {
   public static func encode(_ value: consuming JavaScriptArray, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    return value.asValue()
+    return value.takeValue()
   }
 }

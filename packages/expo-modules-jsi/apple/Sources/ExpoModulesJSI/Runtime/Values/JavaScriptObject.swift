@@ -473,6 +473,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
+  /// Moves the object into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  @usableFromInline
+  internal consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
+  }
+
   /// Returns the object as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
     guard let jsiRuntime else {
@@ -730,7 +736,7 @@ extension JavaScriptObject: JavaScriptCodable {
   public static func encode(_ value: consuming JavaScriptObject, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    return value.asValue()
+    return value.takeValue()
   }
 }
 
