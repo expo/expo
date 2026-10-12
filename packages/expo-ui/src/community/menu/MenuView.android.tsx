@@ -86,7 +86,10 @@ function MenuActionItem({ action, onPressAction, dismissAll, destructiveColor }:
       );
     }
     return (
-      <DropdownMenu expanded={submenuExpanded} onDismissRequest={() => setSubmenuExpanded(false)}>
+      <DropdownMenu
+        expanded={submenuExpanded}
+        onDismissRequest={() => setSubmenuExpanded(false)}
+        properties={POPUP_PROPERTIES}>
         <DropdownMenu.Trigger>
           <DropdownMenuItem
             enabled={!attributes?.disabled}
