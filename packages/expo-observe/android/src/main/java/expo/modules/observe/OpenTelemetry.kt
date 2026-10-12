@@ -286,6 +286,7 @@ private val metricNameMap = mapOf(
   (MetricCategory.Updates.categoryName to "updateDownloadTime") to "expo.updates.download_time",
 
   // Navigation
+  // TODO(@ubax): Remove `cold_ttr` and `warm_ttr` from the navigation integration (ENG-28035).
   (MetricCategory.Navigation.categoryName to "cold_ttr") to "expo.navigation.cold_ttr",
   (MetricCategory.Navigation.categoryName to "warm_ttr") to "expo.navigation.warm_ttr",
   (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti",
