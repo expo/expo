@@ -15,7 +15,8 @@ const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
  * moving to the background and, with the background permission, the app being terminated.
  *
  * On Android, positions keep arriving after the app process ended. Requires the background
- * permission.
+ * permission. While the app is in the background and no location foreground service is running,
+ * Android throttles the delivery. Start a foreground service to receive them at a faster rate.
  *
  * On iOS, positions come from `CLLocationUpdate.liveUpdates`. Requires the `location` background
  * mode and the foreground permission.
@@ -28,6 +29,8 @@ export class LocationUpdatesHandle {
   /**
    * @param taskName The task that receives the positions. Must match the name passed to
    * `defineLocationTask`; both default to the same name.
+   *
+   * On Android the handle keeps the provider selected during construction. If you want to use a different provider, you need to construct a new handle.
    */
   constructor(taskName: string = DEFAULT_LOCATION_TASK_NAME) {
     this.nativeHandle = new NativeLocationUpdatesHandle(taskName);
@@ -46,9 +49,12 @@ export class LocationUpdatesHandle {
 
   /**
    * Registers the delivery with the system and starts sending positions to the task.
-   * @throws When location services are off or the required permission is missing: the background
-   * permission on Android, the foreground permission on iOS, where the `location` background mode
-   * is also required.
+   * @throws On Android, when the foreground or background permission is not granted, or when
+   * `RECEIVE_BOOT_COMPLETED` is missing from the manifest. On iOS, when location services are off
+   * or the foreground permission is missing, where the `location` background mode is also
+   * required.
+   *
+   * On Android the promise resolves even when the provider refuses the request for updates.
    */
   start(): Promise<void> {
     return this.nativeHandle.start();

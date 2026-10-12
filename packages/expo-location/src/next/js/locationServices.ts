@@ -21,6 +21,7 @@ export function hasLocationServicesEnabled(): boolean {
  * See [Handle location services turned off](#handle-location-services-turned-off).
  *
  * @return A promise that resolves to `true` when services are on after the user answered.
+ * @throws When it is called from the background, i.e. when the app has no current Activity.
  * @platform android
  */
 export async function enableLocationServices(): Promise<boolean> {

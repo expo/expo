@@ -7,6 +7,9 @@ import type { GetPositionOptions, Position } from '../types';
  * location when none arrives. With `timeout` `0`, it returns the last known location right away.
  * Check `timestamp` when freshness matters.
  *
+ * On Android, when location services are off, the call still resolves with the last known
+ * position or `null` if there is none.
+ *
  * @param getPositionOptions The options for the location request.
  * @return A promise that resolves to the position, or `null` when the device has none.
  * @throws When the foreground permission is not granted, or when location services are off (iOS).

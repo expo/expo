@@ -36,7 +36,8 @@ export async function requestForegroundPermissions(
  * Checks the background location permission without asking the user.
  *
  * @return A promise that resolves to the current permission. `scope` is `always` when it is
- *   granted.
+ *   granted. `granted` is true only when the foreground permission is granted as well, while
+ *   `status` reflects the background permission alone.
  */
 export async function getBackgroundPermissions(): Promise<LocationPermissionResponse> {
   return NativeLocationModuleNext.getBackgroundPermissions();
@@ -44,8 +45,9 @@ export async function getBackgroundPermissions(): Promise<LocationPermissionResp
 
 /**
  * Asks the user for permission to read the location while the app is in the background.
- * On Android, it requires the foreground permission first. On iOS, answering
- * **Keep Only While Using** resolves with `status` `denied` and `scope` `whenInUse`.
+ * On Android, it throws when `ACCESS_BACKGROUND_LOCATION` is missing from the manifest or the
+ * foreground permission is not granted. On iOS, answering **Keep Only While Using** resolves with
+ * `status` `denied` and `scope` `whenInUse`.
  *
  * See [Request the background permission](#request-the-background-permission).
  *

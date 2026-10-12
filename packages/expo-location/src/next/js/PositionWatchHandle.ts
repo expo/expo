@@ -44,6 +44,8 @@ export class PositionWatchHandle {
    *
    * @return `false` when the provider rejects the request right away. Later failures, including
    *   every failure on iOS and with Google Play services, arrive through `onError`.
+   *   `true` means no failure occurred, not that the watcher is subscribed: on Android it also
+   *   returns `true` when nothing was attempted, for example while the app is in the background.
    * @throws After `dispose()`, like every other call on a disposed handle.
    */
   resume(): boolean {
@@ -51,7 +53,9 @@ export class PositionWatchHandle {
   }
 
   /**
-   * Stages a new profile for the watcher. It has no effect until `restart()`.
+   * Stages a new profile for the watcher. It has no effect until `restart()`. On Android it
+   * overwrites an interval staged by an earlier `withInterval()`; call `withInterval()` afterwards
+   * to set both.
    *
    * @return The same handle, for chaining.
    */
@@ -81,7 +85,9 @@ export class PositionWatchHandle {
    * It does not resume a paused watcher.
    *
    * @return `false` when the provider rejects the request right away. Later failures arrive through
-   *   `onError`.
+   *   `onError`. `true` means no failure occurred, not that the watcher is subscribed: on Android it
+   *   also returns `true` when nothing was attempted, for example while the app is in the
+   *   background.
    */
   restart(): boolean {
     return this.nativeHandle.restart();
@@ -132,7 +138,7 @@ export class PositionWatchHandle {
  *
  * @param options The profile and the callbacks for positions and errors.
  * @return The handle for controlling the watcher.
- * @throws When the foreground permission is not granted, when location services are off (iOS), or
+ * @throws When the foreground permission is not granted, when location services are off, or
  * when the selected provider cannot watch the position (Android).
  * @example
  * ```ts

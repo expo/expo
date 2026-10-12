@@ -1,7 +1,9 @@
 /**
  * A use case that each platform turns into an accuracy, an update interval, and a power budget.
  *
- * On Android it maps to a `LocationRequest` priority and interval.
+ * On Android it maps to a `LocationRequest` priority, interval, batching and a minimum distance
+ * between updates. The mapping differs between the position watcher and background location
+ * updates, which update less often.
  *
  * On iOS 17 and later it maps to a `CLLocationUpdate.LiveConfiguration`; on earlier versions to a
  * `CLLocationManager` activity type with the best available accuracy.
@@ -10,7 +12,7 @@ export enum LocationProfile {
   /**
    * General-purpose positioning, for anything the other profiles do not cover.
    *
-   * On Android, balanced priority with updates about every 5 seconds.
+   * On Android, balanced priority.
    *
    * On iOS, `CLLocationUpdate.LiveConfiguration.default`.
    */
@@ -18,7 +20,7 @@ export enum LocationProfile {
   /**
    * Turn-by-turn navigation in a vehicle.
    *
-   * On Android, high accuracy with updates about every second.
+   * On Android, high accuracy with the most frequent updates.
    *
    * On iOS, `CLLocationUpdate.LiveConfiguration.automotiveNavigation`.
    */
@@ -26,7 +28,7 @@ export enum LocationProfile {
   /**
    * Navigation on foot, by bike, or on water.
    *
-   * On Android, high accuracy with updates about every 2 seconds.
+   * On Android, high accuracy with frequent updates.
    *
    * On iOS, `CLLocationUpdate.LiveConfiguration.otherNavigation`.
    */
@@ -34,7 +36,7 @@ export enum LocationProfile {
   /**
    * Workout tracking such as running or cycling.
    *
-   * On Android, high accuracy with updates about every 2 seconds.
+   * On Android, high accuracy with frequent updates.
    *
    * On iOS, `CLLocationUpdate.LiveConfiguration.fitness`.
    */
@@ -42,7 +44,7 @@ export enum LocationProfile {
   /**
    * Flying, such as in a plane or a glider.
    *
-   * On Android, high accuracy with updates about every second.
+   * On Android, high accuracy with the most frequent updates.
    *
    * On iOS, `CLLocationUpdate.LiveConfiguration.airborne`.
    */
@@ -50,8 +52,8 @@ export enum LocationProfile {
   /**
    * Coarse position at the lowest power use.
    *
-   * On Android, low-power priority with updates about every 60 seconds, which the provider can
-   * delay by up to 5 minutes and deliver in batches.
+   * On Android, low-power priority with the least frequent updates, which the provider can delay
+   * and deliver in batches. The Android provider only uses `NETWORK_PROVIDER` to perform the request.
    *
    * On iOS, kilometer accuracy with a 3 km distance filter, on every iOS version.
    */
@@ -250,7 +252,7 @@ export type PositionWatchStatus = {
   areUpdatesAllowed?: boolean;
   /**
    * Whether the app is in the foreground. On Android, the watcher holds the system request only
-   * while it is `true`.
+   * while it is `true` or when a location foreground service is started and promoted.
    */
   isInForeground: boolean;
 };
