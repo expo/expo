@@ -109,13 +109,14 @@ internal final class CoreModule: Module {
       throw WorkletUIRuntimeException()
     }
 
+    // The runtime is created and stored on the main thread: setting `_uiRuntime` prepares it there.
     // `DispatchQueue.main.sync` doesn't escape its closure and rethrows, so the closure can borrow the
     // holder and the error reaches the caller directly.
     if Thread.isMainThread {
       appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
     } else {
-      appContext._uiRuntime = try DispatchQueue.main.sync {
-        try factory(appContext, uiRuntimeHolder, runtime)
+      try DispatchQueue.main.sync {
+        appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
       }
     }
   }
