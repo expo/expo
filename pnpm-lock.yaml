@@ -403,7 +403,7 @@ importers:
         version: 4.3.6
     devDependencies:
       '@types/bun':
-        specifier: latest
+        specifier: ^1.4.2
         version: 1.4.2
       '@types/pngjs':
         specifier: ^6.0.5
