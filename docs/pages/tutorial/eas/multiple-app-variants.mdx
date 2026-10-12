@@ -27,13 +27,13 @@ Each variant requires a unique Android Application ID and iOS Bundle Identifier 
 {
   "ios": {
     /* @info */
-    "bundleIdentifier": "com.yourname.stickersmash"
+    "bundleIdentifier": "com.yourname.eastutorial"
     /* @end */
     /* @hide ... */ /* @end */
   },
   "android": {
     /* @info */
-    "package": "com.yourname.stickersmash"
+    "package": "com.yourname.eastutorial"
     /* @end */
     /* @hide ... */ /* @end */
   }
@@ -75,26 +75,26 @@ Then, add two functions that dynamically change the app name, Android Applicatio
 ```js app.config.js
 const getUniqueIdentifier = () => {
   if (IS_DEV) {
-    return 'com.yourname.stickersmash.dev';
+    return 'com.yourname.eastutorial.dev';
   }
 
   if (IS_PREVIEW) {
-    return 'com.yourname.stickersmash.preview';
+    return 'com.yourname.eastutorial.preview';
   }
 
-  return 'com.yourname.stickersmash';
+  return 'com.yourname.eastutorial';
 };
 
 const getAppName = () => {
   if (IS_DEV) {
-    return 'StickerSmash (Dev)';
+    return 'eas-tutorial (Dev)';
   }
 
   if (IS_PREVIEW) {
-    return 'StickerSmash (Preview)';
+    return 'eas-tutorial (Preview)';
   }
 
-  return 'StickerSmash: Emoji Stickers';
+  return 'eas-tutorial';
 };
 ```
 
@@ -195,11 +195,11 @@ Run the `npm run dev` command to start the development server:
 
 This script will evaluate **app.config.js** locally and load the environment variable for the `development` profile.
 
-Now, our development build will run on both Android and iOS, displaying the modified app name from **app.config.js**. For example, the below development build is running on an iOS Simulator. See that the app name is **StickerSmash (Dev)**:
+Now, our development build will run on both Android and iOS, displaying the modified app name from **app.config.js**. For example, the below development build is running on an iOS Simulator. See that the app name is **eas-tutorial (Dev)**:
 
 <ContentSpotlight
-  alt="Development variant running on Android device."
-  src="/static/images/tutorial/eas/ios-dev-variant.webp"
+  alt="Development variant running on iOS Simulator."
+  src="/static/images/tutorial/eas/multiple-app-variants-dev-variant.webp"
   className="max-w-[240px]"
 />
 
