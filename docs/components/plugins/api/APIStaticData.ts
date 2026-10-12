@@ -613,6 +613,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     ErrorBoundaryProps: '/versions/v58.0.0/sdk/router/#errorboundaryprops',
     EventEmitter: '/versions/v58.0.0/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/v58.0.0/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/v58.0.0/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/v58.0.0/sdk/router/#hreft',
     HrefObject: '/versions/v58.0.0/sdk/router/#hrefobject',
     NativeModule: '/versions/v58.0.0/sdk/expo/#nativemoduletype',
@@ -640,6 +642,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     TabsProps: '/versions/v58.0.0/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/v58.0.0/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/v58.0.0/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/v58.0.0/sdk/ui/swift-ui/usenativestate/#workletcallback',
   },
   latest: {
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
@@ -682,6 +685,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     ErrorBoundaryProps: '/versions/unversioned/sdk/router/#errorboundaryprops',
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/unversioned/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/unversioned/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/unversioned/sdk/router/#hreft',
     HrefObject: '/versions/unversioned/sdk/router/#hrefobject',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
@@ -710,6 +715,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     TabsProps: '/versions/unversioned/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/unversioned/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/unversioned/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/unversioned/sdk/ui/swift-ui/usenativestate/#workletcallback',
   },
 };
 
