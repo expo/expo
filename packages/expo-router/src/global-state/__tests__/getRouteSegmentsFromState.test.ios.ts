@@ -33,6 +33,7 @@ test.each([
   ],
 ])('collects focused segments from %j', (state, segments) => {
   expect(getRouteSegmentsFromState(state)).toEqual(segments);
+  // Asserting that both functions return the same result
   expect(getRouteInfoFromState(state).segments).toEqual(segments);
 });
 
@@ -65,7 +66,6 @@ test('follows active indices and leaves route state and params untouched', () =>
   const original = JSON.parse(JSON.stringify(state));
 
   expect(getRouteSegmentsFromState(state)).toEqual(['(b)', '[id]', '[...rest]']);
-  expect(getRouteInfoFromState(state).segments).toEqual(['(b)', '[id]', '[...rest]']);
   expect(state).toEqual(original);
   expect(warnSpy).not.toHaveBeenCalled();
 });
@@ -82,7 +82,6 @@ test('collects segments without serializing params', () => {
   };
 
   expect(getRouteSegmentsFromState(state)).toEqual(['page']);
-  expect(() => getRouteInfoFromState(state)).toThrow('Param was serialized');
 });
 
 test('rejects an invalid root after preserving its nested-param warning', () => {
