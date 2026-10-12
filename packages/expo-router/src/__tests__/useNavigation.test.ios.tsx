@@ -183,7 +183,6 @@ describe('state listener', () => {
   }
 
   function expectGetStateToMatchEvent(onState: jest.Mock) {
-    expect(onState).toHaveBeenCalled();
     for (const [fromGetState, fromEvent] of onState.mock.calls) {
       expect(fromGetState).toEqual(fromEvent);
     }
@@ -202,8 +201,8 @@ describe('state listener', () => {
     });
     await act(async () => router.push('/detail'));
 
-    expectGetStateToMatchEvent(onState);
     expect(onState).toHaveBeenLastCalledWith(['index', 'detail'], ['index', 'detail']);
+    expectGetStateToMatchEvent(onState);
   });
 
   it('getState() matches event.data.state after multiple navigations', async () => {
@@ -221,11 +220,11 @@ describe('state listener', () => {
     await act(async () => router.push('/sheet'));
     await act(async () => router.navigate('/detail'));
 
-    expectGetStateToMatchEvent(onState);
     expect(onState).toHaveBeenLastCalledWith(
       ['index', 'sheet', 'detail'],
       ['index', 'sheet', 'detail']
     );
+    expectGetStateToMatchEvent(onState);
   });
 
   it('getState() matches event.data.state in a nested navigator', async () => {
@@ -242,8 +241,8 @@ describe('state listener', () => {
     });
     await act(async () => router.push('/detail'));
 
-    expectGetStateToMatchEvent(onState);
     expect(onState).toHaveBeenLastCalledWith(['index', 'detail'], ['index', 'detail']);
+    expectGetStateToMatchEvent(onState);
   });
 
   it('getState() matches event.data.state with a non-index initialUrl', async () => {
@@ -263,7 +262,7 @@ describe('state listener', () => {
     );
     await act(async () => router.push('/detail'));
 
-    expectGetStateToMatchEvent(onState);
     expect(onState).toHaveBeenLastCalledWith(['sheet', 'detail'], ['sheet', 'detail']);
+    expectGetStateToMatchEvent(onState);
   });
 });
