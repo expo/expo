@@ -152,16 +152,4 @@ struct WidgetsViewRenderer {
     // Preserve the native view type for ExpoUI's slot and text inspection.
     WidgetsChildView(childView: view, stringIdentity: node["__expoWidgetIdentity"] as? String)
   }
-
-  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
-    return children.flatMap { child -> [[String: Any]] in
-      if let node = child as? [String: Any] {
-        return [node]
-      }
-      if let nested = child as? [Any] {
-        return flattenChildNodes(nested)
-      }
-      return []
-    }
-  }
 }
