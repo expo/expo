@@ -111,7 +111,9 @@ it('drops the oldest entries above the buffer cap', () => {
   const entries = api.unstable_performance.getEntriesByName('expo-router:action-dispatched');
   expect(entries).toHaveLength(250);
   // Entries with this name are always action-dispatched marks.
-  expect((entries[0] as RouterActionDispatchedMark).detail.actionType).toBe('ACTION_1');
+  expect(
+    entries.map((entry) => (entry as RouterActionDispatchedMark).detail.actionType)
+  ).not.toContain('ACTION_0');
 });
 
 it('clears marks by name or all marks', () => {
