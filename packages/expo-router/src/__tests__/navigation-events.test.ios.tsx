@@ -83,6 +83,34 @@ describe('AnalyticsListeners event timing', () => {
     expect(focusIdx).toBeGreaterThan(commitIdx);
   });
 
+  it('does not classify a first push into a nested stack as a preload', async () => {
+    const events: string[] = [];
+    for (const type of ['pagePreloaded', 'pageFocused'] as const) {
+      cleanups.push(
+        unstable_navigationEvents.addListener(type, (event) => {
+          if (event.pathname === '/examples/nested-stack/heavy') {
+            events.push(type);
+          }
+        })
+      );
+    }
+
+    await renderRouter(
+      {
+        _layout: () => <Stack />,
+        'examples/nested-stack/_layout': () => <Stack />,
+        'examples/nested-stack/index': () => <Text>Nested stack</Text>,
+        'examples/nested-stack/heavy': () => <Text testID="heavy-content">Heavy</Text>,
+      },
+      { initialUrl: '/examples/nested-stack' }
+    );
+
+    await act(() => router.push('/examples/nested-stack/heavy'));
+
+    expect(screen.getByTestId('heavy-content')).toBeVisible();
+    expect(events).toEqual(['pageFocused']);
+  });
+
   it('does not re-emit pageFocused on plain re-renders of the focused screen', async () => {
     const events = listenForPageFocused();
 
