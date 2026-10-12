@@ -60,7 +60,7 @@ To create an iOS production build using the default `production` profile, open y
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-> **info** **Only if this is your first iOS build for this project:** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use non-exempt encryption, EAS CLI adds `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` to the app config, which manages the compliance check when you release your app to TestFlight or the App Store. If your own app uses non-exempt encryption, select `N`. EAS CLI then leaves the app config unchanged, and you set the encryption status in App Store Connect.
+> **info** **Only if this is your first iOS build for this project:** EAS CLI asks **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use non-exempt encryption, EAS CLI adds `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` to the [app config](/workflow/configuration/). This value manages the compliance check when you release your app to TestFlight or the App Store. If your own app uses non-exempt encryption, press <kbd>N</kbd> and confirm the follow-up prompt. EAS CLI then leaves the app config unchanged. You set the encryption status in App Store Connect.
 
 The command queues the build. Notice on the EAS dashboard that the **Version** column shows the auto-incremented build number in parentheses, for example, `1.0.0 (2)`.
 

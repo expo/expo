@@ -81,11 +81,11 @@ This command adds the [`updates`](/versions/latest/config/app/#updates) and [`ru
 }
 ```
 
-> **info** Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
+> **info** Our `ios-simulator` profile extends the `development` profile, so a separate `channel` for it doesn't make sense. We can safely remove `ios-simulator.channel` from **eas.json**.
 
 <Collapsible summary="What if app.config.js doesn't read from app.json?">
 
-If your **app.config.js** doesn't use the `config` values from **app.json**, EAS CLI can't add these properties for you. Instead, it prints the `updates` and `runtimeVersion` values to add to **app.config.js** manually. After you add them, run `eas update:configure` again to finish the setup.
+If your **app.config.js** doesn't use the `config` values from **app.json**, EAS CLI can't add the `updates` and `runtimeVersion` properties for you. Instead, it prints their values to add to **app.config.js** manually. After you add them, run `eas update:configure` again to finish the setup.
 
 </Collapsible>
 
@@ -135,20 +135,20 @@ Instead of creating a new build to share this change with our team for testing, 
 
 In the command above, we used the `development` channel. Every update is associated with a [channel name](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
 
-So, by using the channel `development` in our build profile and then publishing an update, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update channel it automatically gets mapped to a branch with the same name.
+So, we use the `development` channel in our build profile and publish an update to it. This tells EAS to deliver the update to builds with the `development` channel. When we make an EAS Update channel, EAS automatically maps it to a branch with the same name.
 
-After the update is published, the CLI will prompt us with information about it.
+After publishing the update, the CLI prints information about it.
 
 <ContentSpotlight
-  alt="EAS Update published successfully with CLI prompt"
+  alt="EAS Update published successfully with CLI output"
   src="/static/images/tutorial/eas/team-development-update-cli.webp"
 />
 
-Click the **EAS Dashboard** link to see the Update on the EAS dashboard under **Over-the-air updates** > **Update groups**:
+Click the **EAS Dashboard** link to see the update under **Over-the-air updates** > **Update groups**:
 
 <ContentSpotlight
   alt="EAS dashboard shows the latest published update for the development build"
-  src="/static/images/tutorial/eas/update-02.png"
+  src="/static/images/tutorial/eas/team-development-update-group.webp"
   className="max-w-[800px]"
 />
 
@@ -162,8 +162,7 @@ To preview the live update in a development build:
 
 - Log in to your Expo account within the development build.
 - Open the **Updates** tab.
-- Look for the update with **Branch: development** listed under **Updates**.
-- Tap on **Open** to access the update.
+- On Android, tap the **Branch: development** card, and then tap the update. On iOS, tap **Open** next to the update with **Branch: development**.
 
 </Step>
 
