@@ -137,16 +137,16 @@ Instead of creating a new build to share this change with our team for testing, 
 
 In the command above, we used the `development` channel. Every update is associated with a [channel name](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
 
-So, by using the channel `development` in our build profile and then publishing an, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update channel it automatically gets mapped to a branch with the same name.
+So, by using the channel `development` in our build profile and then publishing an update, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update channel it automatically gets mapped to a branch with the same name.
 
 After the update is published, the CLI will prompt us with information about it.
 
 <ContentSpotlight
   alt="EAS Update published successfully with CLI prompt"
-  src="/static/images/tutorial/eas/update-01.png"
+  src="/static/images/tutorial/eas/team-development-update-cli.webp"
 />
 
-Click on the **Website link** to see the Update on the EAS dashboard under **Over-the-air updates** > **Update groups**:
+Click the **EAS Dashboard** link to see the Update on the EAS dashboard under **Over-the-air updates** > **Update groups**:
 
 <ContentSpotlight
   alt="EAS dashboard shows the latest published update for the development build"
@@ -163,8 +163,8 @@ Click on the **Website link** to see the Update on the EAS dashboard under **Ove
 To preview the live update in a development build:
 
 - Log in to your Expo account within the development build.
-- Open the **Extensions** tab.
-- Look for **Branch: development** listed under **EAS Update**.
+- Open the **Updates** tab.
+- Look for the update with **Branch: development** listed under **Updates**.
 - Tap on **Open** to access the update.
 
 </Step>

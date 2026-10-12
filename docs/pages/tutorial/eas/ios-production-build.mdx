@@ -48,7 +48,7 @@ Run the `eas credentials` command in the terminal and then answer the following 
 - **What do you want to do?** Select **Build Credentials** and choose **All: Set up all the required credentials to build your project**.
 - Now, it will prompt whether we want to re-use the previous Distribution Certificate. Press <kbd>Y</kbd>.
 - **Generate a new Apple Provisioning Profile?** Press <kbd>Y</kbd>. This will be the provisioning profile for the production app.
-- Once the profiles are created, press <kbd>Ctrl</kbd> + <kbd>C</kbd> to exit the EAS CLI.
+- After EAS CLI sets up the credentials, press <kbd>Ctrl</kbd> + <kbd>C</kbd> to exit the EAS CLI.
 
 </Step>
 
@@ -60,7 +60,7 @@ To create an iOS production build using the default `production` profile, open y
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-> **info** **Only if you have skipped the [iOS Simulator](/tutorial/eas/ios-development-build-for-simulators/) and [iOS device](/tutorial/eas/ios-development-build-for-devices/) chapters:** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
+> **info** **Only if this is your first iOS build for this project:** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
 
 The command queues the build. Notice on the EAS dashboard that the **Version** column shows the auto-incremented build number in parentheses, for example, `1.0.0 (2)`.
 
@@ -163,7 +163,7 @@ For future releases, we can streamline the process by combining build creation a
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 
-> **info** This command will automatically upload your build to TestFlight for internal testing, but it will not automatically submit your app for App Store review. You'll still need to manually promote the build from TestFlight to the App Store when you're ready for public release. For more information, see [Default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores).
+> **info** This command automatically uploads your build to TestFlight for internal testing, but it does not submit your app for App Store review. You still need to manually promote the build from TestFlight to the App Store when you're ready for public release. For more information, see [Default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores).
 
 </Step>
 
