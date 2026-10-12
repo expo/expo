@@ -45,19 +45,11 @@ To initialize our project and send an update, we need to use the [`expo-updates`
 
 ## Configure EAS Update
 
-To initialize our project with EAS Update, we need to follow these steps:
-
-- Since we are using dynamic **app.config.js** for our app's configuration, adding [`updates`](/versions/latest/config/app/#updates) and [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) properties are required to make our project compatible with EAS Update. Run the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**:
+To initialize our project with EAS Update, run the following command:
 
 <Terminal cmd={['$ eas update:configure']} />
 
-<Collapsible summary="What about non-dynamic (app.json) projects?">
-
-If a project doesn't use dynamic app config (uses **app.json** instead of **app.config.js**), the above command will configure our app to be compatible with EAS Update and add the right properties to **app.json** and **eas.json**.
-
-</Collapsible>
-
-- Re-run `eas update:configure` to continue with the setup process. A [`channel`](/eas/json/#channel) should be added to every build profile in **eas.json**:
+This command adds the [`updates`](/versions/latest/config/app/#updates) and [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) properties to **app.json**, which our **app.config.js** reads through `config`. It also adds a [`channel`](/eas/json/#channel) to every build profile in **eas.json**:
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -90,6 +82,12 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 ```
 
 > **info** Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
+
+<Collapsible summary="What if app.config.js doesn't read from app.json?">
+
+If your **app.config.js** doesn't use the `config` values from **app.json**, EAS CLI can't add these properties for you. Instead, it prints the `updates` and `runtimeVersion` values to add to **app.config.js** manually. After you add them, run `eas update:configure` again to finish the setup.
+
+</Collapsible>
 
 <Collapsible summary="What is a channel?">
 
