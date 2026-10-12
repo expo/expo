@@ -5,7 +5,7 @@ import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { getRouteSegmentsFromState } from '../global-state/getRouteInfoFromState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { withLoadedLayouts } from '../layoutAnchor';
@@ -98,9 +98,8 @@ export function useLinking(
 
     const path = extractExpoPathFromURL(prefixes, url);
     if (path !== undefined) {
-      // TODO(@ubax): check if this is performant
       // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
-      const segments = getRouteInfoFromState(ref.current?.getRootState()).segments;
+      const segments = getRouteSegmentsFromState(ref.current?.getRootState());
       return getStateFromPath(path, config, segments);
     }
     return undefined;

@@ -10,6 +10,7 @@ import {
 } from '../browserHistory';
 import type { BrowserHistory, ReducibleIntent } from '../browserHistory.types';
 import { completeParsedState } from '../createSeededNavigationState';
+import * as routeInfo from '../getRouteInfoFromState';
 import { getRouteInfoFromState } from '../getRouteInfoFromState';
 
 jest.mock('../getPathForState', () => ({
@@ -23,11 +24,19 @@ jest.mock('../getRouteInfoFromState', () => {
   return {
     ...actual,
     // The simple test states below have no `__root` slot.
-    getRouteInfoFromState: (state: NavigationState) =>
+    getRouteSegmentsFromState: (state: NavigationState) =>
       state.routes[0]!.name === '__root'
-        ? actual.getRouteInfoFromState(state)
-        : { segments: [state.routes[state.index]!.name] },
+        ? actual.getRouteSegmentsFromState(state)
+        : [state.routes[state.index]!.name],
   };
+});
+
+let routeInfoSpy: jest.SpyInstance;
+beforeEach(() => {
+  routeInfoSpy = jest.spyOn(routeInfo, 'getRouteInfoFromState');
+});
+afterEach(() => {
+  routeInfoSpy.mockRestore();
 });
 
 const config = { browserHistoryIdPrefix: 'p' };
@@ -385,6 +394,7 @@ describe('restore', () => {
       entrySeq: 1,
     };
 
+    routeInfoSpy.mockClear();
     const restored = restoreNavigationFromBrowser(
       current,
       { state: currentState },
@@ -396,6 +406,7 @@ describe('restore', () => {
       reduceResets
     );
 
+    expect(routeInfoSpy).not.toHaveBeenCalled();
     expect(getRouteInfoFromState(restored.result.state).segments).toEqual(['(b)', 'shared']);
   });
 

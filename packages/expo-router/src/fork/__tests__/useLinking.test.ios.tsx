@@ -5,7 +5,10 @@ import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import { completeParsedState } from '../../global-state/createSeededNavigationState';
-import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
+import {
+  getRouteInfoFromState,
+  getRouteSegmentsFromState,
+} from '../../global-state/getRouteInfoFromState';
 import { getStateFromPath } from '../../link/linking';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
@@ -78,7 +81,7 @@ test('keeps the current route group when parsing an incoming deep link', async (
     getStateFromPath('/other', config, ['(b)', 'other']),
     ROOT_CHAIN
   );
-  expect(getRouteInfoFromState(currentState).segments).toEqual(['(b)', 'other']);
+  expect(getRouteSegmentsFromState(currentState)).toEqual(['(b)', 'other']);
   const ref = createNavigationContainerRef<ParamListBase>();
   ref.current = {
     getRootState: () => currentState,
@@ -103,9 +106,10 @@ test('keeps the current route group when parsing an incoming deep link', async (
   await act(() => listener?.('example://shared'));
 
   expect(parsePath).toHaveBeenCalledWith('shared', config, ['(b)', 'other']);
-  expect(
-    getRouteInfoFromState(getStateFromPath('/shared', config, ['(b)', 'other'])).segments
-  ).toEqual(['(b)', 'shared']);
+  expect(getRouteSegmentsFromState(getStateFromPath('/shared', config, ['(b)', 'other']))).toEqual([
+    '(b)',
+    'shared',
+  ]);
 });
 
 test('resolves a completed state from an async initial URL', async () => {
