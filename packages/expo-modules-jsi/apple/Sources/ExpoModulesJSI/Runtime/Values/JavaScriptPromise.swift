@@ -40,11 +40,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     /// JavaScript and settled from Swift never needs it, and the callbacks are two host functions plus
     /// a `then` call per promise. Its presence is what marks the callbacks as installed.
     var deferredPromise: DeferredPromise?
+    /// The value the promise was fulfilled with, shared with `deferredPromise`, which keeps it for
+    /// later `await()` calls. Held here too, so the teardown sweep can release it on the JavaScript
+    /// thread before the runtime goes away; the actor's copy is the same reference.
+    var settledValue: JavaScriptValue.Ref?
 
     func allowRelease() {
       object.release()
       resolveFunction.release()
       rejectFunction.release()
+      settledValue?.release()
     }
   }
 
@@ -262,10 +267,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
     // inline when the caller is already on the JavaScript thread.
     try await runtime.execute { [longLivedState, deferredPromise] in
-      let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
+      let onFulfilled = runtime.createFunction { [weak longLivedState, weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined() }
         // Moved into a `JavaScriptRef` so the task can carry the value off the JavaScript thread.
         let value = arguments[0].ref()
+        longLivedState?.settledValue = value
         Task.immediate_polyfill {
           await deferredPromise.resolve(value)
         }

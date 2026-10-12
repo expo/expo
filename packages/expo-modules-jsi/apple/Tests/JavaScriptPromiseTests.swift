@@ -655,4 +655,37 @@ struct JavaScriptPromiseTests {
     // #47454; reaching the end of the test without a crash is the assertion.
     promise = nil
   }
+
+  @Test
+  func `the teardown sweep releases the value of an awaited promise`() async throws {
+    // The receiver keeps the settled value so a later `await()` can read it again. It must not keep
+    // it past the runtime's teardown sweep: a value destroyed after its runtime is a use-after-free.
+    // The runtime work stays on the scheduler's thread, which owns the runtime.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      let weakObject = object.createWeak()
+      promise.resolve(object.asValue())
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakObject))
+    }
+    // Moved into a ref, so the awaited value is released on the runtime's thread below.
+    let awaited = try await promise.value.await().ref()
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      awaited.release()
+      runtime.longLivedObjects.clear()
+      let isCollected = {
+        if let _ = weakObject.value.lock() {
+          return false
+        }
+        return true
+      }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
+  }
 }
