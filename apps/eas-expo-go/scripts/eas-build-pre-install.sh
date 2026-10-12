@@ -19,6 +19,10 @@ if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sdkmanager "cmake;3.30.5"
 elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   df -h /
+  du -sh "$HOME/Library/Developer/CoreSimulator/Devices" || true
+  xcrun simctl shutdown all || true
+  xcrun simctl delete all || true
+  df -h /
   HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake
 fi
 
