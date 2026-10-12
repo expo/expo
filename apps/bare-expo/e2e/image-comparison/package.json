@@ -22,7 +22,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.2",
+    "@types/bun": "1.4.2",
     "@types/pngjs": "^6.0.5"
   }
 }
