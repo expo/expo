@@ -1,5 +1,5 @@
 ---
-'expo-router': patch
+"expo-router": patch
 ---
 
-Reduce route processing overhead during navigation and deep linking.
+Reduce route info processing overhead
