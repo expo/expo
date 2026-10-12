@@ -32,9 +32,9 @@ afterEach(() => jest.restoreAllMocks());
 
 test.each(['18', '26'])(
   'does not wrap iOS %s form sheet content, even with explicit edges',
-  (version) => {
+  async (version) => {
     jest.spyOn(Platform, 'Version', 'get').mockReturnValue(version);
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen
@@ -47,7 +47,7 @@ test.each(['18', '26'])(
       index: () => <View />,
       sheet: () => <ScrollView testID="sheet" />,
     });
-    act(() => router.push('/sheet'));
+    await act(() => router.push('/sheet'));
     expect(screen.getByTestId('sheet')).toBeVisible();
     // The underlying index screen keeps its wrapper; the form sheet must not add another.
     expect(screen.getAllByTestId('leaf-safe-area', { includeHiddenElements: true })).toHaveLength(
@@ -70,9 +70,9 @@ test.each([
   ['26', {}, false, false],
 ] as const)(
   'iOS %s header=%j with top=%s avoids duplicate top padding',
-  (version, options, top, expectedTop) => {
+  async (version, options, top, expectedTop) => {
     jest.spyOn(Platform, 'Version', 'get').mockReturnValue(version);
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen name="index" options={options} safeAreaEdges={{ vertical: top }} />
@@ -99,9 +99,9 @@ test.each([
   }
 );
 
-test('iOS 26 opaque headers also consume an individually enabled top edge', () => {
+test('iOS 26 opaque headers also consume an individually enabled top edge', async () => {
   jest.spyOn(Platform, 'Version', 'get').mockReturnValue('26');
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" safeAreaEdges={{ top: true }} />
@@ -112,9 +112,9 @@ test('iOS 26 opaque headers also consume an individually enabled top edge', () =
   expect(screen.getByTestId('leaf-safe-area').props.edges.top).toBe(false);
 });
 
-test('a hidden nested header does not inherit the parent header top suppression', () => {
+test('a hidden nested header does not inherit the parent header top suppression', async () => {
   jest.spyOn(Platform, 'Version', 'get').mockReturnValue('26');
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Stack>
@@ -129,9 +129,9 @@ test('a hidden nested header does not inherit the parent header top suppression'
   expect(screen.getByTestId('leaf-safe-area').props.edges.top).toBe(true);
 });
 
-test('iOS 26 NativeTabs retain explicitly enabled top padding', () => {
+test('iOS 26 NativeTabs retain explicitly enabled top padding', async () => {
   jest.spyOn(Platform, 'Version', 'get').mockReturnValue('26');
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" safeAreaEdges={{ top: true }} />

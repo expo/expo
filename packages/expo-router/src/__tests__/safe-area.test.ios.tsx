@@ -38,8 +38,8 @@ jest.mock('react-native-screens', () => {
 const defaults = { left: true, right: true, top: false, bottom: false };
 const disabled = { left: false, right: false, top: false, bottom: false };
 
-test('wraps only native stack leaves with horizontal safe area by default', () => {
-  renderRouter(
+test('wraps only native stack leaves with horizontal safe area by default', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       'nested/_layout': () => <Stack />,
@@ -56,8 +56,8 @@ test('wraps only native stack leaves with horizontal safe area by default', () =
   expect(screen.getByTestId('content')).toBeVisible();
 });
 
-test.each(['slot', 'custom', 'no-layout'])('does not wrap %s routes', (layout) => {
-  renderRouter({
+test.each(['slot', 'custom', 'no-layout'])('does not wrap %s routes', async (layout) => {
+  await renderRouter({
     ...(layout === 'slot'
       ? { _layout: () => <Slot /> }
       : layout === 'custom'
@@ -70,8 +70,8 @@ test.each(['slot', 'custom', 'no-layout'])('does not wrap %s routes', (layout) =
 
 test.each(['object', 'function'])(
   'converts direct layout props with %s options and resolves individual overrides',
-  (form) => {
-    renderRouter({
+  async (form) => {
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen
@@ -97,9 +97,9 @@ test.each(['object', 'function'])(
   }
 );
 
-test('page-local updates change edges without remounting the route', () => {
+test('page-local updates change edges without remounting the route', async () => {
   const mount = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: function Page() {
       const [enabled, setEnabled] = useState(true);
@@ -115,13 +115,13 @@ test('page-local updates change edges without remounting the route', () => {
     },
   });
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(defaults);
-  act(() => fireEvent.press(screen.getByTestId('toggle')));
+  await act(() => fireEvent.press(screen.getByTestId('toggle')));
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(disabled);
   expect(mount).toHaveBeenCalledTimes(1);
 });
 
-test('nested stack axes override inherited resolved individual edges', () => {
-  renderRouter(
+test('nested stack axes override inherited resolved individual edges', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Stack>
@@ -145,9 +145,9 @@ test('nested stack axes override inherited resolved individual edges', () => {
   });
 });
 
-test('parent edge updates cross protected screens and nested static containers without remounting', () => {
+test('parent edge updates cross protected screens and nested static containers without remounting', async () => {
   const mount = jest.fn();
-  renderRouter(
+  await renderRouter(
     {
       _layout: function Layout() {
         const [enabled, setEnabled] = useState(true);
@@ -173,15 +173,15 @@ test('parent edge updates cross protected screens and nested static containers w
     { initialUrl: '/nested' }
   );
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(defaults);
-  act(() => fireEvent.press(screen.getByTestId('parent-toggle')));
+  await act(() => fireEvent.press(screen.getByTestId('parent-toggle')));
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(disabled);
   expect(mount).toHaveBeenCalledTimes(1);
 });
 
 test.each([undefined, true, false])(
   'tab disableAutomaticContentInsets=%s is inherited by nested stack leaves',
-  (disable) => {
-    renderRouter(
+  async (disable) => {
+    await renderRouter(
       {
         _layout: () => (
           <NativeTabs>
@@ -198,8 +198,8 @@ test.each([undefined, true, false])(
   }
 );
 
-test('explicit tab edges enable padding after disabling automatic insets', () => {
-  renderRouter(
+test('explicit tab edges enable padding after disabling automatic insets', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <NativeTabs>
@@ -227,8 +227,8 @@ test('explicit tab edges enable padding after disabling automatic insets', () =>
   });
 });
 
-test('a child stack axis explicitly enables padding under a disabled tab', () => {
-  renderRouter(
+test('a child stack axis explicitly enables padding under a disabled tab', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <NativeTabs>
@@ -247,8 +247,8 @@ test('a child stack axis explicitly enables padding under a disabled tab', () =>
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(defaults);
 });
 
-test('dynamic tab edges update while an omitted prop preserves layout edges', () => {
-  renderRouter({
+test('dynamic tab edges update while an omitted prop preserves layout edges', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" safeAreaEdges={{ horizontal: false }} />
@@ -265,6 +265,6 @@ test('dynamic tab edges update while an omitted prop preserves layout edges', ()
     },
   });
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(disabled);
-  act(() => fireEvent.press(screen.getByTestId('toggle')));
+  await act(() => fireEvent.press(screen.getByTestId('toggle')));
   expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual(defaults);
 });

@@ -9,8 +9,8 @@ import { act, renderRouter, screen } from '../testing-library';
 
 test.each([undefined, false, true])(
   'preserves the Android bottom tab wrapper with disableAutomaticContentInsets=%s',
-  (disable) => {
-    renderRouter({
+  async (disable) => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" disableAutomaticContentInsets={disable} />
@@ -32,8 +32,8 @@ test.each([undefined, false, true])(
   }
 );
 
-test('Android form sheets retain the automatic leaf wrapper', () => {
-  renderRouter({
+test('Android form sheets retain the automatic leaf wrapper', async () => {
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="sheet" options={{ presentation: 'formSheet' }} />
@@ -42,7 +42,7 @@ test('Android form sheets retain the automatic leaf wrapper', () => {
     index: () => <View />,
     sheet: () => <ScrollView testID="sheet" />,
   });
-  act(() => router.push('/sheet'));
+  await act(() => router.push('/sheet'));
   expect(screen.getByTestId('sheet')).toBeVisible();
   expect(screen.getAllByTestId('leaf-safe-area', { includeHiddenElements: true })).toHaveLength(2);
 });
