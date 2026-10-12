@@ -19,9 +19,6 @@ struct LocationUpdateDiagnostics {
     if authorizationDenied {
       return LocationAuthorizationDenied()
     }
-    if serviceSessionRequired {
-      return LocationServiceSessionRequired()
-    }
     return nil
   }
 }
