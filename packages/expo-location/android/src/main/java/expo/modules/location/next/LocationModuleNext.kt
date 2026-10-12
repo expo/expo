@@ -2,26 +2,48 @@ package expo.modules.location.next
 
 import android.content.Context
 import android.location.LocationManager
+import android.os.Build
+import android.util.Log
 import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
 import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.location.next.locationForegroundService.BackgroundSessionOptions
+import expo.modules.location.next.locationForegroundService.BackgroundSessionState
+import expo.modules.location.next.locationForegroundService.LocationForegroundService
+import expo.modules.location.next.locationForegroundService.ServicePromotionFailedException
+import expo.modules.location.next.locationForegroundService.ServicePromotionResult
+import expo.modules.location.next.locationForegroundService.ServicePromotionTimedOutException
+import expo.modules.location.next.locationForegroundService.SessionState
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
 import expo.modules.location.next.locationProviders.EnableLocationServicesResult
 import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import expo.modules.location.next.locationProviders.PositionUpdatesSession
 import java.lang.ref.WeakReference
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+
+private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
+  "Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
+    "permission. The service runs and location updates are not throttled, but its notification " +
+    "does not appear in the notification drawer."
 
 class LocationModuleNext : Module() {
   private val context: Context
@@ -45,7 +67,6 @@ class LocationModuleNext : Module() {
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     SharedRef(AndroidLocationProvider(context))
   }
-
   lateinit var currentLocationProvider: LocationProvider
 
   lateinit var locationManager: LocationManager
@@ -53,8 +74,22 @@ class LocationModuleNext : Module() {
   @Volatile
   private var locationServicesPrompt: CompletableDeferred<Boolean>? = null
 
+  @Volatile
+  var isForegrounded = false
+
+  private fun shouldWatchersRun() = isForegrounded || LocationForegroundService.isBackgroundLocationUnthrottled()
+
+  private fun updateWatchSessions() = synchronized(watchSessions) {
+    watchSessions.removeIf { it.get() == null }
+    val areUpdatesAllowed = shouldWatchersRun()
+    for (session in watchSessions) {
+      session.get()?.setUpdatesAllowed(areUpdatesAllowed)
+    }
+  }
+
   fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: PositionUpdatesSession): PositionWatchHandle = synchronized(watchSessions) {
-    val pausableSession = PausableWatchSession(initialParameters, session)
+    val areUpdatesAllowed = shouldWatchersRun()
+    val pausableSession = PausableWatchSession(initialParameters, session, areUpdatesAllowed)
     watchSessions.add(WeakReference(pausableSession))
     return@synchronized PositionWatchHandle(pausableSession)
   }
@@ -86,6 +121,15 @@ class LocationModuleNext : Module() {
 
     AsyncFunction("getBackgroundPermissions") Coroutine { ->
       return@Coroutine permissionsManager.getLocationPermissions(background = true)
+    }
+
+    AsyncFunction("requestNotificationPermissions") Coroutine { ->
+      permissionsManager.requestNotificationPermissions()
+      return@Coroutine permissionsManager.getNotificationPermissions(context)
+    }
+
+    AsyncFunction("getNotificationPermissions") Coroutine { ->
+      return@Coroutine permissionsManager.getNotificationPermissions(context)
     }
 
     // Location providers
@@ -161,6 +205,51 @@ class LocationModuleNext : Module() {
       }
     }
 
+    Class("BackgroundSession") {
+      StaticAsyncFunction("ensureStarted") Coroutine { backgroundSessionOptions: BackgroundSessionOptions? ->
+        if (!LocationForegroundService.isForegroundServiceRequired) {
+          return@Coroutine
+        }
+        permissionsManager.ensureForegroundServicePermissions()
+        if (!permissionsManager.hasNotificationPermission()) {
+          Log.w("ExpoLocation", MISSING_NOTIFICATION_PERMISSION_WARNING)
+        }
+
+        val requested = backgroundSessionOptions
+        val options = if (requested != null) {
+          BackgroundSessionOptions.persist(context, requested)
+          requested
+        } else {
+          BackgroundSessionOptions.readPersisted(context)
+            ?: BackgroundSessionOptions().also { BackgroundSessionOptions.persist(context, it) }
+        }
+
+        val sessionState = LocationForegroundService.startOrUpdate(context, options, updateOnly = !isForegrounded)
+        if (sessionState !is SessionState.Starting) {
+          return@Coroutine
+        }
+
+        when (val result = withTimeoutOrNull(4.seconds) { sessionState.promotion.await() }) {
+          is ServicePromotionResult.Failed ->
+            throw result.cause as? CodedException ?: ServicePromotionFailedException(result.cause)
+          ServicePromotionResult.Promoted -> {}
+          null -> throw ServicePromotionTimedOutException()
+        }
+      }
+
+      StaticAsyncFunction("stop") Coroutine { ->
+        val currentState = LocationForegroundService.state
+        if (currentState is SessionState.Starting) {
+          withTimeoutOrNull(4.seconds) { currentState.promotion.await() }
+        }
+        LocationForegroundService.stop(context)
+      }
+
+      StaticFunction("status") {
+        LocationForegroundService.status()
+      }
+    }
+
     Class(PositionWatchHandle::class) {
       Constructor {
         throw PositionWatchHandleCreationException()
@@ -194,11 +283,12 @@ class LocationModuleNext : Module() {
       }
 
       Function("status") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.status()
+        locationWatchHandle.session.status(isForegrounded)
       }
     }
 
     OnDestroy {
+      pollForegroundServiceJob?.cancel()
       synchronized(watchSessions) {
         for (session in watchSessions) {
           session.get()?.release()
@@ -207,19 +297,57 @@ class LocationModuleNext : Module() {
     }
 
     OnActivityEntersForeground {
-      synchronized(watchSessions) {
-        for (session in watchSessions) {
-          session.get()?.onLifecycleChange(true)
+      isForegrounded = true
+      updateWatchSessions()
+
+      appContext.backgroundCoroutineScope.launch {
+        try {
+          BackgroundSessionOptions.readPersisted(context)?.let {
+            permissionsManager.ensureForegroundServicePermissions()
+            val sessionState = LocationForegroundService.startOrUpdate(context, it, updateOnly = !isForegrounded)
+            if (sessionState is SessionState.Starting) {
+              sessionState.promotion.await()
+              updateWatchSessions()
+            }
+          }
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          Log.w("ExpoLocation", "Could not restart the background session after entering the foreground", e)
         }
       }
     }
 
     OnActivityEntersBackground {
-      synchronized(watchSessions) {
-        watchSessions.removeIf { it.get() == null }
-        for (session in watchSessions) {
-          session.get()?.onLifecycleChange(false)
+      isForegrounded = false
+      updateWatchSessions()
+      startPollingForegroundService()
+    }
+  }
+
+  private var pollForegroundServiceJob: Job? = null
+
+  // Poll the foreground service so that if it promotes or dies we can update the watch sessions.
+  private fun startPollingForegroundService() {
+    if (pollForegroundServiceJob != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+    pollForegroundServiceJob = appContext.mainQueue.launch {
+      var previousAreUpdatesAllowed: Boolean? = null
+      while (isActive) {
+        val areUpdatesAllowed = shouldWatchersRun()
+
+        if (areUpdatesAllowed != previousAreUpdatesAllowed) {
+          updateWatchSessions()
         }
+
+        if (LocationForegroundService.status().state == BackgroundSessionState.NOT_RUNNING || isForegrounded) {
+          pollForegroundServiceJob = null
+          return@launch
+        }
+
+        previousAreUpdatesAllowed = areUpdatesAllowed
+        delay(1.seconds)
       }
     }
   }

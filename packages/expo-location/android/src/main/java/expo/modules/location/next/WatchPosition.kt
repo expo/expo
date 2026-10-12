@@ -36,12 +36,14 @@ class PositionWatchStatus(
   @Field val isHandleAlive: Boolean = false,
   @Field val isStarted: Boolean = false,
   @Field val isPaused: Boolean = false,
+  @Field val areUpdatesAllowed: Boolean = true,
   @Field val isInForeground: Boolean = true
 ) : Record
 
 class PausableWatchSession(
   initialParameters: WatchPositionParameters,
-  private val session: PositionUpdatesSession
+  private val session: PositionUpdatesSession,
+  private var areUpdatesAllowed: Boolean
 ) {
 
   private var activeParameters: WatchPositionParameters = initialParameters
@@ -50,13 +52,12 @@ class PausableWatchSession(
   var isPaused: Boolean = false
   var isStarted: Boolean = false
   var isReleased: Boolean = false
-  var isInForeground: Boolean = true
 
   private var onEvent: ((PositionChangedEvent) -> Unit)? = null
 
   @Synchronized
   private fun handleLocationUpdatesRequest(): Throwable? {
-    val shouldBeActive = !isPaused && isStarted && !isReleased && isInForeground
+    val shouldBeActive = !isPaused && isStarted && !isReleased && areUpdatesAllowed
     val shouldRequestUpdates = !session.isSubscribed() && shouldBeActive
     val onEvent = this.onEvent
     if (shouldRequestUpdates && onEvent != null) {
@@ -100,8 +101,8 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun onLifecycleChange(isInForeground: Boolean) {
-    this.isInForeground = isInForeground
+  fun setUpdatesAllowed(allowed: Boolean) {
+    this.areUpdatesAllowed = allowed
     emitEventOnFailure(handleLocationUpdatesRequest())
   }
 
@@ -138,13 +139,14 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun status(): PositionWatchStatus {
+  fun status(isInForeground: Boolean): PositionWatchStatus {
     return PositionWatchStatus(
       isSubscribed = session.isSubscribed(),
       canDeliverUpdates = session.canDeliverUpdates(),
       isHandleAlive = !isReleased,
       isStarted = isStarted,
       isPaused = isPaused,
+      areUpdatesAllowed = areUpdatesAllowed,
       isInForeground = isInForeground
     )
   }
