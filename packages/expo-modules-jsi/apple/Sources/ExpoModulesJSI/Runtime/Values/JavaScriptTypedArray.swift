@@ -31,15 +31,41 @@ public struct JavaScriptTypedArray: ~Copyable {
   }
 
   /// Creates a typed array from an existing JSI object, which belongs to `runtime`.
+  @JavaScriptActor
   init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     let jsiRuntime = runtime.pointee
+    let propNames = runtime.cached(PropNames.key) { PropNames(jsiRuntime) }
     self.runtimeHandle = runtime.handle
-    self.kind = Kind(rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object).rawValue))!
-    self.byteLength = Int(object.getProperty(jsiRuntime, "byteLength").getNumber())
-    self.byteOffset = Int(object.getProperty(jsiRuntime, "byteOffset").getNumber())
-    self.length = Int(object.getProperty(jsiRuntime, "length").getNumber())
-    self.arrayBuffer = expo.getTypedArrayBuffer(jsiRuntime, object)
+    self.kind = Kind(
+      rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
+    )!
+    self.byteLength = Int(object.getProperty(jsiRuntime, propNames.byteLength).getNumber())
+    self.byteOffset = Int(object.getProperty(jsiRuntime, propNames.byteOffset).getNumber())
+    self.length = Int(object.getProperty(jsiRuntime, propNames.length).getNumber())
+    self.arrayBuffer = expo.getTypedArrayBuffer(jsiRuntime, object, propNames.buffer)
     self.pointee = object
+  }
+
+  /// The property names the initializer reads. Creating a property name costs about as much as
+  /// reading the property, so they are created once per runtime and kept in its cache.
+  internal final class PropNames {
+    static let key = JavaScriptRuntime.Cache.Key<PropNames>()
+
+    let constructor: facebook.jsi.PropNameID
+    let name: facebook.jsi.PropNameID
+    let byteLength: facebook.jsi.PropNameID
+    let byteOffset: facebook.jsi.PropNameID
+    let length: facebook.jsi.PropNameID
+    let buffer: facebook.jsi.PropNameID
+
+    init(_ jsiRuntime: facebook.jsi.IRuntime) {
+      constructor = "constructor".toJSIPropNameID(in: jsiRuntime)
+      name = "name".toJSIPropNameID(in: jsiRuntime)
+      byteLength = "byteLength".toJSIPropNameID(in: jsiRuntime)
+      byteOffset = "byteOffset".toJSIPropNameID(in: jsiRuntime)
+      length = "length".toJSIPropNameID(in: jsiRuntime)
+      buffer = "buffer".toJSIPropNameID(in: jsiRuntime)
+    }
   }
 
   /// Invokes the closure with a raw buffer pointer covering the typed array's bytes.
