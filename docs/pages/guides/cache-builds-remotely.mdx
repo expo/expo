@@ -79,7 +79,7 @@ type BuildCacheProviderPlugin<T = any> = {
   ) => Promise<string | null>;
 
   /**
-   * (Optional) Set to also resolve builds for physical iOS devices, not just iOS Simulators.
+   * (Optional) Set to `true` to also resolve builds for physical iOS devices, not just iOS Simulators.
    */
   supportsIosPhysicalDevices?: boolean;
 };
@@ -238,7 +238,9 @@ const plugin: BuildCacheProviderPlugin = {
 export default plugin;
 ```
 
-When the target is a physical device, `resolveBuildCache` receives the device's UDID in `device.id`. The provider must only return a build that is signed with a provisioning profile that includes this device, and otherwise return `null` so that the project is built locally. Expo CLI installs the returned **.app** or **.ipa** the same way as `npx expo run:ios --binary`.
+When the target is a physical device, `resolveBuildCache` receives the unique device identifier (UDID) of that device in `device.id`. Return a build only if its provisioning profile includes this device. Otherwise, return `null` so that the project builds locally. Expo CLI installs the returned **.app** or **.ipa** the same way as `npx expo run:ios --binary`.
+
+### CocoaPods installation
 
 When a provider is configured, `npx expo run:ios` waits until the cache lookup misses before installing CocoaPods, so that a cached build launches without running `pod install`.
 
