@@ -611,7 +611,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let ref = try await execute {
       return try await closure().ref()
     }
-    return ref.asValue()
+    // Moved out of the reference, not read with `asValue()`, which would clone the engine value
+    // here, off the JavaScript thread.
+    return try ref.take()
   }
 
   /// Runs a closure synchronously when already on the JavaScript thread, or schedules it

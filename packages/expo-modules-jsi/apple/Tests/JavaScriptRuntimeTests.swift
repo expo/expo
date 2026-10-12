@@ -150,6 +150,15 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `execute async returns a JavaScript value`() async throws {
+    let result = try await runtime.execute {
+      await Task.yield()
+      return try self.runtime.eval("({ answer: 42 })")
+    }
+    #expect(result.getObject().getProperty("answer").getInt() == 42)
+  }
+
+  @Test
   func `execute async throws error`() async {
     await #expect(throws: ScriptEvaluationError.self) {
       _ = try await runtime.execute {

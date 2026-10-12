@@ -171,6 +171,24 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `awaiting a settled promise again delivers the value again`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+
+    let obj = runtime.createObject()
+    obj.setProperty("value", value: 42)
+    promise.resolve(obj.asValue())
+
+    let first = try await promise.await()
+    let second = try await promise.await()
+    #expect(first.getObject().getProperty("value").getInt() == 42)
+    #expect(second.getObject().getProperty("value").getInt() == 42)
+    // Both reads clone the same settled object.
+    let isSameObject = first.isEqual(to: second)
+    #expect(isSameObject)
+  }
+
+  @Test
   func `reject promise with error`() async throws {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)

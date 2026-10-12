@@ -111,7 +111,18 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
     let deferredPromise = try await deferredPromiseForAwait()
-    return try await deferredPromise.getValue()
+    let ref = try await deferredPromise.getValue()
+    guard let runtime else {
+      throw JavaScriptCallback.RuntimeLostError()
+    }
+    // The settled value stays in the receiver, so a later `await()` can read it again. Cloning it
+    // touches the runtime, so it happens on the JavaScript thread and the clone is moved back.
+    return try await runtime.execute {
+      guard let value = ref.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.copy() }) else {
+        preconditionFailure("The settled promise value was released before it was read")
+      }
+      return value
+    }
   }
 
   public func asValue() -> JavaScriptValue {
