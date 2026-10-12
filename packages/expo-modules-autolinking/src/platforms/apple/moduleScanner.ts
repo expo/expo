@@ -48,7 +48,7 @@ export interface ScanModulesOutput {
 
 /** The part of the `expo-modules-macros` API used here. */
 export interface ModulesScanner {
-  scanModules(paths: string[]): Promise<ScanModulesOutput>;
+  scanModules(paths: string[], options?: { timeout?: number }): Promise<ScanModulesOutput>;
 }
 
 /**
@@ -150,7 +150,7 @@ export async function scanExpoModulesAsync(
 
   let output: ScanModulesOutput;
   try {
-    output = await scanner.scanModules(roots);
+    output = await scanner.scanModules(roots, { timeout: 5000 });
   } catch (error: any) {
     console.warn(
       `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}`

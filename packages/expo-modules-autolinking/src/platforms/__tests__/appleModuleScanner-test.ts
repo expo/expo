@@ -39,15 +39,15 @@ function mockScanner(result: ScanModulesOutput | Error): ModulesScanner {
 }
 
 describe(scanExpoModulesAsync, () => {
-  it('scans every package root', async () => {
+  it('scans every package root with a timeout', async () => {
     const scanner = mockScanner(scannerOutput({}));
 
     await scanExpoModulesAsync(scanner, packageRoots);
 
-    expect(scanner.scanModules).toHaveBeenCalledWith([
-      '/app/node_modules/expo-clipboard',
-      '/app/node_modules/expo-camera',
-    ]);
+    expect(scanner.scanModules).toHaveBeenCalledWith(
+      ['/app/node_modules/expo-clipboard', '/app/node_modules/expo-camera'],
+      { timeout: 5000 }
+    );
   });
 
   it('never writes to stdout, which must stay parseable for resolve --json', async () => {
