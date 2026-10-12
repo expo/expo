@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
-import type { ModifierConfig } from '../../types';
+import type { ModifierConfig, PopupProperties } from '../../types';
 /**
  * Props of the `DropdownMenu` component.
  */
@@ -30,6 +30,12 @@ export interface DropdownMenuProps {
      * @platform android
      */
     shadowElevation?: number;
+    /**
+     * Properties for the popup window of the dropdown menu.
+     *
+     * @platform android
+     */
+    properties?: PopupProperties;
     /**
      * Optional styles to apply to the `DropdownMenu`.
      */
@@ -72,4 +78,5 @@ declare namespace DropdownMenu {
 }
 export { DropdownMenu };
 export { DropdownMenuItem } from './DropdownMenuItem';
+export type { PopupProperties };
 //# sourceMappingURL=index.d.ts.map

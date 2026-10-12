@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the community `MenuView` opening detached above its anchor near the bottom of the screen, and add a `properties` prop to the Jetpack Compose `DropdownMenu`. ([#51412](https://github.com/expo/expo/pull/51412) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.23 — 2026-10-12

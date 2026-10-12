@@ -50,3 +50,31 @@ export type DialogProperties = {
    */
   decorFitsSystemWindows?: boolean;
 };
+
+/**
+ * Properties for the popup window, matching `PopupProperties` in Compose.
+ */
+export type PopupProperties = {
+  /**
+   * Whether the popup is focusable. When `true`, the popup receives IME events and key presses,
+   * such as the back button.
+   * @default true
+   */
+  focusable?: boolean;
+  /**
+   * Whether the popup can be dismissed by pressing the back button. Has no effect when `focusable` is `false`.
+   * @default true
+   */
+  dismissOnBackPress?: boolean;
+  /**
+   * Whether the popup can be dismissed by clicking outside of its bounds.
+   * @default true
+   */
+  dismissOnClickOutside?: boolean;
+  /**
+   * Whether the popup window is clipped to the screen boundaries. Set to `false` to let it extend
+   * beyond them, which positions the popup accurately.
+   * @default true
+   */
+  clippingEnabled?: boolean;
+};
