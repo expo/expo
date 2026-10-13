@@ -167,8 +167,11 @@ export function extendRouter<
       return key;
     };
 
-    const { getStateForAction, ...members } = extension({ baseRouter: delegate, options, nextKey });
-    const router: Router<State, Action> = { ...baseRouter, ...members, type };
+    const router: RouterExtensionMembers<State, Action> = {
+      ...delegate,
+      ...extension({ baseRouter: delegate, options, nextKey }),
+      type,
+    };
     const { normalizeState } = router;
 
     return {
@@ -183,9 +186,7 @@ export function extendRouter<
       },
       getStateForAction(state, action, config) {
         const typedState = ensureType(start(state, config));
-        const handled = getStateForAction
-          ? getStateForAction(typedState, action, config)
-          : RouterActionHandling.Delegate;
+        const handled = router.getStateForAction(typedState, action, config);
         if (handled === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
           warnedNull = true;
           console.warn(
