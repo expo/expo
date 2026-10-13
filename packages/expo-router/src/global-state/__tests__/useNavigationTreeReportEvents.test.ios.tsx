@@ -38,6 +38,7 @@ test('emits and consumes only new report events', async () => {
   const firstEvent = {
     id: 0,
     type: 'action-dispatched' as const,
+    actionId: 0,
     action: { type: 'FIRST' },
     state,
   };
@@ -50,7 +51,10 @@ test('emits and consumes only new report events', async () => {
 
   await result.rerender({
     report: {
-      events: [firstEvent, { id: 1, type: 'action-dispatched', action: { type: 'SECOND' }, state }],
+      events: [
+        firstEvent,
+        { id: 1, type: 'action-dispatched', actionId: 0, action: { type: 'SECOND' }, state },
+      ],
     },
   });
 
@@ -137,7 +141,7 @@ test('does not emit twice in StrictMode', async () => {
     actions.push(event.actionType)
   );
   const report: NavigationTreeReport = {
-    events: [{ id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state }],
+    events: [{ id: 0, type: 'action-dispatched', actionId: 0, action: { type: 'FIRST' }, state }],
   };
 
   await renderHook(
@@ -168,8 +172,8 @@ test('keeps emitting the remaining events when a listener throws', async () => {
   });
   const report: NavigationTreeReport = {
     events: [
-      { id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state },
-      { id: 1, type: 'action-dispatched', action: { type: 'SECOND' }, state },
+      { id: 0, type: 'action-dispatched', actionId: 0, action: { type: 'FIRST' }, state },
+      { id: 1, type: 'action-dispatched', actionId: 0, action: { type: 'SECOND' }, state },
     ],
   };
 

@@ -8,7 +8,13 @@ export interface RouterPageMarkDetail {
 }
 
 export type RouterPerformanceMark =
-  | { name: 'expo-router:action-dispatched'; startTime: number; detail: { actionType: string } }
+  | { name: 'expo-router:action-enqueued'; startTime: number; detail: { actionId: number } }
+  | {
+      name: 'expo-router:action-dispatched';
+      startTime: number;
+      // `actionId` is missing in expo-router versions without the action-enqueued mark.
+      detail: { actionType: string; actionId?: number };
+    }
   | {
       name:
         | 'expo-router:page-preloaded'

@@ -28,6 +28,10 @@ export interface RouterPageMarkDetail {
  */
 export interface RouterActionMarkDetail {
   /**
+   * Same value on the `expo-router:action-enqueued` and `expo-router:action-dispatched` marks of one action.
+   */
+  actionId: number;
+  /**
    * The type of the dispatched navigation action, for example `NAVIGATE`.
    */
   actionType: NavigationAction['type'];
@@ -84,6 +88,16 @@ export type RouterPageRemovedMark = BaseRouterPerformanceMark<
 >;
 
 /**
+ * A navigation action entered the navigation queue, before Expo Router reduced it. If the action
+ * changes the navigation state, `expo-router:action-dispatched` marks with the same `actionId`
+ * follow.
+ */
+export type RouterActionEnqueuedMark = BaseRouterPerformanceMark<
+  'expo-router:action-enqueued',
+  Pick<RouterActionMarkDetail, 'actionId'>
+>;
+
+/**
  * A navigation action changed the navigation state.
  */
 export type RouterActionDispatchedMark = BaseRouterPerformanceMark<
@@ -99,6 +113,7 @@ export type RouterPerformanceMark =
   | RouterPageFocusedMark
   | RouterPageBlurredMark
   | RouterPageRemovedMark
+  | RouterActionEnqueuedMark
   | RouterActionDispatchedMark;
 
 export type RouterPerformanceMarkName = RouterPerformanceMark['name'];

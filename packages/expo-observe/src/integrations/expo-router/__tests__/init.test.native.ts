@@ -53,8 +53,17 @@ function createFakeRouterPerformance(): FakeRouterPerformance {
   };
 }
 
-function dispatch(events: FakeRouterPerformance, actionType: string, startTime?: number) {
-  events.mark('expo-router:action-dispatched', { actionType }, startTime);
+function dispatch(
+  events: FakeRouterPerformance,
+  actionType: string,
+  startTime?: number,
+  actionId?: number
+) {
+  events.mark('expo-router:action-dispatched', { actionType, actionId }, startTime);
+}
+
+function enqueue(events: FakeRouterPerformance, actionId: number, startTime: number) {
+  events.mark('expo-router:action-enqueued', { actionId }, startTime);
 }
 
 function pageDetail(screenId: string, overrides?: object) {
@@ -212,6 +221,63 @@ describe('initListeners', () => {
 
     expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
     expect(storage.screenTimes['a']?.dispatchTime).toBe(1000);
+  });
+
+  it('measures TTR from the action-enqueued mark of the dispatched action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+  });
+
+  it('ignores an enqueued action that never dispatched', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    enqueue(events, 2, 1100);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+  });
+
+  it('drops enqueue times of older actions when an action dispatches', () => {
+    enqueue(events, 1, 1000);
+    enqueue(events, 2, 1100);
+    enqueue(events, 3, 1200);
+    dispatch(events, 'NAVIGATE', 1300, 2);
+
+    expect([...storage.enqueueTimes.keys()]).toEqual([2, 3]);
+  });
+
+  it('keeps the enqueue time of an action enqueued before the previous focus', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1100, 1);
+    enqueue(events, 2, 1200);
+    focus(events, 'a', undefined, 1250);
+    dispatch(events, 'NAVIGATE', 1300, 2);
+    focus(events, 'b', undefined, 1400);
+    await flushAsync();
+
+    expect(mockAddMetric.mock.calls[1][0].value).toBeCloseTo(0.2);
+  });
+
+  it('does not record a TTR for an enqueued PRELOAD action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'PRELOAD', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {

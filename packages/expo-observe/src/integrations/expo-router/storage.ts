@@ -6,7 +6,8 @@ export interface ScreenTimes {
 
 export interface PendingAction {
   actionType: string;
-  dispatchTime: number;
+  // When the action was enqueued, or dispatched if expo-router did not mark the enqueue.
+  startTime: number;
 }
 
 export interface RouterIntegrationStorage {
@@ -14,6 +15,10 @@ export interface RouterIntegrationStorage {
    * Actions dispatched, but not yet processed by the integration
    */
   pendingActions: PendingAction[];
+  /**
+   * Enqueue times by `actionId`. Older ids are dropped when an action dispatches
+   */
+  enqueueTimes: Map<number, number>;
   renderedScreensIds: Set<string>;
   /**
    * Whether the app had already recorded the first render of the screen
@@ -29,6 +34,7 @@ export interface RouterIntegrationStorage {
 export function createRouterIntegrationStorage(): RouterIntegrationStorage {
   return {
     pendingActions: [],
+    enqueueTimes: new Map(),
     renderedScreensIds: new Set(),
     hasRecordedInitialTtr: false,
     screenTimes: {},
