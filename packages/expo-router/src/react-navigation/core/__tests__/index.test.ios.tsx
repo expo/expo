@@ -8,6 +8,7 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
+  isActionRejected,
   type Router,
   RouterActionHandling,
   StackRouter,
@@ -642,7 +643,7 @@ test('resets state when a conditional navigator changes router type', async () =
         type,
         getStateForAction(state, action, config) {
           const result = router.getStateForAction(state, action, config);
-          if (result === null || result === RouterActionHandling.Reject) {
+          if (isActionRejected(result)) {
             return result;
           }
           return {

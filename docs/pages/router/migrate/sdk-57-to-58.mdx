@@ -536,6 +536,22 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 
 Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Reject` when the router cannot handle an action. Returning `null` is deprecated.
 
+#### Check rejected actions with `isActionRejected`
+
+A router can reject an action with `RouterActionHandling.Reject` or the deprecated `null`. Replace `null` checks on a `getStateForAction` result with `isActionRejected`:
+
+<DiffBlock
+  raw={`diff --git a/custom-router.ts b/custom-router.ts
+--- a/custom-router.ts
++++ b/custom-router.ts
+@@ -1,4 +1,4 @@
+ const result = baseRouter.getStateForAction(state, action);
+-if (result === null) {
++if (isActionRejected(result)) {
+   return result;
+ }`}
+/>
+
 #### Extend a built-in router
 
 `extendRouter` receives the base router and a `nextKey` function. `nextKey` generates deterministic route keys, and the wrapper writes the updated `routeKeySeq` into returned state:

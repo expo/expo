@@ -286,4 +286,4 @@ export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
 }));
 ```
 
-Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state.
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state. Use `isActionRejected` to check whether the base router rejected an action.

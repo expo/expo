@@ -20,6 +20,7 @@ import {
   RouterActionHandling,
   type RouterFactory,
 } from '../types';
+import { isActionRejected } from '../utils';
 
 type CustomAction = {
   type: 'CUSTOM';
@@ -434,7 +435,7 @@ describe('extendRouterActions', () => {
       }
       const key = nextKey('index');
       const result = baseRouter.getStateForAction(state, action, config);
-      if (result === null || result === RouterActionHandling.Reject) {
+      if (isActionRejected(result)) {
         return result;
       }
       return {
@@ -459,7 +460,7 @@ describe('extendRouterActions', () => {
         return RouterActionHandling.Delegate;
       }
       const result = baseRouter.getStateForAction(state, action, config);
-      if (result === null || result === RouterActionHandling.Reject) {
+      if (isActionRejected(result)) {
         return result;
       }
       return {

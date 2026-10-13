@@ -19,9 +19,10 @@ export type RouterExtensionContext<
   Options extends DefaultRouterOptions,
 > = {
   /**
-   * The router being extended. Call it to change its result; return `RouterActionHandling.Delegate`
-   * to hand it an action unchanged. It is typed for the extended state and actions; actions it
-   * does not recognize return `null` or `RouterActionHandling.Reject`.
+   * The router being extended. Delegate to it or return `RouterActionHandling.Delegate` for
+   * everything the extension does not handle. It is typed for the extended state and actions;
+   * actions it does not recognize return `null` or `RouterActionHandling.Reject`. Use
+   * `isActionRejected` to detect whether the router rejected the action.
    */
   baseRouter: Router<State, Action> & {
     /**
@@ -163,11 +164,6 @@ export function extendRouter<
     };
 
     const { getStateForAction, ...members } = extension({ baseRouter: delegate, options, nextKey });
-    // For a generic `State`, TypeScript cannot remove `getStateForAction` from `Router` with `Omit`,
-    // so it also sees the base router's method and picks its narrower return type.
-    const extendedGetStateForAction = getStateForAction as
-      | RouterExtensionMembers<State, Action>['getStateForAction']
-      | undefined;
     const router: Router<State, Action> = { ...baseRouter, ...members, type };
     const { normalizeState } = router;
 
@@ -183,8 +179,8 @@ export function extendRouter<
       },
       getStateForAction(state, action, config) {
         const typedState = ensureType(start(state, config));
-        const handled = extendedGetStateForAction
-          ? extendedGetStateForAction(typedState, action, config)
+        const handled = getStateForAction
+          ? getStateForAction(typedState, action, config)
           : RouterActionHandling.Delegate;
         const result =
           handled === RouterActionHandling.Delegate
@@ -222,9 +218,6 @@ export type RouterActionContext<
 /**
  * Reduces one action. Return a result to handle the action, `RouterActionHandling.Delegate` to
  * let the base router handle it, or `RouterActionHandling.Reject` to reject it.
- *
- * Returning `undefined` (deprecated) also delegates, and returning `null` (deprecated) also
- * rejects.
  */
 export type RouterActionReducer<
   State extends NavigationState,

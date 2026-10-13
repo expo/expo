@@ -1,4 +1,8 @@
-import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
+import {
+  type NavigationAction,
+  type NavigationState,
+  RouterActionHandling,
+} from '../../react-navigation/routers';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from '../reduceNavigationTree';
 import type { RouterRegistry } from '../routerRegistry';
 import { entry } from './__fixtures__/routerEntry';
@@ -93,7 +97,12 @@ it('bubbles from the deepest focused navigator to its parent', () => {
 
 it('handles an unsupported targeted action as a no-op', () => {
   const action: NavigationAction = { type: 'TEST', target: 'child' };
-  const result = reduce(root, action, new Map([['child', entry(() => null)]]), 'child');
+  const result = reduce(
+    root,
+    action,
+    new Map([['child', entry(() => RouterActionHandling.Reject)]]),
+    'child'
+  );
 
   expect(result).toMatchObject({ handled: true });
   if (result.handled) {
@@ -104,7 +113,7 @@ it('handles an unsupported targeted action as a no-op', () => {
 it('returns unhandled when no navigator handles an untargeted action', () => {
   const registry: RouterRegistry = new Map([
     ['root', entry(() => null)],
-    ['child', entry(() => null)],
+    ['child', entry(() => RouterActionHandling.Reject)],
   ]);
 
   expect(reduce(root, { type: 'TEST' }, registry)).toEqual({ handled: false });

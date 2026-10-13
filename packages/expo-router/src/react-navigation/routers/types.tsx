@@ -216,8 +216,8 @@ export type Router<
   /**
    * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `RouterActionHandling.Reject`. Returning `null` is
-   * deprecated. Custom routers must explicitly handle `ROUTE_NAMES_CHANGED` to durably reconcile
-   * state when their declared routes change.
+   * deprecated. Use `isActionRejected` to check a result. Custom routers must explicitly handle
+   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.

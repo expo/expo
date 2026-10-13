@@ -15,9 +15,10 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
+import { isActionRejected } from '../react-navigation/routers/utils';
 import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
-import type { RouterRegistry } from './routerRegistry';
+import type { RouterRegistry, RouterRegistryEntry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
   payload: {
@@ -224,7 +225,7 @@ function resolveState({
     internalParams,
   });
   const result = registry.get(navigationState.key)?.reduce(navigationState, action);
-  if (result?.state.stale !== false || getSelectedRoute(result) === undefined) {
+  if (result === undefined || isActionRejected(result) || getSelectedRoute(result) === undefined) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
@@ -336,16 +337,13 @@ function findDestinationNode(routeNode: RouteNode, routeName: string | undefined
   return routeName === INTERNAL_SLOT_NAME ? routeNode : findRouteNodeByName(routeNode, routeName);
 }
 
-function getSelectedRoute(
-  result:
-    | {
-        state: NavigationState | PartialState<NavigationState>;
-        affectedRouteKey: string | undefined;
-      }
-    | null
-    | undefined
-) {
-  if (result?.state.stale !== false || result.affectedRouteKey === undefined) {
+function getSelectedRoute(result: ReturnType<RouterRegistryEntry['reduce']> | undefined) {
+  if (
+    result === undefined ||
+    isActionRejected(result) ||
+    result.state.stale !== false ||
+    result.affectedRouteKey === undefined
+  ) {
     return undefined;
   }
   return result.state.routes.find((route) => route.key === result.affectedRouteKey);
