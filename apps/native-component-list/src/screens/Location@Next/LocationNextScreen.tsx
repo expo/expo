@@ -4,13 +4,21 @@ import {
   LocationProvider,
   LocationUpdatesHandle,
   PositionWatchHandle,
+  type BackgroundTaskStatus,
+  type Position,
   type PositionWatchStatus,
 } from 'expo-location/next';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import {
+  clearBackgroundFixesAsync,
+  getBackgroundFixesAsync,
+  type BackgroundFixEntry,
+} from './backgroundLocationStore';
 import { setLocationTaskListener } from './locationTask';
 
 const PERMISSION_SHAPE = '{ status, granted, canAskAgain, scope, accuracy, expires }';
@@ -21,20 +29,145 @@ const POSITION_SHAPE =
   '  horizontalAccuracy, verticalAccuracy, speedAccuracy }\n' +
   'Every field except coordinates, timestamp and mocked may be null.';
 
-const NOT_IMPLEMENTED =
-  'Not implemented natively on this branch.\n' +
-  'Fails immediately with: LocationUpdatesHandle is undefined.';
+const NOTIFICATION_PERMISSION_SHAPE = '{ status, granted, canAskAgain, expires }';
+
+const SESSION_SHAPE = '{ state, stopOnTaskRemoved, unthrottled }';
+
+const TASK_STATUS_SHAPE = '{ isRegistered, isRunning, lastError, lastFixAt }';
+
+const BACKGROUND_PROFILES: { label: string; profile: LocationProfile }[] = [
+  { label: 'default', profile: LocationProfile.DEFAULT },
+  { label: 'automotive', profile: LocationProfile.AUTOMOTIVE_NAVIGATION },
+  { label: 'other nav', profile: LocationProfile.OTHER_NAVIGATION },
+  { label: 'fitness', profile: LocationProfile.FITNESS },
+  { label: 'airborne', profile: LocationProfile.AIRBORNE },
+  { label: 'low power', profile: LocationProfile.LOW_POWER },
+];
+
+type LoggedFix = {
+  n: number;
+  latitude: number;
+  longitude: number;
+  at: number;
+  source: string;
+};
+
+function formatClock(at: number) {
+  const d = new Date(at);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// Newest on the left, so the interesting end is the one you see without scrolling.
+function FixHistory({ fixes }: { fixes: LoggedFix[] }) {
+  if (fixes.length === 0) {
+    return <Text style={{ fontSize: 11, marginTop: 6 }}>No fixes recorded yet.</Text>;
+  }
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ marginTop: 8 }}
+      contentContainerStyle={{ gap: 10, paddingVertical: 2 }}>
+      {fixes.map((fix) => (
+        <View key={fix.n} style={{ minWidth: 104 }}>
+          <Text style={{ fontSize: 11, fontWeight: '700' }}>{`#${fix.n} ${fix.source}`}</Text>
+          <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+            {fix.latitude.toFixed(5)}
+          </Text>
+          <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+            {fix.longitude.toFixed(5)}
+          </Text>
+          <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>{formatClock(fix.at)}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
+
+function BackgroundStatusView({ status }: { status: BackgroundTaskStatus | null }) {
+  if (!status) {
+    return (
+      <Text style={{ fontSize: 11, marginTop: 6, width: '100%' }}>
+        {'Status not read yet — press "updates status".'}
+      </Text>
+    );
+  }
+  return (
+    <View style={{ width: '100%', marginTop: 8 }}>
+      <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+        isRegistered: {String(status.isRegistered)}
+      </Text>
+      <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+        isRunning: {String(status.isRunning)}
+      </Text>
+      <Text style={{ fontSize: 11 }}>lastError: {status.lastError ?? '—'}</Text>
+      <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+        lastFixAt: {status.lastFixAt == null ? '—' : formatClock(status.lastFixAt)}
+      </Text>
+    </View>
+  );
+}
+
+// "held" is the gap between the fix timestamp and the moment the task callback ran, which is the
+// only way to see the provider batching deliveries.
+function BackgroundFixHistory({ entries }: { entries: BackgroundFixEntry[] }) {
+  if (entries.length === 0) {
+    return (
+      <Text style={{ fontSize: 11, marginTop: 6, width: '100%' }}>
+        No background fixes recorded yet.
+      </Text>
+    );
+  }
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ marginTop: 8 }}
+      contentContainerStyle={{ gap: 10, paddingVertical: 2 }}>
+      {entries.map((entry, index) => {
+        const heldForSeconds = (entry.arrivedAt - entry.fixedAt) / 1000;
+        return (
+          <View key={`${entry.arrivedAt}-${index}`} style={{ minWidth: 112 }}>
+            <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+              {entry.lat.toFixed(5)}
+            </Text>
+            <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+              {entry.lon.toFixed(5)}
+            </Text>
+            <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+              {`fix ${formatClock(entry.fixedAt)}`}
+            </Text>
+            <Text style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+              {`got ${formatClock(entry.arrivedAt)}`}
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                fontVariant: ['tabular-nums'],
+                color: heldForSeconds <= 10 ? '#2e7d32' : '#ed6c02',
+              }}>
+              {`held ${heldForSeconds.toFixed(1)}s`}
+            </Text>
+          </View>
+        );
+      })}
+    </ScrollView>
+  );
+}
 
 function Section({
   title,
   note,
   right,
   children,
+  footer,
 }: {
   title: string;
   note: string;
   right?: React.ReactNode;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }) {
   return (
     <View style={{ marginBottom: 14 }}>
@@ -49,6 +182,7 @@ function Section({
       </View>
       <Text style={{ fontSize: 11, opacity: 0.7, marginBottom: 6 }}>{note}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>{children}</View>
+      {footer}
     </View>
   );
 }
@@ -127,13 +261,46 @@ export default function LocationNextScreen() {
   });
   const [watchStatus, setWatchStatus] = useState<PositionWatchStatus | null>(null);
   const watcher = useRef<PositionWatchHandle | null>(null);
-  // Constructed lazily: LocationUpdatesHandle is not implemented natively yet, so building it
-  // during render would crash the screen before any of the other buttons can be used.
   const updates = useRef<LocationUpdatesHandle | null>(null);
+  const fixCount = useRef(0);
+  const [fixes, setFixes] = useState<LoggedFix[]>([]);
+  const [showFixes, setShowFixes] = useState(false);
+  const [backgroundProfile, setBackgroundProfile] = useState(LocationProfile.DEFAULT);
+  const [backgroundStatus, setBackgroundStatus] = useState<BackgroundTaskStatus | null>(null);
+  const [backgroundFixes, setBackgroundFixes] = useState<BackgroundFixEntry[]>([]);
+  const [showBackgroundFixes, setShowBackgroundFixes] = useState(false);
+
+  const refreshBackgroundFixesAsync = async () => {
+    setBackgroundFixes(await getBackgroundFixesAsync());
+  };
+
+  // The task writes while the screen is gone, so re-read on focus rather than on mount.
+  useFocusEffect(
+    useCallback(() => {
+      refreshBackgroundFixesAsync();
+    }, [])
+  );
+
+  // Every Position the screen sees goes through here, whatever produced it.
+  const recordFix = (position: Position, source: string) => {
+    fixCount.current += 1;
+    setFixes((previous) =>
+      [
+        {
+          n: fixCount.current,
+          latitude: position.coordinates.latitude,
+          longitude: position.coordinates.longitude,
+          at: Date.now(),
+          source,
+        },
+        ...previous,
+      ].slice(0, 200)
+    );
+  };
 
   useEffect(() => {
     setLocationTaskListener((message) =>
-      setOutput({ actual: `[task] ${message}`, expected: NOT_IMPLEMENTED })
+      setOutput({ actual: `[task] ${message}`, expected: 'One call per delivered position.' })
     );
     return () => {
       setLocationTaskListener(null);
@@ -255,6 +422,22 @@ export default function LocationNextScreen() {
               Location.requestBackgroundPermissions
             )}
           />
+          <GridButton
+            label="get notification"
+            onPress={run(
+              'permissions',
+              `${NOTIFICATION_PERMISSION_SHAPE}\nReturns immediately; no dialog.\nGoverns only whether the foreground service notification is visible.`,
+              Location.getNotificationPermissions
+            )}
+          />
+          <GridButton
+            label="request notification"
+            onPress={run(
+              'permissions',
+              `${NOTIFICATION_PERMISSION_SHAPE}\nShows a dialog on Android 13 and later.\nThe foreground service runs whether or not this is granted.`,
+              Location.requestNotificationPermissions
+            )}
+          />
         </Section>
 
         <Section title="Position" note="A single fix, using the currently selected provider.">
@@ -263,11 +446,16 @@ export default function LocationNextScreen() {
             onPress={run(
               'position',
               `${POSITION_SHAPE}\nAsks for AUTOMOTIVE_NAVIGATION (high accuracy) and no cached fix.\nUp to the 90s native timeout. null if no fix is available.`,
-              () =>
-                Location.getPosition({
+              async () => {
+                const position = await Location.getPosition({
                   profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
                   maxCachedAge: 0,
-                })
+                });
+                if (position) {
+                  recordFix(position, 'getPosition');
+                }
+                return position;
+              }
             )}
           />
         </Section>
@@ -287,11 +475,13 @@ export default function LocationNextScreen() {
                 watcher.current = null;
                 const handle = Location.watchPosition({
                   profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
-                  onPosition: (position) =>
+                  onPosition: (position) => {
+                    recordFix(position, 'watcher');
                     setOutput({
                       actual: `[watcher] ${JSON.stringify(position, null, 2)}`,
                       expected: POSITION_SHAPE,
-                    }),
+                    });
+                  },
                   onError: (error) =>
                     setOutput({
                       actual: `[watcher] ${error.code}: ${error.message}`,
@@ -376,20 +566,127 @@ export default function LocationNextScreen() {
 
         <Section
           title="Background updates"
-          note="Durable background task. The native side is not part of this branch, so both buttons are expected to fail.">
+          note="Durable background task. Positions arrive through the task listener and are written to storage, so they survive the process dying. Pick a profile first: it sets both the update interval and the delay the provider may batch fixes by."
+          right={
+            <Text style={{ fontSize: 11, opacity: 0.8 }}>{`profile: ${backgroundProfile}`}</Text>
+          }
+          footer={<BackgroundStatusView status={backgroundStatus} />}>
+          {BACKGROUND_PROFILES.map(({ label, profile }) => (
+            <GridButton
+              key={profile}
+              label={backgroundProfile === profile ? `• ${label}` : label}
+              onPress={() => setBackgroundProfile(profile)}
+            />
+          ))}
           <GridButton
             label="updates start"
-            onPress={run('updates', NOT_IMPLEMENTED, () => {
-              updates.current ??= new LocationUpdatesHandle();
-              return updates.current.start();
-            })}
+            onPress={run(
+              'updates',
+              'Registers the task; resolves with nothing.\n' +
+                'Throws without the background permission, or without\n' +
+                'RECEIVE_BOOT_COMPLETED in the merged manifest.',
+              () => {
+                updates.current ??= new LocationUpdatesHandle();
+                return updates.current.withProfile(backgroundProfile).start();
+              }
+            )}
           />
           <GridButton
             label="updates stop"
-            onPress={run('updates', NOT_IMPLEMENTED, () => {
-              updates.current ??= new LocationUpdatesHandle();
-              return updates.current.stop();
-            })}
+            onPress={run(
+              'updates',
+              'Unregisters the task; resolves with nothing.\nDoes nothing when no task is registered.',
+              () => {
+                updates.current ??= new LocationUpdatesHandle();
+                return updates.current.stop();
+              }
+            )}
+          />
+          <GridButton
+            label="updates status"
+            onPress={run(
+              'updates',
+              `${TASK_STATUS_SHAPE}\nProcess-local: lastError and lastFixAt reset when the process is recreated,\neven while the task stays registered.`,
+              async () => {
+                updates.current ??= new LocationUpdatesHandle();
+                const status = updates.current.status();
+                setBackgroundStatus(status);
+                return status;
+              }
+            )}
+          />
+        </Section>
+
+        <Section
+          title="Foreground session"
+          note="Keeps background tasks unthrottled and watchers alive while the app is backgrounded. Start it from the foreground.">
+          <GridButton
+            label="session start"
+            onPress={run(
+              'session',
+              'Resolves once the service is promoted.\n' +
+                'A notification appears when POST_NOTIFICATIONS is granted; the service runs either way.\n' +
+                'Throws when no service is running and the app is in the background.',
+              () =>
+                Location.ensureBackgroundSessionStarted({
+                  notificationTitle: 'Tracking your route',
+                  notificationBody: 'Tap to return to the app',
+                })
+            )}
+          />
+          <GridButton
+            label="session stop"
+            onPress={run(
+              'session',
+              'Stops the service and clears the persisted configuration,\nso it is not restarted when the app next enters the foreground.',
+              () => Location.stopBackgroundSession()
+            )}
+          />
+          <GridButton
+            label="session status"
+            onPress={run(
+              'session',
+              `${SESSION_SHAPE}\nstate "PROMOTED" while running, "NOT_RUNNING" after stop.\nunthrottled is true while promoted, and always true below Android 8.`,
+              async () => Location.getBackgroundSessionStatus()
+            )}
+          />
+        </Section>
+
+        <Section
+          title="Background fix history"
+          note="Every fix the background task wrote to storage, newest first. 'held' is the gap between the fix timestamp and the moment the callback ran, so a large gap means the provider batched the delivery. Reloaded whenever the screen regains focus."
+          footer={showBackgroundFixes ? <BackgroundFixHistory entries={backgroundFixes} /> : null}>
+          <GridButton
+            label={showBackgroundFixes ? 'hide list' : `show list (${backgroundFixes.length})`}
+            onPress={() => {
+              refreshBackgroundFixesAsync();
+              setShowBackgroundFixes((previous) => !previous);
+            }}
+          />
+          <GridButton label="refresh list" onPress={() => refreshBackgroundFixesAsync()} />
+          <GridButton
+            label="clear list"
+            onPress={async () => {
+              await clearBackgroundFixesAsync();
+              setBackgroundFixes([]);
+            }}
+          />
+        </Section>
+
+        <Section
+          title="Fix history"
+          note="Every Position this screen has received, newest first, from the watcher and from getPosition. Useful for eyeballing the real interval between fixes."
+          footer={showFixes ? <FixHistory fixes={fixes} /> : null}>
+          <GridButton
+            label={showFixes ? 'hide list' : `show list (${fixes.length})`}
+            onPress={() => setShowFixes((previous) => !previous)}
+          />
+          <GridButton
+            label="clear list"
+            onPress={() => {
+              fixCount.current = 0;
+              setFixes([]);
+            }}
           />
         </Section>
       </ScrollView>

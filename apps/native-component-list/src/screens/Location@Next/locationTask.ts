@@ -1,5 +1,7 @@
 import { defineLocationTask } from 'expo-location/next';
 
+import { appendBackgroundFixAsync } from './backgroundLocationStore';
+
 let listener: ((message: string) => void) | null = null;
 
 export function setLocationTaskListener(next: ((message: string) => void) | null) {
@@ -7,6 +9,9 @@ export function setLocationTaskListener(next: ((message: string) => void) | null
 }
 
 defineLocationTask({
-  onPosition: (position) => listener?.(JSON.stringify(position, null, 2)),
+  onPosition: (position) => {
+    appendBackgroundFixAsync(position);
+    listener?.(JSON.stringify(position, null, 2));
+  },
   onError: (error) => listener?.(`Error: ${error.message}`),
 });
