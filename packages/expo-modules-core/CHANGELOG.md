@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Fix a launch crash (`Symbol not found: _swift_allocateMetadataPack`) in apps that use precompiled Expo modules and build with Xcode 27. `ExpoModulesJSI` no longer exports Swift runtime symbols, so the precompiled `ExpoModulesCore` no longer depends on them. ([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix a `UIViewControllerHierarchyInconsistency` crash when a SwiftUI view (such as `@expo/ui`'s `Host`) is rendered inside a text input's accessory view, for example React Native's `InputAccessoryView` or react-native-keyboard-controller's `KeyboardExtender`. ([#51420](https://github.com/expo/expo/pull/51420) by [@kirillzyusko](https://github.com/kirillzyusko))
+- Updated dependencies. ([#51463](https://github.com/expo/expo/pull/51463), [#51451](https://github.com/expo/expo/pull/51451))
+  - expo-modules-jsi@58.0.12
+
 ## 58.0.16
 
 ### Patch Changes

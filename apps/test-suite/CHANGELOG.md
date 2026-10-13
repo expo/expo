@@ -1,5 +1,14 @@
 # test-suite
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies. ([#51236](https://github.com/expo/expo/pull/51236), [#51463](https://github.com/expo/expo/pull/51463), [#51444](https://github.com/expo/expo/pull/51444), [#51443](https://github.com/expo/expo/pull/51443), [#51231](https://github.com/expo/expo/pull/51231), [#51420](https://github.com/expo/expo/pull/51420))
+  - expo-location@58.0.15
+  - expo-modules-core@58.0.17
+  - expo@58.0.9
+
 ## 1.0.2
 
 ### Patch Changes
