@@ -1,0 +1,85 @@
+---
+title: How long an EAS Simulator session runs
+sidebar_title: Session lifetime
+description: Learn the maximum duration and idle timeout of an EAS Simulator session, which activity keeps a session alive, and every way that a session stops.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+An EAS Simulator session runs until you stop it or until it reaches a limit. The **maximum duration** is a hard stop time. The optional **idle timeout** stops the session after a period without controller activity. Set a limit on each session that you do not watch, so that it does not run longer than you need.
+
+## Maximum duration
+
+| Account    | Maximum duration | Default duration |
+| ---------- | ---------------- | ---------------- |
+| Free plan  | 40 minutes       | 40 minutes       |
+| Paid plans | 115 minutes      | 115 minutes      |
+
+If you do not set a duration, the session gets the maximum for the account. On any plan, you can set a shorter duration: pass `--max-duration-minutes` to EAS CLI or `maxDurationMinutes` to the REST API. A value above the account's maximum fails.
+
+The session timer starts when the session is ready. The job that runs the session has a hard limit of the maximum duration plus five minutes.
+
+## Idle timeout
+
+Pass `--max-idle-time-minutes` to stop the session after that many minutes without controller activity. Without this flag, the session has no idle timeout.
+
+| Rule                                   | Detail                                                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium                                                                                         |
+| Activity that does not reset the timer | Use of the browser preview                                                                                                                       |
+| Session types without idle timeout     | `web-preview-only`                                                                                                                               |
+| Allowed values                         | A positive number smaller than the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one. |
+
+For a session that a person uses in the browser preview, limit the session with the maximum duration. The idle timeout can stop the session while the person uses it.
+
+## Ways that a session stops
+
+| Event                                                                     | Result                                                        |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| You run `eas simulator:stop` or the REST stop endpoint                    | The session stops. Stopping a stopped session also succeeds.  |
+| You press <kbd>Ctrl</kbd> + <kbd>C</kbd> in an attached `simulator:start` | The session stops, and EAS CLI resets **.env.eas-simulator**. |
+| You press **Stop session** on the session page                            | The session stops.                                            |
+| The egress client in an interactive `simulator:start` exits with an error | EAS CLI stops the session.                                    |
+| The session reaches its maximum duration                                  | The session stops.                                            |
+| The session reaches its idle timeout                                      | The session stops.                                            |
+| The startup timeout of EAS CLI expires                                    | EAS CLI stops the session.                                    |
+| The user who started the session is deleted                               | EAS stops the session.                                        |
+| The job fails                                                             | The session goes to errored.                                  |
+
+These events do **not** stop a session:
+
+- A `--non-interactive` or `--json` start command returns.
+- A CI job, an HTTP request, or an agent task ends.
+- A second `simulator:start` replaces **.env.eas-simulator**.
+- The local egress client disconnects. Proxied requests fail, and the session continues to run.
+
+## Dropped controller connections
+
+If a controller command returns `ERR_NGROK_3200` or `Remote daemon is unavailable` after the session sat idle, the controller connection dropped. A lost connection also removes the installed app state and the snapshot references. Do not retry the command. Stop the session, start a new one, and then install and drive the app immediately. Create builds before you start the session, not during it.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="How do I keep a session alive for a reviewer?">
+
+Start the session with `--max-duration-minutes` set to the review time, and do not set an idle timeout. Tell the reviewer when the session stops. See [Share a live EAS Simulator session or start one from a link](/preview/eas-simulator/how-to/hand-off-a-session/).
+
+</Collapsible>
+
+<Collapsible summary="Can I extend a running session?">
+
+No. EAS CLI and the REST API do not have a command to change the duration of a running session. Start a new session.
+
+</Collapsible>
+
+<Collapsible summary="Does queue time count toward the duration?">
+
+No. The maximum duration starts when the session is ready, so queue time does not count toward it. Queue time also does not count toward the 15-minute startup timeout of EAS CLI. For usage, see [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/).
+
+</Collapsible>
+
+</FAQ>

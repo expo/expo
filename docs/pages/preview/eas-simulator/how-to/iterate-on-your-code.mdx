@@ -1,0 +1,156 @@
+---
+title: Use Fast Refresh with Metro on a remote simulator
+sidebar_title: Iterate on your code
+description: Connect a development build on EAS Simulator to Metro through a tunnel so that source changes reach the remote device with Fast Refresh.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+To see source changes on a remote device without a new build, connect a [development build](/develop/development-builds/introduction/) to Metro on your computer. Metro runs locally, a tunnel makes it public, and the development build on EAS Simulator loads JavaScript from that tunnel. After the first bundle loads, Fast Refresh sends each edit to the remote app.
+
+> **warning** A release build contains the JavaScript from build time. If you connect a release build to Metro, Fast Refresh does not work. Use a development build that includes `expo-dev-client`.
+
+## Choose the build for the goal
+
+| Goal                                      | Build                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------ |
+| See source changes with Fast Refresh      | Development build connected to Metro                                     |
+| Test a project that works in Expo Go      | [Expo Go](/preview/eas-simulator/works-with/expo-go/) connected to Metro |
+| Inspect a fixed build or capture evidence | Release build                                                            |
+
+## Connect a development build to Metro
+
+<Step label="1">
+
+### Create a development build for the simulator
+
+If you cannot create the native build on your computer, add an EAS Build profile with both `developmentClient: true` and `ios.simulator: true`:
+
+```json eas.json
+{
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+Create the build before you start the session:
+
+<Terminal cmd={['$ eas build --platform ios --profile development-simulator --non-interactive']} />
+
+For Android, run the same command with `--platform android`. The profile produces an APK.
+
+</Step>
+
+<Step label="2">
+
+### Start Metro with a tunnel
+
+The remote device must reach Metro over the internet. Start Metro with the Expo tunnel **before** you start the session, because EAS opens the Metro URL while the session starts:
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+`EXPO_UNSTABLE_TUNNEL_V2=1` selects a tunnel that is signed for your Expo account. It works with an `EXPO_TOKEN` or a robot user, and it accepts any `--port`. Use your own free port if another Metro process uses port 8081.
+
+From SDK 58, `npx expo start --tunnel` uses this tunnel by default and ignores `EXPO_UNSTABLE_TUNNEL_V2`. You can leave the variable out in an SDK 58 project.
+
+</Step>
+
+<Step label="3">
+
+### Start the session with the build and the Metro URL
+
+Pass the build ID and the development client URL:
+
+<Terminal
+  cmdCopy={`eas simulator:start --platform ios --type agent-device --build-id <build-id> --launch-arg "-EXDevMenuIsOnboardingFinished" --launch-arg "1" --launch-arg "-EXDevMenuShowsAtLaunch" --launch-arg "0" --open-url "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" --name "Checkout live edits" --non-interactive`}
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --build-id <build-id> \\',
+    '    --launch-arg "-EXDevMenuIsOnboardingFinished" --launch-arg "1" \\',
+    '    --launch-arg "-EXDevMenuShowsAtLaunch" --launch-arg "0" \\',
+    '    --open-url "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" \\',
+    '    --name "Checkout live edits" --non-interactive',
+  ]}
+/>
+
+Replace `<scheme>` with the `scheme` value from your [app config](/workflow/configuration/), or with `exp+<slug>`. `expo-dev-client` adds the `exp+<slug>` scheme to a development build. Here, `<slug>` is the `slug` from your app config in lowercase, without characters that are not valid in a URL scheme. Do not use the slug without the `exp+` prefix. URL-encode the Metro URL when it contains a path or a query.
+
+The launch arguments hide the developer menu onboarding screen and stop the developer menu from opening at launch. Add `--launch-arg "-EXDevMenuShowFloatingActionButton" --launch-arg "0"` to hide the floating button. These `-EXDevMenu*` launch arguments work only on iOS. For an Android session, do not pass them.
+
+On SDK 58 and later, you can control the same behavior on both platforms from the URL instead. Add `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, and `__expo_disable_auto_launch=1` as query parameters of the development client URL. SDK 58 also accepts the `<scheme>://?__expo_url=<encoded-public-metro-url>` form that `npx expo start` prints. The `expo-development-client/?url=` form in the example keeps working, with the legacy `disableOnboarding=1`, `disableFab=1`, and `disableAutoLaunch=1` parameters placed next to `url`. See [Using launch URLs in automation scenarios](/develop/development-builds/development-workflows/#using-launch-urls-in-automation-scenarios).
+
+</Step>
+
+<Step label="4">
+
+### Attach the controller and confirm
+
+When the start command launches the app, agent-device does not have an open app session yet. Attach to the running app without a relaunch, then take a screenshot:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --foreground --platform ios',
+    '$ eas simulator:exec npx agent-device@latest screenshot ./artifacts/live.png',
+  ]}
+/>
+
+Edit a source file, then take another screenshot to confirm the change.
+
+</Step>
+
+## Connect a local development build
+
+The start command installs a development build only from EAS Build, a fingerprint, or an archive URL. For a local development **.app**, start a blank session and connect through agent-device:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest install com.example.app ./MyApp.app --platform ios',
+    '$ eas simulator:exec npx agent-device@latest open com.example.app "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" --platform ios --relaunch',
+    '$ eas simulator:exec npx agent-device@latest alert wait 2500 --platform ios',
+    '$ eas simulator:exec npx agent-device@latest alert accept --platform ios',
+  ]}
+/>
+
+`alert accept` accepts the **Open in** dialog if it appears. If the app shows the development client launcher instead of your project, press **Enter URL manually**, enter the Metro manifest URL, and press **Connect**.
+
+## Keep the loop reliable
+
+- Run exactly one Metro process for the session.
+- Start Metro before the session when you pass `--open-url`.
+- Take screenshots only after the development build connects to Metro.
+- The first bundle over the tunnel is slow. Later Fast Refresh updates are fast.
+- If the first connection fails, stop the session and Metro, then repeat the steps one time. Do not reconnect a release build.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Who can reach my Metro server through the tunnel?">
+
+Anyone who has the URL. The tunnel URL is public while the tunnel runs. A random URL is hard to guess, but the URL does not require authentication. Share the URL only with the session, and stop Metro when you finish. See [EAS Simulator security model](/preview/eas-simulator/how-it-works/security-model/).
+
+</Collapsible>
+
+<Collapsible summary="Can I use Fast Refresh on Android?">
+
+Yes. Use a development build APK and the same Metro tunnel. Do not pass the `-EXDevMenu*` launch arguments, because they work only on iOS.
+
+</Collapsible>
+
+<Collapsible summary="Why does Metro stop with exit code 137?">
+
+Exit code 137 means that the operating system stopped the process, usually because of low memory. This is common in small cloud sandboxes. Do not run a native build and Metro at the same time.
+
+</Collapsible>
+
+</FAQ>

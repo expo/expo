@@ -1,0 +1,57 @@
+---
+title: Use Maestro flows with EAS Simulator
+sidebar_title: Maestro
+description: Run supported Maestro YAML flows with agent-device, or use the EAS Workflows Maestro job, and learn which option uses an EAS Simulator session.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+agent-device, the default EAS Simulator controller, can run supported Maestro YAML flows. It can also export its own recorded flows to Maestro YAML. EAS Workflows has a separate Maestro job. That job runs tests on its own Android Emulator or iOS Simulator, not on an EAS Simulator session.
+
+## Choose an option
+
+| Option                             | Device                            | Use it when                                                                                          |
+| ---------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| agent-device with `test --maestro` | An EAS Simulator session          | You want to run Maestro flows on a session that an agent also uses.                                  |
+| EAS Workflows `maestro` job        | A device in the EAS Workflows job | You want Maestro tests in a CI workflow. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/). |
+
+## Run Maestro YAML with agent-device
+
+Start an `agent-device` session with your app, then run the flow through `eas simulator:exec`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --build-id <build-id> --name "Maestro login flow" --non-interactive',
+    '$ eas simulator:exec npx agent-device@latest test --maestro <flow.yaml> --platform ios',
+  ]}
+/>
+
+agent-device supports a subset of Maestro YAML. Unsupported commands fail with an error. Read the version-matched help for the supported commands and arguments:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest help maestro']} />
+
+## Export agent-device flows to Maestro
+
+agent-device can record a working session as a deterministic **.ad** script. You can export compatible **.ad** flows to Maestro YAML, then run them with Maestro or the EAS Workflows `maestro` job. For more information, see [agent-device](/agents/agent-device/#what-agent-device-lets-your-agent-do).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Does EAS Simulator run the Maestro CLI?">
+
+No. EAS Simulator does not provision the Maestro CLI. Use agent-device to run supported Maestro YAML on a session.
+
+</Collapsible>
+
+<Collapsible summary="Is the EAS Workflows Maestro job the same as EAS Simulator?">
+
+No. The `maestro` job runs tests on a build in an EAS Workflows job. It does not create an EAS Simulator session, and it is in [alpha](/more/release-statuses/#alpha).
+
+</Collapsible>
+
+</FAQ>
