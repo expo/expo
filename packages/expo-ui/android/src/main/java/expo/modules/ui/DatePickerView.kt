@@ -123,6 +123,8 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val clockDialSelectedContentColor: AndroidColor? = null
 
+  @Field val clockDialContentColor: AndroidColor? = null
+
   @Field val clockDialUnselectedContentColor: AndroidColor? = null
 
   @Field val selectorColor: AndroidColor? = null
@@ -131,17 +133,25 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val periodSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val periodSelectorContainerColor: AndroidColor? = null
+
   @Field val periodSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val periodSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val periodSelectorContentColor: AndroidColor? = null
 
   @Field val periodSelectorUnselectedContentColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val timeSelectorContainerColor: AndroidColor? = null
+
   @Field val timeSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val timeSelectorContentColor: AndroidColor? = null
 
   @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
 }
@@ -323,17 +333,17 @@ fun buildTimePickerColors(
     containerColor = elementColors.containerColor.composeOrNull ?: defaults.containerColor,
     clockDialColor = elementColors.clockDialColor.composeOrNull ?: colorProp?.copy(alpha = 0.3f) ?: defaults.clockDialColor,
     clockDialSelectedContentColor = elementColors.clockDialSelectedContentColor.composeOrNull ?: defaults.clockDialSelectedContentColor,
-    clockDialContentColor = elementColors.clockDialUnselectedContentColor.composeOrNull ?: defaults.clockDialContentColor,
+    clockDialContentColor = (elementColors.clockDialContentColor ?: elementColors.clockDialUnselectedContentColor).composeOrNull ?: defaults.clockDialContentColor,
     selectorColor = elementColors.selectorColor.composeOrNull ?: colorProp ?: defaults.selectorColor,
     periodSelectorBorderColor = elementColors.periodSelectorBorderColor.composeOrNull ?: defaults.periodSelectorBorderColor,
     periodSelectorSelectedContainerColor = elementColors.periodSelectorSelectedContainerColor.composeOrNull ?: defaults.periodSelectorSelectedContainerColor,
-    periodSelectorContainerColor = elementColors.periodSelectorUnselectedContainerColor.composeOrNull ?: defaults.periodSelectorContainerColor,
+    periodSelectorContainerColor = (elementColors.periodSelectorContainerColor ?: elementColors.periodSelectorUnselectedContainerColor).composeOrNull ?: defaults.periodSelectorContainerColor,
     periodSelectorSelectedContentColor = elementColors.periodSelectorSelectedContentColor.composeOrNull ?: defaults.periodSelectorSelectedContentColor,
-    periodSelectorContentColor = elementColors.periodSelectorUnselectedContentColor.composeOrNull ?: defaults.periodSelectorContentColor,
+    periodSelectorContentColor = (elementColors.periodSelectorContentColor ?: elementColors.periodSelectorUnselectedContentColor).composeOrNull ?: defaults.periodSelectorContentColor,
     timeSelectorSelectedContainerColor = elementColors.timeSelectorSelectedContainerColor.composeOrNull ?: colorProp ?: defaults.timeSelectorSelectedContainerColor,
-    timeSelectorContainerColor = elementColors.timeSelectorUnselectedContainerColor.composeOrNull ?: defaults.timeSelectorContainerColor,
+    timeSelectorContainerColor = (elementColors.timeSelectorContainerColor ?: elementColors.timeSelectorUnselectedContainerColor).composeOrNull ?: defaults.timeSelectorContainerColor,
     timeSelectorSelectedContentColor = elementColors.timeSelectorSelectedContentColor.composeOrNull ?: defaults.timeSelectorSelectedContentColor,
-    timeSelectorContentColor = elementColors.timeSelectorUnselectedContentColor.composeOrNull ?: defaults.timeSelectorContentColor
+    timeSelectorContentColor = (elementColors.timeSelectorContentColor ?: elementColors.timeSelectorUnselectedContentColor).composeOrNull ?: defaults.timeSelectorContentColor
   )
 }
 
