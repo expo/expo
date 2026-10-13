@@ -1,9 +1,22 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import SwiftUI
 import Testing
 import UIKit
 
 @testable import ExpoModulesCore
+
+private final class PrivateImageView: UIImageView {}
+
+private final class PrivateSwiftUIViewProps: ExpoSwiftUI.ViewProps {}
+
+private struct PrivateSwiftUIView: ExpoSwiftUI.View {
+  @ObservedObject var props: PrivateSwiftUIViewProps
+
+  var body: some SwiftUI.View {
+    Text("")
+  }
+}
 
 // `createView` and `ConcreteViewProp.set` call `MainActor.assumeIsolated`, so these tests must
 // run on the main thread. Swift Testing runs tests on the cooperative pool by default, where
@@ -20,6 +33,18 @@ struct ViewDefinitionTests {
       let definition = View(UIImageView.self) {}
       let view = definition.createView(appContext: AppContext())
       #expect((try? view?.toUIView()) is UIImageView)
+    }
+
+    @Test
+    func `names a private view after its type`() {
+      let definition = View(PrivateImageView.self) {}
+      #expect(definition.name == "PrivateImageView")
+    }
+
+    @Test
+    func `names a private SwiftUI view after its type`() {
+      let definition = View(PrivateSwiftUIView.self)
+      #expect(definition.name == "PrivateSwiftUIView")
     }
   }
 
