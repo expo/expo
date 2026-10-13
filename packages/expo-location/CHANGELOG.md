@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Stop the location foreground service when a background location task is unregistered while the service is still binding, so a `stopLocationUpdatesAsync` that follows `startLocationUpdatesAsync` within milliseconds no longer leaves the service and its notification running. ([#51236](https://github.com/expo/expo/pull/51236) by [@jrceranornelson](https://github.com/jrceranornelson))
+
 ### 💡 Others
 
 ## 57.0.22 — 2026-10-21
