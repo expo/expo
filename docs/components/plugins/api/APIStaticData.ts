@@ -320,6 +320,11 @@ export const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 /**
+ * Packages whose pages render type names as they are declared, skipping `replaceableTypes`.
+ */
+export const packagesWithoutReplaceableTypes = ['expo-location-next'];
+
+/**
  * Map of entity/type names that should be linked to user specified source, internal or external.
  */
 export const hardcodedTypeLinks: Record<string, string> = {
@@ -462,6 +467,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   TabNavigationState:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
   TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  TaskManagerError: '/versions/latest/sdk/task-manager/#taskmanagererror',
   TaskManagerTaskExecutor: '/versions/latest/sdk/task-manager/#taskmanagertaskexecutorbody',
   TemplateStringsArray:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TemplateStringsArray',
