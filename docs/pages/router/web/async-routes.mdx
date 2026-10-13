@@ -98,7 +98,7 @@ Set `experiments.chunking.mode` to `granular` in your app config and keep async 
 }
 ```
 
-Granular splitting applies only to production web client exports with bundle splitting enabled. Development bundles, native bundles, DOM component bundles, and React Server Component bundles continue to use the legacy strategy. If a web worker or one of its dependencies contains an asynchronous import, Expo falls back to legacy splitting for the entire bundle graph.
+Granular splitting applies only to production web client exports with bundle splitting enabled. Development bundles, native bundles, and DOM component bundles continue to use the legacy strategy. Projects that enable React Server Components use the legacy strategy for every bundle. If a web worker or one of its dependencies contains an asynchronous import, Expo falls back to legacy splitting for the entire bundle graph.
 
 Remove `experiments.chunking` or set its `mode` to `legacy` to restore the default strategy. This setting is separate from `asyncRoutes`: enabling async routes does not opt into granular splitting.
 

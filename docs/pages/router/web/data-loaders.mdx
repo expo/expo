@@ -277,6 +277,8 @@ See the [Runtime API documentation](/router/web/api-routes/#runtime-api) for a f
 
 ## Caching and revalidation
 
+> **info** This section describes SDK 58 and later. In SDK 55–57, Expo Router caches loader data on the client during navigation.
+
 Expo Router uses loader data from the initial HTML response for hydration. When you revisit a route after it unmounts, `useLoaderData` fetches its data again. The platform HTTP cache uses `Cache-Control` to decide whether to reuse a cached response, revalidate it, or request fresh data. Expo Router does not keep a permanent in-memory data cache across route visits.
 
 A revisit can display a Suspense fallback while the fetch completes, even when the platform serves a cached response. Retrying a loader error through the route's `ErrorBoundary` also fetches again.
@@ -291,11 +293,11 @@ When a loader does not declare `Cache-Control`, these defaults apply:
 | Server export | `no-store`                            | Loader responses                                           |
 | Static export | `private, must-revalidate, max-age=0` | Loader data files and the HTML pages that embed their data |
 
-If the loader returns a `Cache-Control` header, it takes precedence over these defaults. In development, return the header from the loader to override `no-store`.
+If the loader returns a `Cache-Control` header, it takes precedence over these defaults.
 
 ### Static exports
 
-When exporting an app in static output mode, a loader's `Cache-Control` header is used for both the data and the HTML page that embeds the data. Static exports keep only the `Cache-Control` header from loader responses.
+In a static export, a loader's `Cache-Control` header applies to both the data file and the HTML page that embeds the data. Static exports keep only the `Cache-Control` header from loader responses.
 
 The `expo-server` package, EAS Hosting, and `npx expo serve` apply these rules when serving your export. Other static hosts need their own header configuration. HTTP caching does not rerun a static loader. Its data changes only when you export and deploy the app again.
 

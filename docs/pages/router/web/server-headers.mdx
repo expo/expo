@@ -12,7 +12,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** Server headers are available in SDK 54 and later, and requires [`expo-server`](/versions/latest/sdk/server/) to serve your exported application.
 
-Server headers in Expo Router allow you to set custom HTTP headers for security, caching, cookies, and custom metadata on route responses. Global `headers` apply to HTML, API route, and data loader responses. Use `pageHeaders` to configure headers for specific HTML pages. These options do not apply to static assets such as images, fonts, or JavaScript bundles.
+Server headers in Expo Router allow you to set custom HTTP headers for security, caching, cookies, and custom metadata on route responses. Global `headers` apply to HTML, API route, and data loader responses. In SDK 58 and later, use `pageHeaders` to configure headers for specific HTML pages. These options do not apply to static assets such as images, fonts, or JavaScript bundles.
 
 ## Setup
 
@@ -81,7 +81,7 @@ Headers are configured as an object where keys are header names and values are e
 
 ### Path-specific headers
 
-Use `pageHeaders` in the `expo-router` config plugin to apply headers to matching HTML pages:
+In SDK 58 and later, use `pageHeaders` in the `expo-router` config plugin to apply headers to matching HTML pages:
 
 ```json app.json
 {
