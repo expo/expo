@@ -206,24 +206,26 @@ export function useHeaderConfigProps({
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
   const headerNativeProps = unstable_nativeProps?.headerConfig;
 
-  const headerBackTitleStyleFlattened =
-    StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
-  const headerLargeTitleStyleFlattened =
-    StyleSheet.flatten([
-      Platform.select({ ios: fonts.heavy, default: fonts.medium }),
-      headerLargeTitleStyle,
-    ]) || {};
-  const headerTitleStyleFlattened =
-    StyleSheet.flatten([
-      Platform.select({ ios: fonts.bold, default: fonts.medium }),
-      headerTitleStyle,
-    ]) || {};
+  // Theme fonts are not passed to the native header, so its default title and back title use
+  // the platform fonts. A custom Android title (`HeaderTitle`) still applies theme fonts.
+  const headerBackTitleStyleFlattened = StyleSheet.flatten(headerBackTitleStyle) || {};
+  const headerLargeTitleStyleFlattened = StyleSheet.flatten(headerLargeTitleStyle) || {};
+  const headerTitleStyleFlattened = StyleSheet.flatten(headerTitleStyle) || {};
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
 
+  // Without background options, iOS uses the system bar: Liquid Glass on iOS 26+,
+  // and a blur that is transparent at the scroll edge on earlier versions.
+  const usesSystemBackground =
+    Platform.OS === 'ios' &&
+    headerStyleFlattened.backgroundColor == null &&
+    headerBackground == null &&
+    headerTransparent == null;
+
   const headerBackgroundColor =
     headerStyleFlattened.backgroundColor ??
-    (headerBackground != null ||
+    (usesSystemBackground ||
+    headerBackground != null ||
     headerTransparent ||
     // The title becomes invisible if background color is set with large title on iOS 26
     (Platform.OS === 'ios' && headerLargeTitleEnabled)
@@ -245,17 +247,17 @@ export function useHeaderConfigProps({
   const titleColor =
     'color' in headerTitleStyleFlattened
       ? headerTitleStyleFlattened.color
-      : isLiquidGlassAvailable() && (headerTransparent || headerBackgroundColor === 'transparent')
-        ? // On iOS 26, we want header title to change color based on content underneath
-          // So we don't set an explicit color when header is transparent
-          // Unless a custom tint color is explicitly provided
+      : Platform.OS === 'ios'
+        ? // Unset on iOS, so the system picks the title color (and adapts it under Liquid Glass)
           headerTintColor
         : (headerTintColor ?? colors.text);
   const titleFontSize =
     'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
 
-  const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
+  // Also used by react-native-screens for the scroll edge appearance of a regular title
+  const largeTitleBackgroundColor =
+    headerLargeStyleFlattened.backgroundColor ?? (usesSystemBackground ? 'transparent' : undefined);
   const largeTitleColor =
     'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
   const largeTitleFontSize =
@@ -321,6 +323,7 @@ export function useHeaderConfigProps({
     (Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);
 
   const translucent =
+    usesSystemBackground ||
     headerBackground != null ||
     headerTransparent ||
     // When using a SearchBar or large title, the header needs to be translucent for it to work on iOS
@@ -457,8 +460,11 @@ export function useHeaderConfigProps({
       : undefined,
     backTitleFontFamily,
     backTitleFontSize,
-    blurEffect: headerBlurEffect,
-    color: tintColor,
+    blurEffect:
+      headerBlurEffect ??
+      (usesSystemBackground && !isLiquidGlassAvailable() ? 'systemChromeMaterial' : undefined),
+    // Unset on iOS, so the system tint applies to native buttons
+    color: Platform.OS === 'ios' ? headerTintColor : tintColor,
     direction,
     disableBackButtonMenu: headerBackButtonMenuEnabled === false,
     hidden: headerShown === false,
@@ -478,7 +484,7 @@ export function useHeaderConfigProps({
     titleColor,
     titleFontFamily,
     titleFontSize,
-    titleFontWeight: String(titleFontWeight),
+    titleFontWeight: titleFontWeight != null ? String(titleFontWeight) : undefined,
     topInsetEnabled: headerTopInsetEnabled,
     translucent: translucent === true,
     children,

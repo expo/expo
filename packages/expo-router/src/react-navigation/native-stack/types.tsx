@@ -324,11 +324,15 @@ export type NativeStackNavigationOptions = {
    * Boolean indicating whether the navigation bar is translucent.
    * Setting this to `true` makes the header absolutely positioned,
    * and changes the background color to `transparent` unless specified in `headerStyle`.
+   *
+   * On iOS, the header is translucent by default. Set this to `false` to use an opaque header.
+   * Content goes under the default iOS header, so scroll views need `contentInsetAdjustmentBehavior="automatic"`.
    */
   headerTransparent?: boolean;
   /**
    * Blur effect for the translucent header.
-   * The `headerTransparent` option needs to be set to `true` for this to work.
+   * Works when the header background is transparent, which is the default.
+   * Defaults to `systemChromeMaterial` when Liquid Glass is not available and no header background option is set.
    *
    * **Note:** Using both `headerBlurEffect` and `scrollEdgeEffects` (>= iOS 26) simultaneously may cause overlapping effects.
    *
