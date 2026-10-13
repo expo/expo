@@ -430,7 +430,7 @@ The `requestHeaders()` function synchronously returns an `ImmutableHeaders` obje
 ### Key points
 
 - This API requires an active request. You cannot use it with build-time rendering (`render: 'static'`), where there is no incoming request.
-- `requestHeaders()` is server-only and cannot be used on the client.
+- `requestHeaders()` is server-only, so you cannot call it on the client.
 
 ## Full React Server Components mode
 
