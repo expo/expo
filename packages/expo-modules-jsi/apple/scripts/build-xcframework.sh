@@ -37,8 +37,9 @@ SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 # Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
-# their symbols with Xcode 26.4 (Xcode 27 hides them), and frameworks linked against ours then bind
-# to them here, which breaks when the user's Xcode rebuilds this framework without the export.
+# their symbols with Xcode 26.4 (Xcode 27 hides them). A precompiled expo-modules-core then binds
+# _swift_allocateMetadataPack to this framework, and crashes at launch when the user's Xcode
+# rebuilds this framework without the export.
 # ld documents wildcards for symbol list files only, hence the list file.
 UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
 
