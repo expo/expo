@@ -91,6 +91,8 @@ Without these nodes, the rendered HTML does not include generated metadata, styl
 
 > **warning** In SDK 58, `bodyNodes` includes the JavaScript bundles required for hydration. Omitting it prevents the app from becoming interactive.
 
+The root HTML component also receives `pathname` and `params` props for the rendered route. Use these props instead of navigation hooks to customize HTML based on the route's pathname and URL parameters.
+
 ### Remove deprecated server flags
 
 Remove the following options from the `expo-router` config plugin in your app config. In SDK 58, they have no effect and emit a deprecation warning whenever present, including when set to `false`:
@@ -131,17 +133,24 @@ In SDK 58, `expo-router/testing-library` requires `@testing-library/react-native
 
 `renderRouter` now returns a promise. Add `await` before rendering or calling the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` so that updates finish before assertions run:
 
-```tsx app.test.tsx
-import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
-
-it('navigates to the profile', async () => {
-  await renderRouter(['index', 'profile']);
-
-  await testRouter.push('/profile');
-
-  expect(screen).toHavePathname('/profile');
-});
-```
+<DiffBlock
+  raw={`diff --git a/app.test.tsx b/app.test.tsx
+--- a/app.test.tsx
++++ b/app.test.tsx
+@@ -1,9 +1,9 @@
+ import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
+ 
+-it('navigates to the profile', () => {
+-  renderRouter(['index', 'profile']);
++it('navigates to the profile', async () => {
++  await renderRouter(['index', 'profile']);
+ 
+-  testRouter.push('/profile');
++  await testRouter.push('/profile');
+ 
+   expect(screen).toHavePathname('/profile');
+ });`}
+/>
 
 Replace imports and calls to `renderRouterAsync` with `renderRouter`, keeping `await`. Replace the removed `RenderRouterAsyncOptions` type with `RenderRouterOptions`. The `testRouter.canGoBack()` method remains synchronous.
 

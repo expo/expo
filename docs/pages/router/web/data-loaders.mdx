@@ -238,7 +238,7 @@ export async function loader() {
 
 If your loader returns `undefined` or `null`, the value is normalized to `null`.
 
-You can also return a `Response` with a JSON body to set response headers. The `useLoaderData` hook reads the JSON data from the response:
+In SDK 58 and later, you can also return a `Response` with a JSON body to set response headers. The `useLoaderData` hook reads the JSON data from the response:
 
 ```tsx src/app/posts.tsx
 export async function loader() {

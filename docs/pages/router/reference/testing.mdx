@@ -115,7 +115,7 @@ it('my-test', async () => {
 
 ## Navigation helpers
 
-In SDK 58 and later, await `renderRouter` and the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` before asserting on the result. The `testRouter.canGoBack()` method remains synchronous.
+Await `renderRouter` and the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` before asserting on the result. The `testRouter.canGoBack()` method remains synchronous.
 
 ```tsx app.test.tsx
 import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
