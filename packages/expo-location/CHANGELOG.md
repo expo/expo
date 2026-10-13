@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [Android] Stop the location foreground service when a background location task is unregistered while the service is still binding, so a `stopLocationUpdatesAsync` that follows `startLocationUpdatesAsync` within milliseconds no longer leaves the service and its notification running. ([#51236](https://github.com/expo/expo/pull/51236) by [@jrceranornelson](https://github.com/jrceranornelson))
+- [iOS] Fix `notifyOnEnter` being ignored for geofencing regions. The native side read a misspelled key, so every region reported enter events regardless of the flag. ([#51444](https://github.com/expo/expo/pull/51444) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix an infinite region restart loop when geofencing exceeds the maximum number of monitored regions. ([#51443](https://github.com/expo/expo/pull/51443) by [@Wenszel](https://github.com/Wenszel))
+- Add TSDoc to the `expo-location/next` API. ([#51231](https://github.com/expo/expo/pull/51231) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.14
 
 ### Patch Changes

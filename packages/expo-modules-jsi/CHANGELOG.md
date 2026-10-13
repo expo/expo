@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Fix a launch crash (`Symbol not found: _swift_allocateMetadataPack`) in apps that use precompiled Expo modules and build with Xcode 27. `ExpoModulesJSI` no longer exports Swift runtime symbols, so the precompiled `ExpoModulesCore` no longer depends on them. ([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix the `Build ExpoModulesJSI xcframework` build phase reporting `the following command failed with exit code 0 but produced no further output` on a cold build with Xcode 27. The package now builds with unused results (`NoUsage`) as errors, so a new one fails at the line that causes it. ([#51451](https://github.com/expo/expo/pull/51451) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.11
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "router-tester",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
