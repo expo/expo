@@ -67,8 +67,6 @@ export type RouterExtension<
   context: RouterExtensionContext<State, Action, Options>
 ) => Partial<RouterExtensionMembers<State, Action>>;
 
-// A router made by `extendRouter` never returns the deprecated `null`. Callers should check its
-// result with `isActionRejected`.
 type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
   Router<State, Action>,
   'getStateForAction'
