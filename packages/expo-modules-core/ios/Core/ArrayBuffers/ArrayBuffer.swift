@@ -259,7 +259,7 @@ extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
     _ value: ArrayBuffer,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> JavaScriptValue {
-    return value.asJavaScriptArrayBuffer(runtime: copy runtime).asValue()
+    return value.asJavaScriptArrayBuffer(runtime: runtime).asValue()
   }
 }
 

@@ -560,7 +560,7 @@ extension JavaScriptArray: JavaScriptCodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptArray
   {
-    return try value.asArray(in: copy runtime)
+    return try value.asArray(in: runtime)
   }
 
   @JavaScriptActor

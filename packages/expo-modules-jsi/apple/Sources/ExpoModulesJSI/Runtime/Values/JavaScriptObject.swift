@@ -728,7 +728,7 @@ extension JavaScriptObject: JavaScriptCodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptObject
   {
-    return try value.asObject(in: copy runtime)
+    return try value.asObject(in: runtime)
   }
 
   @JavaScriptActor
