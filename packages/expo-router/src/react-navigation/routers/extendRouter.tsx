@@ -67,6 +67,8 @@ export type RouterExtension<
   context: RouterExtensionContext<State, Action, Options>
 ) => Partial<RouterExtensionMembers<State, Action>>;
 
+// `Omit` replaces the method. A plain intersection keeps `Router`'s signature as the first
+// overload, so callers would still see `null` in the return type.
 type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
   Router<State, Action>,
   'getStateForAction'
@@ -184,34 +186,34 @@ export function extendRouter<
       },
       getStateForAction(state, action, config) {
         const typedState = ensureType(start(state, config));
-        const handled = router.getStateForAction(typedState, action, config);
-        if (handled === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
+        const result = router.getStateForAction(typedState, action, config);
+        if (result === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
           warnedNull = true;
           console.warn(
             `An \`extendRouter\` extension or \`extendRouterActions\` reducer returned \`null\` for the "${action.type}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Reject\` to reject the action, and use \`isActionRejected\` to check whether a router rejected an action.`
           );
         }
-        const result =
-          handled === RouterActionHandling.Delegate
+        const resolved =
+          result === RouterActionHandling.Delegate
             ? delegate.getStateForAction(typedState, action, config)
-            : handled;
+            : result;
 
-        if (isActionRejected(result)) {
+        if (isActionRejected(resolved)) {
           return RouterActionHandling.Reject;
         }
 
-        const finishedState = finish(result.state, typedState.type);
+        const finishedState = finish(resolved.state, typedState.type);
         if (router.getBrowserHistoryForAction) {
           const browserHistory = router.getBrowserHistoryForAction(
             typedState,
             finishedState,
             action
           );
-          if (browserHistory !== result.browserHistory) {
-            return { ...result, state: finishedState, browserHistory };
+          if (browserHistory !== resolved.browserHistory) {
+            return { ...resolved, state: finishedState, browserHistory };
           }
         }
-        return finishedState === result.state ? result : { ...result, state: finishedState };
+        return finishedState === resolved.state ? resolved : { ...resolved, state: finishedState };
       },
     };
   };
