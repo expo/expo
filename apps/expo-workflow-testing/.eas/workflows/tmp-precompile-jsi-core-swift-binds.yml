@@ -1,0 +1,80 @@
+# TEMPORARY: verification for chrfalch/precompiled-jsi-swift-runtime-binds. Remove before merge.
+name: TMP Precompile JSI + core Swift runtime binds
+
+defaults:
+  tools:
+    pnpm: "12.2.1"
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  precompile_check:
+    name: Precompile expo-modules-jsi + expo-modules-core and check Swift runtime binds
+    runs_on: macos-large
+    image: macos-tahoe-26.4-xcode-26.4
+    environment: production
+    env:
+      RCT_HERMES_V1_ENABLED: "1"
+      TURBO_TEAM: expo
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Precompile expo-modules-jsi, then expo-modules-core
+        working_directory: ../..
+        run: |
+          xcodebuild -version
+          bin/expo-turbo run precompile-ios --filter=expo-modules-jsi --force
+          bin/expo-turbo run precompile-ios --filter=expo-modules-core --force
+      - name: Check Swift runtime exports and binds
+        working_directory: ../..
+        run: |
+          set -uo pipefail
+          status=0
+          echo "== ExpoModulesJSI binaries built by the pipeline: exported _swift_* (expect 0) =="
+          find packages/expo-modules-jsi packages/precompile/.build -path '*ExpoModulesJSI.framework/ExpoModulesJSI' -type f 2>/dev/null | while read -r bin; do
+            echo "$bin: $(nm -gU "$bin" | grep -c ' _swift_')"
+          done
+          out="$HOME/core-check"
+          mkdir -p "$out"
+          for tarball in packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz; do
+            flavor=$(basename "$(dirname "$(dirname "$tarball")")")
+            mkdir -p "$out/$flavor"
+            tar -xzf "$tarball" -C "$out/$flavor"
+            find "$out/$flavor" -path '*ExpoModulesCore.framework/ExpoModulesCore' -type f | while read -r bin; do
+              echo "== $flavor: $bin =="
+              otool -l "$bin" | grep -A5 LC_BUILD_VERSION | grep -E 'minos|sdk|version'
+              fixups=$(xcrun dyld_info -fixups "$bin")
+              echo "binds to ExpoModulesJSI/_swift_*:"
+              echo "$fixups" | grep 'ExpoModulesJSI/_swift_' || echo "  none"
+              echo "binds of _swift_allocate*Pack (any image, incl. flat-namespace):"
+              echo "$fixups" | grep -E '_swift_allocate(Metadata|WitnessTable)Pack' || echo "  none"
+              echo "nm -m _swift_allocate*Pack:"
+              nm -m "$bin" | grep -E '_swift_allocate(Metadata|WitnessTable)Pack' || echo "  not referenced"
+            done
+          done > "$out/report.txt"
+          cat "$out/report.txt"
+          if grep -q 'ExpoModulesJSI/_swift_' "$out/report.txt"; then
+            echo "FAIL: core binds Swift runtime symbols to ExpoModulesJSI"; status=1
+          fi
+          if grep -E '_swift_allocate(Metadata|WitnessTable)Pack' "$out/report.txt" | grep -qE 'bind|undefined'; then
+            echo "FAIL: core does not define the pack runtime functions itself"; status=1
+          fi
+          if ! ls packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz >/dev/null 2>&1; then
+            echo "FAIL: no ExpoModulesCore.tar.gz found"; status=1
+          fi
+          for tarball in packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz; do
+            flavor=$(basename "$(dirname "$(dirname "$tarball")")")
+            cp "$tarball" "$out/ExpoModulesCore-$flavor.tar.gz"
+          done
+          exit $status
+      - name: Upload core xcframeworks and report
+        if: ${{ always() }}
+        uses: eas/upload_artifact
+        with:
+          type: other
+          name: expo-modules-core-precompiled
+          path: |
+            ${{ env.HOME }}/core-check/report.txt
+            ${{ env.HOME }}/core-check/ExpoModulesCore-*.tar.gz
