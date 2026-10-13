@@ -6,6 +6,10 @@ import ExpoModulesJSI
  Represents a JavaScript class.
  */
 public final class ClassDefinition: ObjectDefinition {
+  public override var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.klass(self))
+  }
+
   /**
    Name of the class.
    */
@@ -28,13 +32,24 @@ public final class ClassDefinition: ObjectDefinition {
 
   private init(_ name: String, associatedType: AnyDynamicType, isSharedRef: Bool, elements: [AnyClassDefinitionElement] = []) {
     self.name = name
-    self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = associatedType
     self.isSharedRef = isSharedRef
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
-    let elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
+    var constructor: AnySyncFunctionDefinition?
+    var elementsWithoutConstructors = [AnyClassDefinitionElement]()
+
+    for element in elements {
+      if let candidate = constructorDefinition(element) {
+        if constructor == nil {
+          constructor = candidate
+        }
+        continue
+      }
+      elementsWithoutConstructors.append(element)
+    }
+    self.constructor = constructor
 
     super.init(definitions: elementsWithoutConstructors)
   }
@@ -169,13 +184,26 @@ extension SharedObject: ClassAssociatedObject {}
 // MARK: - Privates
 
 /**
- Checks whether the definition item is a constructor — a synchronous function whose name is "constructor".
+ Returns the definition item as a constructor, a synchronous function whose name is "constructor", or `nil`.
 
  We do it that way for the following two reasons:
  - It's easier to reuse existing `SyncFunctionDefinition`.
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
-private func isConstructor(_ item: AnyDefinition) -> Bool {
-  return (item as? AnySyncFunctionDefinition)?.name == "constructor"
+private func constructorDefinition(_ item: AnyDefinition) -> AnySyncFunctionDefinition? {
+  let function: AnyFunctionDefinition
+  switch item._definitionClassification.kind {
+  case .function(let definition):
+    function = definition
+  case .staticFunction(let definition):
+    function = definition
+  default:
+    return nil
+  }
+  // Only the element named "constructor" pays for the protocol cast.
+  guard function.name == "constructor" else {
+    return nil
+  }
+  return function as? AnySyncFunctionDefinition
 }
