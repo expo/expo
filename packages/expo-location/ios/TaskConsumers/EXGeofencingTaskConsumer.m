@@ -80,7 +80,8 @@ static const NSUInteger EXMaxMonitoredRegions = 20;
       NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
       CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
       CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
-      BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
+      id notifyOnEnterValue = regionDict[@"notifyOnEnter"] ?: regionDict[@"notifyOnEntry"];
+      BOOL notifyOnEntry = [self.class boolValueFrom:notifyOnEnterValue defaultValue:YES];
       BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
 
       CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
