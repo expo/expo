@@ -220,8 +220,9 @@ export type PositionWatchStatus = {
    */
   isSubscribed: boolean;
   /**
-   * Whether the subscription can deliver. `false` while no provider matches the request or Google
-   * Play services reports location unavailable. Restarting the watcher does not clear it.
+   * Whether the subscription can deliver. `false` while no system provider matches the request,
+   * or Google Play services reports location unavailable. Restarting the watcher does not clear
+   * it.
    *
    * @platform android
    */
@@ -239,8 +240,9 @@ export type PositionWatchStatus = {
    */
   isPaused: boolean;
   /**
-   * Whether the watcher is allowed to run. `true` in the foreground, and in the background only
-   * while a location foreground service is running.
+   * Whether the watcher is allowed to run. `true` in the foreground, and in the background while
+   * a location foreground service is running, or on Android 7 and earlier, where no service is
+   * needed.
    *
    * @platform android
    */

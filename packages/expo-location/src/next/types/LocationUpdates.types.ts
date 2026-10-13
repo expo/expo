@@ -4,7 +4,7 @@
  * @platform android
  */
 export type BackgroundTaskStatus = {
-  /** Whether the task is registered with the system. */
+  /** Whether the task is registered in the system. */
   isRegistered: boolean;
   /** Whether the provider accepted the request for updates. */
   isRunning: boolean;

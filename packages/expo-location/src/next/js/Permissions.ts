@@ -59,8 +59,7 @@ export async function requestBackgroundPermissions(
 }
 
 /**
- * Checks the user's permission for posting the notification shown by the location foreground
- * service. The service runs without it — only its notification stays hidden.
+ * Checks the user's permission for posting notifications.
  * @return A promise that fulfills with an object of type `PermissionResponse`.
  * @platform android
  */
@@ -73,8 +72,7 @@ export async function getNotificationPermissions(): Promise<PermissionResponse> 
 }
 
 /**
- * Asks the user to grant the permission for posting the notification shown by the location
- * foreground service. The service runs without it — only its notification stays hidden.
+ * Asks the user to grant the permission for posting notifications.
  * @return A promise that fulfills with an object of type `PermissionResponse`.
  * @platform android
  */
@@ -127,8 +125,7 @@ export const useBackgroundLocationPermissions = createPermissionHook({
 });
 
 /**
- * Check or request the permission for the notification shown by the location foreground service.
- * This uses both `getNotificationPermissions` and `requestNotificationPermissions`.
+ * Checks or requests the permission for showing notifications.
  * @platform android
  */
 export const useNotificationPermissions = createPermissionHook({
