@@ -23,7 +23,7 @@ function geolocationPositionToJSON(position: GeolocationPosition): LocationObjec
       latitude: coords.latitude,
       longitude: coords.longitude,
       altitude: coords.altitude,
-      altitudeAboveMeanSeaLevel: null,
+      mslAltitude: null,
       accuracy: coords.accuracy,
       altitudeAccuracy: coords.altitudeAccuracy,
       heading: coords.heading,

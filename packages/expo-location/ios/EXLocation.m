@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
         @"altitude": hasAltitude ? @(location.ellipsoidalAltitude) : [NSNull null],
-        @"altitudeAboveMeanSeaLevel": hasAltitude ? @(location.altitude) : [NSNull null],
+        @"mslAltitude": hasAltitude ? @(location.altitude) : [NSNull null],
         @"accuracy": @(location.horizontalAccuracy),
         @"altitudeAccuracy": hasAltitude ? @(location.verticalAccuracy) : [NSNull null],
         @"heading": @(location.course),

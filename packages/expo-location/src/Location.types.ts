@@ -298,7 +298,7 @@ export type LocationObjectCoords = {
    * @platform android 14+
    * @platform ios
    */
-  altitudeAboveMeanSeaLevel: number | null;
+  mslAltitude: number | null;
   /**
    * The radius of uncertainty for the location, measured in meters. Can be `null` on Web if it's not available.
    */
