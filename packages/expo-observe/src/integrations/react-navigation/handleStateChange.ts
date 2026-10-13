@@ -1,6 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { getNavigationRouteParams } from '../navigationConfig';
+import { recordNavigationMetric } from '../recordNavigationMetric';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
 import { getReactNavigationIntegrationConfig } from './init';
@@ -82,7 +83,7 @@ export function createStateChangeHandler(
           lastInteractiveCall: now,
         };
       }
-      mainSession.addMetric({
+      recordNavigationMetric(mainSession, {
         timestamp,
         category: 'navigation',
         name,
@@ -112,7 +113,7 @@ export function createStateChangeHandler(
       };
     }
 
-    mainSession.addMetric({
+    recordNavigationMetric(mainSession, {
       timestamp,
       category: 'navigation',
       name,
