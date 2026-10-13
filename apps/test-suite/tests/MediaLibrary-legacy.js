@@ -6,7 +6,7 @@ import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
 import { waitFor } from './helpers';
 
-export const name = 'MediaLibrary';
+export const name = 'MediaLibrary@legacy';
 
 const FILES = [
   require('../assets/icons/app.png'),

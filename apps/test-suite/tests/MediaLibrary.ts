@@ -13,7 +13,7 @@ import {
 } from 'expo-media-library';
 import { Platform } from 'react-native';
 
-export const name = 'MediaLibrary@Next';
+export const name = 'MediaLibrary';
 
 const mp3Path = require('../assets/LLizard.mp3');
 const mp4Path = require('../assets/big_buck_bunny.mp4');
