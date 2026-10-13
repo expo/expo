@@ -63,6 +63,12 @@ metadata. You do **not** re-review the code. You consolidate and decide.
 A lone warning in an otherwise clean PR is `approve_with_comments`, not
 `request_changes`.
 
+A `quality` warning from the pull-request requirements reviewer is about the
+title, body, or change size. The evidence is the text itself, so it is not
+speculative. Do not drop it because the product impact is low, and do not
+upgrade it to `critical`. It does not make the decision `request_changes` by
+itself. Keep it so the author sees the missing part.
+
 ## Severity floors specific to this repository
 
 Every package here publishes to npm and is installed by many thousands of apps, and
