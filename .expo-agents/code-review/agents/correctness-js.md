@@ -57,7 +57,9 @@ really reach review here — not a generic checklist.
 - `mockRestore()` at the end of a test body rather than in teardown, so one failure leaks
   the mock into every later test.
 - A bug fix with no test, in a package that has a `__tests__/` directory. This repo works
-  red/green, so the failing test is expected to come first.
+  red/green, so the failing test is expected to come first. Do not ask for a test that
+  would pass on the code before this change, or a test that only mocks the function
+  it claims to test. The pull request title and body are not yours to judge.
 
 **Dependency and lockfile desync**
 - Added or bumped dependencies in any `package.json` with no `pnpm-lock.yaml` in the same
