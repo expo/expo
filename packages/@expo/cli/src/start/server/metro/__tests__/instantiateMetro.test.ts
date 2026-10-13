@@ -1,5 +1,10 @@
 import { Log } from '../../../../log';
-import { event, isWatchEnabled, prewarmTransformPool } from '../instantiateMetro';
+import {
+  event,
+  isWatchEnabled,
+  moveHmrClientGroupToRevision,
+  prewarmTransformPool,
+} from '../instantiateMetro';
 
 jest.mock('../../../../log');
 jest.mock(
@@ -91,5 +96,41 @@ describe(isWatchEnabled, () => {
     process.env.CI = 'true';
     expect(isWatchEnabled()).toBe(false);
     expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Metro is running in CI mode'));
+  });
+});
+
+describe(moveHmrClientGroupToRevision, () => {
+  function createClientGroup(revisionId: string) {
+    const client = { optedIntoHMR: true, revisionIds: [revisionId], sendFn: jest.fn() };
+    const group = {
+      clients: new Set([client]),
+      clientUrl: new URL('http://localhost:8081/index.bundle?platform=ios'),
+      revisionId,
+      unlisten: jest.fn(),
+      graphOptions: { lazy: false, shallow: false },
+    };
+    return { client, group };
+  }
+
+  it('moves a registered group and its clients to the new revision', () => {
+    const { client, group } = createClientGroup('rev0');
+    const clientGroups = new Map([['rev0', group]]);
+
+    moveHmrClientGroupToRevision(clientGroups, group, 'rev1');
+
+    expect([...clientGroups]).toEqual([['rev1', group]]);
+    expect(client.revisionIds).toEqual(['rev1']);
+  });
+
+  it('does not add back a group whose last client disconnected during the update', () => {
+    const { client, group } = createClientGroup('rev0');
+    const clientGroups = new Map([['rev0', group]]);
+    // Metro's `onClientDisconnect` removes a group, and stops it listening, with its last client.
+    group.clients.delete(client);
+    clientGroups.delete('rev0');
+
+    moveHmrClientGroupToRevision(clientGroups, group, 'rev1');
+
+    expect(clientGroups.size).toBe(0);
   });
 });
