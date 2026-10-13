@@ -121,6 +121,6 @@ export const SITE_NAMES: Record<SupportedLocale, string> = {
 };
 
 export const BASE_DESCRIPTIONS: Record<SupportedLocale, string> = {
-  en: 'Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.',
-  ja: 'Expo は、JavaScript と React を使って Android、iOS、web で動作するユニバーサルネイティブアプリを作るためのオープンソースプラットフォームです。',
+  en: 'Expo is agentic mobile infrastructure. It provides building blocks that agents and teams can use to build, validate, deploy, and monitor their mobile apps.',
+  ja: 'Expo は、エージェント型のモバイルインフラストラクチャです。エージェントとチームがモバイルアプリのビルド、検証、デプロイ、監視に使える構成要素を提供します。',
 };

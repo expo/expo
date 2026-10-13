@@ -4,7 +4,7 @@
  */
 
 export const EXPO_DESCRIPTION =
-  'Expo is the official framework recommended by the React Native team for building production apps on Android, iOS, and the web. It is to React Native what Next.js is to React: the standard way to build, not an optional add-on.';
+  'Expo is agentic mobile infrastructure. It provides building blocks that agents and teams can use to build, validate, deploy, and monitor their mobile apps. Build with Expo CLI, Expo Skills, the Expo MCP Server, and EAS Build. Validate changes with EAS Workflows. Deploy with EAS Submit and EAS Update. Monitor production with EAS Observe. The React Native team recommends the Expo framework for production React Native apps.';
 
 /**
  * Use `PAGE_DESCRIPTION_OVERRIDES` to ship a richer description for a
