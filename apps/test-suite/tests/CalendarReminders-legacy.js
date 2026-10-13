@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 
-export const name = 'CalendarReminders';
+export const name = 'CalendarReminders@legacy';
 
 async function createTestReminderAsync(calendarId) {
   return await Calendar.createReminderAsync(calendarId, {

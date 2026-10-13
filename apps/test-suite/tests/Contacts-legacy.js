@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 
-export const name = 'Contacts';
+export const name = 'Contacts@legacy';
 const isAndroid = Platform.OS !== 'ios';
 
 async function sortContacts(contacts, sortField, expect) {
