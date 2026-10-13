@@ -49,7 +49,7 @@ Do not add a unit test the change does not need.
 
 ## Pull requests
 
-Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and keep the headings in [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE).
+Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and keep the headings in [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE): `Why`, `How`, `Test Plan`, and `Checklist`.
 
 - Keep the diff small enough to read in one pass. If the change has more than one reason, split it into a stack. Each pull request does one thing. Set its base branch to the previous pull request. After one merges, retarget the next to `main`.
 - List the stack order in `How`, and say which pull request this one is.
