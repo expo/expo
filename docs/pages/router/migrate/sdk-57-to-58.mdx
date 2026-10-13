@@ -11,7 +11,8 @@ SDK 58 changes how Expo Router builds navigation state and integrates with navig
 Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
-- For web apps, review the [async route defaults](#review-async-route-defaults), move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html), review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"`, and review the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
+- For web apps, remove [deprecated server flags](#remove-deprecated-server-flags), review the [async route defaults](#review-async-route-defaults), and move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html). Review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"` and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
+- For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
@@ -84,9 +85,25 @@ See [Static rendering: Meta tags](/router/web/static-rendering/#meta-tags) for t
 
 ### Update custom Root HTML components
 
-If your static web app has a **src/app/+html.tsx** file, make sure it calls `useServerDocumentContext()` from `expo-router/html`. Spread `htmlAttributes` and `bodyAttributes` onto their respective elements, and render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`.
+If your app uses `web.output: "static"` or `"server"` and has a **src/app/+html.tsx** file, make sure it calls `useServerDocumentContext()` from `expo-router/html`. Spread `htmlAttributes` and `bodyAttributes` onto their respective elements, and render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`.
 
-Without these nodes, the exported HTML does not include generated metadata, styles, fonts, or JavaScript bundles. See the [root HTML example](/router/web/static-rendering/#root-html).
+Without these nodes, the rendered HTML does not include generated metadata, styles, fonts, or JavaScript bundles. See the [static rendering](/router/web/static-rendering/#root-html) and [server rendering](/router/web/server-rendering/#root-html) examples.
+
+> **warning** In SDK 58, `bodyNodes` includes the JavaScript bundles required for hydration. Omitting it prevents the app from becoming interactive.
+
+The root HTML component also receives `pathname` and `params` props for the rendered route. Use these props instead of navigation hooks to customize HTML based on the route's pathname and URL parameters.
+
+### Remove deprecated server flags
+
+Remove the following options from the `expo-router` config plugin in your app config. In SDK 58, they have no effect and emit a deprecation warning whenever present, including when set to `false`:
+
+| Deprecated option               | SDK 58 behavior                                                                                                      |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `unstable_useServerRendering`   | [Server rendering](/router/web/server-rendering/) runs when `web.output` is `"server"`.                              |
+| `unstable_useServerDataLoaders` | [Data loaders](/router/web/data-loaders/) are available with `web.output: "static"` or `"server"` without an opt-in. |
+| `unstable_useServerMiddleware`  | [Server middleware](/router/web/middleware/) no longer requires an opt-in.                                           |
+
+Setting these flags to `false` no longer disables the corresponding feature. To keep prerendered HTML with API routes, follow [Review server rendering behavior](#review-server-rendering-behavior).
 
 ### Review async route defaults
 
@@ -109,6 +126,35 @@ After upgrading or changing `asyncRoutes`, clear the Metro cache with `expo star
 ### Move navigation hooks out of the root HTML
 
 In SDK 58, navigation hooks, such as `usePathname`, `useSegments`, `useLocalSearchParams`, and `useRouter`, no longer work in the [root HTML](/router/web/static-rendering/#root-html) component in **app/+html.tsx**. Use them in the [root layout](/router/basics/navigation-layouts/#root-layout) in **app/\_layout.tsx** instead.
+
+### Update Router tests
+
+In SDK 58, `expo-router/testing-library` requires `@testing-library/react-native` version 14 or later. Update this dependency when upgrading your app.
+
+`renderRouter` now returns a promise. Add `await` before rendering or calling the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` so that updates finish before assertions run:
+
+<DiffBlock
+  raw={`diff --git a/app.test.tsx b/app.test.tsx
+--- a/app.test.tsx
++++ b/app.test.tsx
+@@ -1,9 +1,9 @@
+ import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
+ 
+-it('navigates to the profile', () => {
+-  renderRouter(['index', 'profile']);
++it('navigates to the profile', async () => {
++  await renderRouter(['index', 'profile']);
+ 
+-  testRouter.push('/profile');
++  await testRouter.push('/profile');
+ 
+   expect(screen).toHavePathname('/profile');
+ });`}
+/>
+
+Replace imports and calls to `renderRouterAsync` with `renderRouter`, keeping `await`. Replace the removed `RenderRouterAsyncOptions` type with `RenderRouterOptions`. The `testRouter.canGoBack()` method remains synchronous.
+
+See [Testing with Expo Router](/router/reference/testing/) for test helpers and [Unit testing with Jest](/develop/unit-testing/) for setup instructions.
 
 ### Prefer `useRouter` in components
 

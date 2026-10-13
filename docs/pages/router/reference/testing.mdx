@@ -6,6 +6,8 @@ description: Learn how to create integration tests for your app when using Expo 
 
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
+> **info** This guide covers SDK 58 and later. If you're upgrading from SDK 57, see the [Router testing migration guide](/router/migrate/sdk-57-to-58/#update-router-tests).
+
 Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quickly create in-memory Expo Router apps that are pre-configured for testing.
 
 ## Configuration
@@ -16,7 +18,7 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 ## `renderRouter`
 
-`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api/queries) to locate components.
+`renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. The returned promise is fulfilled with the same query object as `render`. You can also use [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen) and the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api/queries) to locate components.
 
 `renderRouter` accepts the same [options](https://callstack.github.io/react-native-testing-library/docs/api#render-options) as `render` and introduces an additional option `initialUrl`, which sets an initial route for simulating deep-linking.
 
@@ -110,6 +112,21 @@ it('my-test', async () => {
 ```
 
 </PaddedAPIBox>
+
+## Navigation helpers
+
+Await `renderRouter` and the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` before asserting on the result. The `testRouter.canGoBack()` method remains synchronous.
+
+```tsx app.test.tsx
+import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
+
+it('navigates to the profile', async () => {
+  await renderRouter(['index', 'profile']);
+  await testRouter.push('/profile');
+
+  expect(screen).toHavePathname('/profile');
+});
+```
 
 ## Jest matchers
 
