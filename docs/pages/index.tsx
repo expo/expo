@@ -16,7 +16,7 @@ function Home() {
     <DocumentationPage
       hideTOC
       hideFromSearch
-      description="Documentation for Expo, the agentic mobile infrastructure that agents and teams can use to build, validate, deploy, and monitor their mobile apps.">
+      description="Documentation for Expo, the agentic mobile infrastructure that agents and teams can use to build, validate, deploy, and monitor mobile apps.">
       <div className="h-0">
         <DevicesImageMasks />
       </div>
