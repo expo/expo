@@ -70,7 +70,7 @@ index 00000000000..3ec2507bab7
 +    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
 +</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 150248b6b3c..14bdba124ab 100644
+index 150248b6b3c..30ef6349e33 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -1,12 +1,13 @@
@@ -95,7 +95,7 @@ index 150248b6b3c..14bdba124ab 100644
  
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
 -    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
-+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>
@@ -172,10 +172,16 @@ index 267e20c30e5..cbb5ddb85d0 100644
    }
  
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index fa7b11e23c1..0554dd156c1 100644
+index fa7b11e23c1..521e972aa7b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -12,21 +12,8 @@ buildscript {
+@@ -8,25 +8,13 @@ buildscript {
+   dependencies {
+     classpath('com.android.tools.build:gradle')
+     classpath('com.facebook.react:react-native-gradle-plugin')
+-    classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
++    def kotlinVersion = findProperty('android.kotlinVersion')
++    classpath(kotlinVersion ? "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion" : 'org.jetbrains.kotlin:kotlin-gradle-plugin')
    }
  }
  
@@ -213,7 +219,7 @@ index 8a6be077181..01581731149 100644
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 7531e9eb23c..97271b9456f 100644
+index 7531e9eb23c..6826811f37f 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -15,7 +15,7 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
@@ -225,30 +231,66 @@ index 7531e9eb23c..97271b9456f 100644
  
  # AndroidX package structure to make it clearer which packages are bundled with the
  # Android operating system, and which are packaged with your app's APK
-@@ -41,6 +41,11 @@ newArchEnabled=true
+@@ -25,6 +25,12 @@ android.useAndroidX=true
+ # Enable AAPT2 PNG crunching
+ android.enablePngCrunchInReleaseBuilds=true
+ 
++# Enable R8 in release builds to shrink, optimize and obfuscate the Java/Kotlin code.
++# The app is optimized using the `proguard-android-optimize.txt` preset.
++# Add custom keep rules to android/app/proguard-rules.pro.
++# See https://developer.android.com/topic/performance/app-optimization/enable-app-optimization
++android.enableMinifyInReleaseBuilds=true
++
+ # Use this property to specify which architecture you want to build.
+ # You can also override it from the CLI using
+ # ./gradlew <task> -PreactNativeArchitectures=x86_64
+@@ -41,12 +47,21 @@ newArchEnabled=true
  # If set to false, you will be using JSC instead.
  hermesEnabled=true
  
+-# Enable GIF support in React Native images (~200 B increase)
 +# Use this property to enable edge-to-edge display support.
 +# This allows your app to draw behind system bars for an immersive UI.
 +# Note: Only works with ReactActivity and should not be used with custom Activity.
 +edgeToEdgeEnabled=true
 +
- # Enable GIF support in React Native images (~200 B increase)
++# Enable GIF support in React Native's <Image> component.
++# Disable to reduce app size if you only render GIFs via expo-image.
++# See https://docs.expo.dev/distribution/app-size/
  expo.gif.enabled=true
- # Enable webp support in React Native images (~85 KB increase)
+-# Enable webp support in React Native images (~85 KB increase)
++# Enable WebP support in React Native's <Image> component.
++# Disable to reduce app size if you only render WebP via expo-image.
++# See https://docs.expo.dev/distribution/app-size/
+ expo.webp.enabled=true
+-# Enable animated webp support (~3.4 MB increase)
+-# Disabled by default because iOS doesn't support animated webp
++# Enable animated WebP support in React Native's <Image> component.
++# Disabled by default because iOS doesn't support animated WebP.
+ expo.webp.animated=false
+ 
+ # Enable network inspector
+@@ -54,3 +69,8 @@ EX_DEV_CLIENT_NETWORK_INSPECTOR=true
+ 
+ # Use legacy packaging to compress native libraries in the resulting APK.
+ expo.useLegacyPackaging=false
++
++# Opt out of built-in kotlin and new DSL behavior that ships with AGP 9.
++# Starting from AGP 10.x these opt outs will be removed.
++android.builtInKotlin=false
++android.newDsl=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index a4b76b9530d..61285a659d1 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 37f853b1c84..37f78a6af83 100644
+index 37f853b1c84..c61a118f7dd 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,6 @@
  distributionBase=GRADLE_USER_HOME
  distributionPath=wrapper/dists
 -distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
-+distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.4.1-bin.zip
  networkTimeout=10000
  validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
@@ -326,7 +368,7 @@ index 9b42019c791..39baf4d6846 100644
  :end
  @rem End local scope for the variables with windows NT shell
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 1b7513bd31b..4670609274a 100644
+index 1b7513bd31b..ad9f97ad63d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 @@ -11,6 +11,7 @@
@@ -353,7 +395,7 @@ index 1b7513bd31b..4670609274a 100644
  				F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */,
  				BB2F792B24A3F905000567C9 /* Supporting */,
  				13B07FB51A68108700A75B9A /* Images.xcassets */,
-@@ -168,6 +171,8 @@
+@@ -168,13 +171,15 @@
  			files = (
  			);
  			inputPaths = (
@@ -362,6 +404,14 @@ index 1b7513bd31b..4670609274a 100644
  			);
  			name = "Bundle React Native code and images";
  			outputPaths = (
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 			shellPath = /bin/sh;
+-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
++			shellScript = "if [[ -f \"$SRCROOT/.xcode.env\" ]]; then\n  source \"$SRCROOT/.xcode.env\"\nfi\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$SRCROOT/.xcode.env.updates\" ]]; then\n  source \"$SRCROOT/.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n\"`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\"\n\n";
+ 		};
+ 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+ 			isa = PBXShellScriptBuildPhase;
 @@ -228,6 +233,7 @@
  			buildActionMask = 2147483647;
  			files = (
@@ -615,19 +665,24 @@ index 29503ff0cc1..1a7b1969798 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 661f6b6addf..92989571f5f 100644
+index 661f6b6addf..bc906eb9033 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
-@@ -2,7 +2,7 @@
+@@ -2,7 +2,12 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "53.0.42",
-+  "version": "56.0.19",
++  "version": "58.0.17",
++  "repository": {
++    "type": "git",
++    "url": "https://github.com/expo/expo.git",
++    "directory": "templates/expo-template-bare-minimum"
++  },
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -11,12 +11,14 @@
+@@ -11,12 +16,14 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -635,10 +690,10 @@ index 661f6b6addf..92989571f5f 100644
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
-+    "expo": "~56.0.5",
-+    "expo-status-bar": "~56.0.4",
-+    "react": "19.2.3",
-+    "react-native": "0.86.0"
++    "expo": "workspace:~",
++    "expo-status-bar": "workspace:~",
++    "react": "19.3.0",
++    "react-native": "0.88.0-rc.4"
    },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
