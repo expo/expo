@@ -238,6 +238,11 @@ export type UserInteractionEvent = {
    */
   target: string;
   /**
+   * The key of the custom notification that contains the button. Absent for widget interactions.
+   * @platform android
+   */
+  notificationId?: string;
+  /**
    * Timestamp of the event.
    */
   timestamp: number;
