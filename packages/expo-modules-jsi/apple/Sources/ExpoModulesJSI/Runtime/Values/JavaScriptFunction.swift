@@ -67,6 +67,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
 
   /// Calls the function with a single borrowed argument. The argument's `jsi::Value` is passed
   /// straight to the call, without copying it into an owned value or an arguments buffer.
+  @discardableResult
   internal func call(argument: borrowing JavaScriptValue) throws -> JavaScriptValue {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
@@ -82,6 +83,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
 
   /// Calls the function with the given `this` object and a single borrowed argument, passed the same
   /// way as in ``call(argument:)``.
+  @discardableResult
   internal func call(this: borrowing JavaScriptObject, argument: borrowing JavaScriptValue) throws -> JavaScriptValue {
     guard let jsiRuntime else {
       FatalError.runtimeLost()

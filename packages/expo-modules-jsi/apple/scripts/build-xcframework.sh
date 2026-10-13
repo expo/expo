@@ -220,6 +220,16 @@ build_slice() {
   # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
   # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
   # .DerivedData. The .swiftinterface and the dSYM are unaffected.
+  #
+  # The output goes to a log first. Xcode reads every `error:` line that a script phase prints as
+  # a build error, even when the script exits 0. The nested xcodebuild can print such lines for a
+  # build that succeeds: Xcode 27 reports a compile step that emitted only warnings as "error: the
+  # following command failed with exit code 0 but produced no further output". When the nested
+  # build succeeds, its `error:` lines are printed as warnings. When it fails, the log is printed
+  # without changes.
+  local xcodebuild_log="${DERIVED_DATA_PATH}/xcodebuild-${platform}.log"
+  mkdir -p "$DERIVED_DATA_PATH"
+  local xcodebuild_status=0
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -245,7 +255,13 @@ build_slice() {
     CLANG_COVERAGE_MAPPING=NO \
     SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
     SWIFT_ENABLE_EXPLICIT_MODULES=NO \
-  )
+  ) > "$xcodebuild_log" 2>&1 || xcodebuild_status=$?
+
+  if [[ $xcodebuild_status -ne 0 ]]; then
+    cat "$xcodebuild_log"
+    exit "$xcodebuild_status"
+  fi
+  sed -E 's/(^|: )error: /\1warning: /' "$xcodebuild_log"
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
