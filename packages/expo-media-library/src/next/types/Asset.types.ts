@@ -20,6 +20,8 @@ export enum MediaSubtype {
   TIME_LAPSE = 'timelapse',
   SPATIAL_MEDIA = 'spatialMedia',
   VIDEO_CINEMATIC = 'videoCinematic',
+  ANIMATION = 'animation',
+  SCREEN_RECORDING = 'screenRecording',
 }
 
 /**
