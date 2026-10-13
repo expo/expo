@@ -5,6 +5,7 @@ import {
   type CommonNavigationAction,
   extendRouterActions,
   type ParamListBase,
+  RouterActionHandling,
   type RouterConfigOptions,
   StackActions,
   type StackActionType,
@@ -3185,7 +3186,7 @@ describe('extended stack router', () => {
       StackRouter,
       (state, action: StackActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
         if (action.type !== 'CUSTOM') {
-          return undefined;
+          return RouterActionHandling.Delegate;
         }
         return {
           state: {

@@ -101,6 +101,7 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from './react-navigation/routers';
@@ -122,6 +123,7 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionMembers,
   RouterExtensionOptions,
   RouterFactory,
   StackActionType,

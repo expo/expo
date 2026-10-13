@@ -2,14 +2,18 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import {
+  extendRouter,
+  RouterActionHandling,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
   NavigationState,
   ParamListBase,
   Route,
-  Router,
   RouterBrowserHistoryAction,
   NavigationAction,
 } from './types';
@@ -250,7 +254,10 @@ function stackRouterExtension({
   StackRouterOptions
 >) {
   const router: Omit<
-    Router<StackNavigationState<ParamListBase>, CommonNavigationAction | StackActionType>,
+    RouterExtensionMembers<
+      StackNavigationState<ParamListBase>,
+      CommonNavigationAction | StackActionType
+    >,
     'shouldActionChangeFocus'
   > = {
     normalizeState: markPreloadedRoutes,
@@ -342,11 +349,11 @@ function stackRouterExtension({
               : state.index;
 
           if (currentIndex === -1) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const getId = options.routeGetIdList[action.payload.name];
@@ -378,7 +385,7 @@ function stackRouterExtension({
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const getId = options.routeGetIdList[action.payload.name];
@@ -533,7 +540,7 @@ function stackRouterExtension({
             return { state: result, affectedRouteKey: result.routes[result.index]?.key };
           }
 
-          return null;
+          return RouterActionHandling.Reject;
         }
 
         case 'POP_TO_TOP':
@@ -553,11 +560,11 @@ function stackRouterExtension({
               : state.index;
 
           if (currentIndex === -1) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           // If the route already exists, navigate to it
@@ -648,7 +655,7 @@ function stackRouterExtension({
             );
           }
 
-          return null;
+          return RouterActionHandling.Reject;
 
         case 'PRELOAD': {
           const getId = options.routeGetIdList[action.payload.name];
@@ -705,7 +712,7 @@ function stackRouterExtension({
         }
 
         default:
-          return baseRouter.getStateForAction(state, action, options);
+          return RouterActionHandling.Delegate;
       }
     },
 

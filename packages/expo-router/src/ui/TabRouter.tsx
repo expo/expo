@@ -3,6 +3,7 @@ import {
   extendRouterActions,
   type ParamListBase,
   type RouterActionContext,
+  RouterActionHandling,
   type TabActionType as RNTabActionType,
   type TabNavigationState,
   type TabRouterOptions as RNTabRouterOptions,
@@ -46,13 +47,13 @@ export const ExpoTabRouter = extendRouterActions(
     >
   ) => {
     if (action.type !== 'JUMP_TO') {
-      return undefined;
+      return RouterActionHandling.Delegate;
     }
 
     const { route, isSwitching } = getTabRoute(state, action.payload.name);
 
     if (!route) {
-      return undefined;
+      return RouterActionHandling.Delegate;
     }
 
     const shouldReset =
@@ -82,6 +83,6 @@ export const ExpoTabRouter = extendRouterActions(
       }
     }
 
-    return baseRouter.getStateForAction(state, action);
+    return baseRouter.getStateForAction(state, action) ?? RouterActionHandling.Reject;
   }
 );

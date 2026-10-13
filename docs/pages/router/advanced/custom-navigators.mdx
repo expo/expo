@@ -245,9 +245,9 @@ Consumers then import the integration for their framework (for example, `import 
 
 > **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
 
-Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `null` to reject it, or `undefined` to let the base router handle it.
+Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Reject` to reject it. Returning `undefined` or `null` instead is deprecated and logs a warning in development.
 
-Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
+Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router. An extension's `getStateForAction` also returns a result, `RouterActionHandling.Delegate`, or `RouterActionHandling.Reject`.
 
 The following example adds a `CLEAR` action and an action creator for it:
 
@@ -255,6 +255,7 @@ The following example adds a `CLEAR` action and an action creator for it:
 import {
   extendRouter,
   extendRouterActions,
+  RouterActionHandling,
   StackRouter,
   type CommonNavigationAction,
   type StackActionType,
@@ -266,7 +267,7 @@ const RouterWithClearAction = extendRouterActions(
   StackRouter,
   (state, action: CommonNavigationAction | StackActionType | ClearAction, { nextKey }) => {
     if (action.type !== 'CLEAR') {
-      return undefined;
+      return RouterActionHandling.Delegate;
     }
 
     const route = { key: nextKey('index'), name: 'index' };
@@ -285,4 +286,4 @@ export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
 }));
 ```
 
-Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to delegate existing behavior, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state.
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state.

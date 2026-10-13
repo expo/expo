@@ -8,7 +8,7 @@ import {
 } from '..';
 import type { NavigationState } from '..';
 import type { StackActionType } from '../StackRouter';
-import { extendRouterActions } from '../extendRouter';
+import { extendRouterActions, RouterActionHandling } from '../extendRouter';
 import type { CommonNavigationAction } from '../types';
 
 const options = { routeNames: ['index', 'details', 'final'], routeGetIdList: {} };
@@ -108,7 +108,7 @@ test.each([
   const router = extendRouterActions(
     StackRouter,
     (state, action: StackActionType | CommonNavigationAction | CustomAction) => {
-      if (action.type !== 'CUSTOM') return undefined;
+      if (action.type !== 'CUSTOM') return RouterActionHandling.Delegate;
       return {
         state: {
           ...state,

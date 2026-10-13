@@ -1,12 +1,11 @@
 import { NoopRouter } from './NoopRouter';
-import { extendRouter } from './extendRouter';
+import { extendRouter, RouterActionHandling, type RouterExtensionMembers } from './extendRouter';
 import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   NavigationAction,
   NavigationState,
   PartialState,
-  Router,
 } from './types';
 
 /**
@@ -15,7 +14,7 @@ import type {
  */
 export const BaseRouter = extendRouter(
   NoopRouter,
-  ({ baseRouter }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
+  ({ baseRouter }): Partial<RouterExtensionMembers<NavigationState, CommonNavigationAction>> => ({
     getStateForDeclaredRoutes(state, routeNames) {
       const declaredRouteNames = new Set(routeNames);
       const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));
@@ -46,7 +45,7 @@ export const BaseRouter = extendRouter(
             : state.index;
 
           if (index === -1) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           return {
@@ -77,7 +76,7 @@ export const BaseRouter = extendRouter(
               (route: { name: string }) => !state.routeNames.includes(route.name)
             )
           ) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           if (nextState.stale === false) {
@@ -85,7 +84,7 @@ export const BaseRouter = extendRouter(
               state.routeNames.length !== nextState.routeNames.length ||
               nextState.routeNames.some((name) => !state.routeNames.includes(name))
             ) {
-              return null;
+              return RouterActionHandling.Reject;
             }
 
             // The payload may carry a higher sequence than the current state, so RESET mints on
@@ -114,11 +113,11 @@ export const BaseRouter = extendRouter(
           console.warn(
             'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, `routeKeySeq`, and `stale: false` when resetting.'
           );
-          return null;
+          return RouterActionHandling.Reject;
         }
 
         default:
-          return baseRouter.getStateForAction(state, action, options);
+          return RouterActionHandling.Delegate;
       }
     },
 

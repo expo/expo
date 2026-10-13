@@ -3,7 +3,12 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import {
+  extendRouter,
+  RouterActionHandling,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import type {
   CommonNavigationAction,
@@ -11,7 +16,6 @@ import type {
   NavigationState,
   ParamListBase,
   Route,
-  Router,
   RouterBrowserHistoryAction,
 } from './types';
 
@@ -356,7 +360,10 @@ function tabRouterExtension({
 
   // TODO: Simplify the action handling in this router.
   const router: Omit<
-    Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
+    RouterExtensionMembers<
+      TabNavigationState<ParamListBase>,
+      TabActionType | CommonNavigationAction
+    >,
     'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
     normalizeState: clearFocusedPreloadedRoute,
@@ -382,7 +389,7 @@ function tabRouterExtension({
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Reject;
       }
 
       switch (action.type) {
@@ -483,7 +490,7 @@ function tabRouterExtension({
         case 'JUMP_TO':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
@@ -584,17 +591,17 @@ function tabRouterExtension({
             }
           }
 
-          return actionResult;
+          return actionResult ?? RouterActionHandling.Reject;
         }
 
         case 'GO_BACK': {
           if (backBehavior === 'none') {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const focusedRoute = state.routes[state.index];
           if (!focusedRoute) {
-            return null;
+            return RouterActionHandling.Reject;
           }
           let backTargetName: string | undefined;
 
@@ -628,7 +635,7 @@ function tabRouterExtension({
           }
 
           if (state.history.length === 1) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const previousHistoryItem = state.history[state.history.length - 2];
@@ -636,7 +643,7 @@ function tabRouterExtension({
           const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
           if (index === -1) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           let routes = state.routes;
@@ -665,7 +672,7 @@ function tabRouterExtension({
 
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
@@ -759,7 +766,7 @@ function tabRouterExtension({
           const result = baseRouter.getStateForAction(state, action, options);
 
           if (result === null) {
-            return result;
+            return RouterActionHandling.Reject;
           }
 
           return {

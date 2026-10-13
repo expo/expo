@@ -11,6 +11,7 @@ import {
   extendRouterActions,
   type NavigationState,
   type PartialState,
+  RouterActionHandling,
   TabRouter,
 } from '../react-navigation/native';
 
@@ -83,11 +84,10 @@ export const NativeBottomTabsRouter = extendRouterActions(
       case 'PUSH':
       case 'NAVIGATE': {
         const actionResult = baseRouter.getStateForAction(state, action);
-        const newStateFromNavigation = actionResult?.state;
-
-        if (!newStateFromNavigation) {
-          return actionResult;
+        if (actionResult === null) {
+          return RouterActionHandling.Reject;
         }
+        const newStateFromNavigation = actionResult.state;
         const focusedRouteKey = state.routes[state.index]?.key;
         const nextFocusedRouteKey =
           newStateFromNavigation.routes[newStateFromNavigation.index]?.key;
@@ -146,6 +146,6 @@ export const NativeBottomTabsRouter = extendRouterActions(
         return { ...actionResult, state: newState };
       }
     }
-    return undefined;
+    return RouterActionHandling.Delegate;
   }
 );

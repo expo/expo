@@ -7,6 +7,7 @@ import {
   type CommonNavigationAction,
   extendRouterActions,
   type ParamListBase,
+  RouterActionHandling,
   type RouterConfigOptions,
   TabActions,
   type TabActionHelpers,
@@ -3155,7 +3156,7 @@ describe('extended tab router', () => {
       TabRouter,
       (state, action: TabActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
         if (action.type !== 'CUSTOM') {
-          return undefined;
+          return RouterActionHandling.Delegate;
         }
         return {
           state: {

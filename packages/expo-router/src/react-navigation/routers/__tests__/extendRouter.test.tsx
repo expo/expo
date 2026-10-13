@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { afterEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
   StackActions,
@@ -9,6 +9,7 @@ import {
 import {
   extendRouter,
   extendRouterActions,
+  RouterActionHandling,
   type RouterActionContext,
   type RouterExtensionContext,
 } from '../extendRouter';
@@ -63,6 +64,10 @@ const uppercaseNames = (state: NavigationState) => ({
   })),
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('extendRouter', () => {
   test('merges the extension over the base router and passes the context', () => {
     const context: { baseRouterType?: string; initialRouteName?: string } = {};
@@ -108,6 +113,34 @@ describe('extendRouter', () => {
     expect(router.getStateForAction(untyped, { type: 'GO_BACK' }, config)?.state.type).toBe(
       'custom'
     );
+  });
+
+  test('delegates to the base router when getStateForAction returns Delegate', () => {
+    const router = extendRouter(StackRouter, () => ({
+      getStateForAction: () => RouterActionHandling.Delegate,
+    }))({});
+
+    const result = router.getStateForAction(stackState, StackActions.pop(1), config);
+
+    expect(result?.state.routes).toHaveLength(1);
+  });
+
+  test('rejects the action when getStateForAction returns Reject', () => {
+    const router = extendRouter(StackRouter, () => ({
+      getStateForAction: () => RouterActionHandling.Reject,
+    }))({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBeNull();
+  });
+
+  test('still rejects the action when getStateForAction returns null and warns once', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const router = extendRouter(StackRouter, () => ({ getStateForAction: () => null }))({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBeNull();
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"POP"'));
   });
 
   test('uses the base router type when the options give none', () => {
@@ -181,7 +214,7 @@ describe('extendRouter', () => {
 
   test('does not compute browser history for an unhandled action', () => {
     const router = extendRouter(TestRouter, () => ({
-      getStateForAction: () => null,
+      getStateForAction: () => RouterActionHandling.Reject,
       getBrowserHistoryForAction: () => {
         throw new Error('An unhandled action must not change browser history.');
       },
@@ -276,20 +309,35 @@ describe('extendRouter', () => {
 });
 
 describe('extendRouterActions', () => {
-  test('falls through to the base router when the reducer returns undefined', () => {
-    const router = extendRouterActions(StackRouter, () => undefined)({});
+  test('delegates to the base router when the reducer returns Delegate', () => {
+    const router = extendRouterActions(StackRouter, () => RouterActionHandling.Delegate)({});
 
     const result = router.getStateForAction(stackState, StackActions.pop(1), config);
 
     expect(result?.state.routes).toHaveLength(1);
   });
 
-  test('rejects the action when the reducer returns null', () => {
+  test('rejects the action when the reducer returns Reject', () => {
+    const router = extendRouterActions(StackRouter, (state, action) =>
+      action.type === 'POP' ? RouterActionHandling.Reject : RouterActionHandling.Delegate
+    )({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBeNull();
+  });
+
+  test('still accepts undefined and null from the reducer and warns once', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const router = extendRouterActions(StackRouter, (state, action) =>
       action.type === 'POP' ? null : undefined
     )({});
 
-    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBeNull();
+    const rejected = router.getStateForAction(stackState, StackActions.pop(1), config);
+    const delegated = router.getStateForAction(stackState, StackActions.push('second'), config);
+
+    expect(rejected).toBeNull();
+    expect(delegated?.state.routes).toHaveLength(3);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"POP"'));
   });
 
   test('returns the result of a handled action', () => {
@@ -301,7 +349,7 @@ describe('extendRouterActions', () => {
               state: { ...state, index: 0 },
               affectedRouteKey: state.routes[0]?.key,
             }
-          : undefined
+          : RouterActionHandling.Delegate
     )({});
 
     const result = router.getStateForAction(
@@ -319,8 +367,9 @@ describe('extendRouterActions', () => {
       StackRouter,
       (state, action: StackActionType | CommonNavigationAction | CustomAction, { baseRouter }) =>
         action.type === 'CUSTOM'
-          ? baseRouter.getStateForAction(state, StackActions.pop(1), config)
-          : undefined
+          ? (baseRouter.getStateForAction(state, StackActions.pop(1), config) ??
+            RouterActionHandling.Reject)
+          : RouterActionHandling.Delegate
     )({});
 
     const result = router.getStateForAction(
@@ -339,8 +388,10 @@ describe('extendRouterActions', () => {
         affectedRouteKey: undefined,
       }),
     }));
-    const router = extendRouterActions(RecordingRouter, (state, action, { baseRouter }) =>
-      baseRouter.getStateForAction(state, action)
+    const router = extendRouterActions(
+      RecordingRouter,
+      (state, action, { baseRouter }) =>
+        baseRouter.getStateForAction(state, action) ?? RouterActionHandling.Reject
     )({});
 
     const result = router.getStateForAction(state, { type: 'GO_BACK' }, config);
@@ -365,7 +416,7 @@ describe('extendRouterActions', () => {
             },
             affectedRouteKey: undefined,
           }
-        : undefined
+        : RouterActionHandling.Delegate
     )({});
 
     const result = router.getStateForAction(stackState, StackActions.push('second'), config);
@@ -377,19 +428,20 @@ describe('extendRouterActions', () => {
   test('does not reuse a key minted before delegating to the base router', () => {
     const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
       if (action.type !== 'PUSH') {
-        return undefined;
+        return RouterActionHandling.Delegate;
       }
       const key = nextKey('index');
       const result = baseRouter.getStateForAction(state, action, config);
-      return (
-        result && {
-          ...result,
-          state: {
-            ...result.state,
-            routes: [...result.state.routes, { key, name: 'index' }],
-          },
-        }
-      );
+      if (result === null) {
+        return RouterActionHandling.Reject;
+      }
+      return {
+        ...result,
+        state: {
+          ...result.state,
+          routes: [...result.state.routes, { key, name: 'index' }],
+        },
+      };
     })({});
 
     const result = router.getStateForAction(stackState, StackActions.push('second'), config);
@@ -402,18 +454,19 @@ describe('extendRouterActions', () => {
   test('does not reuse a key minted after delegating to the base router', () => {
     const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
       if (action.type !== 'PUSH') {
-        return undefined;
+        return RouterActionHandling.Delegate;
       }
       const result = baseRouter.getStateForAction(state, action, config);
-      return (
-        result && {
-          ...result,
-          state: {
-            ...result.state,
-            routes: [...result.state.routes, { key: nextKey('index'), name: 'index' }],
-          },
-        }
-      );
+      if (result === null) {
+        return RouterActionHandling.Reject;
+      }
+      return {
+        ...result,
+        state: {
+          ...result.state,
+          routes: [...result.state.routes, { key: nextKey('index'), name: 'index' }],
+        },
+      };
     })({});
 
     const result = router.getStateForAction(stackState, StackActions.push('second'), config);
@@ -426,10 +479,10 @@ describe('extendRouterActions', () => {
   test('keeps a higher routeKeySeq produced by the base router', () => {
     const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
       if (action.type !== 'RESET') {
-        return undefined;
+        return RouterActionHandling.Delegate;
       }
       nextKey('index');
-      return baseRouter.getStateForAction(state, action, config);
+      return baseRouter.getStateForAction(state, action, config) ?? RouterActionHandling.Reject;
     })({});
 
     const result = router.getStateForAction(
@@ -458,7 +511,7 @@ describe('extendRouterActions', () => {
         >
       ) => {
         seen.push(options.extra);
-        return undefined;
+        return RouterActionHandling.Delegate;
       }
     )({ extra: 'value' });
 
@@ -475,7 +528,7 @@ describe('extendRouterActions', () => {
           action.payload.value satisfies number;
           return { state, affectedRouteKey: undefined };
         }
-        return undefined;
+        return RouterActionHandling.Delegate;
       }
     )({});
 

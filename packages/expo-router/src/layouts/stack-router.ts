@@ -13,6 +13,7 @@ import {
   type PartialRoute,
   type PartialState,
   type Route,
+  RouterActionHandling,
   type RouterConfigOptions,
   type StackActionType,
   type StackNavigationState,
@@ -369,6 +370,12 @@ function filterSingular<
   };
 }
 
-export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) =>
-  stackRouterOverride(baseRouter)
-);
+export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) => {
+  // `stackRouterOverride` also serves `UNSTABLE_router`, which keeps the `null` contract, and it
+  // always sets `getStateForAction`.
+  const { getStateForAction } = stackRouterOverride(baseRouter);
+  return {
+    getStateForAction: (state, action, options) =>
+      getStateForAction!(state, action, options) ?? RouterActionHandling.Reject,
+  };
+});

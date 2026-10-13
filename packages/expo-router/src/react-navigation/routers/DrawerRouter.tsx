@@ -7,9 +7,14 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import {
+  extendRouter,
+  RouterActionHandling,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import type { CommonNavigationAction, ParamListBase } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -76,7 +81,10 @@ function drawerRouterExtension({
   DrawerActionType | CommonNavigationAction,
   DrawerRouterOptions
 >): Partial<
-  Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction>
+  RouterExtensionMembers<
+    DrawerNavigationState<ParamListBase>,
+    DrawerActionType | CommonNavigationAction
+  >
 > {
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
@@ -227,7 +235,7 @@ function drawerRouterExtension({
             };
           }
 
-          return null;
+          return RouterActionHandling.Reject;
         }
 
         case 'GO_BACK':
@@ -238,10 +246,10 @@ function drawerRouterExtension({
             };
           }
 
-          return router.getStateForAction(state, action, options);
+          return router.getStateForAction(state, action, options) ?? RouterActionHandling.Reject;
 
         default:
-          return router.getStateForAction(state, action, options);
+          return router.getStateForAction(state, action, options) ?? RouterActionHandling.Reject;
       }
     },
 
