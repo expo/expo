@@ -190,6 +190,17 @@ struct JavaScriptValueTests {
   }
 
   @Test
+  func `getString leaves the value's string intact`() throws {
+    let value = try runtime.eval("'żółć ' + 'hello'.repeat(2)")
+    for _ in 0..<1000 {
+      #expect(value.getString() == "żółć hellohello")
+    }
+    runtime.collectGarbage()
+    #expect(value.isString() == true)
+    #expect(value.getString() == "żółć hellohello")
+  }
+
+  @Test
   func `String(runtime, ...) round-trips an empty string`() {
     let value = JavaScriptValue(runtime, "")
     #expect(value.isString() == true)

@@ -36,6 +36,20 @@ struct JavaScriptUnownedValueTests {
   }
 
   @Test
+  func `getString leaves the borrowed string intact`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("'żółć ' + 'hello'.repeat(2)").ref()
+    )
+    for _ in 0..<1000 {
+      #expect(buffer.unownedValue(at: 0).getString() == "żółć hellohello")
+    }
+    runtime.collectGarbage()
+    #expect(buffer.unownedValue(at: 0).isString() == true)
+    #expect(buffer.unownedValue(at: 0).getString() == "żółć hellohello")
+  }
+
+  @Test
   func `recognizes null and undefined`() {
     let buffer = JavaScriptValuesBuffer.allocate(
       in: runtime,

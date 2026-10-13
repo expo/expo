@@ -25,6 +25,16 @@ extension String {
     self = result
   }
 
+  /// Builds a Swift `String` from a string `jsi::Value` the same way as `init(jsiString:in:)`, but
+  /// without the `jsi::String` that `value.getString(runtime)` would clone for it.
+  internal init(jsiStringValue: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) {
+    var result = ""
+    withUnsafeMutablePointer(to: &result) { resultPtr in
+      expo.getStringDataFromValue(runtime, jsiStringValue, UnsafeMutableRawPointer(resultPtr), appendEngineStringChunk)
+    }
+    self = result
+  }
+
   /// Builds a Swift `String` from a `jsi::PropNameID` the same way as `init(jsiString:in:)`, reading
   /// the engine's internal representation without materializing a `std::string` first.
   internal init(jsiPropNameID: borrowing facebook.jsi.PropNameID, in runtime: facebook.jsi.IRuntime) {

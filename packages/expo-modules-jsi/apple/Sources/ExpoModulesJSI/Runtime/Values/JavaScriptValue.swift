@@ -343,7 +343,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(jsiString: pointee.getString(jsiRuntime), in: jsiRuntime)
+    return String(jsiStringValue: pointee, in: jsiRuntime)
   }
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.

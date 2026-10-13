@@ -325,6 +325,42 @@ inline void getPropNameIdData(
 #endif
 }
 
+/**
+ Reaches the protected `jsi::Runtime` statics that let a derived class wrap a `PointerValue` in a
+ `jsi::Pointer` subclass. Never instantiated: it derives from `jsi::Runtime` only for that access.
+ */
+class PointerValueAccess : public jsi::Runtime {
+ public:
+  PointerValueAccess() = delete;
+
+  /**
+   A `jsi::String` holding the pointer of the given string value without cloning it. The string
+   shares the pointer with `value`, so it must never be destroyed: its destructor would release a
+   reference it doesn't own.
+   */
+  static jsi::String borrowString(const jsi::Value &value) noexcept {
+    return make<jsi::String>(const_cast<PointerValue *>(getPointerValue(value)));
+  }
+} __attribute__((availability(swift, unavailable)));
+
+/**
+ Same as `getStringData`, but reads the string straight from a string `jsi::Value`. `value.getString(runtime)`
+ clones the handle into a `jsi::String` for the call and releases it after; this lends the value's
+ own pointer instead, so the read costs no reference counting.
+ */
+inline void getStringDataFromValue(
+  jsi::IRuntime &runtime,
+  const jsi::Value &value,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+  // The borrowed string lives in raw storage that is never destroyed, so it doesn't release the
+  // pointer `value` still owns. Nothing else is left behind: a `jsi::String` holds just the pointer.
+  alignas(jsi::String) unsigned char storage[sizeof(jsi::String)];
+  const jsi::String *string = new (storage) jsi::String(PointerValueAccess::borrowString(value));
+  getStringData(runtime, *string, ctx, callback);
+}
+
 // MARK: - ArrayBuffer
 
 /**
