@@ -110,6 +110,36 @@ async function stagePodsRootAsync(
   return stage;
 }
 
+const PIPELINE_ENV_NAMES = ['PODS_ROOT', 'EXPO_CUSTOM_BUILD_ROOT', 'PLATFORM_NAME'];
+
+/**
+ * The environment a customBuild script runs in: the inherited env, then the
+ * product's `customBuild.env`, then the pipeline's own variables. The config
+ * env can never set a pipeline variable, even one the pipeline leaves unset.
+ */
+export function createCustomBuildEnv({
+  inheritedEnv,
+  configEnv = {},
+  podsRoot,
+  customBuildRoot,
+  platformName,
+}: {
+  inheritedEnv: NodeJS.ProcessEnv;
+  configEnv?: Record<string, string>;
+  podsRoot: string;
+  customBuildRoot?: string;
+  platformName?: string;
+}): NodeJS.ProcessEnv {
+  const configOnlyEnv = Object.fromEntries(
+    Object.entries(configEnv).filter(([name]) => !PIPELINE_ENV_NAMES.includes(name))
+  );
+  const env: NodeJS.ProcessEnv = { ...inheritedEnv, ...configOnlyEnv, PODS_ROOT: podsRoot };
+  if (customBuildRoot) env.EXPO_CUSTOM_BUILD_ROOT = customBuildRoot;
+  if (platformName) env.PLATFORM_NAME = platformName;
+  else delete env.PLATFORM_NAME;
+  return env;
+}
+
 async function spawnScriptAsync(
   scriptPath: string,
   args: string[],
@@ -171,13 +201,15 @@ export async function runCustomBuildAsync(
 
   const scriptPath = path.resolve(pkg.path, cb.script);
   const podsRoot = await stagePodsRootAsync(pkg, artifacts);
-  const sdk = platformFilter && PLATFORM_TO_SDK[platformFilter];
-  const env: NodeJS.ProcessEnv = { ...process.env, PODS_ROOT: podsRoot };
-  if (usesPackageLocalBuildPath(pkg)) {
-    env.EXPO_CUSTOM_BUILD_ROOT = path.join(pkg.buildPath, 'custom-build');
-  }
-  if (sdk) env.PLATFORM_NAME = sdk;
-  else delete env.PLATFORM_NAME;
+  const env = createCustomBuildEnv({
+    inheritedEnv: process.env,
+    configEnv: cb.env,
+    podsRoot,
+    customBuildRoot: usesPackageLocalBuildPath(pkg)
+      ? path.join(pkg.buildPath, 'custom-build')
+      : undefined,
+    platformName: platformFilter && PLATFORM_TO_SDK[platformFilter],
+  });
 
   const args = clean ? ['--clean'] : [];
   await spawnScriptAsync(

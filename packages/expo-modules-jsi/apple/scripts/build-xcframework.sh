@@ -36,6 +36,14 @@ SPM_BUILD_PATH="${BUILD_ROOT}/.build"
 SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
+# Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
+# their symbols on some Xcode versions, and frameworks linked against ours then bind to them here.
+# Only the precompile pipeline hides them: already published prebuilt cores rely on the export.
+OTHER_LDFLAGS_SETTING=""
+if [[ "${EXPO_JSI_HIDE_SWIFT_RUNTIME_EXPORTS:-}" == "1" ]]; then
+  OTHER_LDFLAGS_SETTING='OTHER_LDFLAGS=$(inherited) -Xlinker -unexported_symbol -Xlinker _swift_*'
+fi
+
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 resolve_pods_root "$PACKAGE_DIR"
@@ -111,6 +119,9 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    if [[ -n "$OTHER_LDFLAGS_SETTING" ]]; then
+      echo "$OTHER_LDFLAGS_SETTING"
+    fi
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -245,6 +256,7 @@ build_slice() {
     CLANG_COVERAGE_MAPPING=NO \
     SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
     SWIFT_ENABLE_EXPLICIT_MODULES=NO \
+    ${OTHER_LDFLAGS_SETTING:+"$OTHER_LDFLAGS_SETTING"} \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

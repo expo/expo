@@ -14,7 +14,10 @@
       ],
       "customBuild": {
         "script": "apple/scripts/build-xcframework.sh",
-        "output": "apple/Products/ExpoModulesJSI.xcframework"
+        "output": "apple/Products/ExpoModulesJSI.xcframework",
+        "env": {
+          "EXPO_JSI_HIDE_SWIFT_RUNTIME_EXPORTS": "1"
+        }
       },
       "targets": []
     }
