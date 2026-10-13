@@ -14,6 +14,11 @@ function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
 }
 
+// The queue tags each intent with the id reported by the `expo-router:action-enqueued` mark.
+function queued(intent: RoutingIntent) {
+  return { ...intent, actionId: expect.any(Number) };
+}
+
 function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
   return renderHook(useEnqueueRoutingIntent, {
     wrapper: ({ children }) => (
@@ -45,7 +50,7 @@ it('isolates queue notifications from its parent', async () => {
   await act(() => result.current(actionIntent('TEST')));
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
+  expect(processIntent).toHaveBeenCalledWith(queued(actionIntent('TEST')), false);
 });
 
 it('processes a queued batch in FIFO order', async () => {
@@ -59,9 +64,9 @@ it('processes a queued batch in FIFO order', async () => {
     result.current(actionIntent('THIRD'));
   });
   expect(processIntent).toHaveBeenCalledTimes(3);
-  expect(processIntent).toHaveBeenNthCalledWith(1, actionIntent('FIRST'), false);
-  expect(processIntent).toHaveBeenNthCalledWith(2, actionIntent('SECOND'), false);
-  expect(processIntent).toHaveBeenNthCalledWith(3, actionIntent('THIRD'), false);
+  expect(processIntent).toHaveBeenNthCalledWith(1, queued(actionIntent('FIRST')), false);
+  expect(processIntent).toHaveBeenNthCalledWith(2, queued(actionIntent('SECOND')), false);
+  expect(processIntent).toHaveBeenNthCalledWith(3, queued(actionIntent('THIRD')), false);
 });
 
 it('does not process an intent twice in Strict Mode', async () => {
@@ -85,7 +90,7 @@ it('does not process an intent twice in Strict Mode', async () => {
 
   await act(() => result.current(actionIntent('TEST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
+  expect(processIntent).toHaveBeenCalledWith(queued(actionIntent('TEST')), false);
 
   await rerender(undefined);
   expect(processIntent).toHaveBeenCalledTimes(1);
@@ -98,11 +103,11 @@ it('processes separately enqueued intents', async () => {
 
   await act(() => result.current(actionIntent('FIRST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('FIRST'), false);
+  expect(processIntent).toHaveBeenCalledWith(queued(actionIntent('FIRST')), false);
 
   await act(() => result.current(actionIntent('SECOND')));
   expect(processIntent).toHaveBeenCalledTimes(2);
-  expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'), false);
+  expect(processIntent).toHaveBeenLastCalledWith(queued(actionIntent('SECOND')), false);
 });
 
 it('continues after processIntent throws synchronously', async () => {
@@ -120,7 +125,7 @@ it('continues after processIntent throws synchronously', async () => {
       result.current(actionIntent('SECOND'));
     });
     expect(processIntent).toHaveBeenCalledTimes(2);
-    expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'), false);
+    expect(processIntent).toHaveBeenLastCalledWith(queued(actionIntent('SECOND')), false);
     expect(warning).toHaveBeenCalledWith(expect.stringContaining('failed'));
   } finally {
     warning.mockRestore();
@@ -197,7 +202,7 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
     const first = { ...actionIntent('FIRST'), inTransition: true };
     await act(() => result.current(first));
     expect(onProcess).toHaveBeenCalledTimes(1);
-    expect(onProcess).toHaveBeenCalledWith(first);
+    expect(onProcess).toHaveBeenCalledWith(queued(first));
 
     const interrupt: RoutingIntent =
       type === 'BROWSER_HISTORY_CHANGED'
@@ -205,7 +210,7 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
         : { ...actionIntent(type), inTransition: false };
     await act(() => result.current(interrupt));
     expect(onProcess).toHaveBeenCalledTimes(2);
-    expect(onProcess).toHaveBeenLastCalledWith(interrupt);
+    expect(onProcess).toHaveBeenLastCalledWith(queued(interrupt));
   }
 );
 

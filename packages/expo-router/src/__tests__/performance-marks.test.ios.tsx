@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { router } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import {
@@ -16,6 +17,7 @@ import type {
   RouterPageFocusedMark,
   RouterPerformanceMark,
 } from '../performance';
+import { CommonActions } from '../react-navigation/routers';
 import { renderRouter } from '../testing-library';
 
 describe('router performance marks', () => {
@@ -239,9 +241,59 @@ describe('router performance marks', () => {
     const [focus] = unstable_performance.getEntriesByName(
       'expo-router:page-focused'
     ) as RouterPageFocusedMark[];
-    expect(action?.detail).toEqual({ actionType: 'PUSH' });
+    expect(action?.detail).toEqual({ actionType: 'PUSH', actionId: expect.any(Number) });
     expect(focus?.detail.pathname).toBe('/details');
     expect(focus!.startTime).toBeGreaterThanOrEqual(action!.startTime);
+  });
+
+  function observeActionIds() {
+    const log: { name: string; actionId: number }[] = [];
+    observe((entry) => {
+      if (
+        entry.name === 'expo-router:action-enqueued' ||
+        entry.name === 'expo-router:action-dispatched'
+      ) {
+        log.push({ name: entry.name, actionId: entry.detail.actionId });
+      }
+    });
+    return log;
+  }
+
+  it('marks action-enqueued before the queued action is reduced, with the id of its action-dispatched mark', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => {
+      router.push('/details');
+      expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    });
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
+  });
+
+  it('marks action-enqueued for synchronous dispatches', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('details')));
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
   });
 
   it('marks action-dispatched even when an internal listener throws', async () => {

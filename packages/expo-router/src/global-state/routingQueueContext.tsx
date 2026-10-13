@@ -12,10 +12,10 @@ import {
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import { createImperativeRouter, getDefaultTransitionMode, router, unboundRouter } from './router';
-import type { RoutingIntent } from './routingQueue';
+import { markActionEnqueued, type QueuedRoutingIntent, type RoutingIntent } from './routingQueue';
 import type { NavigationTransitionMode } from './types';
 
-const EMPTY: RoutingIntent[] = [];
+const EMPTY: QueuedRoutingIntent[] = [];
 let boundBridges = 0;
 const throwMissingRoutingQueue = () => {
   throw new Error(
@@ -25,14 +25,14 @@ const throwMissingRoutingQueue = () => {
 
 export type RoutingQueueApi = {
   enqueue: (intent: RoutingIntent) => void;
-  dequeue: (processed: RoutingIntent[]) => void;
+  dequeue: (processed: QueuedRoutingIntent[]) => void;
   startTransition: TransitionStartFunction;
   transitionMode: NavigationTransitionMode;
   setTransitionMode: (mode: NavigationTransitionMode) => void;
 };
 
 export const RoutingQueueApiContext = createContext<RoutingQueueApi | undefined>(undefined);
-export const PendingIntentsContext = createContext<RoutingIntent[]>(EMPTY);
+export const PendingIntentsContext = createContext<QueuedRoutingIntent[]>(EMPTY);
 export const NavigationPendingContext = createContext(false);
 
 export function RoutingQueueProvider({ children }: PropsWithChildren) {
@@ -44,7 +44,7 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
     () => ({
       // Each enqueue has its own identity, including repeated uses of the same intent object.
       enqueue: (intent) => {
-        const queued = { ...intent };
+        const queued = { ...intent, actionId: markActionEnqueued() };
         setQueue((previous) => [...previous, queued]);
       },
       // Keep intents added between the drained render and this state update.

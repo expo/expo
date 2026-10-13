@@ -30,7 +30,7 @@ import {
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
-import type { RoutingIntent } from './routingQueue';
+import { markActionEnqueued, type QueuedRoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
@@ -47,8 +47,8 @@ type ReducerConfig = {
 };
 
 type QueuedOperation = (
-  | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
-  | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
+  | Exclude<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
+  | (Extract<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
       /**
        * Browser traversal may interrupt a suspended transition. Restore from the last committed
        * result so commands from the abandoned transition are not applied later.
@@ -111,6 +111,7 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
+      actionId: number;
     }
   | {
       type: 'route-preloaded';
@@ -241,7 +242,7 @@ function reduceOperation(
       result,
       operation.payload,
       config,
-      (current, intent) => reduceTree(current, intent, config)
+      (current, intent) => reduceTree(current, { ...intent, actionId: operation.actionId }, config)
     );
     return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
   }
@@ -299,7 +300,15 @@ function reduceTree(
         );
         return result;
       }
-      return reduceTree(result, { type: 'ACTION', payload: { action: resolution.action } }, config);
+      return reduceTree(
+        result,
+        {
+          type: 'ACTION',
+          payload: { action: resolution.action },
+          actionId: operation.actionId,
+        },
+        config
+      );
     }
     case 'COMPUTED_ACTION': {
       let action: NavigationAction | undefined;
@@ -322,6 +331,7 @@ function reduceTree(
         {
           type: 'ACTION',
           payload: { action, originKey: operation.payload.originKey },
+          actionId: operation.actionId,
         },
         config
       );
@@ -391,6 +401,7 @@ function reduceTree(
                 type: 'action-dispatched',
                 action: operation.payload.action,
                 state: committedState,
+                actionId: operation.actionId,
               },
             ];
       return appendReportEvents(
@@ -531,7 +542,11 @@ export function useNavigationTreeReducer({
         ? payload.params
         : undefined;
     warnIfScreenParam(params);
-    reactDispatch({ type: 'ACTION', payload: { action, originKey } });
+    reactDispatch({
+      type: 'ACTION',
+      payload: { action, originKey },
+      actionId: markActionEnqueued(),
+    });
   });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
@@ -540,7 +555,7 @@ export function useNavigationTreeReducer({
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
-  const processIntent = useLatestCallback((intent: RoutingIntent, inTransition = false) => {
+  const processIntent = useLatestCallback((intent: QueuedRoutingIntent, inTransition = false) => {
     const deferrable = { inTransition };
     if (intent.type === 'BROWSER_HISTORY_CHANGED') {
       // Example: A is visible while a push to B is suspended. Browser Back starts from A,
