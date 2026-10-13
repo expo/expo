@@ -1,4 +1,5 @@
 import type { NavigationAction } from '../react-navigation';
+import type { UnknownOutputParams } from '../types';
 
 /**
  * The page that a page mark describes.
@@ -11,7 +12,7 @@ export interface RouterPageMarkDetail {
   /**
    * The route and search params of the page.
    */
-  params: Record<string, string | string[]>;
+  params: UnknownOutputParams;
   /**
    * The route segments of the page, for example `['users', '[id]']`.
    */

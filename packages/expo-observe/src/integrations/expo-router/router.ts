@@ -2,7 +2,7 @@
 // hasn't installed it, `require` throws and the integration becomes a no-op.
 export interface RouterPageMarkDetail {
   pathname: string;
-  params: Record<string, string | string[]>;
+  params: Record<string, string | string[] | undefined>;
   screenId: string;
   segments: string[];
 }
