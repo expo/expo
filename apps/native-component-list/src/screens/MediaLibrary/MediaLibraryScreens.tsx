@@ -6,21 +6,21 @@ import ComponentListScreen, { apiScreensToListElements } from '../ComponentListS
 export const MediaLibraryScreens = [
   {
     name: 'Asset',
-    route: 'medialibrary@next/asset',
+    route: 'medialibrary/asset',
     getComponent() {
       return optionalRequire(() => require('./AssetScreen'));
     },
   },
   {
     name: 'Add Asset to Album',
-    route: 'medialibrary@next/add-asset-to-album',
+    route: 'medialibrary/add-asset-to-album',
     getComponent() {
       return optionalRequire(() => require('./AddAssetToAlbumScreen'));
     },
   },
   {
     name: 'Sort',
-    route: 'medialibrary@next/sort',
+    route: 'medialibrary/sort',
     getComponent() {
       return optionalRequire(() => require('./SortScreen'));
     },
@@ -30,7 +30,7 @@ export const MediaLibraryScreens = [
 if (Platform.OS === 'android' && Platform.Version >= 33) {
   MediaLibraryScreens.push({
     name: 'Granular Permissions',
-    route: 'medialibrary@next/granular-permissions',
+    route: 'medialibrary/granular-permissions',
     getComponent() {
       return optionalRequire(() => require('./GranularPermissionsScreen'));
     },

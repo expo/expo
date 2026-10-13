@@ -57,7 +57,7 @@ export default class MediaAlbumsScreen extends React.Component<object, State> {
 
   openAlbum = (album: MediaLibrary.Album) => {
     router.push({
-      pathname: '/apis/medialibrary',
+      pathname: '/apis/medialibrarylegacy',
       params: { albumId: album.id, albumTitle: album.title },
     });
   };
