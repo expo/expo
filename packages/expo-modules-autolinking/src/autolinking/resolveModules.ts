@@ -8,14 +8,43 @@ import type {
   SupportedPlatform,
 } from '../types';
 
+export type ResolveModulesParams = {
+  /**
+   * Whether to scan native sources for annotated module classes, on platforms that support it.
+   * Only the modules provider generation asks for it.
+   */
+  scanNativeModules?: boolean;
+  /** Called with whether the requested scan produced a result. */
+  onScanResult?: (succeeded: boolean) => void;
+  /** The platform to scan for, when narrower than the resolved one (the umbrella `apple`). */
+  scanPlatform?: SupportedPlatform;
+};
+
 /** Resolves search results to a list of platform-specific configuration. */
 export async function resolveModulesAsync(
   searchResults: SearchResults,
-  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform }
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform },
+  { scanNativeModules = false, onScanResult, scanPlatform }: ResolveModulesParams = {}
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
+  // One scan for all packages, passed down through `extraOutput`. A failed scan never fails
+  // resolution.
+  let scannedModules = null;
+  if (scanNativeModules && 'scanNativeModulesAsync' in platformLinking) {
+    try {
+      scannedModules = await platformLinking.scanNativeModulesAsync(
+        searchResults,
+        scanPlatform ?? autolinkingOptions.platform
+      );
+    } catch (error: any) {
+      console.warn(
+        `warning: Scanning for native modules failed, only modules declared in the module config will be linked: ${error.message ?? error}`
+      );
+    }
+    onScanResult?.(scannedModules != null);
+  }
   // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags };
+  const extraOutput = { flags: autolinkingOptions.flags, scannedModules };
 
   const moduleDescriptorList = await taskAll(
     Object.entries(searchResults),

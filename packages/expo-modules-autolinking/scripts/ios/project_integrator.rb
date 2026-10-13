@@ -323,6 +323,8 @@ module Expo
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
       podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      # Links only the scanned classes that compile for this platform.
+      target_platform_param = "--target-platform \"#{platform}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -379,6 +381,7 @@ module Expo
         #{app_root_param} \\
         #{podfile_properties_param} \\
         --platform "apple" \\
+        #{target_platform_param} \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end

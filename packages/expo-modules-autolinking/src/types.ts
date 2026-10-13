@@ -183,6 +183,7 @@ export type RawAppleModuleConfig = {
 export type RawModuleConfigApple = {
   /**
    * Names of Swift native modules classes to put to the generated modules provider file.
+   * Declaring it, even empty, disables `@ExpoModule` scanning for the package.
    */
   modules?: (string | RawAppleModuleConfig)[];
 
