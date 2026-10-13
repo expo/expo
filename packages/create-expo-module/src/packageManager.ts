@@ -73,14 +73,15 @@ export function shouldCreatePnpmWorkspace(
     return false;
   }
   // pnpm uses the closest `pnpm-workspace.yaml` in the parent directories as the workspace root
-  for (let dir = path.dirname(targetDir); ; dir = path.dirname(dir)) {
-    if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
-      return !isPnpmWorkspaceProject(dir, targetDir);
-    }
-    if (path.dirname(dir) === dir) {
+  let dir = path.dirname(targetDir);
+  while (!fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
+    const parentDir = path.dirname(dir);
+    if (parentDir === dir) {
       return true;
     }
+    dir = parentDir;
   }
+  return !isPnpmWorkspaceProject(dir, targetDir);
 }
 
 /** Whether the workspace's `packages` globs include the project, as listed by pnpm */
