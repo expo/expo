@@ -20,14 +20,18 @@ internal func normalizeAccuracy(_ accuracy: CLLocationDirection) -> Int {
 }
 
 internal func exportLocation(_ location: CLLocation) -> [String: Any] {
+  let hasAltitude = location.verticalAccuracy >= 0
+  let altitude: Any = hasAltitude ? location.ellipsoidalAltitude : NSNull()
+  let altitudeAboveMeanSeaLevel: Any = hasAltitude ? location.altitude : NSNull()
+  let altitudeAccuracy: Any = hasAltitude ? location.verticalAccuracy : NSNull()
   return [
     "coords": [
       "latitude": location.coordinate.latitude,
       "longitude": location.coordinate.longitude,
-      "altitude": location.ellipsoidalAltitude,
-      "altitudeAboveMeanSeaLevel": location.altitude,
+      "altitude": altitude,
+      "altitudeAboveMeanSeaLevel": altitudeAboveMeanSeaLevel,
       "accuracy": location.horizontalAccuracy,
-      "altitudeAccuracy": location.verticalAccuracy,
+      "altitudeAccuracy": altitudeAccuracy,
       "heading": location.course,
       "speed": location.speed
     ],
