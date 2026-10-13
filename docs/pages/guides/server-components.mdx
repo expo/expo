@@ -412,13 +412,13 @@ You can use this instead of the `Head` component from `expo-router/head`, but it
 
 ## Request headers
 
-Use [`requestHeaders()`](/versions/latest/sdk/server/#requestheaders) from `expo-server` to read the headers of the current request in a Server Component or server function.
+Use [`requestHeaders()`](/versions/latest/sdk/server/#requestheaders) from `expo-server` to read the headers of the current request in a Server Component or Server Function.
 
 ```tsx actions/renderHome.tsx
 import { requestHeaders } from 'expo-server';
 import { Text } from 'react-native';
 
-export function renderHome() {
+export async function renderHome() {
   const authorization = requestHeaders().get('authorization');
 
   return <Text>{authorization}</Text>;
@@ -429,7 +429,7 @@ The `requestHeaders()` function synchronously returns an `ImmutableHeaders` obje
 
 ### Key points
 
-- This API requires an active request. It cannot be used with build-time rendering (`render: 'static'`), where there is no incoming request.
+- This API requires an active request. You cannot use it with build-time rendering (`render: 'static'`), where there is no incoming request.
 - `requestHeaders()` is server-only and cannot be used on the client.
 
 ## Full React Server Components mode
