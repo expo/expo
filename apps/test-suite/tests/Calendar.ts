@@ -17,7 +17,7 @@ import type { JasmineInterface } from '../types';
 import { requireNotNull } from '../utils/requireNotNull';
 import { alertAndWaitForResponse } from './helpers';
 
-export const name = 'Calendar@next';
+export const name = 'Calendar';
 
 const defaultCalendarData = {
   title: `Expo test-suite calendar ${new Date().toISOString()}`,

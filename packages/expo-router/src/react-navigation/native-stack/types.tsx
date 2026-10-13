@@ -768,7 +768,6 @@ export type NativeStackNavigationOptions = {
    * * `none` - there will be dimming view for all detents levels,
    * * `last` - there won't be a dimming view for any detent level.
    *
-   * @remark
    * On iOS, the native implementation might resize the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
    * In case after such resize the sheet exceeds height for which in regular scenario a dimming view would be applied - it will be applied,
    * even if the detent has not effectively been changed.
@@ -851,7 +850,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform ios
    *
-   * @supported iOS 26 or higher
+   * Only supported on iOS 26 and later.
    */
   scrollEdgeEffects?: {
     bottom?: ScrollEdgeEffect;

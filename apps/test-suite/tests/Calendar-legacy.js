@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 import { alertAndWaitForResponse } from './helpers';
 
-export const name = 'Calendar';
+export const name = 'Calendar@legacy';
 
 async function createTestCalendarAsync(patch = {}) {
   return await Calendar.createCalendarAsync({

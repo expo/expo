@@ -1,7 +1,7 @@
 import * as Contacts from 'expo-contacts/legacy';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 
-export const name = 'Contacts';
+export const name = 'Contacts@legacy';
 
 const unavailableMessage = `is unavailable on ${Platform.OS}`;
 

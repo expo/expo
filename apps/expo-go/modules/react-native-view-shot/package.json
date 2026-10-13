@@ -1,6 +1,6 @@
 {
   "name": "react-native-view-shot",
-  "version": "5.1.1",
+  "version": "6.1.1",
   "description": "Capture a React Native view to an image",
   "type": "module",
   "main": "lib/index.js",
@@ -40,24 +40,33 @@
     "build": "tsc",
     "prepare": "npm run build"
   },
-  "dependencies": {
-    "html2canvas": "^1.4.1"
-  },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-native": ">=0.76.0"
+    "react-native": ">=0.80.0",
+    "html2canvas-pro": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    },
+    "html2canvas-pro": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/preset-typescript": "^8.0.1",
     "@eslint/js": "^10",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.1.1",
     "@types/react-test-renderer": "^19.1.0",
     "babel-jest": "^30.2.0",
-    "eslint": "^9.17.0",
-    "eslint-config-prettier": "^9.1.2",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
     "html-webpack-plugin": "^5.6.0",
+    "html2canvas-pro": "^2.4.4",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "prettier": "^3.4.2",
@@ -65,8 +74,7 @@
     "react-dom": "^19.2.4",
     "react-native": "^0.84.1",
     "react-test-renderer": "^19.2.4",
-    "ts-jest": "^29.4.6",
-    "typescript": "^5.8.3"
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=20.19.4",

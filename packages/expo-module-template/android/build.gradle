@@ -39,9 +39,9 @@ android {
 <% if (usesCompose) { -%>
 
 dependencies {
-  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
-  implementation 'androidx.compose.ui:ui-android:1.10.6'
-  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha17'
+  implementation 'androidx.compose.foundation:foundation-android:1.12.1'
+  implementation 'androidx.compose.ui:ui-android:1.12.1'
+  implementation 'androidx.compose.material3:material3-android:1.5.0-beta01'
   if (findProject(':expo-ui') != null) {
     implementation project(':expo-ui')
   } else {

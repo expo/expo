@@ -24,7 +24,7 @@ function timeoutWrapper(fn: () => void, time: number): Promise<void> {
   });
 }
 
-export const name = 'Contacts@Next';
+export const name = 'Contacts';
 
 export async function test(t: JasmineInterface) {
   const contacts: Contact[] = [];
