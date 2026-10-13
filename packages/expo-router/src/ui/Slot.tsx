@@ -46,7 +46,8 @@ function hoistChildStyle(children: React.ReactNode, childStyle: unknown, slotSty
  */
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   return forwardRef(function RNSlotHOC({ style, children, ...props }, ref) {
-    const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+    // On web, `StyleSheet.flatten` returns `{}` for a falsy style; native returns `undefined`.
+    const flattenedStyle = useMemo(() => (style ? StyleSheet.flatten(style) : undefined), [style]);
     const childStyle =
       React.isValidElement(children) &&
       typeof children.props === 'object' &&
