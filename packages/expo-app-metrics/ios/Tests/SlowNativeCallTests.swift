@@ -21,14 +21,15 @@ struct SlowNativeCallTests {
   }
 
   @Test
-  func `is anchored to didFinishLaunching and names the module`() {
+  func `is anchored to didFinishLaunching and names the module`() throws {
     let call = SlowNativeCall(call: slowSyncCall(), phase: "beforeFirstRender", anchor: 10.0)
     #expect(call.module == "MidiModule")
     #expect(call.function == "getOutputs")
     #expect(call.kind == "function")
     #expect(call.thread == "js")
     #expect(call.qualifiedName == "MidiModule.getOutputs")
-    #expect(abs(call.startedAt - 0.4) < 0.0001)
+    let startedAt = try #require(call.startedAt)
+    #expect(abs(startedAt - 0.4) < 0.0001)
     #expect(call.duration == 0.23)
   }
 
