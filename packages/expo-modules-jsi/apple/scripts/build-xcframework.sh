@@ -35,6 +35,13 @@ SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
+# Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
+# their symbols with Xcode 26.4 (Xcode 27 hides them). A precompiled expo-modules-core then binds
+# _swift_allocateMetadataPack to this framework, and crashes at launch when the user's Xcode
+# rebuilds this framework without the export.
+# ld documents wildcards for symbol list files only, hence the list file.
+UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
+
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 resolve_pods_root "$PACKAGE_DIR"
@@ -77,6 +84,7 @@ SOURCE_FILES=(
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
   "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
   "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+  "${UNEXPORTED_SYMBOLS_LIST}"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
@@ -245,6 +253,7 @@ build_slice() {
     SWIFT_COMPILATION_MODE=wholemodule \
     CLANG_ENABLE_CODE_COVERAGE=NO \
     CLANG_COVERAGE_MAPPING=NO \
+    "OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\"" \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
