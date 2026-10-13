@@ -221,7 +221,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 ## 📬 Opening a pull request
 
-Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, and `Test Plan`. Delete the HTML comments when you fill them in.
+Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, and `Checklist`. Delete the HTML comments when you fill them in.
 
 Keep the pull request small enough to read in one pass. Limit a code change to one published package, plus its changeset. Put a documentation change that can land alone in its own pull request. CI also finishes faster when docs are separate. See [Before Submitting](#-before-submitting).
 
@@ -287,7 +287,7 @@ The module stores the promise before startActivityForResult. That call throws, a
 
 # How
 
-How did you build this fix and why?
+How did you build this feature or fix this bug and why?
 
 Two solutions were possible.
 
@@ -307,6 +307,12 @@ Android emulator, API 34. No unit test covers this path.
 3. Call getDocumentAsync again and confirm the picker opens.
 
 Before this change, the second call did nothing. After this change, the promise rejects and the next call opens the picker.
+
+# Checklist
+
+- [x] I added a changeset and followed [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
+- [ ] This diff will work correctly for `npx expo prebuild` & EAS Build (eg: updated a module plugin).
+- [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
 ```
 
 ## 🔎 Before Submitting
