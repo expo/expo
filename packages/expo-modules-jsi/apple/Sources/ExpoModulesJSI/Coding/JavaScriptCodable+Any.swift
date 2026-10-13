@@ -73,7 +73,7 @@ extension JavaScriptValue {
     guard value.isObject() else {
       return [try freeFormValue(of: value, depth: 0, in: runtime)]
     }
-    let object = value.getObject(in: copy runtime)
+    let object = value.getObject(in: runtime)
     guard object.isArray() else {
       return wrappingInArray(try freeFormValue(ofObject: object, depth: 0, in: runtime))
     }
@@ -98,7 +98,7 @@ extension JavaScriptValue {
     _ value: borrowing JavaScriptUnownedValue,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> [String: Any] {
-    return try freeFormDictionary(of: value.asObject(in: copy runtime), in: runtime)
+    return try freeFormDictionary(of: value.asObject(in: runtime), in: runtime)
   }
 
   /// Decodes a JavaScript value into any type built from free-form values, such as `[[Any]]` or
@@ -173,7 +173,7 @@ extension JavaScriptValue {
       return .number(number.doubleValue)
     }
     if let representable = value as? any JavaScriptRepresentable {
-      return representable.toJavaScriptValue(in: copy runtime)
+      return representable.toJavaScriptValue(in: runtime)
     }
     throw EncodingError(valueType: valueType)
   }
@@ -247,14 +247,14 @@ extension JavaScriptValue {
       return value.getBool()
     }
     if value.isObject() {
-      return try freeFormValue(ofObject: value.getObject(in: copy runtime), depth: depth, in: runtime)
+      return try freeFormValue(ofObject: value.getObject(in: runtime), depth: depth, in: runtime)
     }
     if value.isNull() || value.isUndefined() {
       return Optional<Any>.none as Any
     }
     if value.isBigInt() {
       // The borrowed value has no bigint accessor, so this rare case goes through an owning copy.
-      return try value.copied(in: copy runtime).getBigInt().asInt64()
+      return try value.copied(in: runtime).getBigInt().asInt64()
     }
     throw TypeError(type: Any.self, reason: unrepresentableValueReason)
   }

@@ -645,9 +645,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
-    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
-    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
+    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
