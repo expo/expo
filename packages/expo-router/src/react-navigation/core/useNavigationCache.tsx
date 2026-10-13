@@ -8,8 +8,12 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { isRenderingFunctionComponent } from './isRenderingFunctionComponent';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
+
+// Warn once per process, so re-renders and nested parent checks do not repeat it.
+let didWarnIsFocusedInRender = false;
 
 type Options<
   State extends NavigationState,
@@ -143,6 +147,17 @@ export function useNavigationCache<
         }));
       },
       isFocused: () => {
+        if (
+          process.env.NODE_ENV !== 'production' &&
+          !didWarnIsFocusedInRender &&
+          isRenderingFunctionComponent()
+        ) {
+          didWarnIsFocusedInRender = true;
+          console.warn(
+            `navigation.isFocused() was called while rendering the screen '${route.name}'. During render it can return a stale value, because focus state is updated after render. Use the useIsFocused() hook to read focus during render.`
+          );
+        }
+
         const state = rest.getState();
 
         if (state.routes[state.index]?.key !== route.key) {
