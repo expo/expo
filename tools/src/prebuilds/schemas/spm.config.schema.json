@@ -185,11 +185,6 @@
                         "output": {
                             "type": "string",
                             "description": "Path to the xcframework the script produces, relative to the package root."
-                        },
-                        "env": {
-                            "type": "object",
-                            "description": "Extra environment variables for the script. They cannot override the variables the pipeline sets itself (PODS_ROOT, EXPO_CUSTOM_BUILD_ROOT, PLATFORM_NAME).",
-                            "additionalProperties": { "type": "string" }
                         }
                     },
                     "required": [ "script", "output" ],

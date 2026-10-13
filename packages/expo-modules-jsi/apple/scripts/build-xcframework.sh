@@ -39,13 +39,8 @@ BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 # Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
 # their symbols with Xcode 26.4 (Xcode 27 hides them), and frameworks linked against ours then bind
 # to them here, which breaks when the user's Xcode rebuilds this framework without the export.
-# Only the precompile pipeline hides them: already published prebuilt cores rely on the export.
 # ld documents wildcards for symbol list files only, hence the list file.
 UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
-OTHER_LDFLAGS_SETTING=""
-if [[ "${EXPO_JSI_HIDE_SWIFT_RUNTIME_EXPORTS:-}" == "1" ]]; then
-  OTHER_LDFLAGS_SETTING="OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\""
-fi
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
@@ -123,9 +118,6 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
-    if [[ -n "$OTHER_LDFLAGS_SETTING" ]]; then
-      echo "$OTHER_LDFLAGS_SETTING"
-    fi
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -260,7 +252,7 @@ build_slice() {
     CLANG_COVERAGE_MAPPING=NO \
     SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
     SWIFT_ENABLE_EXPLICIT_MODULES=NO \
-    ${OTHER_LDFLAGS_SETTING:+"$OTHER_LDFLAGS_SETTING"} \
+    "OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\"" \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

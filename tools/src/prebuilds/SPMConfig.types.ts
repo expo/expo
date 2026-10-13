@@ -234,9 +234,6 @@ export interface CustomBuild {
   script: string;
   /** Path to the xcframework the script produces, relative to the package root. */
   output: string;
-  /** Extra environment variables for the script. They cannot override the variables the
-   * pipeline sets itself (PODS_ROOT, EXPO_CUSTOM_BUILD_ROOT, PLATFORM_NAME). */
-  env?: Record<string, string>;
 }
 
 /**
