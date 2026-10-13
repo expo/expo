@@ -386,6 +386,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Returns the value as a typed array, or asserts if it is not a typed array.
+  @JavaScriptActor
   public func getTypedArray() -> JavaScriptTypedArray {
     guard let runtime else {
       FatalError.runtimeLost()
