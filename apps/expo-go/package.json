@@ -22,7 +22,7 @@
     "@react-native-picker/picker": "2.11.4",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@shopify/react-native-skia": "2.14.0",
-    "@stripe/stripe-react-native": "0.76.0",
+    "@stripe/stripe-react-native": "0.81.0",
     "expo": "workspace:*",
     "expo-age-range": "workspace:*",
     "expo-apple-authentication": "workspace:*",
