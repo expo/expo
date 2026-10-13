@@ -332,7 +332,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     };
   }) {
     const routeInfo = useCurrentRouteInfo();
-    const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const activityThreshold = useActivityThreshold();
@@ -373,14 +372,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
-    useEffect(() => {
-      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
-        console.warn(
-          'All routes in this navigator are protected. Ensure at least one route is accessible.'
-        );
-      }
-    }, [isFocused, isGuarded, redirectHref]);
-
     const hasRouteKey = !!route?.key;
 
     if (isGuarded) {
@@ -389,7 +380,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
+          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
         </Route>
       );
     }
@@ -452,6 +443,19 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   qualifiedStore.set(value, BaseRoute);
   return BaseRoute;
+}
+
+// A separate component, so reading focus does not rerender the screen on focus changes.
+function AllRoutesProtectedWarning() {
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (__DEV__ && isFocused) {
+      console.warn(
+        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      );
+    }
+  }, [isFocused]);
+  return null;
 }
 
 function AnalyticsListeners({
