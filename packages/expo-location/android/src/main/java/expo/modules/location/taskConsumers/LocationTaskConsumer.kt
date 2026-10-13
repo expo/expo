@@ -222,6 +222,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService?.let {
               it.setParentContext(context)
               it.startForeground(serviceOptions)
+              // The task was unregistered while this bind was pending: didUnregister() found no
+              // service to stop. Stop it now. startForeground() above is still required, since the
+              // service was started with startForegroundService().
+              if (mTask == null) {
+                stopForegroundService()
+              }
             }
           }
 

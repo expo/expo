@@ -18,23 +18,23 @@ const AudioScreens: ScreenConfig[] = optionalScreens(
 const BlobScreens: ScreenConfig[] = optionalScreens(
   () => require('../screens/Blob/BlobScreen').BlobScreens
 );
-const CalendarNextScreens: ScreenConfig[] = optionalScreens(
-  () => require('../screens/Calendar@Next/CalendarNextScreens').CalendarNextScreens
+const CalendarScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Calendar/CalendarNextScreens').CalendarScreens
 );
-const CalendarsScreens: ScreenConfig[] = optionalScreens(
-  () => require('../screens/CalendarsScreen').CalendarsScreens
+const CalendarsLegacyScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/CalendarsLegacyScreen').CalendarsLegacyScreens
+);
+const ContactsLegacyScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/ContactsLegacy/ContactsScreen').ContactsLegacyScreens
 );
 const ContactsScreens: ScreenConfig[] = optionalScreens(
-  () => require('../screens/Contacts/ContactsScreen').ContactsScreens
-);
-const ContactsNextScreens: ScreenConfig[] = optionalScreens(
-  () => require('../screens/Contacts@Next/ContactsNextScreen').ContactsNextScreens
+  () => require('../screens/Contacts/ContactsNextScreen').ContactsScreens
 );
 const CryptoScreens: ScreenConfig[] = optionalScreens(
   () => require('../screens/Crypto/CryptoScreen').CryptoScreens
 );
 const MediaLibraryScreens: ScreenConfig[] = optionalScreens(
-  () => require('../screens/MediaLibrary@Next/MediaLibraryScreens').MediaLibraryScreens
+  () => require('../screens/MediaLibrary/MediaLibraryScreens').MediaLibraryScreens
 );
 const ModulesCoreScreens: ScreenConfig[] = optionalScreens(
   () => require('../screens/ModulesCore/ModulesCoreScreen').ModulesCoreScreens
@@ -60,10 +60,9 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MediaLibrary@Next/MediaLibraryScreens'));
+      return optionalRequire(() => require('../screens/MediaLibrary/MediaLibraryScreens'));
     },
-    name: 'MediaLibrary@Next',
-    options: { title: 'MediaLibrary@Next' },
+    name: 'MediaLibrary',
   },
   {
     getComponent() {
@@ -274,15 +273,15 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/CalendarsScreen'));
+      return optionalRequire(() => require('../screens/CalendarsLegacyScreen'));
     },
-    name: 'Calendars',
+    name: 'Calendars@legacy',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Calendar@Next/CalendarNextScreens'));
+      return optionalRequire(() => require('../screens/Calendar/CalendarNextScreens'));
     },
-    name: 'Calendars@next',
+    name: 'Calendars',
   },
   {
     getComponent() {
@@ -292,16 +291,15 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
+      return optionalRequire(() => require('../screens/ContactsLegacy/ContactsScreen'));
     },
-    name: 'Contacts',
+    name: 'Contacts@legacy',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Contacts@Next/ContactsNextScreen'));
+      return optionalRequire(() => require('../screens/Contacts/ContactsNextScreen'));
     },
-    name: 'Contacts@Next',
-    options: { title: 'Contacts@Next' },
+    name: 'Contacts',
   },
   {
     getComponent() {
@@ -354,20 +352,20 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MediaLibrary/MediaLibraryScreen'));
+      return optionalRequire(() => require('../screens/MediaLibraryLegacy/MediaLibraryScreen'));
     },
-    name: 'MediaLibrary',
+    name: 'MediaLibrary@legacy',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MediaLibrary/MediaAlbumsScreen'));
+      return optionalRequire(() => require('../screens/MediaLibraryLegacy/MediaAlbumsScreen'));
     },
     name: 'MediaAlbums',
     options: { title: 'MediaLibrary Albums' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MediaLibrary/MediaDetailsScreen'));
+      return optionalRequire(() => require('../screens/MediaLibraryLegacy/MediaDetailsScreen'));
     },
     name: 'MediaDetails',
     options: { title: 'MediaLibrary Asset' },
@@ -574,10 +572,10 @@ export const Screens: ScreenConfig[] = [
   ...MediaLibraryScreens,
   ...AudioScreens,
   ...BlobScreens,
+  ...ContactsLegacyScreens,
   ...ContactsScreens,
-  ...ContactsNextScreens,
-  ...CalendarsScreens,
-  ...CalendarNextScreens,
+  ...CalendarsLegacyScreens,
+  ...CalendarScreens,
   ...CryptoScreens,
   ...WorkletsScreens,
 ];

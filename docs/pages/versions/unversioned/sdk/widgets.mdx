@@ -25,7 +25,6 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## Known limitations
 
-- **Frequent Live Activity updates.** To raise the budget for frequent push updates, set `NSSupportsLiveActivitiesFrequentUpdates` to `true` in your **Info.plist**. The system may still throttle updates, and the user can disable frequent updates in Settings.
 - **Widget runtime.** Code inside a `'widget'`-marked component runs in an isolated runtime and can only use `@expo/ui/swift-ui` components, with no React hooks, app state, or asynchronous work. See [The `'widget'` directive](#the-widget-directive).
 
 ## Installation
@@ -81,7 +80,13 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
     {
       name: 'enablePushNotifications',
       description:
-        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoLiveActivity_EnablePushNotifications` in the **Info.plist**.',
+        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
+      default: 'false',
+    },
+    {
+      name: 'frequentUpdates',
+      description:
+        'Whether an app can update its Live Activities frequently. When enabled, your Live Activities can receive frequent updates with remote push notifications. This sets `NSSupportsLiveActivitiesFrequentUpdates` in the **Info.plist**.',
       default: 'false',
     },
     {

@@ -6,7 +6,7 @@ import ComponentListScreen, { apiScreensToListElements } from '../ComponentListS
 const calendarTopLevelScreens = [
   {
     name: 'CalendarsNextList',
-    route: 'calendar@next/calendars',
+    route: 'calendar/calendars',
     getComponent() {
       return optionalRequire(() => require('./CalendarsNextScreen'));
     },
@@ -16,14 +16,14 @@ const calendarTopLevelScreens = [
 if (Platform.OS === 'ios') {
   calendarTopLevelScreens.push({
     name: 'WriteOnly Permissions',
-    route: 'calendar@next/write-only-permissions',
+    route: 'calendar/write-only-permissions',
     getComponent() {
       return optionalRequire(() => require('./WriteOnlyPermissionsScreen'));
     },
   });
 }
 
-export const CalendarNextScreens = [
+export const CalendarScreens = [
   ...calendarTopLevelScreens,
   {
     name: 'EventsNext',
