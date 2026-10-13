@@ -11,10 +11,17 @@ import {
   ROOT_CHAIN,
 } from '../react-navigation/routers/stateKeys';
 import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
+import type { RouterResetState } from './types';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;
 type SeedRoute = SeedState['routes'][number];
+type SeedOptions = {
+  // Reset trees come from the app, not the URL parser, so every given route is kept.
+  keepAllRoutes?: boolean;
+  // First sequence for route keys. Reset continues the current one, so no key is reused.
+  routeKeySeq?: number;
+};
 
 /**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
@@ -36,6 +43,77 @@ export function createSeededRootState(
     parentChain: ROOT_CHAIN,
     findChildNode: (routeName) => (routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined),
   });
+}
+
+/**
+ * Creates the root state for `router.reset` from a tree of route names. Unknown routes are skipped.
+ * Returns `undefined` when no top-level route is known.
+ */
+export function createResetRootState(
+  resetState: RouterResetState,
+  currentState: NavigationState,
+  rootRouteNode: RouteNode
+): NavigationState | undefined {
+  const targetState = toSeedState(resetState, rootRouteNode);
+  if (!targetState) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        'router.reset() did nothing because none of the given routes is a child of the root layout. Use the route names of the root layout, as in `<Stack.Screen name>`.'
+      );
+    }
+    return undefined;
+  }
+  // The hidden root route keeps its key, so the root layout stays mounted.
+  // The slot is missing when the initial URL showed `+not-found`.
+  const minter = createRouteKeyMinter(currentState);
+  const slot = currentState.routes.find((route) => route.name === INTERNAL_SLOT_NAME);
+  const slotKey = slot?.key ?? minter.mint(INTERNAL_SLOT_NAME);
+  const state = createSeededNavigationState(
+    targetState,
+    rootRouteNode,
+    getChainFromRouteKey(slotKey),
+    undefined,
+    { keepAllRoutes: true, routeKeySeq: slot?.state?.routeKeySeq }
+  );
+  return {
+    ...currentState,
+    routeKeySeq: minter.routeKeySeq,
+    index: 0,
+    routes: [{ key: slotKey, name: INTERNAL_SLOT_NAME, state }],
+  };
+}
+
+/** Keeps only the routes known by `routeNode`, and nested state only on layouts. */
+function toSeedState(
+  resetState: RouterResetState,
+  routeNode: RouteNode
+): PartialState<NavigationState> | undefined {
+  const routes = resetState.routes.flatMap((route) => {
+    const childNode = findRouteNodeByName(routeNode, route.name);
+    if (!childNode) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `router.reset() skipped the route "${route.name}" because the layout "${routeNode.contextKey}" has no child route with this name. Use the route name as in \`<Stack.Screen name>\`, for example "(tabs)" or "[id]".`
+        );
+      }
+      return [];
+    }
+    const isLayout = childNode.children.length > 0;
+    if (route.state && !isLayout && process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `router.reset() ignored the \`state\` of the route "${route.name}" because the route is not a layout. Remove \`state\` or move the nested routes to a layout route.`
+      );
+    }
+    const state = isLayout && route.state ? toSeedState(route.state, childNode) : undefined;
+    return [
+      {
+        name: route.name,
+        ...(route.params ? { params: route.params } : undefined),
+        ...(state ? { state } : undefined),
+      },
+    ];
+  });
+  return routes.length > 0 ? { routes } : undefined;
 }
 
 export function completeNavigationState(
@@ -83,7 +161,8 @@ export function createSeededNavigationState(
   targetState: SeedState | undefined,
   routeNode: RouteNode,
   parentChain: string,
-  anchorParams?: object
+  anchorParams?: object,
+  { keepAllRoutes = false, routeKeySeq }: SeedOptions = {}
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
   const routeNames = [...routeNode.children]
@@ -91,16 +170,20 @@ export function createSeededNavigationState(
     .map((child) => child.route);
 
   return createSeededState({
-    targetState: withoutParsedGroupAnchor(
-      targetState,
-      getGroupMatchingRouteName(routeNode),
-      initialRouteName
-    ),
+    targetState: keepAllRoutes
+      ? targetState
+      : withoutParsedGroupAnchor(
+          targetState,
+          getGroupMatchingRouteName(routeNode),
+          initialRouteName
+        ),
     routeNames,
     initialRouteName,
     anchorParams,
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
+    keepAllRoutes,
+    routeKeySeq,
   });
 }
 
@@ -219,7 +302,7 @@ type CreateSeededStateOptions = {
   parentChain: string;
   // Root maps `INTERNAL_SLOT_NAME` to itself; nested levels lazily use `findRouteNodeByName`.
   findChildNode: (routeName: string) => RouteNode | undefined;
-};
+} & SeedOptions;
 
 function createSeededState({
   targetState,
@@ -228,6 +311,8 @@ function createSeededState({
   anchorParams,
   parentChain,
   findChildNode,
+  keepAllRoutes,
+  routeKeySeq = 0,
 }: CreateSeededStateOptions): NavigationState {
   const initialState = createInitialState({ routeNames: [], parentChain });
   let targetRoutes = targetState?.routes ?? [];
@@ -246,7 +331,7 @@ function createSeededState({
     initialRouteName,
     anchorParams
   );
-  const minter = createRouteKeyMinter(initialState);
+  const minter = createRouteKeyMinter({ key: initialState.key, routeKeySeq });
   const routes = routesToCreate.map((targetRoute) => {
     const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);
@@ -256,7 +341,9 @@ function createSeededState({
             'state' in targetRoute ? targetRoute.state : undefined,
             childNode,
             getChainFromRouteKey(key),
-            'params' in targetRoute ? targetRoute.params : undefined
+            'params' in targetRoute ? targetRoute.params : undefined,
+            // Nested keys build on the new parent key, so they start at 0.
+            { keepAllRoutes }
           )
         : undefined;
 

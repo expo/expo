@@ -15,7 +15,12 @@ export {
   useCurrentRouteInfo,
 } from './hooks';
 
-export { router, type ImperativeRouter, type NavigationTransitionMode } from './imperative-api';
+export {
+  router,
+  type ImperativeRouter,
+  type NavigationTransitionMode,
+  type RouterResetState,
+} from './imperative-api';
 export { useIsNavigating as unstable_useIsNavigating } from './global-state/useIsNavigating';
 
 export { withLayoutContext } from './layouts/withLayoutContext';

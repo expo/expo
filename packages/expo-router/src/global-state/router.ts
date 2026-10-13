@@ -7,6 +7,7 @@ import {
   emitDomDismissAll,
   emitDomGoBack,
   emitDomLinkEvent,
+  emitDomReset,
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
@@ -19,6 +20,7 @@ import type {
   LinkToOptions,
   NavigationOptions,
   NavigationTransitionMode,
+  RouterResetState,
   TransitionOptions,
 } from './types';
 
@@ -101,6 +103,17 @@ function dismissAllImpl(enqueue: (intent: RoutingIntent) => void, options?: Tran
     return;
   }
   enqueueAction(enqueue, { type: 'POP_TO_TOP' }, options?.inTransition);
+}
+
+function resetImpl(
+  enqueue: (intent: RoutingIntent) => void,
+  state: RouterResetState,
+  options?: TransitionOptions
+) {
+  if (emitDomReset(state, options)) {
+    return;
+  }
+  enqueue({ type: 'RESET_ROUTES', payload: { state }, inTransition: options?.inTransition });
 }
 
 // `GO_BACK` follows focused back handling; `POP` (used by `dismiss`) explicitly removes stack routes.
@@ -261,6 +274,29 @@ export type ImperativeRouter = {
    */
   dismissAll: (options?: TransitionOptions) => void;
   /**
+   * Replaces the whole navigation history with a tree of route names from the root `_layout`
+   * navigator. The last route in each `routes` array is focused. All screens remount, and
+   * `usePreventRemove` can block the reset.
+   *
+   * @param state Tree of route names to show, from the navigator of the root `_layout`.
+   *
+   * @example
+   * ```ts
+   * router.reset({
+   *   routes: [
+   *     { name: '(tabs)' },
+   *     {
+   *       name: 'workflow',
+   *       state: {
+   *         routes: [{ name: 'step1' }, { name: 'step2' }, { name: 'step3', params: { id: '42' } }],
+   *       },
+   *     },
+   *   ],
+   * });
+   * ```
+   */
+  reset: (state: RouterResetState, options?: TransitionOptions) => void;
+  /**
    * Checks if it is possible to dismiss the current screen. Returns `true` if the
    * router is within the stack with more than one screen in stack's history.
    *
@@ -306,6 +342,7 @@ export function createImperativeRouter(
     dismiss: (count, options) => dismissImpl(enqueue, count, options),
     dismissAll: (options) => dismissAllImpl(enqueue, options),
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
+    reset: (state, options) => resetImpl(enqueue, state, options),
     canDismiss,
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
@@ -342,6 +379,7 @@ export const unboundRouter: InternalRouter = {
   dismiss: throwBeforeFirstRender,
   dismissAll: throwBeforeFirstRender,
   dismissTo: throwBeforeFirstRender,
+  reset: throwBeforeFirstRender,
   canDismiss: throwBeforeFirstRender,
   replace: throwBeforeFirstRender,
   back: throwBeforeFirstRender,

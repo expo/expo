@@ -238,6 +238,26 @@ Query parameters can be updated without navigating to a new page. This can be do
   Icon={RouterLogo}
 />
 
+## Resetting the navigation history
+
+Use `router.reset` to replace the whole navigation history at once, for example, to resume a multi-step flow at its last step. It takes a tree of route names that starts at the navigator of the root layout. The last route in each `routes` array is focused, and the other routes stay below it in the history.
+
+```tsx
+router.reset({
+  routes: [
+    { name: '(tabs)' },
+    {
+      name: 'workflow',
+      state: {
+        routes: [{ name: 'step1' }, { name: 'step2' }, { name: 'step3', params: { id: '42' } }],
+      },
+    },
+  ],
+});
+```
+
+Each `name` is the route name you would pass to `<Stack.Screen name>`, such as `(tabs)` or `[id]`. All screens in the new history mount again.
+
 ## Redirects
 
 You can immediately redirect to another route from a page or layout with the `Redirect` component. This functions like the `replace` imperative navigation function. A redirect will navigate to the new route without rendering the current page.

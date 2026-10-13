@@ -1,10 +1,11 @@
-import type { LinkToOptions, TransitionOptions } from '../global-state/types';
+import type { LinkToOptions, RouterResetState, TransitionOptions } from '../global-state/types';
 import {
   ROUTER_SET_PARAMS_TYPE,
   ROUTER_DISMISS_TYPE,
   ROUTER_BACK_TYPE,
   ROUTER_DISMISS_ALL_TYPE,
   ROUTER_LINK_TYPE,
+  ROUTER_RESET_TYPE,
 } from './events';
 
 function emitDomEvent(type: string, data: any = {}) {
@@ -32,6 +33,10 @@ export function emitDomGoBack(options?: TransitionOptions) {
 
 export function emitDomDismissAll(options?: TransitionOptions) {
   return emitDomEvent(ROUTER_DISMISS_ALL_TYPE, { options });
+}
+
+export function emitDomReset(state: RouterResetState, options?: TransitionOptions) {
+  return emitDomEvent(ROUTER_RESET_TYPE, { state, options });
 }
 
 export function emitDomLinkEvent(href: string, options: LinkToOptions) {

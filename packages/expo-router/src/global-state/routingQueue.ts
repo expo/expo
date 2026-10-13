@@ -1,6 +1,6 @@
 import type { NavigationAction, NavigationState } from '../react-navigation/native';
 import type { RouterRegistry } from './routerRegistry';
-import type { LinkToOptions } from './types';
+import type { LinkToOptions, RouterResetState } from './types';
 
 interface NavigateToHrefIntent {
   type: 'NAVIGATE_TO_HREF';
@@ -27,6 +27,11 @@ export type RoutingIntent = (
   | {
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
+    }
+  | {
+      // Built into a root `RESET` by the reducer, which knows the route tree.
+      type: 'RESET_ROUTES';
+      payload: { state: RouterResetState };
     }
   | {
       // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in

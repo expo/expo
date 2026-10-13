@@ -1,6 +1,11 @@
 import * as Linking from 'expo-linking';
 
-import { emitDomDismiss, emitDomDismissAll, emitDomGoBack } from '../../domComponents/emitDomEvent';
+import {
+  emitDomDismiss,
+  emitDomDismissAll,
+  emitDomGoBack,
+  emitDomReset,
+} from '../../domComponents/emitDomEvent';
 import { navigationRef } from '../navigationRef';
 import {
   canDismiss,
@@ -46,6 +51,7 @@ jest.mock('../../domComponents/emitDomEvent', () => ({
   emitDomDismissAll: jest.fn(() => false),
   emitDomGoBack: jest.fn(() => false),
   emitDomLinkEvent: jest.fn(() => false),
+  emitDomReset: jest.fn(() => false),
   emitDomSetParams: jest.fn(() => false),
 }));
 
@@ -58,6 +64,7 @@ const mockSetTransitionMode = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
+const mockEmitDomReset = emitDomReset as jest.Mock;
 const mountedNavigation = navigationRef.current;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -311,6 +318,17 @@ describe('router action functions', () => {
     });
   });
 
+  it('reset enqueues the route tree with the inTransition option', () => {
+    const state = { routes: [{ name: 'index' }] };
+    router.reset(state, { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'RESET_ROUTES',
+      payload: { state },
+      inTransition: true,
+    });
+  });
+
   it('preserves inTransition when a relative href becomes GO_BACK', () => {
     push('..', { inTransition: true });
 
@@ -448,6 +466,16 @@ describe('DOM short-circuit paths', () => {
     dismissAll({ inTransition: true });
 
     expect(mockEmitDomDismissAll).toHaveBeenCalledWith({ inTransition: true });
+    expect(mockAdd).not.toHaveBeenCalled();
+  });
+
+  it('reset short-circuits when emitDomReset returns true', () => {
+    mockEmitDomReset.mockReturnValueOnce(true);
+    const state = { routes: [{ name: 'index' }] };
+
+    router.reset(state, { inTransition: true });
+
+    expect(mockEmitDomReset).toHaveBeenCalledWith(state, { inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 

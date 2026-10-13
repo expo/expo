@@ -8,6 +8,7 @@ import {
   ROUTER_DISMISS_TYPE,
   ROUTER_BACK_TYPE,
   ROUTER_SET_PARAMS_TYPE,
+  ROUTER_RESET_TYPE,
 } from './events';
 
 export function useDomComponentNavigation() {
@@ -33,6 +34,9 @@ export function useDomComponentNavigation() {
           break;
         case ROUTER_SET_PARAMS_TYPE:
           router.setParams(data.params);
+          break;
+        case ROUTER_RESET_TYPE:
+          router.reset(data.state, data.options);
           break;
       }
     });

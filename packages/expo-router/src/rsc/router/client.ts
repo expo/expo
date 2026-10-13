@@ -362,6 +362,9 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     dismissAll() {
       throw new Error('router.dismissAll() is not supported in React Server Components yet');
     },
+    reset() {
+      throw new Error('router.reset() is not supported in React Server Components yet');
+    },
     setParams() {
       throw new Error('router.setParams() is not supported in React Server Components yet');
     },

@@ -25,6 +25,7 @@ import {
 import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
   completeNavigationState,
+  createResetRootState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
@@ -322,6 +323,22 @@ function reduceTree(
         {
           type: 'ACTION',
           payload: { action, originKey: operation.payload.originKey },
+        },
+        config
+      );
+    }
+    case 'RESET_ROUTES': {
+      const resetState = config.routeNode
+        ? createResetRootState(operation.payload.state, state, config.routeNode)
+        : undefined;
+      if (!resetState) {
+        return result;
+      }
+      return reduceTree(
+        result,
+        {
+          type: 'ACTION',
+          payload: { action: { type: 'RESET', payload: resetState, target: state.key } },
         },
         config
       );

@@ -26,6 +26,7 @@ const routerWithWarnings: ImperativeRouter = {
   dismiss: createNOOPWithWarning('dismiss'),
   dismissTo: createNOOPWithWarning('dismissTo'),
   dismissAll: createNOOPWithWarning('dismissAll'),
+  reset: createNOOPWithWarning('reset'),
   canDismiss: () => {
     displayWarningForProp('canDismiss');
     return false;
