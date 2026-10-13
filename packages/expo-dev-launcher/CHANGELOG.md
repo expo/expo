@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Remove the unused date formatter in `getAppExpirationDate`, which built a string nothing read and triggered an `-Wunused-variable` warning. ([#51360](https://github.com/expo/expo/pull/51360) by [@yasserstudio](https://github.com/yasserstudio))
+
 ## 58.0.12
 
 ### Patch Changes

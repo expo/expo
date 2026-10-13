@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Re-apply `preferredForwardBufferDuration` when the player item is replaced or a loop item is queued. ([#50468](https://github.com/expo/expo/pull/50468) by [@rmotafreitas](https://github.com/rmotafreitas))
+
 ## 58.0.8
 
 ### Patch Changes

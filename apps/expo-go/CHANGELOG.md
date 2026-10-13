@@ -1,5 +1,40 @@
 # @expo/home
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies. ([#50468](https://github.com/expo/expo/pull/50468), [#49784](https://github.com/expo/expo/pull/49784), [#51368](https://github.com/expo/expo/pull/51368), [#51354](https://github.com/expo/expo/pull/51354), [#50876](https://github.com/expo/expo/pull/50876), [#51219](https://github.com/expo/expo/pull/51219), [#50991](https://github.com/expo/expo/pull/50991), [#51194](https://github.com/expo/expo/pull/51194), [#51319](https://github.com/expo/expo/pull/51319), [#51237](https://github.com/expo/expo/pull/51237), [#50715](https://github.com/expo/expo/pull/50715), [#50727](https://github.com/expo/expo/pull/50727), [#50536](https://github.com/expo/expo/pull/50536), [#50218](https://github.com/expo/expo/pull/50218), [#51124](https://github.com/expo/expo/pull/51124), [#51327](https://github.com/expo/expo/pull/51327), [#51326](https://github.com/expo/expo/pull/51326), [#51325](https://github.com/expo/expo/pull/51325), [#51370](https://github.com/expo/expo/pull/51370), [#49995](https://github.com/expo/expo/pull/49995), [#50737](https://github.com/expo/expo/pull/50737), [#50874](https://github.com/expo/expo/pull/50874), [#51255](https://github.com/expo/expo/pull/51255), [#49639](https://github.com/expo/expo/pull/49639), [#51239](https://github.com/expo/expo/pull/51239), [#51364](https://github.com/expo/expo/pull/51364), [#51293](https://github.com/expo/expo/pull/51293), [#51294](https://github.com/expo/expo/pull/51294), [#51356](https://github.com/expo/expo/pull/51356), [#51330](https://github.com/expo/expo/pull/51330), [#43939](https://github.com/expo/expo/pull/43939), [#51270](https://github.com/expo/expo/pull/51270), [#51412](https://github.com/expo/expo/pull/51412), [#51322](https://github.com/expo/expo/pull/51322), [#51351](https://github.com/expo/expo/pull/51351), [#51408](https://github.com/expo/expo/pull/51408))
+  - expo-audio@58.0.9
+  - expo@58.0.8
+  - @expo/ui@58.0.16
+  - expo-application@58.1.1
+  - expo-camera@58.0.10
+  - expo-contacts@58.0.7
+  - expo-font@58.0.8
+  - expo-image@58.0.14
+  - expo-image-manipulator@58.0.14
+  - expo-live-photo@58.0.5
+  - expo-media-library@58.0.8
+  - expo-print@58.0.6
+  - expo-video@58.0.10
+  - expo-router@58.0.18
+  - expo-location@58.0.14
+  - expo-cellular@58.0.3
+  - expo-notifications@58.1.3
+  - expo-haptics@58.0.6
+  - expo-sqlite@58.0.12
+  - expo-sensors@58.0.4
+  - expo-sharing@58.0.17
+  - expo-crypto@58.0.6
+  - expo-constants@58.0.11
+  - expo-updates@58.0.16
+  - expo-splash-screen@58.0.8
+  - expo-asset@58.0.14
+  - expo-linking@58.0.12
+  - expo-store-review@58.0.2
+  - expo-dev-menu@58.0.11
+
 ## 0.0.2
 
 ### Patch Changes

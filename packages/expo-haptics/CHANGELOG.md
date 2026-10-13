@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.5
 
 ### Patch Changes

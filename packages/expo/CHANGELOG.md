@@ -1,5 +1,26 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [iOS] Detect native module classes annotated with the `@ExpoModule` macro and add them to the generated modules provider automatically, without listing them in `expo-module.config.json`. Generating the modules provider runs the scanner from `expo-modules-macros` once over all package sources and links only the classes that compile for the target platform. When the scan fails, packages that declare their modules still link them, and the build fails if a package relies on the scan for its module classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#49784](https://github.com/expo/expo/pull/49784), [#51417](https://github.com/expo/expo/pull/51417), [#51368](https://github.com/expo/expo/pull/51368), [#51037](https://github.com/expo/expo/pull/51037), [#50978](https://github.com/expo/expo/pull/50978), [#51219](https://github.com/expo/expo/pull/51219), [#51405](https://github.com/expo/expo/pull/51405), [#50536](https://github.com/expo/expo/pull/50536), [#51439](https://github.com/expo/expo/pull/51439), [#51436](https://github.com/expo/expo/pull/51436), [#46526](https://github.com/expo/expo/pull/46526))
+  - expo-modules-autolinking@58.0.12
+  - @expo/cli@58.1.7
+  - expo-file-system@58.0.9
+  - expo-font@58.0.8
+  - expo-modules-core@58.0.16
+  - @expo/metro-config@58.0.12
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+  - @expo/fingerprint@0.21.5
+  - expo-constants@58.0.11
+  - babel-preset-expo@58.0.13
+  - @expo/local-build-cache-provider@58.0.5
+  - expo-asset@58.0.14
+
 ## 58.0.7
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- [Android] Fixed `DeviceMotion` emitting a stale reading from the previous subscription when re-subscribing, and sensors restarting after the last listener was removed when the app returned to the foreground. ([#51364](https://github.com/expo/expo/pull/51364) by [@tomjvk](https://github.com/tomjvk))
+
 ## 58.0.3
 
 ### Patch Changes

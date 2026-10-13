@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+- [Web] Fix statement finalization and failed-close recovery, same as #50121 on Android and iOS. ([#51293](https://github.com/expo/expo/pull/51293) by [@Kudo](https://github.com/Kudo))
+- [Web] Add `configureWeb()` with a `wasmURL` option to load a custom SQLite WebAssembly build, for example one built with FTS enabled. ([#51294](https://github.com/expo/expo/pull/51294) by [@Kudo](https://github.com/Kudo))
+- [Web] Fix `isInTransactionAsync()` returning `undefined` instead of `false` outside a transaction. ([#51356](https://github.com/expo/expo/pull/51356) by [@Kudo](https://github.com/Kudo))
+- [Web] Fix synchronous calls that lost the SQLite error message or failed on results longer than 255 bytes. ([#51330](https://github.com/expo/expo/pull/51330) by [@Kudo](https://github.com/Kudo))
+- [iOS] Fixed database paths with whitespace, non-ASCII characters, `#` or `?`, both as plain paths and as `file://` URIs such as App Group containers. `importDatabaseFromAssetAsync` with `forceOverwrite` now also removes the `-journal`, `-wal` and `-shm` files so a stale write-ahead log is not replayed over the imported copy, and a database that an earlier release created under a percent-encoded name on iOS 17, tvOS 17 or macOS 14 and later is moved to the decoded path on first open. ([#43939](https://github.com/expo/expo/pull/43939) by [@nickrugge](https://github.com/nickrugge))
+
 ## 58.0.11
 
 ### Patch Changes

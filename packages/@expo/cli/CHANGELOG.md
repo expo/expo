@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.1.7
+
+### Patch Changes
+
+- Load externalized modules from the project root during development for static/server rendering. ([#51417](https://github.com/expo/expo/pull/51417) by [@hassankhan](https://github.com/hassankhan))
+- Allow interfaces extending `UnknownOutputParams` to declare optional params, so an omitted query parameter can be typed as optional, e.g. `interface MyParams extends UnknownOutputParams { id?: string }`. ([#51219](https://github.com/expo/expo/pull/51219) by [@Ubax](https://github.com/Ubax))
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321), [#50536](https://github.com/expo/expo/pull/50536), [#51255](https://github.com/expo/expo/pull/51255), [#46526](https://github.com/expo/expo/pull/46526))
+  - @expo/env@2.5.2
+  - @expo/metro-config@58.0.12
+  - @expo/router-server@58.0.12
+  - expo-server@58.0.5
+  - @expo/prebuild-config@58.0.12
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+  - @expo/inline-modules@0.2.5
+
 ## 58.1.6
 
 ### Patch Changes
