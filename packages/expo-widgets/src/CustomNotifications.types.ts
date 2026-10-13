@@ -8,7 +8,8 @@ import type { ReactNode } from 'react';
  */
 export type CustomNotificationLayout = {
   /**
-   * The collapsed row shown in the notification shade. The system gives it about 64 dp of height.
+   * The collapsed row shown in the notification shade. The system gives it about 64
+   * density-independent pixels (dp) of height.
    */
   collapsed: ReactNode;
   /**
@@ -56,9 +57,10 @@ export type CustomNotificationOptions = {
    */
   id?: string;
   /**
-   * The notification channel the notification is posted to. The channel must exist, for example
-   * created with `expo-notifications`. Defaults to a low-importance channel named
-   * `expo_widgets_notifications` that `expo-widgets` creates on first use.
+   * The notification channel the notification is posted to. The channel must exist, for example,
+   * one created with `expo-notifications`. Defaults to a low-importance channel with the ID
+   * `expo_widgets_notifications`, which `expo-widgets` creates on first use. The system settings
+   * list it as "Notifications".
    */
   channelId?: string;
   /**
@@ -76,8 +78,7 @@ export type CustomNotificationOptions = {
    */
   ongoing?: boolean;
   /**
-   * Whether a tap removes the notification.
-   * @default The opposite of `ongoing`.
+   * Whether a tap removes the notification. Defaults to the opposite of `ongoing`.
    */
   autoCancel?: boolean;
   /**
