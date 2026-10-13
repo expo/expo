@@ -180,11 +180,11 @@ export default function CalendarsNextScreen() {
 }
 
 CalendarRow.navigationOptions = {
-  title: 'Calendars@next',
+  title: 'Calendars',
 };
 
 CalendarsNextScreen.navigationOptions = {
-  title: 'Calendars@next',
+  title: 'Calendars',
 };
 
 const styles = StyleSheet.create({

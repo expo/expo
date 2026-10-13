@@ -1,24 +1,24 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
-export const ContactsNextScreens = [
+export const ContactsScreens = [
   {
     name: 'Form',
-    route: 'contacts@next/form',
+    route: 'contacts/form',
     getComponent() {
       return optionalRequire(() => require('./ContactsNextFormScreen'));
     },
   },
   {
     name: 'Query Contacts',
-    route: 'contacts@next/query',
+    route: 'contacts/query',
     getComponent() {
       return optionalRequire(() => require('./ContactsNextQueryScreen'));
     },
   },
   {
     name: 'Intents (Pickers & Forms)',
-    route: 'contacts@next/intents',
+    route: 'contacts/intents',
     getComponent() {
       return optionalRequire(() => require('./ContactsNextIntentsScreen'));
     },
@@ -26,6 +26,6 @@ export const ContactsNextScreens = [
 ];
 
 export default function ContactsNextScreen() {
-  const apis = apiScreensToListElements(ContactsNextScreens);
+  const apis = apiScreensToListElements(ContactsScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

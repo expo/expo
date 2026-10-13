@@ -17,7 +17,7 @@ import { useResolvedValue } from '../../utilities/useResolvedValue';
 import * as ContactUtils from './ContactUtils';
 import ContactsList from './ContactsList';
 
-export const ContactsScreens = [
+export const ContactsLegacyScreens = [
   {
     name: 'ContactDetail',
     route: 'contact/detail',

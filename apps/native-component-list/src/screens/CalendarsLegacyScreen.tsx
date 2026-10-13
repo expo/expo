@@ -9,7 +9,7 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import { optionalRequire } from '../navigation/routeBuilder';
 
-export const CalendarsScreens = [
+export const CalendarsLegacyScreens = [
   {
     name: 'Events',
     route: 'events',
