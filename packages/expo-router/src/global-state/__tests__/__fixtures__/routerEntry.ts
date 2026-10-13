@@ -3,6 +3,7 @@ import type {
   NavigationState,
   Router,
 } from '../../../react-navigation/routers';
+import { isActionRejected } from '../../../react-navigation/routers/extendRouter';
 import type { RouterRegistryEntry } from '../../routerRegistry';
 
 export function entry(reduce: RouterRegistryEntry['reduce']): RouterRegistryEntry;
@@ -17,12 +18,15 @@ export function entry<State extends NavigationState, Action extends NavigationAc
   const reduce: RouterRegistryEntry['reduce'] =
     typeof reduceOrRouter === 'function'
       ? reduceOrRouter
-      : (state, action) =>
+      : (state, action) => {
           // The registry erases each router's narrower state and action unions at this boundary.
-          reduceOrRouter.getStateForAction(state as State, action as Action, {
+          const result = reduceOrRouter.getStateForAction(state as State, action as Action, {
             routeNames: routeNames!,
             routeGetIdList: {},
           });
+          // Same as `useNavigationBuilder`: the registry marks a rejected action with `null`.
+          return isActionRejected(result) ? null : result;
+        };
 
   return {
     reduce,

@@ -1,5 +1,31 @@
-import { CommonActions, type StackNavigationState } from '../../react-navigation/routers';
-import { StackRouter } from '../stack-router';
+import {
+  CommonActions,
+  RouterActionHandling,
+  type StackNavigationState,
+  StackRouter as RNStackRouter,
+} from '../../react-navigation/routers';
+import { StackRouter, stackRouterOverride } from '../stack-router';
+
+test('stackRouterOverride rejects an action targeting another navigator', () => {
+  const { getStateForAction } = stackRouterOverride(RNStackRouter({}));
+  const state: StackNavigationState<{ index: undefined }> = {
+    stale: false,
+    routeKeySeq: 1,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['index'],
+    routes: [{ key: 'index:0', name: 'index' }],
+  };
+
+  const result = getStateForAction!(
+    state,
+    { ...CommonActions.navigate('index'), target: 'navigator:other' },
+    { routeNames: ['index'], routeGetIdList: {} }
+  );
+
+  expect(result).toBe(RouterActionHandling.Reject);
+});
 
 test('same-route navigation preserves merge semantics without consuming another preload', () => {
   const router = StackRouter({});

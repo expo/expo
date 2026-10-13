@@ -163,6 +163,19 @@ type RouterType<State extends NavigationState> = undefined extends State['type']
   ? { type?: State['type'] }
   : { type: State['type'] };
 
+/**
+ * What a router's `getStateForAction` returns when it does not produce a result itself.
+ */
+export enum RouterActionHandling {
+  /**
+   * Lets the base router handle the action. Only an `extendRouter` extension or an
+   * `extendRouterActions` reducer can return it.
+   */
+  Delegate = 'DELEGATE',
+  /** Rejects the action, so the navigator ignores it. */
+  Reject = 'REJECT',
+}
+
 export type Router<
   State extends NavigationState,
   Action extends NavigationAction,
@@ -202,8 +215,9 @@ export type Router<
 
   /**
    * Take the current state and action, and return a new state and the affected route key.
-   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
-   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
+   * If the action cannot be handled, return `RouterActionHandling.Reject`. Returning `null` is
+   * deprecated. Custom routers must explicitly handle `ROUTE_NAMES_CHANGED` to durably reconcile
+   * state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.
@@ -213,7 +227,7 @@ export type Router<
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): RouterActionResult<State> | null;
+  ): RouterActionResult<State> | RouterActionHandling.Reject | null;
 
   /**
    * Whether the action should also change focus in parent navigator
@@ -247,6 +261,21 @@ export type Router<
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
+};
+
+/**
+ * The router members an `extendRouter` extension returns. Its `getStateForAction` may also return
+ * `RouterActionHandling.Delegate` to let the base router handle the action.
+ */
+export type RouterExtensionMembers<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = Omit<Router<State, Action>, 'getStateForAction'> & {
+  getStateForAction(
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ): RouterActionResult<State> | RouterActionHandling | null;
 };
 
 /** A router's instruction for synchronizing an accepted action with browser history. */

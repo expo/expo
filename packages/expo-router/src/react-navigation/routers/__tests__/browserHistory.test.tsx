@@ -8,8 +8,8 @@ import {
 } from '..';
 import type { NavigationState } from '..';
 import type { StackActionType } from '../StackRouter';
-import { extendRouterActions, RouterActionHandling } from '../extendRouter';
-import type { CommonNavigationAction } from '../types';
+import { extendRouterActions } from '../extendRouter';
+import { type CommonNavigationAction, RouterActionHandling } from '../types';
 
 const options = { routeNames: ['index', 'details', 'final'], routeGetIdList: {} };
 const stack = {

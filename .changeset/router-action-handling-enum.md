@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Add `RouterActionHandling` to delegate or reject an action from an `extendRouter` extension's `getStateForAction` or an `extendRouterActions` reducer. Returning `null` or `undefined` for this is deprecated.
+Add `RouterActionHandling` so `getStateForAction` can delegate an action to the base router or reject it.

@@ -20,6 +20,7 @@ import {
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
+import { isActionRejected } from '../routers/extendRouter';
 import { Group } from './Group';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
@@ -356,13 +357,15 @@ export function useNavigationBuilder<
       ? declaredState
       : { ...declaredState, routeNames };
   }, [committedState, routeNamesKey, router]);
-  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
+  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) => {
     // The registry stores states from different router types; this entry only receives its own state key.
-    router.getStateForAction(registryState as State, action, {
+    const result = router.getStateForAction(registryState as State, action, {
       routeNames,
       routeGetIdList,
-    })
-  );
+    });
+    // The registry marks a rejected action with `null`.
+    return isActionRejected(result) ? null : result;
+  });
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 

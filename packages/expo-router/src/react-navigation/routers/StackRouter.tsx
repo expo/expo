@@ -2,20 +2,17 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import {
-  extendRouter,
+  type CommonNavigationAction,
+  type DefaultRouterOptions,
+  type NavigationState,
+  type ParamListBase,
+  type Route,
   RouterActionHandling,
-  type RouterExtensionContext,
+  type RouterBrowserHistoryAction,
   type RouterExtensionMembers,
-} from './extendRouter';
-import type {
-  CommonNavigationAction,
-  DefaultRouterOptions,
-  NavigationState,
-  ParamListBase,
-  Route,
-  RouterBrowserHistoryAction,
-  NavigationAction,
+  type NavigationAction,
 } from './types';
 
 export type StackActionType =

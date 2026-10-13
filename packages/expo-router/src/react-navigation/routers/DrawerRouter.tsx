@@ -7,14 +7,14 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import {
-  extendRouter,
-  RouterActionHandling,
-  type RouterExtensionContext,
-  type RouterExtensionMembers,
-} from './extendRouter';
+import { extendRouter, isActionRejected, type RouterExtensionContext } from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
-import type { CommonNavigationAction, ParamListBase } from './types';
+import {
+  type CommonNavigationAction,
+  type ParamListBase,
+  RouterActionHandling,
+  type RouterExtensionMembers,
+} from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -223,7 +223,7 @@ function drawerRouterExtension({
         case 'NAVIGATE': {
           const actionResult = router.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (!isActionRejected(actionResult)) {
             const nextState = actionResult.state;
             if (nextState.index === state.index) {
               return actionResult;
@@ -246,10 +246,10 @@ function drawerRouterExtension({
             };
           }
 
-          return router.getStateForAction(state, action, options) ?? RouterActionHandling.Reject;
+          return router.getStateForAction(state, action, options);
 
         default:
-          return router.getStateForAction(state, action, options) ?? RouterActionHandling.Reject;
+          return router.getStateForAction(state, action, options);
       }
     },
 

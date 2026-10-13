@@ -3,20 +3,17 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import {
-  extendRouter,
-  RouterActionHandling,
-  type RouterExtensionContext,
-  type RouterExtensionMembers,
-} from './extendRouter';
+import { extendRouter, isActionRejected, type RouterExtensionContext } from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
-import type {
-  CommonNavigationAction,
-  DefaultRouterOptions,
-  NavigationState,
-  ParamListBase,
-  Route,
-  RouterBrowserHistoryAction,
+import {
+  type CommonNavigationAction,
+  type DefaultRouterOptions,
+  type NavigationState,
+  type ParamListBase,
+  type Route,
+  RouterActionHandling,
+  type RouterBrowserHistoryAction,
+  type RouterExtensionMembers,
 } from './types';
 
 export type TabActionType =
@@ -561,7 +558,7 @@ function tabRouterExtension({
         case 'REPLACE_PARAMS': {
           const actionResult = baseRouter.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (!isActionRejected(actionResult)) {
             const nextState = actionResult.state;
             const index = nextState.index;
 
@@ -591,7 +588,7 @@ function tabRouterExtension({
             }
           }
 
-          return actionResult ?? RouterActionHandling.Reject;
+          return actionResult;
         }
 
         case 'GO_BACK': {
@@ -765,8 +762,8 @@ function tabRouterExtension({
         default: {
           const result = baseRouter.getStateForAction(state, action, options);
 
-          if (result === null) {
-            return RouterActionHandling.Reject;
+          if (isActionRejected(result)) {
+            return result;
           }
 
           return {

@@ -12,13 +12,12 @@ export type {
   DrawerStatus,
 } from './DrawerRouter';
 export { DrawerActions, DrawerRouter } from './DrawerRouter';
-export { extendRouter, extendRouterActions, RouterActionHandling } from './extendRouter';
+export { extendRouter, extendRouterActions } from './extendRouter';
 export type {
   RouterActionContext,
   RouterActionReducer,
   RouterExtension,
   RouterExtensionContext,
-  RouterExtensionMembers,
   RouterExtensionOptions,
 } from './extendRouter';
 export type {

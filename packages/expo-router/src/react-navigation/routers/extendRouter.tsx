@@ -1,24 +1,22 @@
 import { ensureStateType } from './ensureStateType';
 import { createRouteKeyMinter } from './stateKeys';
-import type {
-  DefaultRouterOptions,
-  NavigationAction,
-  NavigationState,
-  Router,
-  RouterActionResult,
-  RouterConfigOptions,
-  RouterFactory,
+import {
+  type DefaultRouterOptions,
+  type NavigationAction,
+  type NavigationState,
+  type Router,
+  RouterActionHandling,
+  type RouterActionResult,
+  type RouterConfigOptions,
+  type RouterExtensionMembers,
+  type RouterFactory,
 } from './types';
 
-/**
- * What an extension's `getStateForAction` or a `RouterActionReducer` returns when it does not
- * produce a result itself.
- */
-export enum RouterActionHandling {
-  /** Lets the base router handle the action. */
-  Delegate = 'DELEGATE',
-  /** Rejects the action, so the navigator ignores it. */
-  Reject = 'REJECT',
+// Internal: `Router` results use both `null` (deprecated) and `Reject` for a rejected action.
+export function isActionRejected<State extends NavigationState>(
+  result: RouterActionResult<State> | RouterActionHandling.Reject | null
+): result is RouterActionHandling.Reject | null {
+  return result === null || result === RouterActionHandling.Reject;
 }
 
 export type RouterExtensionContext<
@@ -27,8 +25,9 @@ export type RouterExtensionContext<
   Options extends DefaultRouterOptions,
 > = {
   /**
-   * The router being extended. Delegate to it for everything the extension does not handle.
-   * It is typed for the extended state and actions; actions it does not recognize return `null`.
+   * The router being extended. Call it to change its result; return `RouterActionHandling.Delegate`
+   * to hand it an action unchanged. It is typed for the extended state and actions; actions it
+   * does not recognize return `null` or `RouterActionHandling.Reject`.
    */
   baseRouter: Router<State, Action> & {
     /**
@@ -38,7 +37,7 @@ export type RouterExtensionContext<
       state: State,
       action: Action,
       config?: RouterConfigOptions
-    ): RouterActionResult<State> | null;
+    ): RouterActionResult<State> | RouterActionHandling.Reject | null;
   };
   /**
    * The options the navigator passed to the router factory.
@@ -59,30 +58,6 @@ export type RouterExtensionOptions<State extends NavigationState> = {
   type?: NonNullable<State['type']>;
 };
 
-type ExtensionActionResult<State extends NavigationState> =
-  | RouterActionResult<State>
-  | RouterActionHandling
-  | null;
-
-/**
- * A router whose `getStateForAction` returns a result to handle the action,
- * `RouterActionHandling.Delegate` to let the base router handle it, or
- * `RouterActionHandling.Reject` to reject it.
- *
- * Returning `null` from `getStateForAction` is deprecated: return `RouterActionHandling.Reject`
- * instead.
- */
-export type RouterExtensionMembers<
-  State extends NavigationState,
-  Action extends NavigationAction,
-> = Omit<Router<State, Action>, 'getStateForAction'> & {
-  getStateForAction(
-    state: State,
-    action: Action,
-    options: RouterConfigOptions
-  ): ExtensionActionResult<State>;
-};
-
 /**
  * Returns the router members to merge over the base router. Members that are left out are
  * inherited from the base router, including `actionCreators`: return a merged object to add
@@ -97,16 +72,18 @@ export type RouterExtension<
   context: RouterExtensionContext<State, Action, Options>
 ) => Partial<RouterExtensionMembers<State, Action>>;
 
-// Warns once per router factory, so a deprecated result does not log on every action.
-function createDeprecationWarning(getMessage: (actionType: string) => string) {
-  let warned = false;
-  return (actionType: string) => {
-    if (process.env.NODE_ENV !== 'production' && !warned) {
-      warned = true;
-      console.warn(getMessage(actionType));
-    }
-  };
-}
+// Built-in routers keep returning `null` for a rejected action on purpose, so callers that check
+// `=== null` keep working. New routers should return `RouterActionHandling.Reject` instead.
+type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
+  Router<State, Action>,
+  'getStateForAction'
+> & {
+  getStateForAction(
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ): RouterActionResult<State> | null;
+};
 
 /**
  * Creates a router factory that merges the members returned by `extension` over the router
@@ -136,11 +113,7 @@ export function extendRouter<
   // and `Router`'s conditional `type` requirement makes `State` measure as invariant. `typeof
   // StackRouter` then fails constraints such as `RouterFactory<NavigationState, NavigationAction,
   // DefaultRouterOptions>` (TS2344 in `views/Navigator.tsx`). A function type is compared structurally.
-): (options: Options) => Router<State, Action> {
-  const warnNullResult = createDeprecationWarning(
-    (actionType) =>
-      `The \`getStateForAction\` of an \`extendRouter\` extension returned \`null\` for the "${actionType}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Reject\` to reject the action, or \`RouterActionHandling.Delegate\` to let the base router handle it.`
-  );
+): (options: Options) => ExtendedRouter<State, Action> {
   return (options) => {
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
@@ -182,7 +155,7 @@ export function extendRouter<
           );
         }
         const result = baseRouter.getStateForAction(stamp(state), action, config);
-        if (result !== null) {
+        if (!isActionRejected(result)) {
           current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
         }
         return result;
@@ -197,13 +170,9 @@ export function extendRouter<
 
     const { getStateForAction, ...members } = extension({ baseRouter: delegate, options, nextKey });
     // For a generic `State`, TypeScript cannot remove `getStateForAction` from `Router` with `Omit`,
-    // so it also sees the base router's method and picks its `null`-only return type.
+    // so it also sees the base router's method and picks its narrower return type.
     const extendedGetStateForAction = getStateForAction as
-      | ((
-          state: State,
-          action: Action,
-          config: RouterConfigOptions
-        ) => ExtensionActionResult<State>)
+      | RouterExtensionMembers<State, Action>['getStateForAction']
       | undefined;
     const router: Router<State, Action> = { ...baseRouter, ...members, type };
     const { normalizeState } = router;
@@ -223,15 +192,12 @@ export function extendRouter<
         const handled = extendedGetStateForAction
           ? extendedGetStateForAction(typedState, action, config)
           : RouterActionHandling.Delegate;
-        if (handled === null) {
-          warnNullResult(action.type);
-        }
         const result =
           handled === RouterActionHandling.Delegate
             ? delegate.getStateForAction(typedState, action, config)
             : handled;
 
-        if (result === null || result === RouterActionHandling.Reject) {
+        if (isActionRejected(result)) {
           return null;
         }
 
@@ -263,8 +229,8 @@ export type RouterActionContext<
  * Reduces one action. Return a result to handle the action, `RouterActionHandling.Delegate` to
  * let the base router handle it, or `RouterActionHandling.Reject` to reject it.
  *
- * Returning `undefined` or `null` is deprecated: return `RouterActionHandling.Delegate` or
- * `RouterActionHandling.Reject` instead.
+ * Returning `undefined` (deprecated) also delegates, and returning `null` (deprecated) also
+ * rejects.
  */
 export type RouterActionReducer<
   State extends NavigationState,
@@ -304,11 +270,9 @@ export function extendRouterActions<
 >(
   base: RouterFactory<State, BaseAction, BaseOptions>,
   reducer: RouterActionReducer<State, Action, Options>
-): (options: Options) => Router<State, Action> {
-  const warnLegacyResult = createDeprecationWarning(
-    (actionType) =>
-      `An \`extendRouterActions\` reducer returned \`undefined\` or \`null\` for the "${actionType}" action. This is deprecated. Return \`RouterActionHandling.Delegate\` instead of \`undefined\` to let the base router handle the action, or \`RouterActionHandling.Reject\` instead of \`null\` to reject it.`
-  );
+): (options: Options) => ExtendedRouter<State, Action> {
+  // Warns once per router factory, so a deprecated result does not log on every action.
+  let warnedUndefined = false;
   return extendRouter<State, BaseAction, BaseOptions, State, Action, Options>(
     base,
     ({ baseRouter, options, nextKey }) => {
@@ -317,13 +281,16 @@ export function extendRouterActions<
       const overrides = {
         getStateForAction(state: State, action: Action, config: RouterConfigOptions) {
           const result = reducer(state, action, { ...config, baseRouter, options, nextKey });
-          if (result == null) {
-            warnLegacyResult(action.type);
-            return result === undefined
-              ? RouterActionHandling.Delegate
-              : RouterActionHandling.Reject;
+          if (result !== undefined) {
+            return result;
           }
-          return result;
+          if (process.env.NODE_ENV !== 'production' && !warnedUndefined) {
+            warnedUndefined = true;
+            console.warn(
+              `An \`extendRouterActions\` reducer returned \`undefined\` for the "${action.type}" action. Returning \`undefined\` is deprecated. Return \`RouterActionHandling.Delegate\` to let the base router handle the action.`
+            );
+          }
+          return RouterActionHandling.Delegate;
         },
       } as Partial<RouterExtensionMembers<State, Action>>;
       return overrides;

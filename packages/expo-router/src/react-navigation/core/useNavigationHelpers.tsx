@@ -11,6 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { isActionRejected } from '../routers/extendRouter';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -74,15 +75,12 @@ export function useNavigationHelpers<
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
         const state = getState();
+        const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
+          routeNames: state.routeNames,
+          routeGetIdList: {},
+        });
 
-        return (
-          router.getStateForAction(state, CommonActions.goBack() as Action, {
-            routeNames: state.routeNames,
-            routeGetIdList: {},
-          }) !== null ||
-          parentNavigationHelpers?.canGoBack() ||
-          false
-        );
+        return !isActionRejected(result) || parentNavigationHelpers?.canGoBack() || false;
       },
       getId: () => navigatorId,
       getParent: (id?: string) => {

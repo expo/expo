@@ -534,7 +534,7 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 +};`}
 />
 
-Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. A router returns `null` when it cannot handle an action. An extension returns `RouterActionHandling.Reject` instead.
+Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Reject` when the router cannot handle an action. Returning `null` is deprecated.
 
 #### Extend a built-in router
 
@@ -588,7 +588,7 @@ const CustomStackRouter = extendRouter(StackRouter, ({ nextKey }) => ({
 }));
 ```
 
-Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated and logs a warning in development.
+Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated, and `undefined` logs a warning in development.
 
 #### Make the router type optional when appropriate
 

@@ -83,6 +83,9 @@ export const ExpoTabRouter = extendRouterActions(
       }
     }
 
-    return baseRouter.getStateForAction(state, action) ?? RouterActionHandling.Reject;
+    // Without a reset the state is unchanged, so the base router can handle the action itself.
+    return shouldReset
+      ? baseRouter.getStateForAction(state, action)
+      : RouterActionHandling.Delegate;
   }
 );

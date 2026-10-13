@@ -9,6 +9,7 @@ import {
   type NavigationState,
   type ParamListBase,
   type Router,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from '../../routers';
@@ -641,16 +642,17 @@ test('resets state when a conditional navigator changes router type', async () =
         type,
         getStateForAction(state, action, config) {
           const result = router.getStateForAction(state, action, config);
-          return (
-            result && {
-              ...result,
-              state: {
-                ...result.state,
-                type,
-                ...(action.type === 'ROUTE_NAMES_CHANGED' ? { history: [type] } : null),
-              },
-            }
-          );
+          if (result === null || result === RouterActionHandling.Reject) {
+            return result;
+          }
+          return {
+            ...result,
+            state: {
+              ...result.state,
+              type,
+              ...(action.type === 'ROUTE_NAMES_CHANGED' ? { history: [type] } : null),
+            },
+          };
         },
       };
     };
@@ -1077,6 +1079,51 @@ test('overrides router with UNSTABLE_router', async () => {
     stale: false,
     routeKeySeq: 0,
   });
+});
+
+test('treats a Reject result from UNSTABLE_router as an unhandled action', async () => {
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+
+  const onStateChange = jest.fn();
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const navigation = createNavigationContainerRef<ParamListBase>();
+
+  await render(
+    <BaseNavigationContainer
+      ref={navigation}
+      onStateChange={onStateChange}
+      initialState={{ index: 1, routes: [{ name: 'foo' }, { name: 'bar' }] }}>
+      <TestNavigator
+        UNSTABLE_router={(
+          original: Router<NavigationState, NavigationAction>
+        ): Partial<Router<NavigationState, NavigationAction>> => ({
+          getStateForAction: (state, action, options) =>
+            action.type === 'GO_BACK'
+              ? RouterActionHandling.Reject
+              : original.getStateForAction(state, action, options),
+        })}>
+        <Screen name="foo" component={React.Fragment} />
+        <Screen name="bar" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(navigation.canGoBack()).toBe(false);
+
+  await act(() => navigation.goBack());
+
+  expect(onStateChange).toHaveBeenCalledTimes(0);
+  expect(spy).toHaveBeenCalledWith(
+    expect.stringContaining("The action 'GO_BACK' was not handled by any navigator.")
+  );
+
+  spy.mockRestore();
 });
 
 test('gets immediate parent with getParent()', async () => {

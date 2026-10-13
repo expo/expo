@@ -23,6 +23,7 @@ import type { NativeStackNavigatorProps } from '../react-navigation/native-stack
 import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackRouter';
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
+import { isActionRejected } from '../react-navigation/routers/extendRouter';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
@@ -89,7 +90,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
       state = ensureStateType(state, 'stack');
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Reject;
       }
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -127,7 +128,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
 
           const getId = getIdFunction();
@@ -215,7 +216,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               routeGetIdList,
             });
           }
-          if (!actionResult) {
+          if (isActionRejected(actionResult)) {
             return actionResult;
           }
 
@@ -256,10 +257,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Reject;
           }
           const actionResult = original.getStateForAction(state, action, options);
-          if (!actionResult) {
+          if (isActionRejected(actionResult)) {
             return actionResult;
           }
           const affectedRouteKey = actionResult.affectedRouteKey;
@@ -370,12 +371,6 @@ function filterSingular<
   };
 }
 
-export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) => {
-  // `stackRouterOverride` also serves `UNSTABLE_router`, which keeps the `null` contract, and it
-  // always sets `getStateForAction`.
-  const { getStateForAction } = stackRouterOverride(baseRouter);
-  return {
-    getStateForAction: (state, action, options) =>
-      getStateForAction!(state, action, options) ?? RouterActionHandling.Reject,
-  };
-});
+export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) =>
+  stackRouterOverride(baseRouter)
+);
