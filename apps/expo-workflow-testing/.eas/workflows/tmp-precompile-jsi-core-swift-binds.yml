@@ -30,20 +30,22 @@ jobs:
       - name: Check Swift runtime exports and binds
         working_directory: ../..
         run: |
+          set +e
           set -uo pipefail
-          status=0
-          echo "== ExpoModulesJSI binaries built by the pipeline: exported _swift_* (expect 0) =="
-          find packages/expo-modules-jsi packages/precompile/.build -path '*ExpoModulesJSI.framework/ExpoModulesJSI' -type f 2>/dev/null | while read -r bin; do
-            echo "$bin: $(nm -gU "$bin" | grep -c ' _swift_')"
-          done
           out="$HOME/core-check"
           mkdir -p "$out"
-          for tarball in packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz; do
-            flavor=$(basename "$(dirname "$(dirname "$tarball")")")
-            mkdir -p "$out/$flavor"
-            tar -xzf "$tarball" -C "$out/$flavor"
-            find "$out/$flavor" -path '*ExpoModulesCore.framework/ExpoModulesCore' -type f | while read -r bin; do
-              echo "== $flavor: $bin =="
+          {
+            echo "== ExpoModulesJSI: exported _swift_* count (expect 0), and pack symbols (expect non-external) =="
+            find packages/expo-modules-jsi -path '*ExpoModulesJSI.framework/ExpoModulesJSI' -type f | while read -r bin; do
+              echo "$bin: exported _swift_*: $(nm -gU "$bin" | grep -c ' _swift_')"
+              nm -m "$bin" | grep -E '_swift_allocate(Metadata|WitnessTable)Pack' | sed 's/^/    /'
+            done
+            echo
+            echo "== ExpoModulesCore output files =="
+            find packages/expo-modules-core -path '*/output/*' \( -name 'ExpoModulesCore.tar.gz' -o -name 'ExpoModulesCore.xcframework' \) | sed 's/^/  /'
+            echo
+            find packages/expo-modules-core -path '*ExpoModulesCore.xcframework/*/ExpoModulesCore.framework/ExpoModulesCore' -type f | while read -r bin; do
+              echo "== $bin =="
               otool -l "$bin" | grep -A5 LC_BUILD_VERSION | grep -E 'minos|sdk|version'
               fixups=$(xcrun dyld_info -fixups "$bin")
               echo "binds to ExpoModulesJSI/_swift_*:"
@@ -53,21 +55,24 @@ jobs:
               echo "nm -m _swift_allocate*Pack:"
               nm -m "$bin" | grep -E '_swift_allocate(Metadata|WitnessTable)Pack' || echo "  not referenced"
             done
-          done > "$out/report.txt"
+          } > "$out/report.txt" 2>&1
           cat "$out/report.txt"
+
+          status=0
+          if ! grep -q '^== packages/expo-modules-core' "$out/report.txt"; then
+            echo "FAIL: no ExpoModulesCore binary found"; status=1
+          fi
           if grep -q 'ExpoModulesJSI/_swift_' "$out/report.txt"; then
             echo "FAIL: core binds Swift runtime symbols to ExpoModulesJSI"; status=1
           fi
           if grep -E '_swift_allocate(Metadata|WitnessTable)Pack' "$out/report.txt" | grep -qE 'bind|undefined'; then
-            echo "FAIL: core does not define the pack runtime functions itself"; status=1
+            echo "FAIL: a binary does not define the pack runtime functions itself"; status=1
           fi
-          if ! ls packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz >/dev/null 2>&1; then
-            echo "FAIL: no ExpoModulesCore.tar.gz found"; status=1
-          fi
-          for tarball in packages/expo-modules-core/prebuilds/output/*/xcframeworks/ExpoModulesCore.tar.gz; do
+          find packages/expo-modules-core -path '*/output/*/ExpoModulesCore.tar.gz' | while read -r tarball; do
             flavor=$(basename "$(dirname "$(dirname "$tarball")")")
             cp "$tarball" "$out/ExpoModulesCore-$flavor.tar.gz"
           done
+          ls -la "$out"
           exit $status
       - name: Upload core xcframeworks and report
         if: ${{ always() }}
