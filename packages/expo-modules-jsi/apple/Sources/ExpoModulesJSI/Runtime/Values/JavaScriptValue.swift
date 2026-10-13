@@ -377,12 +377,12 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the value as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Value is not a function")
-    assert(runtime.isOnOwningThread(), "A JavaScript value was copied off its runtime's JavaScript thread")
-    return JavaScriptFunction(runtime, pointee.getObject(runtime.pointee).getFunction(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptFunction(runtimeHandle, expo.functionFromValue(jsiRuntime, pointee))
   }
 
   /// Returns the value as a typed array, or asserts if it is not a typed array.
@@ -396,12 +396,12 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the value as an array buffer, or asserts if it is not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Value is not an array buffer")
-    assert(runtime.isOnOwningThread(), "A JavaScript value was copied off its runtime's JavaScript thread")
-    return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptArrayBuffer(runtimeHandle, expo.arrayBufferFromValue(jsiRuntime, pointee))
   }
 
   /// Returns the value as a promise, or asserts if it is not a promise.

@@ -40,6 +40,12 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
   return jsi::Value(runtime, function);
 }
 
+// Clones the function's handle into an object. The intermediate value is a C++ temporary, so its
+// rvalue `getObject` moves the handle on instead of cloning it a second time.
+inline jsi::Object objectFromFunction(jsi::IRuntime &runtime, const jsi::Function &function) {
+  return jsi::Value(runtime, function).getObject(runtime);
+}
+
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
 // They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
 // which mangles non-ASCII property names coming from Swift strings.
@@ -97,6 +103,17 @@ inline jsi::Value takeValueFromObject(jsi::Object &object) noexcept {
 
 inline jsi::Value takeValueFromArray(jsi::Array &array) noexcept {
   return jsi::Value(std::move(array));
+}
+
+// Clones a value's handle into a function or an array buffer. `value.getObject(runtime)` clones the
+// handle once, and the rvalue `getFunction` and `getArrayBuffer` move it on. Calling the two steps
+// from Swift clones it twice, since Swift only calls the `const&` overloads.
+inline jsi::Function functionFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  return value.getObject(runtime).getFunction(runtime);
+}
+
+inline jsi::ArrayBuffer arrayBufferFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  return value.getObject(runtime).getArrayBuffer(runtime);
 }
 
 inline const jsi::Value valueFromError(jsi::IRuntime &runtime, const jsi::JSError &error) {

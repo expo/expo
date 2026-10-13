@@ -102,11 +102,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as an array buffer, or asserts if not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Object is not an ArrayBuffer")
-    return JavaScriptArrayBuffer(runtime, pointee.getArrayBuffer(runtime.pointee))
+    return JavaScriptArrayBuffer(runtimeHandle, pointee.getArrayBuffer(jsiRuntime))
   }
 
   /// Returns the object as an array, or asserts if not an array.
@@ -120,11 +120,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Object is not a function")
-    return JavaScriptFunction(runtime, pointee.getFunction(runtime.pointee))
+    return JavaScriptFunction(runtimeHandle, pointee.getFunction(jsiRuntime))
   }
 
   // MARK: - Accessing object properties
