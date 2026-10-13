@@ -538,7 +538,7 @@ Set `affectedRouteKey` to the route selected or changed by that specific action,
 
 #### Check rejected actions with `isActionRejected`
 
-A router can reject an action with `RouterActionHandling.Reject` or the deprecated `null`. Replace `null` checks on a `getStateForAction` result with `isActionRejected`:
+Built-in routers and routers created with `extendRouter` or `extendRouterActions` now return `RouterActionHandling.Reject` instead of `null` when they reject an action. Replace `null` checks on a `getStateForAction` result with `isActionRejected`:
 
 <DiffBlock
   raw={`diff --git a/custom-router.ts b/custom-router.ts
@@ -604,7 +604,7 @@ const CustomStackRouter = extendRouter(StackRouter, ({ nextKey }) => ({
 }));
 ```
 
-Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated, and `undefined` logs a warning in development.
+Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated and logs a warning in development.
 
 #### Make the router type optional when appropriate
 

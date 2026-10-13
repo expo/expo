@@ -2,7 +2,8 @@ import { expect, jest, test } from '@jest/globals';
 
 import { BaseRouter } from '../BaseRouter';
 import * as CommonActions from '../CommonActions';
-import type { CommonNavigationAction, NavigationState } from '../types';
+import { type CommonNavigationAction, type NavigationState, RouterActionHandling } from '../types';
+import { expectHandled } from './__fixtures__/expectHandled';
 
 const STATE = {
   stale: false as const,
@@ -23,7 +24,7 @@ const getStateForAction = (state: NavigationState, action: CommonNavigationActio
   router.getStateForAction(state, action, { routeNames: state.routeNames, routeGetIdList: {} });
 
 test('sets params for the focused screen with SET_PARAMS', () => {
-  const result = getStateForAction(STATE, CommonActions.setParams({ answer: 42 }));
+  const result = expectHandled(getStateForAction(STATE, CommonActions.setParams({ answer: 42 })));
 
   expect(result?.state).toEqual({
     stale: false,
@@ -42,10 +43,12 @@ test('sets params for the focused screen with SET_PARAMS', () => {
 });
 
 test('merges params for the source screen with SET_PARAMS', () => {
-  const result = getStateForAction(STATE, {
-    ...CommonActions.setParams({ user: 'jane' }),
-    source: 'baz',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.setParams({ user: 'jane' }),
+      source: 'baz',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -64,10 +67,12 @@ test('merges params for the source screen with SET_PARAMS', () => {
 });
 
 test('sets params for the source screen with SET_PARAMS', () => {
-  const result = getStateForAction(STATE, {
-    ...CommonActions.setParams({ user: 'jane' }),
-    source: 'foo',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.setParams({ user: 'jane' }),
+      source: 'foo',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -91,11 +96,13 @@ test("doesn't handle SET_PARAMS if source key isn't present", () => {
     source: 'magic',
   });
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
 });
 
 test('replaces params for the focused screen with REPLACE_PARAMS', () => {
-  const result = getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }));
+  const result = expectHandled(
+    getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }))
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -114,10 +121,12 @@ test('replaces params for the focused screen with REPLACE_PARAMS', () => {
 });
 
 test('adds params for the source screen with REPLACE_PARAMS', () => {
-  const result = getStateForAction(STATE, {
-    ...CommonActions.replaceParams({ user: 'jane' }),
-    source: 'foo',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.replaceParams({ user: 'jane' }),
+      source: 'foo',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -136,10 +145,12 @@ test('adds params for the source screen with REPLACE_PARAMS', () => {
 });
 
 test('replaces params for the source screen with REPLACE_PARAMS', () => {
-  const result = getStateForAction(STATE, {
-    ...CommonActions.replaceParams({ user: 'jane' }),
-    source: 'baz',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.replaceParams({ user: 'jane' }),
+      source: 'baz',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -163,7 +174,7 @@ test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
     source: 'magic',
   });
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
 });
 
 test('resets to a complete state with RESET', () => {
@@ -174,13 +185,15 @@ test('resets to a complete state with RESET', () => {
     { key: 'qux-1', name: 'qux' },
   ];
 
-  const result = getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      index: 0,
-      routes,
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        index: 0,
+        routes,
+      })
+    )
   );
 
   expect(result?.state).toEqual({ ...STATE, index: 0, routes });
@@ -192,7 +205,7 @@ test('warns and ignores a partial RESET state', () => {
 
   const result = getStateForAction(STATE, CommonActions.reset({ routes: [{ name: 'foo' }] }));
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
   expect(warn).toHaveBeenCalledWith(
     expect.stringContaining('The RESET action payload must contain a complete navigation state.')
   );
@@ -200,12 +213,14 @@ test('warns and ignores a partial RESET state', () => {
 });
 
 test('adds keys to routes missing keys during RESET', () => {
-  const result = getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      routes: [...STATE.routes, { name: 'qux' }],
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        routes: [...STATE.routes, { name: 'qux' }],
+      })
+    )
   );
 
   expect(result?.state).toEqual({
@@ -217,13 +232,15 @@ test('adds keys to routes missing keys during RESET', () => {
 });
 
 test('adds RESET route keys using the current navigator key', () => {
-  const result = getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      key: 'navigator:incoming',
-      routes: [...STATE.routes, { name: 'qux' }],
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        key: 'navigator:incoming',
+        routes: [...STATE.routes, { name: 'qux' }],
+      })
+    )
   );
 
   expect(result?.state.routes[3]).toEqual({ key: 'qux:0', name: 'qux' });
@@ -236,7 +253,7 @@ test('starts the route key sequence when RESET omits routeKeySeq', () => {
     ...stateWithoutRouteKeySeq,
     routes: [...STATE.routes, { name: 'qux' }],
   } as Parameters<typeof CommonActions.reset>[0];
-  const result = getStateForAction(STATE, CommonActions.reset(resetState));
+  const result = expectHandled(getStateForAction(STATE, CommonActions.reset(resetState)));
 
   expect(result?.state).toEqual({
     ...STATE,
@@ -269,7 +286,7 @@ test("doesn't handle RESET if routes don't match routeNames", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
 });
 
 test("doesn't handle RESET if routeNames don't match", () => {
@@ -281,7 +298,7 @@ test("doesn't handle RESET if routeNames don't match", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
 });
 
 test("doesn't handle RESET if there are no routes", () => {
@@ -293,7 +310,7 @@ test("doesn't handle RESET if there are no routes", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Reject);
 });
 
 const DECLARED_ROUTES_STATE: NavigationState = {

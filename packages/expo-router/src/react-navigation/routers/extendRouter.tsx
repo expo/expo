@@ -21,8 +21,8 @@ export type RouterExtensionContext<
   /**
    * The router being extended. Delegate to it or return `RouterActionHandling.Delegate` for
    * everything the extension does not handle. It is typed for the extended state and actions;
-   * actions it does not recognize return `null` or `RouterActionHandling.Reject`. Use
-   * `isActionRejected` to detect whether the router rejected the action.
+   * actions it does not recognize return `RouterActionHandling.Reject`. Use `isActionRejected`
+   * to detect whether the router rejected the action.
    */
   baseRouter: Router<State, Action> & {
     /**
@@ -32,7 +32,7 @@ export type RouterExtensionContext<
       state: State,
       action: Action,
       config?: RouterConfigOptions
-    ): RouterActionResult<State> | RouterActionHandling.Reject | null;
+    ): RouterActionResult<State> | RouterActionHandling.Reject;
   };
   /**
    * The options the navigator passed to the router factory.
@@ -67,8 +67,8 @@ export type RouterExtension<
   context: RouterExtensionContext<State, Action, Options>
 ) => Partial<RouterExtensionMembers<State, Action>>;
 
-// Built-in routers keep returning `null` for a rejected action on purpose, so callers that check
-// `=== null` keep working. New routers should return `RouterActionHandling.Reject` instead.
+// A router made by `extendRouter` never returns the deprecated `null`. Callers should check its
+// result with `isActionRejected`.
 type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
   Router<State, Action>,
   'getStateForAction'
@@ -77,7 +77,7 @@ type ExtendedRouter<State extends NavigationState, Action extends NavigationActi
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): RouterActionResult<State> | null;
+  ): RouterActionResult<State> | RouterActionHandling.Reject;
 };
 
 /**
@@ -109,6 +109,8 @@ export function extendRouter<
   // StackRouter` then fails constraints such as `RouterFactory<NavigationState, NavigationAction,
   // DefaultRouterOptions>` (TS2344 in `views/Navigator.tsx`). A function type is compared structurally.
 ): (options: Options) => ExtendedRouter<State, Action> {
+  // Warns once per router factory, so a deprecated result does not log on every action.
+  let warnedNull = false;
   return (options) => {
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
@@ -150,9 +152,11 @@ export function extendRouter<
           );
         }
         const result = baseRouter.getStateForAction(stamp(state), action, config);
-        if (!isActionRejected(result)) {
-          current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
+        // A custom base router may still return the deprecated `null`.
+        if (isActionRejected(result)) {
+          return RouterActionHandling.Reject;
         }
+        current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
         return result;
       },
     };
@@ -182,13 +186,19 @@ export function extendRouter<
         const handled = getStateForAction
           ? getStateForAction(typedState, action, config)
           : RouterActionHandling.Delegate;
+        if (handled === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
+          warnedNull = true;
+          console.warn(
+            `An \`extendRouter\` extension or \`extendRouterActions\` reducer returned \`null\` for the "${action.type}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Reject\` to reject the action, and use \`isActionRejected\` to check whether a router rejected an action.`
+          );
+        }
         const result =
           handled === RouterActionHandling.Delegate
             ? delegate.getStateForAction(typedState, action, config)
             : handled;
 
         if (isActionRejected(result)) {
-          return null;
+          return RouterActionHandling.Reject;
         }
 
         const finishedState = finish(result.state, typedState.type);

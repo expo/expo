@@ -13,6 +13,7 @@ import {
   type StackNavigationState,
 } from '..';
 import { createInitialState } from '../../core/createInitialState';
+import { expectHandled } from './__fixtures__/expectHandled';
 
 describe('state without router type', () => {
   const options: RouterConfigOptions = {
@@ -39,9 +40,9 @@ describe('state without router type', () => {
     CommonActions.preload('baz', { id: 'new' }),
     { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
   ])('$type returns stack state', (action) => {
-    expect(StackRouter({}).getStateForAction(createState(), action, options)?.state.type).toBe(
-      'stack'
-    );
+    expect(
+      expectHandled(StackRouter({}).getStateForAction(createState(), action, options)).state.type
+    ).toBe('stack');
   });
 
   test('stamps stack state on route focus', () => {
@@ -50,10 +51,12 @@ describe('state without router type', () => {
 
   test('stamps complete RESET state', () => {
     const state = createState();
-    const result = StackRouter({}).getStateForAction(
-      state,
-      CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
-      options
+    const result = expectHandled(
+      StackRouter({}).getStateForAction(
+        state,
+        CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
+        options
+      )
     );
 
     expect(result?.state.type).toBe('stack');
@@ -61,10 +64,12 @@ describe('state without router type', () => {
 
   test('preserves the type from complete RESET state', () => {
     const state = createState();
-    const result = StackRouter({}).getStateForAction(
-      state,
-      CommonActions.reset({ ...state, type: 'stack' }),
-      options
+    const result = expectHandled(
+      StackRouter({}).getStateForAction(
+        state,
+        CommonActions.reset({ ...state, type: 'stack' }),
+        options
+      )
     );
 
     expect(result?.state.type).toBe('stack');
@@ -79,7 +84,7 @@ describe('state without router type', () => {
       options
     );
 
-    expect(result).toBeNull();
+    expect(result).toBe(RouterActionHandling.Reject);
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining('The RESET action payload must contain a complete navigation state.')
     );
@@ -111,26 +116,28 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForAction(
-      {
-        index: 2,
-        key: 'navigator:stack',
-        routeNames: ['bar', 'baz', 'qux'],
-        routes: [
-          { key: 'bar-test', name: 'bar' },
-          { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-          { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-        ],
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-      },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
-      {
-        routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeGetIdList: {},
-      }
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          index: 2,
+          key: 'navigator:stack',
+          routeNames: ['bar', 'baz', 'qux'],
+          routes: [
+            { key: 'bar-test', name: 'bar' },
+            { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+            { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+          ],
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+        },
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
+        {
+          routeNames: ['qux', 'baz', 'foo', 'fiz'],
+          routeGetIdList: {},
+        }
+      )
+    ).state
   ).toEqual({
     index: 1,
     key: 'navigator:stack',
@@ -145,25 +152,27 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        index: 1,
-        key: 'navigator:stack',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo-test', name: 'foo' },
-          { key: 'bar-test', name: 'bar' },
-        ],
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-      },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
-      {
-        routeNames: ['baz', 'qux'],
-        routeGetIdList: {},
-      }
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          index: 1,
+          key: 'navigator:stack',
+          routeNames: ['foo', 'bar'],
+          routes: [
+            { key: 'foo-test', name: 'foo' },
+            { key: 'bar-test', name: 'bar' },
+          ],
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+        },
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
+        {
+          routeNames: ['baz', 'qux'],
+          routeGetIdList: {},
+        }
+      )
+    ).state
   ).toEqual({
     index: 0,
     key: 'navigator:stack',
@@ -179,25 +188,27 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForAction(
-      {
-        index: 1,
-        key: 'navigator:stack',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo-test', name: 'foo' },
-          { key: 'bar-test', name: 'bar' },
-        ],
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-      },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
-      {
-        routeNames: ['baz', 'qux'],
-        routeGetIdList: {},
-      }
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          index: 1,
+          key: 'navigator:stack',
+          routeNames: ['foo', 'bar'],
+          routes: [
+            { key: 'foo-test', name: 'foo' },
+            { key: 'bar-test', name: 'bar' },
+          ],
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+        },
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
+        {
+          routeNames: ['baz', 'qux'],
+          routeGetIdList: {},
+        }
+      )
+    ).state
   ).toEqual({
     index: 0,
     key: 'navigator:stack',
@@ -220,11 +231,13 @@ test('returns the same complete stack state when route names already match', () 
   };
 
   expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
-      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+        { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+      )
+    ).state
   ).toBe(state);
 });
 
@@ -245,11 +258,13 @@ test('promotes a surviving preloaded route when every active route is removed', 
   };
 
   expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
-      { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
+        { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
+      )
+    ).state
   ).toEqual({
     ...state,
     index: 0,
@@ -266,21 +281,23 @@ test('handles navigate action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigate('qux', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.navigate('qux', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -300,22 +317,24 @@ test('handles navigate action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigate('baz', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.navigate('baz', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -339,22 +358,24 @@ test('updates params on navigate if already on the screen', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42, color: 'tomato' } },
-        ],
-      },
-      CommonActions.navigate('bar', { answer: 96 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42, color: 'tomato' } },
+          ],
+        },
+        CommonActions.navigate('bar', { answer: 96 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -377,22 +398,24 @@ test('merges params on navigate when specified', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { color: 'tomato' } },
-        ],
-      },
-      CommonActions.navigate('bar', { answer: 96 }, { merge: true }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { color: 'tomato' } },
+          ],
+        },
+        CommonActions.navigate('bar', { answer: 96 }, { merge: true }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -431,7 +454,7 @@ test("doesn't navigate to nonexistent screen", () => {
       CommonActions.navigate('far', { answer: 42 }),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('ensures unique ID for navigate', () => {
@@ -445,19 +468,21 @@ test('ensures unique ID for navigate', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      CommonActions.navigate('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'bar', name: 'bar' }],
+        },
+        CommonActions.navigate('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -472,22 +497,24 @@ test('ensures unique ID for navigate', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigate('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+          ],
+        },
+        CommonActions.navigate('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -502,22 +529,24 @@ test('ensures unique ID for navigate', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigate('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.navigate('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -532,22 +561,24 @@ test('ensures unique ID for navigate', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigate('bar', { foo: 'b' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+          ],
+        },
+        CommonActions.navigate('bar', { foo: 'b' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 2,
@@ -575,22 +606,24 @@ test('ensure unique ID is only per route name for navigate', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-          { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigate('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'qux-test', name: 'qux', params: { test: 'a' } },
+            { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
+          ],
+        },
+        CommonActions.navigate('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -614,26 +647,28 @@ test('goes back to matching screen for navigate if pop: true', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'qux',
-        params: { answer: 42 },
-        pop: true,
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'qux',
+          params: { answer: 42 },
+          pop: true,
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -653,26 +688,28 @@ test('goes back to matching screen for navigate if pop: true', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'baz',
-        params: { answer: 42 },
-        pop: true,
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'baz',
+          params: { answer: 42 },
+          pop: true,
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -684,26 +721,28 @@ test('goes back to matching screen for navigate if pop: true', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'bar',
-        params: { answer: 96 },
-        pop: true,
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'bar',
+          params: { answer: 96 },
+          pop: true,
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -729,26 +768,28 @@ test('goes back to matching ID for navigate if pop: true', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'bar',
-        params: { foo: 'a' },
-        pop: true,
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'bar',
+          params: { foo: 'a' },
+          pop: true,
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -763,28 +804,30 @@ test('goes back to matching ID for navigate if pop: true', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 3,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar-a', name: 'bar', params: { foo: 'a' } },
-          { key: 'bar-b', name: 'bar', params: { foo: 'b' } },
-          { key: 'bar-c', name: 'bar', params: { foo: 'c' } },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'bar',
-        params: { foo: 'b' },
-        pop: true,
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 3,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar-a', name: 'bar', params: { foo: 'a' } },
+            { key: 'bar-b', name: 'bar', params: { foo: 'b' } },
+            { key: 'bar-c', name: 'bar', params: { foo: 'c' } },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'bar',
+          params: { foo: 'b' },
+          pop: true,
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -808,22 +851,24 @@ test('handles go back action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.goBack(),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        CommonActions.goBack(),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -848,7 +893,7 @@ test('handles go back action', () => {
       CommonActions.goBack(),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('handles pop action', () => {
@@ -859,23 +904,25 @@ test('handles pop action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      StackActions.pop(),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
+        StackActions.pop(),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -890,23 +937,25 @@ test('handles pop action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      StackActions.pop(2),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
+        StackActions.pop(2),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -918,23 +967,25 @@ test('handles pop action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      StackActions.pop(4),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
+        StackActions.pop(4),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -946,27 +997,29 @@ test('handles pop action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz-0', name: 'baz' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      {
-        ...StackActions.pop(),
-        target: 'navigator:root',
-        source: 'bar-0',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz-0', name: 'baz' },
+            { key: 'bar-0', name: 'bar' },
+            { key: 'qux-0', name: 'qux' },
+          ],
+        },
+        {
+          ...StackActions.pop(),
+          target: 'navigator:root',
+          source: 'bar-0',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -981,29 +1034,31 @@ test('handles pop action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 4,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz-0', name: 'baz' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-0', name: 'qux' },
-          { key: 'quy-0', name: 'quy' },
-          { key: 'quz-0', name: 'quz' },
-        ],
-      },
-      {
-        ...StackActions.pop(2),
-        target: 'navigator:root',
-        source: 'qux-0',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 4,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz-0', name: 'baz' },
+            { key: 'bar-0', name: 'bar' },
+            { key: 'qux-0', name: 'qux' },
+            { key: 'quy-0', name: 'quy' },
+            { key: 'quz-0', name: 'quz' },
+          ],
+        },
+        {
+          ...StackActions.pop(2),
+          target: 'navigator:root',
+          source: 'qux-0',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1032,7 +1087,7 @@ test('handles pop action', () => {
       StackActions.pop(),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('handles pop to top action', () => {
@@ -1043,23 +1098,25 @@ test('handles pop to top action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      StackActions.popToTop(),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
+        StackActions.popToTop(),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1079,23 +1136,25 @@ test('replaces focused screen with replace', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
-          { key: 'baz', name: 'baz' },
-        ],
-        routeNames: ['foo', 'bar', 'baz', 'qux'],
-      },
-      StackActions.replace('qux', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+            { key: 'baz', name: 'baz' },
+          ],
+          routeNames: ['foo', 'bar', 'baz', 'qux'],
+        },
+        StackActions.replace('qux', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1119,26 +1178,28 @@ test('replaces active screen with replace', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
-          { key: 'baz', name: 'baz' },
-        ],
-        routeNames: ['foo', 'bar', 'baz', 'qux'],
-      },
-      {
-        ...StackActions.replace('qux', { answer: 42 }),
-        source: 'baz',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+            { key: 'baz', name: 'baz' },
+          ],
+          routeNames: ['foo', 'bar', 'baz', 'qux'],
+        },
+        {
+          ...StackActions.replace('qux', { answer: 42 }),
+          source: 'baz',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1162,26 +1223,28 @@ test("handles replace if source key isn't present but target is not specified", 
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
-          { key: 'baz', name: 'baz' },
-        ],
-        routeNames: ['foo', 'bar', 'baz', 'qux'],
-      },
-      {
-        ...StackActions.replace('qux', { answer: 42 }),
-        source: 'magic',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+            { key: 'baz', name: 'baz' },
+          ],
+          routeNames: ['foo', 'bar', 'baz', 'qux'],
+        },
+        {
+          ...StackActions.replace('qux', { answer: 42 }),
+          source: 'magic',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     index: 1,
     key: 'navigator:root',
@@ -1226,7 +1289,7 @@ test("doesn't handle replace if source key isn't present when target is specifie
       },
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test("doesn't handle replace if screen to replace with isn't present", () => {
@@ -1257,7 +1320,7 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
       },
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('handles push action', () => {
@@ -1268,19 +1331,21 @@ test('handles push action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      StackActions.push('baz'),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'bar', name: 'bar' }],
+        },
+        StackActions.push('baz'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1295,19 +1360,21 @@ test('handles push action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      StackActions.push('baz', { bar: 29 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'bar', name: 'bar' }],
+        },
+        StackActions.push('baz', { bar: 29 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1335,7 +1402,7 @@ test('handles push action', () => {
       StackActions.push('unknown'),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test("doesn't push nonexistent screen", () => {
@@ -1362,7 +1429,7 @@ test("doesn't push nonexistent screen", () => {
       StackActions.push('far', { answer: 42 }),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('ensures unique ID for push', () => {
@@ -1376,19 +1443,21 @@ test('ensures unique ID for push', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      StackActions.push('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'bar', name: 'bar' }],
+        },
+        StackActions.push('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1403,22 +1472,24 @@ test('ensures unique ID for push', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      StackActions.push('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+          ],
+        },
+        StackActions.push('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1433,22 +1504,24 @@ test('ensures unique ID for push', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 1,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      StackActions.push('bar', { foo: 'b' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 1,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'bar', name: 'bar' },
+            { key: 'bar:0', name: 'bar', params: { foo: 'a' } },
+          ],
+        },
+        StackActions.push('bar', { foo: 'b' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 2,
@@ -1476,22 +1549,24 @@ test('ensure unique ID is only per route name for push', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-          { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-        ],
-      },
-      StackActions.push('bar', { foo: 'a' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'qux-test', name: 'qux', params: { test: 'a' } },
+            { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
+          ],
+        },
+        StackActions.push('bar', { foo: 'a' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1515,26 +1590,28 @@ test('adds path on navigate if provided', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
 
-      CommonActions.navigate({
-        name: 'bar',
-        path: '/foo/bar',
-      }),
-      options
-    )?.state
+        CommonActions.navigate({
+          name: 'bar',
+          path: '/foo/bar',
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1549,26 +1626,28 @@ test('adds path on navigate if provided', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 }, path: '/foo/bar' },
-        ],
-      },
-      CommonActions.navigate({
-        name: 'bar',
-        params: { fruit: 'orange' },
-        path: '/foo/baz',
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 }, path: '/foo/bar' },
+          ],
+        },
+        CommonActions.navigate({
+          name: 'bar',
+          params: { fruit: 'orange' },
+          path: '/foo/baz',
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1588,22 +1667,24 @@ test('adds path on navigate if provided', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar', params: { answer: 42 } }],
-      },
-      CommonActions.navigate({
-        name: 'baz',
-        path: '/foo/bar',
-      }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [{ key: 'bar', name: 'bar', params: { answer: 42 } }],
+        },
+        CommonActions.navigate({
+          name: 'baz',
+          path: '/foo/bar',
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1630,26 +1711,28 @@ test("doesn't remove existing path on navigate if not provided", () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', path: '/foo/bar' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', path: '/foo/bar' },
+          ],
+        },
 
-      CommonActions.navigate({
-        name: 'bar',
-        params: { answer: 42 },
-      }),
-      options
-    )?.state
+        CommonActions.navigate({
+          name: 'bar',
+          params: { answer: 42 },
+        }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1672,22 +1755,24 @@ test('handles popTo action', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      StackActions.popTo('qux', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        StackActions.popTo('qux', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -1706,22 +1791,24 @@ test('handles popTo action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      StackActions.popTo('baz', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar' },
+          ],
+        },
+        StackActions.popTo('baz', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1733,22 +1820,24 @@ test('handles popTo action', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      StackActions.popTo('bar', { answer: 96 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
+        StackActions.popTo('bar', { answer: 96 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1787,7 +1876,7 @@ test("doesn't popTo to nonexistent screen", () => {
       CommonActions.navigate('far', { answer: 42 }),
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test("doesn't merge params on popTo to an existing screen", () => {
@@ -1798,23 +1887,25 @@ test("doesn't merge params on popTo to an existing screen", () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
-      StackActions.popTo('bar'),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
+        StackActions.popTo('bar'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1829,22 +1920,24 @@ test("doesn't merge params on popTo to an existing screen", () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      StackActions.popTo('bar', { fruit: 'orange' }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
+        StackActions.popTo('bar', { fruit: 'orange' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1867,24 +1960,26 @@ test('merges params on popTo to an existing screen if merge: true', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
 
-      StackActions.popTo('bar', {}, { merge: true }),
-      options
-    )?.state
+        StackActions.popTo('bar', {}, { merge: true }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1899,22 +1994,24 @@ test('merges params on popTo to an existing screen if merge: true', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      StackActions.popTo('bar', { fruit: 'orange' }, { merge: true }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
+        StackActions.popTo('bar', { fruit: 'orange' }, { merge: true }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1933,22 +2030,24 @@ test('merges params on popTo to an existing screen if merge: true', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz', params: { test: 99 } },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      StackActions.popTo('baz', { color: 'black' }, { merge: true }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz', params: { test: 99 } },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+          ],
+        },
+        StackActions.popTo('baz', { color: 'black' }, { merge: true }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -1974,26 +2073,28 @@ test("handles popTo if source key isn't present but target is not specified", ()
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
-          { key: 'baz', name: 'baz' },
-        ],
-        routeNames: ['foo', 'bar', 'baz', 'qux'],
-      },
-      {
-        ...StackActions.popTo('qux', { answer: 42 }),
-        source: 'magic',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+            { key: 'baz', name: 'baz' },
+          ],
+          routeNames: ['foo', 'bar', 'baz', 'qux'],
+        },
+        {
+          ...StackActions.popTo('qux', { answer: 42 }),
+          source: 'magic',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     index: 1,
     key: 'navigator:root',
@@ -2017,27 +2118,29 @@ test('handles popTo when source and target match a route', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 2,
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
-          { key: 'baz', name: 'baz' },
-        ],
-        routeNames: ['foo', 'bar', 'baz', 'qux'],
-      },
-      {
-        ...StackActions.popTo('qux', { answer: 42 }),
-        source: 'bar',
-        target: 'navigator:root',
-      },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 2,
+          routes: [
+            { key: 'foo', name: 'foo' },
+            { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+            { key: 'baz', name: 'baz' },
+          ],
+          routeNames: ['foo', 'bar', 'baz', 'qux'],
+        },
+        {
+          ...StackActions.popTo('qux', { answer: 42 }),
+          source: 'bar',
+          target: 'navigator:root',
+        },
+        options
+      )
+    ).state
   ).toEqual({
     index: 1,
     key: 'navigator:root',
@@ -2081,7 +2184,7 @@ test("doesn't handle popTo if source key isn't present when target is specified"
       },
       options
     )
-  ).toBeNull();
+  ).toBe(RouterActionHandling.Reject);
 });
 
 test('adds route to preloaded list with preload', () => {
@@ -2094,23 +2197,25 @@ test('adds route to preloaded list with preload', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        key: 'navigator:root',
-        index: 2,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-          { key: 'qux', name: 'qux' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          key: 'navigator:root',
+          index: 2,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bar', name: 'bar', params: { answer: 42 } },
+            { key: 'qux', name: 'qux' },
+          ],
+        },
 
-      CommonActions.preload('bar'),
-      options
-    )?.state
+        CommonActions.preload('bar'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -2127,27 +2232,29 @@ test('adds route to preloaded list with preload', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'bar-existing',
-            name: 'bar',
-            params: { answer: 42, toBe: 'overrode' },
-          },
-          { key: 'baz', name: 'baz' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            {
+              key: 'bar-existing',
+              name: 'bar',
+              params: { answer: 42, toBe: 'overrode' },
+            },
+            { key: 'baz', name: 'baz' },
+          ],
+        },
 
-      CommonActions.preload('bar', { answer: 42, something: 'else' }),
-      options
-    )?.state
+        CommonActions.preload('bar', { answer: 42, something: 'else' }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2166,27 +2273,29 @@ test('adds route to preloaded list with preload', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'bar-existing',
-            name: 'bar',
-            params: { answer: 42, toBe: 'notMerged' },
-          },
-          { key: 'baz', name: 'baz' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            {
+              key: 'bar-existing',
+              name: 'bar',
+              params: { answer: 42, toBe: 'notMerged' },
+            },
+            { key: 'baz', name: 'baz' },
+          ],
+        },
 
-      CommonActions.preload('bar', { answer: 43 }),
-      options
-    )?.state
+        CommonActions.preload('bar', { answer: 43 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -2214,30 +2323,32 @@ test('uses preloaded route when pushing a route with the same name', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'bar-active',
-            name: 'bar',
-          },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-          },
-          { key: 'qux-some', name: 'qux' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            {
+              key: 'bar-active',
+              name: 'bar',
+            },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+            },
+            { key: 'qux-some', name: 'qux' },
+          ],
+        },
 
-      StackActions.push('qux'),
-      options
-    )?.state
+        StackActions.push('qux'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2260,31 +2371,33 @@ test('uses preloaded route when pushing a route with the same name', () => {
   });
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-active', name: 'qux' },
-          {
-            key: 'bar-active',
-            name: 'bar',
-          },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-          },
-          { key: 'qux-preloaded', name: 'qux' },
-        ],
-      },
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'qux-active', name: 'qux' },
+            {
+              key: 'bar-active',
+              name: 'bar',
+            },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+            },
+            { key: 'qux-preloaded', name: 'qux' },
+          ],
+        },
 
-      StackActions.push('qux'),
-      options
-    )?.state
+        StackActions.push('qux'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2328,10 +2441,12 @@ test.each([StackActions.push('bar'), CommonActions.navigate('bar')])(
       ],
     };
 
-    const result = router.getStateForAction(state, action, {
-      routeNames: state.routeNames,
-      routeGetIdList: {},
-    })!;
+    const result = expectHandled(
+      router.getStateForAction(state, action, {
+        routeNames: state.routeNames,
+        routeGetIdList: {},
+      })
+    );
 
     const focusedRoute = result.state.routes[result.state.index]!;
     expect(focusedRoute.key).toBe('bar-preloaded');
@@ -2349,32 +2464,34 @@ test('uses preloaded route when pushing a route with the same ID', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'qux:0',
-            name: 'qux',
-          },
-          {
-            key: 'bar:0',
-            params: {
-              answer: 41,
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            {
+              key: 'qux:0',
+              name: 'qux',
             },
-            name: 'bar',
-          },
-        ],
-      },
+            {
+              key: 'bar:0',
+              params: {
+                answer: 41,
+              },
+              name: 'bar',
+            },
+          ],
+        },
 
-      StackActions.push('bar', { answer: 41 }),
-      options
-    )?.state
+        StackActions.push('bar', { answer: 41 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2416,11 +2533,9 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   };
 
-  const pushedState = router.getStateForAction(
-    state,
-    StackActions.push('p2', { preload: 2 }),
-    options
-  )?.state;
+  const pushedState = expectHandled(
+    router.getStateForAction(state, StackActions.push('p2', { preload: 2 }), options)
+  ).state;
   expect(pushedState?.index).toBe(2);
   expect(pushedState?.routes.map((route) => route.key)).toEqual([
     'a-key',
@@ -2431,11 +2546,13 @@ test('partitions active history from multiple preloaded routes', () => {
   expect(pushedState?.routes[2]?.isPreloaded).toBeUndefined();
   expect(pushedState?.routes[3]?.isPreloaded).toBe(true);
 
-  const navigatedState = router.getStateForAction(
-    state,
-    CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
-    options
-  )?.state;
+  const navigatedState = expectHandled(
+    router.getStateForAction(
+      state,
+      CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
+      options
+    )
+  ).state;
   expect(navigatedState?.index).toBe(2);
   expect(navigatedState?.routes.map((route) => route.key)).toEqual([
     'a-key',
@@ -2446,7 +2563,9 @@ test('partitions active history from multiple preloaded routes', () => {
   expect(navigatedState?.routes[2]?.isPreloaded).toBeUndefined();
   expect(navigatedState?.routes[3]?.isPreloaded).toBe(true);
 
-  expect(router.getStateForAction(state, StackActions.push('c'), options)?.state).toEqual({
+  expect(
+    expectHandled(router.getStateForAction(state, StackActions.push('c'), options)).state
+  ).toEqual({
     ...state,
     routeKeySeq: 1,
     index: 2,
@@ -2459,15 +2578,17 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   });
 
-  expect(router.getStateForAction(state, StackActions.pop(), options)?.state).toEqual({
-    ...state,
-    index: 0,
-    routes: [
-      state.routes[0],
-      { ...state.routes[2], isPreloaded: true },
-      { ...state.routes[3], isPreloaded: true },
-    ],
-  });
+  expect(expectHandled(router.getStateForAction(state, StackActions.pop(), options)).state).toEqual(
+    {
+      ...state,
+      index: 0,
+      routes: [
+        state.routes[0],
+        { ...state.routes[2], isPreloaded: true },
+        { ...state.routes[3], isPreloaded: true },
+      ],
+    }
+  );
 });
 
 test('does not use preloaded route when pushing a route with different ID', () => {
@@ -2480,33 +2601,35 @@ test('does not use preloaded route when pushing a route with different ID', () =
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          {
-            key: 'qux:0',
-            name: 'qux',
-          },
-          {
-            key: 'bar-some',
-            params: {
-              answer: 42,
-              toBe: 'notMerged',
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            {
+              key: 'qux:0',
+              name: 'qux',
             },
-            name: 'bar',
-          },
-        ],
-      },
+            {
+              key: 'bar-some',
+              params: {
+                answer: 42,
+                toBe: 'notMerged',
+              },
+              name: 'bar',
+            },
+          ],
+        },
 
-      StackActions.push('bar', { answer: 41 }),
-      options
-    )?.state
+        StackActions.push('bar', { answer: 41 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -2545,27 +2668,29 @@ test('uses preloaded route when replacing current route', () => {
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
-      },
-      StackActions.replace('bar'),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 42 },
+            },
+          ],
+        },
+        StackActions.replace('bar'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2594,27 +2719,29 @@ test('uses preloaded route with the same ID when replacing current route', () =>
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
-      },
-      StackActions.replace('bar', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 42 },
+            },
+          ],
+        },
+        StackActions.replace('bar', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2643,27 +2770,29 @@ test('does not use preloaded route with different ID when replacing current rout
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 99 },
-          },
-        ],
-      },
-      StackActions.popTo('bar', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 99 },
+            },
+          ],
+        },
+        StackActions.popTo('bar', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -2696,27 +2825,29 @@ test('uses preloaded route with the same name when popTo replaces current route'
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
-      },
-      StackActions.popTo('bar'),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 42 },
+            },
+          ],
+        },
+        StackActions.popTo('bar'),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2745,27 +2876,29 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 42 },
-          },
-        ],
-      },
-      StackActions.popTo('bar', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 42 },
+            },
+          ],
+        },
+        StackActions.popTo('bar', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -2794,27 +2927,29 @@ test('does not use preloaded route with different ID when popTo replaces current
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'qux', name: 'qux' },
-          {
-            key: 'bar-preloaded',
-            name: 'bar',
-            params: { answer: 99 },
-          },
-        ],
-      },
-      StackActions.popTo('bar', { answer: 42 }),
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['baz', 'bar', 'qux'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'qux', name: 'qux' },
+            {
+              key: 'bar-preloaded',
+              name: 'bar',
+              params: { answer: 99 },
+            },
+          ],
+        },
+        StackActions.popTo('bar', { answer: 42 }),
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 1,
@@ -2840,18 +2975,20 @@ test('does not use preloaded route with different ID when popTo replaces current
 });
 
 test('returns the created route key for push', () => {
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 0,
-      routeNames: ['bar', 'baz'],
-      routes: [{ key: 'bar', name: 'bar' }],
-    },
-    StackActions.push('baz'),
-    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 0,
+        routeNames: ['bar', 'baz'],
+        routes: [{ key: 'bar', name: 'bar' }],
+      },
+      StackActions.push('baz'),
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.affectedRouteKey).toBe('baz:0');
@@ -2859,21 +2996,23 @@ test('returns the created route key for push', () => {
 
 test('attaches trusted state to a pushed route', () => {
   const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 0,
-      routeNames: ['bar', 'baz'],
-      routes: [{ key: 'bar', name: 'bar' }],
-    },
-    {
-      type: 'PUSH',
-      payload: { name: 'baz', state: childState },
-    },
-    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 0,
+        routeNames: ['bar', 'baz'],
+        routes: [{ key: 'bar', name: 'bar' }],
+      },
+      {
+        type: 'PUSH',
+        payload: { name: 'baz', state: childState },
+      },
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.state.routes[result.state.index ?? -1]?.state).toEqual({
@@ -2883,113 +3022,123 @@ test('attaches trusted state to a pushed route', () => {
 
 test('attaches trusted state when popping to an existing route', () => {
   const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 1,
-      routeNames: ['bar', 'baz'],
-      routes: [
-        { key: 'bar', name: 'bar' },
-        { key: 'baz', name: 'baz' },
-      ],
-    },
-    {
-      type: 'POP_TO',
-      payload: { name: 'bar', state: childState },
-    },
-    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 1,
+        routeNames: ['bar', 'baz'],
+        routes: [
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      },
+      {
+        type: 'POP_TO',
+        payload: { name: 'bar', state: childState },
+      },
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.state.routes[0]?.state).toEqual({ routes: [{ name: 'child' }] });
 });
 
 test('returns the exact duplicate-name route key for navigate', () => {
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 2,
-      routeNames: ['bar', 'baz'],
-      routes: [
-        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
-        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
-        { key: 'baz', name: 'baz' },
-      ],
-    },
-    CommonActions.navigate('bar', { id: 'a' }),
-    {
-      routeNames: ['bar', 'baz'],
-      routeGetIdList: { bar: ({ params }) => params?.id },
-    }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 2,
+        routeNames: ['bar', 'baz'],
+        routes: [
+          { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+          { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+          { key: 'baz', name: 'baz' },
+        ],
+      },
+      CommonActions.navigate('bar', { id: 'a' }),
+      {
+        routeNames: ['bar', 'baz'],
+        routeGetIdList: { bar: ({ params }) => params?.id },
+      }
+    )
   );
 
   expect(result?.affectedRouteKey).toBe('bar-a');
 });
 
 test('returns the replacement key when replacing a non-focused route', () => {
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 1,
-      routeNames: ['foo', 'bar', 'qux'],
-      routes: [
-        { key: 'foo', name: 'foo' },
-        { key: 'bar', name: 'bar' },
-      ],
-    },
-    { ...StackActions.replace('qux'), source: 'foo', target: 'navigator:root' },
-    { routeNames: ['foo', 'bar', 'qux'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 1,
+        routeNames: ['foo', 'bar', 'qux'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      },
+      { ...StackActions.replace('qux'), source: 'foo', target: 'navigator:root' },
+      { routeNames: ['foo', 'bar', 'qux'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.affectedRouteKey).toBe('qux:0');
 });
 
 test('returns the exact route key for popTo', () => {
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 2,
-      routeNames: ['bar', 'baz'],
-      routes: [
-        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
-        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
-        { key: 'baz', name: 'baz' },
-      ],
-    },
-    StackActions.popTo('bar', { id: 'a' }),
-    {
-      routeNames: ['bar', 'baz'],
-      routeGetIdList: { bar: ({ params }) => params?.id },
-    }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 2,
+        routeNames: ['bar', 'baz'],
+        routes: [
+          { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+          { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+          { key: 'baz', name: 'baz' },
+        ],
+      },
+      StackActions.popTo('bar', { id: 'a' }),
+      {
+        routeNames: ['bar', 'baz'],
+        routeGetIdList: { bar: ({ params }) => params?.id },
+      }
+    )
   );
 
   expect(result?.affectedRouteKey).toBe('bar-a');
 });
 
 test('returns the preloaded route key while focus remains elsewhere', () => {
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 0,
-      routeNames: ['bar', 'baz'],
-      routes: [{ key: 'baz', name: 'baz' }],
-    },
-    CommonActions.preload('bar'),
-    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 0,
+        routeNames: ['bar', 'baz'],
+        routes: [{ key: 'baz', name: 'baz' }],
+      },
+      CommonActions.preload('bar'),
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
@@ -2998,21 +3147,23 @@ test('returns the preloaded route key while focus remains elsewhere', () => {
 
 test('attaches trusted state to a preloaded route without changing focus', () => {
   const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
-  const result = StackRouter({}).getStateForAction(
-    {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'navigator:root',
-      index: 0,
-      routeNames: ['bar', 'baz'],
-      routes: [{ key: 'baz', name: 'baz' }],
-    },
-    {
-      type: 'PRELOAD',
-      payload: { name: 'bar', state: childState },
-    },
-    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  const result = expectHandled(
+    StackRouter({}).getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 0,
+        routeNames: ['bar', 'baz'],
+        routes: [{ key: 'baz', name: 'baz' }],
+      },
+      {
+        type: 'PRELOAD',
+        payload: { name: 'bar', state: childState },
+      },
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+    )
   );
 
   expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
@@ -3029,24 +3180,26 @@ test('removes routes by name while preserving the focused route instance', () =>
   };
 
   expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        routeKeySeq: 0,
-        type: 'stack',
-        key: 'navigator:root',
-        index: 3,
-        routeNames: ['index', 'secret', 'other'],
-        routes: [
-          { key: 'index', name: 'index' },
-          { key: 'secret-old', name: 'secret' },
-          { key: 'other', name: 'other' },
-          { key: 'secret-current', name: 'secret' },
-        ],
-      },
-      { type: 'REMOVE_ROUTES', payload: { routeNames: ['secret', 'other'] } },
-      options
-    )?.state
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 3,
+          routeNames: ['index', 'secret', 'other'],
+          routes: [
+            { key: 'index', name: 'index' },
+            { key: 'secret-old', name: 'secret' },
+            { key: 'other', name: 'other' },
+            { key: 'secret-current', name: 'secret' },
+          ],
+        },
+        { type: 'REMOVE_ROUTES', payload: { routeNames: ['secret', 'other'] } },
+        options
+      )
+    ).state
   ).toEqual({
     stale: false,
     routeKeySeq: 0,
@@ -3079,14 +3232,16 @@ test.each(['secret', 'nonExisting'])(
     };
 
     expect(
-      router.getStateForAction(
-        state,
-        { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
-        {
-          routeNames: state.routeNames,
-          routeGetIdList: {},
-        }
-      )?.state
+      expectHandled(
+        router.getStateForAction(
+          state,
+          { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
+          {
+            routeNames: state.routeNames,
+            routeGetIdList: {},
+          }
+        )
+      ).state
     ).toBe(state);
   }
 );
@@ -3140,11 +3295,13 @@ test('returns the same action result when preload markers are already normalized
     ],
   };
 
-  const result = router.getStateForAction(
-    state,
-    { type: 'REMOVE_ROUTES', payload: { routeNames: ['missing'] } },
-    { routeNames: state.routeNames, routeGetIdList: {} }
-  )!;
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'REMOVE_ROUTES', payload: { routeNames: ['missing'] } },
+      { routeNames: state.routeNames, routeGetIdList: {} }
+    )
+  );
 
   expect(result.state).toBe(state);
 });
@@ -3158,10 +3315,12 @@ test('does not reuse popped route keys', () => {
   });
   const push = StackActions.push('foo');
 
-  const firstPush = router.getStateForAction(initial, push, options)!.state;
-  const secondPush = router.getStateForAction(firstPush, push, options)!.state;
-  const popped = router.getStateForAction(secondPush, StackActions.pop(), options)!.state;
-  const pushedAgain = router.getStateForAction(popped, push, options)!.state;
+  const firstPush = expectHandled(router.getStateForAction(initial, push, options)).state;
+  const secondPush = expectHandled(router.getStateForAction(firstPush, push, options)).state;
+  const popped = expectHandled(
+    router.getStateForAction(secondPush, StackActions.pop(), options)
+  ).state;
+  const pushedAgain = expectHandled(router.getStateForAction(popped, push, options)).state;
 
   expect(pushedAgain.routes[2]!.key).not.toBe(secondPush.routes[2]!.key);
 });
@@ -3199,10 +3358,9 @@ describe('extended stack router', () => {
       }
     )({});
 
-    const result = router.getStateForAction(state, { type: 'CUSTOM' }, options);
+    const result = expectHandled(router.getStateForAction(state, { type: 'CUSTOM' }, options));
 
-    expect(result).not.toBeNull();
-    expect(result!.state.routes[0]?.isPreloaded).toBeUndefined();
-    expect(result!.state.routes[1]?.isPreloaded).toBe(true);
+    expect(result.state.routes[0]?.isPreloaded).toBeUndefined();
+    expect(result.state.routes[1]?.isPreloaded).toBe(true);
   });
 });

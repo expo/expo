@@ -1,8 +1,9 @@
-import type {
-  DefaultRouterOptions,
-  NavigationAction,
-  NavigationState,
-  RouterFactory,
+import {
+  type DefaultRouterOptions,
+  type NavigationAction,
+  type NavigationState,
+  RouterActionHandling,
+  type RouterFactory,
 } from './types';
 
 /**
@@ -16,6 +17,6 @@ export const NoopRouter: RouterFactory<
 > = () => ({
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
-  getStateForAction: () => null,
+  getStateForAction: () => RouterActionHandling.Reject,
   shouldActionChangeFocus: () => false,
 });

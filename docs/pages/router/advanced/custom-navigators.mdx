@@ -245,7 +245,7 @@ Consumers then import the integration for their framework (for example, `import 
 
 > **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
 
-Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Reject` to reject it. Returning `undefined` or `null` instead is deprecated, and `undefined` logs a warning in development.
+Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Reject` to reject it. Returning `undefined` or `null` instead is deprecated and logs a warning in development.
 
 Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router. An extension's `getStateForAction` also returns a result, `RouterActionHandling.Delegate`, or `RouterActionHandling.Reject`.
 
