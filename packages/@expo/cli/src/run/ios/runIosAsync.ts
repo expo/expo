@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -7,7 +8,11 @@ import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
-import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
+import {
+  canResolveIosBuildCache,
+  resolveBuildCache,
+  uploadBuildCache,
+} from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { CommandError } from '../../utils/errors';
 import { loadEnvFiles } from '../../utils/nodeEnv';
@@ -22,6 +27,7 @@ import * as XcodeBuild from './XcodeBuild';
 import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeProject } from './options/resolveXcodeProject';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
@@ -32,7 +38,21 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
+  // Installing CocoaPods is slow and unnecessary when the cache returns a build,
+  // so when a provider is configured, defer it until after the cache lookup.
+  const { exp } = getConfig(projectRoot);
+  const shouldDeferPodInstall =
+    install && !options.binary && !!(exp.buildCacheProvider ?? exp.experiments?.buildCacheProvider);
+
+  if (
+    (await ensureNativeProjectAsync(projectRoot, {
+      platform: 'ios',
+      install,
+      skipPodInstall: shouldDeferPodInstall,
+    })) &&
+    install &&
+    !shouldDeferPodInstall
+  ) {
     await maybePromptToSyncPodsAsync(projectRoot);
   }
 
@@ -49,17 +69,30 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     });
   }
 
-  // We only support build cache for simulator builds for now.
-  if (!options.binary && props.buildCacheProvider && props.isSimulator) {
+  // Physical devices are only supported when the provider opts in with `supportsIosPhysicalDevices`.
+  if (
+    !options.binary &&
+    props.buildCacheProvider &&
+    canResolveIosBuildCache(props.buildCacheProvider, { isSimulator: props.isSimulator })
+  ) {
     const localPath = await resolveBuildCache({
       projectRoot,
       platform: 'ios',
       runOptions: options,
       provider: props.buildCacheProvider,
+      device: props.device
+        ? { id: props.device.udid, type: props.isSimulator ? 'simulator' : 'device' }
+        : undefined,
     });
     if (localPath) {
       options.binary = localPath;
     }
+  }
+
+  if (shouldDeferPodInstall && !options.binary) {
+    await maybePromptToSyncPodsAsync(projectRoot);
+    // Pod install may have created a workspace, which now needs to be built instead of the project.
+    props.xcodeProject = resolveXcodeProject(projectRoot);
   }
 
   if (options.rebundle) {

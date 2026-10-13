@@ -1,13 +1,17 @@
+import type { BuildCacheProvider } from '@expo/config';
 import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { prebuildAsync } from '../../../prebuild/prebuildAsync';
+import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
+import { maybePromptToSyncPodsAsync } from '../../../utils/cocoapods';
 import { loadEnvFiles } from '../../../utils/nodeEnv';
 import { logProjectLogsLocation } from '../../hints';
 import { startBundlerAsync } from '../../startBundler';
 import { buildAsync } from '../XcodeBuild';
 import type { XcodeConfiguration } from '../XcodeBuild.types';
-import { launchAppAsync } from '../launchApp';
+import { getLaunchInfoForBinaryAsync, launchAppAsync } from '../launchApp';
 import { isSimulatorDevice, resolveDeviceAsync } from '../options/resolveDevice';
 import { runIosAsync } from '../runIosAsync';
 
@@ -19,6 +23,16 @@ jest.mock('../../hints', () => ({
 jest.mock('../../../log');
 
 jest.mock('../../../utils/port');
+jest.mock('../../../utils/cocoapods', () => ({
+  maybePromptToSyncPodsAsync: jest.fn(async () => {}),
+}));
+jest.mock('../../../prebuild/prebuildAsync', () => ({
+  prebuildAsync: jest.fn(async () => null),
+}));
+jest.mock('../../../utils/build-cache-providers', () => ({
+  ...jest.requireActual('../../../utils/build-cache-providers'),
+  resolveBuildCacheProvider: jest.fn(async () => undefined),
+}));
 jest.mock('../../../utils/nodeEnv', () => ({
   loadEnvFiles: jest.fn(),
 }));
@@ -245,4 +259,227 @@ describe(runIosAsync, () => {
 
     expect(logProjectLogsLocation).toHaveBeenCalled();
   });
+});
+
+describe('build cache', () => {
+  const physicalDevice = {
+    name: "Evan's phone",
+    model: 'iPhone13,4',
+    osVersion: '15.4.1',
+    deviceType: 'device' as const,
+    udid: '00008101-001964A22629003A',
+    connectionType: 'USB' as const,
+    osType: 'iOS' as const,
+  };
+
+  beforeEach(() => {
+    mockPlatform('darwin');
+    jest
+      .mocked(getLaunchInfoForBinaryAsync)
+      .mockResolvedValueOnce({ bundleId: 'com.example.app', schemes: ['example'] });
+  });
+
+  afterEach(() => vol.reset());
+
+  function mockProject({
+    withBuildCacheProvider,
+    files = rnFixture,
+  }: {
+    withBuildCacheProvider: boolean;
+    files?: Record<string, string>;
+  }) {
+    vol.fromJSON(
+      {
+        ...files,
+        '/package.json': JSON.stringify({}),
+        '/app.json': JSON.stringify({
+          expo: withBuildCacheProvider
+            ? { buildCacheProvider: { plugin: './provider.plugin.js' } }
+            : {},
+        }),
+        'node_modules/expo/package.json': JSON.stringify({ version: '53.0.0' }),
+        '/cache/ReactNativeProject.app/Info.plist': '',
+      },
+      '/'
+    );
+  }
+
+  function mockBuildCacheProvider({
+    supportsIosPhysicalDevices,
+    cachedBuildPath,
+  }: {
+    supportsIosPhysicalDevices?: boolean;
+    cachedBuildPath: string | null;
+  }) {
+    const provider = {
+      plugin: {
+        supportsIosPhysicalDevices,
+        calculateFingerprintHash: jest.fn(async () => 'mock-fingerprint'),
+        resolveBuildCache: jest.fn(async () => cachedBuildPath),
+        uploadBuildCache: jest.fn(async () => null),
+      },
+      options: {},
+    } satisfies BuildCacheProvider;
+    jest.mocked(resolveBuildCacheProvider).mockResolvedValueOnce(provider);
+    return provider.plugin;
+  }
+
+  function mockPhysicalDevice() {
+    jest.mocked(resolveDeviceAsync).mockResolvedValueOnce(physicalDevice);
+    jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
+  }
+
+  function mockPodInstallCreatesWorkspace() {
+    jest.mocked(maybePromptToSyncPodsAsync).mockImplementationOnce(async () => {
+      vol.fromJSON({ '/ios/ReactNativeProject.xcworkspace/contents.xcworkspacedata': '' });
+    });
+  }
+
+  it('installs pods before prompting for a device when no provider is configured', async () => {
+    mockProject({ withBuildCacheProvider: false });
+
+    await runIosAsync('/', { install: true });
+
+    expect(maybePromptToSyncPodsAsync).toHaveBeenCalledWith('/');
+    expect(jest.mocked(maybePromptToSyncPodsAsync).mock.invocationCallOrder[0]).toBeLessThan(
+      jest.mocked(resolveDeviceAsync).mock.invocationCallOrder[0]!
+    );
+    expect(buildAsync).toHaveBeenCalled();
+  });
+
+  it('builds locally for a physical device when the provider does not support physical devices', async () => {
+    mockProject({ withBuildCacheProvider: true });
+    const plugin = mockBuildCacheProvider({ cachedBuildPath: '/cache/ReactNativeProject.app' });
+    mockPhysicalDevice();
+    mockPodInstallCreatesWorkspace();
+
+    await runIosAsync('/', { install: true, device: physicalDevice.udid });
+
+    expect(plugin.resolveBuildCache).not.toHaveBeenCalled();
+    expect(maybePromptToSyncPodsAsync).toHaveBeenCalledWith('/');
+    expect(buildAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcodeProject: { isWorkspace: true, name: '/ios/ReactNativeProject.xcworkspace' },
+      })
+    );
+    expect(plugin.uploadBuildCache).not.toHaveBeenCalled();
+  });
+
+  it('installs the cached build on a physical device without installing pods', async () => {
+    mockProject({ withBuildCacheProvider: true });
+    const plugin = mockBuildCacheProvider({
+      supportsIosPhysicalDevices: true,
+      cachedBuildPath: '/cache/ReactNativeProject.app',
+    });
+    mockPhysicalDevice();
+
+    await runIosAsync('/', { install: true, device: physicalDevice.udid });
+
+    expect(plugin.resolveBuildCache).toHaveBeenCalledWith(
+      expect.objectContaining({
+        platform: 'ios',
+        fingerprintHash: 'mock-fingerprint',
+        device: { id: '00008101-001964A22629003A', type: 'device' },
+      }),
+      {}
+    );
+    expect(maybePromptToSyncPodsAsync).not.toHaveBeenCalled();
+    expect(buildAsync).not.toHaveBeenCalled();
+    expect(launchAppAsync).toHaveBeenCalledWith(
+      '/cache/ReactNativeProject.app',
+      expect.anything(),
+      expect.objectContaining({ isSimulator: false }),
+      'com.example.app'
+    );
+  });
+
+  it('installs pods and builds the workspace for a physical device when the cache misses', async () => {
+    mockProject({ withBuildCacheProvider: true });
+    const plugin = mockBuildCacheProvider({
+      supportsIosPhysicalDevices: true,
+      cachedBuildPath: null,
+    });
+    mockPhysicalDevice();
+    mockPodInstallCreatesWorkspace();
+
+    await runIosAsync('/', { install: true, device: physicalDevice.udid });
+
+    expect(plugin.resolveBuildCache).toHaveBeenCalled();
+    expect(jest.mocked(maybePromptToSyncPodsAsync).mock.invocationCallOrder[0]).toBeGreaterThan(
+      plugin.resolveBuildCache.mock.invocationCallOrder[0]!
+    );
+    expect(buildAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcodeProject: { isWorkspace: true, name: '/ios/ReactNativeProject.xcworkspace' },
+      })
+    );
+    expect(launchAppAsync).toHaveBeenCalledWith(
+      '/mock_binary',
+      expect.anything(),
+      expect.anything(),
+      'com.example.app'
+    );
+    expect(plugin.uploadBuildCache).not.toHaveBeenCalled();
+  });
+
+  it('installs the cached build on a simulator without installing pods', async () => {
+    mockProject({ withBuildCacheProvider: true });
+    const plugin = mockBuildCacheProvider({ cachedBuildPath: '/cache/ReactNativeProject.app' });
+
+    await runIosAsync('/', { install: true });
+
+    expect(plugin.resolveBuildCache).toHaveBeenCalledWith(
+      expect.objectContaining({ device: { id: '123', type: 'simulator' } }),
+      {}
+    );
+    expect(maybePromptToSyncPodsAsync).not.toHaveBeenCalled();
+    expect(buildAsync).not.toHaveBeenCalled();
+    expect(launchAppAsync).toHaveBeenCalledWith(
+      '/cache/ReactNativeProject.app',
+      expect.anything(),
+      expect.objectContaining({ isSimulator: true }),
+      'com.example.app'
+    );
+  });
+
+  it('uploads the simulator build when the cache misses', async () => {
+    mockProject({ withBuildCacheProvider: true });
+    const plugin = mockBuildCacheProvider({ cachedBuildPath: null });
+
+    await runIosAsync('/', { install: true });
+
+    expect(maybePromptToSyncPodsAsync).toHaveBeenCalledWith('/');
+    expect(plugin.uploadBuildCache).toHaveBeenCalledWith(
+      expect.objectContaining({ buildPath: '/mock_binary', fingerprintHash: 'mock-fingerprint' }),
+      {}
+    );
+  });
+
+  it.each([
+    { withBuildCacheProvider: false, skipPodInstall: false },
+    { withBuildCacheProvider: true, skipPodInstall: true },
+  ])(
+    'prebuilds with skipPodInstall: $skipPodInstall when withBuildCacheProvider is $withBuildCacheProvider',
+    async ({ withBuildCacheProvider, skipPodInstall }) => {
+      const iosFiles = Object.fromEntries(
+        Object.entries(rnFixture).filter(([file]) => file.startsWith('ios/'))
+      );
+      mockProject({ withBuildCacheProvider, files: {} });
+      if (withBuildCacheProvider) {
+        mockBuildCacheProvider({ cachedBuildPath: '/cache/ReactNativeProject.app' });
+      }
+      jest.mocked(prebuildAsync).mockImplementationOnce(async () => {
+        vol.fromJSON(iosFiles, '/');
+        return null;
+      });
+
+      await runIosAsync('/', { install: true });
+
+      expect(prebuildAsync).toHaveBeenCalledWith('/', {
+        install: true,
+        skipPodInstall,
+        platforms: ['ios'],
+      });
+    }
+  );
 });
