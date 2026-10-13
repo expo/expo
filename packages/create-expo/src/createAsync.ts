@@ -14,6 +14,7 @@ import {
 } from './Examples';
 import * as Template from './Template';
 import { configureWorkspacesAsync } from './configureWorkspaces';
+import { SwiftPMUnsupportedError } from './error';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
@@ -187,8 +188,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',
-      error: (error) =>
-        `Something went wrong in downloading and extracting the project files: ${error.message}`,
+      error: (error) => formatExtractionError(error, 'project'),
     }
   );
 
@@ -283,8 +283,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     {
       pending: chalk.bold('Locating example files...'),
       success: 'Downloaded and extracted example files.',
-      error: (error) =>
-        `Something went wrong in downloading and extracting the example files: ${error.message}`,
+      error: (error) => formatExtractionError(error, 'example'),
     }
   );
 
@@ -306,6 +305,13 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out
   }
+}
+
+function formatExtractionError(error: Error, files: 'project' | 'example'): string {
+  if (error instanceof SwiftPMUnsupportedError) {
+    return error.message;
+  }
+  return `Something went wrong in downloading and extracting the ${files} files: ${error.message}`;
 }
 
 function getChangeDirectoryPath(projectRoot: string): string {

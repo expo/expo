@@ -10,6 +10,7 @@ import path from 'path';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
+import { SwiftPMUnsupportedError } from './error';
 import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
@@ -144,6 +145,10 @@ export async function extractAndPrepareTemplateAppAsync(
       expName: projectName,
       disableCache: type === 'file',
     });
+  }
+
+  if (swiftpm) {
+    await assertSwiftPMSupportedAsync(projectRoot, 'template');
   }
 
   const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
@@ -382,6 +387,30 @@ function templateHasNativeCode(root: string): boolean {
   return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
     fs.existsSync(folder)
   );
+}
+
+/**
+ * Throw a `SwiftPMUnsupportedError` when the extracted project depends on a React Native version
+ * older than 0.88. Versions that cannot be read here are left for `expo prebuild` to reject.
+ */
+export async function assertSwiftPMSupportedAsync(
+  projectRoot: string,
+  source: 'template' | 'example'
+): Promise<void> {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return;
+  }
+  const { dependencies } = await JsonFile.readAsync<{ dependencies?: Record<string, string> }>(
+    packageJsonPath
+  );
+  const reactNativeVersion = dependencies?.['react-native'];
+  const [, major, minor] = reactNativeVersion?.match(/(\d+)\.(\d+)/) ?? [];
+  // Nightlies are versioned `0.0.0-<date>-<sha>`, so a minor of 0 is not an old release.
+  if (reactNativeVersion && Number(major) === 0 && Number(minor) >= 1 && Number(minor) < 88) {
+    const projectDir = path.relative(process.cwd(), projectRoot) || path.basename(projectRoot);
+    throw new SwiftPMUnsupportedError(source, reactNativeVersion, projectDir);
+  }
 }
 
 /**

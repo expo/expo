@@ -49,7 +49,7 @@ async function run() {
       chalk`npx ${PACKAGE_NAME} {cyan <path>} [options]`,
       [
         `-y, --yes             Use the default options for creating a project`,
-        `    --no-install      Skip installing npm packages or CocoaPods`,
+        `    --no-install      Skip installing npm packages, CocoaPods, or Swift packages`,
         `    --no-agents-md    Skip generating AGENTS.md and .claude/settings.json`,
         `    --swiftpm         iOS: use Swift Package Manager instead of CocoaPods (preview)`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,

@@ -5,6 +5,7 @@ import ora from 'ora';
 import { downloadAndExtractExampleAsync } from '../Examples';
 import { extractAndPrepareTemplateAppAsync, installPodsAsync } from '../Template';
 import { createAsync, logNodeInstallWarning, setupDependenciesAsync } from '../createAsync';
+import { SwiftPMUnsupportedError } from '../error';
 import { installDependenciesAsync } from '../resolvePackageManager';
 
 jest.mock('fs');
@@ -270,6 +271,48 @@ describe(createAsync, () => {
 
     expect(downloadAndExtractExampleAsync).toHaveBeenCalledWith(projectRoot, 'with-router', {
       swiftpm: true,
+    });
+  });
+
+  describe('when the React Native version does not support SwiftPM', () => {
+    const failMessages = () =>
+      asMock(ora).mock.results.flatMap(({ value }) => asMock(value.fail).mock.calls.flat());
+
+    beforeEach(() => {
+      asMock(ora).mockClear();
+      asMock(installDependenciesAsync).mockReset();
+      asMock(spawnAsync).mockReset();
+    });
+
+    it.each([
+      ['template', { template: 'expo-template-blank@sdk-55' }, extractAndPrepareTemplateAppAsync],
+      ['example', { example: 'with-router' }, downloadAndExtractExampleAsync],
+    ] as const)(
+      `stops without installing when the %s React Native is too old and prints the reason as-is`,
+      async (source, sourceOption, extract) => {
+        const error = new SwiftPMUnsupportedError(source, '^0.83.0', 'app');
+        asMock(extract).mockRejectedValueOnce(error);
+
+        await expect(
+          createAsync(projectRoot, { ...options, install: true, ...sourceOption })
+        ).rejects.toBe(error);
+
+        expect(failMessages()).toEqual([error.message]);
+        expect(installDependenciesAsync).not.toHaveBeenCalled();
+        expect(spawnAsync).not.toHaveBeenCalled();
+      }
+    );
+
+    it(`keeps the prefix for other extraction errors`, async () => {
+      asMock(extractAndPrepareTemplateAppAsync).mockRejectedValueOnce(new Error('404'));
+
+      await expect(
+        createAsync(projectRoot, { ...options, template: 'expo-template-blank' })
+      ).rejects.toThrow('404');
+
+      expect(failMessages()).toEqual([
+        'Something went wrong in downloading and extracting the project files: 404',
+      ]);
     });
   });
 });

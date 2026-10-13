@@ -5,6 +5,7 @@ import path from 'path';
 import prompts from 'prompts';
 
 import {
+  assertSwiftPMSupportedAsync,
   getTemplateFilesToRenameAsync,
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
@@ -145,6 +146,10 @@ export async function downloadAndExtractExampleAsync(
     strip: 2,
     filter: (entryName) => entryName.startsWith(prefix),
   });
+
+  if (swiftpm) {
+    await assertSwiftPMSupportedAsync(root, 'example');
+  }
 
   const monorepoConfig = await consumeMonorepoConfigAsync(root);
 
