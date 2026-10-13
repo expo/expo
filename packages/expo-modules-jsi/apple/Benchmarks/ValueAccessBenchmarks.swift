@@ -42,6 +42,49 @@ extension JSIBenchmarks {
     }
   }
 
+  /// A string short enough for Swift to store inline, so the read doesn't allocate.
+  @Test
+  func `value to short string`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("'benchmark'")
+      try benchmark("JavaScriptValue.getString(): 9B ASCII", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = value.getString()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `unowned value to string`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("'benchmark string value'").ref()
+      )
+      try benchmark("JavaScriptUnownedValue.getString()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = buffer.unownedValue(at: 0).getString()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `unowned decode of a string`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("'benchmark string value'").ref()
+      )
+      try benchmark("String.decode(unowned)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try String.decode(buffer.unownedValue(at: 0), in: runtime)
+        }
+      }
+    }
+  }
+
   @Test
   func `value to double`() async throws {
     try await benchmarkCase { runtime in
