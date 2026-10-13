@@ -88,7 +88,7 @@ export type RouterPageRemovedMark = BaseRouterPerformanceMark<
 >;
 
 /**
- * A navigation action entered the navigation queue, before Expo Router reduced it. If the action
+ * Expo Router received a navigation action, before it reduced it. If the action
  * changes the navigation state, `expo-router:action-dispatched` marks with the same `actionId`
  * follow.
  */

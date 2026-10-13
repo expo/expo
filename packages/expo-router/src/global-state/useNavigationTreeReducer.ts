@@ -545,6 +545,7 @@ export function useNavigationTreeReducer({
     reactDispatch({
       type: 'ACTION',
       payload: { action, originKey },
+      // Sync dispatches skip the routing queue, so mark the enqueue here.
       actionId: markActionEnqueued(),
     });
   });
