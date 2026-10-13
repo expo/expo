@@ -1,6 +1,6 @@
 /** @jest-environment node */
 
-import { renderToString } from 'react-dom/server';
+import { renderToString } from 'react-dom/server.node';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
