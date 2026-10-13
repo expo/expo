@@ -44,7 +44,7 @@ export type QueuedRoutingIntent = RoutingIntent & { actionId: number };
 let lastActionId = 0;
 
 /** Marks `expo-router:action-enqueued` and returns the id of the new action. */
-export function markActionEnqueued(): number {
+export function markActionEnqueuedAndReturnId(): number {
   const actionId = ++lastActionId;
   mark('expo-router:action-enqueued', { actionId });
   return actionId;

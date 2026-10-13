@@ -30,7 +30,7 @@ import {
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
-import { markActionEnqueued, type QueuedRoutingIntent } from './routingQueue';
+import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
@@ -546,7 +546,7 @@ export function useNavigationTreeReducer({
       type: 'ACTION',
       payload: { action, originKey },
       // Sync dispatches skip the routing queue, so mark the enqueue here.
-      actionId: markActionEnqueued(),
+      actionId: markActionEnqueuedAndReturnId(),
     });
   });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {

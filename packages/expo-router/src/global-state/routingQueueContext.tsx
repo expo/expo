@@ -12,7 +12,11 @@ import {
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import { createImperativeRouter, getDefaultTransitionMode, router, unboundRouter } from './router';
-import { markActionEnqueued, type QueuedRoutingIntent, type RoutingIntent } from './routingQueue';
+import {
+  markActionEnqueuedAndReturnId,
+  type QueuedRoutingIntent,
+  type RoutingIntent,
+} from './routingQueue';
 import type { NavigationTransitionMode } from './types';
 
 const EMPTY: QueuedRoutingIntent[] = [];
@@ -44,7 +48,7 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
     () => ({
       // Each enqueue has its own identity, including repeated uses of the same intent object.
       enqueue: (intent) => {
-        const queued = { ...intent, actionId: markActionEnqueued() };
+        const queued = { ...intent, actionId: markActionEnqueuedAndReturnId() };
         setQueue((previous) => [...previous, queued]);
       },
       // Keep intents added between the drained render and this state update.
