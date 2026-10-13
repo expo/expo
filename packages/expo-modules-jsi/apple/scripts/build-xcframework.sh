@@ -37,11 +37,14 @@ SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 # Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
-# their symbols on some Xcode versions, and frameworks linked against ours then bind to them here.
+# their symbols with Xcode 26.4 (Xcode 27 hides them), and frameworks linked against ours then bind
+# to them here, which breaks when the user's Xcode rebuilds this framework without the export.
 # Only the precompile pipeline hides them: already published prebuilt cores rely on the export.
+# ld documents wildcards for symbol list files only, hence the list file.
+UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
 OTHER_LDFLAGS_SETTING=""
 if [[ "${EXPO_JSI_HIDE_SWIFT_RUNTIME_EXPORTS:-}" == "1" ]]; then
-  OTHER_LDFLAGS_SETTING='OTHER_LDFLAGS=$(inherited) -Xlinker -unexported_symbol -Xlinker _swift_*'
+  OTHER_LDFLAGS_SETTING="OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\""
 fi
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
@@ -89,6 +92,7 @@ SOURCE_FILES=(
   # Defines the `jsi` module the slices compile against, so its contents change
   # the build output the same way a source file does.
   "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+  "${UNEXPORTED_SYMBOLS_LIST}"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
