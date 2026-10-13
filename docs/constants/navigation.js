@@ -664,6 +664,7 @@ export const eas = [
   ]),
   makeSection('Reference', [
     makePage('eas/webhooks.mdx'),
+    makePage('eas/protected-resources.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),
       makePage('accounts/two-factor.mdx'),
