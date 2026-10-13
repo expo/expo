@@ -65,10 +65,6 @@ Conventions that matter when judging a change:
   that would pass on the unchanged code, or a test that only checks a mock of the
   function it claims to test. A native change with no unit-test seam can use manual
   steps in the Test Plan instead of a new test file.
-- **Pull request text has one owner.** The `pr-requirements` reviewer checks the title,
-  the `Why` / `How` / `Test Plan` body, and whether the diff is one reviewable change.
-  The contract is `CONTRIBUTING.md`, section "Opening a pull request". Do not file a
-  second finding for those. You cannot read `AGENTS.md`; that section is the copy.
 - **Both platforms, or say why.** When a change alters behavior on one platform only,
   the other platform's implementation and the documented behavior must still be
   consistent. Silent iOS/Android divergence is a defect, not a detail.
