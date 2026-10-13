@@ -89,6 +89,10 @@ export type TimePickerElementColors = {
   /** The color of clock dial numbers when selected or overlapping the selector. */
   clockDialSelectedContentColor?: ColorValue;
   /** The color of clock dial numbers when unselected. */
+  clockDialContentColor?: ColorValue;
+  /**
+   * @deprecated Use `clockDialContentColor` instead.
+   */
   clockDialUnselectedContentColor?: ColorValue;
   /** The color of the clock dial selector (hand). */
   selectorColor?: ColorValue;
@@ -97,18 +101,34 @@ export type TimePickerElementColors = {
   /** The background color of the selected AM/PM period. */
   periodSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected AM/PM period. */
+  periodSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContainerColor` instead.
+   */
   periodSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected AM/PM period. */
   periodSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected AM/PM period. */
+  periodSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContentColor` instead.
+   */
   periodSelectorUnselectedContentColor?: ColorValue;
   /** The background color of the selected hour/minute segment. */
   timeSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected hour/minute segment. */
+  timeSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContainerColor` instead.
+   */
   timeSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected hour/minute segment. */
   timeSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected hour/minute segment. */
+  timeSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContentColor` instead.
+   */
   timeSelectorUnselectedContentColor?: ColorValue;
 };
 
