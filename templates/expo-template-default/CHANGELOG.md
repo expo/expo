@@ -1,5 +1,20 @@
 # expo-template-default
 
+## 58.0.17
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.29.0. ([#51354](https://github.com/expo/expo/pull/51354) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#49784](https://github.com/expo/expo/pull/49784), [#51368](https://github.com/expo/expo/pull/51368), [#51354](https://github.com/expo/expo/pull/51354), [#51219](https://github.com/expo/expo/pull/51219), [#51194](https://github.com/expo/expo/pull/51194), [#51319](https://github.com/expo/expo/pull/51319), [#51237](https://github.com/expo/expo/pull/51237), [#50715](https://github.com/expo/expo/pull/50715), [#50727](https://github.com/expo/expo/pull/50727), [#50536](https://github.com/expo/expo/pull/50536), [#51124](https://github.com/expo/expo/pull/51124), [#50737](https://github.com/expo/expo/pull/50737), [#50874](https://github.com/expo/expo/pull/50874), [#51255](https://github.com/expo/expo/pull/51255), [#49639](https://github.com/expo/expo/pull/49639), [#51239](https://github.com/expo/expo/pull/51239), [#51270](https://github.com/expo/expo/pull/51270), [#51412](https://github.com/expo/expo/pull/51412), [#51322](https://github.com/expo/expo/pull/51322), [#51351](https://github.com/expo/expo/pull/51351))
+  - expo@58.0.8
+  - @expo/ui@58.0.16
+  - expo-font@58.0.8
+  - expo-image@58.0.14
+  - expo-router@58.0.18
+  - expo-constants@58.0.11
+  - expo-splash-screen@58.0.8
+  - expo-linking@58.0.12
+
 ## 58.0.16
 
 ### Patch Changes

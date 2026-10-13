@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51368](https://github.com/expo/expo/pull/51368), [#49784](https://github.com/expo/expo/pull/49784))
+  - expo-application@58.1.1
+  - expo-constants@58.0.11
+  - expo-linking@58.0.12
+
 ## 58.0.10
 
 ### Patch Changes

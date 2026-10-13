@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.29.0. ([#51354](https://github.com/expo/expo/pull/51354) by [@Ubax](https://github.com/Ubax))
+- Allow interfaces extending `UnknownOutputParams` to declare optional params, so an omitted query parameter can be typed as optional, e.g. `interface MyParams extends UnknownOutputParams { id?: string }`. ([#51219](https://github.com/expo/expo/pull/51219) by [@Ubax](https://github.com/Ubax))
+- Fix `navigation.getState()` returning the previous state inside a `state` event listener. ([#51194](https://github.com/expo/expo/pull/51194) by [@drakeo338](https://github.com/drakeo338))
+- Read `unstable_settings.anchor` only when a layout is first needed, so async routes apply anchors and startup no longer loads every layout. ([#51124](https://github.com/expo/expo/pull/51124) by [@Ubax](https://github.com/Ubax))
+- Reduce route info processing overhead. ([#50737](https://github.com/expo/expo/pull/50737) by [@Ubax](https://github.com/Ubax))
+- Point the `useFocusEffect` diagnostic links to the new focus handling guide. ([#50874](https://github.com/expo/expo/pull/50874) by [@Ubax](https://github.com/Ubax))
+- Pass the current `pathname` and `params` props to the `+html` component. ([#51255](https://github.com/expo/expo/pull/51255) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix header title not adapting its color to content scrolling underneath a transparent header on iOS 26 Liquid Glass. ([#49639](https://github.com/expo/expo/pull/49639) by [@Jonas-C](https://github.com/Jonas-C))
+- Wait for the initial navigation state with Suspense. ([#51239](https://github.com/expo/expo/pull/51239) by [@Ubax](https://github.com/Ubax))
+- Fix Tabs and Drawer routes with `dangerouslySingular` keeping the nested navigator state of the previous ID after navigating to a new ID. ([#51270](https://github.com/expo/expo/pull/51270) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#46526](https://github.com/expo/expo/pull/46526))
+  - expo-server@58.0.5
+
 ## 58.0.17
 
 ### Patch Changes

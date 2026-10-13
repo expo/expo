@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Add background location tracking. `LocationProvider` interface now has `getLocationTaskConsumerClass` and `getRegisteredTaskConsumerClass` methods, which return the `LocationTaskConsumer` class used to handle background location using TaskManager. Added `GmsLocationTaskConsumer` and `AndroidLocationTaskConsumer` implementations. Add `RECEIVE_BOOT_COMPLETED` to the manifest when the `isAndroidBackgroundLocationEnabled` is true. ([#50876](https://github.com/expo/expo/pull/50876) by [@HubertBer](https://github.com/HubertBer))
+- [iOS] Keep `watchPositionAsync` alive while the app is in the background. ([#51327](https://github.com/expo/expo/pull/51327) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Add `hasLocationServicesEnabled`. ([#51326](https://github.com/expo/expo/pull/51326) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Report `ERR_LOCATION_SERVICES_DISABLED_GLOBALLY` from `expo-location/next` watchers when Location Services are turned off. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Make `LocationUpdatesHandle.stop()` a no-op when the task is not registered. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Keep `expo-location/next` watchers alive while the app is in the background. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Add a `LocationForegroundService` and helper methods to `start`/`update`/`stop` it. Update the position watchers so that they are running in background while the foreground service is running. ([#49995](https://github.com/expo/expo/pull/49995) by [@HubertBer](https://github.com/HubertBer))
+
 ## 58.0.13
 
 ### Patch Changes

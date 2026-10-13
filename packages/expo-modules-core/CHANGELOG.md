@@ -1,5 +1,28 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.16.0, which supports closure arguments in `@JS` functions and initializers. ([#51037](https://github.com/expo/expo/pull/51037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] [Internal] Hold cached JavaScript values and the encoder and decoder state behind `JavaScriptRef`. ([#50978](https://github.com/expo/expo/pull/50978) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix build errors with React Native nightlies by removing an unneeded `enableCppPropsIteratorSetter` check from Expo views. ([#51405](https://github.com/expo/expo/pull/51405) by [@Kudo](https://github.com/Kudo))
+- [iOS] Make `JavaScriptValue` a non-copyable struct. This is a breaking change for Swift code that uses `JavaScriptValue` directly:
+
+  - Values are moved, not shared. Pass them as `borrowing` or `consuming` parameters, and call `copy()` where a second owned value is needed.
+  - `JavaScriptValue.undefined` and `JavaScriptValue.null` are functions now: write `.undefined()` and `.null()`.
+  - A `JavaScriptValue` can no longer be an argument or a result of a `Function`, `AsyncFunction`, `Property` or `Field` definition. Declare the function with the `@JS` macro instead (in an `@ExpoModule` or `@SharedObject` class) and take the value as `borrowing JavaScriptValue`, or use a typed argument.
+  - To keep a value in an array, an escaping closure or another place that takes copyable types only, wrap it with `value.ref()` and read it back with `take()` or `withUnwrappedValue(_:)`.
+  - `JavaScriptArray.init(_:items:)`, `JavaScriptArray.enumerated()`, `JavaScriptArray.filter(_:)` and `JavaScriptValuesBuffer.copying(in:values:)` with an array of values are removed. Use the parameter pack initializer, `forEach`, `forEachIndexed`, `reduce`, or the `[JavaScriptValue.Ref]` overload.
+
+  ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+- [iOS] [Internal] Remove `copy runtime` where a borrowed `JavaScriptRuntime` is passed to a function, which already borrows its parameters. ([#51439](https://github.com/expo/expo/pull/51439) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Read the properties of a typed array through property names cached per runtime, which makes `JavaScriptValue.getTypedArray()` about twice as fast. `getTypedArray()` is now isolated to `JavaScriptActor`, like `asTypedArray()`. ([#51436](https://github.com/expo/expo/pull/51436) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51373](https://github.com/expo/expo/pull/51373), [#51037](https://github.com/expo/expo/pull/51037), [#51368](https://github.com/expo/expo/pull/51368), [#50977](https://github.com/expo/expo/pull/50977), [#51438](https://github.com/expo/expo/pull/51438), [#51439](https://github.com/expo/expo/pull/51439), [#51435](https://github.com/expo/expo/pull/51435), [#51436](https://github.com/expo/expo/pull/51436))
+  - expo-modules-jsi@58.0.11
+
 ## 58.0.15
 
 ### Patch Changes
