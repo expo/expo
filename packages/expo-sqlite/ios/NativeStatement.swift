@@ -174,6 +174,9 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       let result = sqliteResult(for: database.pointer) { exsqlite3_step(pointer) }
       let ret = result.code
       if let message = result.message {
+        // SQLITE_BUSY leaves the statement active.
+        // A later COMMIT on this connection fails until the statement is reset.
+        exsqlite3_reset(pointer)
         throw SQLiteErrorException(message)
       }
       return SQLiteRunResult(
