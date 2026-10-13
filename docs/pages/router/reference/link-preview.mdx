@@ -165,22 +165,11 @@ The following example shows a nested context menu on iOS:
 
 To explore all available customization options, see the API documentation for [`Link.MenuAction`](/versions/latest/sdk/router/link/#linkmenuaction).
 
-## Rounded corners on the trigger
+## Corner radius
 
-When you press and hold a link, iOS lifts the direct child of `Link.Trigger` out of the screen. iOS uses the corner radius of that child to shape the lifted view. If only a nested view has a `borderRadius`, iOS applies its own default corner radius, which can be much larger than your design.
+When you press and hold a link, iOS lifts the direct child of `Link.Trigger`. The lifted view uses the `borderRadius` of that child. To keep the same corners when the view is lifted, set `borderRadius` on the direct child.
 
-The following example shows a trigger where only the inner view has a `borderRadius`. The lifted card gets larger top corners than at rest:
-
-<ContentSpotlight
-  alt="A card at rest with small corners, and the same card lifted with much larger top corners."
-  src="/static/images/expo-router/link-preview-corner-radius-1.webp"
-/>
-
-To keep the corners when the view is lifted, set `borderRadius` on the direct child of `Link.Trigger`.
-
-### Trigger with a background
-
-If the trigger draws its own background, set `borderRadius` on the trigger itself:
+The following example sets `borderRadius` on the `Pressable`:
 
 ```tsx
 <Link href="/about" asChild>
@@ -194,13 +183,11 @@ If the trigger draws its own background, set `borderRadius` on the trigger itsel
 ```
 
 <ContentSpotlight
-  alt="A card with a background and a corner radius on the Pressable, at rest and lifted with the same corners."
+  alt="A rounded card at rest and lifted, with the same corners in both states."
   src="/static/images/expo-router/link-preview-corner-radius-2.webp"
 />
 
-### Trigger without a background
-
-If the trigger has no background and a nested view draws the rounded shape, set the same `borderRadius` on both the trigger and the nested view:
+If a nested view has a `borderRadius`, set the same value on the `Pressable`:
 
 ```tsx
 <Link href="/about" asChild>
@@ -217,7 +204,7 @@ If the trigger has no background and a nested view draws the rounded shape, set 
 ```
 
 <ContentSpotlight
-  alt="A card with a caption and a corner radius on the Pressable and the inner view, at rest and lifted with the same corners."
+  alt="A rounded card with a caption at rest and lifted, with the same corners in both states."
   src="/static/images/expo-router/link-preview-corner-radius-3.webp"
 />
 
