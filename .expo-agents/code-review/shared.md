@@ -61,10 +61,7 @@ Conventions that matter when judging a change:
   the implementation. JS/TS tests are Jest and live in `__tests__/` or `*.test.ts` next
   to the code. Native tests live in `packages/<pkg>/ios/Tests/` and
   `packages/<pkg>/android/src/test/`. A bug fix with no accompanying test is a real
-  observation; a missing test for a pure refactor usually is not. Do not ask for a test
-  that would pass on the unchanged code, or a test that only checks a mock of the
-  function it claims to test. A native change with no unit-test seam can use manual
-  steps in the Test Plan instead of a new test file.
+  observation; a missing test for a pure refactor usually is not.
 - **Both platforms, or say why.** When a change alters behavior on one platform only,
   the other platform's implementation and the documented behavior must still be
   consistent. Silent iOS/Android divergence is a defect, not a detail.
