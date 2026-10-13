@@ -829,6 +829,57 @@ struct JavaScriptRuntimeTests {
     #expect(result[3].getBool() == true)
   }
 
+  // MARK: - Void host functions
+
+  @Test
+  func `void host function runs its closure and returns undefined`() throws {
+    let fn = runtime.createFunction("record") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+      try this.asObject(in: runtime).setProperty("seen", value: arguments[0])
+    }
+    runtime.global().setProperty("record", value: fn.asValue())
+
+    let result = try runtime.eval("var target = {}; [record.call(target, 3), target.seen]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].getInt() == 3)
+  }
+
+  @Test
+  func `throwing void host function propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "void failure" }
+    }
+
+    let fn = runtime.createFunction("failing") {
+      (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) throws -> Void in
+      throw TestError()
+    }
+    runtime.global().setProperty("failing", value: fn.asValue())
+
+    let result = try runtime.eval("try { failing(); 'no error' } catch (e) { e.message }")
+
+    #expect(result.getString().contains("void failure"))
+  }
+
+  @Test
+  func `setProperty with a void closure installs a function returning undefined`() throws {
+    let object = runtime.createObject()
+    object.setProperty("bump") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) -> Void in
+      let target = try this.asObject(in: runtime)
+      target.setProperty("calls", value: JavaScriptValue(runtime, target.getProperty("calls").getInt() + 1))
+    }
+    object.setProperty("calls", value: JavaScriptValue(runtime, 0))
+    runtime.global().setProperty("counter", value: object.asValue())
+
+    let result = try runtime.eval("[counter.bump(), counter.bump(), counter.calls]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].isUndefined() == true)
+    #expect(result[2].getInt() == 2)
+  }
+
   // MARK: - Async functions
 
   @Test
