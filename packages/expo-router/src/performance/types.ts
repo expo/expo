@@ -11,7 +11,7 @@ export interface RouterPageMarkDetail {
   /**
    * The route and search params of the page.
    */
-  params: Record<string, string | string[]>;
+  params: Record<string, string | string[] | undefined>;
   /**
    * The route segments of the page, for example `['users', '[id]']`.
    */
