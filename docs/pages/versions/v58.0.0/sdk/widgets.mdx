@@ -81,7 +81,13 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
     {
       name: 'enablePushNotifications',
       description:
-        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoLiveActivity_EnablePushNotifications` in the **Info.plist**.',
+        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
+      default: 'false',
+    },
+    {
+      name: 'frequentUpdates',
+      description:
+        'Whether an app can update its Live Activities frequently. When enabled, your Live Activities can receive frequent updates with remote push notifications. This sets `NSSupportsLiveActivitiesFrequentUpdates` in the **Info.plist**.',
       default: 'false',
     },
     {
