@@ -23,8 +23,8 @@ import type { NativeStackNavigatorProps } from '../react-navigation/native-stack
 import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackRouter';
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
-import { isActionRejected } from '../react-navigation/routers/extendRouter';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
+import { isActionRejected } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
 

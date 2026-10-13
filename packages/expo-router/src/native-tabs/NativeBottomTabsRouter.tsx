@@ -14,7 +14,7 @@ import {
   RouterActionHandling,
   TabRouter,
 } from '../react-navigation/native';
-import { isActionRejected } from '../react-navigation/routers/extendRouter';
+import { isActionRejected } from '../react-navigation/routers/utils';
 
 const zoomParamNames = [
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,

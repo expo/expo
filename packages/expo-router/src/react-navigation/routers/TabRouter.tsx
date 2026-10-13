@@ -3,7 +3,7 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { extendRouter, isActionRejected, type RouterExtensionContext } from './extendRouter';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import {
   type CommonNavigationAction,
@@ -15,6 +15,7 @@ import {
   type RouterBrowserHistoryAction,
   type RouterExtensionMembers,
 } from './types';
+import { isActionRejected } from './utils';
 
 export type TabActionType =
   | {

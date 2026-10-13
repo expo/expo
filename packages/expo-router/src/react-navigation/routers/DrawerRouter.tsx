@@ -7,7 +7,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { extendRouter, isActionRejected, type RouterExtensionContext } from './extendRouter';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import {
   type CommonNavigationAction,
@@ -15,6 +15,7 @@ import {
   RouterActionHandling,
   type RouterExtensionMembers,
 } from './types';
+import { isActionRejected } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =

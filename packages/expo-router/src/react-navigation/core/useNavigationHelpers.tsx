@@ -11,7 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import { isActionRejected } from '../routers/extendRouter';
+import { isActionRejected } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';

@@ -20,7 +20,7 @@ import {
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
-import { isActionRejected } from '../routers/extendRouter';
+import { isActionRejected } from '../routers/utils';
 import { Group } from './Group';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';

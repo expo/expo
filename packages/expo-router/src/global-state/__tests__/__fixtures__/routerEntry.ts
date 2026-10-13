@@ -3,7 +3,7 @@ import type {
   NavigationState,
   Router,
 } from '../../../react-navigation/routers';
-import { isActionRejected } from '../../../react-navigation/routers/extendRouter';
+import { isActionRejected } from '../../../react-navigation/routers/utils';
 import type { RouterRegistryEntry } from '../../routerRegistry';
 
 export function entry(reduce: RouterRegistryEntry['reduce']): RouterRegistryEntry;
