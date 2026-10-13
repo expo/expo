@@ -224,6 +224,15 @@ extension ExpoSwiftUI {
 
       if window != nil, let parentController = reactViewController() {
         #if !os(macOS)
+        // `reactViewController()` walks the responder chain, which may not match the view hierarchy:
+        // UIKit makes an input accessory view's `nextResponder` the text input that owns it. UIKit throws
+        // when a child controller's view is outside its parent's view, so skip containment in that case.
+        if !(parentController.viewIfLoaded.map(isDescendant(of:)) ?? false) {
+          hostingController.removeFromParent()
+          addSubview(hostingController.view)
+          setupHostingViewConstraints()
+          return
+        }
         if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
           // is UINavigationController, since it's children are supposed to be only screens.
