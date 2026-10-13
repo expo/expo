@@ -83,7 +83,7 @@ function computeMenuLabelAndTitle(
  * @platform android
  * @platform ios
  */
-export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
+export const StackToolbarMenu = (props: StackToolbarMenuProps) => {
   const placement = useToolbarPlacement();
 
   if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
@@ -258,7 +258,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
  * @platform android
  * @platform ios
  */
-export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
+export const StackToolbarMenuAction = (props: StackToolbarMenuActionProps) => {
   const placement = useToolbarPlacement();
 
   if (process.env.EXPO_OS === 'ios' && placement !== 'bottom') {
