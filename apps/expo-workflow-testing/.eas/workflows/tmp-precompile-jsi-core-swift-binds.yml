@@ -62,15 +62,15 @@ jobs:
           if ! grep -q '^== packages/expo-modules-core' "$out/report.txt"; then
             echo "FAIL: no ExpoModulesCore binary found"; status=1
           fi
-          if grep -q 'ExpoModulesJSI/_swift_' "$out/report.txt"; then
+          if grep -E 'ExpoModulesJSI/_swift_[A-Za-z]' "$out/report.txt" | grep -q bind; then
             echo "FAIL: core binds Swift runtime symbols to ExpoModulesJSI"; status=1
           fi
           if grep -E '_swift_allocate(Metadata|WitnessTable)Pack' "$out/report.txt" | grep -qE 'bind|undefined'; then
             echo "FAIL: a binary does not define the pack runtime functions itself"; status=1
           fi
-          find packages/expo-modules-core -path '*/output/*/ExpoModulesCore.tar.gz' | while read -r tarball; do
-            flavor=$(basename "$(dirname "$(dirname "$tarball")")")
-            cp "$tarball" "$out/ExpoModulesCore-$flavor.tar.gz"
+          find packages/expo-modules-core -path '*/output/*/xcframeworks/ExpoModulesCore.xcframework' -type d | while read -r xcf; do
+            flavor=$(basename "$(dirname "$(dirname "$xcf")")")
+            tar -czf "$out/ExpoModulesCore-$flavor.tar.gz" -C "$(dirname "$xcf")" ExpoModulesCore.xcframework
           done
           ls -la "$out"
           exit $status
