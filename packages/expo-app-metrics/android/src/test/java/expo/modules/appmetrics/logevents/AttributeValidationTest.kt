@@ -2,6 +2,7 @@ package expo.modules.appmetrics.logevents
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -146,6 +147,49 @@ class AttributeValidationTest {
     val attributes = result.attributes!!
     assertEquals(1, attributes.size)
     assertEquals("ok", attributes["valid"])
+  }
+
+  @Test
+  fun `drops non-finite values and counts them`() {
+    val result = sanitizeLogEventAttributes(
+      mapOf(
+        "nan" to Double.NaN,
+        "infinity" to Double.POSITIVE_INFINITY,
+        "valid" to 1.5
+      )
+    )
+    assertEquals(2, result.droppedCount)
+    assertEquals(mapOf("valid" to 1.5), result.attributes)
+  }
+
+  @Test
+  fun `strips non-finite numbers nested in lists and maps`() {
+    val result = sanitizeLogEventAttributes(
+      mapOf(
+        "timings" to listOf(1.0, Double.NaN, 3.0),
+        "meta" to mapOf("ratio" to Double.NEGATIVE_INFINITY, "ok" to 2.0)
+      )
+    )
+    val attributes = result.attributes!!
+    assertEquals(listOf(1.0, 3.0), attributes["timings"])
+    assertEquals(mapOf("ok" to 2.0), attributes["meta"])
+  }
+
+  @Test
+  fun `keeps null values at any depth`() {
+    // Only non-finite numbers are stripped; a null is a value the caller passed.
+    val result = sanitizeLogEventAttributes(
+      mapOf(
+        "missing" to null,
+        "list" to listOf("a", null),
+        "map" to mapOf("key" to null)
+      )
+    )
+    assertEquals(0, result.droppedCount)
+    val attributes = result.attributes!!
+    assertTrue(attributes.containsKey("missing"))
+    assertEquals(listOf("a", null), attributes["list"])
+    assertEquals(mapOf("key" to null), attributes["map"])
   }
 
   @Test

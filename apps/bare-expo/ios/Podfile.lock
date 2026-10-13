@@ -294,6 +294,7 @@ PODS:
     - Yoga
   - ExpoAppMetrics/Tests (58.0.11):
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - EXUpdatesInterface
     - hermes-engine
     - RCTRequired
@@ -4082,7 +4083,7 @@ SPEC CHECKSUMS:
   ExpoAppIntents: 6671d7e1312f65d6b6cb3b4159d88dc128ea65f3
   ExpoAppleAuthentication: 86e09d699399d4c09c2cb32bce32901a9d4ca334
   ExpoApplication: 5a2e05d1624dfa81671ae86259ea5b633572346b
-  ExpoAppMetrics: 5e33e407ab583b8f92da29417860a86d173a81e0
+  ExpoAppMetrics: 231b0377abaf5b00f94753f667d9fb45f363ef70
   ExpoAsset: c13f20a5756562af121a753c86a04ea75c743c3f
   ExpoAudio: d58beb5b93d9f2ec2144e02880a224c3e18c3c30
   ExpoBackgroundFetch: e93a25f504fac530e3ba46c5258d70fe5d2d9b7b
