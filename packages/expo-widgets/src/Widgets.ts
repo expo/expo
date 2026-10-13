@@ -6,6 +6,7 @@ import type {
   ExpoWidgetsEvents,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
+  LiveActivityScheduleOptions,
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
@@ -185,16 +186,25 @@ export class LiveActivityFactory<T extends object = object> {
    * @param props The initial content properties for the Live Activity.
    * @param url An optional URL to associate with the Live Activity, used for deep linking.
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param schedule When set, the system starts the Live Activity at `schedule.startDate` instead of immediately, even if the app isn't running. Requires iOS 26.0 or later.
    * @returns The new Live Activity instance.
    */
-  start(props: T, url?: string, staleDate?: Date) {
+  start(props: T, url?: string, staleDate?: Date, schedule?: LiveActivityScheduleOptions) {
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+      this.nativeLiveActivityFactory.start(
+        JSON.stringify(props),
+        url,
+        staleDate?.getTime(),
+        schedule && {
+          startDate: schedule.startDate.getTime(),
+          alertConfiguration: schedule.alertConfiguration,
+        }
+      )
     );
   }
 
   /**
-   * Returns all currently active instances of this Live Activity type.
+   * Returns all currently active instances of this Live Activity type, including scheduled ones that haven't started yet.
    */
   getInstances() {
     return this.nativeLiveActivityFactory
