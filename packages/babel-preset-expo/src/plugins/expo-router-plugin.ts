@@ -30,7 +30,6 @@ interface ExpoRouterPluginState extends PluginPass {
 /**
  * Inlines environment variables to configure the process:
  *
- * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
  * EXPO_ROUTER_IMPORT_MODE
  */
@@ -86,9 +85,6 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
         if (state.isTestEnv) return;
 
         switch (keyValue) {
-          case 'EXPO_ROUTER_ABS_APP_ROOT':
-            path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
-            return;
           case 'EXPO_ROUTER_APP_ROOT': {
             // Use the actual file being transformed to compute the relative path.
             // This ensures the path is correct regardless of package hoisting.

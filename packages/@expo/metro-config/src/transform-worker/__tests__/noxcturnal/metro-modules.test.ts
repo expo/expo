@@ -1679,7 +1679,6 @@ it('resolves only encountered public and Router environment properties', async (
           process.env[key],
           (() => { const process = { env: { EXPO_PUBLIC_NOXCTURNAL_I19: 'shadow' } }; return process.env.EXPO_PUBLIC_NOXCTURNAL_I19; })(),
           process.env.EXPO_ROUTER_APP_ROOT,
-          process['env'].EXPO_ROUTER_ABS_APP_ROOT
         ];
       `,
       options: options({
@@ -1696,7 +1695,6 @@ it('resolves only encountered public and Router environment properties', async (
     expect(result.result.code).toContain('process.env[key]');
     expect(result.result.code).toContain('EXPO_PUBLIC_NOXCTURNAL_I19: "shadow"');
     expect(result.result.code).toContain('"../../../routes"');
-    expect(result.result.code).toContain('"/app/routes"');
   } finally {
     if (previous === undefined) delete process.env.EXPO_PUBLIC_NOXCTURNAL_I19;
     else process.env.EXPO_PUBLIC_NOXCTURNAL_I19 = previous;
