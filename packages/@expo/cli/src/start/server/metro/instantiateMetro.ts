@@ -125,10 +125,14 @@ class LogRespectingTerminal extends Terminal {
       this.flush();
     };
 
-    const sendStderr = (...msg: any[]) => {
+    const sendStderr = (level: 'warn' | 'error', ...msg: any[]) => {
       if (!msg.length) {
         this.logStderr('');
       } else {
+        event('server_log', {
+          level,
+          data: msg.map((value) => (value instanceof Error ? event.error(value) : value)),
+        });
         const [format, ...args] = msg;
         this.logStderr(require('util').format(format, ...args));
       }
@@ -136,8 +140,8 @@ class LogRespectingTerminal extends Terminal {
 
     console.log = sendLog;
     console.info = sendLog;
-    console.warn = sendStderr;
-    console.error = sendStderr;
+    console.warn = (...msg) => sendStderr('warn', ...msg);
+    console.error = (...msg) => sendStderr('error', ...msg);
 
     // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
     process.on('exit', () => {

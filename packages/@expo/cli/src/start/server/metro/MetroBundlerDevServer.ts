@@ -89,6 +89,7 @@ import {
   attachImportStackToRootMessage,
   dropStackIfContainsCodeFrame,
   getErrorOverlayHtmlAsync,
+  HAS_LOGGED_SYMBOL,
   IS_METRO_BUNDLE_ERROR_SYMBOL,
 } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
@@ -1833,9 +1834,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
         );
 
-        for (const key in error) {
-          err[key] = error[key];
-        }
+        // Preserve symbol flags as well as the bundler's error details.
+        Object.assign(err, error);
 
         throw err;
       } finally {
@@ -1955,9 +1955,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       return undefined;
     } catch (error: any) {
-      throw new CommandError(
-        'LOADER_EXECUTION_FAILED',
-        `Failed to execute loader for route "${location.pathname}": ${error.message}`
+      throw Object.assign(
+        new CommandError(
+          'LOADER_EXECUTION_FAILED',
+          `Failed to execute loader for route "${location.pathname}": ${error.message}`
+        ),
+        {
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: error[IS_METRO_BUNDLE_ERROR_SYMBOL],
+          [HAS_LOGGED_SYMBOL]: error[HAS_LOGGED_SYMBOL],
+        }
       );
     }
   }
@@ -1981,9 +1987,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         path: filePath,
         error: debugEvent.error(error as Error),
       });
-      throw new CommandError(
-        'LOADER_BUNDLE',
-        chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
+      throw Object.assign(
+        new CommandError(
+          'LOADER_BUNDLE',
+          chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
+        ),
+        {
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: error[IS_METRO_BUNDLE_ERROR_SYMBOL],
+          [HAS_LOGGED_SYMBOL]: error[HAS_LOGGED_SYMBOL],
+        }
       );
     }
   }
@@ -2275,11 +2287,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         options
       );
 
-      this.metro._reporter.update({
-        buildID: getBuildID(buildNumber),
-        type: 'bundle_build_done',
-      });
-
       bundlePerfLogger?.point('serializingBundle_end');
 
       let bundleCode: string | null = null;
@@ -2300,7 +2307,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const bundleCode = artifacts.find((asset) => asset.type === 'js');
           const bundleMap = artifacts.find((asset) => asset.type === 'map')?.source ?? '';
 
-          return {
+          const result = {
             numModifiedFiles: delta.reset
               ? delta.added.size + revision.prepend.length
               : delta.added.size + delta.modified.size + delta.deleted.size,
@@ -2311,6 +2318,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             artifacts,
             assets,
           };
+          this.metro._reporter.update({
+            buildID: getBuildID(buildNumber),
+            type: 'bundle_build_done',
+          });
+          return result;
         } catch (error: any) {
           throw new Error(
             'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
@@ -2345,7 +2357,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundleMap = bundle.map;
       }
 
-      return {
+      const result = {
         numModifiedFiles: delta.reset
           ? delta.added.size + revision.prepend.length
           : delta.added.size + delta.modified.size + delta.deleted.size,
@@ -2354,6 +2366,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundle: bundleCode,
         map: bundleMap,
       };
+      this.metro._reporter.update({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_build_done',
+      });
+      return result;
     } catch (error: any) {
       // Mark the error so we know how to format and return it later.
       if (error) {
@@ -2364,6 +2381,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_failed',
       });
+      this.metro._reporter.update({ type: 'bundling_error', error });
 
       throw error;
     }
