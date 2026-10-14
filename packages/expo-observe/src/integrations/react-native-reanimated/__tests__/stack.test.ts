@@ -1,10 +1,13 @@
-import { removeLoggerFrames } from '../stack';
+import { removeFirstFrame } from '../stack';
 
-// Stacks captured in `reportReanimatedLog` in a Release build of observe-tester on the iOS
-// simulator (Hermes, Reanimated 4.7.0). The bundle paths are shortened.
+const FUNCTION_NAME = '__expo_observe_reportReanimatedLog';
+
+// Stacks captured in the integration's `onLog` callback in a Release build of observe-tester on
+// the iOS simulator (Hermes, Reanimated 4.7.0). The bundle paths are shortened, and the callback
+// frame was renamed by hand after the callback was renamed.
 const REACT_NATIVE_RUNTIME_STACK = [
   'Error: [Reanimated] Sample error from the React Native runtime (observe-tester)',
-  '    at reportReanimatedLog (main.jsbundle:107425:33)',
+  '    at __expo_observe_reportReanimatedLog (main.jsbundle:107425:33)',
   '    at handleLog (main.jsbundle:114624:21)',
   '    at error (main.jsbundle:114677:18)',
   '    at run (main.jsbundle:197759:19)',
@@ -12,14 +15,16 @@ const REACT_NATIVE_RUNTIME_STACK = [
 ].join('\n');
 const UI_RUNTIME_STACK = [
   'Error: [Reanimated] Sample error from the UI runtime (observe-tester)',
-  '    at reportReanimatedLog (main.jsbundle:107425:33)',
+  '    at __expo_observe_reportReanimatedLog (main.jsbundle:107425:33)',
 ].join('\n');
 
-describe('removeLoggerFrames', () => {
-  it("removes the integration and logger frames so the stack starts at the logger's caller", () => {
-    expect(removeLoggerFrames(REACT_NATIVE_RUNTIME_STACK)).toBe(
+describe('removeFirstFrame', () => {
+  it('removes only the named frame and keeps the Reanimated logger frames', () => {
+    expect(removeFirstFrame(REACT_NATIVE_RUNTIME_STACK, FUNCTION_NAME)).toBe(
       [
         'Error: [Reanimated] Sample error from the React Native runtime (observe-tester)',
+        '    at handleLog (main.jsbundle:114624:21)',
+        '    at error (main.jsbundle:114677:18)',
         '    at run (main.jsbundle:197759:19)',
         '    at runSample (main.jsbundle:197796:19)',
       ].join('\n')
@@ -27,22 +32,8 @@ describe('removeLoggerFrames', () => {
   });
 
   it('keeps only the message for a log delivered from the UI runtime', () => {
-    expect(removeLoggerFrames(UI_RUNTIME_STACK)).toBe(
+    expect(removeFirstFrame(UI_RUNTIME_STACK, FUNCTION_NAME)).toBe(
       'Error: [Reanimated] Sample error from the UI runtime (observe-tester)'
-    );
-  });
-
-  it.each(['warn', 'warnOnce', 'Object.error'])('removes a `%s` logger frame', (method) => {
-    const stack = [
-      'Error: [Reanimated] Message',
-      '    at reportReanimatedLog (main.jsbundle:1:1)',
-      '    at handleLog (main.jsbundle:2:1)',
-      `    at ${method} (main.jsbundle:3:1)`,
-      '    at caller (main.jsbundle:4:1)',
-    ].join('\n');
-
-    expect(removeLoggerFrames(stack)).toBe(
-      ['Error: [Reanimated] Message', '    at caller (main.jsbundle:4:1)'].join('\n')
     );
   });
 
@@ -51,41 +42,48 @@ describe('removeLoggerFrames', () => {
       'Error: [Reanimated] Line one',
       '',
       'Line two',
-      '    at reportReanimatedLog (main.jsbundle:1:1)',
-      '    at handleLog (main.jsbundle:2:1)',
-      '    at error (main.jsbundle:3:1)',
-      '    at caller (main.jsbundle:4:1)',
+      `    at ${FUNCTION_NAME} (main.jsbundle:1:1)`,
+      '    at caller (main.jsbundle:2:1)',
     ].join('\n');
 
-    expect(removeLoggerFrames(stack)).toBe(
-      ['Error: [Reanimated] Line one', '', 'Line two', '    at caller (main.jsbundle:4:1)'].join(
+    expect(removeFirstFrame(stack, FUNCTION_NAME)).toBe(
+      ['Error: [Reanimated] Line one', '', 'Line two', '    at caller (main.jsbundle:2:1)'].join(
         '\n'
       )
     );
   });
 
-  it('stops removing frames at the first frame that does not match the expected order', () => {
+  it.each(['reportReanimatedLog', `${FUNCTION_NAME}2`])(
+    'keeps a first frame from a different function, `%s`',
+    (name) => {
+      const stack = ['Error: Message', `    at ${name} (main.jsbundle:1:1)`].join('\n');
+
+      expect(removeFirstFrame(stack, FUNCTION_NAME)).toBe(stack);
+    }
+  );
+
+  it('keeps the named frame when it is not the first frame', () => {
     const stack = [
-      'Error: [Reanimated] Message',
-      '    at reportReanimatedLog (main.jsbundle:1:1)',
-      '    at error (main.jsbundle:2:1)',
-      '    at caller (main.jsbundle:3:1)',
+      'Error: Message',
+      '    at caller (main.jsbundle:1:1)',
+      `    at ${FUNCTION_NAME} (main.jsbundle:2:1)`,
     ].join('\n');
 
-    expect(removeLoggerFrames(stack)).toBe(
-      [
-        'Error: [Reanimated] Message',
-        '    at error (main.jsbundle:2:1)',
-        '    at caller (main.jsbundle:3:1)',
-      ].join('\n')
-    );
+    expect(removeFirstFrame(stack, FUNCTION_NAME)).toBe(stack);
+  });
+
+  it('matches a minified name that contains regular expression characters literally', () => {
+    const stack = ['Error: Message', '    at a$b (main.jsbundle:1:1)'].join('\n');
+
+    expect(removeFirstFrame(stack, 'a$b')).toBe('Error: Message');
+    expect(removeFirstFrame(stack, 'a.b')).toBe(stack);
   });
 
   it('returns a stack without frames unchanged', () => {
-    expect(removeLoggerFrames('Error: [Reanimated] Message')).toBe('Error: [Reanimated] Message');
+    expect(removeFirstFrame('Error: Message', FUNCTION_NAME)).toBe('Error: Message');
   });
 
   it('returns undefined for an undefined stack', () => {
-    expect(removeLoggerFrames(undefined)).toBeUndefined();
+    expect(removeFirstFrame(undefined, FUNCTION_NAME)).toBeUndefined();
   });
 });
