@@ -59,7 +59,10 @@ extension BaseModule: EventEmitter {
    */
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    return try holder?.withEventTarget(body) ?? nil
+    guard let holder else {
+      return nil
+    }
+    return try holder.withEventTarget(body)
   }
 }
 
