@@ -67,7 +67,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     assert(
-      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
+      isOwned(by: runtime),
       "`copied(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptValue(runtime, copying: pointer.pointee)
@@ -145,7 +145,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
     assert(isObject(), "Value is not an object")
     assert(
-      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
+      isOwned(by: runtime),
       "`getObject(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
@@ -162,7 +162,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getArray(in runtime: JavaScriptRuntime) -> JavaScriptArray {
     assert(isArray(), "Value is not an array")
     assert(
-      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
+      isOwned(by: runtime),
       "`getArray(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
@@ -236,7 +236,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether `runtime` is the runtime that owns the borrowed value.
   private func isOwned(by runtime: JavaScriptRuntime) -> Bool {
-    return Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque()
+    return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
   }
 
   // MARK: - Throwing conversions ("as functions")
