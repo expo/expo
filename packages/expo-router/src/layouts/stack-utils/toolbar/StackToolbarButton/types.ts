@@ -1,9 +1,9 @@
 import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
+import type { SymbolName } from '../../../../types/symbol';
 import type { BasicTextStyle } from '../../../../utils/font';
 import type { StackHeaderItemSharedProps } from '../shared';
 
@@ -90,7 +90,7 @@ export interface StackToolbarButtonProps {
    *
    * On iOS, it can be a string representing an SFSymbol, an image source or xcasset.
    *
-   * > **Note**: When used in `placement="bottom"` on iOS, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+   * > **Note**: When used in `placement="bottom"` on iOS, only string symbol names are supported, including custom symbols from the app's asset catalog (for example, `nano.home` from `react-native-nano-icons`). Custom symbols are not supported in other placements. Use the `image` prop to provide custom images.
    *
    * @platform android
    * @platform ios
@@ -171,7 +171,7 @@ export interface NativeToolbarButtonProps {
   disabled?: boolean;
   hidden?: boolean;
   hidesSharedBackground?: boolean;
-  icon?: SFSymbol;
+  icon?: SymbolName;
   xcassetName?: string;
   image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';

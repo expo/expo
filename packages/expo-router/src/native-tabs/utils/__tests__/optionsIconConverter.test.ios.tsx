@@ -34,7 +34,6 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
   });
 
   it('returns undefined when sf is falsy (empty string)', () => {
-    // @ts-expect-error testing falsy value
     expect(convertOptionsIconToScreensPropsIcon({ sf: '' })).toBeUndefined();
   });
 
@@ -51,6 +50,24 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(convertOptionsIconToScreensPropsIcon({ sf, src })).toEqual({
       type: 'sfSymbol',
       name: sf,
+    });
+  });
+
+  it('passes a custom symbol name through unchanged', () => {
+    expect(convertOptionsIconToScreensPropsIcon({ sf: 'nano.home' })).toStrictEqual({
+      type: 'sfSymbol',
+      name: 'nano.home',
+    });
+  });
+
+  it.each([
+    ['template', 'monochrome'],
+    ['original', 'original'],
+  ] as const)('maps sf renderingMode "%s" to "%s"', (renderingMode, expected) => {
+    expect(convertOptionsIconToScreensPropsIcon({ sf: 'nano.home', renderingMode })).toStrictEqual({
+      type: 'sfSymbol',
+      name: 'nano.home',
+      renderingMode: expected,
     });
   });
 
@@ -149,6 +166,12 @@ describe(resolveIconRenderingMode, () => {
 
   it('returns undefined for SF Symbols, which are always tinted by the system', () => {
     expect(resolveIconRenderingMode({ sf: 'star.fill' }, '#ff0000')).toBeUndefined();
+  });
+
+  it('returns undefined for SF Symbols with an explicit renderingMode', () => {
+    expect(
+      resolveIconRenderingMode({ sf: 'nano.home', renderingMode: 'original' })
+    ).toBeUndefined();
   });
 
   it('returns undefined when sf takes precedence over src', () => {

@@ -3,9 +3,9 @@
 import { SharedRef } from 'expo';
 import React, { isValidElement, use, useId, type PropsWithChildren, type ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Icon, Label } from '../primitives';
+import type { SymbolName } from '../types/symbol';
 import { Slot } from '../ui/Slot';
 import { getFirstChildOfType } from '../utils/children';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
@@ -46,9 +46,9 @@ export interface LinkMenuActionProps {
   hidden?: boolean;
   // TODO: support ImageSourcePropType icons in addition to SFSymbols
   /**
-   * SF Symbol displayed alongside the menu item.
+   * SF Symbol displayed alongside the menu item. Custom symbols from the app's asset catalog are also supported.
    */
-  icon?: SFSymbol;
+  icon?: SymbolName;
   /**
    * Custom image loaded using `useImage()` hook from `expo-image`.
    * Takes priority over `icon` (SF Symbol) when both are provided.
@@ -159,9 +159,9 @@ export interface LinkMenuProps {
    */
   subtitle?: string;
   /**
-   * Optional SF Symbol displayed alongside the menu item.
+   * Optional SF Symbol displayed alongside the menu item. Custom symbols from the app's asset catalog are also supported.
    */
-  icon?: SFSymbol;
+  icon?: SymbolName;
   /**
    * Custom image loaded using `useImage()` hook from `expo-image`.
    * Takes priority over `icon` (SF Symbol) when both are provided.

@@ -499,6 +499,22 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
+  it('passes a custom symbol name from StackToolbarIcon sf child', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon sf="nano.home" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({ icon: 'nano.home' }),
+      undefined
+    );
+  });
+
   it('passes xcassetName from StackToolbarIcon xcasset child', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">

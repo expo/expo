@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue, TextStyle, ViewProps } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { SymbolName } from '../types/symbol';
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
 
 const RouterToolbarHostView: React.ComponentType<ViewProps> = requireNativeView(
@@ -28,7 +28,7 @@ const RouterToolbarItemView: React.ComponentType<
   ViewProps & {
     identifier: string;
     title?: string;
-    systemImageName?: SFSymbol;
+    systemImageName?: SymbolName;
     xcassetName?: string;
     image?: number;
     imageRenderingMode?: 'template' | 'original';

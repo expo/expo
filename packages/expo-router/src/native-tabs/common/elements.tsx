@@ -1,8 +1,8 @@
 import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
+import type { SymbolName } from '../../types/symbol';
 import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
 
 export interface NativeTabsTriggerLabelProps {
@@ -73,6 +73,9 @@ export interface SFSymbolIcon {
   /**
    * The name of the SF Symbol to use as an icon.
    *
+   * Custom symbols from the app's asset catalog (for example, `nano.home` from
+   * `react-native-nano-icons`) are also supported.
+   *
    * The value can be provided in two ways:
    * - As a string with the SF Symbol name
    * - As an object specifying the default and selected states
@@ -89,7 +92,7 @@ export interface SFSymbolIcon {
    *
    * @platform iOS
    */
-  sf?: SFSymbol | { default?: SFSymbol; selected: SFSymbol };
+  sf?: SymbolName | { default?: SymbolName; selected: SymbolName };
 }
 
 export interface XcassetIcon {
@@ -172,7 +175,24 @@ export interface MaterialIcon {
   md: AndroidSymbol | { default?: AndroidSymbol; selected: AndroidSymbol };
 }
 
-export type NativeTabsTriggerIconProps = { selectedColor?: ColorValue } & (
+export type NativeTabsTriggerIconProps = {
+  selectedColor?: ColorValue;
+  /**
+   * Controls whether the icon is tinted with the tab bar icon color (`'template'`) or keeps
+   * its own colors (`'original'`).
+   *
+   * - `src` (iOS): defaults to `'template'` when a tab bar icon color is set, otherwise `'original'`.
+   *   See [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum).
+   * - `sf` (iOS): `'original'` uses the symbol's multicolor rendering. Defaults to the system behavior.
+   * - `drawable` (Android): defaults to `'template'`.
+   *
+   * Has no effect on `xcasset` and `md` icons, or on `src` icons on Android.
+   *
+   * @platform android
+   * @platform ios
+   */
+  renderingMode?: IconRenderingMode;
+} & (
   | (SFSymbolIcon & DrawableIcon)
   | (SFSymbolIcon & MaterialIcon)
   | (SFSymbolIcon & SrcIcon)

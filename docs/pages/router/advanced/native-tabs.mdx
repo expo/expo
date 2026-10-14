@@ -532,6 +532,36 @@ export default function TabLayout() {
 
 > **info** Asset catalog icons don't support the `renderingMode` prop. Their rendering mode comes from the asset's **Render As** setting in the asset catalog. Set it to **Template Image** for the icon to be tinted with `iconColor` and `selectedIconColor`. Setting `renderingMode` alongside `xcasset` has no effect and logs a warning.
 
+#### Custom symbols
+
+You can use custom symbols generated from SVG files, for example with [`react-native-nano-icons`](https://github.com/software-mansion-labs/react-native-nano-icons). Configure its `symbolSets` option, then pass the generated symbol name to the `sf` prop on iOS and the generated drawable name to the `drawable` prop on Android:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf="nano.home" drawable="nano_home" />
+      </NativeTabs.Trigger>
+      {/* Multicolor symbol that keeps its own colors */}
+      <NativeTabs.Trigger name="flag">
+        <NativeTabs.Trigger.Icon
+          sf="nano.flag"
+          drawable="nano_flag_original"
+          renderingMode="original"
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+On Android, each symbol ships two drawables: `nano_<name>` is a solid shape for tinting, and `nano_<name>_original` keeps the SVG's own colors. Use the `_original` drawable with `renderingMode="original"`.
+
+With `sf` and `drawable`, `renderingMode="template"` draws the icon in the tab bar icon color, and `renderingMode="original"` keeps the icon's own colors. When `renderingMode` is not set, the platform default is used.
+
 #### Vector icons
 
 You can render icons from an icon font, such as the ones provided by [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons), by passing an image source to the `src` prop. Each icon set exposes a `getImageSourceSync` method that rasterizes a glyph to an image source you can pass directly to `src`.

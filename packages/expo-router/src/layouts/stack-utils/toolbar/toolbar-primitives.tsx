@@ -38,9 +38,12 @@ export type StackToolbarIconProps =
       /**
        * Name of an SF Symbol to display.
        *
+       * Custom symbols from the app's asset catalog are supported only in `placement="bottom"`.
+       *
        * @platform ios
        */
-      sf: SFSymbol;
+      // Inlined instead of `SymbolName`: TypeDoc doesn't expand the alias inside object unions.
+      sf: SFSymbol | (string & {});
     }
   | {
       /**

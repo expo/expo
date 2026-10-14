@@ -67,7 +67,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
       return UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
     }
     if let icon = icon {
-      return UIImage(systemName: icon)
+      return symbolImage(named: icon)
     }
     return nil
   }

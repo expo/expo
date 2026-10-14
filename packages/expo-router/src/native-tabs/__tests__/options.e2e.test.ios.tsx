@@ -598,6 +598,34 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
+  it('passes sf renderingMode to both states without a rendering mode warning', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: () => (
+        // Would warn for image icons, which resolve their mode from the colors.
+        <NativeTabs iconColor={{ selected: 'red' }}>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'nano.home', selected: 'nano.home.fill' }}
+              renderingMode="original"
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls[0][0].ios).toMatchObject({
+      icon: { type: 'sfSymbol', name: 'nano.home', renderingMode: 'original' },
+      selectedIcon: { type: 'sfSymbol', name: 'nano.home.fill', renderingMode: 'original' },
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
   it('warns when using Icon xcasset together with renderingMode', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -616,6 +644,30 @@ describe('Icons', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('`renderingMode` has no effect on `xcasset` icons')
     );
+
+    warnSpy.mockRestore();
+  });
+
+  it('does not warn about xcasset renderingMode when it is meant for an Android drawable', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset="home-outline"
+              drawable="nano_home_original"
+              renderingMode="original"
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(warnSpy).not.toHaveBeenCalled();
 
     warnSpy.mockRestore();
   });
@@ -1337,6 +1389,10 @@ describe(appendIconOptions, () => {
     [
       { sf: { selected: 'o.circle.fill' } },
       { icon: undefined, selectedIcon: { sf: 'o.circle.fill' } },
+    ],
+    [
+      { sf: 'nano.home', renderingMode: 'template' },
+      { icon: { sf: 'nano.home', renderingMode: 'template' }, selectedIcon: undefined },
     ],
     [
       { src: { uri: 'xxx', scale: 2 } },

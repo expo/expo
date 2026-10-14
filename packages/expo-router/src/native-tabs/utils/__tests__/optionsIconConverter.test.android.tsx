@@ -45,6 +45,24 @@ describe(appendIconOptions, () => {
     expect(srcOptions).toEqual({ icon: { src: source } });
     expect(drawableOptions).toEqual({ icon: { drawable: 'home' } });
   });
+
+  it('copies renderingMode to drawable icons', () => {
+    const options = {};
+    appendIconOptions(options, {
+      drawable: { default: 'nano_home', selected: 'nano_home_filled' },
+      renderingMode: 'original',
+    });
+    expect(options).toStrictEqual({
+      icon: { drawable: 'nano_home', renderingMode: 'original' },
+      selectedIcon: { drawable: 'nano_home_filled', renderingMode: 'original' },
+    });
+  });
+
+  it('does not add renderingMode to drawable icons when unset', () => {
+    const options = {};
+    appendIconOptions(options, { drawable: 'nano_home' });
+    expect(options).toStrictEqual({ icon: { drawable: 'nano_home' }, selectedIcon: undefined });
+  });
 });
 
 describe(convertOptionsIconToScreensPropsIcon, () => {
@@ -53,6 +71,22 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
       type: 'drawableResource',
       name: 'ic_launcher',
     });
+  });
+
+  it('does not set tinting when drawable renderingMode is unset', () => {
+    expect(convertOptionsIconToScreensPropsIcon({ drawable: 'nano_home' })).toStrictEqual({
+      type: 'drawableResource',
+      name: 'nano_home',
+    });
+  });
+
+  it.each([
+    ['template', 'tinted'],
+    ['original', 'original'],
+  ] as const)('maps drawable renderingMode "%s" to tinting "%s"', (renderingMode, tinting) => {
+    expect(
+      convertOptionsIconToScreensPropsIcon({ drawable: 'nano_home', renderingMode })
+    ).toStrictEqual({ type: 'drawableResource', name: 'nano_home', tinting });
   });
 
   it('returns imageSource when src is provided as an object', () => {

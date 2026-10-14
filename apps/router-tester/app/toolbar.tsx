@@ -30,6 +30,7 @@ export default function ToolbarScreen() {
   const [showMenu, setShowMenu] = useState(!!params.menu);
   const [showXcassetButton, setShowXcassetButton] = useState(false);
   const [showXcassetMenu, setShowXcassetMenu] = useState(false);
+  const [showNanoSymbolButton, setShowNanoSymbolButton] = useState(false);
   const [showFixedSpacer, setShowFixedSpacer] = useState(false);
   const [fixedSpacerShareBackground, setFixedSpacerShareBackground] = useState(false);
   const [fixedSpacerWidth, setFixedSpacerWidth] = useState(20);
@@ -192,6 +193,13 @@ export default function ToolbarScreen() {
             testID="toggle-xcasset-menu"
             value={showXcassetMenu}
             onValueChange={setShowXcassetMenu}
+          />
+
+          <ToggleRow
+            label="Show Nano Symbol Button"
+            testID="toggle-nano-symbol-button"
+            value={showNanoSymbolButton}
+            onValueChange={setShowNanoSymbolButton}
           />
 
           <ToggleRow
@@ -366,6 +374,13 @@ export default function ToolbarScreen() {
           onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
           <Stack.Toolbar.Icon xcasset="expo-logo" />
         </Stack.Toolbar.Button>
+
+        {/* Custom symbol from react-native-nano-icons */}
+        <Stack.Toolbar.Button
+          hidden={!showNanoSymbolButton}
+          icon="nano.home"
+          onPress={() => Alert.alert('Nano Symbol Button', 'nano.home pressed')}
+        />
 
         {/* Xcasset menu */}
         {showXcassetMenu && (

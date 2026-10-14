@@ -161,6 +161,19 @@ describe('StackToolbarButton component', () => {
     );
   });
 
+  it('passes a custom symbol name to RouterToolbarItem', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton icon="nano.home" />
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({ systemImageName: 'nano.home' }),
+      undefined
+    );
+  });
+
   it('passes variant done as barButtonItemStyle prominent', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">

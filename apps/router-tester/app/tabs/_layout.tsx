@@ -69,6 +69,14 @@ export default function Layout() {
             />
             <NativeTabs.Trigger.Label>Image icon</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="nano-symbol">
+            <NativeTabs.Trigger.Icon
+              sf="nano.flag"
+              drawable="nano_flag_original"
+              renderingMode="original"
+            />
+            <NativeTabs.Trigger.Label>Nano</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
           <NativeTabs.BottomAccessory>
             <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           </NativeTabs.BottomAccessory>

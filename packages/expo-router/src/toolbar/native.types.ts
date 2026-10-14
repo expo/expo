@@ -1,7 +1,7 @@
 import { SharedRef } from 'expo';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { SymbolName } from '../types/symbol';
 import type { BasicTextStyle } from '../utils/font';
 
 export interface RouterToolbarHostProps {
@@ -14,7 +14,7 @@ export interface RouterToolbarItemProps {
   children?: React.ReactNode;
   identifier: string;
   title?: string;
-  systemImageName?: SFSymbol;
+  systemImageName?: SymbolName;
   xcassetName?: string;
   image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';

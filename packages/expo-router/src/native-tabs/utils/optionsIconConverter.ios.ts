@@ -1,5 +1,5 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { PlatformIconIOS } from 'react-native-screens';
+import type { TabsScreenIconIOS } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { IconRenderingMode, NativeTabOptions } from '../types';
@@ -8,28 +8,21 @@ import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('sf' in props && props.sf) {
+    const renderingMode = props.renderingMode ? { renderingMode: props.renderingMode } : {};
     if (typeof props.sf === 'string') {
-      options.icon = props.sf
-        ? {
-            sf: props.sf,
-          }
-        : undefined;
+      options.icon = { sf: props.sf, ...renderingMode };
       options.selectedIcon = undefined;
-    } else if (props.sf) {
-      options.icon = props.sf.default
-        ? {
-            sf: props.sf.default,
-          }
-        : undefined;
+    } else {
+      options.icon = props.sf.default ? { sf: props.sf.default, ...renderingMode } : undefined;
       options.selectedIcon = props.sf.selected
-        ? {
-            sf: props.sf.selected,
-          }
+        ? { sf: props.sf.selected, ...renderingMode }
         : undefined;
     }
   } else if ('xcasset' in props && props.xcasset) {
+    // With `drawable`, `renderingMode` is meant for the Android icon.
     if (
       process.env.NODE_ENV !== 'production' &&
+      !('drawable' in props) &&
       'renderingMode' in props &&
       props.renderingMode !== undefined
     ) {
@@ -68,11 +61,15 @@ export function resolveIconRenderingMode(
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined,
   renderingMode?: IconRenderingMode
-): PlatformIconIOS | undefined {
+): TabsScreenIconIOS | undefined {
   if (icon && 'sf' in icon && icon.sf) {
+    // SF Symbols use only an explicit `renderingMode`. The color-based override applies to images.
     return {
       type: 'sfSymbol',
       name: icon.sf,
+      ...(icon.renderingMode && {
+        renderingMode: icon.renderingMode === 'template' ? 'monochrome' : 'original',
+      }),
     };
   }
   // Asset catalog icons have to be resolved natively with `[UIImage imageNamed:]`.

@@ -145,8 +145,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
         let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
         item.image = UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
       } else if let systemImageName {
-        // Fallback to SF Symbol
-        item.image = UIImage(systemName: systemImageName)
+        item.image = symbolImage(named: systemImageName)
       } else {
         item.image = nil
       }

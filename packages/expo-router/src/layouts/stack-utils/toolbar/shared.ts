@@ -3,6 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
+import type { SymbolName } from '../../../types/symbol';
 import { getFirstChildOfType } from '../../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
@@ -16,7 +17,7 @@ export interface StackHeaderItemSharedProps {
   accessibilityHint?: string;
   disabled?: boolean;
   tintColor?: ColorValue;
-  icon?: SFSymbol | ImageSourcePropType;
+  icon?: SymbolName | ImageSourcePropType;
   /**
    * Controls how image-based icons are rendered.
    *
@@ -146,7 +147,8 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
     }
     return {
       type: 'sfSymbol',
-      name: iconComponentProps.sf,
+      // Custom symbol names are passed through as is. React Navigation types `name` as a system symbol.
+      name: iconComponentProps.sf as SFSymbol,
     };
   })();
   const item: RNSharedHeaderItem = {

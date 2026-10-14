@@ -1,4 +1,4 @@
-import type { PlatformIconAndroid } from 'react-native-screens';
+import type { TabsScreenIconAndroid } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
@@ -13,13 +13,16 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
       );
     }
+    const renderingMode = props.renderingMode ? { renderingMode: props.renderingMode } : {};
     if (typeof props.drawable === 'string') {
-      options.icon = { drawable: props.drawable };
+      options.icon = { drawable: props.drawable, ...renderingMode };
       options.selectedIcon = undefined;
     } else {
-      options.icon = props.drawable.default ? { drawable: props.drawable.default } : undefined;
+      options.icon = props.drawable.default
+        ? { drawable: props.drawable.default, ...renderingMode }
+        : undefined;
       options.selectedIcon = props.drawable.selected
-        ? { drawable: props.drawable.selected }
+        ? { drawable: props.drawable.selected, ...renderingMode }
         : undefined;
     }
   } else if ('md' in props && props.md) {
@@ -49,11 +52,14 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined
-): PlatformIconAndroid | undefined {
+): TabsScreenIconAndroid | undefined {
   if (icon && 'drawable' in icon && icon.drawable) {
     return {
       type: 'drawableResource',
       name: icon.drawable,
+      ...(icon.renderingMode && {
+        tinting: icon.renderingMode === 'template' ? 'tinted' : 'original',
+      }),
     };
   }
   if (icon && 'src' in icon && icon.src) {

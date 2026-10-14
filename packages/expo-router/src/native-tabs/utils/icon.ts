@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { SymbolName } from '../../types/symbol';
 import { isChildOfType } from '../../utils/children';
 import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
 import type {
@@ -28,9 +28,10 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
 
 export type AwaitedIcon =
   | {
-      sf?: SFSymbol;
+      sf?: SymbolName;
       xcasset?: string;
       drawable?: string;
+      renderingMode?: IconRenderingMode;
     }
   | {
       src?: ImageSourcePropType;

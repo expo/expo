@@ -1,10 +1,10 @@
 import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { LinkMenuActionProps } from '../../../../link/elements';
 import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
+import type { SymbolName } from '../../../../types/symbol';
 import type { StackHeaderItemSharedProps } from '../shared';
 
 export interface StackToolbarMenuProps {
@@ -81,7 +81,7 @@ export interface StackToolbarMenuProps {
    *
    * Can be an SF Symbol name or an image source.
    *
-   * > **Note**: When used in `placement="bottom"` on iOS, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+   * > **Note**: When used in `placement="bottom"` on iOS, only string symbol names are supported, including custom symbols from the app's asset catalog (for example, `nano.home` from `react-native-nano-icons`). Custom symbols are not supported in other placements. Use the `image` prop to provide custom images.
    *
    * > **Note (Android)**: Only `ImageSourcePropType` icons are rendered at the menu root.
    * > SF Symbols and `xcasset` names are silently dropped — provide a `require()` or
@@ -200,7 +200,7 @@ export interface NativeToolbarMenuProps {
   disabled?: boolean;
   hidden?: boolean;
   hidesSharedBackground?: boolean;
-  icon?: SFSymbol;
+  icon?: SymbolName;
   xcassetName?: string;
   /** @platform android */
   cornerRadius?: number;
@@ -242,10 +242,12 @@ export interface StackToolbarMenuActionProps {
    *
    * Can be an SF Symbol name or an image source.
    *
+   * > **Note**: Custom symbols from the app's asset catalog are supported only in `placement="bottom"` on iOS.
+   *
    * > **Note (Android)**: Only `ImageSourcePropType` icons are rendered. SF Symbols are
    * > silently dropped. Provide a `require()` or `{ uri }` source.
    */
-  icon?: SFSymbol | ImageSourcePropType;
+  icon?: SymbolName | ImageSourcePropType;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu action.

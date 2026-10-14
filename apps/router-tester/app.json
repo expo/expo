@@ -20,7 +20,13 @@
       }
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "react-native-nano-icons",
+        {
+          "symbolSets": [{ "inputDir": "./assets/nano-symbols" }]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

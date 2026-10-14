@@ -100,6 +100,26 @@ describe('Icons', () => {
   //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
   //   });
 
+  it('passes drawable renderingMode as tinting', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf="nano.home" drawable="nano_home" renderingMode="original" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+      type: 'drawableResource',
+      name: 'nano_home',
+      tinting: 'original',
+    });
+  });
+
   it('uses drawable for both icon and selectedIcon on Android when sf with string is also provided', async () => {
     await renderRouter({
       _layout: () => (
