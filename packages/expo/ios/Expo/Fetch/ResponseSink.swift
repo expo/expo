@@ -15,6 +15,10 @@ internal final class ResponseSink {
     bodyQueue.append(data)
   }
 
+  func discard() {
+    bodyQueue.removeAll()
+  }
+
   func finalize() -> Data {
     let size = bodyQueue.reduce(0) { $0 + $1.count }
     var result = Data(capacity: size)
