@@ -3,11 +3,9 @@
  */
 public protocol AnyDefinition: ~Copyable {
   /**
-   The kind of definition element this is, resolved with one dynamic dispatch.
-   Containers switch on it instead of casting every element to every element protocol.
-   A protocol cast that misses the runtime cache scans every conformance record in the process,
-   and with hundreds of distinct generic `Function` and `Prop` types that dominated module registration at launch.
-   Only types from other modules return `.unknown`; the containers classify those with a cast fallback.
+   The kind of definition element this is, so containers can switch on it instead of casting to each element protocol.
+   A protocol cast that misses the runtime cache walks every conformance record.
+   A type that does not override this returns `.unknown`.
    */
   var _definitionClassification: DefinitionClassification { get }
 }

@@ -198,7 +198,8 @@ private func constructorDefinition(_ item: AnyDefinition) -> AnySyncFunctionDefi
     function = definition
   case .staticFunction(let definition):
     function = definition
-  default:
+  case .unknown, .legacyConstants, .constant, .property, .klass, .moduleName, .eventListener, .events, .eventObserver, .view,
+    .viewProp, .viewName, .viewLifecycle:
     return nil
   }
   // Only the element named "constructor" pays for the protocol cast.
