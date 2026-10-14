@@ -43,6 +43,7 @@ import {
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { getValidInitialRouteName } from './routeNode';
 import type { UnknownOutputParams } from './types';
+import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
 import { useActivityThreshold } from './views/NavigationActivityContext';
@@ -457,16 +458,16 @@ function AnalyticsListeners({
   navigation,
   screenId,
 }: {
-  navigation: EventConsumer<EventMapBase> & {
-    isFocused(): boolean;
-  };
+  navigation: EventConsumer<EventMapBase>;
   screenId: string;
 }) {
   const hasEmittedPagePreloadedRef = React.useRef(false);
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
-  const isFocused = navigation.isFocused();
+  // Read focus from render context. `navigation.isFocused()` can return the navigator's
+  // previous state during render, so a first push would look like a preload.
+  const isFocused = useIsFocused();
 
   const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {
