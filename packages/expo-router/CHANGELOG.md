@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade react-native-screens to 4.30.0 ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+
 ## 57.0.27 — 2026-10-14
 
 _This version does not introduce any user-facing changes._
