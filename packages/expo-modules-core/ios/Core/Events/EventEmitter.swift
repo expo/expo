@@ -45,10 +45,10 @@ public extension EventEmitter {
     let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
     // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
-    // Sendable` box is safe here because the scheduled closure only calls `withEventTarget`, which touches
+    // Sendable` reference is safe here because the scheduled closure only calls `withEventTarget`, which touches
     // `@JavaScriptActor`-isolated or `Sendable` state (the JS object, the registry, `appContext`) and the
     // emitter's identity - never the module's own mutable state.
-    let emitter = NonisolatedUnsafeWeakVar(self)
+    let emitter = WeakEventEmitterReference(value: self)
 
     runtime.schedule {
       guard let emitter = emitter.value else {
@@ -71,15 +71,51 @@ public extension EventEmitter {
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
    */
+  func emit<P: JavaScriptEncodable>(event: String, payload: sending P) {
+    guard let appContext, let runtime = try? appContext.runtime else {
+      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+      return
+    }
+    // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
+    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // `@JavaScriptActor`-isolated or `Sendable` state through it.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    runtime.schedule {
+      guard let emitter = emitter.value else {
+        return
+      }
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try P.encode(payload, in: runtime)
+      } catch {
+        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
+        return
+      }
+      let dispatched = emitter.withEventTarget { target in
+        dispatchEvent(event: event, payload: jsPayload, to: target, in: runtime)
+        return true
+      }
+      if dispatched == nil {
+        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+      }
+    }
+  }
+
+  /**
+   Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
+   Payloads that are `JavaScriptEncodable` use the overload above, which converts them statically.
+   */
+  @_disfavoredOverload
   func emit<P: AnyArgument>(event: String, payload: sending P) {
     guard let appContext, let runtime = try? appContext.runtime else {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
     // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
-    // Sendable` box because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
-    let emitter = NonisolatedUnsafeWeakVar(self)
+    let emitter = WeakEventEmitterReference(value: self)
 
     runtime.schedule { [weak appContext] in
       guard let emitter = emitter.value, let appContext else {
@@ -103,6 +139,12 @@ public extension EventEmitter {
   }
 }
 
+/// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
+/// in the closure context without an allocation of its own.
+private struct WeakEventEmitterReference: @unchecked Sendable {
+  weak var value: (any EventEmitter)?
+}
+
 /**
  Sends a pre-converted event payload to the given JavaScript object via the JSI emitter helper.
  Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
@@ -112,13 +154,15 @@ internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, t
   runtime.withUnsafePointee { runtimePtr in
     target.withUnsafePointee { objectPtr in
       payload.withUnsafePointee { payloadPtr in
-        JSUtils.emitEvent(
-          event,
-          runtimePointer: runtimePtr,
-          objectPointer: objectPtr,
-          argumentsPointer: payloadPtr,
-          argumentCount: 1
-        )
+        event.withCString { eventName in
+          emitJSEvent(
+            utf8Name: eventName,
+            runtimePointer: runtimePtr,
+            objectPointer: objectPtr,
+            argumentsPointer: payloadPtr,
+            argumentCount: 1
+          )
+        }
       }
     }
   }
