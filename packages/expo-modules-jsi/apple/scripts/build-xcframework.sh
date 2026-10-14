@@ -115,6 +115,12 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    # Xcode releases can share a Swift compiler but ship different SDKs (Xcode
+    # 27.0 and 27.1 print the same swiftc --version). A binary module records the
+    # SDK it was built against and Swift won't load it with another SDK, so every
+    # importer would compile ExpoModulesJSI again from its stripped
+    # .swiftinterface. Key the cache on the Xcode build, which pins its SDKs.
+    echo "XCODE_VERSION=$(xcodebuild -version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -203,6 +209,9 @@ build_slice() {
   # publish pipeline targeting a specific Xcode) and the in-Xcode build phase when
   # the running Xcode differs from the global one.
   #
+  # TOOLCHAINS is forwarded the same way so the nested build uses the same Swift toolchain
+  # as compute_hash and the app build, not the default toolchain.
+  #
   # SYMROOT/OBJROOT are pinned explicitly because Xcode emits
   # "Supported platforms for the buildables in the current scheme is empty" for
   # an auto-generated SwiftPM scheme and then ignores -derivedDataPath when
@@ -228,6 +237,9 @@ build_slice() {
   local env_args=(PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT")
   if [[ -n "${DEVELOPER_DIR:-}" ]]; then
     env_args+=(DEVELOPER_DIR="$DEVELOPER_DIR")
+  fi
+  if [[ -n "${TOOLCHAINS:-}" ]]; then
+    env_args+=(TOOLCHAINS="$TOOLCHAINS")
   fi
 
   (cd "$PACKAGE_DIR" && env -i "${env_args[@]}" \
