@@ -8,7 +8,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import { isRenderingFunctionComponent } from './isRenderingFunctionComponent';
+import { isRenderingComponent } from './isRenderingComponent';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
@@ -150,7 +150,7 @@ export function useNavigationCache<
         if (
           process.env.NODE_ENV !== 'production' &&
           !didWarnIsFocusedInRender &&
-          isRenderingFunctionComponent()
+          isRenderingComponent()
         ) {
           didWarnIsFocusedInRender = true;
           console.warn(
