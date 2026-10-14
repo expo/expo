@@ -100,19 +100,9 @@ public class TypedArray: AnyTypedArray {
 
   /// `JavaScriptDecodable` witness. It's a `class func` in the class body, not in the conformance
   /// extension, so the concrete subclasses can override it (extension methods can't be overridden).
-  /// It borrows the value and forwards to the unowned `decode`, which the subclasses override.
-  @JavaScriptActor
-  @inlinable
-  public class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
-    let runtime = copy runtime
-    return try value.withUnownedValue(in: runtime) { unownedValue in
-      return try decode(unownedValue, in: runtime)
-    }
-  }
-
-  /// `JavaScriptDecodable` witness for a borrowed value, so a typed array argument is decoded without
-  /// copying it into an owning `JavaScriptValue`. The base accepts any kind and resolves the concrete
-  /// subclass via `create(from:)`.
+  /// It takes a borrowed value, so a typed array argument is decoded without copying it into an owning
+  /// `JavaScriptValue`; the owning `decode` is the `JavaScriptDecodable` default, which forwards here.
+  /// The base accepts any kind and resolves the concrete subclass via `create(from:)`.
   @JavaScriptActor
   @inlinable
   public class func decode(

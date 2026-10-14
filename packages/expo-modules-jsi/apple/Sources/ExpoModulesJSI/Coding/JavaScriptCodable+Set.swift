@@ -12,18 +12,6 @@ internal import jsi
 extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Set<Element>
-  {
-    // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
-    return try value.withUnownedValue(in: runtime) { unownedValue in
-      return try decode(unownedValue, in: runtime)
-    }
-  }
-
-  @JavaScriptActor
-  @inlinable
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Set<Element>
   {

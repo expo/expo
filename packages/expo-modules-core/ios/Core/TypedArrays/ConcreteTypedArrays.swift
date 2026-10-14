@@ -4,7 +4,7 @@ import ExpoModulesJSI
 
 // Each concrete typed array overrides the unowned `decode` to return its own `Self` and reject a
 // mismatched kind, delegating to the shared `decode(_:expectingKind:in:)` on the base. The owning
-// `decode` on the base forwards to it. See `TypedArray.swift` for why the
+// `decode` is the `JavaScriptDecodable` default, which forwards to it. See `TypedArray.swift` for why the
 // witness is an overridable `class func` rather than living in the conformance extension.
 
 /// Native equivalent of `Int8Array` in JavaScript, an array of two's-complement 8-bit signed integers.

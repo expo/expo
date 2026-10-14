@@ -166,4 +166,28 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `owning decode of data`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("new Uint8Array(16)")
+      try benchmark("Data.decode(owning): 16 bytes", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try Data.decode(value, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `owning decode of a bigint`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("9007199254740993n")
+      try benchmark("Int64.decode(owning): BigInt", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try Int64.decode(value, in: runtime)
+        }
+      }
+    }
+  }
 }
