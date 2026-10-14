@@ -31,12 +31,25 @@ Delete this comment when you fill the section.
 # Screenshots
 
 <!--
-If this change affects what a person sees, add a before screenshot and an after screenshot.
+If this change affects what a person sees, keep the two headings below.
 Take the before screenshot first. Then make the change. Then take the after screenshot.
-Name the device or simulator under each image.
-If nothing visible changes, write "No UI change."
+Put each image under its heading. Name the device or simulator on the next line.
+Use a full-width image. Do not put the two images in a table.
+If nothing visible changes, delete the headings and images and write "No UI change."
 Delete this comment when you fill the section.
 -->
+
+### Before
+
+![Before](https://github.com/user-attachments/assets/00000000-0000-4000-8000-000000000001)
+
+Device or simulator.
+
+### After
+
+![After](https://github.com/user-attachments/assets/00000000-0000-4000-8000-000000000002)
+
+Device or simulator.
 
 # Checklist
 

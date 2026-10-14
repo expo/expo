@@ -274,7 +274,7 @@ Say what you ran, where you ran it, and the result.
 
 ### Screenshots
 
-If the change affects what a person sees, add a before screenshot and an after screenshot. Take the before screenshot first. Then make the change. Then take the after screenshot. Name the device or simulator under each image. If nothing visible changes, write `No UI change.`
+If the change affects what a person sees, add a `Before` heading and an `After` heading. Take the before screenshot first. Then make the change. Then take the after screenshot. Put each image under its heading, at full width. Do not put the two images in a table. Name the device or simulator on the line after each image. If nothing visible changes, write `No UI change.`
 
 ### Comments in the diff
 
@@ -314,7 +314,17 @@ Before this change, the second call did nothing. After this change, the promise 
 
 # Screenshots
 
-No UI change.
+### Before
+
+![The document picker does not open](https://github.com/user-attachments/assets/11111111-1111-4111-8111-111111111111)
+
+Android emulator, API 34. The second call does not open the picker.
+
+### After
+
+![The document picker opens](https://github.com/user-attachments/assets/22222222-2222-4222-8222-222222222222)
+
+Android emulator, API 34. The promise rejects, and the next call opens the picker.
 
 # Checklist
 
