@@ -5,6 +5,7 @@ import path from 'node:path';
 
 import {
   buildAugmentedData,
+  copyPnpmWorkspaceFiles,
   getGeneratedWebStubSentinel,
   getTemplateDistTag,
   getTemplateVersion,
@@ -193,5 +194,51 @@ describe('Android module metadata', () => {
     const gradle = await renderTemplateFile('android/build.gradle', { ...data, type });
     expect(gradle).toContain(`version = '${version}'`);
     expect(gradle).toContain(`versionName "${version}"`);
+  });
+});
+
+describe(copyPnpmWorkspaceFiles, () => {
+  let root: string;
+  let templatePath: string;
+  let targetPath: string;
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'create-expo-module-template-'));
+    templatePath = path.join(root, 'template');
+    targetPath = path.join(root, 'my-module');
+    fs.mkdirSync(templatePath);
+    fs.mkdirSync(path.join(targetPath, 'example'), { recursive: true });
+  });
+
+  afterEach(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  it('skips the files that the template does not have', async () => {
+    await copyPnpmWorkspaceFiles(templatePath, targetPath);
+    expect(fs.readdirSync(targetPath)).toEqual(['example']);
+  });
+
+  it('copies missing files and keeps existing ones, so that a rerun keeps the pnpm settings', async () => {
+    fs.mkdirSync(path.join(templatePath, 'snippets/pnpm'), { recursive: true });
+    fs.writeFileSync(
+      path.join(templatePath, 'snippets/pnpm/pnpm-workspace.yaml'),
+      'allowBuilds: {}\n'
+    );
+    fs.writeFileSync(
+      path.join(templatePath, 'snippets/pnpm/example-pnpm-workspace.yaml'),
+      '# example\n'
+    );
+    fs.writeFileSync(
+      path.join(targetPath, 'pnpm-workspace.yaml'),
+      'allowBuilds:\n  esbuild: true\n'
+    );
+    await copyPnpmWorkspaceFiles(templatePath, targetPath);
+    expect(fs.readFileSync(path.join(targetPath, 'pnpm-workspace.yaml'), 'utf8')).toBe(
+      'allowBuilds:\n  esbuild: true\n'
+    );
+    expect(fs.readFileSync(path.join(targetPath, 'example/pnpm-workspace.yaml'), 'utf8')).toBe(
+      '# example\n'
+    );
   });
 });
