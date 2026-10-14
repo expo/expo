@@ -74,20 +74,19 @@ async function updateModuleTemplateAsync(
   canary: boolean,
   root: string
 ): Promise<void> {
-  const versions = new Map(
-    packages
-      .filter((pkg) => ['expo-modules-core', '@expo/internal-scripts', 'expo'].includes(pkg.name))
-      .map((pkg) => [pkg.name, pkg.after])
-  );
-  if (!versions.size) return;
-
   const filePath = path.join(root, 'packages/expo-module-template/$package.json');
-  let contents = await fs.readFile(filePath, 'utf8');
-  for (const [name, version] of versions) {
-    const expression = new RegExp(`("${escapeRegExp(name)}"\\s*:\\s*")([^"]+)(")`);
-    contents = contents.replace(expression, `$1${canary ? version : `^${version}`}$3`);
+  const original = await fs.readFile(filePath, 'utf8');
+  let contents = original;
+  for (const pkg of packages) {
+    // Only match version ranges, so that peer dependencies such as `"expo": "*"` stay intact.
+    // Stable releases keep the template's `^` or `~` prefix, canaries pin the exact version.
+    const expression = new RegExp(`("${escapeRegExp(pkg.name)}"\\s*:\\s*")([~^]?)\\d[^"]*(")`, 'g');
+    contents = contents.replace(
+      expression,
+      (_, start, prefix, end) => `${start}${canary ? '' : prefix}${pkg.after}${end}`
+    );
   }
-  await fs.writeFile(filePath, contents);
+  if (contents !== original) await fs.writeFile(filePath, contents);
 }
 
 async function updateAndroidVersionsAsync(packages: VersionDerivedPackage[]): Promise<void> {

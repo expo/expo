@@ -52,10 +52,11 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
     -> JavaScriptValue
   {
     let jsArray = runtime.createArray(length: value.count)
+    // The array is created with one slot per element, so every index is in bounds.
     for (index, element) in value.enumerated() {
-      try jsArray.set(value: Element.encode(element, in: runtime), at: index)
+      jsArray.setValueUnchecked(try Element.encode(element, in: runtime), at: index)
     }
-    return jsArray.asValue()
+    return jsArray.takeValue()
   }
 }
 
@@ -160,6 +161,6 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
     for (key, element) in value {
       object.setProperty(key, value: try Value.encode(element, in: runtime))
     }
-    return object.asValue()
+    return object.takeValue()
   }
 }

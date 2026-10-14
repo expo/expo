@@ -4,7 +4,7 @@ description: A library to build iOS home screen widgets and Live Activities usin
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
 packageName: 'expo-widgets'
 exampleName: 'with-widgets'
-platforms: ['ios']
+platforms: ['ios', 'android']
 hasVideoLink: true
 ---
 
@@ -80,7 +80,7 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
     {
       name: 'enablePushNotifications',
       description:
-        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
+        'Whether to enable custom notifications on Android and push notifications for Live Activities on iOS. On Android, this adds the `POST_NOTIFICATIONS` permission to **AndroidManifest.xml**. On iOS, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
       default: 'false',
     },
     {

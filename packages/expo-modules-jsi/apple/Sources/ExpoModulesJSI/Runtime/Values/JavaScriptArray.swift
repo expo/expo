@@ -194,9 +194,20 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// Returns the value at the given index without bounds-checking. Used by the iteration
   /// helpers (`map`, `forEach`, `reduce`, `filter`, `enumerated`) which iterate
   /// `0..<length` and never produce an out-of-range index. Skipping the redundant bounds
-  /// check avoids a weak-runtime load on every element on the hot path.
+  /// check avoids a call into the engine for the array's length on every element.
   internal func getValueUnchecked(at index: Int, in jsiRuntime: facebook.jsi.IRuntime) -> JavaScriptValue {
     return JavaScriptValue(runtimeHandle, pointee.getValueAtIndex(jsiRuntime, index))
+  }
+
+  /// Sets the value at the given index without bounds-checking or growing the array. The caller
+  /// guarantees that `index` is below the length, for example when filling an array created with
+  /// a known length.
+  @usableFromInline
+  internal func setValueUnchecked(_ value: borrowing JavaScriptValue, at index: Int) {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    expo.setValueAtIndex(jsiRuntime, pointee, index, value.pointee)
   }
 
   /// Sets the element at the specified index.

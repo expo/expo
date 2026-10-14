@@ -389,6 +389,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   KeyboardTypeOptions: 'https://reactnative.dev/docs/textinput#keyboardtype',
   LayoutChangeEvent: 'https://reactnative.dev/docs/layoutevent',
   LiveActivityComponent: '/versions/latest/sdk/widgets/#liveactivitycomponentprops-environment',
+  CustomNotificationComponent:
+    '/versions/latest/sdk/widgets/#customnotificationcomponentprops-environment',
   LiveActivityEnvironment: '/versions/latest/sdk/widgets/#liveactivityenvironment',
   LoaderFunction: '/versions/latest/sdk/server/#loaderfunctionrequest-params',
   Location: '/versions/latest/sdk/media-library/#location',
