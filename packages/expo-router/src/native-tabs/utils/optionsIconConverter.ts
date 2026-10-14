@@ -13,14 +13,14 @@ import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('src' in props && props.src) {
-    applyIconSrcOptions(options, props);
+    applyIconSrcOptions(options, props, {});
   }
   applySelectedColor(options, props.selectedColor);
 }
 
 export function convertOptionsIconToScreensPropsIcon(
   _icon: AwaitedIcon | undefined,
-  _renderingMode?: IconRenderingMode
+  _iconColor?: ColorValue
 ): PlatformIconIOS | PlatformIconAndroid | undefined {
   return undefined;
 }

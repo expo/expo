@@ -426,6 +426,55 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
+  it('passes a different tinting for each drawable state', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              drawable={{ default: 'ic_home_outline', selected: 'ic_home_filled' }}
+              tinting={{ default: 'tinted', selected: 'original' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls[0][0].android).toMatchObject({
+      icon: { type: 'drawableResource', name: 'ic_home_outline', tinting: 'tinted' },
+      selectedIcon: { type: 'drawableResource', name: 'ic_home_filled', tinting: 'original' },
+    });
+  });
+
+  it('keeps tinting when md icons are loaded asynchronously', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon md="home" tinting={{ selected: 'original' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    await waitFor(() => {
+      expect(TabsScreen.mock.calls.at(-1)![0].android?.selectedIcon).toBeDefined();
+    });
+    const lastCall = TabsScreen.mock.calls.at(-1)![0];
+    expect(lastCall.android?.icon).toEqual({
+      type: 'imageSource',
+      imageSource: { height: 0, uri: 'home', width: 0, scale: 1 },
+    });
+    expect(lastCall.android?.selectedIcon).toEqual({
+      type: 'imageSource',
+      imageSource: { height: 0, uri: 'home', width: 0, scale: 1 },
+      tinting: 'original',
+    });
+  });
+
   it('when md={{selected}} only is provided, icon is undefined and selectedIcon is loaded asynchronously', async () => {
     await renderRouter({
       _layout: () => (

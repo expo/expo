@@ -3,7 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
-import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
+import type { IconRenderingMode, IconTinting, NativeTabsLabelStyle } from '../types';
 
 export interface NativeTabsTriggerLabelProps {
   /**
@@ -58,15 +58,22 @@ export interface SrcIcon {
    * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
    * - `'original'`: Preserves original icon colors
    *
+   * The value can be a single mode, or an object with a distinct mode for the selected state.
+   *
    * **Default behavior:**
-   * - If tab bar icon color is configured, defaults to `'template'`
-   * - If no icon color is set, defaults to `'original'`
+   * - If an icon color applies to the tab state, defaults to `'template'`
+   * - If no icon color applies to the tab state, defaults to `'original'`
+   *
+   * @example
+   * ```tsx
+   * <Icon src={require('./path/to/icon.png')} renderingMode={{ default: 'template', selected: 'original' }} />
+   * ```
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
    *
    * @platform ios
    */
-  renderingMode?: IconRenderingMode;
+  renderingMode?: IconRenderingMode | { default?: IconRenderingMode; selected: IconRenderingMode };
 }
 
 export interface SFSymbolIcon {
@@ -90,6 +97,23 @@ export interface SFSymbolIcon {
    * @platform iOS
    */
   sf?: SFSymbol | { default?: SFSymbol; selected: SFSymbol };
+  /**
+   * Controls how the SF Symbol is rendered on iOS.
+   *
+   * - `'template'`: The symbol is rendered in a single color, the tab's icon color (monochrome)
+   * - `'original'`: The symbol keeps its own colors (multicolor)
+   *
+   * The value can be a single mode, or an object with a distinct mode for the selected state.
+   * When not set, the system decides how the symbol is rendered.
+   *
+   * @example
+   * ```tsx
+   * <Icon sf="cloud.sun.fill" renderingMode={{ default: 'template', selected: 'original' }} />
+   * ```
+   *
+   * @platform ios
+   */
+  renderingMode?: IconRenderingMode | { default?: IconRenderingMode; selected: IconRenderingMode };
 }
 
 export interface XcassetIcon {
@@ -172,7 +196,27 @@ export interface MaterialIcon {
   md: AndroidSymbol | { default?: AndroidSymbol; selected: AndroidSymbol };
 }
 
-export type NativeTabsTriggerIconProps = { selectedColor?: ColorValue } & (
+export type NativeTabsTriggerIconProps = {
+  selectedColor?: ColorValue;
+  /**
+   * Controls how the `drawable`, `md`, or `src` icon is tinted on Android.
+   *
+   * - `'tinted'`: The icon is drawn in the tab's icon color
+   * - `'original'`: The icon keeps its own colors. Use it for multicolor `drawable` or `src`
+   *   images. `md` icons are white glyphs, so they render white with `'original'`.
+   *
+   * The value can be a single mode, or an object with a distinct mode for the selected state.
+   *
+   * @example
+   * ```tsx
+   * <Icon drawable="ic_logo" tinting={{ default: 'tinted', selected: 'original' }} />
+   * ```
+   *
+   * @default 'tinted'
+   * @platform android
+   */
+  tinting?: IconTinting | { default?: IconTinting; selected: IconTinting };
+} & (
   | (SFSymbolIcon & DrawableIcon)
   | (SFSymbolIcon & MaterialIcon)
   | (SFSymbolIcon & SrcIcon)

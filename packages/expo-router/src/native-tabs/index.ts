@@ -11,6 +11,7 @@ export type {
 } from './common/elements';
 export type {
   IconRenderingMode,
+  IconTinting,
   NativeTabsProps,
   NativeTabTriggerProps,
   NativeTabsLabelStyle,

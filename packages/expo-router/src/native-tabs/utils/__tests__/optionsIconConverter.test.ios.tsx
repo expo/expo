@@ -22,6 +22,7 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
       type: 'imageSource',
       imageSource: src,
+      renderingMode: 'original',
     });
   });
 
@@ -30,6 +31,7 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
       type: 'imageSource',
       imageSource: src,
+      renderingMode: 'original',
     });
   });
 
@@ -67,8 +69,8 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
       });
     });
 
-    it('returns xcasset icon even when a renderingMode override is passed, so symbol sets still resolve via imageNamed:', () => {
-      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, 'template')).toEqual({
+    it('returns xcasset icon even when an icon color is passed, so symbol sets still resolve via imageNamed:', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, '#ff0000')).toEqual({
         type: 'xcasset',
         name: 'custom-icon',
       });
@@ -91,48 +93,77 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
       const icon = convertOptionsIconToScreensPropsIcon({ xcasset: 'home-outline' }, undefined);
       const selectedIcon = convertOptionsIconToScreensPropsIcon(
         { xcasset: 'home-filled' },
-        'template'
+        '#ff0000'
       );
       expect(icon?.type).toBe(selectedIcon?.type);
     });
   });
 
   describe('renderingMode', () => {
-    it('returns templateSource when renderingMode is "template"', () => {
+    it('returns a template imageSource when renderingMode is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' })).toEqual({
-        type: 'templateSource',
-        templateSource: src,
+        type: 'imageSource',
+        imageSource: src,
+        renderingMode: 'template',
       });
     });
 
-    it('returns imageSource when renderingMode is "original"', () => {
+    it('returns an original imageSource when renderingMode is "original"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' })).toEqual({
         type: 'imageSource',
         imageSource: src,
+        renderingMode: 'original',
       });
+    });
+
+    it('renders SF Symbols in monochrome when renderingMode is "template"', () => {
+      expect(
+        convertOptionsIconToScreensPropsIcon({ sf: 'star.fill', renderingMode: 'template' })
+      ).toEqual({
+        type: 'sfSymbol',
+        name: 'star.fill',
+        renderingMode: 'monochrome',
+      });
+    });
+
+    it('keeps SF Symbol colors when renderingMode is "original"', () => {
+      expect(
+        convertOptionsIconToScreensPropsIcon({ sf: 'star.fill', renderingMode: 'original' })
+      ).toEqual({
+        type: 'sfSymbol',
+        name: 'star.fill',
+        renderingMode: 'original',
+      });
+    });
+
+    it('leaves the SF Symbol rendering mode to the system when renderingMode is not set', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ sf: 'star.fill' })).not.toHaveProperty(
+        'renderingMode'
+      );
     });
   });
 
-  describe('rendering mode override', () => {
-    it('renders as a template when the override is "template"', () => {
+  describe('icon color', () => {
+    it('renders an image as a template when an icon color is set', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      expect(convertOptionsIconToScreensPropsIcon({ src }, 'template')).toEqual({
-        type: 'templateSource',
-        templateSource: src,
+      expect(convertOptionsIconToScreensPropsIcon({ src }, '#ff0000')).toEqual({
+        type: 'imageSource',
+        imageSource: src,
+        renderingMode: 'template',
       });
     });
 
-    it('renders as an image when the override is "original"', () => {
+    it('keeps an explicit renderingMode when an icon color is set', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(
-        convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' }, 'original')
-      ).toEqual({ type: 'imageSource', imageSource: src });
+        convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' }, '#ff0000')
+      ).toEqual({ type: 'imageSource', imageSource: src, renderingMode: 'original' });
     });
 
     it('is ignored for SF Symbols', () => {
-      expect(convertOptionsIconToScreensPropsIcon({ sf: 'star.fill' }, 'template')).toEqual({
+      expect(convertOptionsIconToScreensPropsIcon({ sf: 'star.fill' }, '#ff0000')).toEqual({
         type: 'sfSymbol',
         name: 'star.fill',
       });

@@ -45,6 +45,34 @@ describe(appendIconOptions, () => {
     expect(srcOptions).toEqual({ icon: { src: source } });
     expect(drawableOptions).toEqual({ icon: { drawable: 'home' } });
   });
+
+  it('applies a single tinting to the default icon', () => {
+    const options = {};
+    appendIconOptions(options, { drawable: 'home', tinting: 'original' });
+    expect(options).toEqual({ icon: { drawable: 'home', tinting: 'original' } });
+  });
+
+  it('applies per-state tinting to the default and selected icons', () => {
+    const options = {};
+    appendIconOptions(options, {
+      drawable: { default: 'home', selected: 'home_filled' },
+      tinting: { default: 'tinted', selected: 'original' },
+    });
+    expect(options).toEqual({
+      icon: { drawable: 'home', tinting: 'tinted' },
+      selectedIcon: { drawable: 'home_filled', tinting: 'original' },
+    });
+  });
+
+  it('reuses the default icon when only the selected tinting differs', () => {
+    const source = { uri: 'https://example.com/icon.png' };
+    const options = {};
+    appendIconOptions(options, { src: source, tinting: { selected: 'original' } });
+    expect(options).toEqual({
+      icon: { src: source },
+      selectedIcon: { src: source, tinting: 'original' },
+    });
+  });
 });
 
 describe(convertOptionsIconToScreensPropsIcon, () => {
@@ -80,6 +108,21 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(
       convertOptionsIconToScreensPropsIcon({ src: null as unknown as ImageSourcePropType })
     ).toBeUndefined();
+  });
+
+  it('passes tinting for drawable icons', () => {
+    expect(
+      convertOptionsIconToScreensPropsIcon({ drawable: 'ic_launcher', tinting: 'original' })
+    ).toEqual({ type: 'drawableResource', name: 'ic_launcher', tinting: 'original' });
+  });
+
+  it('passes tinting for image icons', () => {
+    const src = { uri: 'https://example.com/icon.png' };
+    expect(convertOptionsIconToScreensPropsIcon({ src, tinting: 'tinted' })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
+      tinting: 'tinted',
+    });
   });
 
   it('returns imageSource regardless of renderingMode', () => {

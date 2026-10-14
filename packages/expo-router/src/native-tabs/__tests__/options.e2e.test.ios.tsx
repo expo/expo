@@ -441,17 +441,29 @@ describe('Icons', () => {
     },
     {
       src: { uri: 'some-uri' },
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
     {
       src: { uri: 'some-uri' },
       drawable: 'ic_some_drawable',
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
     {
       src: { uri: 'some-uri' },
       md: 'home',
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
   ] as (DrawableIcon &
     MaterialIcon &
@@ -478,8 +490,6 @@ describe('Icons', () => {
     }
   );
 
-  // React Native Screens throws when `icon` and `selectedIcon` have different types, so both
-  // states have to use the same rendering mode — the one resolved for the normal state.
   describe('rendering mode', () => {
     let warnSpy: jest.SpyInstance;
 
@@ -491,35 +501,32 @@ describe('Icons', () => {
       warnSpy.mockRestore();
     });
 
+    // A state with an icon color defaults to `template`, a state without one to `original`.
     it.each([
       {
         name: 'only selectedIconColor is set',
         iconColor: { selected: 'red' } as const,
-        expectedType: 'imageSource',
-        expectsWarning: true,
+        expectedModes: ['original', 'template'],
       },
       {
-        // `iconColor` applies to every state, so both icons agree without a warning.
+        // `iconColor` applies to every state.
         name: 'only iconColor is set',
         iconColor: { default: 'red' } as const,
-        expectedType: 'templateSource',
-        expectsWarning: false,
+        expectedModes: ['template', 'template'],
       },
       {
         name: 'both icon colors are set',
         iconColor: { default: 'blue', selected: 'red' } as const,
-        expectedType: 'templateSource',
-        expectsWarning: false,
+        expectedModes: ['template', 'template'],
       },
       {
         name: 'no icon color is set',
         iconColor: undefined,
-        expectedType: 'imageSource',
-        expectsWarning: false,
+        expectedModes: ['original', 'original'],
       },
     ])(
-      'icon and selectedIcon are $expectedType when $name',
-      async ({ iconColor, expectedType, expectsWarning }) => {
+      'icon and selectedIcon render as $expectedModes when $name',
+      async ({ iconColor, expectedModes }) => {
         await renderRouter({
           _layout: () => (
             <NativeTabs iconColor={iconColor}>
@@ -534,22 +541,95 @@ describe('Icons', () => {
         expect(screen.getByTestId('index')).toBeVisible();
         expect(TabsScreen).toHaveBeenCalledTimes(1);
         const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
-        expect(icon?.type).toBe(expectedType);
-        expect(selectedIcon?.type).toBe(expectedType);
-
-        if (expectsWarning) {
-          expect(warnSpy).toHaveBeenCalledWith(
-            expect.stringContaining(
-              'NativeTabs does not currently support rendering icons in different modes'
-            )
-          );
-          // The warning names the tab so it can be found in a layout with many triggers.
-          expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"index" tab'));
-        } else {
-          expect(warnSpy).not.toHaveBeenCalled();
-        }
+        expect([icon, selectedIcon]).toEqual(
+          expectedModes.map((renderingMode) => ({
+            type: 'imageSource',
+            imageSource: { uri: 'some-uri' },
+            renderingMode,
+          }))
+        );
+        expect(warnSpy).not.toHaveBeenCalled();
       }
     );
+
+    it('passes a different renderingMode for each image state', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                src={{ default: { uri: 'default-uri' }, selected: { uri: 'selected-uri' } }}
+                renderingMode={{ default: 'template', selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen.mock.calls[0][0].ios).toMatchObject({
+        icon: {
+          type: 'imageSource',
+          imageSource: { uri: 'default-uri' },
+          renderingMode: 'template',
+        },
+        selectedIcon: {
+          type: 'imageSource',
+          imageSource: { uri: 'selected-uri' },
+          renderingMode: 'original',
+        },
+      });
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('renders the same image differently when only the selected renderingMode is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor="red">
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                src={{ uri: 'some-uri' }}
+                renderingMode={{ selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen.mock.calls[0][0].ios).toMatchObject({
+        icon: { type: 'imageSource', imageSource: { uri: 'some-uri' }, renderingMode: 'template' },
+        selectedIcon: {
+          type: 'imageSource',
+          imageSource: { uri: 'some-uri' },
+          renderingMode: 'original',
+        },
+      });
+    });
+
+    it('passes a different renderingMode for each SF Symbol state', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                sf={{ default: 'cloud.sun', selected: 'cloud.sun.fill' }}
+                renderingMode={{ default: 'template', selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen.mock.calls[0][0].ios).toMatchObject({
+        icon: { type: 'sfSymbol', name: 'cloud.sun', renderingMode: 'monochrome' },
+        selectedIcon: { type: 'sfSymbol', name: 'cloud.sun.fill', renderingMode: 'original' },
+      });
+    });
   });
 
   it('when using Icon xcasset, it is passed as an asset catalog icon', async () => {
@@ -1353,6 +1433,29 @@ describe(appendIconOptions, () => {
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
+    [
+      { sf: '0.circle', renderingMode: 'original' },
+      { icon: { sf: '0.circle', renderingMode: 'original' }, selectedIcon: undefined },
+    ],
+    [
+      { sf: '0.circle', renderingMode: { selected: 'original' } },
+      { icon: { sf: '0.circle' }, selectedIcon: { sf: '0.circle', renderingMode: 'original' } },
+    ],
+    [
+      {
+        src: { default: 'xxx', selected: 'yyy' },
+        renderingMode: { default: 'template', selected: 'original' },
+      },
+      {
+        icon: { src: 'xxx', renderingMode: 'template' },
+        selectedIcon: { src: 'yyy', renderingMode: 'original' },
+      },
+    ],
+    [
+      // `tinting` is Android-only.
+      { sf: '0.circle', tinting: { selected: 'original' } },
+      { icon: { sf: '0.circle' }, selectedIcon: undefined },
+    ],
   ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
@@ -1361,6 +1464,19 @@ describe(appendIconOptions, () => {
       expect(options).toEqual(expected);
     }
   );
+  it('loads a vector icon once when only the selected renderingMode is set', () => {
+    const options: NativeTabOptions = {};
+    appendIconOptions(options, {
+      src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
+      renderingMode: { selected: 'original' },
+    });
+    expect(options.selectedIcon).toEqual({ src: expect.any(Promise), renderingMode: 'original' });
+    // Both states share the same loaded image instead of loading it twice.
+    const { icon, selectedIcon } = options;
+    expect(selectedIcon && 'src' in selectedIcon && selectedIcon.src).toBe(
+      icon && 'src' in icon && icon.src
+    );
+  });
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
     const props: NativeTabsTriggerIconProps = {

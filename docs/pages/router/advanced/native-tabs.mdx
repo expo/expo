@@ -397,8 +397,10 @@ export default function TabLayout() {
 
 When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
 
-- **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
+- **`template`**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
 - **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
+
+When `renderingMode` is not set, an image icon renders as `template` in a state that has an icon color (from `iconColor`, `tintColor`, or `selectedColor`), and as `original` in a state without one.
 
 <Tabs>
 
@@ -485,7 +487,58 @@ export default function TabLayout() {
 
 </Tabs>
 
-> **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
+The `renderingMode` prop also applies to SF Symbols. `template` renders the symbol in a single color, the tab's icon color. `original` keeps the symbol's own colors (multicolor rendering). When `renderingMode` is not set, the system decides how the symbol is rendered.
+
+To use a different mode for the selected state, pass an object with `default` and `selected` keys. The default and selected icons can use different modes:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="weather">
+        {/* Single-color symbol by default, multicolor symbol when selected */}
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'cloud.sun', selected: 'cloud.sun.fill' }}
+          renderingMode={{ default: 'template', selected: 'original' }}
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        {/* The same image, tinted by default and in its own colors when selected */}
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/avatar.png')}
+          renderingMode={{ default: 'template', selected: 'original' }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+The `renderingMode` prop only affects iOS. On Android, use the `tinting` prop for `drawable`, `md`, and `src` icons:
+
+- **`tinted` (default)**: The icon is drawn in the tab's icon color.
+- **`original`**: The icon keeps its own colors. Use it for multicolor `drawable` or `src` images. `md` icons are white glyphs, so they render white with `original`.
+
+Like `renderingMode`, `tinting` accepts an object with `default` and `selected` keys:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon
+          drawable={{ default: 'ic_logo_outline', selected: 'ic_logo_color' }}
+          tinting={{ default: 'tinted', selected: 'original' }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
 
 #### Asset catalog icons (iOS)
 
@@ -1817,38 +1870,6 @@ export default function TabLayout() {
 </Collapsible>
 
 ## Known limitations
-
-<Collapsible summary="The default and selected icons share one rendering mode on iOS">
-
-On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
-
-The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state. A color implies `'template'` rendering, while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
-
-To render both icons the same way, set a color for both states, or set `renderingMode` on the `Icon`:
-
-```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/native-tabs';
-
-export default function TabLayout() {
-  return (
-    // `iconColor` applies to both states, so both icons render as templates
-    <NativeTabs iconColor={{ default: 'gray', selected: 'black' }}>
-      <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Icon
-          src={{
-            default: require('../assets/setting_icon.png'),
-            selected: require('../assets/selected_setting_icon.png'),
-          }}
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-```
-
-This limitation doesn't apply to SF Symbols, which the system always tints.
-
-</Collapsible>
 
 <Collapsible summary="A limit of 5 tabs on Android">
 

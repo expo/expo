@@ -230,11 +230,19 @@ export interface NativeTabOptions extends DefaultRouterOptions {
 }
 
 /**
- * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
- * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
+ * How an icon is rendered on iOS: `template` draws the icon in the tab bar's icon color,
+ * `original` keeps the icon's own colors. For SF Symbols, `template` is the monochrome
+ * rendering and `original` is the multicolor rendering.
  * @platform ios
  */
 export type IconRenderingMode = 'template' | 'original';
+
+/**
+ * How an icon is tinted on Android: `tinted` draws the icon in the tab bar's icon color,
+ * `original` keeps the icon's own colors.
+ * @platform android
+ */
+export type IconTinting = 'tinted' | 'original';
 
 export type SymbolOrImageSource =
   | {
@@ -253,6 +261,17 @@ export type SymbolOrImageSource =
        * @platform android
        */
       drawable?: string;
+      /**
+       * Controls how the SF Symbol is rendered on iOS. When not set, the system decides.
+       * @platform ios
+       */
+      renderingMode?: IconRenderingMode;
+      /**
+       * Controls how the drawable is tinted on Android.
+       * @platform android
+       * @default 'tinted'
+       */
+      tinting?: IconTinting;
     }
   | {
       /**
@@ -260,11 +279,17 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
-       * Controls how the icon is rendered on iOS.
+       * Controls how the icon is rendered on iOS. When not set, it is `'template'` if an icon
+       * color applies to the tab state, and `'original'` otherwise.
        * @platform ios
-       * @default 'template'
        */
       renderingMode?: IconRenderingMode;
+      /**
+       * Controls how the icon is tinted on Android.
+       * @platform android
+       * @default 'tinted'
+       */
+      tinting?: IconTinting;
     };
 
 export type NativeTabsLabelStyle = Pick<
