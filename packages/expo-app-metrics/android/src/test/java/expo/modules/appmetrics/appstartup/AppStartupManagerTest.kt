@@ -4,6 +4,7 @@ import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.storage.Metric
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -14,6 +15,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class AppStartupManagerTest {
+  @Before
+  fun resumeRecording() {
+    // The manager is a singleton shared across tests, so undo a stop from an earlier test.
+    AppStartupManager::class.java.getDeclaredField("isRecordingStopped").apply {
+      isAccessible = true
+    }.setBoolean(AppStartupManager, false)
+  }
+
   @Test
   fun `takeUnsavedMetrics returns each metric once`() {
     // Drop anything left by other tests.
@@ -32,6 +41,23 @@ class AppStartupManagerTest {
       listOf(AppStartupMetric.TimeToInteractive.metricName),
       AppStartupManager.takeUnsavedMetrics().map { it.name }
     )
+  }
+
+  @Test
+  fun `metrics added after stopRecording are never returned`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+
+    AppStartupManager.addMetric(AppStartupMetric.ColdLaunchTime, valueInMs = 100)
+    AppStartupManager.stopRecording()
+    AppStartupManager.addMetric(AppStartupMetric.TimeToInteractive, valueInMs = 200)
+    assertEquals(
+      listOf(AppStartupMetric.ColdLaunchTime.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+
+    AppStartupManager.addMetric(AppStartupMetric.TimeToFirstRender, valueInMs = 300)
+    assertEquals(emptyList<Metric>(), AppStartupManager.takeUnsavedMetrics())
   }
 
   @Test

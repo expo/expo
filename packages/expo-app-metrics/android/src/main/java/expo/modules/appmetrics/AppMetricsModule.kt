@@ -247,6 +247,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnActivityEntersBackground {
+        // A pause skews startup timings, so stop recording and save what was recorded before.
+        AppStartupManager.stopRecording()
         scope.launch {
           saveStartupMetrics()
         }

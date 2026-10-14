@@ -49,6 +49,9 @@ object AppStartupManager {
   // How many of `_metrics` were already handed out for saving. Guarded by `this`.
   private var savedCount = 0
 
+  // Set once recording is stopped; `addMetric` then drops every metric. Guarded by `this`.
+  private var isRecordingStopped = false
+
   // These fields are read and written across the React marker thread, the main thread,
   // and the JS thread. @Volatile guarantees writes are visible across threads so the
   // one-shot guards (hasRecorded*) don't spuriously fire twice.
@@ -124,12 +127,21 @@ object AppStartupManager {
     return unsaved
   }
 
+  @Synchronized
+  internal fun stopRecording() {
+    isRecordingStopped = true
+  }
+
+  @Synchronized
   internal fun addMetric(
     metric: AppStartupMetric,
     valueInMs: Long,
     routeName: String? = null,
     params: Map<String, Any>? = null
   ) {
+    if (isRecordingStopped) {
+      return
+    }
     _metrics.add(
       Metric(
         sessionId = "",
