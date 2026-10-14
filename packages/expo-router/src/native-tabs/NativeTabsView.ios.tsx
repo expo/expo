@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
 import { getFirstChildOfType } from '../utils/children';
+import { ScrollViewHierarchyDetector } from '../utils/scroll-view-hierarchy-detector';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
@@ -150,7 +151,15 @@ function Screen(props: InternalTabScreenProps) {
   );
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
-  const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
+  const wrappedContent = useMemo(
+    () => (
+      <SafeAreaProvider>
+        {content}
+        <ScrollViewHierarchyDetector containerType="nativeTabs" />
+      </SafeAreaProvider>
+    ),
+    [content]
+  );
 
   return (
     <TabsScreen

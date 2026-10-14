@@ -27,6 +27,19 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => React.ReactNode>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
 
+it('renders the scroll view hierarchy detector inside each tab screen', async () => {
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('expo-router-scroll-view-detector')).toBeVisible();
+});
+
 it('uses a navigator error boundary for an individual tab screen', async () => {
   function ThrowingRoute(): never {
     throw new Error('Expected route error');
