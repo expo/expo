@@ -1,9 +1,16 @@
 import { isValidElement, type ReactElement } from 'react';
 import type { ImageSourcePropType } from 'react-native';
+import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 
 import type { SrcIcon } from '../common/elements';
 import type { IconRenderingMode, NativeTabOptions } from '../types';
 import { convertComponentSrcToImageSource } from './icon';
+
+// Tagged with the platform so each tab view can narrow to its own icon type. `tsc` only sees the
+// fallback converter, which can return either variant.
+export type ScreensPropsIcon =
+  | { platform: 'ios'; icon: PlatformIconIOS }
+  | { platform: 'android'; icon: PlatformIconAndroid };
 
 export function applyIconSrcOptions(options: NativeTabOptions, props: SrcIcon) {
   const icon = convertIconSrcToIconOption(props);

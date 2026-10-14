@@ -258,8 +258,9 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].ios).toBeDefined();
+    expect(TabsScreen.mock.calls[0][0].ios?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].ios?.selectedIcon).toBeUndefined();
   });
 
   it('uses last Icon sf value when multiple are provided', async () => {
