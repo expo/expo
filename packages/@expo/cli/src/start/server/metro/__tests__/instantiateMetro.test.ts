@@ -123,10 +123,9 @@ describe(moveHmrClientGroupToRevision, () => {
   });
 
   it('does not add back a group whose last client disconnected during the update', () => {
-    const { client, group } = createClientGroup('rev0');
+    const { group } = createClientGroup('rev0');
     const clientGroups = new Map([['rev0', group]]);
-    // Metro's `onClientDisconnect` removes a group, and stops it listening, with its last client.
-    group.clients.delete(client);
+    // Metro's `onClientDisconnect` unregisters the group and keeps its last client in it.
     clientGroups.delete('rev0');
 
     moveHmrClientGroupToRevision(clientGroups, group, 'rev1');
