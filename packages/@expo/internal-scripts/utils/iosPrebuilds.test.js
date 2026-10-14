@@ -234,6 +234,53 @@ test('a customBuild product without headersXCFramework contributes nothing to st
   ]);
 });
 
+test('a customBuild product neither requires nor stages its SPM dependencies', () => {
+  const root = fixture([
+    {
+      name: 'ExpoOne',
+      headersXCFramework: true,
+      customBuild,
+      spmPackages: [{ productName: 'DepOnly' }],
+    },
+  ]);
+  framework(root, 'ExpoOneHeaders', 'headers');
+  assert.equal(validateRawIosPrebuilds(root), true);
+  assert.equal(stageIosPrebuilds(root), true);
+  assert.equal(validatePublishedIosPrebuilds(root), true);
+  assert.equal(fs.existsSync(path.join(root, 'prebuilds/spm-deps/DepOnly')), false);
+});
+
+test('an SPM dependency shared with a non-customBuild product is still required and staged', () => {
+  const spmPackages = [{ productName: 'SharedDependency' }];
+  const root = fixture([
+    { name: 'ExpoOne', spmPackages },
+    { name: 'ExpoCustom', headersXCFramework: true, customBuild, spmPackages },
+  ]);
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  framework(root, 'ExpoCustomHeaders', 'headers');
+  assert.throws(
+    () => validateRawIosPrebuilds(root),
+    /SharedDependency debug SPM dependency XCFramework is missing/
+  );
+  framework(root, 'SharedDependency', 'debug');
+  framework(root, 'SharedDependency', 'release');
+  assert.equal(stageIosPrebuilds(root), true);
+  for (const flavor of ['debug', 'release']) {
+    assert.equal(
+      fs.existsSync(
+        path.join(
+          root,
+          'prebuilds/spm-deps/SharedDependency',
+          flavor,
+          'SharedDependency.xcframework/Info.plist'
+        )
+      ),
+      true
+    );
+  }
+});
+
 test('non-publishing packages are lifecycle no-ops', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ios-prebuilds-'));
   fs.writeFileSync(path.join(root, 'spm.config.json'), JSON.stringify({ products: [] }));

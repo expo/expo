@@ -15,9 +15,11 @@ export function readPublishedIosProducts(packageRoot = process.cwd()) {
 function getSpmDependencyNames(products) {
   return [
     ...new Set(
-      products.flatMap((product) =>
-        (product.spmPackages ?? []).map((dependency) => dependency.productName)
-      )
+      products
+        .filter((product) => !product.customBuild)
+        .flatMap((product) =>
+          (product.spmPackages ?? []).map((dependency) => dependency.productName)
+        )
     ),
   ];
 }
