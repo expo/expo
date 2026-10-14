@@ -413,6 +413,27 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return JavaScriptFunction(self, hostFunction)
   }
 
+  /// Variant of ``UnownedThisSyncFunctionClosure`` for host functions that return `undefined` to JS.
+  /// It skips creating and writing the result value.
+  public typealias VoidFunctionClosure =
+    @JavaScriptActor (
+      _ this: borrowing JavaScriptUnownedValue,
+      _ arguments: consuming JavaScriptValuesBuffer
+    ) throws -> Void
+
+  /// Creates a synchronous host function from a ``VoidFunctionClosure``.
+  ///
+  /// A closure with several statements, or one that only throws, must declare `-> Void`.
+  /// Otherwise the call is ambiguous with the ``UnownedThisSyncFunctionClosure`` overload.
+  @_disfavoredOverload
+  @JavaScriptActor
+  public func createFunction(_ name: String, _ function: sending @escaping VoidFunctionClosure) -> JavaScriptFunction {
+    let closure = createFunctionClosure(runtime: self, name: name, function)
+    let hostFunction = expo.createHostFunction(pointee, name, closure)
+
+    return JavaScriptFunction(self, hostFunction)
+  }
+
   /// The synchronous decode phase of an async host function, passed to ``createAsyncFunction(_:_:)``.
   /// It takes the same parameters as ``UnownedThisSyncFunctionClosure`` and returns the function's
   /// asynchronous body (``AsyncFunctionBody``). Decode `this` and the arguments here and capture
@@ -945,6 +966,42 @@ private func createFunctionClosure(
 
   func deallocate(context: UnsafeMutableRawPointer) {
     Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context).release()
+  }
+
+  return expo.HostFunctionClosure(context, call, deallocate)
+}
+
+private func createFunctionClosure(
+  runtime: JavaScriptRuntime,
+  name: String? = nil,
+  _ closure: @escaping JavaScriptRuntime.VoidFunctionClosure
+) -> expo.HostFunctionClosure {
+  let context = Unmanaged.passRetained(VoidHostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
+
+  func call(
+    context: UnsafeMutableRawPointer,
+    thisPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsCount: Int,
+    resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
+  ) -> Bool {
+    // Like the overload above, but the result slot keeps the `undefined` it was created with.
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+
+    return withGuaranteedContext(context) { (context: VoidHostFunctionContext, runtime) in
+      return JavaScriptActor.assumeIsolated {
+        return forwardingSwiftErrorsToJS(runtime: runtime) {
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
+          try context.call(thisValue, consume arguments)
+        }
+      }
+    }
+  }
+
+  func deallocate(context: UnsafeMutableRawPointer) {
+    Unmanaged<VoidHostFunctionContext>.fromOpaque(context).release()
   }
 
   return expo.HostFunctionClosure(context, call, deallocate)

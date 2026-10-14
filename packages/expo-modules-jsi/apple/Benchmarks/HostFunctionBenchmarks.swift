@@ -51,6 +51,22 @@ extension JSIBenchmarks {
     }
   }
 
+  /// Same as `noop unowned-this host function`, but through the `Void` closure form that
+  /// leaves the result slot untouched.
+  @Test
+  func `noop void unowned-this host function`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("noop") {
+        (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval("(function(n) { for (var i = 0; i < n; i++) benchFn(); })").getFunction()
+      try benchmark("host function: noop void unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
   @Test
   func `host function concatenating two strings`() async throws {
     try await benchmarkCase { runtime in
