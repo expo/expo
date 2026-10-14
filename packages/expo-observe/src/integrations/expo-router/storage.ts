@@ -16,7 +16,7 @@ export interface RouterIntegrationStorage {
    */
   pendingActions: PendingAction[];
   /**
-   * Enqueue times by `actionId`. Older ids are dropped when an action dispatches
+   * Enqueue times by `actionId`. The oldest id is dropped when the map is full
    */
   enqueueTimes: Map<number, number>;
   renderedScreensIds: Set<string>;

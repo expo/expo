@@ -24,7 +24,7 @@ export interface RouterPageMarkDetail {
 }
 
 /**
- * The navigation action that an `expo-router:action-dispatched` mark describes.
+ * The navigation action that an `expo-router:action-enqueued` or `expo-router:action-dispatched` mark describes.
  */
 export interface RouterActionMarkDetail {
   /**
