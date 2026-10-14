@@ -18,12 +18,12 @@ import type { BackgroundSessionOptions, BackgroundSessionStatus } from '../types
  * A missing `POST_NOTIFICATIONS` permission is not an error. The service still runs, but its
  * notification does not appear in the notification drawer.
  *
+ * See [Start a background session](#start-a-background-session).
+ *
  * @throws if the manifest is missing `FOREGROUND_SERVICE` or `FOREGROUND_SERVICE_LOCATION`,
  * foreground location permission is not granted, the app is in the background with no service
  * running, a previous session is still stopping, or promotion does not complete within four
  * seconds.
- *
- * See [Start a background session](#start-a-background-session).
  *
  * @platform android
  */
