@@ -14,6 +14,7 @@
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
+#include "SwiftUIVirtualViewsRegistry.h"
 #include "ExpoViewProps.h"
 #include "ExpoViewState.h"
 
@@ -72,6 +73,16 @@ public:
 
     auto contentOrigin = ContentOriginRegistry::find(this->getTag());
     if (!contentOrigin) {
+      // A SwiftUI view without its own UIKit view is placed by SwiftUI, not Yoga, so the Yoga
+      // frame origin of its shadow node is not where the view was drawn — e.g. a horizontal
+      // `LazyHStack` of pages stacks their Yoga frames in a column. `measure()` adds every
+      // ancestor's Yoga origin, so cancel this node's own origin. Not for a layout root: the
+      // measurement walk stops there and zeroes its frame origin itself.
+      if (SwiftUIVirtualViewsRegistry::contains(this->getTag()) &&
+          !this->getTraits().check(facebook::react::ShadowNodeTraits::Trait::RootNodeKind)) {
+        auto ownOrigin = this->getLayoutMetrics().frame.origin;
+        return {.x = -ownOrigin.x, .y = -ownOrigin.y};
+      }
       return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
     }
 

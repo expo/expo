@@ -11,6 +11,7 @@
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
+#import <ExpoModulesCore/SwiftUIVirtualViewsRegistry.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
 #import <ExpoModulesCore/EXJSIConversions.h>
@@ -90,6 +91,7 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   react::SharedViewProps _props;
   react::SharedViewEventEmitter _eventEmitter;
   expo::ExpoViewShadowNode<>::ConcreteState::Shared _state;
+  NSInteger _registeredVirtualViewTag;
 }
 
 - (instancetype)init

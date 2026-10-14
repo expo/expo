@@ -77,6 +77,15 @@ namespace react = facebook::react;
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  // This view has no UIKit view of its own, so SwiftUI, not Yoga, places it on the screen.
+  // Record the tag so `ExpoViewShadowNode` cancels this node's Yoga origin in `measure()`.
+  if (self.tag != 0 && _registeredVirtualViewTag != self.tag) {
+    if (_registeredVirtualViewTag != 0) {
+      expo::SwiftUIVirtualViewsRegistry::remove((react::Tag)_registeredVirtualViewTag);
+    }
+    expo::SwiftUIVirtualViewsRegistry::add((react::Tag)self.tag);
+    _registeredVirtualViewTag = self.tag;
+  }
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = static_cast<const expo::ExpoViewProps &>(*_props);
     NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
@@ -98,6 +107,11 @@ namespace react = facebook::react;
 - (void)prepareForRecycle
 {
   // Default implementation does nothing.
+  // Not `self.tag`: by the time this runs, React Native may have already zeroed it.
+  if (_registeredVirtualViewTag != 0) {
+    expo::SwiftUIVirtualViewsRegistry::remove((react::Tag)_registeredVirtualViewTag);
+    _registeredVirtualViewTag = 0;
+  }
   [self clearContentOrigin];
   _eventEmitter.reset();
 }
