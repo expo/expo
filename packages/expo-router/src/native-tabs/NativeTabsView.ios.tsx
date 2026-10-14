@@ -6,6 +6,7 @@ import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
+  TabsScreen,
   useOnTabSelectedHandler,
   useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
@@ -152,7 +153,7 @@ function Screen(props: InternalTabScreenProps) {
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
   return (
-    <Tabs.Screen
+    <TabsScreen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       ios={{
@@ -170,7 +171,7 @@ function Screen(props: InternalTabScreenProps) {
       screenKey={shared.screenKey}
       nativeID={props.routeKey ? `expo-router-tab:${props.routeKey}` : undefined}>
       {wrappedContent}
-    </Tabs.Screen>
+    </TabsScreen>
   );
 }
 
