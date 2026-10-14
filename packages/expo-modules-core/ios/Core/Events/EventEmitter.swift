@@ -28,7 +28,7 @@ public extension EventEmitter {
    Schedules an event with the given name to be emitted to the associated JavaScript object.
    */
   func emit(event: String) {
-    emit(event: event, payload: JavaScriptValue.undefined())
+    emit(event: event, payload: JavaScriptUndefined())
   }
 
   /**

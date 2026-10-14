@@ -75,6 +75,17 @@ private struct MacroEventTests {
   }
 
   @Test
+  func `emits a no-payload event with undefined as the only argument`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('done', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
+      """)
+    module.onDone()
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "1:undefined")
+  }
+
+  @Test
   func `emits a 64-bit integer payload as a bigint`() throws {
     try runtime.eval("""
       globalThis.result = null
