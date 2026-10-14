@@ -348,11 +348,11 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.
   public func getBigInt() -> JavaScriptBigInt {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isBigInt(), "Value is not a BigInt")
-    return JavaScriptBigInt(runtime, pointee.getBigInt(runtime.pointee))
+    return JavaScriptBigInt(runtimeHandle, pointee.getBigInt(jsiRuntime))
   }
 
   /// Returns the value as an object, or asserts if not an object.
