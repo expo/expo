@@ -215,9 +215,18 @@ export type PositionUpdate =
  */
 export type PositionWatchStatus = {
   /**
-   * Whether the provider is feeding positions right now.
+   * Whether the watcher is subscribed to location updates. On Android, this does not mean
+   * positions are arriving. Check `canDeliverUpdates` for that.
    */
   isSubscribed: boolean;
+  /**
+   * Whether the watcher can deliver positions. `false` while no system provider matches the
+   * request, or while Google Play services reports location unavailable. It turns `true` again on
+   * its own when location becomes available.
+   *
+   * @platform android
+   */
+  canDeliverUpdates?: boolean;
   /**
    * Whether the handle can still be brought back to sending. False only once released.
    */
@@ -231,6 +240,14 @@ export type PositionWatchStatus = {
    * Whether `pause()` was called and `resume()` was not called yet.
    */
   isPaused: boolean;
+  /**
+   * Whether the watcher is allowed to run. `true` while the app is in the foreground or the
+   * background session is promoted, and always `true` on Android 7 and earlier, where no service is
+   * needed.
+   *
+   * @platform android
+   */
+  areUpdatesAllowed?: boolean;
   /**
    * Whether the app is in the foreground. On Android, the watcher holds the system request only
    * while it is `true`.

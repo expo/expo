@@ -3,6 +3,7 @@ export * as Location from './Location';
 export {
   useForegroundLocationPermissions,
   useBackgroundLocationPermissions,
+  useNotificationPermissions,
   useLocationServices,
   PositionWatchHandle,
   LocationProvider,
@@ -26,4 +27,8 @@ export {
   type LocationPermissionResponse,
   type RequestPermissionsOptions,
   type LocationProviderRefType,
+  BackgroundSessionState,
+  type BackgroundSessionOptions,
+  type BackgroundSessionStatus,
+  type BackgroundTaskStatus,
 } from './types';
