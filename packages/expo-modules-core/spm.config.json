@@ -36,7 +36,13 @@
           "path": "ios",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
-          "exclude": ["Tests/**", "WorkletsTests/**", "Worklets/**", "WorkletsAdapter/**"],
+          "exclude": [
+            "Tests/**",
+            "Benchmarks/**",
+            "WorkletsTests/**",
+            "Worklets/**",
+            "WorkletsAdapter/**"
+          ],
           "fileMapping": [
             {
               "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
@@ -65,6 +71,7 @@
           "exclude": [
             "JSI/**",
             "Tests/**",
+            "Benchmarks/**",
             "WorkletsTests/**",
             "BridgeModule/**",
             "Views/**",
