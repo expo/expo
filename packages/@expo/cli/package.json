@@ -151,7 +151,7 @@
     "devtools-protocol": "^0.0.1113120",
     "eslint": "^9.18.0",
     "expect": "^30.0.0",
-    "expo-atlas": "^0.4.1",
+    "expo-atlas": "^0.5.0",
     "expo-modules-autolinking": "workspace:*",
     "expo-router": "workspace:*",
     "find-process": "^1.4.7",
