@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Encode Swift arrays to JS arrays about 35% faster, and Swift sets to JS sets about 25% faster. ([#51496](https://github.com/expo/expo/pull/51496) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptUnownedValue` `@frozen`, so modules that decode `@JS` function arguments know its layout and no longer ask its type metadata for it. Host functions with arguments are faster, by about 8 to 12% with eight arguments. This changes the ABI of `ExpoModulesJSI`. ([#51499](https://github.com/expo/expo/pull/51499) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `createFunction` and `setProperty(_:function:)` overloads taking a `VoidFunctionClosure`, for host functions that return nothing to JavaScript. They make such calls faster because they skip creating and writing the result value. ([#51498](https://github.com/expo/expo/pull/51498) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the `ExpoModulesJSI` xcframework slice staying built against another Xcode's SDK. The slice cache now includes the Xcode build, so switching between Xcode releases that share a Swift compiler (such as Xcode 27.0 and 27.1) rebuilds it, and the rebuild uses the app build's `DEVELOPER_DIR` and `TOOLCHAINS` instead of the Xcode selected with `xcode-select` and the default toolchain. ([#51371](https://github.com/expo/expo/pull/51371) by [@mwolson](https://github.com/mwolson))
+
 ## 58.0.12
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # expo-app
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51485](https://github.com/expo/expo/pull/51485), [#51446](https://github.com/expo/expo/pull/51446), [#51508](https://github.com/expo/expo/pull/51508), [#51068](https://github.com/expo/expo/pull/51068), [#51464](https://github.com/expo/expo/pull/51464))
+  - expo@58.0.10
+  - expo-router@58.0.19
+  - expo-image@58.0.14
+  - expo-brownfield@58.0.13
+  - expo-dev-menu@58.0.11
+  - expo-constants@58.0.12
+  - expo-device@58.0.5
+  - expo-font@58.0.8
+  - expo-glass-effect@58.0.3
+  - expo-linking@58.0.13
+  - expo-splash-screen@58.0.9
+  - expo-status-bar@58.0.3
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.5
+  - expo-web-browser@58.0.6
+
 ## 1.0.3
 
 ### Patch Changes

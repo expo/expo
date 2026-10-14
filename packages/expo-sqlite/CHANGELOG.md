@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Fixed `getFirstSync()` and sync `for...of` so they mark the cursor as moved. A later `getFirstSync()` or `getAllSync()` throws until `resetSync()`, matching the async APIs. ([#47989](https://github.com/expo/expo/pull/47989) by [@tsushanth](https://github.com/tsushanth))
+
 ## 58.0.12
 
 ### Patch Changes

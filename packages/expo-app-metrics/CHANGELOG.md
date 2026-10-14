@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Fix startup metrics recorded after the first save (for example TTI after an update download) never being persisted. ([#51538](https://github.com/expo/expo/pull/51538) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.11
 
 ### Patch Changes
