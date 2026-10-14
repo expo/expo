@@ -1,4 +1,5 @@
 ---
+'expo': patch
 'expo-router': patch
 'expo-template-default': patch
 'expo-template-tabs': patch
