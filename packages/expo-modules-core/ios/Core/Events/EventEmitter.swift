@@ -148,13 +148,15 @@ internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, t
   runtime.withUnsafePointee { runtimePtr in
     target.withUnsafePointee { objectPtr in
       payload.withUnsafePointee { payloadPtr in
-        JSUtils.emitEvent(
-          event,
-          runtimePointer: runtimePtr,
-          objectPointer: objectPtr,
-          argumentsPointer: payloadPtr,
-          argumentCount: 1
-        )
+        event.withCString { eventName in
+          emitJSEvent(
+            utf8Name: eventName,
+            runtimePointer: runtimePtr,
+            objectPointer: objectPtr,
+            argumentsPointer: payloadPtr,
+            argumentCount: 1
+          )
+        }
       }
     }
   }
