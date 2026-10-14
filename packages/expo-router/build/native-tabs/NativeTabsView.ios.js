@@ -69,9 +69,9 @@ function Screen(props) {
     const iosSelectedIcon = (0, optionsIconConverter_1.convertOptionsIconToScreensPropsIcon)(selectedIcon, effectiveRenderingMode);
     const content = (0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.ScreenContent, { options: options, contentRenderer: contentRenderer });
     const wrappedContent = (0, react_1.useMemo)(() => (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: content }), [content]);
-    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: {
-            icon: iosIcon,
-            selectedIcon: iosSelectedIcon,
+    return ((0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.TabsScreen, { ...shared.options, pointerEvents: shared.pointerEvents, ios: {
+            icon: iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
+            selectedIcon: iosSelectedIcon?.platform === 'ios' ? iosSelectedIcon.icon : undefined,
             standardAppearance,
             scrollEdgeAppearance,
             systemItem: options.role,

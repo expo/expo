@@ -1,8 +1,10 @@
-import type { PlatformIconAndroid } from 'react-native-screens';
-
 import type { AwaitedIcon } from './icon';
 import { convertMaterialIconNameToImageSource } from './materialIconConverter';
-import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
+import {
+  applyIconSrcOptions,
+  applySelectedColor,
+  type ScreensPropsIcon,
+} from './optionsIconConverter.shared';
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
@@ -49,15 +51,12 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined
-): PlatformIconAndroid | undefined {
+): Extract<ScreensPropsIcon, { platform: 'android' }> | undefined {
   if (icon && 'drawable' in icon && icon.drawable) {
-    return {
-      type: 'drawableResource',
-      name: icon.drawable,
-    };
+    return { platform: 'android', icon: { type: 'drawableResource', name: icon.drawable } };
   }
   if (icon && 'src' in icon && icon.src) {
-    return { type: 'imageSource', imageSource: icon.src };
+    return { platform: 'android', icon: { type: 'imageSource', imageSource: icon.src } };
   }
   return undefined;
 }

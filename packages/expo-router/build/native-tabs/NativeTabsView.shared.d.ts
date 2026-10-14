@@ -1,6 +1,8 @@
 import React from 'react';
-import type { TabsHostProps } from 'react-native-screens';
+import { type ViewProps } from 'react-native';
+import { type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
+export declare const TabsScreen: React.ComponentType<TabsScreenProps & Pick<ViewProps, "pointerEvents">>;
 export declare function useSelectedScreenKey({ focusedIndex, provenance, tabs, }: Pick<NativeTabsViewProps, 'focusedIndex' | 'provenance' | 'tabs'>): {
     selectedScreenKey: string;
     provenance: number;

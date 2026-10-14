@@ -1,10 +1,16 @@
 import React, { useCallback, useDeferredValue, useMemo } from 'react';
-import { View } from 'react-native';
-import type { TabsHostProps } from 'react-native-screens';
+import { View, type ViewProps } from 'react-native';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { useAwaitedScreensIcon } from './utils/icon';
 import { useTheme } from '../react-navigation/native';
+
+// `Tabs.Screen` spreads extra props onto its native view, which accepts `ViewProps`,
+// but `TabsScreenProps` does not declare the ones we pass.
+export const TabsScreen = Tabs.Screen as React.ComponentType<
+  TabsScreenProps & Pick<ViewProps, 'pointerEvents'>
+>;
 
 export function useSelectedScreenKey({
   focusedIndex,

@@ -53,10 +53,7 @@ function resolveIconRenderingMode(icon, iconColor) {
 }
 function convertOptionsIconToScreensPropsIcon(icon, renderingMode) {
     if (icon && 'sf' in icon && icon.sf) {
-        return {
-            type: 'sfSymbol',
-            name: icon.sf,
-        };
+        return { platform: 'ios', icon: { type: 'sfSymbol', name: icon.sf } };
     }
     const imageSource = getIconImageSource(icon);
     if (!imageSource) {
@@ -64,9 +61,9 @@ function convertOptionsIconToScreensPropsIcon(icon, renderingMode) {
     }
     const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
     if (effectiveRenderingMode === 'original') {
-        return { type: 'imageSource', imageSource };
+        return { platform: 'ios', icon: { type: 'imageSource', imageSource } };
     }
-    return { type: 'templateSource', templateSource: imageSource };
+    return { platform: 'ios', icon: { type: 'templateSource', templateSource: imageSource } };
 }
 function getIconImageSource(icon) {
     if (!icon || ('sf' in icon && icon.sf)) {

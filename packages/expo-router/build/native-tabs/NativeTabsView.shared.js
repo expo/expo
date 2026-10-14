@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TabsScreen = void 0;
 exports.useSelectedScreenKey = useSelectedScreenKey;
 exports.useOnTabSelectedHandler = useOnTabSelectedHandler;
 exports.useOnTabSelectionPreventedHandler = useOnTabSelectionPreventedHandler;
@@ -8,8 +9,12 @@ exports.ScreenContent = ScreenContent;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const react_native_screens_1 = require("react-native-screens");
 const icon_1 = require("./utils/icon");
 const native_1 = require("../react-navigation/native");
+// `Tabs.Screen` spreads extra props onto its native view, which accepts `ViewProps`,
+// but `TabsScreenProps` does not declare the ones we pass.
+exports.TabsScreen = react_native_screens_1.Tabs.Screen;
 function useSelectedScreenKey({ focusedIndex, provenance, tabs, }) {
     const stableState = (0, react_1.useMemo)(() => ({ focusedIndex, provenance }), [focusedIndex, provenance]);
     const { focusedIndex: deferredFocusedIndex, provenance: deferredProvenance } = (0, react_1.useDeferredValue)(stableState);

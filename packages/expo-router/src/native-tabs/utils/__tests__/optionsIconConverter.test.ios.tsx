@@ -12,24 +12,33 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
 
   it('returns sfSymbol icon when sf is provided', () => {
     expect(convertOptionsIconToScreensPropsIcon({ sf: 'square.fill' })).toEqual({
-      type: 'sfSymbol',
-      name: 'square.fill',
+      platform: 'ios',
+      icon: {
+        type: 'sfSymbol',
+        name: 'square.fill',
+      },
     });
   });
 
   it('returns imageSource when src is provided as an object', () => {
     const src = { uri: 'https://example.com/icon.png' };
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'ios',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
   });
 
   it('returns imageSource when src is a numeric resource identifier', () => {
     const src = 123;
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'ios',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
   });
 
@@ -49,8 +58,11 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     const src = { uri: 'https://example.com/icon.png' };
     const sf = 'star.fill';
     expect(convertOptionsIconToScreensPropsIcon({ sf, src })).toEqual({
-      type: 'sfSymbol',
-      name: sf,
+      platform: 'ios',
+      icon: {
+        type: 'sfSymbol',
+        name: sf,
+      },
     });
   });
 
@@ -63,16 +75,22 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     it('returns templateSource when renderingMode is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' })).toEqual({
-        type: 'templateSource',
-        templateSource: src,
+        platform: 'ios',
+        icon: {
+          type: 'templateSource',
+          templateSource: src,
+        },
       });
     });
 
     it('returns imageSource when renderingMode is "original"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' })).toEqual({
-        type: 'imageSource',
-        imageSource: src,
+        platform: 'ios',
+        icon: {
+          type: 'imageSource',
+          imageSource: src,
+        },
       });
     });
   });
@@ -81,8 +99,11 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     it('renders as a template when the override is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(convertOptionsIconToScreensPropsIcon({ src }, 'template')).toEqual({
-        type: 'templateSource',
-        templateSource: src,
+        platform: 'ios',
+        icon: {
+          type: 'templateSource',
+          templateSource: src,
+        },
       });
     });
 
@@ -90,13 +111,16 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
       const src = { uri: 'https://example.com/icon.png' };
       expect(
         convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' }, 'original')
-      ).toEqual({ type: 'imageSource', imageSource: src });
+      ).toEqual({ platform: 'ios', icon: { type: 'imageSource', imageSource: src } });
     });
 
     it('is ignored for SF Symbols', () => {
       expect(convertOptionsIconToScreensPropsIcon({ sf: 'star.fill' }, 'template')).toEqual({
-        type: 'sfSymbol',
-        name: 'star.fill',
+        platform: 'ios',
+        icon: {
+          type: 'sfSymbol',
+          name: 'star.fill',
+        },
       });
     });
   });

@@ -46,13 +46,10 @@ function appendIconOptions(options, props) {
 }
 function convertOptionsIconToScreensPropsIcon(icon) {
     if (icon && 'drawable' in icon && icon.drawable) {
-        return {
-            type: 'drawableResource',
-            name: icon.drawable,
-        };
+        return { platform: 'android', icon: { type: 'drawableResource', name: icon.drawable } };
     }
     if (icon && 'src' in icon && icon.src) {
-        return { type: 'imageSource', imageSource: icon.src };
+        return { platform: 'android', icon: { type: 'imageSource', imageSource: icon.src } };
     }
     return undefined;
 }

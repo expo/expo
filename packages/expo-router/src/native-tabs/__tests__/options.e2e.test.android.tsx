@@ -238,8 +238,9 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].android).toBeDefined();
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toBeUndefined();
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 

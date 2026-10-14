@@ -5,24 +5,33 @@ import { convertOptionsIconToScreensPropsIcon } from '../optionsIconConverter';
 describe(convertOptionsIconToScreensPropsIcon, () => {
   it('returns drawableResource when drawable is provided', () => {
     expect(convertOptionsIconToScreensPropsIcon({ drawable: 'ic_launcher' })).toEqual({
-      type: 'drawableResource',
-      name: 'ic_launcher',
+      platform: 'android',
+      icon: {
+        type: 'drawableResource',
+        name: 'ic_launcher',
+      },
     });
   });
 
   it('returns imageSource when src is provided as an object', () => {
     const src = { uri: 'https://example.com/icon.png' };
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'android',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
   });
 
   it('returns imageSource when src is a numeric resource identifier', () => {
     const src = 123;
     expect(convertOptionsIconToScreensPropsIcon({ src })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'android',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
   });
 
@@ -40,12 +49,18 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
   it('returns imageSource regardless of renderingMode', () => {
     const src = { uri: 'https://example.com/icon.png' };
     expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'android',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
     expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' })).toEqual({
-      type: 'imageSource',
-      imageSource: src,
+      platform: 'android',
+      icon: {
+        type: 'imageSource',
+        imageSource: src,
+      },
     });
   });
 });

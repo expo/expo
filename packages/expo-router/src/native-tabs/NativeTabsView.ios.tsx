@@ -5,6 +5,7 @@ import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-na
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
+  TabsScreen,
   useOnTabSelectedHandler,
   useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
@@ -151,12 +152,12 @@ function Screen(props: InternalTabScreenProps) {
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
   return (
-    <Tabs.Screen
+    <TabsScreen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       ios={{
-        icon: iosIcon,
-        selectedIcon: iosSelectedIcon,
+        icon: iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
+        selectedIcon: iosSelectedIcon?.platform === 'ios' ? iosSelectedIcon.icon : undefined,
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
@@ -168,7 +169,7 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.nativeRestOverrides}
       screenKey={shared.screenKey}>
       {wrappedContent}
-    </Tabs.Screen>
+    </TabsScreen>
   );
 }
 

@@ -4,11 +4,11 @@
  * Metro resolves at runtime via platform extensions.
  */
 import type { ColorValue } from 'react-native';
-import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 import type { AwaitedIcon } from './icon';
+import { type ScreensPropsIcon } from './optionsIconConverter.shared';
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { IconRenderingMode, NativeTabOptions } from '../types';
 export declare function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps): void;
-export declare function convertOptionsIconToScreensPropsIcon(_icon: AwaitedIcon | undefined, _renderingMode?: IconRenderingMode): PlatformIconIOS | PlatformIconAndroid | undefined;
+export declare function convertOptionsIconToScreensPropsIcon(_icon: AwaitedIcon | undefined, _renderingMode?: IconRenderingMode): ScreensPropsIcon | undefined;
 export declare function resolveIconRenderingMode(_icon: AwaitedIcon | undefined, _iconColor?: ColorValue): IconRenderingMode | undefined;
 //# sourceMappingURL=optionsIconConverter.d.ts.map
