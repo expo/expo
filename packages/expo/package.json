@@ -151,6 +151,14 @@
       "types": "./config/paths.d.ts",
       "default": "./config/paths.js"
     },
+    "./build/winter": {
+      "types": {
+        "expo-source": "./src/winter/index.ts",
+        "default": "./build/winter/index.d.ts"
+      },
+      "expo-source": "./src/winter/index.ts",
+      "default": "./build/winter/index.js"
+    },
     "./src/winter": {
       "types": {
         "expo-source": "./src/winter/index.ts",
