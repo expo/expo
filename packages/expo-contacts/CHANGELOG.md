@@ -12,7 +12,9 @@
 
 ## 57.0.7 — 2026-10-12
 
-_This version does not introduce any user-facing changes._
+### 🐛 Bug fixes
+
+- [iOS] Fix `Contact.presentCreateForm` opening the read-only contact view instead of the new-contact editor, and resolve it with a boolean instead of `null`. ([#50957](https://github.com/expo/expo/pull/50957) by [@Wenszel](https://github.com/Wenszel))
 
 ## 57.0.6 — 2026-09-18
 
