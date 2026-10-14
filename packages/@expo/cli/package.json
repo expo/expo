@@ -160,7 +160,7 @@
     "devtools-protocol": "^0.0.1113120",
     "expect": "^29.7.0",
     "expo": "workspace:*",
-    "expo-atlas": "^0.4.1",
+    "expo-atlas": "^0.5.0",
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
     "expo-router": "workspace:*",
