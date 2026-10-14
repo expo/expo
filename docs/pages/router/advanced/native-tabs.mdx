@@ -1308,6 +1308,29 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Sidebar placement
+
+> **info** This feature is available in SDK 59 and later. To use it, compile your app with Xcode 27 or higher. It has an effect on iOS 27 and later.
+
+When [`sidebarAdaptable`](/versions/latest/sdk/router/native-tabs/#sidebaradaptable) is `true`, the tab bar can turn into a sidebar on iPad and on larger iPhone models in landscape orientation. When only one of them can be shown, the [`sidebarPreferredPlacement`](/versions/latest/sdk/router/native-tabs/#sidebarpreferredplacement) prop selects which one: `'automatic'` (default, the tab bar), `'sidebar'`, or `'tabBar'`. Without `sidebarAdaptable`, the tab bar is always shown.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs sidebarAdaptable sidebarPreferredPlacement="sidebar">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
 ### Keyboard avoidance on Android
 
 > **info** This feature is available in SDK 56 and later.

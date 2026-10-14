@@ -68,6 +68,27 @@ it.each([
   expect(TabsHost.mock.calls[0][0].ios?.tabBarControllerMode).toBe(expected);
 });
 
+it.each(['automatic', 'sidebar', 'tabBar'] as const)(
+  'forwards sidebarPreferredPlacement %s to Tabs.Host with the sidebar-adaptable mode',
+  async (placement) => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs sidebarAdaptable sidebarPreferredPlacement={placement}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].ios).toMatchObject({
+      tabBarControllerMode: 'tabSidebar',
+      tabBarSidebarPreferredPlacement: placement,
+    });
+  }
+);
+
 it('uses shadowColor when it is passed to NativeTabs', async () => {
   await renderRouter({
     _layout: () => (
