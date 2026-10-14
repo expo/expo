@@ -16,7 +16,7 @@
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.4",
+    "react-native": "0.88.0-rc.6",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "4.30.0"
   },
