@@ -175,6 +175,10 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   disabled?: boolean;
   /**
+   * @platform iOS
+   */
+  prominent?: boolean;
+  /**
    * @platform android
    * @platform iOS
    */
@@ -656,6 +660,15 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   disabled?: boolean;
+  /**
+   * If `true`, the tab is shown on its own surface in the tab bar and stays visible when the
+   * tab bar minimizes. Only one tab can be prominent.
+   *
+   * @default false
+   *
+   * @platform ios 27+
+   */
+  prominent?: boolean;
   /**
    * A test identifier for the tab bar item.
    *

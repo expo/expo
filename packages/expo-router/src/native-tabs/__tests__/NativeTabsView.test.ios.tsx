@@ -268,6 +268,112 @@ describe('unstable_nativeProps', () => {
   });
 });
 
+describe('prominent', () => {
+  it('passes the route name of the prominent trigger as ios.prominentScreenKey', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="search" prominent />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        search: () => <View testID="search" />,
+      });
+
+      expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('search');
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('does not set ios.prominentScreenKey when no trigger is prominent', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="search" prominent={false} />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      search: () => <View testID="search" />,
+    });
+
+    expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBeUndefined();
+  });
+
+  it('ignores a hidden prominent trigger', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="search" prominent hidden />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      search: () => <View testID="search" />,
+    });
+
+    expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBeUndefined();
+  });
+
+  it('uses the first prominent trigger and warns in dev when several are prominent', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" prominent />
+            <NativeTabs.Trigger name="search" prominent />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        search: () => <View testID="search" />,
+      });
+
+      expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('index');
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"search"'));
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('lets unstable_nativeProps.ios.prominentScreenKey override the prominent trigger', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs unstable_nativeProps={{ ios: { prominentScreenKey: 'index' } }}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="search" prominent />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      search: () => <View testID="search" />,
+    });
+
+    expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('index');
+  });
+
+  it('applies prominent set from inside the tab screen', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger prominent />
+        </View>
+      ),
+    });
+
+    expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('index');
+  });
+});
+
 // TODO: drop this describe block once react-native-screens honors its documented
 // fallback where `icon` is reused when `selectedIcon` is not provided.
 describe('selectedIcon fallback', () => {
