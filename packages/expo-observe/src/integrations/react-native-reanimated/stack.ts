@@ -1,20 +1,17 @@
-// The leading frames of a stack captured in the integration's `onLog` callback, in order: the
-// callback (`reportReanimatedLog` in `init.ts`), then Reanimated's `handleLog`, then the `logger`
-// method that the caller used. Hermes and V8 can qualify a method name, as in `Object.error`.
-const LOGGER_FRAME_PATTERNS = [
-  /^\s*at reportReanimatedLog /,
-  /^\s*at handleLog /,
-  /^\s*at (?:\S+\.)?(?:error|warn|warnOnce) /,
-];
 const STACK_FRAME_PATTERN = /^\s*at /;
 
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /**
- * Removes the leading frames that are the same for every Reanimated error, so the stack starts
- * at the code that called Reanimated's logger. The message can contain newlines, so the frames
- * start at the first line that is a stack frame. Frames are removed only while they match the
- * expected order.
+ * Removes the first frame of the stack when it is a frame of `functionName`. The message can
+ * contain newlines, so the first frame is the first line that is a stack frame.
  */
-export function removeLoggerFrames(stack: string | undefined): string | undefined {
+export function removeFirstFrame(
+  stack: string | undefined,
+  functionName: string
+): string | undefined {
   if (stack === undefined) {
     return undefined;
   }
@@ -23,13 +20,9 @@ export function removeLoggerFrames(stack: string | undefined): string | undefine
   if (firstFrameIndex === -1) {
     return stack;
   }
-  let index = firstFrameIndex;
-  for (const pattern of LOGGER_FRAME_PATTERNS) {
-    const line = lines[index];
-    if (line === undefined || !pattern.test(line)) {
-      break;
-    }
-    index++;
+  const functionFramePattern = new RegExp(`^\\s*at ${escapeRegExp(functionName)} `);
+  if (!functionFramePattern.test(lines[firstFrameIndex] ?? '')) {
+    return stack;
   }
-  return [...lines.slice(0, firstFrameIndex), ...lines.slice(index)].join('\n');
+  return [...lines.slice(0, firstFrameIndex), ...lines.slice(firstFrameIndex + 1)].join('\n');
 }

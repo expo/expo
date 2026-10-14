@@ -3,7 +3,7 @@ import AppMetrics from 'expo-app-metrics';
 import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { loadReanimated, type ReanimatedLogData } from './reanimated';
-import { removeLoggerFrames } from './stack';
+import { removeFirstFrame } from './stack';
 
 // Value of Reanimated's `ReanimatedLogLevel.error`.
 const LOG_LEVEL_ERROR = 2;
@@ -75,8 +75,8 @@ function shouldReport(reported: Map<string, number>, cappedMessage: string): boo
 }
 
 // Reanimated already prints every log to the console, so this only reports to Observe. The name
-// of this function is matched in `removeLoggerFrames`, so keep the two in sync.
-function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
+// is specific to Observe, so `removeFirstFrame` cannot remove a frame of an app function.
+function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogData): void {
   const isError = level === LOG_LEVEL_ERROR;
   const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
   if (!shouldReport(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
@@ -85,8 +85,12 @@ function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
   if (isError) {
     // For a log on the React Native runtime, Reanimated calls `onLog` synchronously, so this
     // stack includes the frames that led to the log. A log on the UI runtime is delivered later,
-    // so its stack has no frames left after `removeLoggerFrames`.
-    reportCaughtError(new ReanimatedError(message, removeLoggerFrames(new Error(message).stack)));
+    // so its stack has no frames left after `removeFirstFrame`.
+    const stack = removeFirstFrame(
+      new Error(message).stack,
+      __expo_observe_reportReanimatedLog.name
+    );
+    reportCaughtError(new ReanimatedError(message, stack));
     return;
   }
   AppMetrics.logEvent(REANIMATED_WARNING_EVENT, {
@@ -126,5 +130,5 @@ export function initReanimatedIntegration(
   }
 
   const loggerConfig = typeof config === 'object' ? config : {};
-  reanimated.configureReanimatedLogger(loggerConfig, reportReanimatedLog);
+  reanimated.configureReanimatedLogger(loggerConfig, __expo_observe_reportReanimatedLog);
 }
