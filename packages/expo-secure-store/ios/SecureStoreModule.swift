@@ -58,6 +58,14 @@ public final class SecureStoreModule: Module {
       }
     }
 
+    AsyncFunction("hasValueWithKeyAsync") { (key: String, options: SecureStoreOptions) -> Bool in
+      return try hasValue(with: key, options: options)
+    }
+
+    Function("hasValueWithKeySync") { (key: String, options: SecureStoreOptions) -> Bool in
+      return try hasValue(with: key, options: options)
+    }
+
     Function("canUseBiometricAuthentication") {() -> Bool in
       #if os(tvOS)
       return false
@@ -92,6 +100,22 @@ public final class SecureStoreModule: Module {
     }
 
     return nil
+  }
+
+  private func hasValue(with key: String, options: SecureStoreOptions) throws -> Bool {
+    guard let key = validate(for: key) else {
+      throw InvalidKeyException()
+    }
+
+    if try keyChainItemExists(with: key, options: options, requireAuthentication: false) {
+      return true
+    }
+
+    if try keyChainItemExists(with: key, options: options, requireAuthentication: true) {
+      return true
+    }
+
+    return try keyChainItemExists(with: key, options: options)
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
@@ -178,6 +202,39 @@ public final class SecureStoreModule: Module {
       return item
     case errSecItemNotFound:
       return nil
+    default:
+      throw KeyChainException(status)
+    }
+  }
+
+  private func keyChainItemExists(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) throws -> Bool {
+    var query = query(with: key, options: options, requireAuthentication: requireAuthentication)
+    query[kSecMatchLimit as String] = kSecMatchLimitOne
+    query[kSecReturnAttributes as String] = kCFBooleanTrue
+    query[kSecReturnData as String] = kCFBooleanFalse
+
+    #if os(tvOS)
+    query[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
+    #else
+    let context = LAContext()
+    context.interactionNotAllowed = true
+    query[kSecUseAuthenticationContext as String] = context
+    #endif
+
+    var item: CFTypeRef?
+    let status = SecItemCopyMatching(query as CFDictionary, &item)
+
+    // errSecInteractionNotAllowed means the item is there but reading it would need UI, which this
+    // query suppresses. errSecAuthFailed means the item cannot be authorized at all, which is what a
+    // biometryCurrentSet item looks like once biometrics change, so it counts as absent like Android's
+    // KeyPermanentlyInvalidatedException.
+    // https://developer.apple.com/documentation/security/errsecinteractionnotallowed
+    // https://developer.apple.com/documentation/security/errsecauthfailed
+    switch status {
+    case errSecSuccess, errSecInteractionNotAllowed:
+      return true
+    case errSecItemNotFound, errSecAuthFailed:
+      return false
     default:
       throw KeyChainException(status)
     }

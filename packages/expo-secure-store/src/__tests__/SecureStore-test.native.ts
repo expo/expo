@@ -57,6 +57,18 @@ describe.each(confirmationCases)(
 
       expect(ExpoSecureStore.getValueWithKeySync).toHaveBeenLastCalledWith('key', expectedOptions);
     });
+
+    it('when checking whether a value exists asynchronously', async () => {
+      await SecureStore.hasItemAsync('key', options);
+
+      expect(ExpoSecureStore.hasValueWithKeyAsync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
+
+    it('when checking whether a value exists synchronously', () => {
+      SecureStore.hasItem('key', options);
+
+      expect(ExpoSecureStore.hasValueWithKeySync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
   }
 );
 
@@ -90,16 +102,46 @@ it(`deletes values`, async () => {
   expect(ExpoSecureStore.deleteValueWithKeyAsync).toHaveBeenCalledWith('key', options);
 });
 
+it(`checks whether values exist`, async () => {
+  ExpoSecureStore.hasValueWithKeyAsync.mockImplementation(async () => true);
+
+  const options = { keychainService: 'test' };
+  const result = await SecureStore.hasItemAsync('key', options);
+  expect(result).toBe(true);
+  expect(ExpoSecureStore.hasValueWithKeyAsync).toHaveBeenCalledWith('key', options);
+});
+
+it(`checks whether values exist synchronously`, () => {
+  ExpoSecureStore.hasValueWithKeySync.mockImplementation(() => false);
+
+  const options = { keychainService: 'test' };
+  const result = SecureStore.hasItem('key', options);
+  expect(result).toBe(false);
+  expect(ExpoSecureStore.hasValueWithKeySync).toHaveBeenCalledWith('key', options);
+});
+
+it(`provides default options when checking whether values exist`, async () => {
+  await SecureStore.hasItemAsync('key');
+  expect(ExpoSecureStore.hasValueWithKeyAsync).toHaveBeenCalledWith('key', {});
+});
+
 it(`checks for invalid keys`, async () => {
   ExpoSecureStore.getValueWithKeyAsync.mockImplementation(async () => `unexpected value`);
+  ExpoSecureStore.hasValueWithKeyAsync.mockImplementation(async () => true);
 
   await expect(SecureStore.getItemAsync(null as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.getItemAsync(true as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.getItemAsync({} as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.getItemAsync((() => {}) as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.getItemAsync('@')).rejects.toMatchSnapshot();
+  await expect(SecureStore.hasItemAsync('@')).rejects.toMatchSnapshot();
+  expect(() => SecureStore.hasItem('@')).toThrow(
+    'Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".'
+  );
 
   expect(ExpoSecureStore.getValueWithKeyAsync).not.toHaveBeenCalled();
+  expect(ExpoSecureStore.hasValueWithKeyAsync).not.toHaveBeenCalled();
+  expect(ExpoSecureStore.hasValueWithKeySync).not.toHaveBeenCalled();
 });
 
 it(`checks for invalid values`, async () => {

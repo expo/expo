@@ -145,6 +145,24 @@ export async function deleteItemAsync(
   await ExpoSecureStore.deleteValueWithKeyAsync(key, options);
 }
 
+/**
+ * Checks whether a value is stored for the provided key, without reading it or prompting for
+ * authentication.
+ *
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return A promise that resolves to `true` if a value is stored for the key, or `false` if there
+ * is no entry or the key has been invalidated.
+ */
+export async function hasItemAsync(
+  key: string,
+  options: SecureStoreOptions = {}
+): Promise<boolean> {
+  ensureValidKey(key);
+  return await ExpoSecureStore.hasValueWithKeyAsync(key, options);
+}
+
 // @needsAudit
 /**
  * Reads the stored value associated with the provided key.
@@ -240,6 +258,21 @@ export function setItem(key: string, value: string, options: SecureStoreOptions 
 export function getItem(key: string, options: SecureStoreOptions = {}): string | null {
   ensureValidKey(key);
   return ExpoSecureStore.getValueWithKeySync(key, options);
+}
+
+/**
+ * Synchronously checks whether a value is stored for the provided key, without reading it or
+ * prompting for authentication.
+ *
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return `true` if a value is stored for the key, or `false` if there is no entry or the key has
+ * been invalidated.
+ */
+export function hasItem(key: string, options: SecureStoreOptions = {}): boolean {
+  ensureValidKey(key);
+  return ExpoSecureStore.hasValueWithKeySync(key, options);
 }
 
 /**
