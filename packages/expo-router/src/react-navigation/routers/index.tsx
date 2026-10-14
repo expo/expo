@@ -35,4 +35,4 @@ export type {
 } from './TabRouter';
 export { TabActions, TabRouter } from './TabRouter';
 export * from './types';
-export { isActionRejected } from './utils';
+export { isActionHandled } from './utils';

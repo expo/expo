@@ -100,7 +100,7 @@ it('handles an unsupported targeted action as a no-op', () => {
   const result = reduce(
     root,
     action,
-    new Map([['child', entry(() => RouterActionHandling.Reject)]]),
+    new Map([['child', entry(() => RouterActionHandling.Unhandled)]]),
     'child'
   );
 
@@ -113,7 +113,7 @@ it('handles an unsupported targeted action as a no-op', () => {
 it('returns unhandled when no navigator handles an untargeted action', () => {
   const registry: RouterRegistry = new Map([
     ['root', entry(() => null)],
-    ['child', entry(() => RouterActionHandling.Reject)],
+    ['child', entry(() => RouterActionHandling.Unhandled)],
   ]);
 
   expect(reduce(root, { type: 'TEST' }, registry)).toEqual({ handled: false });

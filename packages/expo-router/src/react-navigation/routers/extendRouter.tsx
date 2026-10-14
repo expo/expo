@@ -10,7 +10,7 @@ import {
   type RouterConfigOptions,
   type RouterFactory,
 } from './types';
-import { isActionRejected } from './utils';
+import { isActionHandled } from './utils';
 
 export type RouterExtensionContext<
   State extends NavigationState,
@@ -20,8 +20,8 @@ export type RouterExtensionContext<
   /**
    * The router being extended. Delegate to it or return `RouterActionHandling.Delegate` for
    * everything the extension does not handle. It is typed for the extended state and actions;
-   * actions it does not recognize return `RouterActionHandling.Reject`. Use `isActionRejected`
-   * to detect whether the router rejected the action.
+   * actions it does not recognize return `RouterActionHandling.Unhandled`. Use `isActionHandled`
+   * to detect whether the router handled the action.
    */
   baseRouter: Router<State, Action> & {
     /**
@@ -31,7 +31,7 @@ export type RouterExtensionContext<
       state: State,
       action: Action,
       config?: RouterConfigOptions
-    ): RouterActionResult<State> | RouterActionHandling.Reject;
+    ): RouterActionResult<State> | RouterActionHandling.Unhandled;
   };
   /**
    * The options the navigator passed to the router factory.
@@ -91,7 +91,7 @@ type ExtendedRouter<State extends NavigationState, Action extends NavigationActi
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): RouterActionResult<State> | RouterActionHandling.Reject;
+  ): RouterActionResult<State> | RouterActionHandling.Unhandled;
 };
 
 /**
@@ -167,8 +167,8 @@ export function extendRouter<
         }
         const result = baseRouter.getStateForAction(stamp(state), action, config);
         // A custom base router may still return the deprecated `null`.
-        if (isActionRejected(result)) {
-          return RouterActionHandling.Reject;
+        if (!isActionHandled(result)) {
+          return RouterActionHandling.Unhandled;
         }
         current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
         return result;
@@ -204,7 +204,7 @@ export function extendRouter<
         if (result === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
           warnedNull = true;
           console.warn(
-            `An \`extendRouter\` extension or \`extendRouterActions\` reducer returned \`null\` for the "${action.type}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Reject\` to reject the action, and use \`isActionRejected\` to check whether a router rejected an action.`
+            `An \`extendRouter\` extension or \`extendRouterActions\` reducer returned \`null\` for the "${action.type}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Unhandled\` to leave the action unhandled, and use \`isActionHandled\` to check whether a router handled an action.`
           );
         }
         const resolved =
@@ -212,8 +212,8 @@ export function extendRouter<
             ? delegate.getStateForAction(typedState, action, config)
             : result;
 
-        if (isActionRejected(resolved)) {
-          return RouterActionHandling.Reject;
+        if (!isActionHandled(resolved)) {
+          return RouterActionHandling.Unhandled;
         }
 
         const finishedState = finish(resolved.state, typedState.type);
@@ -242,7 +242,7 @@ export type RouterActionContext<
 
 /**
  * Reduces one action. Return a result to handle the action, `RouterActionHandling.Delegate` to
- * let the base router handle it, or `RouterActionHandling.Reject` to reject it.
+ * let the base router handle it, or `RouterActionHandling.Unhandled` to leave it unhandled.
  */
 export type RouterActionReducer<
   State extends NavigationState,

@@ -17,6 +17,6 @@ export const NoopRouter: RouterFactory<
 > = () => ({
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
-  getStateForAction: () => RouterActionHandling.Reject,
+  getStateForAction: () => RouterActionHandling.Unhandled,
   shouldActionChangeFocus: () => false,
 });

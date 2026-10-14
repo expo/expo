@@ -14,7 +14,7 @@ import {
   RouterActionHandling,
   TabRouter,
 } from '../react-navigation/native';
-import { isActionRejected } from '../react-navigation/routers/utils';
+import { isActionHandled } from '../react-navigation/routers/utils';
 
 const zoomParamNames = [
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
@@ -85,7 +85,7 @@ export const NativeBottomTabsRouter = extendRouterActions(
       case 'PUSH':
       case 'NAVIGATE': {
         const actionResult = baseRouter.getStateForAction(state, action);
-        if (isActionRejected(actionResult)) {
+        if (!isActionHandled(actionResult)) {
           return actionResult;
         }
         const newStateFromNavigation = actionResult.state;

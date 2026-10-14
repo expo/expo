@@ -67,7 +67,7 @@ describe('state without router metadata', () => {
       options
     );
 
-    expect(result).toBe(RouterActionHandling.Reject);
+    expect(result).toBe(RouterActionHandling.Unhandled);
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining('The RESET action payload must contain a complete navigation state.')
     );
@@ -152,7 +152,7 @@ test('handles empty tab states', () => {
   ).state;
   expect(emptyState).toMatchObject({ index: -1, routes: [], history: [] });
   expect(router.getStateForAction(emptyState, CommonActions.goBack(), emptyOptions)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -589,11 +589,11 @@ test('actions do not mint undeclared routes', () => {
   const state = createTabState(options);
 
   expect(router.getStateForAction(state, CommonActions.navigate('baz'), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
   expect(
     router.getStateForAction(state, { type: 'PRELOAD', payload: { name: 'baz' } }, options)
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>([
@@ -1066,7 +1066,7 @@ test("doesn't navigate to nonexistent screen", () => {
       CommonActions.navigate('non-existent'),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 
   expect(
     router.getStateForAction(
@@ -1086,7 +1086,7 @@ test("doesn't navigate to nonexistent screen", () => {
       CommonActions.navigate('foo', { answer: 42 }),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('ensures unique ID for navigate', () => {
@@ -1241,7 +1241,7 @@ test("doesn't jump to nonexistent screen", () => {
       TabActions.jumpTo('foo', { answer: 42 }),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('ensures unique ID for jump to', () => {
@@ -1484,7 +1484,7 @@ test('replaces the focused route with backBehavior: none', () => {
   expect(nextState.index).toBe(1);
   expect(nextState.history).toEqual([{ type: 'route', key: 'qux:tab-0' }]);
   expect(router.getStateForAction(nextState, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -1551,7 +1551,7 @@ test('handles back action with backBehavior: history', () => {
   };
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 
   state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
@@ -1638,7 +1638,7 @@ test('handles back action with backBehavior: fullHistory', () => {
   };
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 
   state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
@@ -1726,7 +1726,7 @@ test('handles back action with backBehavior: order', () => {
   };
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 
   state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
@@ -1776,7 +1776,7 @@ test('handles back action with backBehavior: order', () => {
     .state as TabNavigationState<ParamListBase>;
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -1797,7 +1797,7 @@ test('handles back action with backBehavior: initialRoute', () => {
   };
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 
   state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
@@ -1844,7 +1844,7 @@ test('handles back action with backBehavior: initialRoute', () => {
     .state as TabNavigationState<ParamListBase>;
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -1870,7 +1870,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
   };
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 
   state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
@@ -1917,7 +1917,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
     .state as TabNavigationState<ParamListBase>;
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -1934,7 +1934,7 @@ test('handles back action with backBehavior: none', () => {
     .state as TabNavigationState<ParamListBase>;
 
   expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 
@@ -3137,7 +3137,7 @@ describe('state without history', () => {
       const router = TabRouter({ backBehavior });
 
       expect(router.getStateForAction(createState(2), CommonActions.goBack(), options)).toBe(
-        RouterActionHandling.Reject
+        RouterActionHandling.Unhandled
       );
     }
   );

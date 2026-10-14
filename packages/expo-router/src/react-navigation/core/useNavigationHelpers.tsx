@@ -11,7 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import { isActionRejected } from '../routers/utils';
+import { isActionHandled } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -80,7 +80,7 @@ export function useNavigationHelpers<
           routeGetIdList: {},
         });
 
-        return !isActionRejected(result) || parentNavigationHelpers?.canGoBack() || false;
+        return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
       },
       getId: () => navigatorId,
       getParent: (id?: string) => {

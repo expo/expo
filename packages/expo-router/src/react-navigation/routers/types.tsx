@@ -172,8 +172,8 @@ export enum RouterActionHandling {
    * `extendRouterActions` reducer can return it.
    */
   Delegate = 'DELEGATE',
-  /** Rejects the action, so the navigator ignores it. */
-  Reject = 'REJECT',
+  /** Leaves the action unhandled, so the navigator ignores it. */
+  Unhandled = 'UNHANDLED',
 }
 
 export type Router<
@@ -215,8 +215,8 @@ export type Router<
 
   /**
    * Take the current state and action, and return a new state and the affected route key.
-   * If the action cannot be handled, return `RouterActionHandling.Reject`. Returning `null` is
-   * deprecated. Use `isActionRejected` to check a result. Custom routers must explicitly handle
+   * If the action cannot be handled, return `RouterActionHandling.Unhandled`. Returning `null` is
+   * deprecated. Use `isActionHandled` to check a result. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
@@ -227,7 +227,7 @@ export type Router<
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): RouterActionResult<State> | RouterActionHandling.Reject | null;
+  ): RouterActionResult<State> | RouterActionHandling.Unhandled | null;
 
   /**
    * Whether the action should also change focus in parent navigator

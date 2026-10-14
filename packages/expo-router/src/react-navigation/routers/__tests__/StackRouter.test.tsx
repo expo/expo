@@ -84,7 +84,7 @@ describe('state without router type', () => {
       options
     );
 
-    expect(result).toBe(RouterActionHandling.Reject);
+    expect(result).toBe(RouterActionHandling.Unhandled);
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining('The RESET action payload must contain a complete navigation state.')
     );
@@ -454,7 +454,7 @@ test("doesn't navigate to nonexistent screen", () => {
       CommonActions.navigate('far', { answer: 42 }),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('ensures unique ID for navigate', () => {
@@ -893,7 +893,7 @@ test('handles go back action', () => {
       CommonActions.goBack(),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('handles pop action', () => {
@@ -1087,7 +1087,7 @@ test('handles pop action', () => {
       StackActions.pop(),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('handles pop to top action', () => {
@@ -1289,7 +1289,7 @@ test("doesn't handle replace if source key isn't present when target is specifie
       },
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't handle replace if screen to replace with isn't present", () => {
@@ -1320,7 +1320,7 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
       },
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('handles push action', () => {
@@ -1402,7 +1402,7 @@ test('handles push action', () => {
       StackActions.push('unknown'),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't push nonexistent screen", () => {
@@ -1429,7 +1429,7 @@ test("doesn't push nonexistent screen", () => {
       StackActions.push('far', { answer: 42 }),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('ensures unique ID for push', () => {
@@ -1876,7 +1876,7 @@ test("doesn't popTo to nonexistent screen", () => {
       CommonActions.navigate('far', { answer: 42 }),
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't merge params on popTo to an existing screen", () => {
@@ -2184,7 +2184,7 @@ test("doesn't handle popTo if source key isn't present when target is specified"
       },
       options
     )
-  ).toBe(RouterActionHandling.Reject);
+  ).toBe(RouterActionHandling.Unhandled);
 });
 
 test('adds route to preloaded list with preload', () => {

@@ -4,7 +4,7 @@ import type {
   PartialState,
   RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
-import { isActionRejected } from '../react-navigation/routers/utils';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import type { RouterRegistry } from './routerRegistry';
 
 export type TreeNode = {
@@ -103,7 +103,7 @@ function findActionHandler(
     }
 
     const reduced = entry.reduce(node.state, action);
-    const result = isActionRejected(reduced) ? undefined : reduced;
+    const result = isActionHandled(reduced) ? reduced : undefined;
     // Unsupported untargeted actions bubble. An action explicitly addressed to this navigator
     // stops here as a handled no-op instead of escaping to another navigator.
     if (!result && action.target !== node.state.key) {

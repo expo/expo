@@ -64,7 +64,7 @@ test('stack pushes and pops describe browser traversal, excluding preloads and r
     ).browserHistory
   ).toBeUndefined();
   expect(router.getStateForAction(stack, CommonActions.goBack(), options)).toBe(
-    RouterActionHandling.Reject
+    RouterActionHandling.Unhandled
   );
 });
 

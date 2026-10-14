@@ -80,7 +80,7 @@ test('warns and ignores a partial RESET state', () => {
     { routeNames: ['bar'], routeGetIdList: {} }
   );
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
   expect(warn).toHaveBeenCalledWith(
     expect.stringContaining('The RESET action payload must contain a complete navigation state.')
   );

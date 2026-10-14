@@ -24,7 +24,7 @@ import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackR
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
-import { isActionRejected } from '../react-navigation/routers/utils';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
 
@@ -90,7 +90,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
       state = ensureStateType(state, 'stack');
 
       if (action.target && action.target !== state.key) {
-        return RouterActionHandling.Reject;
+        return RouterActionHandling.Unhandled;
       }
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -128,7 +128,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = getIdFunction();
@@ -216,7 +216,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               routeGetIdList,
             });
           }
-          if (isActionRejected(actionResult)) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
 
@@ -257,10 +257,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
           const actionResult = original.getStateForAction(state, action, options);
-          if (isActionRejected(actionResult)) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
           const affectedRouteKey = actionResult.affectedRouteKey;

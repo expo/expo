@@ -15,7 +15,7 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
-import { isActionRejected } from '../react-navigation/routers/utils';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import type { RouterRegistry, RouterRegistryEntry } from './routerRegistry';
@@ -339,7 +339,7 @@ function findDestinationNode(routeNode: RouteNode, routeName: string | undefined
 function getSelection(result: ReturnType<RouterRegistryEntry['reduce']> | undefined) {
   if (
     result === undefined ||
-    isActionRejected(result) ||
+    !isActionHandled(result) ||
     result.state.stale !== false ||
     result.affectedRouteKey === undefined
   ) {

@@ -7,7 +7,7 @@ import {
 import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
 import { StackRouter, stackRouterOverride } from '../stack-router';
 
-test('stackRouterOverride rejects an action targeting another navigator', () => {
+test('stackRouterOverride does not handle an action targeting another navigator', () => {
   const { getStateForAction } = stackRouterOverride(RNStackRouter({}));
   const state: StackNavigationState<{ index: undefined }> = {
     stale: false,
@@ -25,7 +25,7 @@ test('stackRouterOverride rejects an action targeting another navigator', () => 
     { routeNames: ['index'], routeGetIdList: {} }
   );
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test('same-route navigation preserves merge semantics without consuming another preload', () => {

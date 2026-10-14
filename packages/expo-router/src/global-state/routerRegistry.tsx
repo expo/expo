@@ -16,7 +16,7 @@ export type RouterRegistryEntry = {
   reduce: (
     state: NavigationState,
     action: NavigationAction
-  ) => RouterActionResult<NavigationState> | RouterActionHandling.Reject | null;
+  ) => RouterActionResult<NavigationState> | RouterActionHandling.Unhandled | null;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
   getBrowserHistoryForRouteFocus?: (

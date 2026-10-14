@@ -8,7 +8,7 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  isActionRejected,
+  isActionHandled,
   type Router,
   RouterActionHandling,
   StackRouter,
@@ -643,7 +643,7 @@ test('resets state when a conditional navigator changes router type', async () =
         type,
         getStateForAction(state, action, config) {
           const result = router.getStateForAction(state, action, config);
-          if (isActionRejected(result)) {
+          if (!isActionHandled(result)) {
             return result;
           }
           return {
@@ -1082,7 +1082,7 @@ test('overrides router with UNSTABLE_router', async () => {
   });
 });
 
-test('treats a Reject result from UNSTABLE_router as an unhandled action', async () => {
+test('reports GO_BACK as not handled when UNSTABLE_router returns Unhandled', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -1106,7 +1106,7 @@ test('treats a Reject result from UNSTABLE_router as an unhandled action', async
         ): Partial<Router<NavigationState, NavigationAction>> => ({
           getStateForAction: (state, action, options) =>
             action.type === 'GO_BACK'
-              ? RouterActionHandling.Reject
+              ? RouterActionHandling.Unhandled
               : original.getStateForAction(state, action, options),
         })}>
         <Screen name="foo" component={React.Fragment} />

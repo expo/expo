@@ -96,7 +96,7 @@ test("doesn't handle SET_PARAMS if source key isn't present", () => {
     source: 'magic',
   });
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test('replaces params for the focused screen with REPLACE_PARAMS', () => {
@@ -174,7 +174,7 @@ test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
     source: 'magic',
   });
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test('resets to a complete state with RESET', () => {
@@ -205,7 +205,7 @@ test('warns and ignores a partial RESET state', () => {
 
   const result = getStateForAction(STATE, CommonActions.reset({ routes: [{ name: 'foo' }] }));
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
   expect(warn).toHaveBeenCalledWith(
     expect.stringContaining('The RESET action payload must contain a complete navigation state.')
   );
@@ -286,7 +286,7 @@ test("doesn't handle RESET if routes don't match routeNames", () => {
     })
   );
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't handle RESET if routeNames don't match", () => {
@@ -298,7 +298,7 @@ test("doesn't handle RESET if routeNames don't match", () => {
     })
   );
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't handle RESET if there are no routes", () => {
@@ -310,7 +310,7 @@ test("doesn't handle RESET if there are no routes", () => {
     })
   );
 
-  expect(result).toBe(RouterActionHandling.Reject);
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 const DECLARED_ROUTES_STATE: NavigationState = {

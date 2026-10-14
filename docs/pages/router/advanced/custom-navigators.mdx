@@ -245,9 +245,9 @@ Consumers then import the integration for their framework (for example, `import 
 
 > **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
 
-Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Reject` to reject it. Returning `undefined` or `null` instead is deprecated and logs a warning in development.
+Use `extendRouterActions` when you only need to handle navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Unhandled` so the navigator ignores it.
 
-Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router. An extension's `getStateForAction` also returns a result, `RouterActionHandling.Delegate`, or `RouterActionHandling.Reject`.
+Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
 
 The following example adds a `CLEAR` action and an action creator for it:
 
@@ -286,4 +286,4 @@ export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
 }));
 ```
 
-Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state. Use `isActionRejected` to check whether the base router rejected an action.
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state. Use `isActionHandled` to check whether the base router handled an action.

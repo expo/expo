@@ -101,7 +101,7 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
-  isActionRejected,
+  isActionHandled,
   RouterActionHandling,
   StackRouter,
   TabRouter,

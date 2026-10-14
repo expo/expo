@@ -349,11 +349,11 @@ function stackRouterExtension({
               : state.index;
 
           if (currentIndex === -1) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = options.routeGetIdList[action.payload.name];
@@ -385,7 +385,7 @@ function stackRouterExtension({
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = options.routeGetIdList[action.payload.name];
@@ -540,7 +540,7 @@ function stackRouterExtension({
             return { state: result, affectedRouteKey: result.routes[result.index]?.key };
           }
 
-          return RouterActionHandling.Reject;
+          return RouterActionHandling.Unhandled;
         }
 
         case 'POP_TO_TOP':
@@ -560,11 +560,11 @@ function stackRouterExtension({
               : state.index;
 
           if (currentIndex === -1) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           // If the route already exists, navigate to it
@@ -655,7 +655,7 @@ function stackRouterExtension({
             );
           }
 
-          return RouterActionHandling.Reject;
+          return RouterActionHandling.Unhandled;
 
         case 'PRELOAD': {
           const getId = options.routeGetIdList[action.payload.name];

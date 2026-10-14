@@ -46,7 +46,7 @@ export const BaseRouter = extendRouter(
             : state.index;
 
           if (index === -1) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           return {
@@ -77,7 +77,7 @@ export const BaseRouter = extendRouter(
               (route: { name: string }) => !state.routeNames.includes(route.name)
             )
           ) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           if (nextState.stale === false) {
@@ -85,7 +85,7 @@ export const BaseRouter = extendRouter(
               state.routeNames.length !== nextState.routeNames.length ||
               nextState.routeNames.some((name) => !state.routeNames.includes(name))
             ) {
-              return RouterActionHandling.Reject;
+              return RouterActionHandling.Unhandled;
             }
 
             // The payload may carry a higher sequence than the current state, so RESET mints on
@@ -114,7 +114,7 @@ export const BaseRouter = extendRouter(
           console.warn(
             'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, `routeKeySeq`, and `stale: false` when resetting.'
           );
-          return RouterActionHandling.Reject;
+          return RouterActionHandling.Unhandled;
         }
 
         default:

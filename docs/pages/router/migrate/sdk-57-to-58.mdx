@@ -515,7 +515,7 @@ Move the parts of an existing custom router that differ from its base router int
 | `RouterActionOptions`         | Use `RouterConfigOptions` in `getStateForAction`.                            |
 | Other router members          | Inherit them from the base router unless the extension changes the behavior. |
 
-The base stack and tab routers handle `PUSH`. If an extension overrides `getStateForAction`, return `RouterActionHandling.Delegate` for actions that it does not handle, so the base router handles them. Return `RouterActionHandling.Reject` to reject an action.
+The base stack and tab routers handle `PUSH`. If an extension overrides `getStateForAction`, delegate actions that it does not handle to the provided `baseRouter`.
 
 #### Return the affected route key
 
@@ -534,11 +534,11 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 +};`}
 />
 
-Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Reject` when the router cannot handle an action. Returning `null` is deprecated.
+Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Unhandled` when the router cannot handle an action. Returning `null` is deprecated.
 
-#### Check rejected actions with `isActionRejected`
+#### Check handled actions with `isActionHandled`
 
-Built-in routers and routers created with `extendRouter` or `extendRouterActions` now return `RouterActionHandling.Reject` instead of `null` when they reject an action. Replace `null` checks on a `getStateForAction` result with `isActionRejected`:
+Built-in routers and routers created with `extendRouter` or `extendRouterActions` now return `RouterActionHandling.Unhandled` instead of `null` when they do not handle an action. Replace `null` checks on a `getStateForAction` result with `isActionHandled`:
 
 <DiffBlock
   raw={`diff --git a/custom-router.ts b/custom-router.ts
@@ -547,7 +547,7 @@ Built-in routers and routers created with `extendRouter` or `extendRouterActions
 @@ -1,4 +1,4 @@
  const result = baseRouter.getStateForAction(state, action);
 -if (result === null) {
-+if (isActionRejected(result)) {
++if (!isActionHandled(result)) {
    return result;
  }`}
 />
@@ -575,7 +575,7 @@ const CustomStackRouter = extendRouter(StackRouter, ({ nextKey }) => ({
   getStateForAction(state, action: CommonNavigationAction | StackActionType | CustomAction) {
     if (action.type === 'CUSTOM-ACTION') {
       if (!state.routeNames.includes(action.payload.name)) {
-        return RouterActionHandling.Reject;
+        return RouterActionHandling.Unhandled;
       }
 
       const route = attachRouteState(

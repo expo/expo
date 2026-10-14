@@ -20,7 +20,7 @@ import {
   RouterActionHandling,
   type RouterFactory,
 } from '../types';
-import { isActionRejected } from '../utils';
+import { isActionHandled } from '../utils';
 import { expectHandled } from './__fixtures__/expectHandled';
 
 type CustomAction = {
@@ -129,29 +129,29 @@ describe('extendRouter', () => {
     expect(result?.state.routes).toHaveLength(1);
   });
 
-  test('rejects the action when getStateForAction returns Reject', () => {
+  test('leaves the action unhandled when getStateForAction returns Unhandled', () => {
     const router = extendRouter(StackRouter, () => ({
-      getStateForAction: () => RouterActionHandling.Reject,
+      getStateForAction: () => RouterActionHandling.Unhandled,
     }))({});
 
     expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
-      RouterActionHandling.Reject
+      RouterActionHandling.Unhandled
     );
   });
 
-  test('rejects the action and warns once when getStateForAction returns null', () => {
+  test('leaves the action unhandled and warns once when getStateForAction returns null', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const router = extendRouter(StackRouter, () => ({ getStateForAction: () => null }))({});
 
     const result = router.getStateForAction(stackState, StackActions.pop(1), config);
     router.getStateForAction(stackState, StackActions.pop(1), config);
 
-    expect(result).toBe(RouterActionHandling.Reject);
+    expect(result).toBe(RouterActionHandling.Unhandled);
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('isActionRejected'));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('isActionHandled'));
   });
 
-  test('rejects without a warning when the extension passes on a null from the base router', () => {
+  test('leaves the action unhandled without a warning when the extension passes on a null from the base router', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const NullRouter: typeof TestRouter = (options) => ({
       ...TestRouter(options),
@@ -162,7 +162,7 @@ describe('extendRouter', () => {
     }))({});
 
     expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)).toBe(
-      RouterActionHandling.Reject
+      RouterActionHandling.Unhandled
     );
     expect(warn).not.toHaveBeenCalled();
   });
@@ -242,14 +242,14 @@ describe('extendRouter', () => {
 
   test('does not compute browser history for an unhandled action', () => {
     const router = extendRouter(TestRouter, () => ({
-      getStateForAction: () => RouterActionHandling.Reject,
+      getStateForAction: () => RouterActionHandling.Unhandled,
       getBrowserHistoryForAction: () => {
         throw new Error('An unhandled action must not change browser history.');
       },
     }))({});
 
     expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)).toBe(
-      RouterActionHandling.Reject
+      RouterActionHandling.Unhandled
     );
   });
 
@@ -351,22 +351,22 @@ describe('extendRouterActions', () => {
     expect(result?.state.routes).toHaveLength(1);
   });
 
-  test('rejects the action when the reducer returns Reject', () => {
+  test('leaves the action unhandled when the reducer returns Unhandled', () => {
     const router = extendRouterActions(StackRouter, (state, action) =>
-      action.type === 'POP' ? RouterActionHandling.Reject : RouterActionHandling.Delegate
+      action.type === 'POP' ? RouterActionHandling.Unhandled : RouterActionHandling.Delegate
     )({});
 
     expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
-      RouterActionHandling.Reject
+      RouterActionHandling.Unhandled
     );
   });
 
-  test('rejects the action and warns when the reducer returns null', () => {
+  test('leaves the action unhandled and warns when the reducer returns null', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const router = extendRouterActions(StackRouter, () => null)({});
 
     expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
-      RouterActionHandling.Reject
+      RouterActionHandling.Unhandled
     );
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('"POP"'));
   });
@@ -472,7 +472,7 @@ describe('extendRouterActions', () => {
       }
       const key = nextKey('index');
       const result = baseRouter.getStateForAction(state, action, config);
-      if (isActionRejected(result)) {
+      if (!isActionHandled(result)) {
         return result;
       }
       return {
@@ -499,7 +499,7 @@ describe('extendRouterActions', () => {
         return RouterActionHandling.Delegate;
       }
       const result = baseRouter.getStateForAction(state, action, config);
-      if (isActionRejected(result)) {
+      if (!isActionHandled(result)) {
         return result;
       }
       return {

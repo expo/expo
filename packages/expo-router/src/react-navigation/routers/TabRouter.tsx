@@ -18,7 +18,7 @@ import {
   RouterActionHandling,
   type RouterBrowserHistoryAction,
 } from './types';
-import { isActionRejected } from './utils';
+import { isActionHandled } from './utils';
 
 export type TabActionType =
   | {
@@ -390,7 +390,7 @@ function tabRouterExtension({
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
 
       if (action.target && action.target !== state.key) {
-        return RouterActionHandling.Reject;
+        return RouterActionHandling.Unhandled;
       }
 
       switch (action.type) {
@@ -491,7 +491,7 @@ function tabRouterExtension({
         case 'JUMP_TO':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
@@ -562,7 +562,7 @@ function tabRouterExtension({
         case 'REPLACE_PARAMS': {
           const actionResult = baseRouter.getStateForAction(state, action, options);
 
-          if (!isActionRejected(actionResult)) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             const index = nextState.index;
 
@@ -597,12 +597,12 @@ function tabRouterExtension({
 
         case 'GO_BACK': {
           if (backBehavior === 'none') {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const focusedRoute = state.routes[state.index];
           if (!focusedRoute) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
           let backTargetName: string | undefined;
 
@@ -636,7 +636,7 @@ function tabRouterExtension({
           }
 
           if (state.history.length === 1) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const previousHistoryItem = state.history[state.history.length - 2];
@@ -644,7 +644,7 @@ function tabRouterExtension({
           const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
           if (index === -1) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           let routes = state.routes;
@@ -673,7 +673,7 @@ function tabRouterExtension({
 
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return RouterActionHandling.Reject;
+            return RouterActionHandling.Unhandled;
           }
 
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
@@ -766,7 +766,7 @@ function tabRouterExtension({
         default: {
           const result = baseRouter.getStateForAction(state, action, options);
 
-          if (isActionRejected(result)) {
+          if (!isActionHandled(result)) {
             return result;
           }
 

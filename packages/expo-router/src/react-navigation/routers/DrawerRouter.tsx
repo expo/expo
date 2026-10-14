@@ -14,7 +14,7 @@ import {
 } from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import { type CommonNavigationAction, type ParamListBase, RouterActionHandling } from './types';
-import { isActionRejected } from './utils';
+import { isActionHandled } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -223,7 +223,7 @@ function drawerRouterExtension({
         case 'NAVIGATE': {
           const actionResult = router.getStateForAction(state, action, options);
 
-          if (!isActionRejected(actionResult)) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             if (nextState.index === state.index) {
               return actionResult;
@@ -235,7 +235,7 @@ function drawerRouterExtension({
             };
           }
 
-          return RouterActionHandling.Reject;
+          return RouterActionHandling.Unhandled;
         }
 
         case 'GO_BACK':
