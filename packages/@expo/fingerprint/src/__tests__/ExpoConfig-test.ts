@@ -98,4 +98,16 @@ describe(diffLoadedModules, () => {
     const withoutPlugins = [file('../../packages/@expo/config/build/index.js')];
     expect(diffLoadedModules(full, withoutPlugins)).toEqual([]);
   });
+
+  it('should keep a linked module the project imports even when it also loads without plugins', async () => {
+    const plugin = file('../../packages/app-plugins/build/withName.js');
+    const framework = file('../../packages/@expo/config/build/index.js');
+    expect(
+      diffLoadedModules(
+        [plugin, framework],
+        [plugin, framework],
+        ['../../packages/app-plugins/build/withName.js']
+      )
+    ).toEqual([plugin]);
+  });
 });

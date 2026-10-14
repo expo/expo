@@ -329,6 +329,64 @@ describe('managed project test', () => {
     // `relaxed` ignores the app version and name, so neither change affects the fingerprint.
     expect(hash).toBe(hash2);
   });
+
+  it('should hash a config plugin that a linked workspace package exports', async () => {
+    const packageName = 'fingerprint-e2e-workspace-plugin';
+    const workspacePackageRoot = path.join(tmpDir, `${projectName}-workspace-plugin`);
+    const linkedPackagePath = path.join(projectRoot, 'node_modules', packageName);
+    const configPath = path.join(projectRoot, 'app.config.js');
+    const labelPath = path.join(workspacePackageRoot, 'label.js');
+    const sourcePrefix = path.relative(projectRoot, workspacePackageRoot).split(path.sep).join('/');
+    await fs.mkdir(workspacePackageRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(workspacePackageRoot, 'package.json'),
+      JSON.stringify({ name: packageName, version: '1.0.0', main: 'index.js' })
+    );
+    await fs.writeFile(labelPath, `module.exports = 'first';\n`);
+    await fs.writeFile(
+      path.join(workspacePackageRoot, 'index.js'),
+      [
+        `const label = require('./label');`,
+        ``,
+        `module.exports = function withLabel(config) {`,
+        `  return config;`,
+        `};`,
+        `module.exports.describeLabel = () => label;`,
+        ``,
+      ].join('\n')
+    );
+    await fs.symlink(workspacePackageRoot, linkedPackagePath, 'junction');
+    await fs.writeFile(
+      configPath,
+      [
+        `const withLabel = require('${packageName}');`,
+        ``,
+        `module.exports = ({ config }) => ({ ...config, plugins: [...(config.plugins ?? []), withLabel] });`,
+        ``,
+      ].join('\n')
+    );
+    try {
+      const sources = await getHashSourcesAsync(
+        projectRoot,
+        await normalizeOptionsAsync(projectRoot)
+      );
+      expect(sources).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: 'file', filePath: `${sourcePrefix}/index.js` }),
+          expect.objectContaining({ type: 'file', filePath: `${sourcePrefix}/label.js` }),
+        ])
+      );
+
+      const hash = await createProjectHashAsync(projectRoot);
+      await fs.writeFile(labelPath, `module.exports = 'second';\n`);
+      const hash2 = await createProjectHashAsync(projectRoot);
+      expect(hash).not.toBe(hash2);
+    } finally {
+      await fs.rm(configPath, { force: true });
+      await fs.rm(linkedPackagePath, { force: true });
+      await fs.rm(workspacePackageRoot, { force: true, recursive: true });
+    }
+  });
 });
 
 describe(`getHashSourcesAsync - managed project`, () => {
