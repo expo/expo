@@ -5,6 +5,12 @@ import path from 'path';
 
 import { generateTypes } from '../generateTypes';
 
+// The scanned paths are not real packages, so scan with the macros this CLI is developed against.
+jest.mock('../../scanner/resolveMacros', () => ({
+  ...jest.requireActual('../../scanner/resolveMacros'),
+  resolveMacros: () => jest.requireActual('expo-modules-macros'),
+}));
+
 const sampleScan = {
   schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: {
@@ -28,14 +34,17 @@ const sampleScan = {
         jsName: 'Player',
         file: '/pkg/ios/Demo.swift',
         events: [],
-        constructorParameters: [
-          {
-            label: 'options',
-            name: 'options',
-            type: { kind: 'ref', name: 'Options', typeof: 'object' },
-            optional: false,
-          },
-        ],
+        initializer: {
+          parameters: [
+            {
+              label: 'options',
+              name: 'options',
+              type: { kind: 'ref', name: 'Options', typeof: 'object' },
+              optional: false,
+            },
+          ],
+          platforms: [{ name: 'iOS' }],
+        },
         functions: [],
         properties: [],
       },

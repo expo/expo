@@ -1,11 +1,7 @@
-import {
-  ScannerError,
-  ScannerSchemaVersionError,
-  getScannerBinaryPath,
-  scanExports,
-  type ScanExportsResult,
-} from 'expo-modules-macros';
+import type { ScanExportsResult } from 'expo-modules-macros';
 import fs from 'fs';
+
+import { resolveMacros } from './resolveMacros';
 
 export type ScanOptions = {
   /** A scanner executable to use instead of the one shipped with the macros plugin. */
@@ -20,13 +16,16 @@ export type ScanOptions = {
  */
 export async function scanPackage(
   packageDir: string,
-  { binaryPath = getScannerBinaryPath(), platform = process.platform }: ScanOptions = {}
+  { binaryPath, platform = process.platform }: ScanOptions = {}
 ): Promise<ScanExportsResult> {
+  const { ScannerError, ScannerSchemaVersionError, getScannerBinaryPath, scanExports } =
+    resolveMacros(packageDir);
+  binaryPath ??= getScannerBinaryPath();
   if (!fs.existsSync(binaryPath)) {
     throw new Error(
-      `The Expo Modules scanner executable was not found at ${binaryPath}. It is bundled with ` +
-        `expo-modules-cli, so reinstall your JavaScript dependencies, or pass the path to a ` +
-        `locally built scanner with --scanner.`
+      `The Expo Modules scanner executable was not found at ${binaryPath}. It ships with ` +
+        `expo-modules-macros, a dependency of expo-modules-core, so reinstall your JavaScript ` +
+        `dependencies, or pass the path to a locally built scanner with --scanner.`
     );
   }
   try {
@@ -37,7 +36,7 @@ export async function scanPackage(
       throw new Error(
         `The Expo Modules scanner at ${binaryPath} reports schema version ${error.found}, but this ` +
           `CLI understands version ${error.expected}. Pass a scanner built from the same release as ` +
-          `this CLI with --scanner, or drop the option to use the bundled one.`
+          `this CLI with --scanner, or drop the option to use the one from expo-modules-macros.`
       );
     }
     if (error instanceof ScannerError && error.exitCode !== null) {
