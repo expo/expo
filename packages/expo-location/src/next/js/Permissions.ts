@@ -60,6 +60,8 @@ export async function requestBackgroundPermissions(
 
 /**
  * Checks the user's permission for posting notifications.
+ * See [Start a background session](#start-a-background-session).
+ *
  * @return A promise that fulfills with an object of type `PermissionResponse`.
  * @platform android
  */
@@ -74,6 +76,9 @@ export async function getNotificationPermissions(): Promise<PermissionResponse> 
 /**
  * Asks the user to grant the permission for posting notifications. On Android 12 and lower, no
  * dialog appears, and the result reports whether notifications are on for the app.
+ * 
+ * See [Start a background session](#start-a-background-session).
+ * 
  * @return A promise that fulfills with an object of type `PermissionResponse`.
  * @platform android
  */

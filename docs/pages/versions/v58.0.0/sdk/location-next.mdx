@@ -342,6 +342,37 @@ Both sides default to the same task name, so you can omit it. To run several tas
 
 </Collapsible>
 
+<Collapsible summary="Start a background session">
+
+On Android, while the app is backgrounded, the watchers stop and location tasks trigger rarely. If you want a steady stream of position fixes in the background, start a background session with `ensureBackgroundSessionStarted`.
+The session runs as a location foreground service with a notification and it can only be started while in the foreground.
+
+The call to `ensureBackgroundSessionStarted` persists the configuration passed to it. With the configuration present, the module restarts the background session whenever the app enters the foreground, even after the app is closed and reopened.
+
+```tsx
+import { Location } from 'expo-location/next';
+
+async function startTracking() {
+  const { granted } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return;
+  }
+  await Location.requestNotificationPermissions();
+  await Location.ensureBackgroundSessionStarted({
+    notificationTitle: 'Tracking your route',
+    notificationBody: 'Tap to return to the app',
+  });
+}
+
+async function stopTracking() {
+  await Location.stopBackgroundSession();
+}
+```
+
+If you no longer need the background session, you need to manually stop it using `stopBackgroundSession`.
+
+</Collapsible>
+
 ## API
 
 ```js

@@ -23,6 +23,8 @@ import type { BackgroundSessionOptions, BackgroundSessionStatus } from '../types
  * running, a previous session is still stopping, or promotion does not complete within four
  * seconds.
  *
+ * See [Start a background session](#start-a-background-session).
+ *
  * @platform android
  */
 export async function ensureBackgroundSessionStarted(
@@ -34,6 +36,8 @@ export async function ensureBackgroundSessionStarted(
 /**
  * Stops the foreground service and clears the persisted configuration.
  *
+ * See [Start a background session](#start-a-background-session).
+ *
  * @platform android
  */
 export async function stopBackgroundSession(): Promise<void> {
@@ -42,6 +46,9 @@ export async function stopBackgroundSession(): Promise<void> {
 
 /**
  * Reads the current state of the background session.
+ *
+ * See [Start a background session](#start-a-background-session).
+ *
  * @platform android
  */
 export function getBackgroundSessionStatus(): BackgroundSessionStatus {
