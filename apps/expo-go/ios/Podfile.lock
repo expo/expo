@@ -11,7 +11,7 @@ PODS:
   - EXJSONUtils (58.0.1)
   - EXManifests (58.0.1):
     - ExpoModulesCore
-  - Expo (58.0.8):
+  - Expo (58.0.9):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -129,7 +129,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (58.0.4):
     - ExpoModulesCore
-  - ExpoLocation (58.0.14):
+  - ExpoLocation (58.0.15):
     - ExpoModulesCore
   - ExpoLogBox (58.0.12):
     - React-Core
@@ -140,7 +140,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (58.0.3):
     - ExpoModulesCore
-  - ExpoModulesCore (58.0.16):
+  - ExpoModulesCore (58.0.17):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -171,13 +171,13 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (58.0.11):
+  - ExpoModulesJSI (58.0.12):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (58.0.16):
+  - ExpoModulesWorklets (58.0.17):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (58.0.16):
+  - ExpoModulesWorkletsAdapter (58.0.17):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
@@ -4851,7 +4851,7 @@ SPEC CHECKSUMS:
   EXConstants: c92dd52f6d69691dcfb5e0d7164130a6df2511e5
   EXJSONUtils: d59bf6b18639752631a81818559b2675a46f99e2
   EXManifests: b0b83ad894166f7e080b18814c5e73aed46e366e
-  Expo: f5cd1076f3f6fea6652c118a77a9c7a0a87dc3a5
+  Expo: f200ec25fcc1016a9d48122297d45b2d16d6664b
   ExpoAgeRange: c2c606e16bbfdfe8ba790f47f24054d0267bfcd7
   ExpoAI: 140b9877c5ae5d45d75c21a52713aa9fbb4d7d94
   ExpoAppleAuthentication: 86e09d699399d4c09c2cb32bce32901a9d4ca334
@@ -4889,15 +4889,15 @@ SPEC CHECKSUMS:
   ExpoLivePhoto: 40ebcec310de5da2474b1b35fe9542df5f6f7448
   ExpoLocalAuthentication: ac9c695d877aafc2d7b33b3fdc47ed8fdf90053e
   ExpoLocalization: 10737c526cc1a661b76b3dbcdd9e5d91df1b8b4b
-  ExpoLocation: 214109665c16e8b69d6fff7676cfb9c89ef092e0
+  ExpoLocation: 1485a0770fff84055866dfd8e03cbb89d7fb965a
   ExpoLogBox: 14c42e5429c85e1e2acfb9316b4e821db8e40d42
   ExpoMailComposer: 88b4d391482d58b4a929152f1ca227b19c9a59ef
   ExpoMediaLibrary: a6fa29be39a371fd9d5fecfd2cde59b9179a1071
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
-  ExpoModulesCore: 03ec6477350dc92dfcbfd3a4b289b4233eacc7ba
-  ExpoModulesJSI: a47827fb750e840c9dd2e2fbee836c8b88276a6a
-  ExpoModulesWorklets: 9835642891e0ebdb28c5e029c5139e10477d93ea
-  ExpoModulesWorkletsAdapter: 06862df4dc768ed9c77f7c0a3423f7a80fb43540
+  ExpoModulesCore: 9b2aec73a769d430333fbc7987fe40fbd284f5a3
+  ExpoModulesJSI: 1ef02be30adca9854519ef1826e9bb6a5fffc036
+  ExpoModulesWorklets: ac40f2357232e0006e29cd7a3ed03aad140a8b57
+  ExpoModulesWorkletsAdapter: bcd6c4ddfc464a3a1347e4a3cbbe73363ad781d0
   ExpoNetwork: 05cec4bdbf35b954ab0434f5ecfec363cf826b33
   ExpoNotifications: d1c73d0bb0701d4fd019f6c083310d928cbfc32d
   ExpoPrint: ee06a6102329efc07f84332ab66ced3ed1819d76
