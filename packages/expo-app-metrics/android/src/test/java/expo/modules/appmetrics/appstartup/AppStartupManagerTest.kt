@@ -1,6 +1,8 @@
 package expo.modules.appmetrics.appstartup
 
+import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.storage.Metric
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,6 +14,26 @@ import java.util.concurrent.atomic.AtomicBoolean
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class AppStartupManagerTest {
+  @Test
+  fun `takeUnsavedMetrics returns each metric once`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+
+    AppStartupManager.addMetric(AppStartupMetric.ColdLaunchTime, valueInMs = 100)
+    assertEquals(
+      listOf(AppStartupMetric.ColdLaunchTime.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+    assertEquals(emptyList<Metric>(), AppStartupManager.takeUnsavedMetrics())
+
+    // For example TTI recorded after an update download already saved the launch time.
+    AppStartupManager.addMetric(AppStartupMetric.TimeToInteractive, valueInMs = 200)
+    assertEquals(
+      listOf(AppStartupMetric.TimeToInteractive.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+  }
+
   @Test
   fun `concurrent add and iterate on _metrics does not throw`() {
     // Drive _metrics directly: the public mutators (markInteractive / markFirstRender)
@@ -39,7 +61,7 @@ class AppStartupManagerTest {
     val readerThread = Thread({
       while (running.get()) {
         try {
-          // Iterate through the public getter, the same way saveStartupMetricsIfNotSaved does.
+          // Iterate through the public getter, the same way the module reads it.
           for (m in AppStartupManager.metrics) {
             m.name.length
           }
