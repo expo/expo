@@ -764,7 +764,27 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       return providerClass.init()
     }
 
-    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    // [2] Fallback to the framework that contains ExpoModulesCore itself (brownfield use case).
+    // Brownfield apps often prelink React Native and Expo into one dynamic framework; the
+    // generated provider is then compiled into that framework, so its Swift module is the
+    // framework's name and the main-bundle lookups above miss. Trying this bundle first avoids
+    // the `Bundle.allFrameworks` scan below, which materializes a bundle for every loaded
+    // framework and runs inside `+load` on every cold launch.
+    let coreBundle = Bundle(for: AppContext.self)
+    if coreBundle.bundlePath != Bundle.main.bundlePath {
+      let coreBundleNames = [
+        coreBundle.infoDictionary?["CFBundleExecutable"],
+        coreBundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: coreBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
+      }
+    }
+
+    // [3] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       let frameworkBundleNames = [
         bundle.infoDictionary?["CFBundleExecutable"],
@@ -778,7 +798,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }
     }
 
-    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [4] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 
