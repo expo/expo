@@ -5,6 +5,7 @@ import {
   Tabs,
   type TabSelectedEvent,
   type TabsHostProps,
+  type TabsScreenProps,
   // @ts-expect-error: method is declared in mock below
   __triggerTabSelected,
   // @ts-expect-error: method is declared in mock below
@@ -62,7 +63,8 @@ const triggerTabSelectionPrevented: NonNullable<TabsHostProps['onTabSelectionPre
     __triggerTabSelectionPrevented(event);
   });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -116,11 +118,11 @@ it('emits tabPress event onNativeFocusChange', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/second-[-\w]+/);
+  expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/index-[-\w]+/);
+  expect(TabsScreen.mock.calls[1]![0].screenKey).toMatch(/second-[-\w]+/);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
@@ -223,11 +225,11 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/a-[-\w]+/);
+  expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/index-[-\w]+/);
+  expect(TabsScreen.mock.calls[1]![0].screenKey).toMatch(/a-[-\w]+/);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const aTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
+  const aTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
@@ -330,8 +332,8 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(2);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
   expect(screen).toHavePathname('/');
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
@@ -352,7 +354,7 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   // The event carries the `isPrevented` flag in its data.
-  expect(secondTabPressHandler.mock.calls[0][0].data).toEqual({
+  expect(secondTabPressHandler.mock.calls[0]![0].data).toEqual({
     __internalTabsType: 'native',
     isPrevented: true,
   });
@@ -382,7 +384,7 @@ it('emits tabPress with isPrevented false on a normal native selection', () => {
     },
   });
 
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
   triggerNativeFocusChange({
     nativeEvent: {
@@ -397,7 +399,7 @@ it('emits tabPress with isPrevented false on a normal native selection', () => {
   act(() => jest.runAllTimers());
 
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
-  expect(secondTabPressHandler.mock.calls[0][0].data).toEqual({
+  expect(secondTabPressHandler.mock.calls[0]![0].data).toEqual({
     __internalTabsType: 'native',
     isPrevented: false,
   });

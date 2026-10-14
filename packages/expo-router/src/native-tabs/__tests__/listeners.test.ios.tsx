@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
 import { View, type NativeSyntheticEvent } from 'react-native';
 import {
   Tabs as _Tabs,
   type TabSelectedEvent,
   type TabsHostProps,
+  type TabsScreenProps,
   // @ts-expect-error: method is declared in mock below
   __triggerTabSelected,
 } from 'react-native-screens';
@@ -36,7 +38,8 @@ const triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = (event) 
     __triggerTabSelected(event);
   });
 
-const TabsScreen = _Tabs.Screen as jest.MockedFunction<typeof _Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = _Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -81,7 +84,7 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(indexTabKey));
 
@@ -112,7 +115,7 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(indexTabKey));
 
@@ -137,7 +140,7 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(secondTabKey));
 
@@ -162,8 +165,8 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
+    const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(indexTabKey));
 
@@ -198,7 +201,7 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(indexTabKey));
 
@@ -223,7 +226,7 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
     triggerTabSelected(tabSelectedEvent(indexTabKey));
 
