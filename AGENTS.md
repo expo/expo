@@ -79,7 +79,7 @@ On Android, `adb devices` lists emulators. `adb shell input keyevent <code>` and
 
 On iOS, `xcrun simctl list devices booted` lists the booted simulator. `xcrun simctl openurl booted bareexpo://<path>` opens a deep link. `xcrun simctl io booted screenshot shot.png` saves a screenshot.
 
-Reproduce the bug first. Run the same steps after the fix. Put the command result in the Test Plan. If the change affects what a person sees, take a screenshot before you edit and a screenshot after the fix. Put each image at full width under its own `Before` or `After` heading in `Screenshots`. Do not put the two images in a table. If nothing visible changes, write `No UI change.` Test each platform the change affects. If you cannot run a platform, say that in the Test Plan.
+Reproduce the bug first. Run the same steps after the fix. Put the command result in the Test Plan. If the change affects what a person sees, take a before screenshot and an after screenshot for each platform it affects: Android, iOS, or web. An Android-only change needs Android screenshots. Shared code needs a pair for every platform that runs it. Do not use an iOS Simulator screenshot for a platform you did not run. Put each image at full width under a platform heading, then a `Before` or `After` heading, in `Screenshots`. Do not put the images in a table. If you cannot run an affected platform, name it and say why. If nothing visible changes, write `No UI change.`
 
 For `expo-router`, follow [packages/expo-router/AGENTS.md](./packages/expo-router/AGENTS.md).
 
@@ -93,7 +93,7 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - `Why` states the problem, then the root cause.
 - `How` answers how you built the feature or fixed the bug, and why. Describe each solution, its performance impact, and why you believe this is the right fix. Then say what the diff changes.
 - `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft.
-- `Screenshots` has a `Before` heading and an `After` heading when the change affects what a person sees. Each image is full width. Take the before image first. If nothing visible changes, write `No UI change.`
+- `Screenshots` has a `Before` and `After` pair for each platform the change affects: Android, iOS, or web. Each image is full width. Take the before image first. Do not substitute an iOS Simulator shot for a platform you did not run. If nothing visible changes, write `No UI change.`
 - A fix that the report limits to some devices must stay limited to those devices. If every device must get the change, say why in `How`.
 - Delete the template's HTML comments when you fill the body.
 - Do not open a pull request you cannot explain in a review reply. Answer questions on that pull request.
