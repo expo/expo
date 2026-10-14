@@ -235,8 +235,12 @@ export function getDefaultConfig(
   sourceExts.push('cjs');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
-  const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
   const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
+  const workletsVersion = getPkgVersion(
+    projectRoot,
+    'react-native-worklets',
+    'react-native-reanimated'
+  );
 
   let sassVersion: string | null = null;
   if (isCSSEnabled) {
