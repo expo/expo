@@ -19,6 +19,7 @@ import type {
 } from '../performance';
 import { CommonActions } from '../react-navigation/routers';
 import { renderRouter } from '../testing-library';
+import { lazyModule } from './lazyModule';
 
 describe('router performance marks', () => {
   const cleanups: (() => void)[] = [];
@@ -294,6 +295,47 @@ describe('router performance marks', () => {
       { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
       { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
     ]);
+  });
+
+  it('marks only action-enqueued for an unhandled action', async () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => router.back());
+
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'GO_BACK'"));
+    expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    error.mockRestore();
+  });
+
+  it('keeps the action id of a navigation that waits for a layout to load', async () => {
+    const layout = lazyModule({ default: () => <Stack /> });
+    await renderRouter({
+      index: () => <Text testID="index" />,
+      other: () => <Text testID="other" />,
+      'profile/_layout': layout.load,
+      'profile/[id]': () => <Text testID="profile-id" />,
+    });
+    await act(() => router.push('/other'));
+    const log = observeActionIds();
+
+    await act(() => router.push('/profile/1'));
+    await act(() => navigationRef.current!.dispatchSync({ type: 'GO_BACK' }));
+    await act(async () => layout.resolve());
+
+    expect(screen.getByTestId('profile-id')).toBeVisible();
+    const [push, back] = log.map(({ actionId }) => actionId);
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: push },
+      { name: 'expo-router:action-enqueued', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: push },
+    ]);
+    expect(push).not.toBe(back);
   });
 
   it('marks action-dispatched even when an internal listener throws', async () => {

@@ -246,13 +246,26 @@ describe('initListeners', () => {
     expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
   });
 
-  it('drops enqueue times of older actions when an action dispatches', () => {
+  it('measures TTR from the enqueue time of an action that dispatches after a later action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
     enqueue(events, 1, 1000);
     enqueue(events, 2, 1100);
-    enqueue(events, 3, 1200);
-    dispatch(events, 'NAVIGATE', 1300, 2);
+    dispatch(events, 'NAVIGATE', 1200, 2);
+    dispatch(events, 'NAVIGATE', 1300, 1);
+    focus(events, 'a', undefined, 1350);
+    await flushAsync();
 
-    expect([...storage.enqueueTimes.keys()]).toEqual([2, 3]);
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.35 }));
+  });
+
+  it('drops the oldest enqueue time when the map exceeds its cap', () => {
+    for (let id = 1; id <= 101; id++) {
+      enqueue(events, id, id);
+    }
+
+    expect(storage.enqueueTimes.size).toBe(100);
+    expect(storage.enqueueTimes.has(1)).toBe(false);
   });
 
   it('keeps the enqueue time of an action enqueued before the previous focus', async () => {

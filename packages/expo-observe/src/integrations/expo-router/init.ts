@@ -17,6 +17,8 @@ import { type RouterIntegrationStorage } from './storage';
 // version should be an explicit no-op (return a noop cleanup) rather than
 // relying on the web stubs in `expo-app-metrics/module.web.ts`.
 
+const MAX_ENQUEUE_TIMES = 100;
+
 let initialized = false;
 let routerIntegrationConfig: ObserveIntegrationsConfig['expo-router'];
 
@@ -42,22 +44,17 @@ export function initListeners(
       switch (entry.name) {
         case 'expo-router:action-enqueued':
           storage.enqueueTimes.set(entry.detail.actionId, entry.startTime);
+          // Ids grow and the map keeps insertion order, so the first key is the oldest. The cap
+          // bounds the map, because some actions never dispatch.
+          if (storage.enqueueTimes.size > MAX_ENQUEUE_TIMES) {
+            storage.enqueueTimes.delete(storage.enqueueTimes.keys().next().value!);
+          }
           break;
         case 'expo-router:action-dispatched': {
           // Look up by id so an action that never dispatched can't become the TTR start.
           const { actionId } = entry.detail;
           const enqueueTime =
             actionId === undefined ? undefined : storage.enqueueTimes.get(actionId);
-          if (actionId !== undefined) {
-            // Ids only grow and the map keeps insertion order, so drop the older ids to limit its
-            // size. Keep `actionId`: a browser restore can dispatch several actions with one id.
-            // An older action that dispatches later (after a `dispatchSync`) falls back to its
-            // dispatch time.
-            for (const id of storage.enqueueTimes.keys()) {
-              if (id >= actionId) break;
-              storage.enqueueTimes.delete(id);
-            }
-          }
           // PRELOAD comes from router.prefetch() — a route warm-up, not a user
           // navigation — so it must not become a TTR start.
           if (entry.detail.actionType === 'PRELOAD') break;
