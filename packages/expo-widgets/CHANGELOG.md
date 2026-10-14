@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Add custom notifications. ([#51461](https://github.com/expo/expo/pull/51461) by [@jakex7](https://github.com/jakex7))
+- [iOS] Rebuild the widgets JS bundle on every Xcode build so JS changes are picked up without a clean build. ([#50200](https://github.com/expo/expo/pull/50200) by [@jakex7](https://github.com/jakex7))
+- Updated dependencies. ([#51480](https://github.com/expo/expo/pull/51480), [#51426](https://github.com/expo/expo/pull/51426))
+  - @expo/ui@58.0.17
+
 ## 58.0.16
 
 ### Patch Changes

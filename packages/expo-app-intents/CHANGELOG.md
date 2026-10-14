@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51480](https://github.com/expo/expo/pull/51480), [#51426](https://github.com/expo/expo/pull/51426))
+  - @expo/ui@58.0.17
+
 ## 0.5.5
 
 ### Patch Changes

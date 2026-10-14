@@ -1,6 +1,6 @@
 {
   "name": "@expo/router-e2e",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {

@@ -1,5 +1,11 @@
 # expo-modules-cli
 
+## 0.3.0
+
+### Minor Changes
+
+- Scan with the `expo-modules-macros` version that `expo-modules-core` depends on, found through the `expo` package of the scanned package, instead of a copy of its own. `expo` is now a peer dependency. The CLI reads the `scan-exports` schema of `expo-modules-macros` 0.20.0, and declares enums, records, and unions nested in other types under their own names. ([#51548](https://github.com/expo/expo/pull/51548) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.2.2
 
 ### Patch Changes

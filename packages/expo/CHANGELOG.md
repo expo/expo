@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Add missing `expo/build/winter` exports entry. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51477](https://github.com/expo/expo/pull/51477), [#51481](https://github.com/expo/expo/pull/51481), [#51548](https://github.com/expo/expo/pull/51548), [#51546](https://github.com/expo/expo/pull/51546), [#50406](https://github.com/expo/expo/pull/50406), [#51553](https://github.com/expo/expo/pull/51553), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51526](https://github.com/expo/expo/pull/51526), [#51023](https://github.com/expo/expo/pull/51023), [#51347](https://github.com/expo/expo/pull/51347), [#51338](https://github.com/expo/expo/pull/51338), [#51517](https://github.com/expo/expo/pull/51517), [#51344](https://github.com/expo/expo/pull/51344))
+  - expo-modules-autolinking@58.0.13
+  - expo-modules-core@58.0.18
+  - @expo/cli@58.1.8
+  - @expo/metro-config@58.0.13
+  - babel-preset-expo@58.0.14
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - expo-constants@58.0.12
+  - @expo/local-build-cache-provider@58.0.6
+  - expo-asset@58.0.15
+
 ## 58.0.9
 
 ### Patch Changes

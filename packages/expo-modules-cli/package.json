@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-cli",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Command-line tools for developing Expo modules.",
   "keywords": [
     "cli",

@@ -1,5 +1,15 @@
 # minimal-swiftpm
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536))
+  - expo@58.0.10
+  - expo-image@58.0.14
+  - expo-crypto@58.0.6
+  - expo-constants@58.0.12
+
 ## 1.0.3
 
 ### Patch Changes

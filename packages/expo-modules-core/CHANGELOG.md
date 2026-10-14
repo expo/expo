@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Fix slow cold launches in brownfield apps where the `ExpoModulesProvider` lookup scanned `Bundle.allFrameworks` inside `+load`. The lookup now tries the framework that contains ExpoModulesCore before falling back to the scan. ([#51481](https://github.com/expo/expo/pull/51481) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Update `expo-modules-macros` to 0.20.0, which binds `@JS` functions and setters that return nothing through the `Void` overload, so they no longer build an `undefined` value on each call. ([#51548](https://github.com/expo/expo/pull/51548) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the overhead of emitting module events. ([#51553](https://github.com/expo/expo/pull/51553) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51496](https://github.com/expo/expo/pull/51496), [#51499](https://github.com/expo/expo/pull/51499), [#51498](https://github.com/expo/expo/pull/51498), [#51371](https://github.com/expo/expo/pull/51371))
+  - expo-modules-jsi@58.0.13
+
 ## 58.0.17
 
 ### Patch Changes
