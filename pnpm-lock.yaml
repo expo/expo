@@ -5435,9 +5435,9 @@ importers:
       commander:
         specifier: ^14.0.3
         version: 14.0.3
-      expo-modules-macros:
-        specifier: ^0.16.0
-        version: 0.16.0
+      expo:
+        specifier: '*'
+        version: link:../expo
     devDependencies:
       '@expo/internal-scripts':
         specifier: workspace:*
@@ -5448,6 +5448,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
+      expo-modules-macros:
+        specifier: 0.20.0
+        version: 0.20.0
 
   packages/expo-modules-core:
     dependencies:
@@ -12251,9 +12254,6 @@ packages:
     hasBin: true
     peerDependencies:
       expo: '*'
-
-  expo-modules-macros@0.16.0:
-    resolution: {integrity: sha512-O8F67o4smrGT2l6G2MKmJUdg/x0gfAOGrXD3Cy1MtQwnOPLSgdKk8eXx21sEPUSMXkfHLcvFcdIbl1May09VBg==}
 
   expo-modules-macros@0.20.0:
     resolution: {integrity: sha512-Ekgb5c9LQPM9CPnmDZdeWcOa1eBbCDUGrgdN5lIFNH2GWDUf9doeAOK7IqQOOVviamy37eIp5FW+N1zyrIwzoA==}
@@ -21545,8 +21545,6 @@ snapshots:
       open: 8.4.2
       serve-static: 2.2.1
       stream-json: 1.9.1
-
-  expo-modules-macros@0.16.0: {}
 
   expo-modules-macros@0.20.0:
     optionalDependencies:

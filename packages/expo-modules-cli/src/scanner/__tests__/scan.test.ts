@@ -5,6 +5,12 @@ import path from 'path';
 
 import { scanPackage } from '../scan';
 
+// The scanned paths are not real packages, so scan with the macros this CLI is developed against.
+jest.mock('../resolveMacros', () => ({
+  ...jest.requireActual('../resolveMacros'),
+  resolveMacros: () => jest.requireActual('expo-modules-macros'),
+}));
+
 let tmpDir: string;
 
 beforeEach(() => {

@@ -34,7 +34,8 @@ export function generateTypesCommand(cli: Command) {
     )
     .option(
       '--scanner <path>',
-      'Path to the Expo Modules scanner executable. Defaults to the scanner bundled with this CLI.'
+      'Path to the Expo Modules scanner executable. Defaults to the scanner of the expo-modules-macros ' +
+        'version that expo-modules-core depends on.'
     )
     .option(
       '--check',
