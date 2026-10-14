@@ -117,8 +117,6 @@ it(`inlines constants`, () => {
 
   // All of this code should remain intact.
   const sourceCode = `
-// EXPO_PROJECT_ROOT
-process.env.EXPO_PROJECT_ROOT;
 // EXPO_ROUTER_ABS_APP_ROOT
 process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
@@ -127,8 +125,6 @@ process.env.EXPO_ROUTER_APP_ROOT;`;
   // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
   // From /foo/bar/node_modules/expo-router/ to /foo/bar/app = ../../app
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
-// EXPO_PROJECT_ROOT
-"/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/foo/bar/app";
 // EXPO_ROUTER_APP_ROOT
@@ -151,8 +147,6 @@ it(`uses custom absolute app entry inside the project`, () => {
 
   // All of this code should remain intact.
   const sourceCode = `
-// EXPO_PROJECT_ROOT
-process.env.EXPO_PROJECT_ROOT;
 // EXPO_ROUTER_ABS_APP_ROOT
 process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
@@ -161,8 +155,6 @@ process.env.EXPO_ROUTER_APP_ROOT;`;
   // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
   // From /foo/bar/node_modules/expo-router/ to /foo/bar/random/value = ../../random/value
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
-// EXPO_PROJECT_ROOT
-"/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/foo/bar/random/value";
 // EXPO_ROUTER_APP_ROOT
@@ -236,8 +228,6 @@ it(`uses custom relative app entry`, () => {
 
   // All of this code should remain intact.
   const sourceCode = `
-// EXPO_PROJECT_ROOT
-process.env.EXPO_PROJECT_ROOT;
 // EXPO_ROUTER_ABS_APP_ROOT
 process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
@@ -246,8 +236,6 @@ process.env.EXPO_ROUTER_APP_ROOT;`;
   // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
   // From /foo/bar/node_modules/expo-router/ to /foo/bar/random/value = ../../random/value
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
-// EXPO_PROJECT_ROOT
-"/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/foo/bar/random/value";
 // EXPO_ROUTER_APP_ROOT

@@ -30,7 +30,6 @@ interface ExpoRouterPluginState extends PluginPass {
 /**
  * Inlines environment variables to configure the process:
  *
- * EXPO_PROJECT_ROOT
  * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
  * EXPO_ROUTER_IMPORT_MODE
@@ -76,9 +75,6 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
         // Check each possible env var
 
         switch (keyValue) {
-          case 'EXPO_PROJECT_ROOT':
-            path.replaceWith(t.stringLiteral(state.projectRoot!));
-            return;
           case 'EXPO_ROUTER_IMPORT_MODE':
             path.replaceWith(t.stringLiteral(importMode));
             return;
