@@ -215,24 +215,25 @@ export type PositionUpdate =
  */
 export type PositionWatchStatus = {
   /**
-   * Whether a session is configured. It does not mean positions are arriving — see
-   * `canDeliverUpdates`.
+   * Whether the watcher is subscribed to location updates. On Android, this does not mean
+   * positions are arriving. Check `canDeliverUpdates` for that.
    */
   isSubscribed: boolean;
   /**
-   * Whether the subscription can deliver. `false` while no system provider matches the request,
-   * or Google Play services reports location unavailable. Restarting the watcher does not clear
-   * it.
+   * Whether the watcher can deliver positions. `false` while no system provider matches the
+   * request, or while Google Play services reports location unavailable. It turns `true` again on
+   * its own when location becomes available.
    *
    * @platform android
    */
-  canDeliverUpdates: boolean;
+  canDeliverUpdates?: boolean;
   /**
    * Whether the handle can still be brought back to sending. False only once released.
    */
   isHandleAlive: boolean;
   /**
-   * Whether delivery has been started. On Android, it is `true` while at least one listener is attached.
+   * Whether delivery has been started. On Android, it is `true` while at least one listener is
+   * attached.
    */
   isStarted: boolean;
   /**
@@ -240,13 +241,13 @@ export type PositionWatchStatus = {
    */
   isPaused: boolean;
   /**
-   * Whether the watcher is allowed to run. `true` in the foreground, and in the background while
-   * a location foreground service is running, or on Android 7 and earlier, where no service is
+   * Whether the watcher is allowed to run. `true` while the app is in the foreground or the
+   * background session is promoted, and always `true` on Android 7 and earlier, where no service is
    * needed.
    *
    * @platform android
    */
-  areUpdatesAllowed: boolean;
+  areUpdatesAllowed?: boolean;
   /**
    * Whether the app is in the foreground. On Android, the watcher holds the system request only
    * while it is `true`.

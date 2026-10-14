@@ -8,8 +8,11 @@ export type BackgroundTaskStatus = {
   isRegistered: boolean;
   /** Whether the provider accepted the request for updates. */
   isRunning: boolean;
-  /** Why the last request for updates failed, or `null` when it succeeded. */
+  /** Why the last request for updates failed, or `null` when no failure was reported. */
   lastError: string | null;
-  /** When the last position arrived, in milliseconds, or `null` when none has. */
+  /**
+   * The `timestamp` of the last delivered position, in milliseconds since the Unix epoch, or
+   * `null` when none has arrived.
+   */
   lastFixAt: number | null;
 };

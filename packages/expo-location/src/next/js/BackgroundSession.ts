@@ -6,13 +6,17 @@ import type { BackgroundSessionOptions, BackgroundSessionStatus } from '../types
  * background. If the service is already promoted, re-posts its notification with the given
  * options.
  *
- * The service keeps the `options` and restarts when the app is closed and reopened.
- * Omitting `options` uses the persisted configuration or default one if unset.
+ * Starting the service requires the app to be in the foreground. When no service is running, a
+ * call from the background rejects, but it still persists the `options`, so the service starts
+ * the next time the app comes to the foreground.
+ *
+ * The service keeps the `options` and restarts when the app is closed and reopened. Omitting
+ * `options` uses the persisted configuration, or the default one if unset.
  *
  * Does nothing on Android 7 and earlier, where background location is never throttled.
  *
- * A missing `POST_NOTIFICATIONS` permission is not an error — the service runs without a visible
- * notification.
+ * A missing `POST_NOTIFICATIONS` permission is not an error. The service still runs, but its
+ * notification does not appear in the notification drawer.
  *
  * @throws if the manifest is missing `FOREGROUND_SERVICE` or `FOREGROUND_SERVICE_LOCATION`,
  * foreground location permission is not granted, the app is in the background with no service

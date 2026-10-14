@@ -11,8 +11,9 @@ export enum BackgroundSessionState {
    */
   PENDING = 'PENDING',
   /**
-   * The service is running in the foreground. Its notification is only visible if the
-   * `android.permission.POST_NOTIFICATIONS` permission is granted.
+   * The service is running in the foreground. On Android 13 and later, its notification appears
+   * in the notification drawer only when the `android.permission.POST_NOTIFICATIONS` permission
+   * is granted.
    */
   PROMOTED = 'PROMOTED',
 }
@@ -26,25 +27,31 @@ export type BackgroundSessionOptions = {
   notificationTitle?: string;
   /** Notification body. When omitted, the notification has no text. */
   notificationBody?: string;
-  /** Notification accent color as an ARGB integer. When set, the notification is colorized. */
+  /**
+   * Notification accent color as an RGB integer, such as `0x2196f3`. When set, the notification is
+   * colorized.
+   */
   notificationColor?: number;
   /**
-   * Whether to stop the session when the user swipes the app away from recents. Defaults to
-   * `false`.
+   * Whether to stop the service when the user swipes the app away from the Recents screen. The
+   * configuration stays persisted, so the service starts again the next time the app comes to the
+   * foreground. Defaults to `false`.
    */
   stopOnTaskRemoved?: boolean;
 };
 
 /**
+ * State of the background session, returned by `getBackgroundSessionStatus`.
  * @platform android
  */
 export type BackgroundSessionStatus = {
+  /** The lifecycle state of the foreground service. */
   state: BackgroundSessionState;
   /** The value currently in effect, which is `false` whenever no service is running. */
   stopOnTaskRemoved: boolean;
   /**
    * Whether location updates keep flowing while the app is in the background.
-   * True while the service is promoted, and always true on Android 7 and earlier, where no
+   * `true` while the service is promoted, and always `true` on Android 7 and earlier, where no
    * throttling exists.
    */
   unthrottled: boolean;

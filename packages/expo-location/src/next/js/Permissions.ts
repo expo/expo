@@ -72,7 +72,8 @@ export async function getNotificationPermissions(): Promise<PermissionResponse> 
 }
 
 /**
- * Asks the user to grant the permission for posting notifications.
+ * Asks the user to grant the permission for posting notifications. On Android 12 and lower, no
+ * dialog appears, and the result reports whether notifications are on for the app.
  * @return A promise that fulfills with an object of type `PermissionResponse`.
  * @platform android
  */
@@ -125,7 +126,7 @@ export const useBackgroundLocationPermissions = createPermissionHook({
 });
 
 /**
- * Checks or requests the permission for showing notifications.
+ * Checks or requests the permission for posting notifications.
  * @platform android
  */
 export const useNotificationPermissions = createPermissionHook({

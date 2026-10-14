@@ -70,8 +70,8 @@ export class LocationUpdatesHandle {
   }
 
   /**
-   * Reads the state of the task. The state lives in the app process, so it is reset whenever the
-   * process is recreated, even while the task stays registered with the system.
+   * Reads the state of the task. The state lives in the app process, so it resets whenever the
+   * process restarts, even while the task stays registered with the system.
    *
    * @platform android
    */
