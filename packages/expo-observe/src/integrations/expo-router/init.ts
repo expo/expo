@@ -2,6 +2,7 @@ import AppMetrics from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
+import { createNavigationBlockingTime } from './blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import {
@@ -36,6 +37,11 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
+  const cleanup = new Set<() => void>();
+  const blockingTime = createNavigationBlockingTime((metric) =>
+    AppMetrics.getMainSession().addMetric(metric)
+  );
+  if (blockingTime) cleanup.add(blockingTime.dispose);
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {
@@ -62,6 +68,8 @@ export function initListeners(
             actionType: entry.detail.actionType,
             startTime: enqueueTime ?? entry.startTime,
           });
+          // Navigations before the first screen is focused are part of app launch.
+          if (storage.hasRecordedInitialTtr) blockingTime?.start();
           break;
         }
         case 'expo-router:page-preloaded':
@@ -76,6 +84,7 @@ export function initListeners(
     }
   });
   observer.observe({ type: 'mark' });
+  cleanup.add(() => observer.disconnect());
 
   async function onPageFocused(e: RouterPageMarkDetail, now: number) {
     // Stamp every metric written below with the moment of the focus mark, not
@@ -144,6 +153,15 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
+    if (!isAppLaunch) {
+      blockingTime?.setMetric({
+        timestamp,
+        category: 'navigation',
+        name: 'tbt',
+        routeName: routePattern,
+        params: navigationParams,
+      });
+    }
     if (hasPendingInteractive) {
       await emitTTI({
         session: mainSession,
@@ -158,5 +176,8 @@ export function initListeners(
     }
   }
 
-  return () => observer.disconnect();
+  return () => {
+    cleanup.forEach((c) => c());
+    cleanup.clear();
+  };
 }
