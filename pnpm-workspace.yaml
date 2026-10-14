@@ -37,6 +37,7 @@ minimumReleaseAgeExclude:
   - '@changesets/config@4.0.1'
   - react-native-screens@4.30.0
   - 2g
+  - expo-atlas@0.5.0
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
