@@ -41,7 +41,7 @@ PODS:
   - EXManifests/Tests (58.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (58.0.8):
+  - Expo (58.0.9):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -216,7 +216,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (58.0.8):
+  - Expo/Tests (58.0.9):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
@@ -456,9 +456,9 @@ PODS:
   - ExpoLocalization/Tests (58.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoLocation (58.0.14):
+  - ExpoLocation (58.0.15):
     - ExpoModulesCore
-  - ExpoLocation/Tests (58.0.14):
+  - ExpoLocation/Tests (58.0.15):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoLogBox (58.0.12):
@@ -478,7 +478,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (58.0.3):
     - ExpoModulesCore
-  - ExpoModulesCore (58.0.16):
+  - ExpoModulesCore (58.0.17):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -503,7 +503,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (58.0.16):
+  - ExpoModulesCore/Benchmarks (58.0.17):
     - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
@@ -529,10 +529,36 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesJSI (58.0.11):
+  - ExpoModulesCore/Tests (58.0.17):
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - ExpoModulesJSI (58.0.12):
     - React-Core
     - ReactCommon
-  - ExpoModulesJSI/Tests (58.0.11):
+  - ExpoModulesJSI/Tests (58.0.12):
     - React-Core
     - ReactCommon
   - ExpoModulesTestCore (58.0.4):
@@ -541,14 +567,14 @@ PODS:
   - ExpoModulesTestCore/Tests (58.0.4):
     - ExpoModulesCore
     - React-hermes
-  - ExpoModulesWorklets (58.0.16):
+  - ExpoModulesWorklets (58.0.17):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorklets/Tests (58.0.16):
+  - ExpoModulesWorklets/Tests (58.0.17):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
-  - ExpoModulesWorkletsAdapter (58.0.16):
+  - ExpoModulesWorkletsAdapter (58.0.17):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
@@ -3401,6 +3427,7 @@ DEPENDENCIES:
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
+  - ExpoModulesCore/Benchmarks (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
@@ -4071,7 +4098,7 @@ SPEC CHECKSUMS:
   EXConstants: c92dd52f6d69691dcfb5e0d7164130a6df2511e5
   EXJSONUtils: d59bf6b18639752631a81818559b2675a46f99e2
   EXManifests: b0b83ad894166f7e080b18814c5e73aed46e366e
-  Expo: 814d227b6e0ef589e22a45a90c4fe0b87d9c83d9
+  Expo: 1b7b09bd7ccd2287ca863925bbd03660f4dce16e
   expo-dev-client: f521d333198b69ec7a6677eddad9914748744049
   expo-dev-launcher: bb8ddc73373878cde970e2454eaf05adb7d77678
   expo-dev-menu: 467097ec7bcafceb0fd2d32328bc6315a0ed6ba9
@@ -4082,7 +4109,7 @@ SPEC CHECKSUMS:
   ExpoAppIntents: 37caed01b6bf01690c4fc90b90064d891fa81f40
   ExpoAppleAuthentication: 86e09d699399d4c09c2cb32bce32901a9d4ca334
   ExpoApplication: a7a10b2d646701cadd8160cb1dbd2ea98e10ab42
-  ExpoAppMetrics: b04ac204d3f844b2ff8457d621fd2ed06b2b525e
+  ExpoAppMetrics: 894a44821e6cc4b8199f81cfe766c8fa83b3b5c0
   ExpoAsset: 81dd549840fe81ec0df681ae2f9985ff07c7ec6e
   ExpoAudio: 7963cae3818d0a9f9b6ac927b7f5401b2539daa6
   ExpoBackgroundFetch: e93a25f504fac530e3ba46c5258d70fe5d2d9b7b
@@ -4118,17 +4145,17 @@ SPEC CHECKSUMS:
   ExpoLivePhoto: 40ebcec310de5da2474b1b35fe9542df5f6f7448
   ExpoLocalAuthentication: ac9c695d877aafc2d7b33b3fdc47ed8fdf90053e
   ExpoLocalization: 10737c526cc1a661b76b3dbcdd9e5d91df1b8b4b
-  ExpoLocation: 214109665c16e8b69d6fff7676cfb9c89ef092e0
+  ExpoLocation: 1485a0770fff84055866dfd8e03cbb89d7fb965a
   ExpoLogBox: 14c42e5429c85e1e2acfb9316b4e821db8e40d42
   ExpoMailComposer: 88b4d391482d58b4a929152f1ca227b19c9a59ef
   ExpoMaps: 75cbf7c110d65ba0f509cf2b53b632bd1f041a9b
   ExpoMediaLibrary: a6fa29be39a371fd9d5fecfd2cde59b9179a1071
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
-  ExpoModulesCore: 7dd7714eeb59640a055053f0cfc8f74bef5486dd
-  ExpoModulesJSI: a47827fb750e840c9dd2e2fbee836c8b88276a6a
+  ExpoModulesCore: 13d08d6560adbb009cea076c7317b15151e98308
+  ExpoModulesJSI: 1ef02be30adca9854519ef1826e9bb6a5fffc036
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
-  ExpoModulesWorklets: 9835642891e0ebdb28c5e029c5139e10477d93ea
-  ExpoModulesWorkletsAdapter: 06862df4dc768ed9c77f7c0a3423f7a80fb43540
+  ExpoModulesWorklets: ac40f2357232e0006e29cd7a3ed03aad140a8b57
+  ExpoModulesWorkletsAdapter: bcd6c4ddfc464a3a1347e4a3cbbe73363ad781d0
   ExpoNetwork: 05cec4bdbf35b954ab0434f5ecfec363cf826b33
   ExpoNotifications: d1c73d0bb0701d4fd019f6c083310d928cbfc32d
   ExpoObserve: b32c25a8555cc03ddc898a91a13d18f435e166ae
@@ -4261,7 +4288,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 5ddeb7b9142ea2b53386cf9e1737fd0ddc5a186f
   RNGestureHandler: e19fcf39b0212e0eb8bc7ca1e645500eb492f6be
   RNReanimated: 38f813e4e6593602a2230746adf65e3275648dac
-  RNScreens: a56a0eca6efd7175da435cdef59aa45bfeb244ed
+  RNScreens: 6d0d3b7819284dbf9f222899eb819f069fce4b8b
   RNSVG: 8b5f2fdb9f0245a863cdd6e9c48a7689821a08b0
   RNWorklets: d1f97e2f206f636eeabb8a3a2e1968565d004d7b
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf

@@ -4894,7 +4894,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 88b4d391482d58b4a929152f1ca227b19c9a59ef
   ExpoMediaLibrary: a6fa29be39a371fd9d5fecfd2cde59b9179a1071
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
-  ExpoModulesCore: 9b2aec73a769d430333fbc7987fe40fbd284f5a3
+  ExpoModulesCore: bc7735c5414624b77a74da370abf852bd16b5a81
   ExpoModulesJSI: 1ef02be30adca9854519ef1826e9bb6a5fffc036
   ExpoModulesWorklets: ac40f2357232e0006e29cd7a3ed03aad140a8b57
   ExpoModulesWorkletsAdapter: bcd6c4ddfc464a3a1347e4a3cbbe73363ad781d0
@@ -5039,7 +5039,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 337d04032de1b11a6651e0aefb70d18f583d5fab
   RNGestureHandler: 9eb2437cb5a73b75be84b6bf6876d450fa3a2371
   RNReanimated: 8775c9ee9094dac52c7a4eaec4ad5ebfc887b48a
-  RNScreens: d3992622606ed13bf65a8481760fa2c90dccd9e4
+  RNScreens: 228d4a60b904d375fbd108f174db502a2f48e251
   RNSVG: 65658480ac6b3c0cddab6b60392f7179cd7682df
   RNWorklets: 3513f121393e90028489874fc1f5c5c003d96d0a
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
