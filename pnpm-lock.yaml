@@ -2054,8 +2054,8 @@ importers:
         specifier: workspace:^
         version: link:../log-box-utils
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
+        specifier: ~58.0.0
+        version: 58.0.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../metro-config
@@ -2886,8 +2886,8 @@ importers:
         specifier: workspace:~
         version: link:../json-file
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
+        specifier: ~58.0.0
+        version: 58.0.0
       '@expo/platforms':
         specifier: workspace:^
         version: link:../platforms
@@ -3505,8 +3505,8 @@ importers:
         specifier: workspace:*
         version: link:../@expo/internal-scripts
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
+        specifier: ~58.0.0
+        version: 58.0.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../@expo/metro-config
@@ -3872,8 +3872,8 @@ importers:
         specifier: workspace:^
         version: link:../@expo/log-box-utils
       '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
+        specifier: ~58.0.0
+        version: 58.0.0
       '@expo/metro-config':
         specifier: workspace:~
         version: link:../@expo/metro-config
@@ -8420,8 +8420,8 @@ packages:
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.26.0
 
-  '@expo/metro@58.0.0-rc.0':
-    resolution: {integrity: sha512-9ZXNH/rppKQcoW0ycTSQqnKcjuYnutWf/6YkfAh1PBeWs+W1Nuc2uMTRM0qWNc9btbD4iHZKovru3gJqMgFzFQ==}
+  '@expo/metro@58.0.0':
+    resolution: {integrity: sha512-PMD640ihB0C3Oqm0AnDVJ/8qF2cKbRUEqGuSOr4tM/OTb9ktxsQqsiSSSeaOEgdCZBq20AxRS0d6WHNhhH2P+g==}
 
   '@expo/modules-macros-win32-arm64@0.19.1':
     resolution: {integrity: sha512-e5tcXNIG1h8rzt+SjD7J8+F+XeZiK2tC+z+f7D20zLwaDdJKOHkbXQbxZ3HdVLdZHW/azxpqKuI27/UBXuY2og==}
@@ -17531,7 +17531,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@expo/metro@58.0.0-rc.0':
+  '@expo/metro@58.0.0':
     dependencies:
       metro: 0.87.1
       metro-babel-transformer: 0.87.1
