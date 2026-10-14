@@ -225,7 +225,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       try {
         context.startForegroundService(serviceIntent)
       } catch (e: RuntimeException) {
-        if (!isStartRejected(e)) throw e
+        if (!isStartRejected(e)) {
+          throw e
+        }
         Log.w(TAG, "Foreground location task could not be started", e)
         return
       }
@@ -239,7 +241,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
               try {
                 it.startForeground(serviceOptions)
               } catch (e: RuntimeException) {
-                if (!isStartRejected(e)) throw e
+                if (!isStartRejected(e)) {
+                  throw e
+                }
                 Log.w(TAG, "Foreground location task could not enter the foreground", e)
                 releaseService()
                 return
@@ -265,7 +269,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       try {
         mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
       } catch (e: RuntimeException) {
-        if (!isStartRejected(e)) throw e
+        if (!isStartRejected(e)) {
+          throw e
+        }
         Log.w(TAG, "Foreground location task could not be restarted", e)
         releaseService()
       }
