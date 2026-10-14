@@ -3877,7 +3877,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNScreens (4.29.0):
+  - RNScreens (4.30.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3905,10 +3905,10 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.29.0)
+    - RNScreens/common (= 4.30.0)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.29.0):
+  - RNScreens/common (4.30.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -4431,7 +4431,7 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.88.0-rc._62f7f8b4080f1afceb6d764fcb67aa38/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-n_12cfda0334e1970c45e3e113afe6e5c0/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_59e85c38406b27a022d8d1249cdcb025/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.29.0_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_d28e573784037c8f3170bfa9298804d4/node_modules/react-native-screens`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.30.0_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_79b3809736aef0ac91d80841eed30c7c/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+metr_03486c5439a75ec8c53a515a6fbeb326/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.13.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_f876db482c9d78acb3b2b811a6594b49/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
@@ -4831,7 +4831,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_59e85c38406b27a022d8d1249cdcb025/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.29.0_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_d28e573784037c8f3170bfa9298804d4/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.30.0_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_79b3809736aef0ac91d80841eed30c7c/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+metr_03486c5439a75ec8c53a515a6fbeb326/node_modules/react-native-svg"
   RNWorklets:
@@ -5039,7 +5039,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 337d04032de1b11a6651e0aefb70d18f583d5fab
   RNGestureHandler: 9eb2437cb5a73b75be84b6bf6876d450fa3a2371
   RNReanimated: 8775c9ee9094dac52c7a4eaec4ad5ebfc887b48a
-  RNScreens: 613a5164474887193f32bb00784c91b67c29b189
+  RNScreens: d3992622606ed13bf65a8481760fa2c90dccd9e4
   RNSVG: 65658480ac6b3c0cddab6b60392f7179cd7682df
   RNWorklets: 3513f121393e90028489874fc1f5c5c003d96d0a
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
