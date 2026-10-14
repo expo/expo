@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   enum StartupState {
     case launching, launched, interrupted
@@ -13,18 +15,41 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     didSet {
       if startupState == .interrupted {
         frameMetricsRecorder.stop()
+        stallMonitor.stop()
+        startupPhase.value = AppStartupMonitoring.steadyStatePhase
       }
     }
   }
 
   let frameMetricsRecorder = FrameMetricsRecorder()
 
+  /// Watches the main thread over the TTI window and reports each stall with its backtrace.
+  let stallMonitor = MainThreadStallMonitor()
+  /// Read from the stall monitor's thread when a stall is detected, so it lives outside the actor.
+  private let startupPhase = LockedValue("beforeFirstRender")
+  /// Phase reported once the measured launch window is over: TTI reached, launch interrupted,
+  /// prewarmed launch, or no TTI within `launchWindowTimeout`.
+  static let steadyStatePhase = "afterInteractive"
+  /// A launch that hasn't reached TTI this long after `didFinishLaunching` stops being treated as
+  /// startup for slow-call thresholds (mirrors `MainThreadStallMonitor.maxMonitoringDuration`).
+  static let launchWindowTimeout: TimeInterval = 10
+
+  nonisolated var currentStartupPhase: String {
+    return startupPhase.value
+  }
+
+  /// Slow synchronous native calls seen before TTI; attached to the `timeToInteractive` metric.
+  @AppMetricsActor
+  private(set) var slowNativeCalls = SlowNativeCallSummary()
+
   lazy var appLaunchState = AppLaunchState()
 
   lazy var launchType: AppLaunchType = getAppLaunchType()
 
   nonisolated func markMain() {
+    startObservingSlowNativeCalls()
     if launchType == .prewarmed {
+      startupPhase.value = AppStartupMonitoring.steadyStatePhase
       return
     }
     let currentTime = CACurrentMediaTime()
@@ -54,10 +79,28 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
       frameMetricsRecorder.start()
+      stallMonitor.start(anchor: currentTime, phase: { [weak self] in self?.startupPhase.value ?? "unknown" }) {
+        [weak self] stall, endedAt in
+        AppMetricsActor.isolated {
+          self?.reportStall(stall, endedAt: endedAt)
+        }
+      }
 
       if let launchTime = markers.getLaunchTime() {
         reportMetric(category: .appStartup, name: "\(launchType.rawValue)LaunchTime", value: launchTime)
       }
+
+      Task { [weak self] in
+        try? await Task.sleep(for: .seconds(AppStartupMonitoring.launchWindowTimeout))
+        await self?.closeLaunchWindowIfStillLaunching()
+      }
+    }
+  }
+
+  @AppMetricsActor
+  private func closeLaunchWindowIfStillLaunching() {
+    if startupState == .launching {
+      startupPhase.value = AppStartupMonitoring.steadyStatePhase
     }
   }
 
@@ -75,6 +118,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToFirstRender = currentTime
+      startupPhase.value = "beforeInteractive"
 
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
@@ -102,9 +146,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToInteractive = currentTime
+      startupPhase.value = "afterInteractive"
 
       if let tti = markers.getTTI() {
         let frameMetrics = frameMetricsRecorder.stop()
+        let mainThreadStalls = stallMonitor.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
         let networkRequests: NetworkRequestSummary? = {
@@ -118,7 +164,9 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
           frameMetrics: frameMetrics,
           deviceState: deviceState,
           networkPath: networkPath,
-          networkRequests: networkRequests
+          networkRequests: networkRequests,
+          mainThreadStalls: mainThreadStalls,
+          slowNativeCalls: slowNativeCalls
         )
         let metric = Metric(
           category: .appStartup,
@@ -130,6 +178,45 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         reportMetric(metric)
       }
       startupState = .launched
+    }
+  }
+
+  @AppMetricsActor
+  private func reportStall(_ stall: MainThreadStall, endedAt: Date) {
+    reportLog(stall.toLogRecord(timestamp: endedAt))
+  }
+
+  /// Installs the process-wide `SyncFunctionCallProfiler` observer. Stays installed for the whole
+  /// session: during startup every call over `SlowNativeCall.startupThreshold` is reported, afterwards
+  /// only those over `steadyStateThreshold`. The observer runs on the calling runtime thread, so it
+  /// only reads the phase and hops to the actor.
+  ///
+  /// The phase is `afterInteractive` for anything outside the measured launch window, including
+  /// prewarmed and interrupted launches and launches that never report TTI (after
+  /// `launchWindowTimeout`), so those sessions use the steady-state threshold too.
+  nonisolated func startObservingSlowNativeCalls() {
+    SyncFunctionCallProfiler.setObserver(threshold: SlowNativeCall.startupThreshold) { [weak self] call in
+      guard let self else {
+        return
+      }
+      let phase = self.startupPhase.value
+      let isSteadyState = phase == AppStartupMonitoring.steadyStatePhase
+      if isSteadyState && call.duration < SlowNativeCall.steadyStateThreshold {
+        return
+      }
+      let endedAt = Date()
+      AppMetricsActor.isolated {
+        self.recordSlowNativeCall(call, phase: phase, endedAt: endedAt)
+      }
+    }
+  }
+
+  @AppMetricsActor
+  func recordSlowNativeCall(_ call: SlowSyncCall, phase: String, endedAt: Date) {
+    let slowCall = SlowNativeCall(call: call, phase: phase, anchor: markers.finishedLaunching ?? markers.main)
+    reportLog(slowCall.toLogRecord(timestamp: endedAt))
+    if startupState == .launching {
+      slowNativeCalls.add(slowCall)
     }
   }
 
@@ -193,5 +280,28 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return .warm
     }
     return .cold
+  }
+}
+
+/// A value guarded by a lock, for state shared with threads that can't hop onto the actor.
+private final class LockedValue<T>: @unchecked Sendable {
+  private let lock = NSLock()
+  private var storage: T
+
+  init(_ value: T) {
+    storage = value
+  }
+
+  var value: T {
+    get {
+      lock.lock()
+      defer { lock.unlock() }
+      return storage
+    }
+    set {
+      lock.lock()
+      storage = newValue
+      lock.unlock()
+    }
   }
 }

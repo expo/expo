@@ -49,60 +49,25 @@ public struct CrashReport: Codable, Sendable {
   /// happened.
   public let ingestedAt: Date
 
-  /// Picks the most likely main session that this crash report belongs to.
-  ///
-  /// MetricKit only gives us the diagnostic payload's time window (`timestampBegin` to
-  /// `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
-  /// "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
-  /// equal "now," so we can't rely on the session's start time falling inside it.
-  ///
-  /// 1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
-  /// pick sessions that intersect the payload window. Among those, prefer the one
-  /// that never finished (`endDate == nil`) — an unfinished main session is a strong
-  /// signal of a crash. Otherwise pick the intersecting session with the latest start time.
-  /// 2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
-  /// where intersection is impossible by construction), fall back to the latest
-  /// unfinished session overall, then to the latest session by start time.
-  /// 3. Otherwise return `nil` — a real payload window that doesn't overlap any session
-  /// is genuinely unattributable, and silently misattributing it to the current
-  /// session would hide that.
+  /// Picks the most likely main session that this crash report belongs to. See
+  /// `MetricKitSessionMatcher` for the rules; an unfinished session is the strongest crash signal.
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    let payloadBegin = timestampBegin.ISO8601Format()
-    let payloadEnd = timestampEnd.ISO8601Format()
-    let intersecting = mainSessions.filter { session in
-      guard session.startTimestamp <= payloadEnd else {
-        return false
-      }
-      // No end timestamp means the session is still active — it overlaps anything in its future.
-      guard let sessionEnd = session.endTimestamp else {
-        return true
-      }
-      return sessionEnd >= payloadBegin
-    }
-    let candidates: [SessionRow]
-    if !intersecting.isEmpty {
-      candidates = intersecting
-    } else if timestampBegin == timestampEnd {
-      candidates = mainSessions
-    } else {
-      return nil
-    }
-    let unfinished = candidates.filter({ $0.endTimestamp == nil })
-    if let session = unfinished.max(by: { $0.startTimestamp < $1.startTimestamp }) {
-      return session
-    }
-    return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
+    return MetricKitSessionMatcher.findMatchingSession(
+      windowBegin: timestampBegin,
+      windowEnd: timestampEnd,
+      in: mainSessions
+    )
   }
 
   func toLogRecord() -> LogRecord {
-    let selected = selectedFrames
+    let rendered = callStackTree?.render(maxFrames: Self.maxLogStackFrames, maxLength: Self.maxLogStacktraceLength)
     var attributes: [String: Any] = [
       "exception.type": exceptionReason?.exceptionName
         ?? exceptionType.map { exceptionName(for: $0) }
         ?? signal.map { signalName(for: $0) }
         ?? "NativeCrash",
       "exception.message": exceptionMessage,
-      "exception.stacktrace": selected.flatMap(renderStacktrace) as Any,
+      "exception.stacktrace": rendered?.stacktrace as Any,
       "expo.error.source": "nativeCrash",
       "expo.error.is_fatal": true,
     ]
@@ -133,10 +98,10 @@ public struct CrashReport: Codable, Sendable {
       attributes["expo.crash.thread_count"] = callStacks.count
       attributes["expo.crash.thread_attributed"] = callStacks.contains { $0.threadAttributed == true }
     }
-    if let selected, !selected.frames.isEmpty {
-      attributes["expo.crash.rendered_frame_count"] = selected.frames.count
-      attributes["expo.crash.total_frame_count"] = selected.total
-      if let binaryUUIDs = renderedBinaryUUIDs(in: selected.frames) {
+    if let rendered, rendered.renderedFrameCount > 0 {
+      attributes["expo.crash.rendered_frame_count"] = rendered.renderedFrameCount
+      attributes["expo.crash.total_frame_count"] = rendered.totalFrameCount
+      if let binaryUUIDs = rendered.binaryUUIDs {
         attributes["expo.crash.binary_uuids"] = binaryUUIDs
       }
     }
@@ -166,99 +131,6 @@ public struct CrashReport: Codable, Sendable {
       return exceptionName(for: exceptionType)
     }
     return "Native crash"
-  }
-
-  /// Frames picked for the stack trace, plus how many the payload actually had.
-  ///
-  /// We stop collecting at `maxLogStackFrames`, so anything past that shows up as the gap between
-  /// `frames.count` and `total`.
-  private var selectedFrames: (frames: [CallStackTree.Frame], total: Int)? {
-    guard let callStacks = callStackTree?.callStacks else {
-      return nil
-    }
-    let attributedStacks = callStacks.filter { $0.threadAttributed == true }
-    let selectedStacks = attributedStacks.isEmpty ? callStacks : attributedStacks
-    var frames: [CallStackTree.Frame] = []
-    var totalFrames = 0
-    for callStack in selectedStacks {
-      collectFrames(callStack.callStackRootFrames ?? [], into: &frames, total: &totalFrames)
-    }
-    return (frames, totalFrames)
-  }
-
-  /// Renders the selected frames, appending a count of the ones that didn't fit.
-  private func renderStacktrace(_ selected: (frames: [CallStackTree.Frame], total: Int)) -> String? {
-    var lines = selected.frames.map(renderFrame)
-    if selected.total > selected.frames.count {
-      lines.append("… +\(selected.total - selected.frames.count) more frames")
-    }
-    guard !lines.isEmpty else {
-      return nil
-    }
-    return truncateToMaxLength(
-      lines.joined(separator: "\n"),
-      maxLength: Self.maxLogStacktraceLength,
-      warningMessage: "[AppMetrics] Native crash stack trace exceeded the maximum length and was truncated."
-    )
-  }
-
-  private func collectFrames(
-    _ source: [CallStackTree.Frame],
-    into frames: inout [CallStackTree.Frame],
-    total: inout Int
-  ) {
-    for frame in source {
-      total += 1
-      if frames.count < Self.maxLogStackFrames {
-        frames.append(frame)
-      }
-      collectFrames(frame.subFrames ?? [], into: &frames, total: &total)
-    }
-  }
-
-  /// The binaries named in the trace and their UUIDs, as `<binary>:<uuid>` entries.
-  ///
-  /// An offset only means something against the build it came from, so these say which dSYM to
-  /// reach for.
-  private func renderedBinaryUUIDs(in frames: [CallStackTree.Frame]) -> [String]? {
-    var uuidsByBinary: [String: String] = [:]
-    for frame in frames {
-      guard let binaryName = frame.binaryName, let binaryUUID = frame.binaryUUID else {
-        continue
-      }
-      uuidsByBinary[binaryName] = binaryUUID
-    }
-    guard !uuidsByBinary.isEmpty else {
-      return nil
-    }
-    return uuidsByBinary.sorted { $0.key < $1.key }.map { "\($0.key):\($0.value)" }
-  }
-
-  /// Renders one frame as `<symbol> (<binary> + <offset>)`.
-  ///
-  /// We keep the address even when a symbol resolved, because on a stripped binary it can be the
-  /// wrong one, and it's what lets you re-symbolicate from the archive. Without an offset or an
-  /// address there's nothing to look up, so the binary name alone is left off.
-  private func renderFrame(_ frame: CallStackTree.Frame) -> String {
-    let location: String? = {
-      if let binaryName = frame.binaryName, let offset = frame.offsetIntoBinaryTextSegment {
-        return "\(binaryName) + \(offset)"
-      }
-      if let address = frame.address {
-        return "0x\(String(address, radix: 16))"
-      }
-      return nil
-    }()
-    switch (frame.symbol, location) {
-    case (let symbol?, let location?):
-      return "\(symbol) (\(location))"
-    case (let symbol?, nil):
-      return symbol
-    case (nil, let location?):
-      return location
-    case (nil, nil):
-      return frame.binaryName ?? "<unknown>"
-    }
   }
 
   /// Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that

@@ -34,6 +34,17 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder,
    Indicates whether the function's arguments starts from the owner that calls this function.
    */
   var takesOwner: Bool { get set }
+
+  /**
+   Tells the function which module/class it belongs to and how JavaScript refers to it, so that
+   `SyncFunctionCallProfiler` can report slow calls by a qualified name. Called once when the owning
+   module definition is built; definitions that aren't profiled (asynchronous functions) ignore it.
+   */
+  func setProfilingIdentity(_ identity: SyncCallIdentity)
+}
+
+extension AnyFunctionDefinition {
+  func setProfilingIdentity(_ identity: SyncCallIdentity) {}
 }
 
 internal final class FunctionCallException: GenericException<String>, @unchecked Sendable {

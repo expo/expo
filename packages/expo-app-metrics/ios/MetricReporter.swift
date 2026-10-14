@@ -27,6 +27,15 @@ open class MetricReporter {
   }
 
   @AppMetricsActor
+  func reportLog(_ log: LogRecord) {
+    Task {
+      for receiver in receivers {
+        receiver.receiveLog(log)
+      }
+    }
+  }
+
+  @AppMetricsActor
   func reportMetric(category: Metric.Category?, name: String, value: Double) {
     reportMetric(Metric(category: category, name: name, value: value))
   }

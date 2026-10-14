@@ -78,6 +78,17 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   var takesOwner: Bool = false
 
+  /**
+   Set once by the owning module definition; `nil` for functions on ad-hoc `Object {}` definitions.
+   Read on every call, so it is intentionally not guarded — it is written before the function is
+   installed in any runtime.
+   */
+  private(set) var profilingIdentity: SyncCallIdentity?
+
+  func setProfilingIdentity(_ identity: SyncCallIdentity) {
+    profilingIdentity = identity
+  }
+
   // MARK: - AnySyncFunctionDefinition
 
   @JavaScriptActor
@@ -99,6 +110,10 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   @JavaScriptActor
   func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue {
+    // Timed as a whole (argument conversion, body, result conversion): that is what the runtime thread waits for.
+    let measurement = SyncFunctionCallProfiler.begin()
+    defer { SyncFunctionCallProfiler.finish(measurement, profilingIdentity) }
+
     let result = try runBody(appContext, in: runtime, this: this, arguments: arguments)
     do {
       return try appContext.converter.toJS(result, returnType, in: runtime)

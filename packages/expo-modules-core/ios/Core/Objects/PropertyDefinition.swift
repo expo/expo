@@ -20,6 +20,11 @@ protocol AnyPropertyDefinition {
    */
   @JavaScriptActor
   func buildDescriptor(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject
+
+  /**
+   Names the owner of the property so `SyncFunctionCallProfiler` can report slow accessors as `Owner.property`.
+   */
+  func setProfilingOwner(_ ownerName: String)
 }
 
 public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
@@ -132,6 +137,11 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
   }
 
   // MARK: - Internals
+
+  internal func setProfilingOwner(_ ownerName: String) {
+    getter?.setProfilingIdentity(SyncCallIdentity(ownerName: ownerName, name: name, kind: .propertyGetter))
+    setter?.setProfilingIdentity(SyncCallIdentity(ownerName: ownerName, name: name, kind: .propertySetter))
+  }
 
   /**
    Creates the JavaScript function that will be used as a getter of the property.
