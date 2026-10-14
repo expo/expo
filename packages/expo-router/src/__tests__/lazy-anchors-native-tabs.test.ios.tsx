@@ -1,9 +1,11 @@
 import { act, screen } from '@testing-library/react-native';
+import type { ReactNode } from 'react';
 import { Text, type NativeSyntheticEvent } from 'react-native';
 import {
   Tabs,
   type TabSelectedEvent,
   type TabsHostProps,
+  type TabsScreenProps,
   // @ts-expect-error: method is declared in mock below
   __triggerTabSelected,
 } from 'react-native-screens';
@@ -34,7 +36,8 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 const originalImportMode = process.env.EXPO_ROUTER_IMPORT_MODE;
 beforeEach(() => {
   process.env.EXPO_ROUTER_IMPORT_MODE = 'lazy';
