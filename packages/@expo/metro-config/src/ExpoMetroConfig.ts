@@ -369,11 +369,15 @@ export function getDefaultConfig(
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
           // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
-          resolveFrom(reactNativeHostPath, './src/setup-env') ??
-            require.resolve(path.join(reactNativeHostPath, 'Libraries/Core/InitializeCore')),
-        ];
+          resolveFrom(projectRoot, `react-native/setup-env`, { followSymlinks: true }) ??
+            resolveFrom(reactNativeHostPath, './src/setup-env.js', { followSymlinks: true }) ??
+            resolveFrom(reactNativeHostPath, 'Libraries/Core/InitializeCore'),
+        ].filter((x): x is string => !!x);
 
-        const stdRuntime = resolveFrom(projectRoot, 'expo/src/winter/index.ts');
+        // NOTE(@kitten): This matches a package.json:exports entry exactly, but also mirrors the
+        // `expo/build/winter/index.js` file via Node resolution. This is brittle, but only has
+        // to stay in place until `getModulesRunBeforeMainModule` will be removed
+        const stdRuntime = resolveFrom(projectRoot, 'expo/build/winter', { followSymlinks: true });
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
@@ -481,7 +485,7 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
-function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
+function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | null {
   return resolveFrom(projectRoot, `expo/${subModule}`);
 }
 
