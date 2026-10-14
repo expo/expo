@@ -34,7 +34,6 @@ public final class NetworkModule: Module {
   }
 
   private func setupNetworkMonitoring() {
-    // A cancelled `NWPathMonitor` cannot be started again, so each start creates a new one.
     stopNetworkMonitoring()
     let monitor = NWPathMonitor()
     monitor.pathUpdateHandler = { [weak self] path in
