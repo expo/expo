@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Button, Text, View } from 'react-native';
-import { Tabs, type TabsHostProps } from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import type { ErrorBoundaryProps } from '../../views/Try';
@@ -23,8 +23,9 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => React.ReactNode>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
 
 it('uses a navigator error boundary for an individual tab screen', async () => {
   function ThrowingRoute(): never {
@@ -65,7 +66,7 @@ it.each([
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsHost).toHaveBeenCalledTimes(1);
-  expect(TabsHost.mock.calls[0][0].ios?.tabBarControllerMode).toBe(expected);
+  expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe(expected);
 });
 
 it('uses shadowColor when it is passed to NativeTabs', async () => {
@@ -80,8 +81,8 @@ it('uses shadowColor when it is passed to NativeTabs', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
-  expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe(
+  expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe(
     'transparent'
   );
 });
@@ -98,8 +99,8 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
-  expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });
 
 describe('unstable_nativeProps', () => {
@@ -115,8 +116,8 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].colorScheme).toBe('dark');
-    expect(TabsHost.mock.calls[0][0].direction).toBe('rtl');
+    expect(TabsHost.mock.calls[0]![0].colorScheme).toBe('dark');
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('rtl');
   });
 
   it('merges ios raw props with expo-router-managed ios props', async () => {
@@ -132,7 +133,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].ios).toMatchObject({
+    expect(TabsHost.mock.calls[0]![0].ios).toMatchObject({
       tabBarTintColor: 'red',
       onMoreTabSelected,
     });
@@ -150,7 +151,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].ios?.tabBarTintColor).toBe('blue');
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarTintColor).toBe('blue');
   });
 
   it('lets top-level raw props override expo-router-managed props', async () => {
@@ -165,7 +166,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(false);
+    expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(false);
   });
 
   it('does not let raw props override navStateRequest or onTabSelected', async () => {
@@ -189,13 +190,13 @@ describe('unstable_nativeProps', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     // navStateRequest should be the router-managed one (initial baseProvenance is 0, screenKey is the route key, not "foo")
-    expect(TabsHost.mock.calls[0][0].navStateRequest).toEqual({
+    expect(TabsHost.mock.calls[0]![0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
       baseProvenance: 0,
     });
     // onTabSelected should be the router-managed handler, not the user's spy
-    expect(TabsHost.mock.calls[0][0].onTabSelected).not.toBe(userOnTabSelected);
-    expect(TabsHost.mock.calls[0][0].onTabSelected).toBeInstanceOf(Function);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).not.toBe(userOnTabSelected);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).toBeInstanceOf(Function);
   });
 
   it('drops android-only raw props on iOS so they do not leak onto Tabs.Host', async () => {
@@ -212,8 +213,8 @@ describe('unstable_nativeProps', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     // Android-only raw props should not be forwarded to the iOS host.
-    expect(TabsHost.mock.calls[0][0].android).toBeUndefined();
-    expect(TabsHost.mock.calls[0][0].direction).toBe('ltr');
+    expect(TabsHost.mock.calls[0]![0].android).toBeUndefined();
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('ltr');
   });
 
   it('warns in dev when ios.bottomAccessory raw prop collides with <NativeTabs.BottomAccessory> child', async () => {
@@ -284,8 +285,8 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
-    expect(TabsScreen.mock.calls[0][0].ios?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
+    expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
       type: 'sfSymbol',
       name: 'house',
     });
@@ -306,7 +307,7 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    const ios = TabsScreen.mock.calls[0][0].ios;
+    const ios = TabsScreen.mock.calls[0]![0].ios;
     expect(ios?.icon).toEqual({ type: 'imageSource', imageSource: src });
     expect(ios?.selectedIcon).toEqual({ type: 'imageSource', imageSource: src });
   });
@@ -325,8 +326,8 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
-    expect(TabsScreen.mock.calls[0][0].ios?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
+    expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
       type: 'sfSymbol',
       name: 'house.fill',
     });
