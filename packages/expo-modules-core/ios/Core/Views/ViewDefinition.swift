@@ -7,7 +7,7 @@ import ExpoModulesJSI
  */
 public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unchecked Sendable {
   public override var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.view(self))
+    return DefinitionClassification(kind: .view(self))
   }
 
   /**
@@ -145,7 +145,7 @@ extension UIView: @MainActor AnyArgument {
 
 public struct ViewNameDefinition: AnyViewDefinitionElement {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.viewName(self))
+    return DefinitionClassification(kind: .viewName(self))
   }
 
   let name: String

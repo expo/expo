@@ -24,7 +24,7 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
  */
 public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.function(self))
+    return DefinitionClassification(kind: .function(self))
   }
 
   typealias ClosureType = (Args) throws -> ReturnType

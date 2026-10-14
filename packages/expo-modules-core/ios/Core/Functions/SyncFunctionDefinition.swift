@@ -35,7 +35,7 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, ~Copyable {
  */
 public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.function(self))
+    return DefinitionClassification(kind: .function(self))
   }
 
   typealias ClosureType = (Args) throws -> ReturnType

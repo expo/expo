@@ -10,7 +10,7 @@ import ExpoModulesJSI
  */
 public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.function(self))
+    return DefinitionClassification(kind: .function(self))
   }
 
   public let name: String

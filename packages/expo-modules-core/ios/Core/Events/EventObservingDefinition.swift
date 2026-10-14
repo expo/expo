@@ -17,7 +17,7 @@ internal protocol AnyEventObservingDefinition: AnyDefinition, Sendable {
 
 public final class EventObservingDefinition: AnyEventObservingDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.eventObserver(self))
+    return DefinitionClassification(kind: .eventObserver(self))
   }
 
   public typealias ClosureType = () -> Void

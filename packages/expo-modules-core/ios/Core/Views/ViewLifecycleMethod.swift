@@ -28,7 +28,7 @@ internal protocol AnyViewLifecycleMethod: AnyDefinition {
  */
 public final class ViewLifecycleMethod<ViewType>: AnyViewLifecycleMethod {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.viewLifecycle(self))
+    return DefinitionClassification(kind: .viewLifecycle(self))
   }
 
   public typealias Closure = @MainActor (ViewType) -> Void

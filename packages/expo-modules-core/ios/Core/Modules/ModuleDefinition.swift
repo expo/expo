@@ -125,7 +125,7 @@ public final class ModuleDefinition: ObjectDefinition {
  */
 internal struct ModuleNameDefinition: AnyDefinition {
   var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.moduleName(self))
+    return DefinitionClassification(kind: .moduleName(self))
   }
 
   let name: String
@@ -136,7 +136,7 @@ internal struct ModuleNameDefinition: AnyDefinition {
  */
 internal struct ConstantsDefinition: AnyDefinition {
   var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.legacyConstants(self))
+    return DefinitionClassification(kind: .legacyConstants(self))
   }
 
   let body: () -> [String: Any?]
@@ -147,7 +147,7 @@ internal struct ConstantsDefinition: AnyDefinition {
  */
 public struct EventsDefinition: AnyDefinition {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.events(self))
+    return DefinitionClassification(kind: .events(self))
   }
 
   let names: [String]

@@ -5,7 +5,7 @@
  */
 public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: AnyViewProp, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.viewProp(self))
+    return DefinitionClassification(kind: .viewProp(self))
   }
 
   public typealias SetterType = @MainActor (ViewType, PropType) -> Void

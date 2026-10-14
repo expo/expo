@@ -22,7 +22,7 @@ protocol AnyConstantDefinition {
 
 public final class ConstantDefinition<ReturnType: AnyArgument>: AnyDefinition, AnyConstantDefinition {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.constant(self))
+    return DefinitionClassification(kind: .constant(self))
   }
 
   typealias ClosureType = () throws -> ReturnType

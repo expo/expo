@@ -18,7 +18,7 @@ internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
  */
 public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.function(self))
+    return DefinitionClassification(kind: .function(self))
   }
 
   typealias ClosureType = @Sendable (Args) async throws -> sending ReturnType

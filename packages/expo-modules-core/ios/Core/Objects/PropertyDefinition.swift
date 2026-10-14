@@ -24,7 +24,7 @@ protocol AnyPropertyDefinition {
 
 public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.property(self))
+    return DefinitionClassification(kind: .property(self))
   }
 
   /**

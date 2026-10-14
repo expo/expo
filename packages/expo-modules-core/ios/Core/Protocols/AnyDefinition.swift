@@ -23,7 +23,7 @@ public struct DefinitionClassification {
   internal enum Kind {
     case unknown
     case function(AnyFunctionDefinition)
-    case staticFunction(AnyStaticFunctionDefinition)
+    case staticFunction(AnyFunctionDefinition)
     case legacyConstants(ConstantsDefinition)
     case constant(AnyConstantDefinition)
     case property(AnyPropertyDefinition)
@@ -40,11 +40,7 @@ public struct DefinitionClassification {
 
   internal let kind: Kind
 
-  internal init(_ kind: Kind) {
-    self.kind = kind
-  }
-
   public static var unknown: DefinitionClassification {
-    return DefinitionClassification(.unknown)
+    return DefinitionClassification(kind: .unknown)
   }
 }

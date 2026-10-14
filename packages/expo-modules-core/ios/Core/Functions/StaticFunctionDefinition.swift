@@ -1,47 +1,31 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 /**
- A protocol for static any type-erased function.
- */
-internal protocol AnyStaticFunctionDefinition: AnyFunctionDefinition {
-  /**
-   Indicates whether the function is static.
-   */
-  var isStatic: Bool { get }
-}
-
-/**
  Represents a static function that can only be called synchronously.
  */
 public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
-  SyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  SyncFunctionDefinition<Args, FirstArgType, ReturnType>, @unchecked Sendable {
   public override var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.staticFunction(self))
+    return DefinitionClassification(kind: .staticFunction(self))
   }
-
-  let isStatic = true
 }
 
 /**
  Represents a static function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
 public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>:
-  AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, @unchecked Sendable {
   public override var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.staticFunction(self))
+    return DefinitionClassification(kind: .staticFunction(self))
   }
-
-  let isStatic = true
 }
 
 /**
  Represents a static function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
 public final class StaticConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
-  ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>, @unchecked Sendable {
   public override var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.staticFunction(self))
+    return DefinitionClassification(kind: .staticFunction(self))
   }
-
-  let isStatic = true
 }

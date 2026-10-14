@@ -3,7 +3,7 @@
  */
 internal struct EventListener: AnyDefinition {
   var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.eventListener(self))
+    return DefinitionClassification(kind: .eventListener(self))
   }
 
   let name: EventName

@@ -8,7 +8,7 @@ import ExpoModulesJSI
  */
 public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unchecked Sendable {
   public var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.function(self))
+    return DefinitionClassification(kind: .function(self))
   }
 
   public let name: String

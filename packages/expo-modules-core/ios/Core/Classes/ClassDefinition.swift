@@ -7,7 +7,7 @@ import ExpoModulesJSI
  */
 public final class ClassDefinition: ObjectDefinition {
   public override var _definitionClassification: DefinitionClassification {
-    return DefinitionClassification(.klass(self))
+    return DefinitionClassification(kind: .klass(self))
   }
 
   /**
@@ -37,19 +37,8 @@ public final class ClassDefinition: ObjectDefinition {
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
-    var constructor: AnySyncFunctionDefinition?
-    var elementsWithoutConstructors = [AnyClassDefinitionElement]()
-
-    for element in elements {
-      if let candidate = constructorDefinition(element) {
-        if constructor == nil {
-          constructor = candidate
-        }
-        continue
-      }
-      elementsWithoutConstructors.append(element)
-    }
-    self.constructor = constructor
+    self.constructor = elements.lazy.compactMap(constructorDefinition).first
+    let elementsWithoutConstructors = elements.filter { constructorDefinition($0) == nil }
 
     super.init(definitions: elementsWithoutConstructors)
   }
@@ -192,19 +181,11 @@ extension SharedObject: ClassAssociatedObject {}
    needs to be filtered out when decorating the prototype.
  */
 private func constructorDefinition(_ item: AnyDefinition) -> AnySyncFunctionDefinition? {
-  let function: AnyFunctionDefinition
   switch item._definitionClassification.kind {
-  case .function(let definition):
-    function = definition
-  case .staticFunction(let definition):
-    function = definition
-  case .unknown, .legacyConstants, .constant, .property, .klass, .moduleName, .eventListener, .events, .eventObserver, .view,
-    .viewProp, .viewName, .viewLifecycle:
+  case .function(let function), .staticFunction(let function):
+    // Only the element named "constructor" pays for the protocol cast.
+    return function.name == "constructor" ? function as? AnySyncFunctionDefinition : nil
+  default:
     return nil
   }
-  // Only the element named "constructor" pays for the protocol cast.
-  guard function.name == "constructor" else {
-    return nil
-  }
-  return function as? AnySyncFunctionDefinition
 }
