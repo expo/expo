@@ -8,6 +8,10 @@ import ExpoModulesJSI
 open class BaseModule {
   public private(set) weak var appContext: AppContext?
 
+  /// The holder that registered this module. Emitting events reaches the module's JavaScript object
+  /// through it, without searching the module registry.
+  internal weak var holder: ModuleHolder?
+
   @available(
     *, unavailable,
     message: "Module's initializer cannot be overridden, override the \"didCreate\" lifecycle hook instead."
@@ -51,15 +55,10 @@ open class BaseModule {
 
 extension BaseModule: EventEmitter {
   /**
-   Lends the module's JavaScript object, looked up from the module registry, for the duration of `body`.
+   Lends the module's JavaScript object for the duration of `body`.
    */
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    guard let appContext else {
-      return nil
-    }
-    let holder = appContext.moduleRegistry.first { $0.module === self }
-
     return try holder?.withEventTarget(body) ?? nil
   }
 }

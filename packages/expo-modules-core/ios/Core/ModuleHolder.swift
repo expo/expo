@@ -53,6 +53,7 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    (module as? BaseModule)?.holder = self
     post(event: .moduleCreate)
   }
 

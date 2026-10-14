@@ -71,6 +71,42 @@ public extension EventEmitter {
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
    */
+  func emit<P: JavaScriptEncodable>(event: String, payload: sending P) {
+    guard let appContext, let runtime = try? appContext.runtime else {
+      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+      return
+    }
+    // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
+    // Sendable` box because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // `@JavaScriptActor`-isolated or `Sendable` state through it.
+    let emitter = NonisolatedUnsafeWeakVar(self)
+
+    runtime.schedule {
+      guard let emitter = emitter.value else {
+        return
+      }
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try P.encode(payload, in: runtime)
+      } catch {
+        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
+        return
+      }
+      let dispatched = emitter.withEventTarget { target in
+        dispatchEvent(event: event, payload: jsPayload, to: target, in: runtime)
+        return true
+      }
+      if dispatched == nil {
+        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+      }
+    }
+  }
+
+  /**
+   Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
+   Payloads that are `JavaScriptEncodable` use the overload above, which converts them statically.
+   */
+  @_disfavoredOverload
   func emit<P: AnyArgument>(event: String, payload: sending P) {
     guard let appContext, let runtime = try? appContext.runtime else {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
