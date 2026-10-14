@@ -161,6 +161,9 @@ function Screen(props: InternalTabScreenProps) {
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
+        // Only `search` is a native tab role; the rest are system items.
+        role: options.role === 'search' ? 'search' : undefined,
+        automaticallyActivatesSearch: options.automaticallyActivatesSearch,
         overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
         ...shared.nativeIosOverrides,
       }}

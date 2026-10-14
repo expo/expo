@@ -93,6 +93,7 @@ export function convertTabPropsToOptions(
     hidden,
     children,
     role,
+    automaticallyActivatesSearch,
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
@@ -113,6 +114,7 @@ export function convertTabPropsToOptions(
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(automaticallyActivatesSearch !== undefined ? { automaticallyActivatesSearch } : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
@@ -136,6 +138,7 @@ export function convertTabPropsToOptions(
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(automaticallyActivatesSearch !== undefined ? { automaticallyActivatesSearch } : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
