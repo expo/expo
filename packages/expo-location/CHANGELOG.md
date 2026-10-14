@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Stop the location foreground service when a background location task is unregistered while the service is still binding, so a `stopLocationUpdatesAsync` that follows `startLocationUpdatesAsync` within milliseconds no longer leaves the service and its notification running. ([#51236](https://github.com/expo/expo/pull/51236) by [@jrceranornelson](https://github.com/jrceranornelson))
+- [Android] Don't crash when the foreground service of a location task can't be started, for example when the location permission was revoked while the task stayed registered. The task now keeps running without the service instead of crashing the app on every launch. ([#51216](https://github.com/expo/expo/pull/51216) by [@krisoft20](https://github.com/krisoft20))
 
 ### 💡 Others
 
