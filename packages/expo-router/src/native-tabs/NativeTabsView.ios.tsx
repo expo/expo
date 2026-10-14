@@ -156,8 +156,8 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       ios={{
-        icon: iosIcon,
-        selectedIcon: iosSelectedIcon,
+        icon: iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
+        selectedIcon: iosSelectedIcon?.platform === 'ios' ? iosSelectedIcon.icon : undefined,
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,

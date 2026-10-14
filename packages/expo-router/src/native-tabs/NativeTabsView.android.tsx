@@ -103,8 +103,9 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       android={{
-        icon: androidIcon,
-        selectedIcon: androidSelectedIcon,
+        icon: androidIcon?.platform === 'android' ? androidIcon.icon : undefined,
+        selectedIcon:
+          androidSelectedIcon?.platform === 'android' ? androidSelectedIcon.icon : undefined,
         standardAppearance: androidAppearance,
         ...shared.nativeAndroidOverrides,
       }}
