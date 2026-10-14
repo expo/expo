@@ -296,7 +296,8 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
-  const routerPackageRoot = resolveFrom(projectRoot, 'expo-router');
+  // TODO(@kitten): Replace cache invalidation here with cache-vary invalidation on individual expo-router paths
+  const routerPackageRoot = resolveFrom(projectRoot, 'expo-router', { followSymlinks: true });
 
   const expoMetroConfig = asMetroConfigInput({
     reporter: {
