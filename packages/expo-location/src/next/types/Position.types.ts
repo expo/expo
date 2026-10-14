@@ -227,7 +227,7 @@ export type PositionWatchStatus = {
    * @platform android
    */
   canDeliverUpdates: boolean;
-  /** 
+  /**
    * Whether the handle can still be brought back to sending. False only once released.
    */
   isHandleAlive: boolean;

@@ -84,7 +84,7 @@ export async function requestNotificationPermissions(): Promise<PermissionRespon
   return NativeLocationModuleNext.requestNotificationPermissions();
 }
 
-/** 
+/**
  * Checks or requests the foreground location permission from a component.
  * See [Request the precise location](#request-the-precise-location).
  *

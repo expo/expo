@@ -1,6 +1,11 @@
 import { NativeLocationUpdatesHandle } from '../native';
 import type { NativeLocationUpdatesHandleClass } from '../native';
-import type { BackgroundTaskStatus, LocationProfile, LocationTaskOptions, Position } from '../types';
+import type {
+  BackgroundTaskStatus,
+  LocationProfile,
+  LocationTaskOptions,
+  Position,
+} from '../types';
 
 const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
 
