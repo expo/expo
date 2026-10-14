@@ -8,7 +8,7 @@
     "modules": ["expo.modules.taskManager.TaskManagerModule"],
     "publication": {
       "groupId": "host.exp.exponent",
-      "artifactId": "expo.modules.taskmanager",
+      "artifactId": "expo.modules.taskManager",
       "repository": "local-maven-repo"
     }
   }
