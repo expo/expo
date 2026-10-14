@@ -89,7 +89,7 @@ function BackgroundStatusView({ status }: { status: BackgroundTaskStatus | null 
   if (!status) {
     return (
       <Text style={{ fontSize: 11, marginTop: 6, width: '100%' }}>
-        {'Status not read yet — press "updates status".'}
+        Status not read yet — press "updates status".
       </Text>
     );
   }
