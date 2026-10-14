@@ -21,20 +21,41 @@ internal import jsi
 /// > decode call, while the owner is alive" — which the buffer-driven decode path honors because it
 /// > reads the value inline on the JS thread before the buffer is torn down. Do not store, capture, or
 /// > escape it; call ``copied(in:)`` to materialize an owning value when escape is needed.
+// `@frozen` so client modules, which decode every `@JS` argument through an unowned value, know its
+// size and that it is trivial to destroy, instead of asking the type's metadata accessor for both.
+@frozen
 public struct JavaScriptUnownedValue: ~Copyable {
-  // Borrows the `jsi::Value` at this address; it does not own it and must not outlive the owner.
-  internal let pointer: UnsafePointer<facebook.jsi.Value>
+  // MARK: - Layout
+
+  // Every stored property below is part of the frozen layout: adding, removing or reordering one
+  // changes the ABI that client modules compiled against, and each type has to be public, which is
+  // why both are kept as raw pointers and rebuilt into their C++ views on access.
+
+  // The address of the borrowed `jsi::Value`. The value is not owned and must not outlive its owner.
+  internal let rawPointer: UnsafeRawPointer
 
   // The JSI runtime, stored as the raw `facebook.jsi.IRuntime` rather than the `JavaScriptRuntime`
   // wrapper. `IRuntime` is imported as an immortal reference (see `jsi.apinotes`), so storing and
-  // copying it emits no ARC, unlike a `JavaScriptRuntime` field whose every per-call access pays an
-  // unowned retain/release. Only `getString` reads it; the type checks and numeric accessors touch
-  // only `pointer`.
-  internal let runtime: facebook.jsi.IRuntime
+  // rebuilding it emits no ARC, unlike a `JavaScriptRuntime` field whose every per-call access pays an
+  // unowned retain/release. Only the string, object and array accessors read it; the type checks and
+  // numeric accessors touch only `pointer`.
+  internal let rawRuntime: UnsafeRawPointer
+
+  // MARK: - C++ views
+
+  internal var pointer: UnsafePointer<facebook.jsi.Value> {
+    return rawPointer.assumingMemoryBound(to: facebook.jsi.Value.self)
+  }
+
+  // `unsafeBitCast` rather than `Unmanaged.takeUnretainedValue()`: with an immortal reference, the
+  // latter crashes the SIL optimizer (Swift 6.4) in Release builds.
+  internal var runtime: facebook.jsi.IRuntime {
+    return unsafeBitCast(rawRuntime, to: facebook.jsi.IRuntime.self)
+  }
 
   internal init(_ runtime: facebook.jsi.IRuntime, _ pointer: UnsafePointer<facebook.jsi.Value>) {
-    self.runtime = runtime
-    self.pointer = pointer
+    self.rawRuntime = unsafeBitCast(runtime, to: UnsafeRawPointer.self)
+    self.rawPointer = UnsafeRawPointer(pointer)
   }
 
   /// Materializes an owning ``JavaScriptValue`` by copying the borrowed `jsi::Value`. Use it when the
@@ -46,7 +67,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     assert(
-      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
       "`copied(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptValue(runtime, copying: pointer.pointee)
@@ -124,7 +145,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
     assert(isObject(), "Value is not an object")
     assert(
-      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
       "`getObject(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
@@ -141,7 +162,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getArray(in runtime: JavaScriptRuntime) -> JavaScriptArray {
     assert(isArray(), "Value is not an array")
     assert(
-      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime,
       "`getArray(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
