@@ -75,7 +75,9 @@ installEventLogger({
     : args['--help'] && !isSubcommand
       ? 'expo --help'
       : `expo ${command}`,
-  version: process.env.__EXPO_VERSION,
+  metadata: {
+    version: process.env.__EXPO_VERSION,
+  },
 });
 
 if (args['--version']) {
