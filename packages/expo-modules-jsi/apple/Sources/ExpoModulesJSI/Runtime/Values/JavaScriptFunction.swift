@@ -157,31 +157,6 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     return try callAsConstructor(argumentsBuffer)
   }
 
-  /// Calls the function with a single borrowed argument. The `jsi::Value` that the unowned value points
-  /// at is passed straight to the call, without copying it into an owned value.
-  @usableFromInline
-  @discardableResult
-  internal func call(argument: borrowing JavaScriptUnownedValue) throws -> JavaScriptValue {
-    guard let jsiRuntime else {
-      FatalError.runtimeLost()
-    }
-    return try capturingCppErrors {
-      return JavaScriptValue(runtimeHandle, expo.callFunction(jsiRuntime, pointee, argument.pointer, 1))
-    }
-  }
-
-  /// Calls the function as a constructor with a single borrowed argument, passed the same way as in
-  /// ``call(argument:)-(JavaScriptUnownedValue)``.
-  @usableFromInline
-  internal func callAsConstructor(argument: borrowing JavaScriptUnownedValue) throws -> JavaScriptValue {
-    guard let jsiRuntime else {
-      FatalError.runtimeLost()
-    }
-    return try capturingCppErrors {
-      return JavaScriptValue(runtimeHandle, expo.callAsConstructor(jsiRuntime, pointee, argument.pointer, 1))
-    }
-  }
-
   // MARK: - Conversions
 
   public func asValue() -> JavaScriptValue {

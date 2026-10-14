@@ -12,7 +12,7 @@ internal import jsi
 extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Set<Element>
   {
     // The cheap tag checks come first: an array takes the `Array` path directly, and a primitive
@@ -44,7 +44,7 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
 @usableFromInline
 @JavaScriptActor
 internal func javaScriptSetEntries(
-  of value: borrowing JavaScriptUnownedValue,
+  of value: borrowing JavaScriptValue,
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue? {
   let entries = try runtime.withCached(
