@@ -16,11 +16,10 @@ import {
   getReactNativeHostPackage as getHostPackageForPlatform,
   isOutOfTreePlatform,
 } from '@expo/platforms';
-import * as requireUtils from '@expo/require-utils';
+import { resolveFrom } from '@expo/require-utils';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { FileStore } from './binary-file-store';
 import { BuildCacheStore } from './build-cache-store';
@@ -72,8 +71,8 @@ function getReactNativeHostPath(projectRoot: string, platform?: string | null): 
   const hostPackage = getReactNativeHostPackage(platform);
   // TODO(@kitten): Switch to `@expo/require-utils` / assess manual require.resolve
   return path.dirname(
-    resolveFrom.silent(projectRoot, `${hostPackage}/package.json`) ??
-      resolveFrom.silent(projectRoot, 'react-native/package.json') ??
+    resolveFrom(projectRoot, `${hostPackage}/package.json`) ??
+      resolveFrom(projectRoot, 'react-native/package.json') ??
       'react-native/package.json'
   );
 }
@@ -217,7 +216,7 @@ export function getDefaultConfig(
   }
 
   const reactNativePath = path.dirname(
-    resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
+    resolveFrom(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
   );
   if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
     hasWarnedAboutReactNative = true;
@@ -297,7 +296,7 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
-  const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
+  const routerPackageRoot = resolveFrom(projectRoot, 'expo-router');
 
   const expoMetroConfig = asMetroConfigInput({
     reporter: {
@@ -370,11 +369,11 @@ export function getDefaultConfig(
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
           // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
-          requireUtils.resolveFrom(reactNativeHostPath, './src/setup-env') ??
+          resolveFrom(reactNativeHostPath, './src/setup-env') ??
             require.resolve(path.join(reactNativeHostPath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
+        const stdRuntime = resolveFrom(projectRoot, 'expo/src/winter/index.ts');
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
@@ -483,24 +482,24 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
 function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
-  return resolveFrom.silent(projectRoot, `expo/${subModule}`);
+  return resolveFrom(projectRoot, `expo/${subModule}`);
 }
 
-function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
+function getExpoMetroRuntimeOptional(projectRoot: string): string | null {
   const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
-  const metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
+  const metroRuntime = resolveFrom(projectRoot, EXPO_METRO_RUNTIME);
   if (metroRuntime) {
     return metroRuntime;
   }
   // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
   // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
   // try to also resolve it via `expo-router`, where it's a required peer
-  const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
+  const baseExpoRouter = resolveFrom(projectRoot, 'expo-router/package.json');
   if (baseExpoRouter) {
-    return resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME);
+    return resolveFrom(baseExpoRouter, EXPO_METRO_RUNTIME);
   }
   // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
   // optional peer dependency
   const baseExpo = getExpoOptional(projectRoot);
-  return baseExpo ? resolveFrom.silent(baseExpo, EXPO_METRO_RUNTIME) : undefined;
+  return baseExpo ? resolveFrom(baseExpo, EXPO_METRO_RUNTIME) : null;
 }
