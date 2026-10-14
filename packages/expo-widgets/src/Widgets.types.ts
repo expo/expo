@@ -50,8 +50,7 @@ export type WidgetFamily =
 
 export type WidgetEnvironment<T extends object | undefined = undefined> = {
   /**
-   * The date of this timeline entry.
-   * @platform iOS
+   * The date when the widget was rendered.
    */
   date?: Date;
   /**
@@ -59,6 +58,14 @@ export type WidgetEnvironment<T extends object | undefined = undefined> = {
    * @platform iOS
    */
   widgetFamily?: WidgetFamily;
+  /**
+   * The size of the widget in density-independent pixels (dp).
+   * @platform android
+   */
+  widgetSize?: {
+    width: number;
+    height: number;
+  };
   /**
    * The color scheme of the widget's environment.
    */

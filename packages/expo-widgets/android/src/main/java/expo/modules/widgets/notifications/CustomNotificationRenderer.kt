@@ -6,7 +6,7 @@ import com.facebook.react.bridge.ReadableType
 import expo.modules.widgets.InteractionSource
 import expo.modules.widgets.WidgetsStorage
 import expo.modules.widgets.evaluateLayout
-import expo.modules.widgets.getWidgetEnvironment
+import expo.modules.widgets.getCommonEnvironment
 import expo.modules.widgets.toPeekRoot
 import io.github.jakex7.peek.emittables.peekEmittableNotificationViews
 import io.github.jakex7.peek.notification.PeekNotificationSizes
@@ -18,7 +18,7 @@ internal object CustomNotificationRenderer {
     val layout = WidgetsStorage.getString(context, "__expo_widgets_notification_${name}_layout")
       ?.takeIf { it.isNotEmpty() }
       ?: throw CustomNotificationLayoutNotFoundException(name)
-    val sections = evaluateLayout(context, layout, props, getWidgetEnvironment(context))
+    val sections = evaluateLayout(context, layout, props, getCommonEnvironment(context))
     val sizes = PeekNotificationSizes()
     val source = InteractionSource.Notification(name, id)
 
