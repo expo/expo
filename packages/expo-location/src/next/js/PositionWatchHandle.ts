@@ -13,9 +13,9 @@ import type {
 /**
  * Controls a running position watcher. Use `watchPosition()` to create one.
  *
- * On Android, the watcher stops emitting fixes when the app is backgrounded and resumes when it
- * enters the foreground. Start a background session to keep it running in the background, see
- * [Start a background session](#start-a-background-session).
+ * On Android 8 and later, the watcher stops emitting fixes when the app is backgrounded and
+ * resumes when it enters the foreground. A background session keeps it running in the background.
+ * See [Start a background session](#start-a-background-session).
  *
  * See [Show live position on a screen](#show-live-position-on-a-screen).
  */
