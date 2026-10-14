@@ -96,6 +96,7 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
       await act(() =>
         result.result.current.processIntent({
           type: 'BROWSER_HISTORY_CHANGED',
+          actionId: 0,
           payload: { id: event.entryId, path: event.path },
         })
       );
@@ -189,6 +190,7 @@ test('restores a tracked entry on a browser change without browser commands', as
   await act(() =>
     result.result.current.processIntent({
       type: 'BROWSER_HISTORY_CHANGED',
+      actionId: 0,
       payload: {
         id: initialEntryId.op === 'go' ? null : initialEntryId.entryId,
         path: '/first',
@@ -203,6 +205,7 @@ test('restores a tracked entry on a browser change without browser commands', as
   await act(() =>
     result.result.current.processIntent({
       type: 'ACTION',
+      actionId: 0,
       payload: { action: { type: 'PUSH', payload: { name: 'third' } } },
     })
   );
@@ -372,6 +375,7 @@ test('browser restoration discards history commands from an uncommitted destinat
     React.startTransition(() =>
       processIntent({
         type: 'ACTION',
+        actionId: 0,
         payload: { action: { type: 'PUSH', payload: { name: 'second' } } },
       })
     )
@@ -381,9 +385,31 @@ test('browser restoration discards history commands from an uncommitted destinat
     React.startTransition(() =>
       processIntent({
         type: 'BROWSER_HISTORY_CHANGED',
+        actionId: 0,
         payload: { id: firstEntryId, path: '/first' },
       })
     )
   );
   expect(commands).toHaveLength(1);
+});
+
+test('reports the browser change actionId on the restored action', async () => {
+  const result = await renderReducer();
+  const initialEntry = browserEvents(result)![0]!;
+  await act(() =>
+    result.result.current.handleAction({ type: 'PUSH', payload: { name: 'second' } })
+  );
+
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'BROWSER_HISTORY_CHANGED',
+      payload: { id: initialEntry.op === 'go' ? null : initialEntry.entryId, path: '/first' },
+      actionId: 7,
+    })
+  );
+
+  expect(result.result.current.report!.events.at(-1)).toMatchObject({
+    type: 'action-dispatched',
+    actionId: 7,
+  });
 });

@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 
-import type { RoutingIntent } from './routingQueue';
+import type { QueuedRoutingIntent, RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 import type { NavigationTransitionMode } from './types';
 
 type Props = {
-  processIntent: (intent: RoutingIntent, inTransition: boolean) => void;
+  processIntent: (intent: QueuedRoutingIntent, inTransition: boolean) => void;
 };
 
 export function shouldUseTransition(
@@ -31,7 +31,7 @@ function isPreloadIntent(intent: RoutingIntent): boolean {
 export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
-  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
+  const lastProcessed = React.useRef<QueuedRoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
     if (intents.length === 0 || lastProcessed.current === intents) {

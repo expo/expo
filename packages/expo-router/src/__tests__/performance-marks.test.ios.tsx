@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { router } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import {
@@ -16,7 +17,9 @@ import type {
   RouterPageFocusedMark,
   RouterPerformanceMark,
 } from '../performance';
+import { CommonActions } from '../react-navigation/routers';
 import { renderRouter } from '../testing-library';
+import { lazyModule } from './lazyModule';
 
 describe('router performance marks', () => {
   const cleanups: (() => void)[] = [];
@@ -239,9 +242,100 @@ describe('router performance marks', () => {
     const [focus] = unstable_performance.getEntriesByName(
       'expo-router:page-focused'
     ) as RouterPageFocusedMark[];
-    expect(action?.detail).toEqual({ actionType: 'PUSH' });
+    expect(action?.detail).toEqual({ actionType: 'PUSH', actionId: expect.any(Number) });
     expect(focus?.detail.pathname).toBe('/details');
     expect(focus!.startTime).toBeGreaterThanOrEqual(action!.startTime);
+  });
+
+  function observeActionIds() {
+    const log: { name: string; actionId: number }[] = [];
+    observe((entry) => {
+      if (
+        entry.name === 'expo-router:action-enqueued' ||
+        entry.name === 'expo-router:action-dispatched'
+      ) {
+        log.push({ name: entry.name, actionId: entry.detail.actionId });
+      }
+    });
+    return log;
+  }
+
+  it('marks action-enqueued before the queued action is reduced, with the id of its action-dispatched mark', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => {
+      router.push('/details');
+      expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    });
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
+  });
+
+  it('marks action-enqueued for synchronous dispatches', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('details')));
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
+  });
+
+  it('marks only action-enqueued for an unhandled action', async () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => router.back());
+
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'GO_BACK'"));
+    expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    error.mockRestore();
+  });
+
+  it('keeps the action id of a navigation that waits for a layout to load', async () => {
+    const layout = lazyModule({ default: () => <Stack /> });
+    await renderRouter({
+      index: () => <Text testID="index" />,
+      other: () => <Text testID="other" />,
+      'profile/_layout': layout.load,
+      'profile/[id]': () => <Text testID="profile-id" />,
+    });
+    await act(() => router.push('/other'));
+    const log = observeActionIds();
+
+    await act(() => router.push('/profile/1'));
+    await act(() => navigationRef.current!.dispatchSync({ type: 'GO_BACK' }));
+    await act(async () => layout.resolve());
+
+    expect(screen.getByTestId('profile-id')).toBeVisible();
+    const [push, back] = log.map(({ actionId }) => actionId);
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: push },
+      { name: 'expo-router:action-enqueued', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: push },
+    ]);
+    expect(push).not.toBe(back);
   });
 
   it('marks action-dispatched even when an internal listener throws', async () => {

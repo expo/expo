@@ -144,6 +144,7 @@ export type {
   RouterPageFocusedMark,
   RouterPageBlurredMark,
   RouterPageRemovedMark,
+  RouterActionEnqueuedMark,
   RouterActionDispatchedMark,
   RouterPerformanceMark,
   RouterPerformanceMarkByName,

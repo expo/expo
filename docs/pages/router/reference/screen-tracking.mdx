@@ -76,7 +76,7 @@ export default function Layout() {
 
 Replace `analytics.track` with your provider's event method. The `buffered` option includes marks recorded before the observer starts, including the initial screen. A preloaded screen does not produce a focus mark until the user navigates to it. Each mark also has a `startTime` in milliseconds, measured from `performance.timeOrigin`. If your provider expects a Unix timestamp, send `performance.timeOrigin + entry.startTime`.
 
-Expo Router also records `expo-router:page-preloaded`, `expo-router:page-blurred`, `expo-router:page-removed`, and `expo-router:action-dispatched` marks. Observe these names if your solution needs more navigation events. This API is experimental and its names may change.
+Expo Router also records `expo-router:page-preloaded`, `expo-router:page-blurred`, `expo-router:page-removed`, `expo-router:action-enqueued`, and `expo-router:action-dispatched` marks. Observe these names if your solution needs more navigation events. This API is experimental and its names may change.
 
 ## Migrating from React Navigation
 

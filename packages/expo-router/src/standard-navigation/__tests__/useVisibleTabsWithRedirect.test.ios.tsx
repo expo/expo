@@ -137,6 +137,7 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
       },
     ]);
@@ -213,6 +214,7 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/home', options: { event: 'REPLACE' } },
       },
     ]);
@@ -263,6 +265,7 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
       },
     ]);
