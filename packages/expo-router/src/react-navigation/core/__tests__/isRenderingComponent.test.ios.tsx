@@ -15,7 +15,7 @@ test('returns true only while a component renders', async () => {
   }
 
   const Test = () => {
-    results.render = isRenderingComponent();
+    results.functionRender = isRenderingComponent();
     useEffect(() => {
       results.effect = isRenderingComponent();
     }, []);
@@ -40,7 +40,7 @@ test('returns true only while a component renders', async () => {
   fireEvent.press(root.getByTestId('button'));
 
   expect(results).toEqual({
-    render: true,
+    functionRender: true,
     classRender: true,
     effect: false,
     layoutEffect: false,
