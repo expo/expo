@@ -135,6 +135,8 @@ PODS:
     - React-Core
   - ExpoMailComposer (58.0.3):
     - ExpoModulesCore
+  - ExpoMaps (58.0.9):
+    - ExpoModulesCore
   - ExpoMediaLibrary (58.0.8):
     - ExpoModulesCore
     - React-Core
@@ -4293,6 +4295,7 @@ DEPENDENCIES:
   - ExpoLocation (from `../../../packages/expo-location/ios`)
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
+  - ExpoMaps (from `../../../packages/expo-maps/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -4575,6 +4578,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/@expo/log-box"
   ExpoMailComposer:
     :path: "../../../packages/expo-mail-composer/ios"
+  ExpoMaps:
+    :path: "../../../packages/expo-maps/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
   ExpoMeshGradient:
@@ -4892,6 +4897,7 @@ SPEC CHECKSUMS:
   ExpoLocation: 1485a0770fff84055866dfd8e03cbb89d7fb965a
   ExpoLogBox: 14c42e5429c85e1e2acfb9316b4e821db8e40d42
   ExpoMailComposer: 88b4d391482d58b4a929152f1ca227b19c9a59ef
+  ExpoMaps: 75cbf7c110d65ba0f509cf2b53b632bd1f041a9b
   ExpoMediaLibrary: a6fa29be39a371fd9d5fecfd2cde59b9179a1071
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: 9b2aec73a769d430333fbc7987fe40fbd284f5a3
@@ -5063,6 +5069,6 @@ SPEC CHECKSUMS:
   Yoga: 54249c61111e792ca81fe3557b84004459bbcdb4
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: b077fda3ef07d8612add66a6f0ea3e20d41fc7d1
+PODFILE CHECKSUM: 8fa8d70492f3780972b48badd17a914c8196456f
 
 COCOAPODS: 1.16.2

@@ -698,6 +698,9 @@ importers:
       expo-mail-composer:
         specifier: workspace:*
         version: link:../../packages/expo-mail-composer
+      expo-maps:
+        specifier: workspace:*
+        version: link:../../packages/expo-maps
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library

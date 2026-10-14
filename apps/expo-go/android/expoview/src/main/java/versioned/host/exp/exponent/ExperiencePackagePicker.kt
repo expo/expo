@@ -44,6 +44,9 @@ import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
+import expo.modules.maps.GoogleMapsModule
+import expo.modules.maps.MapsModule
+import expo.modules.maps.StreetViewModule
 import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.medialibrary.next.MediaLibraryNextModule
 import expo.modules.navigationbar.NavigationBarModule
@@ -170,6 +173,9 @@ object ExperiencePackagePicker : ModulesProvider {
     LocalizationModule::class.java to null,
     LocationModule::class.java to null,
     MailComposerModule::class.java to null,
+    MapsModule::class.java to null,
+    GoogleMapsModule::class.java to null,
+    StreetViewModule::class.java to null,
     MediaLibraryModule::class.java to null,
     MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
