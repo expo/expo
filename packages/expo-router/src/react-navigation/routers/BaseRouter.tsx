@@ -1,5 +1,5 @@
 import { NoopRouter } from './NoopRouter';
-import { extendRouter } from './extendRouter';
+import { extendRouter, type RouterExtensionMembers } from './extendRouter';
 import { createRouteKeyMinter } from './stateKeys';
 import {
   type CommonNavigationAction,
@@ -7,7 +7,6 @@ import {
   type NavigationState,
   type PartialState,
   RouterActionHandling,
-  type RouterExtensionMembers,
 } from './types';
 
 /**

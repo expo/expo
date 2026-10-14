@@ -101,9 +101,7 @@ export function resolveNavigationDestination({
         params: appendInternalExpoRouterParams(childRoute.params, internalParams),
       },
     };
-    if (
-      getSelectedRoute(registry.get(childState.key)?.reduce(childState, probeAction)) === undefined
-    ) {
+    if (getSelection(registry.get(childState.key)?.reduce(childState, probeAction)) === undefined) {
       break;
     }
 
@@ -152,7 +150,7 @@ function createResolvedAction({
   };
   const baseAction = { ...action, payload };
   const result = registry.get(navigationState.key)?.reduce(navigationState, baseAction);
-  const selectedRoute = getSelectedRoute(result);
+  const selectedRoute = getSelection(result)?.route;
   const childTarget = targetRoute.state;
   const childNode = findDestinationNode(routeNode, targetRoute.name);
 
@@ -225,11 +223,12 @@ function resolveState({
     internalParams,
   });
   const result = registry.get(navigationState.key)?.reduce(navigationState, action);
-  if (result === undefined || isActionRejected(result) || getSelectedRoute(result) === undefined) {
+  const selection = getSelection(result);
+  if (!selection) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
-  return isEqual(result.state, navigationState) ? navigationState : result.state;
+  return isEqual(selection.state, navigationState) ? navigationState : selection.state;
 }
 
 function createDestinationState(
@@ -337,7 +336,7 @@ function findDestinationNode(routeNode: RouteNode, routeName: string | undefined
   return routeName === INTERNAL_SLOT_NAME ? routeNode : findRouteNodeByName(routeNode, routeName);
 }
 
-function getSelectedRoute(result: ReturnType<RouterRegistryEntry['reduce']> | undefined) {
+function getSelection(result: ReturnType<RouterRegistryEntry['reduce']> | undefined) {
   if (
     result === undefined ||
     isActionRejected(result) ||
@@ -346,7 +345,8 @@ function getSelectedRoute(result: ReturnType<RouterRegistryEntry['reduce']> | un
   ) {
     return undefined;
   }
-  return result.state.routes.find((route) => route.key === result.affectedRouteKey);
+  const route = result.state.routes.find((route) => route.key === result.affectedRouteKey);
+  return route && { state: result.state, route };
 }
 
 function markState<T extends NavigationState>(state: T): T & RouteState {

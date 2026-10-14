@@ -8,7 +8,6 @@ import {
   RouterActionHandling,
   type RouterActionResult,
   type RouterConfigOptions,
-  type RouterExtensionMembers,
   type RouterFactory,
 } from './types';
 import { isActionRejected } from './utils';
@@ -51,6 +50,21 @@ export type RouterExtensionOptions<State extends NavigationState> = {
    * router's type.
    */
   type?: NonNullable<State['type']>;
+};
+
+/**
+ * The router members an `extendRouter` extension returns. Its `getStateForAction` may also return
+ * `RouterActionHandling.Delegate` to let the base router handle the action.
+ */
+export type RouterExtensionMembers<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = Omit<Router<State, Action>, 'getStateForAction'> & {
+  getStateForAction(
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ): RouterActionResult<State> | RouterActionHandling | null;
 };
 
 /**

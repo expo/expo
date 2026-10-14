@@ -124,7 +124,6 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
-  RouterExtensionMembers,
   RouterExtensionOptions,
   RouterFactory,
   StackActionType,

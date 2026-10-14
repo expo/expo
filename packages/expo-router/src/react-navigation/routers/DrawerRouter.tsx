@@ -7,14 +7,13 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
-import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import {
-  type CommonNavigationAction,
-  type ParamListBase,
-  RouterActionHandling,
+  extendRouter,
+  type RouterExtensionContext,
   type RouterExtensionMembers,
-} from './types';
+} from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
+import { type CommonNavigationAction, type ParamListBase, RouterActionHandling } from './types';
 import { isActionRejected } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
