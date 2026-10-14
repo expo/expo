@@ -45,10 +45,10 @@ public extension EventEmitter {
     let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
     // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
-    // Sendable` box is safe here because the scheduled closure only calls `withEventTarget`, which touches
+    // Sendable` reference is safe here because the scheduled closure only calls `withEventTarget`, which touches
     // `@JavaScriptActor`-isolated or `Sendable` state (the JS object, the registry, `appContext`) and the
     // emitter's identity - never the module's own mutable state.
-    let emitter = NonisolatedUnsafeWeakVar(self)
+    let emitter = WeakEventEmitterReference(value: self)
 
     runtime.schedule {
       guard let emitter = emitter.value else {
@@ -77,9 +77,9 @@ public extension EventEmitter {
       return
     }
     // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
-    // Sendable` box because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
-    let emitter = NonisolatedUnsafeWeakVar(self)
+    let emitter = WeakEventEmitterReference(value: self)
 
     runtime.schedule {
       guard let emitter = emitter.value else {
@@ -113,9 +113,9 @@ public extension EventEmitter {
       return
     }
     // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
-    // Sendable` box because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
-    let emitter = NonisolatedUnsafeWeakVar(self)
+    let emitter = WeakEventEmitterReference(value: self)
 
     runtime.schedule { [weak appContext] in
       guard let emitter = emitter.value, let appContext else {
@@ -137,6 +137,12 @@ public extension EventEmitter {
       }
     }
   }
+}
+
+/// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
+/// in the closure context without an allocation of its own.
+private struct WeakEventEmitterReference: @unchecked Sendable {
+  weak var value: (any EventEmitter)?
 }
 
 /**
