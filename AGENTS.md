@@ -79,13 +79,13 @@ On Android, `adb devices` lists emulators. `adb shell input keyevent <code>` and
 
 On iOS, `xcrun simctl list devices booted` lists the booted simulator. `xcrun simctl openurl booted bareexpo://<path>` opens a deep link. `xcrun simctl io booted screenshot shot.png` saves a screenshot.
 
-Reproduce the bug first. Run the same steps after the fix. Put the before and after output, or the screenshots, in the Test Plan. Test each platform the change affects. If you cannot run a platform, say that in the Test Plan.
+Reproduce the bug first. Run the same steps after the fix. Put the command result in the Test Plan. If the change affects what a person sees, take a screenshot before you edit and a screenshot after the fix, and put both in `Screenshots`. If nothing visible changes, write `No UI change.` Test each platform the change affects. If you cannot run a platform, say that in the Test Plan.
 
 For `expo-router`, follow [packages/expo-router/AGENTS.md](./packages/expo-router/AGENTS.md).
 
 ## Pull requests
 
-Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and keep the headings in [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE): `Why`, `How`, `Test Plan`, and `Checklist`.
+Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and keep the headings in [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE): `Why`, `How`, `Test Plan`, `Screenshots`, and `Checklist`.
 
 - Keep the diff small enough to read in one pass. If the change has more than one reason, split it into a stack. Each pull request does one thing. Set its base branch to the previous pull request. After one merges, retarget the next to `main`.
 - List the stack order in `How`, and say which pull request this one is.
@@ -93,6 +93,7 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - `Why` states the problem, then the root cause.
 - `How` answers how you built the feature or fixed the bug, and why. Describe each solution, its performance impact, and why you believe this is the right fix. Then say what the diff changes.
 - `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft.
+- `Screenshots` has a before image and an after image when the change affects what a person sees. Take the before image first. If nothing visible changes, write `No UI change.`
 - A fix that the report limits to some devices must stay limited to those devices. If every device must get the change, say why in `How`.
 - Delete the template's HTML comments when you fill the body.
 - Do not open a pull request you cannot explain in a review reply. Answer questions on that pull request.

@@ -28,6 +28,16 @@ If you did not run a test, say that and mark the pull request as a draft.
 Delete this comment when you fill the section.
 -->
 
+# Screenshots
+
+<!--
+If this change affects what a person sees, add a before screenshot and an after screenshot.
+Take the before screenshot first. Then make the change. Then take the after screenshot.
+Name the device or simulator under each image.
+If nothing visible changes, write "No UI change."
+Delete this comment when you fill the section.
+-->
+
 # Checklist
 
 <!--

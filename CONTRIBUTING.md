@@ -221,7 +221,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 ## 📬 Opening a pull request
 
-Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, and `Checklist`. Delete the HTML comments when you fill them in.
+Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, `Screenshots`, and `Checklist`. Delete the HTML comments when you fill them in.
 
 Keep the pull request small enough to read in one pass. Limit a code change to one published package, plus its changeset. Put a documentation change that can land alone in its own pull request. CI also finishes faster when docs are separate. See [Before Submitting](#-before-submitting).
 
@@ -272,6 +272,10 @@ Say what you ran, where you ran it, and the result.
 - If there is no automated test, give the steps a reviewer can repeat.
 - If you did not run a test, say that and open the pull request as a draft.
 
+### Screenshots
+
+If the change affects what a person sees, add a before screenshot and an after screenshot. Take the before screenshot first. Then make the change. Then take the after screenshot. Name the device or simulator under each image. If nothing visible changes, write `No UI change.`
+
 ### Comments in the diff
 
 Do not add a comment that repeats the code. Keep a comment only when the code cannot show the constraint. A platform bug, a required call order, or a value you must not change are examples. Put the history of the bug in `Why`, not in a comment. Delete a comment that your change makes false.
@@ -307,6 +311,10 @@ Android emulator, API 34. No unit test covers this path.
 3. Call getDocumentAsync again and confirm the picker opens.
 
 Before this change, the second call did nothing. After this change, the promise rejects and the next call opens the picker.
+
+# Screenshots
+
+No UI change.
 
 # Checklist
 
