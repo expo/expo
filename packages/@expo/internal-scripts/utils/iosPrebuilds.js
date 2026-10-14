@@ -23,7 +23,11 @@ function getSpmDependencyNames(products) {
 }
 
 function getFlavors(product) {
-  return product.headersXCFramework === true ? [...FLAVORS, 'headers'] : FLAVORS;
+  const headers = product.headersXCFramework === true ? ['headers'] : [];
+  // CocoaPods precompiled mode, including released autolinking versions, picks up any
+  // `<flavor>/xcframeworks/<Product>.tar.gz` but cannot consume a pod that vendors its own
+  // xcframework, so a custom-build product publishes its headers only.
+  return product.customBuild ? headers : [...FLAVORS, ...headers];
 }
 
 function expectedPaths(packageRoot, product, flavor, root) {

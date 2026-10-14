@@ -174,6 +174,66 @@ test('products without headersXCFramework neither stage nor require a headers ta
   assert.equal(fs.existsSync(path.join(root, 'prebuilds/output/headers')), false);
 });
 
+const customBuild = { script: 'build.sh', output: 'Products/ExpoOne.xcframework' };
+
+test('a customBuild product stages only its headers tarball', () => {
+  const root = fixture([{ name: 'ExpoOne', headersXCFramework: true, customBuild }]);
+  framework(root, 'ExpoOneHeaders', 'headers');
+  assert.equal(validateRawIosPrebuilds(root), true);
+  assert.equal(stageIosPrebuilds(root), true);
+  assert.ok(
+    tarListing(stagedHeadersTarball(root)).includes('ExpoOneHeaders.xcframework/Info.plist')
+  );
+  assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output')), ['headers']);
+  assert.equal(validatePublishedIosPrebuilds(root), true);
+});
+
+test('a customBuild product never stages its built debug or release binary', () => {
+  const root = fixture([{ name: 'ExpoOne', headersXCFramework: true, customBuild }]);
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  framework(root, 'ExpoOneHeaders', 'headers');
+  assert.equal(stageIosPrebuilds(root), true);
+  assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output')), ['headers']);
+});
+
+test('a customBuild product still requires its headers XCFramework and tarball', () => {
+  const root = fixture([{ name: 'ExpoOne', headersXCFramework: true, customBuild }]);
+  const headers = path.join(
+    root,
+    '.expo-prebuild/output/headers/xcframeworks/ExpoOneHeaders.xcframework'
+  );
+  assert.throws(
+    () => validateRawIosPrebuilds(root),
+    (error) =>
+      error.message.startsWith(`ExpoOne headers XCFramework is missing: ${headers}\n`) &&
+      error.message.includes('et prebuild-package-for-publish')
+  );
+  framework(root, 'ExpoOneHeaders', 'headers');
+  stageIosPrebuilds(root);
+  const tarball = stagedHeadersTarball(root);
+  fs.rmSync(tarball);
+  assert.throws(() => validatePublishedIosPrebuilds(root), {
+    message: `ExpoOne headers publish tarball is missing: ${tarball}`,
+  });
+});
+
+test('a customBuild product without headersXCFramework contributes nothing to staging', () => {
+  const root = fixture([{ name: 'ExpoOne' }, { name: 'ExpoCustom', customBuild }]);
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  assert.equal(stageIosPrebuilds(root), true);
+  for (const flavor of ['debug', 'release']) {
+    assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output', flavor, 'xcframeworks')), [
+      'ExpoOne.tar.gz',
+    ]);
+  }
+  assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output')).sort(), [
+    'debug',
+    'release',
+  ]);
+});
+
 test('non-publishing packages are lifecycle no-ops', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ios-prebuilds-'));
   fs.writeFileSync(path.join(root, 'spm.config.json'), JSON.stringify({ products: [] }));
