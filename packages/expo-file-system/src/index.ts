@@ -13,6 +13,7 @@ export {
   type FileInfo,
   type FileCanPreviewOptions,
   type FilePreviewOptions,
+  type FilePreviewCollectionOptions,
   type FileWriteOptions,
   type InfoOptions,
   type PathInfo,

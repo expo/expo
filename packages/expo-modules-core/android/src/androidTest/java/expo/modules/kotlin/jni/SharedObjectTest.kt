@@ -15,6 +15,29 @@ import org.junit.Test
 
 class SharedObjectTest {
   @Test
+  fun returning_stale_shared_object_throws_instead_of_aborting() = withSingleModule({
+    Function("staleSharedObject") {
+      SharedObjectExampleClass().apply {
+        sharedObjectId = SharedObjectId(Int.MAX_VALUE)
+      }
+    }
+  }) {
+    val message = evaluateScript(
+      """
+      (() => {
+        try {
+          $moduleRef.staleSharedObject();
+          return 'No error';
+        } catch (error) {
+          return error.message;
+        }
+      })()
+      """.trimIndent()
+    ).getString()
+    Truth.assertThat(message).contains("its JavaScript instance is no longer available")
+  }
+
+  @Test
   fun shared_object_class_should_exists() = withJSIInterop {
     val sharedObjectClass = evaluateScript("expo.SharedObject")
     Truth.assertThat(sharedObjectClass.isFunction()).isTrue()
@@ -73,6 +96,27 @@ class SharedObjectTest {
       "sharedObject instanceof expo.SharedObject"
     ).getBool()
     Truth.assertThat(isInstanceOf).isTrue()
+  }
+
+  @Test
+  fun releases_frozen_object() = withExampleSharedClass {
+    // React Native deep-freezes view props in development, so a shared object passed as a prop is
+    // frozen by the time its owner releases it.
+    val sharedObjectId = evaluateScript(
+      "sharedObject = new $moduleRef.SharedObjectExampleClass()",
+      "Object.freeze(sharedObject)",
+      "sharedObject.release()",
+      "sharedObject.release()",
+      "sharedObject.$sharedObjectIdPropertyName"
+    ).getInt()
+    val containSharedObject = jsiInterop
+      .runtimeHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.pairs
+      ?.contains(SharedObjectId(sharedObjectId))
+
+    Truth.assertThat(containSharedObject).isFalse()
   }
 
   @Test

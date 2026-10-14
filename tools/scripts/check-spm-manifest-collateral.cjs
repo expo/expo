@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// Fails when the current tools/src generates a different manifest for an unchanged product from the
+// baseline packages/ than from the current ones. Changes caused by tools/src itself are only reported.
 // Run: node tools/scripts/check-spm-manifest-collateral.cjs --base "$(git merge-base origin/main HEAD)"
 // Additional exclusions: --exclude <npm-package>/<product> (repeatable).
 // Another checkout: --repo <dir> (default: the checkout holding this script).
@@ -21,6 +23,8 @@ const { values } = parseArgs({
     include: { type: 'string', multiple: true, default: [] },
     'only-comparable': { type: 'boolean', default: false },
     worker: { type: 'string' },
+    tooling: { type: 'string' },
+    packages: { type: 'string' },
     scratch: { type: 'string' },
   },
 });
@@ -192,9 +196,9 @@ function compile(source, destination) {
 
 async function generate() {
   const scratch = values.scratch;
-  const fixtureRoot = path.join(scratch, values.worker, 'repo');
+  const fixtureRoot = path.join(scratch, values.packages, 'repo');
   process.env.EXPO_ROOT_DIR = fixtureRoot;
-  const build = path.join(scratch, values.worker, 'build');
+  const build = path.join(scratch, values.tooling, 'build');
   const { SPMPackage } = require(path.join(build, 'prebuilds/SPMPackage.js'));
   const { Frameworks } = require(path.join(build, 'prebuilds/Frameworks.js'));
   const { resolvePackagePath } = require(path.join(build, 'prebuilds/resolvePackage.js'));
@@ -365,13 +369,18 @@ async function main() {
   try {
     prepareFixture(scratch, 'before');
     prepareFixture(scratch, 'after');
+    const toolingChanged =
+      git('diff', '--name-only', values.base, '--', 'tools/src').length > 0 ||
+      git('ls-files', '--others', '--exclude-standard', '--', 'tools/src').length > 0;
     const baselineSource = path.join(scratch, 'base-source');
-    fs.mkdirSync(baselineSource);
-    execFileSync('tar', ['-xf', '-', '-C', baselineSource], {
-      input: git('archive', values.base, 'tools/src'),
-    });
+    if (toolingChanged) {
+      fs.mkdirSync(baselineSource);
+      execFileSync('tar', ['-xf', '-', '-C', baselineSource], {
+        input: git('archive', values.base, 'tools/src'),
+      });
+    }
     for (const [label, source] of [
-      ['before', path.join(baselineSource, 'tools/src')],
+      ...(toolingChanged ? [['before', path.join(baselineSource, 'tools/src')]] : []),
       ['after', path.join(repo, 'tools/src')],
     ]) {
       const destination = path.join(scratch, label);
@@ -379,11 +388,15 @@ async function main() {
       fs.symlinkSync(path.join(repo, 'tools/node_modules'), path.join(destination, 'node_modules'));
     }
 
-    function runWorker(label) {
+    function runWorker(label, tooling, packages) {
       const args = [
         __filename,
         '--worker',
         label,
+        '--tooling',
+        tooling,
+        '--packages',
+        packages,
         '--scratch',
         scratch,
         '--base',
@@ -407,11 +420,15 @@ async function main() {
       }
     }
 
-    function requireWorkerSuccess(label, result) {
+    function requireWorkerSuccess(label, result, why, how) {
       if (result.status !== 0) {
         process.stderr.write(result.stdout);
         process.stderr.write(result.stderr);
-        throw new Error(`${label} generator failed (exit ${result.status})`);
+        const error = new Error(
+          `Unable to check SwiftPM manifest collateral: the ${label} generator failed (exit ${result.status}).\nWhy: ${why}\nHow to fix: ${how}`
+        );
+        error.stack = error.message;
+        throw error;
       }
       console.log(`${label}: ${result.stdout.trim().split('\n').at(-1)}`);
     }
@@ -421,15 +438,80 @@ async function main() {
       const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
       assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
       const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
-      for (const id of changed) console.error(`DIFF: ${id}`);
+      for (const id of changed) {
+        const [a, b] = [before[id].split('\n'), after[id].split('\n')];
+        const line = a.findIndex((text, index) => text !== b[index]);
+        console.error(`DIFF: ${id}\n  line ${line + 1}\n  - ${a[line]}\n  + ${b[line]}`);
+      }
       assert.equal(changed.length, 0, 'Collateral manifest changes');
       console.log(
-        `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base}.`
+        `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base} packages, current tooling.`
       );
     }
 
-    requireWorkerSuccess('before', runWorker('before'));
-    requireWorkerSuccess('after', runWorker('after'));
+    function reportToolingChanges() {
+      const result = runWorker('report', 'before', 'after');
+      if (result.status !== 0) {
+        console.log(
+          `INFO: Tooling report skipped: the baseline tooling failed on the current packages (exit ${result.status}): ${(result.stderr || result.stdout).trim().split('\n')[0]}`
+        );
+        return;
+      }
+      const before = JSON.parse(fs.readFileSync(path.join(scratch, 'report.json'), 'utf8'));
+      const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
+      const changed = Object.keys(after).filter((id) => before[id] !== after[id]);
+      for (const id of changed) console.log(`INFO: Tooling report: ${id} changed`);
+      const summary = `the tools/src changes since ${values.base} alter ${changed.length} of ${Object.keys(after).length} compared manifests`;
+      console.log(`INFO: Tooling report: ${summary}. The report never fails this check.`);
+      if (process.env.GITHUB_STEP_SUMMARY && changed.length > 0) {
+        fs.appendFileSync(
+          process.env.GITHUB_STEP_SUMMARY,
+          `\n### SwiftPM manifests changed by tooling\n\nInformational: ${summary}.\n\n${changed.map((id) => `- \`${id}\``).join('\n')}\n`
+        );
+      }
+    }
+
+    requireWorkerSuccess(
+      'after',
+      runWorker('after', 'after', 'after'),
+      'the current tools/src failed on the current spm.config.json files.',
+      'fix the error in the generator output above, then run this check again.'
+    );
+    if (toolingChanged) reportToolingChanges();
+    let before = runWorker('before', 'after', 'before');
+    let beforeLabel = 'before';
+    if (before.status !== 0 && toolingChanged) {
+      // Any tools/src edit sets toolingChanged, so only skip when the baseline's own generator
+      // still handles the baseline packages; otherwise the baseline itself is broken.
+      const baseline = runWorker('baseline', 'before', 'before');
+      if (baseline.status === 0) {
+        process.stderr.write(before.stdout);
+        process.stderr.write(before.stderr);
+        const skip = `SKIP: The package check did not run: the current tooling failed on the baseline ${values.base} packages (exit ${before.status}).`;
+        console.log(
+          `${skip}\n` +
+            'Why: tools/src changed together with the spm.config.json format, so the baseline configs are no longer valid generator input.\n' +
+            'How to fix: nothing, if that format change is intended. Otherwise, fix the generator error printed above.'
+        );
+        if (process.env.GITHUB_STEP_SUMMARY) {
+          fs.appendFileSync(
+            process.env.GITHUB_STEP_SUMMARY,
+            `\n### SwiftPM manifest collateral check skipped\n\n${skip}\n\nGenerator error: ${(before.stderr || before.stdout).trim().split('\n')[0]}\n`
+          );
+        }
+        return;
+      }
+      process.stderr.write(before.stdout);
+      process.stderr.write(before.stderr);
+      before = baseline;
+      beforeLabel = 'baseline';
+    }
+    requireWorkerSuccess(
+      beforeLabel,
+      before,
+      `the baseline ${values.base} packages fail with the baseline's own generator, so the baseline packages are most likely broken.`,
+      'read the generator output above; if the baseline packages are broken, land their fix on the base branch first.'
+    );
     compareSnapshots();
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });

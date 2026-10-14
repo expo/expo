@@ -72,7 +72,10 @@ class SettingsManager(
           it.matches(project.name)
         }
 
-        project.configuration.shouldUsePublication = !forceBuildFromSource && evaluateShouldUsePublicationScript(project)
+        project.configuration.shouldUsePublication =
+          !forceBuildFromSource &&
+          hasPublicationRepository(project) &&
+          evaluateShouldUsePublicationScript(project)
       }
     }
   }
@@ -169,4 +172,12 @@ class SettingsManager(
     allPlugins.forEach(settings::linkPlugin)
     allAarProjects.forEach(settings::linkAarProject)
   }
+}
+
+internal fun hasPublicationRepository(project: GradleProject): Boolean {
+  val repository = project.publication?.repository ?: return false
+  if (repository == "mavenLocal") {
+    return true
+  }
+  return File(project.sourceDir).resolve("../$repository").isDirectory
 }

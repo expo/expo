@@ -76,7 +76,9 @@ public final class ConstantDefinition<ReturnType: AnyArgument>: AnyDefinition, A
    */
   @JavaScriptActor
   internal func buildGetter(appContext: AppContext) throws -> JavaScriptFunction {
-    var savedValue: JavaScriptValue?
+    // The converted value is cached behind a `JavaScriptRef` so the closure can keep it across calls:
+    // the ref gives the value reference semantics, which an escaping closure capture needs.
+    let savedValue = JavaScriptValue.Ref()
     return try appContext.runtime.createFunction(name) { [weak appContext, weak self, name] _, _ in
       guard let appContext else {
         throw Exceptions.AppContextLost()
@@ -87,11 +89,11 @@ public final class ConstantDefinition<ReturnType: AnyArgument>: AnyDefinition, A
       guard let getter = self.getter else {
         throw NativeConstantWithoutGetterException(name)
       }
-      if let value = savedValue {
+      if let value = savedValue.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.copy() }) {
         return value
       }
       let value = try appContext.converter.toJS(try getter(), ~ReturnType.self)
-      savedValue = value
+      savedValue.reset(value.copy())
       return value
     }
   }

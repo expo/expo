@@ -1,6 +1,11 @@
 {
   "platforms": ["android"],
   "android": {
-    "modules": ["expo.modules.navigationbar.NavigationBarModule"]
+    "modules": ["expo.modules.navigationbar.NavigationBarModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.navigationbar",
+      "repository": "local-maven-repo"
+    }
   }
 }

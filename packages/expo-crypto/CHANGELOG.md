@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Fix `digest()` failing on Android and iOS when `data` is an `ArrayBuffer` or `DataView`. Both are valid `BufferSource` inputs and are now wrapped in a `Uint8Array` before reaching the native module. ([#51136](https://github.com/expo/expo/pull/51136) by [@devauntea](https://github.com/devauntea))
 
-### 🐛 Bug fixes
+## 58.0.5
 
-### 💡 Others
+### Patch Changes
+
+- [Android] Migrate the main module to the Expo Modules API 2.0. ([#51091](https://github.com/expo/expo/pull/51091) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-21
 

@@ -191,11 +191,14 @@ If you're having trouble setting up the banner, run the following command to aut
 If you're building a [statically rendered website with Expo Router](/router/web/static-rendering), then add the HTML tag to the `<head>` component in your [**src/app/+html.js** file](/router/web/static-rendering#root-html).
 
 ```tsx src/app/+html.tsx
+import { useServerDocumentContext } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
 export default function Root({ children }: PropsWithChildren) {
+  const { headNodes, bodyNodes, htmlAttributes, bodyAttributes } = useServerDocumentContext();
+
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -203,8 +206,12 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="apple-itunes-app" content="app-id=<ITUNES_ID>" />
         /* @end */
         {/* Other head elements... */}
+        {headNodes}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }

@@ -94,7 +94,7 @@ open class SharedObject: AnySharedObject {
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
   @JavaScriptActor
-  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+  open class func _constructSharedObject(this: borrowing JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
     return nil
   }
 }
@@ -119,13 +119,13 @@ extension SharedObject {
   /// Returns the base `SharedObject`. Callers wanting a concrete subclass use the `as:` overload, which
   /// performs a checked downcast.
   ///
-  /// Throws `NotFoundException` when the object carries no native state.
+  /// Throws `NotFoundException` when the object carries no native state or its native object was released.
   @JavaScriptActor
   public static func native(from jsObject: borrowing JavaScriptObject) throws -> SharedObject {
-    guard let native = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native else {
+    guard let nativeState = jsObject.getNativeState(as: SharedObjectNativeState.self), !nativeState.isReleased else {
       throw NotFoundException()
     }
-    return native
+    return nativeState.native
   }
 
   /// Recovers the native shared object and casts it to the given subclass, e.g.

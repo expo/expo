@@ -159,6 +159,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(NavigationStackView.self)
     ExpoUIView(NavigationLinkView.self)
     ExpoUIView(NavigationSplitViewView.self)
+    ExpoUIView(ArrangementViewView.self)
     ExpoUIView(ToolbarView.self)
 
     ExpoUIView(FormView.self)
@@ -204,7 +205,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(BackgroundView.self)
     ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
-    ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
     ExpoUIView(TabView.self)
     ExpoUIView(Tab.self)

@@ -36,11 +36,15 @@ function routerRoot(state: ProcessEnvState): string {
 }
 
 /**
- * Mirrors `getAsyncRoutes` in `babel-preset-expo`. Production async routes are web-only: native
- * production bundles are never split, so they must keep the synchronous Router import mode even
- * when the bundler request enables async routes.
+ * Mirrors `getAsyncRoutes` in `babel-preset-expo`. Server bundles are never split, so they keep
+ * the synchronous Router import mode. Production async routes are web-only: native production
+ * bundles are never split either, so they must keep the synchronous Router import mode even when
+ * the bundler request enables async routes.
  */
 function isAsyncRoutesEnabled(options: NoxcturnalTransformInput['options']): boolean {
+  if (['node', 'react-server'].includes(String(options.customTransformOptions?.environment))) {
+    return false;
+  }
   if (String(options.customTransformOptions?.asyncRoutes) !== 'true') {
     return false;
   }

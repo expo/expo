@@ -42,7 +42,7 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
 
   public var takesOwner: Bool = false
 
-  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (consuming FunctionCallResult) -> ()) {
     callback(.failure(GenericException("OptimizedAsyncFunctionDefinition cannot be called from native code")))
   }
 

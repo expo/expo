@@ -8,6 +8,12 @@ interface Window {
   sidebarState: Record<string, boolean>;
 }
 
+interface ImportMeta {
+  webpackHot?: {
+    decline: (dependency: string) => void;
+  };
+}
+
 declare module NodeJS {
   interface Global {
     tippy: any;

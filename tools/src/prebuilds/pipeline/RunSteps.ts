@@ -19,6 +19,7 @@ import { getPackageByName } from '../../Packages';
 import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
 import {
+  getSiblingProductNames,
   listCheckedInTargetInputs,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
@@ -360,7 +361,11 @@ async function getNewestProductInputAsync(
   if (checkedInRoot) {
     let targets;
     try {
-      targets = await resolveCheckedInManifestAsync(checkedInRoot, product);
+      targets = await resolveCheckedInManifestAsync(
+        checkedInRoot,
+        product,
+        getSiblingProductNames(pkg, product)
+      );
     } catch {
       return { unknownReason: 'its checked-in Package.swift could not be resolved' };
     }

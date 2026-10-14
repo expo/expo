@@ -2,6 +2,7 @@
 import { jest } from '@jest/globals';
 
 const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
+const BROWSER_NAVIGATION = { 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document' };
 const page = path => ({ path, title: path, description: 'Expo documentation' });
 const pages = [page(NATIVE_TABS), page('/guides/permissions/'), page('/html-only/')];
 let worker;
@@ -41,8 +42,14 @@ function respond(choose = () => NATIVE_TABS, confidence = 0.9) {
   });
 }
 
-function request(path, options) {
-  return worker.fetch(new Request(`https://docs.expo.dev${path}`, options), env);
+function request(path, { headers, ...options } = {}) {
+  return worker.fetch(
+    new Request(`https://docs.expo.dev${path}`, {
+      ...options,
+      headers: { ...BROWSER_NAVIGATION, ...headers },
+    }),
+    env
+  );
 }
 
 function useInventory(inventory) {
@@ -103,7 +110,7 @@ test.each(['/router/basics/tabs/', '/router/layouts/tabs'])(
     expect(response.status).toBe(302);
     expect(response.headers.get('location')).toBe(`https://docs.expo.dev${NATIVE_TABS}`);
     expect(response.headers.get('cache-control')).toBe('no-store');
-    expect(response.headers.get('vary')).toBe('Accept');
+    expect(response.headers.get('vary')).toBe('Accept, Sec-Fetch-Mode, Sec-Fetch-Dest');
     expect(run).toHaveBeenCalledTimes(1);
     expect(env.AI.gateway).toHaveBeenCalledWith('default');
     const [input, options] = run.mock.calls[0];
@@ -213,6 +220,19 @@ test.each([
   expect((await request(path, options)).status).toBe(status);
   expect(run).not.toHaveBeenCalled();
 });
+
+test.each([
+  [{}, false],
+  [{ headers: { Accept: 'text/markdown' } }, true],
+])(
+  'does not recover a request without browser navigation headers (%j)',
+  async (options, wantsMarkdown) => {
+    const { recoverNotFoundAsync } = await import('../worker/url-recovery.ts');
+    const missing = new Request('https://docs.expo.dev/router/basics/tabs/', options);
+    expect(await recoverNotFoundAsync(missing, env, wantsMarkdown)).toBeNull();
+    expect(run).not.toHaveBeenCalled();
+  }
+);
 
 test('works without an AI binding and keeps markdown discovery links', async () => {
   delete env.AI;

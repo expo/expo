@@ -13,7 +13,14 @@ class PatchStarred(
   override val contentValues =
     ContentValues().apply {
       if (!starred.isUndefined) {
-        put(ContactsContract.Contacts.STARRED, if (starred.optional == true) 1 else 0)
+        put(
+          ContactsContract.Contacts.STARRED,
+          if (starred.optional == true) {
+            1
+          } else {
+            0
+          }
+        )
       }
     }
 }

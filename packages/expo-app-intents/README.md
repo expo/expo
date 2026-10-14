@@ -45,6 +45,33 @@ export function AppIntentHandler() {
 }
 ```
 
+## Donating intents
+
+Donate an intent when the user performs its action inside your app, so the system can suggest it later on the Lock Screen, in Siri Suggestions, and in Spotlight. Make the intent donatable in Swift and register it in the `OnCreate` of your `AppIntentsSetup` module. JavaScript donates by the registered name. Nothing requires it to match the name the intent dispatches, but reusing that name gives each intent one name in JavaScript. The params that JavaScript passes are converted to the intent's `DonationParams` record, so a missing required field or a field of the wrong type rejects the donation. An intent without params only needs to conform to `DonatableAppIntent`. Declare the record with `@Field` properties, because the `@Record` macro is not available in the app target:
+
+```swift
+extension SaveNoteIntent: DonatableAppIntent {
+  struct DonationParams: Record {
+    @Field(.required) var text: String = ""
+  }
+
+  init(donationParams: DonationParams) {
+    self.init()
+    self.text = donationParams.text
+  }
+}
+
+AppIntentDonationRegistry.shared.register("saveNote", as: SaveNoteIntent.self)
+```
+
+Then donate it from JavaScript, and delete donations when they no longer apply:
+
+```ts
+await AppIntents.donateIntentAsync('saveNote', { text: 'Buy milk' });
+
+await AppIntents.deleteDonationsAsync({ intent: 'saveNote' });
+```
+
 ## Limitations
 
 - Shortcut phrases are compiled at build time and cannot be created from JavaScript at runtime. Only parameter values are dynamic.

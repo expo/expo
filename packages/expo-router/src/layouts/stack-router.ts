@@ -1,7 +1,6 @@
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
@@ -170,7 +169,6 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                     : {}),
                   ...action.payload.params,
                   [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
-                  [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
                 },
               },
               action

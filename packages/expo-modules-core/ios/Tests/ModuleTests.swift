@@ -148,7 +148,7 @@ struct ModuleTests {
 
       detached.emit(event: "ignored")
       detached.emit(event: "ignored", payload: ["key": "value"])
-      detached.emit(event: "ignored", payload: .undefined)
+      detached.emit(event: "ignored", payload: .undefined())
     }
   }
 }

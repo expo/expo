@@ -3,6 +3,7 @@
 package expo.modules.logbox
 
 import android.app.Activity
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.webkit.JavascriptInterface
@@ -27,7 +28,9 @@ class ExpoLogBoxWebViewWrapper(
   val webView: WebView = WebView(context).apply {
     setBackgroundColor(Color.BLACK)
     settings.javaScriptEnabled = true
-    setWebContentsDebuggingEnabled(true)
+    if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+      setWebContentsDebuggingEnabled(true)
+    }
     // This interface is defined by the Expo DOM Components WebView Wrapper
     // and must always be the same as [add link]
     addJavascriptInterface(

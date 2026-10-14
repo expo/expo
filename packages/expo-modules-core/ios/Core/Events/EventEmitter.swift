@@ -28,7 +28,7 @@ public extension EventEmitter {
    Schedules an event with the given name to be emitted to the associated JavaScript object.
    */
   func emit(event: String) {
-    emit(event: event, payload: JavaScriptValue.undefined)
+    emit(event: event, payload: JavaScriptValue.undefined())
   }
 
   /**
@@ -36,11 +36,13 @@ public extension EventEmitter {
    to the associated JavaScript object. This is the lowest-level emit overload - use it when the
    value is already a `JavaScriptValue` to skip the native-to-JS conversion step.
    */
-  func emit(event: String, payload: JavaScriptValue) {
+  func emit(event: String, payload: consuming JavaScriptValue) {
     guard let appContext, let runtime = try? appContext.runtime else {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
+    // The payload is moved into a `JavaScriptRef` so the scheduled closure can capture it.
+    let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
     // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
     // Sendable` box is safe here because the scheduled closure only calls `withEventTarget`, which touches
@@ -50,6 +52,10 @@ public extension EventEmitter {
 
     runtime.schedule {
       guard let emitter = emitter.value else {
+        return
+      }
+      // The event is dispatched once, so the payload can be moved out of the ref.
+      guard let payload = payload.take() else {
         return
       }
       let dispatched = emitter.withEventTarget { target in
@@ -102,7 +108,7 @@ public extension EventEmitter {
  Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
  */
 @JavaScriptActor
-internal func dispatchEvent(event: String, payload: JavaScriptValue, to target: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
+internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, to target: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
   runtime.withUnsafePointee { runtimePtr in
     target.withUnsafePointee { objectPtr in
       payload.withUnsafePointee { payloadPtr in

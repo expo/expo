@@ -8,9 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.FrameLayout
+import androidx.annotation.UiThread
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
@@ -39,10 +47,12 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
+import java.util.WeakHashMap
 
 @OptimizedComposeProps
 internal data class RNHostViewProps(
-  val matchContents: MutableState<Boolean?> = mutableStateOf(null),
+  val matchContentsHorizontal: MutableState<Boolean?> = mutableStateOf(null),
+  val matchContentsVertical: MutableState<Boolean?> = mutableStateOf(null),
   //  Adds LeafNode and MeasurableYogaNode trait in Shadow node
   val expoInternalSizeFromChildren: MutableState<Boolean?> = mutableStateOf(null),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
@@ -144,24 +154,54 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     shadowNodeProxy.clearContentOrigin()
   }
 
+  // Compose places the views between this view and its `Host`, so `measure()` must skip their Yoga
+  // origins. A zero content origin on each one does that while this view is attached.
+  private var composeAncestors: List<ExpoComposeView<*>> = emptyList()
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    composeAncestors = generateSequence(parent) { it.parent }
+      .takeWhile { it is ExpoComposeView<*> && !it.shouldUseAndroidLayout }
+      .filterIsInstance<ExpoComposeView<*>>()
+      .toList()
+    composeAncestors.forEach(ZeroContentOrigins::acquire)
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    composeAncestors.forEach(ZeroContentOrigins::release)
+    composeAncestors = emptyList()
+  }
+
   @Composable
   override fun ComposableScope.Content() {
-    val matchContents = props.matchContents.value ?: false
+    val matchContentsHorizontal = props.matchContentsHorizontal.value ?: false
+    val matchContentsVertical = props.matchContentsVertical.value ?: false
     val scope: ComposableScope = this
 
     wrapperState.value?.let { wrapper ->
       childViewState.value ?: return@let
-      val sizingModifier = if (matchContents) {
-        applySizeFromYogaNodeModifier()
-      } else {
-        Modifier
-          .fillMaxSize()
-          .then(reportSizeToYogaNodeModifier())
+      val sizingModifier = when {
+        matchContentsHorizontal && matchContentsVertical -> applySizeFromYogaNodeModifier()
+        matchContentsVertical ->
+          Modifier
+            .fillMaxWidth()
+            .then(reportSizeToYogaNodeModifier(reportHeight = false))
+            .then(applyHeightFromYogaNodeModifier())
+        matchContentsHorizontal ->
+          Modifier
+            .fillMaxHeight()
+            .then(reportSizeToYogaNodeModifier(reportWidth = false))
+            .then(applyWidthFromYogaNodeModifier())
+        else ->
+          Modifier
+            .fillMaxSize()
+            .then(reportSizeToYogaNodeModifier())
       }
-      // Origin last: a chain applies outside-in, so a caller `padding` or `offset` has to shift the
-      // content before it is read.
-      val modifiers = sizingModifier
-        .then(ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher))
+      // A chain applies outside-in. Caller modifiers go first so a `padding` or `border` shrinks the
+      // box before its size is reported and its origin is read.
+      val modifiers = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher)
+        .then(sizingModifier)
         .then(publishContentOriginModifier())
 
       AndroidView(
@@ -204,6 +244,28 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     }
   }
 
+  @Composable
+  private fun applyHeightFromYogaNodeModifier(): Modifier {
+    val height = childSizeState.value.height
+    if (height <= 0) {
+      return Modifier
+    }
+    return Modifier
+      .wrapContentHeight(Alignment.Top, unbounded = true)
+      .requiredHeight(with(LocalDensity.current) { height.toDp() })
+  }
+
+  @Composable
+  private fun applyWidthFromYogaNodeModifier(): Modifier {
+    val width = childSizeState.value.width
+    if (width <= 0) {
+      return Modifier
+    }
+    return Modifier
+      .wrapContentWidth(Alignment.CenterHorizontally, unbounded = true)
+      .requiredWidth(with(LocalDensity.current) { width.toDp() })
+  }
+
   /**
    * Publishes where Compose placed this view inside its `Host`, which Yoga has no way to know:
    * Yoga puts the box at the `Host`'s origin while Compose may draw it anywhere inside. Without
@@ -233,16 +295,62 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   // Sets Yoga node size from Compose view size
   // Listens to Compose view size changes and updates the Yoga node size
   @Composable
-  private fun reportSizeToYogaNodeModifier(): Modifier {
+  private fun reportSizeToYogaNodeModifier(reportWidth: Boolean = true, reportHeight: Boolean = true): Modifier {
     val density = LocalDensity.current
     return Modifier.onSizeChanged { size ->
       with(density) {
         shadowNodeProxy.setViewSize(
-          size.width.toDp().value.toDouble(),
-          size.height.toDp().value.toDouble()
+          if (reportWidth) {
+            size.width.toDp().value.toDouble()
+          } else {
+            Double.NaN
+          },
+          if (reportHeight) {
+            size.height.toDp().value.toDouble()
+          } else {
+            Double.NaN
+          }
         )
       }
     }
+  }
+}
+
+/**
+ * Counts, for each Compose ancestor, the attached `RNHostView`s below it. Several can share an
+ * ancestor, so the ancestor's zero content origin is set when its count becomes 1 and cleared when
+ * it returns to 0.
+ */
+internal object ZeroContentOrigins {
+  private val counts = WeakHashMap<ExpoComposeView<*>, Int>()
+
+  @UiThread
+  fun acquire(view: ExpoComposeView<*>) {
+    val count = counts[view] ?: 0
+    if (count == 0) {
+      view.shadowNodeProxy.setContentOrigin(0.0, 0.0)
+    }
+    counts[view] = count + 1
+  }
+
+  @UiThread
+  fun release(view: ExpoComposeView<*>) {
+    val count = counts[view] ?: return
+    if (count > 1) {
+      counts[view] = count - 1
+      return
+    }
+    counts.remove(view)
+    view.shadowNodeProxy.clearContentOrigin()
+  }
+
+  /**
+   * Called on reload, after the content origins themselves are cleared. A late `release` from the
+   * old app context then finds no count and can't clear an entry for a reused tag.
+   */
+  @UiThread
+  fun clear() {
+    counts.clear()
   }
 }
 
@@ -259,6 +367,28 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 internal fun detachForReuse(wrapper: View) {
   (wrapper.parent as? ViewGroup)?.removeView(wrapper)
   wrapper.layout(0, 0, 0, 0)
+}
+
+/**
+ * React Native looks for touch targets from the last child to the first, and Compose appends helper
+ * views such as ripple containers to its owner view after the hosted views. Those helpers have no
+ * React tag, so a touch on them goes to the `Host` instead of the hosted view.
+ * This is a workaround: React Native has no way to let the `Host` choose the touch target.
+ * This causes https://github.com/expo/expo/issues/51159
+ */
+internal fun keepLastForTouchTargeting(composeOwnerView: ViewGroup, hostedViewsContainer: View) {
+  if (composeOwnerView.indexOfChild(hostedViewsContainer) != composeOwnerView.childCount - 1) {
+    composeOwnerView.bringChildToFront(hostedViewsContainer)
+  }
+  composeOwnerView.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
+    override fun onChildViewAdded(parent: View, child: View) {
+      if (child !== hostedViewsContainer) {
+        composeOwnerView.bringChildToFront(hostedViewsContainer)
+      }
+    }
+
+    override fun onChildViewRemoved(parent: View, child: View) = Unit
+  })
 }
 
 /**
@@ -318,7 +448,8 @@ private class TouchDispatchingRootViewGroup(
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     // Always gets called with EXACTLY mode
-    // because parent has either fillMaxSize (matchContents = false) or requiredSize (matchContents = true) modifiers
+    // because parent has fillMaxSize (matchContents = false), requiredSize (matchContents = true), or a
+    // fillMax* + required* pair (one matched axis) modifiers
     setMeasuredDimension(
       MeasureSpec.getSize(widthMeasureSpec),
       MeasureSpec.getSize(heightMeasureSpec)
@@ -330,8 +461,25 @@ private class TouchDispatchingRootViewGroup(
     // and we must not override those values.
   }
 
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    // Walk up until the parent is the ComposeView. That ancestor is the Compose owner view, and the
+    // child we came from is the container that Compose keeps all hosted views in.
+    var hostedViewsContainer: View = this
+    var composeOwnerView = parent as? ViewGroup
+    while (composeOwnerView != null && composeOwnerView.parent !is AbstractComposeView) {
+      hostedViewsContainer = composeOwnerView
+      composeOwnerView = composeOwnerView.parent as? ViewGroup
+    }
+    composeOwnerView?.let { keepLastForTouchTargeting(it, hostedViewsContainer) }
+  }
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    if (ev.actionMasked == MotionEvent.ACTION_CANCEL && !dispatchesTouchesToJS) {
+    if (
+      ev.actionMasked == MotionEvent.ACTION_CANCEL &&
+      !dispatchesTouchesToJS &&
+      !isCancelFromReactNative()
+    ) {
       // Compose cancels this subtree when a gesture detector above it claims the gesture. The
       // ancestor root, which dispatches this subtree's touches, keeps streaming moves, so a
       // `Pressable` still fires on release. Tell it a native child took over.
@@ -383,6 +531,23 @@ private class TouchDispatchingRootViewGroup(
       }
     }
     return handled
+  }
+
+  /**
+   * Whether this cancel reached the `Host` from React Native rather than from Compose. The JS
+   * responder's view intercepts the stream once it's granted, which cancels its native children,
+   * including the `Host` of a `MaskedView` laid over a `Pressable`. JS still owns that gesture, so
+   * reporting it as a native one would cancel the press it belongs to.
+   */
+  private fun isCancelFromReactNative(): Boolean {
+    var current: ViewParent? = parent
+    while (current != null) {
+      if (current is HostView) {
+        return current.isDispatchingCancelFromParent
+      }
+      current = current.parent
+    }
+    return false
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
@@ -498,7 +663,9 @@ private class TouchDispatchingRootViewGroup(
     // Use the (…, type, consumed) variant so we can read how much the sheet ate (consumed[1]).
     val consumed = IntArray(2)
     dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
-    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
+    if (consumed[1] != 0) {
+      sheetMovingOnLastDragFrame = true
+    }
   }
 
   override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {

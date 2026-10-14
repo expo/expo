@@ -98,7 +98,7 @@ function SymbolScales({ title, ...props }: RowProps) {
             <View key={index} style={{ alignItems: 'center' }}>
               <SymbolView
                 {...props}
-                name={symbol as SFSymbol}
+                name={{ ios: symbol as SFSymbol, android: symbol as AndroidSymbol }}
                 style={styles.symbol}
                 scale={scale}
               />

@@ -30,23 +30,23 @@ const requestWindow = (first: number, last: number, revision = nativeProps().rev
 
 beforeEach(() => jest.clearAllMocks());
 
-it('creates a bounded JSX window for 10,000 items and recenters after a distant request', () => {
+it('creates a bounded JSX window for 10,000 items and recenters after a distant request', async () => {
   const renderItem = jest.fn(({ index }: { index: number }) => <Text>{index}</Text>);
-  render(
+  await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
   expect(renderItem).toHaveBeenCalledTimes(11);
   expect(nativeProps().itemKeys).toHaveLength(10_000);
-  requestWindow(500, 510);
+  await requestWindow(500, 510);
   expect(renderItem).toHaveBeenCalledTimes(42);
   const indices = slotsOf(nativeProps()).map((child: any) => child.props.index);
   expect(indices).toHaveLength(31);
   for (let index = 500; index <= 510; index++) expect(indices).toContain(index);
 });
 
-it('reuses overlapping slots without rerendering them and preserves parent context', () => {
+it('reuses overlapping slots without rerendering them and preserves parent context', async () => {
   const Context = createContext('missing');
   let mounts = 0;
   function Row({ index }: { index: number }) {
@@ -54,65 +54,65 @@ it('reuses overlapping slots without rerendering them and preserves parent conte
     return <Text>{`${useContext(Context)}:${index}:${slot}`}</Text>;
   }
   const renderItem = jest.fn(({ index }: { index: number }) => <Row index={index} />);
-  const screen = render(
+  const screen = await render(
     <Context.Provider value="parent">
       <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={3}>
         {renderItem}
       </ListForEach>
     </Context.Provider>
   );
-  requestWindow(10, 11);
+  await requestWindow(10, 11);
   expect(mounts).toBe(8);
   const calls = renderItem.mock.calls.length;
   const slot = screen.getAllByText(/^parent:7:/)[0]!.props.children.split(':')[2];
-  requestWindow(12, 13); // Two rows enter, reusing slots from rows 7 and 8.
+  await requestWindow(12, 13); // Two rows enter, reusing slots from rows 7 and 8.
   expect(renderItem).toHaveBeenCalledTimes(calls + 2);
   expect(mounts).toBe(8);
   expect(screen.getByText(`parent:15:${slot}`)).toBeTruthy();
-  requestWindow(12, 13);
+  await requestWindow(12, 13);
   expect(renderItem).toHaveBeenCalledTimes(calls + 2);
 });
 
-it('ignores stale events and updates same-key data without retaining old content', () => {
+it('ignores stale events and updates same-key data without retaining old content', async () => {
   const renderItem = ({ item }: { item: { id: string; title?: string } }) => (
     <Text>{item.title ?? item.id}</Text>
   );
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
   const revision = nativeProps().revision;
   const updated = [{ id: 'item-0', title: 'Updated' }, ...data.slice(1)];
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={updated} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
   expect(screen.getByText('Updated')).toBeTruthy();
   expect(nativeProps().revision).not.toBe(revision);
-  requestWindow(500, 510, revision);
+  await requestWindow(500, 510, revision);
   expect(slotsOf(nativeProps())[0].props.index).toBe(0);
 });
 
-it('clamps after shrinking, handles empty data, and rejects pre-resize requests', () => {
+it('clamps after shrinking, handles empty data, and rejects pre-resize requests', async () => {
   const renderItem = ({ index }: { index: number }) => <Text>{index}</Text>;
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
-  requestWindow(9900, 9905);
+  await requestWindow(9900, 9905);
   const oldRevision = nativeProps().revision;
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={data.slice(0, 3)} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
   expect(slotsOf(nativeProps()).map((child: any) => child.props.index)).toEqual([0, 1, 2]);
-  requestWindow(9900, 9905, oldRevision);
+  await requestWindow(9900, 9905, oldRevision);
   expect(slotsOf(nativeProps())).toHaveLength(3);
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={[]} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
@@ -120,16 +120,16 @@ it('clamps after shrinking, handles empty data, and rejects pre-resize requests'
   expect(slotsOf(nativeProps())).toHaveLength(0);
 });
 
-it('preserves the window anchor across insertion and keeps its buffer', () => {
+it('preserves the window anchor across insertion and keeps its buffer', async () => {
   const renderItem = () => <View />;
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
-  requestWindow(500, 510);
+  await requestWindow(500, 510);
   const before = Math.min(...slotsOf(nativeProps()).map((child: any) => child.props.index));
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={[{ id: 'new' }, ...data]} keyExtractor={keyExtractor} overscanCount={10}>
       {renderItem}
     </ListForEach>
@@ -153,63 +153,63 @@ it('keeps pool assignments unique and covers demand across jumps and reversals',
   }
 });
 
-it('grows to cover 100 visible rows plus 10 on each side and keeps its capacity when the viewport shrinks', () => {
-  render(
+it('grows to cover 100 visible rows plus 10 on each side and keeps its capacity when the viewport shrinks', async () => {
+  await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {() => <View />}
     </ListForEach>
   );
   const indices = () => slotsOf(nativeProps()).map((row: any) => row.props.index);
   const revision = nativeProps().revision;
-  requestWindow(500, 599);
+  await requestWindow(500, 599);
   expect(indices()).toHaveLength(120);
   expect([...indices()].sort((a, b) => a - b)).toEqual(
     Array.from({ length: 120 }, (_, index) => index + 490)
   );
   expect(nativeProps().revision).toBe(revision);
-  requestWindow(500, 509);
+  await requestWindow(500, 509);
   expect(indices()).toHaveLength(120);
   expect(Math.min(...indices())).toBe(490);
-  requestWindow(0, 99);
+  await requestWindow(0, 99);
   expect(indices()).toHaveLength(120);
   expect(Math.min(...indices())).toBe(0);
-  requestWindow(9900, 9999);
+  await requestWindow(9900, 9999);
   expect(indices()).toHaveLength(120);
   expect(Math.max(...indices())).toBe(9999);
 });
 
-it('keeps slot assignments stable while rows appear and disappear one at a time', () => {
-  render(
+it('keeps slot assignments stable while rows appear and disappear one at a time', async () => {
+  await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {() => <View />}
     </ListForEach>
   );
   const assignments = (): number[] => slotsOf(nativeProps()).map((row: any) => row.props.index);
-  requestWindow(500, 509);
-  requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
+  await requestWindow(500, 509);
+  await requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
   const grown = assignments();
   expect(grown).toHaveLength(41); // Grows once, with overscan headroom, instead of on every row.;
-  requestWindow(501, 510); // The top row disappears.
+  await requestWindow(501, 510); // The top row disappears.
   const shifted = assignments();
   expect(shifted).toHaveLength(41);
   expect(shifted.filter((index, slot) => index !== grown[slot])).toHaveLength(1);
-  requestWindow(501, 511); // The next row appears without moving any slot.
+  await requestWindow(501, 511); // The next row appears without moving any slot.
   expect(assignments()).toEqual(shifted);
-  requestWindow(502, 511);
+  await requestWindow(502, 511);
   expect(assignments().filter((index, slot) => index !== shifted[slot])).toHaveLength(1);
   for (let index = 492; index <= 521; index++) expect(assignments()).toContain(index);
 });
 
-it('updates overscan without resetting demand and supports zero extra rows', () => {
+it('updates overscan without resetting demand and supports zero extra rows', async () => {
   const renderItem = () => <View />;
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {renderItem}
     </ListForEach>
   );
-  requestWindow(500, 599);
+  await requestWindow(500, 599);
   const revision = nativeProps().revision;
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={0}>
       {renderItem}
     </ListForEach>
@@ -217,7 +217,7 @@ it('updates overscan without resetting demand and supports zero extra rows', () 
   expect(slotsOf(nativeProps())).toHaveLength(100);
   expect(Math.min(...slotsOf(nativeProps()).map((row: any) => row.props.index))).toBe(500);
   expect(nativeProps().revision).toBe(revision);
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={20}>
       {renderItem}
     </ListForEach>
@@ -225,27 +225,28 @@ it('updates overscan without resetting demand and supports zero extra rows', () 
   expect(slotsOf(nativeProps())).toHaveLength(140);
 });
 
-it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount) => {
-  expect(() =>
-    render(
-      <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={overscanCount}>
-        {() => <View />}
-      </ListForEach>
-    )
-  ).toThrow('overscanCount must be a non-negative integer');
+it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', async (overscanCount) => {
+  await expect(
+    async () =>
+      await render(
+        <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={overscanCount}>
+          {() => <View />}
+        </ListForEach>
+      )
+  ).rejects.toThrow('overscanCount must be a non-negative integer');
 });
 
-it('keeps the group when only the keyExtractor identity changes', () => {
+it('keeps the group when only the keyExtractor identity changes', async () => {
   const renderItem = jest.fn(() => <View />);
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={(item) => item.id}>
       {renderItem}
     </ListForEach>
   );
-  requestWindow(500, 510);
+  await requestWindow(500, 510);
   const { revision, itemKeys } = nativeProps();
   const calls = renderItem.mock.calls.length;
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={data} keyExtractor={(item) => item.id}>
       {renderItem}
     </ListForEach>
@@ -263,20 +264,20 @@ it('keeps ListForEachProps extendable as an interface', () => {
   expect(props.extra).toBe('ok');
 });
 
-it('forwards full group editing indices and rejects events from old revisions', () => {
+it('forwards full group editing indices and rejects events from old revisions', async () => {
   const onDelete = jest.fn();
   const onMove = jest.fn();
   const renderItem = () => <View />;
-  const screen = render(
+  const screen = await render(
     <ListForEach data={data} keyExtractor={keyExtractor} onDelete={onDelete} onMove={onMove}>
       {renderItem}
     </ListForEach>
   );
-  requestWindow(500, 510);
+  await requestWindow(500, 510);
   const oldProps = nativeProps();
   expect(oldProps.deleteEnabled).toBe(true);
   expect(oldProps.moveEnabled).toBe(true);
-  act(() => {
+  await act(() => {
     oldProps.onDelete({
       nativeEvent: { indices: [502, 505], revision: oldProps.revision },
     });
@@ -290,7 +291,7 @@ it('forwards full group editing indices and rejects events from old revisions', 
   });
   expect(onDelete).toHaveBeenCalledWith([502, 505]);
   expect(onMove).toHaveBeenCalledWith([502, 505], data.length);
-  screen.rerender(
+  await screen.rerender(
     <ListForEach
       data={[...data].reverse()}
       keyExtractor={keyExtractor}
@@ -299,7 +300,7 @@ it('forwards full group editing indices and rejects events from old revisions', 
       {renderItem}
     </ListForEach>
   );
-  act(() => {
+  await act(() => {
     nativeProps().onDelete({
       nativeEvent: { indices: [502], revision: oldProps.revision },
     });
@@ -315,9 +316,9 @@ it('forwards full group editing indices and rejects events from old revisions', 
   expect(onMove).toHaveBeenCalledTimes(1);
 });
 
-it('maintains independent windows and revisions for separate groups', () => {
+it('maintains independent windows and revisions for separate groups', async () => {
   const renderItem = () => <View />;
-  render(
+  await render(
     <>
       <ListForEach data={data} keyExtractor={keyExtractor} overscanCount={3}>
         {renderItem}
@@ -328,14 +329,14 @@ it('maintains independent windows and revisions for separate groups', () => {
     </>
   );
   const [first, second] = mockList.mock.calls.map(([props]) => props);
-  act(() =>
+  await act(() =>
     first.onWindowChange({
       nativeEvent: { first: 500, last: 502, revision: first.revision },
     })
   );
   expect(slotsOf(nativeProps()).some((row: any) => row.props.index === 500)).toBe(true);
   expect(slotsOf(second).map((row: any) => row.props.index)).toEqual([0, 1]);
-  act(() =>
+  await act(() =>
     second.onWindowChange({
       nativeEvent: { first: 15, last: 16, revision: second.revision },
     })
@@ -344,8 +345,8 @@ it('maintains independent windows and revisions for separate groups', () => {
   expect(nativeProps().itemKeys).toHaveLength(20);
 });
 
-it('disables absent editing actions and preserves children rendering', () => {
-  const screen = render(
+it('disables absent editing actions and preserves children rendering', async () => {
+  const screen = await render(
     <ListForEach>
       <Text>Existing row</Text>
     </ListForEach>
@@ -354,14 +355,14 @@ it('disables absent editing actions and preserves children rendering', () => {
   expect(nativeProps().deleteEnabled).toBe(false);
   expect(nativeProps().moveEnabled).toBe(false);
   const onDelete = jest.fn();
-  screen.rerender(
+  await screen.rerender(
     <ListForEach onDelete={onDelete}>
       <Text>Existing row</Text>
     </ListForEach>
   );
-  act(() => nativeProps().onDelete({ nativeEvent: { indices: [0] } }));
+  await act(() => nativeProps().onDelete({ nativeEvent: { indices: [0] } }));
   expect(onDelete).toHaveBeenCalledWith([0]);
-  screen.rerender(
+  await screen.rerender(
     <ListForEach data={data} keyExtractor={keyExtractor}>
       {() => <View />}
     </ListForEach>

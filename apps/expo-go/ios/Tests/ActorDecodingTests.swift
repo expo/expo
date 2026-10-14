@@ -53,6 +53,16 @@ final class ActorDecodingTests: XCTestCase {
     XCTAssertEqual(actor.primaryAccountProfileImageUrl, "https://example.test/a.png")
   }
 
+  func testNullActorWithoutErrorsIsARevokedSession() throws {
+    XCTAssertTrue(try decode(#"{"data":{"meActor":null}}"#).isRevokedSession)
+  }
+
+  func testNullActorWithErrorsIsNotARevokedSession() throws {
+    let response = try decode(#"{"data":{"meActor":null},"errors":[{"message":"Internal server error"}]}"#)
+
+    XCTAssertFalse(response.isRevokedSession)
+  }
+
   func testDecodesNullActor() throws {
     let response = try decode(#"{"data":{"meActor":null}}"#)
     XCTAssertNil(response.data.meActor)

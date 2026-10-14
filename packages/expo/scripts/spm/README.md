@@ -95,9 +95,6 @@ surfaces as a build error, naming the fix:
   Ruby: a misread link line fails in a shipped app, not here. Declare it as
   `linkerSettings` in a `Package.swift`, which the plugin mirrors verbatim, or
   ship an `spm.config.json` and prebuild the module.
-- **An iOS deployment floor that is not a literal** — the plugin reads
-  `s.platforms = { :ios => '16.4' }` and `s.ios.deployment_target = '16.4'` as
-  text; anything computed would need the podspec to be run.
 - **No precompiled ExpoModulesCore** — a single project-level fault reported
   once, not per module, since every source module compiles against its interface
   tree.

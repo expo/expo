@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import { collectMissingLayouts, loadLayouts } from '../layoutAnchor';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import type {
@@ -45,7 +46,7 @@ type ReducerConfig = {
   browserHistoryIdPrefix: string;
 };
 
-type TreeOperation =
+type QueuedOperation = (
   | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
   | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
       /**
@@ -54,6 +55,15 @@ type TreeOperation =
        */
       commitedTreeResult?: NavigationTreeResult;
     })
+) & {
+  // Queued operations wait for missing layouts. Direct actions apply at once.
+  deferrable?: { inTransition: boolean };
+};
+
+type TreeOperation =
+  | QueuedOperation
+  // `failed` layouts could not load, so the replay skips their anchors.
+  | { type: 'RESUME'; failed: RouteNode[] }
   | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
@@ -120,6 +130,13 @@ type NavigationTreeResult = {
   // Web only; browser entries tracked by this page.
   history: BrowserHistory | undefined;
   browserHistoryAction?: RouterBrowserHistoryAction;
+  // Queued operations that wait for layout modules, in order.
+  deferred?: {
+    operations: QueuedOperation[];
+    missing: RouteNode[];
+    // Resume as a transition only if every waiting operation was one.
+    inTransition: boolean;
+  };
 };
 
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
@@ -139,18 +156,83 @@ function warnIfStaleState(state: NavigationState) {
   }
 }
 
-// Browser changes restore a saved navigation state. Other operations update navigation first,
-// then queue the matching browser command to run after React commits.
 function navigationTreeReducer(
   result: NavigationTreeResult,
   operation: TreeOperation,
   config: ReducerConfig
 ): NavigationTreeResult {
-  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
-    if (operation.commitedTreeResult) {
-      // Discard the interrupted transition while keeping event IDs monotonic.
-      result = { ...operation.commitedTreeResult, eventSeq: result.eventSeq };
+  if (operation.type === 'RESUME') {
+    if (!result.deferred) {
+      return result;
     }
+    // Replays go through the same path, so an operation that needs another layout waits again.
+    const failed = new Set(operation.failed);
+    return result.deferred.operations.reduce<NavigationTreeResult>(
+      (current, deferred) => reduceQueuedOperation(current, deferred, config, failed),
+      { ...result, deferred: undefined }
+    );
+  }
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    const { commitedTreeResult, ...change } = operation;
+    // Waiting operations never reached the screen or the browser, so the browser change drops them.
+    result = commitedTreeResult
+      ? // Discard the interrupted transition while keeping event IDs monotonic.
+        { ...commitedTreeResult, eventSeq: result.eventSeq, deferred: undefined }
+      : { ...result, deferred: undefined };
+    return reduceQueuedOperation(result, change, config);
+  }
+  if ('deferrable' in operation && operation.deferrable) {
+    return reduceQueuedOperation(result, operation, config);
+  }
+  const { value, missing } = collectMissingLayouts(() =>
+    reduceOperation(result, operation, config)
+  );
+  if (missing.length > 0 && process.env.NODE_ENV !== 'production') {
+    // TODO(@ubax): move console side effects out of the reducer.
+    console.warn(
+      `Expo Router handled "${operation.type === 'ACTION' ? operation.payload.action.type : operation.type}" before the layouts ${missing.map((node) => `"${node.contextKey}"`).join(', ')} loaded, so their \`unstable_settings.anchor\` is skipped.`
+    );
+  }
+  return value;
+}
+
+function reduceQueuedOperation(
+  result: NavigationTreeResult,
+  operation: QueuedOperation,
+  config: ReducerConfig,
+  failedLayouts?: ReadonlySet<RouteNode>
+): NavigationTreeResult {
+  const inTransition = operation.deferrable?.inTransition ?? false;
+  if (result.deferred) {
+    const { operations, missing } = result.deferred;
+    return {
+      ...result,
+      deferred: {
+        operations: [...operations, operation],
+        missing,
+        inTransition: result.deferred.inTransition && inTransition,
+      },
+    };
+  }
+  const { value, missing } = collectMissingLayouts(
+    () => reduceOperation(result, operation, config),
+    failedLayouts
+  );
+  if (missing.length === 0) {
+    return value;
+  }
+  // TODO(@ubax): show a pending UI or a Suspense fallback while the layout chunk loads.
+  return { ...result, deferred: { operations: [operation], missing, inTransition } };
+}
+
+// Browser changes restore a saved navigation state. Other operations update navigation first,
+// then queue the matching browser command to run after React commits.
+function reduceOperation(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'RESUME' }>,
+  config: ReducerConfig
+): NavigationTreeResult {
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
     if (!result.history) {
       return result;
     }
@@ -180,7 +262,7 @@ function navigationTreeReducer(
 // helper with a generated navigation intent. Excluding them prevents a recursive restore.
 function reduceTree(
   result: NavigationTreeResult,
-  operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' }>,
+  operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' | 'RESUME' }>,
   config: ReducerConfig
 ): NavigationTreeResult {
   const state = result.state;
@@ -458,16 +540,41 @@ export function useNavigationTreeReducer({
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
-  const processIntent = useLatestCallback((intent: RoutingIntent) => {
+  const processIntent = useLatestCallback((intent: RoutingIntent, inTransition = false) => {
+    const deferrable = { inTransition };
     if (intent.type === 'BROWSER_HISTORY_CHANGED') {
       // Example: A is visible while a push to B is suspended. Browser Back starts from A,
       // so restore from A's committed result, not the reducer's pending B state.
       // useLatestCallback keeps `result` at the last commit; the browser's ID and URL still pass through.
-      reactDispatch({ ...intent, commitedTreeResult: result });
+      reactDispatch({ ...intent, commitedTreeResult: result, deferrable });
       return;
     }
-    reactDispatch(intent);
+    reactDispatch({ ...intent, deferrable });
   });
+
+  const resume = React.useEffectEvent((failed: RouteNode[]) => {
+    const dispatchResume = () => reactDispatch({ type: 'RESUME', failed });
+    if (result.deferred?.inTransition) {
+      React.startTransition(dispatchResume);
+    } else {
+      dispatchResume();
+    }
+  });
+  const missingLayouts = result.deferred?.missing;
+  React.useEffect(() => {
+    if (!missingLayouts) {
+      return;
+    }
+    let cancelled = false;
+    loadLayouts(missingLayouts).then((failed) => {
+      if (!cancelled) {
+        resume(failed);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [missingLayouts]);
 
   React.useInsertionEffect(() => {
     warnIfStaleState(result.state);
@@ -475,6 +582,7 @@ export function useNavigationTreeReducer({
 
   return {
     state: result.state,
+    isWaitingForLayouts: result.deferred !== undefined,
     report: result.report,
     consumeReportEvents,
     resetNavigator,

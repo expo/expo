@@ -146,7 +146,7 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
         throw NativePropertyUnavailableException(name)
       }
       guard let getter = self.getter else {
-        return .undefined
+        return .undefined()
       }
       return try getter.call(appContext, in: runtime, this: this, arguments: arguments)
     }
@@ -165,7 +165,7 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
         throw NativePropertyUnavailableException(name)
       }
       guard let setter = self.setter else {
-        return .undefined
+        return .undefined()
       }
       return try setter.call(appContext, in: runtime, this: this, arguments: arguments)
     }

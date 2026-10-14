@@ -1,3 +1,10 @@
 {
-  "platforms": ["android"]
+  "platforms": ["android"],
+  "android": {
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.statusbar",
+      "repository": "local-maven-repo"
+    }
+  }
 }

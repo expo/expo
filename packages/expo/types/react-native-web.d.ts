@@ -37,17 +37,7 @@ declare module 'react-native' {
     /** @platform web */
     backgroundClip?: string;
     /** @platform web */
-    backgroundImage?: string;
-    /** @platform web */
     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
-    /** @platform web */
-    backgroundPosition?: string;
-    /** @platform web */
-    backgroundRepeat?: string;
-    /** @platform web */
-    backgroundSize?: string;
-    /** @platform web */
-    boxSizing?: string;
     /** @platform web */
     clip?: string;
     /** @platform web */
@@ -148,25 +138,11 @@ declare module 'react-native' {
     /** @platform web */
     backgroundClip?: string;
     /** @platform web */
-    backgroundImage?: string;
-    /** @platform web */
     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
-    /** @platform web */
-    backgroundPosition?: string;
-    /** @platform web */
-    backgroundRepeat?: string;
-    /** @platform web */
-    backgroundSize?: string;
-    /** @platform web */
-    boxShadow?: string;
-    /** @platform web */
-    boxSizing?: string;
     /** @platform web */
     clip?: string;
     /** @platform web */
     cursor?: string;
-    /** @platform web */
-    filter?: string;
     /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
@@ -193,8 +169,6 @@ declare module 'react-native' {
     gridTemplateAreas?: string;
     /** @platform web */
     outline?: string;
-    /** @platform web */
-    outlineColor?: string;
     /** @platform web */
     overflowX?: string;
     /** @platform web */
@@ -261,7 +235,7 @@ declare module 'react-native' {
   //   PressableProps & React.RefAttributes<RN.View>
   // >;
 
-  interface FlatListProps<ItemT> extends RN.VirtualizedListProps<ItemT> {
+  interface FlatListProps<ItemT> {
     className?: string;
   }
 

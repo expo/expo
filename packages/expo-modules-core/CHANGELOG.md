@@ -1,20 +1,121 @@
 # Changelog
 
-## Unpublished
+## 58.0.17
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Fix a launch crash (`Symbol not found: _swift_allocateMetadataPack`) in apps that use precompiled Expo modules and build with Xcode 27. `ExpoModulesJSI` no longer exports Swift runtime symbols, so the precompiled `ExpoModulesCore` no longer depends on them. ([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix a `UIViewControllerHierarchyInconsistency` crash when a SwiftUI view (such as `@expo/ui`'s `Host`) is rendered inside a text input's accessory view, for example React Native's `InputAccessoryView` or react-native-keyboard-controller's `KeyboardExtender`. ([#51420](https://github.com/expo/expo/pull/51420) by [@kirillzyusko](https://github.com/kirillzyusko))
+- Updated dependencies. ([#51463](https://github.com/expo/expo/pull/51463), [#51451](https://github.com/expo/expo/pull/51451))
+  - expo-modules-jsi@58.0.12
+
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.16.0, which supports closure arguments in `@JS` functions and initializers. ([#51037](https://github.com/expo/expo/pull/51037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] [Internal] Hold cached JavaScript values and the encoder and decoder state behind `JavaScriptRef`. ([#50978](https://github.com/expo/expo/pull/50978) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix build errors with React Native nightlies by removing an unneeded `enableCppPropsIteratorSetter` check from Expo views. ([#51405](https://github.com/expo/expo/pull/51405) by [@Kudo](https://github.com/Kudo))
+- [iOS] Make `JavaScriptValue` a non-copyable struct. This is a breaking change for Swift code that uses `JavaScriptValue` directly:
+
+  - Values are moved, not shared. Pass them as `borrowing` or `consuming` parameters, and call `copy()` where a second owned value is needed.
+  - `JavaScriptValue.undefined` and `JavaScriptValue.null` are functions now: write `.undefined()` and `.null()`.
+  - A `JavaScriptValue` can no longer be an argument or a result of a `Function`, `AsyncFunction`, `Property` or `Field` definition. Declare the function with the `@JS` macro instead (in an `@ExpoModule` or `@SharedObject` class) and take the value as `borrowing JavaScriptValue`, or use a typed argument.
+  - To keep a value in an array, an escaping closure or another place that takes copyable types only, wrap it with `value.ref()` and read it back with `take()` or `withUnwrappedValue(_:)`.
+  - `JavaScriptArray.init(_:items:)`, `JavaScriptArray.enumerated()`, `JavaScriptArray.filter(_:)` and `JavaScriptValuesBuffer.copying(in:values:)` with an array of values are removed. Use the parameter pack initializer, `forEach`, `forEachIndexed`, `reduce`, or the `[JavaScriptValue.Ref]` overload.
+
+  ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+- [iOS] [Internal] Remove `copy runtime` where a borrowed `JavaScriptRuntime` is passed to a function, which already borrows its parameters. ([#51439](https://github.com/expo/expo/pull/51439) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Read the properties of a typed array through property names cached per runtime, which makes `JavaScriptValue.getTypedArray()` about twice as fast. `getTypedArray()` is now isolated to `JavaScriptActor`, like `asTypedArray()`. ([#51436](https://github.com/expo/expo/pull/51436) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51373](https://github.com/expo/expo/pull/51373), [#51037](https://github.com/expo/expo/pull/51037), [#51368](https://github.com/expo/expo/pull/51368), [#50977](https://github.com/expo/expo/pull/50977), [#51438](https://github.com/expo/expo/pull/51438), [#51439](https://github.com/expo/expo/pull/51439), [#51435](https://github.com/expo/expo/pull/51435), [#51436](https://github.com/expo/expo/pull/51436))
+  - expo-modules-jsi@58.0.11
+
+## 58.0.15
+
+### Patch Changes
+
+- [Android] Fix record arguments without `@OptimizedRecord` (such as `ImagePickerOptions` in older `expo-image-picker` versions) failing to convert in minified release builds with `The 1st argument cannot be cast to type ...` caused by a `NullPointerException`. Keep the `@Field` annotation class from being renamed by R8. ([#51206](https://github.com/expo/expo/pull/51206) by [@SoSerious194](https://github.com/SoSerious194))
+- [Android] Fix release builds crashing at launch when the app uses an Expo Modules API 2.0 module, such as `expo-crypto`. R8 removed classes and members that the v2 runtime reaches through reflection and JNI. ([#51204](https://github.com/expo/expo/pull/51204) by [@Kudo](https://github.com/Kudo))
+- [Android] Fixed Expo modules not receiving `OnCreate` when JavaScript reaches the JSI `NativeModulesProxy` before the legacy one, for example with lazy imports, which made modules like `expo-web-browser` fail on first use. Its constants are read lazily again, as before #46964. ([#51310](https://github.com/expo/expo/pull/51310) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed JavaScript errors created from native `Exception`s using the exception's debug description as their `message`, which prefixed it with the Swift type name and appended the native `file:line` (e.g. `MyException: reason (at MyModule.swift:42)`). The message is the exception's `description` again, as before the JSI rewrite and as on Android. `Exception.message` can now be overridden by subclasses; subclasses that already declare a `message` property need to mark it as `override`. ([#51210](https://github.com/expo/expo/pull/51210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix views sized by Jetpack Compose, such as `RNHostView` in a `ModalBottomSheet`, that kept their old size until the keyboard animation ended when the keyboard was dismissed with the predictive back gesture. ([#51083](https://github.com/expo/expo/pull/51083) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Throw when JavaScript constructs a shared object class that has no way to build its native instance, instead of returning an object that fails at its first member access. ([#51171](https://github.com/expo/expo/pull/51171) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Warn instead of failing silently when `installModules()` gives up waiting for an active `ReactInstance`. Previously JSI interop was installed into a context with no active instance and the method still returned `true`, so the first visible symptom was `globalThis.expo` being undefined in JS. ([#49801](https://github.com/expo/expo/pull/49801) by [@JeffreyKlug](https://github.com/JeffreyKlug))
+- Updated dependencies. ([#51129](https://github.com/expo/expo/pull/51129), [#51234](https://github.com/expo/expo/pull/51234))
+  - expo-modules-jsi@58.0.10
+
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fixed a data race on the Fabric view state-prop map when Expo registers its view components while React Native builds a component descriptor registry on another thread. ([#51044](https://github.com/expo/expo/pull/51044) by [@hirvesh](https://github.com/hirvesh))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+
+## 58.0.13
+
+### Patch Changes
+
+- [macOS] Attach SwiftUI hosting views even when no `NSViewController` is in the responder chain, such as a React root view set directly as `NSWindow.contentView`. Previously, `@expo/ui` content in such windows rendered nothing. ([#50995](https://github.com/expo/expo/pull/50995) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Update `expo-modules-macros` to 0.15.0, which generates only the unowned decode for `@Union` and skips cases whose `decodableKinds` can't match. ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Make `AppContext` non-final, so that `TestAppContext` from `expo-modules-test-core` can subclass it. ([#51015](https://github.com/expo/expo/pull/51015) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed a race where a promise resolved and rejected from different threads at the same time could settle twice and throw on the JavaScript thread. ([#51052](https://github.com/expo/expo/pull/51052) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] An Expo Modules API 2.0 module that throws a `CodedException` now reports its `code` to JavaScript. ([#51036](https://github.com/expo/expo/pull/51036) by [@lukmccall](https://github.com/lukmccall))
+- Updated dependencies. ([#50859](https://github.com/expo/expo/pull/50859), [#51015](https://github.com/expo/expo/pull/51015), [#51004](https://github.com/expo/expo/pull/51004), [#51040](https://github.com/expo/expo/pull/51040), [#51055](https://github.com/expo/expo/pull/51055))
+  - expo-modules-jsi@58.0.9
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal][Android] `expoPublish` now formats the updated `expo-module.config.json` with `oxfmt` instead of `prettier`. ([#47438](https://github.com/expo/expo/pull/47438) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add `decodableKinds` to `JavaScriptDecodable`: the kinds of JavaScript value (`JavaScriptValueKinds`) that `decode` can accept, so code that picks between several types can skip the ones that can't match. ([#50905](https://github.com/expo/expo/pull/50905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptValue.withUnownedValue(in:_:)`, and give the owning `JavaScriptDecodable.decode` a default that borrows the value and decodes it through the `JavaScriptUnownedValue` overload, so a conformer can implement only that one. Arrays, dictionaries, dates, records and enums now decode unowned values without copying them first. ([#50960](https://github.com/expo/expo/pull/50960) by [@tsapeta](https://github.com/tsapeta))
+- Fixed native views ignoring `aria-*`, `id` and `tabIndex` props such as `aria-hidden` and `aria-label` ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed `release()` throwing on a shared object whose JS object is frozen, for example an `ImageRef` passed as a view prop in development ([#50962](https://github.com/expo/expo/issues/50962)). ([#50970](https://github.com/expo/expo/pull/50970) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50905](https://github.com/expo/expo/pull/50905), [#50698](https://github.com/expo/expo/pull/50698), [#50937](https://github.com/expo/expo/pull/50937), [#50888](https://github.com/expo/expo/pull/50888), [#50960](https://github.com/expo/expo/pull/50960), [#50980](https://github.com/expo/expo/pull/50980), [#50354](https://github.com/expo/expo/pull/50354))
+  - expo-modules-jsi@58.0.8
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] `@Record` now accepts properties that hold free-form `Any` values, such as `[String: Any]?` or `[Any]`. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed Expo views using Android layout not completing system-forced layout passes. ([#48679](https://github.com/expo/expo/pull/48679) by [@lujjjh](https://github.com/lujjjh))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#50660](https://github.com/expo/expo/pull/50660))
+  - expo-modules-jsi@58.0.7
+
+## 58.0.10
+
+### Patch Changes
+
+- Lay out `RNHostView` hosted content at the size SwiftUI or Compose gives it on an axis that `matchContents` does not match. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50805](https://github.com/expo/expo/pull/50805), [#50844](https://github.com/expo/expo/pull/50844), [#50806](https://github.com/expo/expo/pull/50806))
+  - expo-modules-jsi@58.0.6
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Depend on `expo-modules-macros`, the new name of the `@expo/expo-modules-macros-plugin` package. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a crash (`The app context has been lost`) when an Expo view mounts during a reload. ([#50721](https://github.com/expo/expo/pull/50721) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-modules-jsi@58.0.5
+
+## 58.0.8 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available. ([#50667](https://github.com/expo/expo/pull/50667) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.7 — 2026-09-25
 
 ### 🐛 Bug fixes
 
-- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`).
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`). ([#50603](https://github.com/expo/expo/pull/50603) by [@gkueny](https://github.com/gkueny))
 - [iOS] Fixed `Exception` reporting `undefined reason` to JavaScript instead of the description it was created with, which also affected every `promise.reject(code, description)` call. ([#50215](https://github.com/expo/expo/pull/50215) by [@Maher-Reven](https://github.com/Maher-Reven))
 
 ## 58.0.6 — 2026-09-23

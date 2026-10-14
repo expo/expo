@@ -1,14 +1,49 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Pass the current `pathname` and `params` props to the `+html` component. ([#51255](https://github.com/expo/expo/pull/51255) by [@Ubax](https://github.com/Ubax))
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
 
-### 🐛 Bug fixes
+## 58.0.11
 
-### 💡 Others
+No changes in this release.
+
+## 58.0.10
+
+No changes in this release.
+
+## 58.0.9
+
+No changes in this release.
+
+## 58.0.8
+
+### Patch Changes
+
+- Keep large, completed Suspense content visible without JavaScript during streaming SSR. ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
+
+## 58.0.7
+
+### Patch Changes
+
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+No changes in this release.
+
+## 58.0.5
+
+No changes in this release.
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.3 — 2026-09-21
 

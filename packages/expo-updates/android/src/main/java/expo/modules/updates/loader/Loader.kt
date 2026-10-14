@@ -238,7 +238,11 @@ abstract class Loader protected constructor(
 
         handleAssetDownloadCompleted(
           result.assetEntity,
-          if (result.isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
+          if (result.isNew) {
+            AssetLoadResult.FINISHED
+          } else {
+            AssetLoadResult.ALREADY_EXISTS
+          }
         )
       }
       assetDownloadJobs.add(job)

@@ -140,15 +140,14 @@ describe(getCssSerialAssets, () => {
         type: 'css-external',
         originFilename: 'external.js',
         filename: 'https://fonts.example.com/all.css',
-        source: '<link rel="stylesheet" href="https://fonts.example.com/all.css">',
+        source: '',
         metadata: { hmrId: 'external_js', media: undefined },
       },
       {
         type: 'css-external',
         originFilename: 'external.js',
         filename: 'https://fonts.example.com/wide.css',
-        source:
-          '<link rel="stylesheet" href="https://fonts.example.com/wide.css" media="screen and (min-width: 900px)">',
+        source: '',
         metadata: { hmrId: 'external_js', media: 'screen and (min-width: 900px)' },
       },
     ]);

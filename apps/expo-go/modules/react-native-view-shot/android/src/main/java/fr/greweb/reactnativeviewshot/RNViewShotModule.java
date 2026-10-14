@@ -62,7 +62,7 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
         File file = new File(path);
         if (!file.exists()) return;
         File parent = file.getParentFile();
-        if (parent.equals(reactContext.getExternalCacheDir()) || parent.equals(reactContext.getCacheDir())) {
+        if (parent != null && (parent.equals(reactContext.getExternalCacheDir()) || parent.equals(reactContext.getCacheDir()))) {
             file.delete();
         }
     }
@@ -91,8 +91,8 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
         final Boolean snapshotContentContainer = options.getBoolean("snapshotContentContainer");
         final boolean handleGLSurfaceView = options.hasKey("handleGLSurfaceViewOnAndroid") && options.getBoolean("handleGLSurfaceViewOnAndroid");
 
+        File outputFile = null;
         try {
-            File outputFile = null;
             if (Results.TEMP_FILE.equals(resultStreamFormat)) {
                 outputFile = createTempFile(getReactApplicationContext(), extension, fileName);
             }
@@ -115,6 +115,9 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
                 uiManager.addUIBlock(uiBlock);
             }
         } catch (final Throwable ex) {
+            if (outputFile != null) {
+                outputFile.delete();
+            }
             Log.e(NAME, "Failed to snapshot view tag " + tag, ex);
             promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag " + tag);
         }

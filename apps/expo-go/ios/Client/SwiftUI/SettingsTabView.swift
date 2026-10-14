@@ -202,11 +202,12 @@ struct SettingsTabView: View {
           }
         }
       }
+      .maxContentWidth()
       .padding()
     }
     .background(Color.expoSystemBackground)
-    .navigationTitle("Settings")
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationTitle(HomeTab.settings.title)
+    .navigationBarTitleDisplayMode(.large)
     .task {
       await refreshTrackingStatus()
     }

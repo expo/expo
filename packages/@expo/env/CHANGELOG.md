@@ -1,14 +1,16 @@
 # Changelog
 
-## Unpublished
+## 2.5.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Fix `PYTHONNOUSERSITE` not being blocked in `.env` files due to a typo. ([#51321](https://github.com/expo/expo/pull/51321) by [@ramonclaudio](https://github.com/ramonclaudio))
 
-### 🐛 Bug fixes
+## 2.5.1
 
-### 💡 Others
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 2.5.0 — 2026-09-10
 

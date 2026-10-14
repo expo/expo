@@ -20,7 +20,7 @@ extension JavaScriptValue: JavaScriptCodable {
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+  public static func encode(_ value: consuming JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
     return value

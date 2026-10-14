@@ -121,6 +121,17 @@ function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
   return { ...state, routes };
 }
 
+// A route that `getId` re-keys is a new route instance, so it must not keep the nested navigator
+// state of the previous ID.
+function withoutStaleState<T extends Route<string> & { state?: unknown }>(route: T, key: string) {
+  if (key === route.key) {
+    return route;
+  }
+
+  const { state, ...routeWithoutState } = route;
+  return routeWithoutState;
+}
+
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
@@ -522,7 +533,7 @@ function tabRouterExtension({
 
                 const updatedRoute =
                   params !== route.params || path !== route.path
-                    ? { ...route, key, path, params }
+                    ? { ...withoutStaleState(route, key), key, path, params }
                     : route;
                 return attachRouteState(updatedRoute, action);
               }),
@@ -682,7 +693,7 @@ function tabRouterExtension({
             const newRoute = attachRouteState(
               params !== route.params
                 ? {
-                    ...route,
+                    ...withoutStaleState(route, key),
                     key,
                     params,
                     ...(key !== route.key && { isPreloaded: true }),

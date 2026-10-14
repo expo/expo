@@ -11,6 +11,10 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   let openOptions: OpenDatabaseOptions
   var isClosed = false
   let closeLock = NSLock()
+  // Protect statement registration and cleanup through the final close attempt.
+  // Running statements use their own locks, so interruption need not wait for them.
+  let statementLifecycleLock = NSRecursiveLock()
+  var statements: [NativeStatement] = []
   var extraPointer: OpaquePointer?
   private var refCount = AtomicInteger(1)
 
@@ -134,11 +138,19 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   }
 
   private func prepare(statement: NativeStatement, source: String) throws {
-    try ensureOpen()
-    try statement.ensureNotFinalized()
-    let sourceString = source.cString(using: .utf8)
-    if exsqlite3_prepare_v2(pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
-      throw SQLiteErrorException(lastErrorMessage())
+    statementLifecycleLock.lock()
+    defer { statementLifecycleLock.unlock() }
+    try statement.lock.withLock { _ in
+      try statement.ensureNotFinalized()
+      try ensureOpen()
+      let sourceString = source.cString(using: .utf8)
+      let result = sqliteResult(for: pointer) {
+        exsqlite3_prepare_v2(pointer, sourceString, -1, &statement.pointer, nil)
+      }
+      if let message = result.message {
+        throw SQLiteErrorException(message)
+      }
+      statements.append(statement)
     }
   }
 
@@ -161,12 +173,6 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
       throw SQLiteErrorException(errorString)
     }
   }
-}
-
-internal func sqliteErrorMessage(for db: OpaquePointer?) -> String {
-  let code = exsqlite3_errcode(db)
-  let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
-  return "Error code \(code): \(message)"
 }
 
 // `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro

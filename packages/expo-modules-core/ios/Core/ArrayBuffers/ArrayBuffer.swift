@@ -157,6 +157,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   // MARK: - JavaScript conversion
 
   /// Converts a JavaScript ArrayBuffer or TypedArray to Expo's safe native ArrayBuffer representation.
+  @JavaScriptActor
   @usableFromInline
   internal static func from(value: borrowing JavaScriptValue) throws -> ArrayBuffer {
     guard value.isObject() else {
@@ -166,6 +167,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   }
 
   /// Converts a borrowed JavaScript ArrayBuffer or TypedArray without materializing an owning JavaScriptValue.
+  @JavaScriptActor
   @usableFromInline
   internal static func from(
     unownedValue: borrowing JavaScriptUnownedValue,
@@ -177,6 +179,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     return try ArrayBuffer.from(jsObject: unownedValue.getObject(in: runtime))
   }
 
+  @JavaScriptActor
   private static func from(jsObject: consuming JavaScriptObject) throws -> ArrayBuffer {
     if jsObject.isArrayBuffer() {
       return ArrayBuffer.from(jsArrayBuffer: jsObject.getArrayBuffer())
@@ -225,6 +228,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
 }
 
 extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   // MARK: - JavaScriptDecodable
   @JavaScriptActor
   @inlinable
@@ -251,7 +259,7 @@ extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
     _ value: ArrayBuffer,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> JavaScriptValue {
-    return value.asJavaScriptArrayBuffer(runtime: copy runtime).asValue()
+    return value.asJavaScriptArrayBuffer(runtime: runtime).asValue()
   }
 }
 

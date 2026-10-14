@@ -3,9 +3,10 @@ import ExpoModulesJSI
 
 /**
  The app context is an interface to a single Expo app.
+ Not `final` so that `TestAppContext` from `ExpoModulesTestCore` can subclass it.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
+public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -91,7 +92,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   public typealias UIRuntimeFactory = (
     _ appContext: AppContext,
-    _ pointerValue: JavaScriptValue,
+    _ pointerValue: borrowing JavaScriptValue,
     _ runtime: JavaScriptRuntime
   ) throws -> JavaScriptRuntime
 
@@ -120,17 +121,30 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
-  /**
-   The application identifier that is used to distinguish between different `RCTHost`.
-   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
-   It shouldn't be used on the old architecture.
-   */
+  /// The number of app contexts created so far in this process.
+  private static let appContextsCount = Mutex<Int>(0)
+
+  /// The position of this app context in creation order, starting at 0.
+  internal let appIndex: Int = AppContext.appContextsCount.withLock { count in
+    defer {
+      count += 1
+    }
+    return count
+  }
+
+  /// The application identifier that distinguishes app contexts that are alive at the same time,
+  /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
+  /// app context, so its view names have no suffix.
   @objc
   public var appIdentifier: String? {
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+    return AppContext.appIdentifier(forIndex: appIndex)
+  }
+
+  internal static func appIdentifier(forIndex index: Int) -> String? {
+    if index == 0 {
       return nil
     }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    return String(index)
   }
 
   /**
@@ -481,6 +495,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
+    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    try coreModule._decorateModule(object: coreObject, in: runtime)
+
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()
 
@@ -547,8 +564,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
-    // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
-    // and cannot be a Dictionary value.
+    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
+    // cannot be a Dictionary value.
     let prototypeCache = WorkletPrototypeCache()
 
     // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
@@ -566,8 +583,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let typeId = ObjectIdentifier(type(of: nativeObject))
       let instance: JavaScriptObject
 
-      if let cachedPrototype = prototypeCache.store[typeId] {
-        instance = runtime.createObject(prototype: cachedPrototype.getObject())
+      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+        runtime.createObject(prototype: prototype)
+      }) {
+        instance = cachedInstance
       } else {
         guard let classDefinition = self.findClassDefinition(for: typeId) else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
@@ -577,8 +596,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
           appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        prototypeCache.store[typeId] = built.asValue()
         instance = runtime.createObject(prototype: built)
+        prototypeCache.store[typeId] = built.ref()
       }
 
       instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
@@ -626,9 +645,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
-    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
-    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
+    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
@@ -806,12 +823,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
 /**
  Reference-type store for cached worklet prototypes. Needed because JavaScriptObject
- is ~Copyable and cannot be stored in a Dictionary; we cache via JavaScriptValue
- (a class) and rehydrate a JavaScriptObject on use.
+ is ~Copyable and cannot be stored in a Dictionary; we cache the prototype as a
+ `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
 private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptValue] = [:]
+  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
 
 // MARK: - Public exceptions

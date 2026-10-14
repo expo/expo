@@ -32,7 +32,7 @@ const config = {
 
 expectNoUnexpectedWarnings();
 
-test('builds href outside of a navigator', () => {
+test('builds href outside of a navigator', async () => {
   expect.assertions(2);
 
   const Root = () => {
@@ -45,14 +45,14 @@ test('builds href outside of a navigator', () => {
     return null;
   };
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <Root />
     </NavigationContainer>
   );
 });
 
-test('builds href in navigator layout', () => {
+test('builds href in navigator layout', async () => {
   expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
@@ -67,7 +67,7 @@ test('builds href in navigator layout', () => {
 
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator layout={({ children }) => <Test>{children}</Test>}>
         <Stack.Screen name="Foo">{() => null}</Stack.Screen>
@@ -76,7 +76,7 @@ test('builds href in navigator layout', () => {
   );
 });
 
-test('builds href in route context', () => {
+test('builds href in route context', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -91,7 +91,7 @@ test('builds href in route context', () => {
 
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator
         layout={({ state }) => (
@@ -105,7 +105,7 @@ test('builds href in route context', () => {
   );
 });
 
-test('builds href in stack navigator screen without reading navigation state imperatively', () => {
+test('builds href in stack navigator screen without reading navigation state imperatively', async () => {
   expect.assertions(2);
 
   const HrefProbe = () => {
@@ -132,7 +132,7 @@ test('builds href in stack navigator screen without reading navigation state imp
 
   const StackA = createStackNavigator<{ Foo: undefined }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo" component={Test} />
@@ -141,7 +141,7 @@ test('builds href in stack navigator screen without reading navigation state imp
   );
 });
 
-test('builds href in nested navigator layout', () => {
+test('builds href in nested navigator layout', async () => {
   expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
@@ -157,7 +157,7 @@ test('builds href in nested navigator layout', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
@@ -172,7 +172,7 @@ test('builds href in nested navigator layout', () => {
   );
 });
 
-test('builds href in nested route context', () => {
+test('builds href in nested route context', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -188,7 +188,7 @@ test('builds href in nested route context', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
@@ -208,7 +208,7 @@ test('builds href in nested route context', () => {
   );
 });
 
-test('builds href in nested navigator screen', () => {
+test('builds href in nested navigator screen', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -224,7 +224,7 @@ test('builds href in nested navigator screen', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
@@ -239,7 +239,7 @@ test('builds href in nested navigator screen', () => {
   );
 });
 
-test('builds action from href outside of a navigator', () => {
+test('builds action from href outside of a navigator', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -255,14 +255,14 @@ test('builds action from href outside of a navigator', () => {
     return null;
   };
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <Test />
     </NavigationContainer>
   );
 });
 
-test('builds action from href in navigator screen', () => {
+test('builds action from href in navigator screen', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -280,7 +280,7 @@ test('builds action from href in navigator screen', () => {
 
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator>
         <Stack.Screen name="Foo" component={Test} />
@@ -289,7 +289,7 @@ test('builds action from href in navigator screen', () => {
   );
 });
 
-test('builds action from href in nested navigator', () => {
+test('builds action from href in nested navigator', async () => {
   expect.assertions(2);
 
   const Test = () => {
@@ -316,7 +316,7 @@ test('builds action from href in nested navigator', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
-  render(
+  await render(
     <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
@@ -331,7 +331,7 @@ test('builds action from href in nested navigator', () => {
   );
 });
 
-test('builds a navigate action past a configured initial route', () => {
+test('builds a navigate action past a configured initial route', async () => {
   expect.assertions(2);
   const linking = {
     ...config,
@@ -352,7 +352,7 @@ test('builds a navigate action past a configured initial route', () => {
     return null;
   };
 
-  render(
+  await render(
     <NavigationContainer
       initialState={initialState}
       // The non-generic test container types its route list as `object`, so it cannot express an initial route.
@@ -362,7 +362,7 @@ test('builds a navigate action past a configured initial route', () => {
   );
 });
 
-test('builds a marked reset action for state that cannot be represented as navigate', () => {
+test('builds a marked reset action for state that cannot be represented as navigate', async () => {
   expect.assertions(2);
 
   const parsedState = {
@@ -379,7 +379,7 @@ test('builds a marked reset action for state that cannot be represented as navig
     return null;
   };
 
-  render(
+  await render(
     <NavigationContainer
       initialState={initialState}
       linking={{ ...config, getStateFromPath: () => parsedState }}>

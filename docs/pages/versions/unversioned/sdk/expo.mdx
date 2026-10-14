@@ -60,9 +60,7 @@ const hello = new TextEncoder().encode('hello');
 const text = new TextDecoder().decode(hello);
 ```
 
-The `TextEncoder` API is included in the Hermes engine. See the [source code in TextEncoder.cpp inside the Hermes GitHub repository](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
-
-The `TextDecoder` API is not [spec-compliant](https://encoding.spec.whatwg.org/#textdecoder) on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
+The `TextEncoder` API and, starting with SDK 58 and React Native 0.88, the `TextDecoder` API are provided by Hermes. See the source code for [TextEncoder.cpp](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1) and [TextDecoder.cpp](https://github.com/facebook/hermes/blob/4188b63f24026ca62b79dc81d95db122a59c6089/API/hermes/extensions/contrib/TextDecoder.cpp) in the Hermes GitHub repository. `TextDecoder` supports UTF-8, UTF-16, and legacy single-byte encodings such as `windows-1252` (also known as `latin1`). If you use a custom JavaScript runtime, it must provide `TextDecoder` before Expo initializes.
 
 The stream equivalents of these APIs, `TextEncoderStream` and `TextDecoderStream`, are also available on all platforms. They allow you to encode and decode text in a streaming manner, which is useful for processing large amounts of data without loading it all into memory at once.
 

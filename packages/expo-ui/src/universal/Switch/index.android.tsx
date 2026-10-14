@@ -1,5 +1,11 @@
 import { Row, Switch as ComposeSwitch, Text } from '@expo/ui/jetpack-compose';
-import { testID as testIDModifier, weight } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  fillMaxWidth,
+  IntrinsicSize,
+  testID as testIDModifier,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 import type { SwitchProps } from './types';
 
@@ -16,7 +22,10 @@ export function Switch({ value, onValueChange, label, disabled, testID, modifier
   if (label == null) return toggle;
 
   return (
-    <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 8 }}>
+    <Row
+      verticalAlignment="center"
+      horizontalArrangement={{ spacedBy: 8 }}
+      modifiers={[fillMaxWidth(), width(IntrinsicSize.Max)]}>
       <Text modifiers={[weight(1)]}>{label}</Text>
       {toggle}
     </Row>

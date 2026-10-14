@@ -36,8 +36,26 @@ struct JavaScriptUnownedValueTests {
   }
 
   @Test
+  func `getString leaves the borrowed string intact`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("'żółć ' + 'hello'.repeat(2)").ref()
+    )
+    for _ in 0..<1000 {
+      #expect(buffer.unownedValue(at: 0).getString() == "żółć hellohello")
+    }
+    runtime.collectGarbage()
+    #expect(buffer.unownedValue(at: 0).isString() == true)
+    #expect(buffer.unownedValue(at: 0).getString() == "żółć hellohello")
+  }
+
+  @Test
   func `recognizes null and undefined`() {
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: JavaScriptValue.null, JavaScriptValue.undefined)
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: JavaScriptValue.null().ref(),
+      JavaScriptValue.undefined().ref()
+    )
 
     let null = buffer.unownedValue(at: 0)
     #expect(null.isNull() == true)
@@ -78,10 +96,25 @@ struct JavaScriptUnownedValueTests {
   @Test
   func `recognizes objects`() {
     let object = runtime.createObject()
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue().ref())
 
     let view = buffer.unownedValue(at: 0)
     #expect(view.isObject() == true)
     #expect(view.isNumber() == false)
+  }
+
+  @Test
+  func `asArray(in:) accepts only arrays`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("[1, 2]").ref(),
+      try runtime.eval("({ length: 2 })").ref()
+    )
+
+    #expect(try buffer.unownedValue(at: 0).asArray(in: runtime).length == 2)
+    #expect(try buffer.unownedValue(at: 1).asObject(in: runtime).getProperty("length").getInt() == 2)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try buffer.unownedValue(at: 1).asArray(in: runtime)
+    }
   }
 }

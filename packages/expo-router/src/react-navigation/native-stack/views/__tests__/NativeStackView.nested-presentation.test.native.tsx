@@ -27,11 +27,11 @@ function nativeContainerStyleOf(testID: string) {
 }
 
 /** Renders a root stack with a `sheet` screen using `presentation`, containing a nested stack. */
-function renderNestedStack(
+async function renderNestedStack(
   presentation: NativeStackNavigationOptions['presentation'],
   nestedNativeProps?: NativeStackNavigationConfig['unstable_nativeProps']
 ) {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack unstable_nativeProps={{ testID: 'root' }}>
         <Stack.Screen name="sheet" options={{ presentation }} />
@@ -47,7 +47,7 @@ function renderNestedStack(
   expect(screen.getByTestId('index')).toBeVisible();
 
   // Index 0 is always forced to `card`, so the sheet has to be pushed.
-  act(() => router.push('/sheet'));
+  await act(() => router.push('/sheet'));
 
   expect(screen.getByTestId('sheet')).toBeVisible();
 }
@@ -59,8 +59,8 @@ describe('nested stack inside a transparent presentation', () => {
 
   it.each(['formSheet', 'transparentModal', 'containedTransparentModal'] as const)(
     'does not set a native container background inside %s',
-    (presentation) => {
-      renderNestedStack(presentation);
+    async (presentation) => {
+      await renderNestedStack(presentation);
 
       expect(nativeContainerStyleOf('root')).toEqual({
         backgroundColor: expect.any(String),
@@ -71,8 +71,8 @@ describe('nested stack inside a transparent presentation', () => {
 
   it.each(['modal', 'pageSheet', 'card'] as const)(
     'keeps the native container background inside %s',
-    (presentation) => {
-      renderNestedStack(presentation);
+    async (presentation) => {
+      await renderNestedStack(presentation);
 
       expect(nativeContainerStyleOf('nested')).toEqual(nativeContainerStyleOf('root'));
       expect(nativeContainerStyleOf('nested')).toEqual({
@@ -81,8 +81,8 @@ describe('nested stack inside a transparent presentation', () => {
     }
   );
 
-  it('resets the default background for a stack nested deeper under a card screen', () => {
-    renderRouter({
+  it('resets the default background for a stack nested deeper under a card screen', async () => {
+    await renderRouter({
       _layout: () => (
         <Stack unstable_nativeProps={{ testID: 'root' }}>
           <Stack.Screen name="sheet" options={{ presentation: 'formSheet' }} />
@@ -95,8 +95,8 @@ describe('nested stack inside a transparent presentation', () => {
       'sheet/card/index': () => <Text testID="card">Card</Text>,
     });
 
-    act(() => router.push('/sheet'));
-    act(() => router.push('/sheet/card'));
+    await act(() => router.push('/sheet'));
+    await act(() => router.push('/sheet/card'));
 
     expect(screen.getByTestId('card')).toBeVisible();
 
@@ -107,8 +107,8 @@ describe('nested stack inside a transparent presentation', () => {
     });
   });
 
-  it('lets unstable_nativeProps override the skipped background', () => {
-    renderNestedStack('formSheet', {
+  it('lets unstable_nativeProps override the skipped background', async () => {
+    await renderNestedStack('formSheet', {
       nativeContainerStyle: { backgroundColor: 'red' },
     });
 

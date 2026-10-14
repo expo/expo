@@ -8,6 +8,7 @@ import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
 import {
   type CheckedInResolvedTarget,
+  getSiblingProductNames,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
@@ -71,7 +72,11 @@ export const SPMBuild = {
     const checkedIn = checkedInRoot
       ? {
           root: checkedInRoot,
-          targets: await resolveCheckedInManifestAsync(checkedInRoot, product),
+          targets: await resolveCheckedInManifestAsync(
+            checkedInRoot,
+            product,
+            getSiblingProductNames(pkg, product)
+          ),
         }
       : undefined;
 

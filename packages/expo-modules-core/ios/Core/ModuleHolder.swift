@@ -186,18 +186,18 @@ public final class ModuleHolder {
     let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
       [weak module = self.module] _, arguments in
       guard let module, arguments.count > 0 else {
-        return .undefined
+        return .undefined()
       }
       module.didStartListening(event: try arguments[0].asString())
-      return .undefined
+      return .undefined()
     }
     let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
       [weak module = self.module] _, arguments in
       guard let module, arguments.count > 0 else {
-        return .undefined
+        return .undefined()
       }
       module.didStopListening(event: try arguments[0].asString())
-      return .undefined
+      return .undefined()
     }
     object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
     object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])

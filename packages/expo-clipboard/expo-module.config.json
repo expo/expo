@@ -4,6 +4,11 @@
     "modules": ["ClipboardModule"]
   },
   "android": {
-    "modules": ["expo.modules.clipboard.ClipboardModule"]
+    "modules": ["expo.modules.clipboard.ClipboardModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.clipboard",
+      "repository": "local-maven-repo"
+    }
   }
 }

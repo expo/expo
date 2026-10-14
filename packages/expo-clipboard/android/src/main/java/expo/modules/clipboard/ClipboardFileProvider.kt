@@ -196,7 +196,9 @@ class ClipboardFileProvider : ContentProvider() {
         ?: throw IllegalArgumentException("Missing $META_DATA_FILE_PROVIDER_PATHS meta-data")
       var type: Int
       while (parser.next().also { type = it } != END_DOCUMENT) {
-        if (type != START_TAG) continue
+        if (type != START_TAG) {
+          continue
+        }
 
         val tag = parser.name
         val target: File? = targetFileFromTag(tag, context)

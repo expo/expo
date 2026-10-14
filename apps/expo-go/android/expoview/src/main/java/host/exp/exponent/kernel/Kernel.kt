@@ -471,6 +471,9 @@ class Kernel : KernelInterface() {
 
   // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
   private fun shouldOpenUrl(uri: Uri): Boolean {
+    if (ExponentUrls.isHomeUrl(uri.toString())) {
+      return false
+    }
     val host = uri.host ?: ""
     val path = uri.path ?: ""
     return !(((host == "expo.io") || (host == "expo.dev")) && (path == "/expo-go"))

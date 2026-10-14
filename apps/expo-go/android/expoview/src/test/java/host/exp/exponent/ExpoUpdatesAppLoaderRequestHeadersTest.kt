@@ -5,9 +5,11 @@ import android.net.Uri
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.Kernel
-import host.exp.exponent.services.SessionRepository
+import host.exp.exponent.services.FakeSessionCipher
+import host.exp.exponent.services.SessionStore
 import io.mockk.mockk
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
@@ -23,9 +25,20 @@ class ExpoUpdatesAppLoaderRequestHeadersTest {
   private val context: Context = RuntimeEnvironment.getApplication()
   private val manifestUrl = Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000/group/abc")
 
+  private val sessionStore = SessionStore(
+    context.getSharedPreferences("request-headers-test", Context.MODE_PRIVATE),
+    FakeSessionCipher()
+  )
+
   @Before
   fun registerKernel() {
     NativeModuleDepsProvider.instance.add(Kernel::class.java, mockk<Kernel>(relaxed = true))
+    SessionStore.setInstanceForTesting(sessionStore)
+  }
+
+  @After
+  fun resetSessionStore() {
+    SessionStore.setInstanceForTesting(null)
   }
 
   private fun loader() =
@@ -33,7 +46,7 @@ class ExpoUpdatesAppLoaderRequestHeadersTest {
 
   @Test
   fun sendsTheSignedInSessionSecret() {
-    SessionRepository(context).saveSessionSecret("session-secret-123")
+    sessionStore.add("session-secret-123")
 
     val headers = loader().requestHeaders(manifestUrl, versionName = "58.0.0")
 
@@ -41,9 +54,18 @@ class ExpoUpdatesAppLoaderRequestHeadersTest {
   }
 
   @Test
-  fun omitsTheSessionHeaderWhenSignedOut() {
-    SessionRepository(context).clearSessionSecret()
+  fun sendsTheActiveSessionSecretWhenSeveralAreStored() {
+    val first = sessionStore.add("first-secret")
+    sessionStore.add("second-secret")
+    sessionStore.activate(first.id)
 
+    val headers = loader().requestHeaders(manifestUrl, versionName = "58.0.0")
+
+    assertEquals("first-secret", headers["Expo-Session"])
+  }
+
+  @Test
+  fun omitsTheSessionHeaderWhenSignedOut() {
     val headers = loader().requestHeaders(manifestUrl, versionName = "58.0.0")
 
     assertFalse(headers.containsKey("Expo-Session"))

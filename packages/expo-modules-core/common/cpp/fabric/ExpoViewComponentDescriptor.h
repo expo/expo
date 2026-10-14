@@ -61,17 +61,47 @@ public:
 
     const auto snode = dynamic_cast<ShadowNodeType *>(&shadowNode);
     const auto state = snode->getStateData();
+    auto const &sharedProps = snode->getProps();
+    auto &style = const_cast<facebook::yoga::Style &>(
+      static_cast<const facebook::react::ViewProps &>(*sharedProps).yogaStyle);
+    bool propsStyleChanged = false;
 
+    if (isRNHostView(sharedProps)) {
+      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
+      auto const alignSelf = style.alignSelf();
+
+      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
+        style.setAlignSelf(facebook::yoga::Align::FlexStart);
+        propsStyleChanged = true;
+      }
+    }
+
+    // handle layout style prop update
+    if (!isnan(state._styleWidth)) {
+      style.setDimension(facebook::yoga::Dimension::Width,
+                         facebook::yoga::StyleSizeLength::points(state._styleWidth));
+      propsStyleChanged = true;
+    }
+
+    if (!isnan(state._styleHeight)) {
+      style.setDimension(facebook::yoga::Dimension::Height,
+                         facebook::yoga::StyleSizeLength::points(state._styleHeight));
+      propsStyleChanged = true;
+    }
+
+    if (propsStyleChanged) {
+      // Updates yoga style from props and sets the node dirty
+      snode->updateYogaProps();
+    }
+
+    // Writes the node style directly, so it runs last.
     auto width = state._width;
     auto height = state._height;
 
     if (!isnan(width) || !isnan(height)) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-
       // The node has width and/or height set as style props, so we should not override it
-      auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
-      auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
+      auto widthProp = style.dimension(facebook::yoga::Dimension::Width);
+      auto heightProp = style.dimension(facebook::yoga::Dimension::Height);
 
       if (widthProp.value().isDefined()) {
         // view has fixed dimension size set in props, so we should not autosize it in that axis
@@ -82,44 +112,6 @@ public:
       }
 
       snode->setSize({width, height});
-    }
-
-    // handle layout style prop update
-    auto styleWidth = state._styleWidth;
-    auto styleHeight = state._styleHeight;
-
-    if (!isnan(styleWidth) || !isnan(styleHeight)) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-
-      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
-
-      if (!isnan(styleWidth)) {
-        style.setDimension(facebook::yoga::Dimension::Width,
-                           facebook::yoga::StyleSizeLength::points(styleWidth));
-      }
-
-      if (!isnan(styleHeight)) {
-        style.setDimension(facebook::yoga::Dimension::Height,
-                           facebook::yoga::StyleSizeLength::points(styleHeight));
-      }
-
-      // Updates yoga style from props and sets the node dirty
-      snode->updateYogaProps();
-    }
-
-    if (isRNHostView(snode->getProps())) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
-
-      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
-      auto const alignSelf = style.alignSelf();
-
-      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
-        style.setAlignSelf(facebook::yoga::Align::FlexStart);
-        snode->updateYogaProps();
-      }
     }
 
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);

@@ -9,6 +9,11 @@ import Foundation
 // read/write rather than a single accessor.
 
 extension Data: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Data
@@ -38,7 +43,7 @@ extension Data: JavaScriptCodable {
       }
     }
     let uint8ArrayConstructor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayConstructor.callAsConstructor(arrayBuffer.asValue())
+    return try uint8ArrayConstructor.callAsConstructor(argument: arrayBuffer.asValue())
   }
 }
 

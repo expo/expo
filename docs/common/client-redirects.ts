@@ -435,10 +435,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
 
-  // Preview section
-  '/preview/support/': '/preview/introduction/',
-  '/preview/react-compiler/': '/guides/react-compiler/',
-
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
 
@@ -549,9 +545,6 @@ const RENAMED_PAGES: Record<string, string> = {
   // After merging registerRootComponent info in `expo` API reference
   '/versions/latest/sdk/register-root-component/':
     '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
-
-  // Temporary redirects
-  '/router/advanced/singular/': '/preview/singular/',
 
   // After adding System bars
   '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',

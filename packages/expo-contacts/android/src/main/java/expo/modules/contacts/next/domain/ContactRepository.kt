@@ -184,7 +184,11 @@ class ContactRepository(val contentResolver: ContentResolver) {
         .forEach { _ -> queryAggregator.aggregateDataRow(cursor) }
     }
     val contacts = queryAggregator.buildContacts()
-    return@withContext if (contacts.isNotEmpty()) contacts[0] else null
+    return@withContext if (contacts.isNotEmpty()) {
+      contacts[0]
+    } else {
+      null
+    }
   }
 
   suspend fun getAllPaginated(

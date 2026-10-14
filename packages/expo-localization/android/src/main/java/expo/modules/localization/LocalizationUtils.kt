@@ -11,7 +11,11 @@ val USES_FAHRENHEIT = listOf("AG", "BZ", "VG", "FM", "MH", "MS", "KN", "BS", "CY
 fun getCountryCode(locale: Locale): String? {
   return runCatching {
     val country = locale.country
-    if (TextUtils.isEmpty(country)) null else country
+    if (TextUtils.isEmpty(country)) {
+      null
+    } else {
+      country
+    }
   }.getOrNull()
 }
 
@@ -32,5 +36,9 @@ fun getRegionCode(locale: Locale): String? {
 
 fun getTemperatureUnit(locale: Locale): String? {
   val countryCode = getRegionCode(locale) ?: return null
-  return if (USES_FAHRENHEIT.contains(countryCode)) "fahrenheit" else "celsius"
+  return if (USES_FAHRENHEIT.contains(countryCode)) {
+    "fahrenheit"
+  } else {
+    "celsius"
+  }
 }

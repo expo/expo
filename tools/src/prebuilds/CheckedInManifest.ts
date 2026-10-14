@@ -797,11 +797,22 @@ function environmentForTarget(
   return target?.type === 'framework' ? undefined : target;
 }
 
+/** The other products in the package's spm.config.json, which a target may depend on by name. */
+export function getSiblingProductNames(pkg: SPMPackageSource, product: SPMProduct): Set<string> {
+  return new Set(
+    pkg
+      .getSwiftPMConfiguration()
+      .products.map((candidate) => candidate.name)
+      .filter((name) => name !== product.name)
+  );
+}
+
 /** Keep regular-target filtering and path inference aligned with parseDumpedManifest and
  * resolveTargetPaths in expo/scripts/spm/manifests.js; environment settings belong to config. */
 export async function resolveCheckedInManifestAsync(
   root: string,
-  product: SPMProduct
+  product: SPMProduct,
+  siblingProductNames: ReadonlySet<string>
 ): Promise<CheckedInResolvedTarget[]> {
   for (const target of product.targets) {
     if (target.type === 'framework') continue;
@@ -1038,6 +1049,11 @@ export async function resolveCheckedInManifestAsync(
   const configSourceTargetNames = new Set(
     product.targets.filter((target) => target.type !== 'framework').map((target) => target.name)
   );
+  const resolvableConfigDependencies = new Set([
+    ...externalNames,
+    ...product.targets.filter((target) => target.type === 'framework').map((target) => target.name),
+    ...siblingProductNames,
+  ]);
   const result: CheckedInResolvedTarget[] = [];
   for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
     const sourceRoot = resolveCheckedInTargetSourceRoot(root, product.name, target, regular.length);
@@ -1073,6 +1089,17 @@ export async function resolveCheckedInManifestAsync(
     const configDependencies = (config?.dependencies ?? []).filter(
       (dependency) => !regularByName.has(dependency) && !configSourceTargetNames.has(dependency)
     );
+    const unresolvable = configDependencies.find(
+      (dependency) => !resolvableConfigDependencies.has(dependency)
+    );
+    if (unresolvable) {
+      throw manifestError(
+        product.name,
+        target.name,
+        `spm.config.json lists dependency "${unresolvable}", which the generated package cannot resolve because it is not a regular target in Package.swift, a framework target, another product in spm.config.json, or a name in externalDependencies or spmPackages.`,
+        'Fix the name, or declare it as a regular target in Package.swift, or list the dependency in externalDependencies or spmPackages in spm.config.json.'
+      );
+    }
     const dependencies = Array.from(
       new Set([
         ...(target.dependencies ?? [])

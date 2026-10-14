@@ -193,11 +193,9 @@ public class LocalizationModule: Module {
     return unitCharacter == "F" ? "fahrenheit" : "celsius"
   }
 
-  // https://stackoverflow.com/a/28183182
-  static func uses24HourClock() -> Bool {
-    let dateFormat = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)!
-
-    return dateFormat.firstIndex(of: "a") == nil
+  static func uses24HourClock(locale: Locale = .current) -> Bool {
+    let hourCycle = locale.hourCycle
+    return hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour
   }
 
   static func getCalendars() -> [[String: Any?]] {

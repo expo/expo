@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyVStack.ForEach / LazyHStack.ForEach data',
+    route: 'ui/lazy-stack-for-each',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyStackForEachScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},
@@ -168,6 +176,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./NavigationSplitViewScreen'));
+    },
+  },
+  {
+    name: 'ArrangementView component',
+    route: 'ui/arrangementview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ArrangementViewScreen'));
     },
   },
   {
@@ -464,6 +480,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./Rotation3DEffectScreen'));
+    },
+  },
+  {
+    name: 'onHingeChange modifier',
+    route: 'ui/on-hinge-change',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HingeChangeScreen'));
     },
   },
 ];
