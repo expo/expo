@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Faces, StaticFaces } from '../../components/faces';
-import { TabBarHiddenToggle } from '../../components/tab-bar-hidden-context';
+import { TabBarHiddenToggles } from '../../components/tab-bar-hidden-context';
 
 export default function Index() {
   const { colors } = useTheme();
@@ -25,7 +25,7 @@ export default function Index() {
         padding: 32,
         gap: 16,
       }}>
-      <TabBarHiddenToggle />
+      <TabBarHiddenToggles />
       <Text
         style={{
           color: colors.text,

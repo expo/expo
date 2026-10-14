@@ -1,7 +1,7 @@
 import { ScrollView } from 'react-native';
 
 import { Faces } from '../../../components/faces';
-import { TabBarHiddenToggle } from '../../../components/tab-bar-hidden-context';
+import { TabBarHiddenToggles } from '../../../components/tab-bar-hidden-context';
 
 export default function Index() {
   return (
@@ -11,7 +11,7 @@ export default function Index() {
         alignItems: 'center',
         padding: 32,
       }}>
-      <TabBarHiddenToggle />
+      <TabBarHiddenToggles />
       <Faces numberOfFaces={60} />
     </ScrollView>
   );

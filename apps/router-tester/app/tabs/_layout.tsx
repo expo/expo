@@ -13,12 +13,15 @@ if (process.env.EXPO_OS !== 'web') {
 export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [hiddenAnimationEnabled, setHiddenAnimationEnabled] = useState(true);
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <TabBarHiddenContext.Provider value={{ hidden, setHidden }}>
+      <TabBarHiddenContext.Provider
+        value={{ hidden, setHidden, hiddenAnimationEnabled, setHiddenAnimationEnabled }}>
         <NativeTabs
           hidden={hidden}
+          hiddenAnimationEnabled={hiddenAnimationEnabled}
           minimizeBehavior="onScrollDown"
           rippleColor="#a6c1ee"
           labelVisibilityMode="labeled"

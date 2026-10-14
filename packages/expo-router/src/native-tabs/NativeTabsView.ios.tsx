@@ -87,6 +87,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       ios={{
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
+        tabBarHiddenAnimationEnabled: props.hiddenAnimationEnabled,
         tabBarControllerMode,
         bottomAccessory: bottomAccessoryFn,
         ...rawIosProps,

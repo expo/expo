@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
 import { useFaceColors } from '../../../components/faces';
-import { TabBarHiddenToggle } from '../../../components/tab-bar-hidden-context';
+import { TabBarHiddenToggles } from '../../../components/tab-bar-hidden-context';
 
 export default function Index() {
   const [shouldPerformHeavyComputation, setShouldPerformHeavyComputation] = useState(false);
@@ -30,7 +30,7 @@ export default function Index() {
         contentContainerStyle={{
           height: '150%',
         }}>
-        <TabBarHiddenToggle />
+        <TabBarHiddenToggles />
         <View
           style={{
             flexDirection: 'row',

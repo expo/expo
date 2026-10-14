@@ -349,6 +349,13 @@ export interface NativeTabsProps extends PropsWithChildren {
   // #endregion common props
   // #region iOS props
   /**
+   * Whether the tab bar animates when `hidden` changes.
+   *
+   * @default true
+   * @platform iOS 18+
+   */
+  hiddenAnimationEnabled?: boolean;
+  /**
    * Specifies the minimize behavior for the tab bar.
    *
    * Available starting from iOS 26.

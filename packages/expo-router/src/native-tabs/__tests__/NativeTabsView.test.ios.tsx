@@ -68,6 +68,23 @@ it.each([
   expect(TabsHost.mock.calls[0][0].ios?.tabBarControllerMode).toBe(expected);
 });
 
+it.each([undefined, true, false])(
+  'passes hiddenAnimationEnabled=%s to Tabs.Host as ios.tabBarHiddenAnimationEnabled',
+  async (value) => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs hiddenAnimationEnabled={value}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].ios?.tabBarHiddenAnimationEnabled).toBe(value);
+  }
+);
+
 it('uses shadowColor when it is passed to NativeTabs', async () => {
   await renderRouter({
     _layout: () => (

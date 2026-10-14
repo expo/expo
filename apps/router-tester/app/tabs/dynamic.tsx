@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { TabBarHiddenToggle } from '../../components/tab-bar-hidden-context';
+import { TabBarHiddenToggles } from '../../components/tab-bar-hidden-context';
 
 const iconNames =
   process.env.EXPO_OS === 'ios'
@@ -31,7 +31,7 @@ export default function Dynamic() {
         <NativeTabs.Trigger.Badge>{badgeValue}</NativeTabs.Trigger.Badge>
         <NativeTabs.Trigger.Icon sf={iconName as SFSymbol} drawable={iconName} />
       </NativeTabs.Trigger>
-      <TabBarHiddenToggle />
+      <TabBarHiddenToggles />
       <Text style={{ fontSize: 24, fontWeight: 600 }}>Label</Text>
       <TextInput
         testID="label-input"
