@@ -173,10 +173,15 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     unownedValue: borrowing JavaScriptUnownedValue,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> ArrayBuffer {
-    guard unownedValue.isObject() else {
-      throw ArrayBufferJavaScriptValueConversionException(unownedValue.copied(in: runtime).kind)
+    // The kind checks read the borrowed value, so neither an `ArrayBuffer` nor a typed array is
+    // copied into an owning `JavaScriptValue` first.
+    if unownedValue.isArrayBuffer() {
+      return ArrayBuffer.from(jsArrayBuffer: unownedValue.getArrayBuffer(in: runtime))
     }
-    return try ArrayBuffer.from(jsObject: unownedValue.getObject(in: runtime))
+    if unownedValue.isTypedArray() {
+      return try ArrayBuffer.from(typedArray: unownedValue.getTypedArray(in: runtime))
+    }
+    throw ArrayBufferJavaScriptValueConversionException(unownedValue.isObject() ? .object : unownedValue.kind)
   }
 
   @JavaScriptActor

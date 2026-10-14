@@ -61,6 +61,26 @@ struct JavaScriptCodableTypedArrayTests {
     }
   }
 
+  @Test
+  func `concrete decode of a borrowed value throws on a kind mismatch`() throws {
+    let runtime = try runtime
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("new Int16Array([1, 2])").ref())
+    let error = try #require(throws: TypedArray.KindMismatchException.self) {
+      _ = try Uint8Array.decode(buffer.unownedValue(at: 0), in: runtime)
+    }
+    #expect(error.expected == .Uint8Array)
+    #expect(error.received == .Int16Array)
+  }
+
+  @Test
+  func `concrete decode of a borrowed value throws when it is not a typed array`() throws {
+    let runtime = try runtime
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("[1, 2, 3]").ref())
+    #expect(throws: TypedArray.NotATypedArrayException.self) {
+      _ = try Uint8Array.decode(buffer.unownedValue(at: 0), in: runtime)
+    }
+  }
+
   // MARK: - Base TypedArray
 
   @Test
@@ -73,6 +93,18 @@ struct JavaScriptCodableTypedArrayTests {
     let decodedFloat64 = try TypedArray.decode(runtime.eval("new Float64Array([1.5])"), in: runtime)
     #expect(decodedFloat64 is Float64Array)
     #expect(decodedFloat64.kind == .Float64Array)
+  }
+
+  @Test
+  func `base TypedArray decodes a borrowed value into the matching concrete subclass`() throws {
+    let runtime = try runtime
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("new Int32Array([1])").ref()
+    )
+    let decoded = try TypedArray.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(decoded is Int32Array)
+    #expect(decoded.kind == .Int32Array)
   }
 
   @Test

@@ -15,6 +15,18 @@ extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Set<Element>
   {
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Set<Element>
+  {
     // The cheap tag checks come first: an array takes the `Array` path directly, and a primitive
     // can't be a JS `Set`, so both skip the JS call below. Any other value that is not a JS `Set` is
     // arrayized, as in `Array`. Duplicates in an array collapse without an error.
@@ -44,7 +56,7 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
 @usableFromInline
 @JavaScriptActor
 internal func javaScriptSetEntries(
-  of value: borrowing JavaScriptValue,
+  of value: borrowing JavaScriptUnownedValue,
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue? {
   let entries = try runtime.withCached(

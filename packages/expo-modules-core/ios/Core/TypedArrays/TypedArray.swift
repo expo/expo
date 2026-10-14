@@ -100,10 +100,25 @@ public class TypedArray: AnyTypedArray {
 
   /// `JavaScriptDecodable` witness. It's a `class func` in the class body, not in the conformance
   /// extension, so the concrete subclasses can override it (extension methods can't be overridden).
-  /// The base accepts any kind and resolves the concrete subclass via `create(from:)`.
+  /// It borrows the value and forwards to the unowned `decode`, which the subclasses override.
   @JavaScriptActor
   @inlinable
   public class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
+    }
+  }
+
+  /// `JavaScriptDecodable` witness for a borrowed value, so a typed array argument is decoded without
+  /// copying it into an owning `JavaScriptValue`. The base accepts any kind and resolves the concrete
+  /// subclass via `create(from:)`.
+  @JavaScriptActor
+  @inlinable
+  public class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Self {
     guard value.isTypedArray() else {
       throw NotATypedArrayException()
     }
@@ -111,7 +126,7 @@ public class TypedArray: AnyTypedArray {
     // to `Self` always holds; it only fails when this inherited witness runs for a narrower `Self` (a
     // `GenericTypedArray<T>` specialization) whose element type doesn't match the JS kind. Guard rather
     // than force-cast so that surfaces as a thrown error instead of a trap.
-    let typedArray = create(from: value.getTypedArray())
+    let typedArray = create(from: value.getTypedArray(in: runtime))
     guard let typed = typedArray as? Self else {
       throw KindMismatchException(expected: nil, received: typedArray.kind)
     }
@@ -123,13 +138,14 @@ public class TypedArray: AnyTypedArray {
   @JavaScriptActor
   @inlinable
   internal static func decode(
-    _ value: borrowing JavaScriptValue,
-    expectingKind kind: JavaScriptTypedArray.Kind
+    _ value: borrowing JavaScriptUnownedValue,
+    expectingKind kind: JavaScriptTypedArray.Kind,
+    in runtime: borrowing JavaScriptRuntime
   ) throws -> Self {
     guard value.isTypedArray() else {
       throw NotATypedArrayException()
     }
-    let jsTypedArray = value.getTypedArray()
+    let jsTypedArray = value.getTypedArray(in: runtime)
     guard jsTypedArray.kind == kind else {
       throw KindMismatchException(expected: kind, received: jsTypedArray.kind)
     }

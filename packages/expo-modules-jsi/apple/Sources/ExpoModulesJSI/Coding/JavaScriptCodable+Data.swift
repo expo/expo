@@ -18,10 +18,22 @@ extension Data: JavaScriptCodable {
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Data
   {
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Data
+  {
     guard value.isTypedArray() else {
       throw DataNotUint8ArrayException()
     }
-    let typedArray = value.getTypedArray()
+    let typedArray = value.getTypedArray(in: runtime)
     guard typedArray.kind == .Uint8Array else {
       throw DataNotUint8ArrayException()
     }

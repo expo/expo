@@ -2,18 +2,20 @@
 
 import ExpoModulesJSI
 
-// Each concrete typed array overrides `decode` to return its own `Self` and reject a mismatched kind,
-// delegating to the shared `decode(_:expectingKind:)` on the base. See `TypedArray.swift` for why the
+// Each concrete typed array overrides the unowned `decode` to return its own `Self` and reject a
+// mismatched kind, delegating to the shared `decode(_:expectingKind:in:)` on the base. The owning
+// `decode` on the base forwards to it. See `TypedArray.swift` for why the
 // witness is an overridable `class func` rather than living in the conformance extension.
 
 /// Native equivalent of `Int8Array` in JavaScript, an array of two's-complement 8-bit signed integers.
 public final class Int8Array: GenericTypedArray<Int8> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Int8Array
-  {
-    return try decode(value, expectingKind: .Int8Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Int8Array {
+    return try decode(value, expectingKind: .Int8Array, in: runtime)
   }
 }
 
@@ -21,10 +23,11 @@ public final class Int8Array: GenericTypedArray<Int8> {
 public final class Int16Array: GenericTypedArray<Int16> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Int16Array
-  {
-    return try decode(value, expectingKind: .Int16Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Int16Array {
+    return try decode(value, expectingKind: .Int16Array, in: runtime)
   }
 }
 
@@ -32,10 +35,11 @@ public final class Int16Array: GenericTypedArray<Int16> {
 public final class Int32Array: GenericTypedArray<Int32> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Int32Array
-  {
-    return try decode(value, expectingKind: .Int32Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Int32Array {
+    return try decode(value, expectingKind: .Int32Array, in: runtime)
   }
 }
 
@@ -43,10 +47,11 @@ public final class Int32Array: GenericTypedArray<Int32> {
 public final class Uint8Array: GenericTypedArray<UInt8> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Uint8Array
-  {
-    return try decode(value, expectingKind: .Uint8Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Uint8Array {
+    return try decode(value, expectingKind: .Uint8Array, in: runtime)
   }
 }
 
@@ -54,10 +59,11 @@ public final class Uint8Array: GenericTypedArray<UInt8> {
 public final class Uint8ClampedArray: GenericTypedArray<UInt8> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Uint8ClampedArray
-  {
-    return try decode(value, expectingKind: .Uint8ClampedArray)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Uint8ClampedArray {
+    return try decode(value, expectingKind: .Uint8ClampedArray, in: runtime)
   }
 }
 
@@ -65,10 +71,11 @@ public final class Uint8ClampedArray: GenericTypedArray<UInt8> {
 public final class Uint16Array: GenericTypedArray<UInt16> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Uint16Array
-  {
-    return try decode(value, expectingKind: .Uint16Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Uint16Array {
+    return try decode(value, expectingKind: .Uint16Array, in: runtime)
   }
 }
 
@@ -76,10 +83,11 @@ public final class Uint16Array: GenericTypedArray<UInt16> {
 public final class Uint32Array: GenericTypedArray<UInt32> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Uint32Array
-  {
-    return try decode(value, expectingKind: .Uint32Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Uint32Array {
+    return try decode(value, expectingKind: .Uint32Array, in: runtime)
   }
 }
 
@@ -87,10 +95,11 @@ public final class Uint32Array: GenericTypedArray<UInt32> {
 public final class Float32Array: GenericTypedArray<Float32> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Float32Array
-  {
-    return try decode(value, expectingKind: .Float32Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Float32Array {
+    return try decode(value, expectingKind: .Float32Array, in: runtime)
   }
 }
 
@@ -98,10 +107,11 @@ public final class Float32Array: GenericTypedArray<Float32> {
 public final class Float64Array: GenericTypedArray<Float64> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> Float64Array
-  {
-    return try decode(value, expectingKind: .Float64Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Float64Array {
+    return try decode(value, expectingKind: .Float64Array, in: runtime)
   }
 }
 
@@ -109,10 +119,11 @@ public final class Float64Array: GenericTypedArray<Float64> {
 public final class BigInt64Array: GenericTypedArray<Int64> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> BigInt64Array
-  {
-    return try decode(value, expectingKind: .BigInt64Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> BigInt64Array {
+    return try decode(value, expectingKind: .BigInt64Array, in: runtime)
   }
 }
 
@@ -120,9 +131,10 @@ public final class BigInt64Array: GenericTypedArray<Int64> {
 public final class BigUint64Array: GenericTypedArray<UInt64> {
   @JavaScriptActor
   @inlinable
-  public override class func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
-    -> BigUint64Array
-  {
-    return try decode(value, expectingKind: .BigUint64Array)
+  public override class func decode(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> BigUint64Array {
+    return try decode(value, expectingKind: .BigUint64Array, in: runtime)
   }
 }
