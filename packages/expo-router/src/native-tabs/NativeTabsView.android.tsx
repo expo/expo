@@ -39,8 +39,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     <Screen
       key={tab.name}
       name={tab.name}
+      routeKey={tab.routeKey}
       options={tab.options}
-      isFocused={selectedScreenKey === tab.name}
+      isFocused={selectedScreenKey === tab.routeKey}
       androidAppearance={androidAppearances[index]!}
       contentRenderer={tab.contentRenderer}
       tabBarHidden={props.hidden}

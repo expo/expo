@@ -116,10 +116,11 @@ it('emits tabPress event onNativeFocusChange', async () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(4);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^index:/);
+  // The unfocused tab is a placeholder route until preloaded, so its key is the route name.
   expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-  expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
-  expect(TabsScreen.mock.calls[3][0].screenKey).toBe('second');
+  expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/^index:/);
+  expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/^second:/);
 
   const indexTabKey = TabsScreen.mock.calls[2][0].screenKey;
   const secondTabKey = TabsScreen.mock.calls[3][0].screenKey;
@@ -225,10 +226,10 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(4);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/^index:/);
   expect(TabsScreen.mock.calls[1][0].screenKey).toBe('a');
-  expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
-  expect(TabsScreen.mock.calls[3][0].screenKey).toBe('a');
+  expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/^index:/);
+  expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/^a:/);
 
   const indexTabKey = TabsScreen.mock.calls[2][0].screenKey;
   const aTabKey = TabsScreen.mock.calls[3][0].screenKey;
@@ -386,7 +387,8 @@ it('emits tabPress with isPrevented false on a normal native selection', async (
     },
   });
 
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  // The last render has the preloaded route key.
+  const secondTabKey = TabsScreen.mock.calls.at(-1)![0].screenKey;
 
   await triggerNativeFocusChange({
     nativeEvent: {

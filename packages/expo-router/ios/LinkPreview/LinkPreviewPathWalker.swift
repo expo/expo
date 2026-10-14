@@ -73,7 +73,7 @@ final class LinkPreviewPathWalker {
     if let tabBarController = tabBarController(from: view) {
       let tabViews = tabBarController.viewControllers?.compactMap(\.view) ?? []
       if let tabCursor = path.firstIndex(where: { route in
-        tabViews.contains(where: { RNScreensTabCompat.routeKey(from: $0) == route.key })
+        tabViews.contains(where: { RNScreensTabCompat.screenKey(from: $0) == route.key })
       }) {
         if cursor.map({ tabCursor < $0 }) ?? true {
           cursor = tabCursor
@@ -133,7 +133,7 @@ final class LinkPreviewPathWalker {
       for routeIndex in path.indices.dropFirst(cursor) {
         guard
           let tabIndex = tabViews.firstIndex(where: {
-            RNScreensTabCompat.routeKey(from: $0) == path[routeIndex].key
+            RNScreensTabCompat.screenKey(from: $0) == path[routeIndex].key
           })
         else {
           continue

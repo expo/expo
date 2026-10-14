@@ -137,7 +137,8 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    // The last render has the preloaded route key.
+    const secondTabKey = TabsScreen.mock.calls.at(-1)![0].screenKey;
 
     await triggerTabSelected(tabSelectedEvent(secondTabKey));
 
@@ -163,7 +164,8 @@ describe('NativeTabs screenListeners prop', () => {
     });
 
     const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    // The last render has the preloaded route key.
+    const secondTabKey = TabsScreen.mock.calls.at(-1)![0].screenKey;
 
     await triggerTabSelected(tabSelectedEvent(indexTabKey));
 

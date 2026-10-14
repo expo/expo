@@ -41,15 +41,17 @@ describe('Native Bottom Tabs Navigation', () => {
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index:/);
+    // `second` may still be a placeholder route, whose key is the route name.
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(/^second(:|$)/);
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
-    expect(lastHostSelectedKey()).toBe('second');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index:/);
+    // `second` may still be a placeholder route, whose key is the route name.
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(/^second(:|$)/);
+    expect(lastHostSelectedKey()).toMatch(/^second:/);
   }
 
   beforeEach(async () => {
@@ -130,7 +132,7 @@ describe('Native Bottom Tabs Navigation', () => {
 
   it('when Link is pressed to a hidden tab, it redirects to the initial tab', async () => {
     await act(() => fireEvent.press(screen.getByTestId('index-hidden-link')));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
 
     TabsScreen.mockClear();
@@ -138,13 +140,13 @@ describe('Native Bottom Tabs Navigation', () => {
     expectSecondTabFocused();
 
     await act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
   });
 
   it('when Link is pressed to a not-specified tab, it redirects to the initial tab', async () => {
     await act(() => fireEvent.press(screen.getByTestId('index-not-specified-link')));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
 
     TabsScreen.mockClear();
@@ -152,17 +154,17 @@ describe('Native Bottom Tabs Navigation', () => {
     expectSecondTabFocused();
 
     await act(() => fireEvent.press(screen.getByTestId('second-not-specified-link')));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
   });
 
   it('redirects to the initial tab when router.push targets a hidden or not-specified route', async () => {
     await act(() => router.push('/hidden'));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
 
     await act(() => router.push('/notSpecified'));
-    expect(lastHostSelectedKey()).toBe('index');
+    expect(lastHostSelectedKey()).toMatch(/^index:/);
     expect(screen).toHavePathname('/');
   });
 });
@@ -195,7 +197,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.queryByTestId('hidden')).toBeNull();
     expect(screen.queryByTestId('not-specified')).toBeNull();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/^index:/);
   });
 
   it('removes a tab item when its trigger is removed and redirects navigation to it', async () => {
@@ -221,7 +223,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('second')).toBeNull();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toMatch(/^index:/);
 
     await act(() => router.push('/second'));
     expect(screen).toHavePathname('/');
@@ -365,7 +367,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.queryByTestId('second')).toBeNull();
     expect(TabsScreen).toHaveBeenCalled();
     for (const call of TabsScreen.mock.calls) {
-      expect(call[0].screenKey).toBe('index');
+      expect(call[0].screenKey).toMatch(/^index:/);
     }
   });
 

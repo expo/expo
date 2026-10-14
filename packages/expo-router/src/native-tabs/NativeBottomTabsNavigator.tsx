@@ -149,7 +149,7 @@ function NativeTabsContent({
         // so the provenance counter is left untouched.
         emitter.emit({
           type: 'tabPress',
-          target: routes.find((route) => route.name === selectedKey)?.key ?? selectedKey,
+          target: selectedKey,
           data: {
             __internalTabsType: 'native',
             isPrevented: true,
@@ -162,7 +162,7 @@ function NativeTabsContent({
       provenanceRef.current = provenance;
 
       if (isNativeAction) {
-        const selectedRoute = routes.find((route) => route.name === selectedKey);
+        const selectedRoute = routes.find((route) => route.key === selectedKey);
         if (!selectedRoute) {
           if (process.env.NODE_ENV !== 'production') {
             console.warn(

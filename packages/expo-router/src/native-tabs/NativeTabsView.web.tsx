@@ -40,7 +40,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       defaultValue={defaultTab.name}
       value={value}
       onValueChange={(value) => {
-        props.onTabChange({ selectedKey: value, provenance: 0, isNativeAction: true });
+        // Tabs are identified by name here; the navigator expects the route key.
+        const selectedKey = tabs.find((tab) => tab.name === value)!.routeKey;
+        props.onTabChange({ selectedKey, provenance: 0, isNativeAction: true });
       }}
       style={convertNativeTabsPropsToStyleVars(props, currentTab.options)}>
       <TabsList aria-label="Main" className={nativeTabsStyles.navigationMenuRoot}>

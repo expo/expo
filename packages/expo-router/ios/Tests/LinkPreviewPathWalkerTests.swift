@@ -6,7 +6,6 @@ import UIKit
 private final class MockPathView: UIView {
   @objc var screenId: String?
   @objc var screenKey: String?
-  @objc var nativeId: String?
   @objc var screenIds: [String] = []
   @objc var activityState: Int32 = 2
   @objc var controller: UIViewController?
@@ -310,8 +309,7 @@ struct LinkPreviewPathWalkerTests {
 
   private func tab(name: String, children: [UIView] = []) -> MockPathView {
     let view = MockPathView()
-    view.screenKey = name
-    view.nativeId = "expo-router-tab:\(name)-key"
+    view.screenKey = "\(name)-key"
     view.mockReactSubviews = children
     children.forEach(view.addSubview)
     return view

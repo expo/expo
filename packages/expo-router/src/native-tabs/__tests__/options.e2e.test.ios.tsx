@@ -102,7 +102,7 @@ it('when no options are passed, default ones are used', async () => {
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
-    screenKey: 'index',
+    screenKey: expect.stringMatching(/^index:/),
     children: expect.objectContaining({}),
   } as TabsScreenProps);
 });
@@ -1058,7 +1058,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -1069,7 +1069,7 @@ describe('Dynamic options', () => {
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -1101,7 +1101,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,
@@ -1111,7 +1111,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1166,13 +1166,13 @@ describe('Dynamic options', () => {
       },
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1217,13 +1217,13 @@ describe('Dynamic options', () => {
         },
       },
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       badgeValue: '5',
       ios: {
         icon: {
@@ -1304,7 +1304,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: 'index',
+      screenKey: expect.stringMatching(/^index:/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,
@@ -1314,7 +1314,7 @@ describe('Dynamic options', () => {
       title: 'Second',
       hidden: false,
       specialEffects: {},
-      screenKey: 'second',
+      screenKey: expect.stringMatching(/^second:/),
       ios: {
         icon: undefined,
         selectedIcon: undefined,

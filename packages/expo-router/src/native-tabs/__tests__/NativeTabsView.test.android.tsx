@@ -66,9 +66,10 @@ it('mounts deep-linked tabs in Trigger order without remounting', async () => {
 
   expect(mockTabsHostMount).toHaveBeenCalledTimes(1);
   expect(mockTabsHostUnmount).not.toHaveBeenCalled();
+  // Only the deep-linked tab has a created route; the others are placeholders keyed by name.
   expect(
     TabsScreen.mock.calls.slice(0, 4).map((call: [TabsScreenProps]) => call[0].screenKey)
-  ).toEqual(['test-suite', 'playground', 'apis', 'components']);
+  ).toEqual(['test-suite', 'playground', expect.stringMatching(/^apis:/), 'components']);
   expect(mockScreenMount.mock.calls.map(([name]) => name)).toEqual([
     // The deep-linked route has real content before the other tabs finish preloading.
     'apis',
@@ -77,7 +78,7 @@ it('mounts deep-linked tabs in Trigger order without remounting', async () => {
     'components',
   ]);
   expect(mockScreenUnmount).not.toHaveBeenCalled();
-  expect(TabsHost.mock.calls[0][0].navStateRequest?.selectedScreenKey).toBe('apis');
+  expect(TabsHost.mock.calls[0][0].navStateRequest?.selectedScreenKey).toMatch(/^apis:/);
 });
 
 it.each([
