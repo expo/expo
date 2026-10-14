@@ -136,10 +136,13 @@ export function getBabelRuntimeVersion(caller?: any) {
   return babelRuntimeVersion ?? '^7.20.0';
 }
 
-export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
+export function getExpoRouterAbsoluteAppRoot(caller?: any): string | null {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
   const projectRoot = getPossibleProjectRoot(caller);
+  if (!projectRoot && !caller?.routerRoot) {
+    return null;
+  }
   const resolved = path.isAbsolute(rootModuleId)
     ? rootModuleId
     : path.join(projectRoot || '/', rootModuleId);
