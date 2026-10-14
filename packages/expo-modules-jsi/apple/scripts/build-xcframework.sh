@@ -227,8 +227,9 @@ build_slice() {
   # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
   # .DerivedData. The .swiftinterface and the dSYM are unaffected.
   #
-  # DEVELOPER_DIR is forwarded so the nested build uses the same Xcode as the app build,
-  # not the one selected with xcode-select.
+  # DEVELOPER_DIR and TOOLCHAINS are forwarded so the nested build uses the same Xcode and
+  # Swift toolchain as compute_hash and the app build, not the xcode-select Xcode or the
+  # default toolchain.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
     xcodebuild \
