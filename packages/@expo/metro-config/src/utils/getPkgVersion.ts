@@ -1,17 +1,9 @@
 import JsonFile from '@expo/json-file';
-import resolveFrom from 'resolve-from';
-
-import { findUpPackageJsonPath } from './findUpPackageJsonPath';
+import { resolveFrom } from '@expo/require-utils';
 
 export function getPkgVersion(projectRoot: string, pkgName: string): string | null {
-  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
-  const targetPkgJson = findUpPackageJsonPath(targetPkg);
-  if (!targetPkgJson) return null;
-  const pkg = JsonFile.read(targetPkgJson);
-  const pkgVersion = pkg.version;
-  if (typeof pkgVersion === 'string') {
-    return pkgVersion;
-  }
-  return null;
+  const targetPkgMeta = resolveFrom(projectRoot, `${pkgName}/package.json`);
+  if (!targetPkgMeta) return null;
+  const pkg = JsonFile.read(targetPkgMeta);
+  return pkg && typeof pkg?.version === 'string' ? pkg.version : null;
 }
