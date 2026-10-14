@@ -16,9 +16,8 @@ describe(wrapFetchWithWindowLocation, () => {
   afterEach(() => mockLocation(null));
 
   it(`keeps the expo.builtin marker of the fetch it wraps`, () => {
-    const builtinSymbol = Symbol.for('expo.builtin');
-    const fetch = Object.defineProperty(jest.fn(), builtinSymbol, { value: true });
-    expect(Reflect.get(wrapFetchWithWindowLocation(fetch), builtinSymbol)).toBe(true);
+    const fetch = Object.defineProperty(jest.fn(), Symbol.for('expo.builtin'), { value: true });
+    expect((wrapFetchWithWindowLocation(fetch) as any)[Symbol.for('expo.builtin')]).toBe(true);
   });
 
   it(`resolves a relative URL against the location origin`, () => {
