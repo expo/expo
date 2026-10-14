@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "57.0.29",
+  "version": "57.0.30",
   "description": "The Expo CLI",
   "main": "main.js",
   "bin": {
@@ -63,7 +63,7 @@
     "@expo/osascript": "workspace:^2.7.1",
     "@expo/package-manager": "workspace:^1.13.1",
     "@expo/plist": "workspace:^0.8.1",
-    "@expo/prebuild-config": "workspace:^57.0.18",
+    "@expo/prebuild-config": "workspace:^57.0.19",
     "@expo/require-utils": "workspace:^57.0.6",
     "@expo/router-server": "workspace:^57.0.12",
     "@expo/schema-utils": "workspace:^57.0.2",

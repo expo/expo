@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix importing `expo-notifications` crashing the app in Expo Go. Backport of [#49062](https://github.com/expo/expo/pull/49062). ([#51476](https://github.com/expo/expo/pull/51476) by [@khushal87](https://github.com/khushal87))
-
 ### 💡 Others
+
+## 57.0.23 — 2026-10-14
+
+### 🐛 Bug fixes
+
+- [Android] Fix importing `expo-notifications` crashing the app in Expo Go. Backport of [#49062](https://github.com/expo/expo/pull/49062). ([#51476](https://github.com/expo/expo/pull/51476) by [@khushal87](https://github.com/khushal87))
 
 ## 57.0.22 — 2026-10-06
 
