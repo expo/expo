@@ -18,6 +18,15 @@ private struct PrivateSwiftUIView: ExpoSwiftUI.View {
   }
 }
 
+/**
+ A prop declared outside of `ExpoModulesCore`, so it can't classify itself and relies on the cast fallback.
+ */
+private struct ExternalProp: AnyViewProp {
+  let name = "external"
+
+  func set(value: Any, onView: UIView, appContext: AppContext) throws {}
+}
+
 // `createView` and `ConcreteViewProp.set` call `MainActor.assumeIsolated`, so these tests must
 // run on the main thread. Swift Testing runs tests on the cooperative pool by default, where
 // that traps. Actor isolation is not inherited by nested types, so every suite below needs its
@@ -64,6 +73,12 @@ struct ViewDefinitionTests {
       }
       try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
       #expect(textView.text == content)
+    }
+
+    @Test
+    func `collects a prop declared outside of the module`() {
+      let definition = ExpoSwiftUI.ViewDefinition(PrivateSwiftUIView.self, name: "PrivateSwiftUIView", elements: [ExternalProp()])
+      #expect(definition.propsDict()["external"] != nil)
     }
 
     @Test
