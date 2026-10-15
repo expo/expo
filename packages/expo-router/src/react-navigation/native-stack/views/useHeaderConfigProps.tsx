@@ -27,6 +27,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../types';
 import { processFonts } from './FontProcessor';
+import { getPlatformHeaderTransparent, isLegacyHeaderAppearanceEnabled } from './headerAppearance';
 
 type Props = NativeStackNavigationOptions & {
   headerTopInsetEnabled: boolean;
@@ -190,7 +191,7 @@ export function useHeaderConfigProps({
   headerTitle,
   headerTitleAlign,
   headerTitleStyle,
-  headerTransparent,
+  headerTransparent: headerTransparentOption,
   headerSearchBarOptions,
   headerTopInsetEnabled,
   headerBack,
@@ -206,20 +207,34 @@ export function useHeaderConfigProps({
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
   const headerNativeProps = unstable_nativeProps?.headerConfig;
 
+  const platformHeaderTransparent = getPlatformHeaderTransparent(headerTransparentOption);
+  // With Liquid Glass, the header uses the system fonts and bar unless the legacy appearance is enabled
+  const usesNativeAppearance =
+    Platform.OS === 'ios' && isLiquidGlassAvailable() && !isLegacyHeaderAppearanceEnabled();
+  const usesThemeFonts = !usesNativeAppearance;
+
   const headerBackTitleStyleFlattened =
-    StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
+    StyleSheet.flatten([usesThemeFonts && fonts.regular, headerBackTitleStyle]) || {};
   const headerLargeTitleStyleFlattened =
     StyleSheet.flatten([
-      Platform.select({ ios: fonts.heavy, default: fonts.medium }),
+      usesThemeFonts && Platform.select({ ios: fonts.heavy, default: fonts.medium }),
       headerLargeTitleStyle,
     ]) || {};
   const headerTitleStyleFlattened =
     StyleSheet.flatten([
-      Platform.select({ ios: fonts.bold, default: fonts.medium }),
+      usesThemeFonts && Platform.select({ ios: fonts.bold, default: fonts.medium }),
       headerTitleStyle,
     ]) || {};
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
+
+  // When nothing sets the header background, the native appearance uses the Liquid Glass system bar
+  const usesSystemBackground =
+    usesNativeAppearance &&
+    platformHeaderTransparent == null &&
+    headerStyleFlattened.backgroundColor == null &&
+    headerBackground == null;
+  const headerTransparent = usesSystemBackground || platformHeaderTransparent;
 
   const headerBackgroundColor =
     headerStyleFlattened.backgroundColor ??
@@ -255,7 +270,9 @@ export function useHeaderConfigProps({
     'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
 
-  const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
+  // Also used by react-native-screens for the scroll edge appearance of a regular title
+  const largeTitleBackgroundColor =
+    headerLargeStyleFlattened.backgroundColor ?? (usesSystemBackground ? 'transparent' : undefined);
   const largeTitleColor =
     'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
   const largeTitleFontSize =
@@ -466,7 +483,7 @@ export function useHeaderConfigProps({
     hideShadow:
       headerShadowVisible === false ||
       headerBackground != null ||
-      (headerTransparent && headerShadowVisible !== true),
+      (platformHeaderTransparent && headerShadowVisible !== true),
     largeTitle: headerLargeTitleEnabled,
     largeTitleBackgroundColor,
     largeTitleColor,
@@ -478,7 +495,7 @@ export function useHeaderConfigProps({
     titleColor,
     titleFontFamily,
     titleFontSize,
-    titleFontWeight: String(titleFontWeight),
+    titleFontWeight: titleFontWeight != null ? String(titleFontWeight) : undefined,
     topInsetEnabled: headerTopInsetEnabled,
     translucent: translucent === true,
     children,
