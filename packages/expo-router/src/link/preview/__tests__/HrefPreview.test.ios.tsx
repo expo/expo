@@ -629,3 +629,20 @@ describe('ZoomTransitionEnabler in preview', () => {
     expect(setDismissalBoundsRect).not.toHaveBeenCalled();
   });
 });
+
+it('does not wrap the previewed screen in a SafeAreaView', async () => {
+  await renderRouter({
+    index: () => (
+      <View testID="index">
+        <HrefPreview href="/foo" />
+      </View>
+    ),
+    foo: () => <View testID="foo" />,
+  });
+
+  let node = screen.getByTestId('foo');
+  while (node.parent && node.props.testID !== 'index') {
+    node = node.parent;
+    expect(node.type).not.toBe('RNCSafeAreaView');
+  }
+});

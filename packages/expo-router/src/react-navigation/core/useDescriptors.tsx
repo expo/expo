@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { DisableAutomaticHorizontalSafeAreaInsetsProvider } from '../../views/DisableAutomaticHorizontalSafeAreaInsetsContext';
 import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
   NavigationAction,
@@ -160,11 +161,9 @@ export function useDescriptors<
         : []) as ScreenOptionsOrCallback<ScreenOptions>[]),
       // The `options` prop passed to `Screen` elements,
       screen.options,
-      // The options set via `navigation.setOptions`
-      overrides,
     ];
 
-    return optionsList.reduce<ScreenOptions>(
+    const layoutOptions = optionsList.reduce<ScreenOptions>(
       (acc, curr) =>
         Object.assign(
           acc,
@@ -173,6 +172,20 @@ export function useDescriptors<
         ),
       {} as ScreenOptions
     );
+
+    // Option types differ per navigator; these keys are read the same way for all of them.
+    const insetOptions = layoutOptions as {
+      sheetAllowedDetents?: unknown;
+      __internal__disableAutomaticHorizontalSafeAreaInsets?: boolean;
+    };
+    // A `flex: 1` wrapper breaks sheets that size to their content. Only layout options are read,
+    // so `navigation.setOptions` cannot toggle the wrapper and remount the page.
+    if (insetOptions.sheetAllowedDetents === 'fitToContents') {
+      insetOptions.__internal__disableAutomaticHorizontalSafeAreaInsets ??= true;
+    }
+
+    // The options set via `navigation.setOptions`
+    return Object.assign(layoutOptions, overrides);
   };
 
   const render = (
@@ -220,6 +233,17 @@ export function useDescriptors<
         clearOptions={clearOptions}
         emitRemovalEvent={emitRemovalEvent}
       />
+    );
+
+    // Option types differ per navigator; the internal key is the same for all of them.
+    const { __internal__disableAutomaticHorizontalSafeAreaInsets } = customOptions as {
+      __internal__disableAutomaticHorizontalSafeAreaInsets?: boolean;
+    };
+    element = (
+      <DisableAutomaticHorizontalSafeAreaInsetsProvider
+        value={__internal__disableAutomaticHorizontalSafeAreaInsets}>
+        {element}
+      </DisableAutomaticHorizontalSafeAreaInsetsProvider>
     );
 
     if (layout != null) {

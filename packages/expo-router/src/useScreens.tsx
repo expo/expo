@@ -46,6 +46,7 @@ import type { UnknownOutputParams } from './types';
 import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
+import { HorizontalSafeAreaView } from './views/HorizontalSafeAreaView';
 import { useActivityThreshold } from './views/NavigationActivityContext';
 import { NavigationAwareActivity } from './views/NavigationAwareActivity';
 import {
@@ -87,6 +88,16 @@ export type ScreenProps<
    * specifies how many screens must be above this route before its content is hidden.
    */
   activityEnabled?: TState extends { type?: 'stack' } ? boolean | number : boolean;
+
+  /**
+   * When set to `true`, this screen and screens of its nested navigators are not wrapped in a
+   * `SafeAreaView` with left and right insets. Only supported when used inside a Layout component.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
 };
 
 export type SingularOptions =
@@ -114,7 +125,16 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular, activityEnabled }) => {
+    .map((screen) => {
+      const {
+        name,
+        listeners,
+        options,
+        dangerouslySingular: singular,
+        activityEnabled,
+        disableAutomaticHorizontalSafeAreaInsets,
+      } = screen;
+      let { getId } = screen;
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -152,7 +172,13 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId, activityEnabled },
+          props: {
+            listeners,
+            options,
+            getId,
+            activityEnabled,
+            disableAutomaticHorizontalSafeAreaInsets,
+          },
           routeSource: 'layout' as const,
         };
       }
@@ -393,12 +419,17 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
-    const screenContent =
-      ScreenErrorBoundary && isRouteType ? (
-        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
-      ) : (
-        screenComponent
-      );
+    const screenContent = isRouteType ? (
+      <HorizontalSafeAreaView>
+        {ScreenErrorBoundary ? (
+          <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+        ) : (
+          screenComponent
+        )}
+      </HorizontalSafeAreaView>
+    ) : (
+      screenComponent
+    );
 
     return (
       <Route node={value} params={route?.params}>
@@ -558,7 +589,8 @@ function AnalyticsListeners({
 export function screenOptionsFactory<TOptions extends object = Record<string, any>>(
   route: RouteNode,
   options?: ScreenProps<TOptions>['options'],
-  isGuarded?: boolean
+  isGuarded?: boolean,
+  disableAutomaticHorizontalSafeAreaInsets?: boolean
 ): ScreenProps<TOptions>['options'] {
   return (args) => {
     // Only eager load generated components
@@ -568,10 +600,19 @@ export function screenOptionsFactory<TOptions extends object = Record<string, an
       typeof staticOptions === 'function' ? staticOptions(args) : staticOptions
     ) as TOptions | null | undefined;
     const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-    const output: Partial<TOptions> & { hidden?: boolean } = {
+    const output: Partial<TOptions> & {
+      hidden?: boolean;
+      __internal__disableAutomaticHorizontalSafeAreaInsets?: boolean;
+    } = {
       ...staticResult,
       ...dynamicResult,
     };
+
+    // Read only from the layout, so a page cannot toggle the wrapper and remount itself.
+    if (disableAutomaticHorizontalSafeAreaInsets !== undefined) {
+      output.__internal__disableAutomaticHorizontalSafeAreaInsets =
+        disableAutomaticHorizontalSafeAreaInsets;
+    }
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.internal || isGuarded) {
@@ -592,7 +633,12 @@ export function routeToScreen<
   TEventMap extends EventMapBase,
 >(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
+  {
+    options,
+    getId,
+    disableAutomaticHorizontalSafeAreaInsets,
+    ...props
+  }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {
@@ -603,7 +649,12 @@ export function routeToScreen<
       key={route.route}
       getId={getId}
       routeSource={routeSource}
-      options={screenOptionsFactory(route, options, isGuarded)}
+      options={screenOptionsFactory(
+        route,
+        options,
+        isGuarded,
+        disableAutomaticHorizontalSafeAreaInsets
+      )}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );

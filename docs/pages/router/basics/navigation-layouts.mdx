@@ -276,6 +276,42 @@ export default function Layout() {
 }
 ```
 
+## Horizontal safe area insets
+
+> **info** This feature is available in SDK 58 and later.
+
+On Android and iOS, Expo Router wraps each screen that does not render a navigator in a `SafeAreaView` with left and right insets. This keeps content out of the display cutout and rounded corners when the device is in landscape. Layout routes do not get the wrapper, so nested navigators do not add the insets twice.
+
+Form sheets that size to their content do not get the wrapper either, including screens of navigators nested in that sheet. Expo Router skips the wrapper when `sheetAllowedDetents: 'fitToContents'` is set in the `options` of the screen in the layout, or in the navigator `screenOptions`. If a page sets `sheetAllowedDetents: 'fitToContents'` with `Stack.Screen`, the wrapper stays. In that case, set `disableAutomaticHorizontalSafeAreaInsets` on the screen in the layout.
+
+If a screen already pads its content with `useSafeAreaInsets().left` and `useSafeAreaInsets().right`, or draws content from edge to edge (for example, a map, video, or camera), set `disableAutomaticHorizontalSafeAreaInsets` to avoid double padding or gaps at the sides.
+
+To turn off the insets for all screens of a navigator, including screens of nested navigators, set `disableAutomaticHorizontalSafeAreaInsets` on the navigator. This works on all Expo Router navigators, including `Slot`, a custom `Navigator`, and the `Tabs` component from `expo-router/ui`:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return <Stack disableAutomaticHorizontalSafeAreaInsets />;
+}
+```
+
+To turn off the insets for one screen, set `disableAutomaticHorizontalSafeAreaInsets` on its `Stack.Screen` in the layout. Set it to `false` to turn the insets on again for a screen inside a navigator that turns them off. The prop has no effect on a `Stack.Screen` rendered inside a page:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" disableAutomaticHorizontalSafeAreaInsets />
+    </Stack>
+  );
+}
+```
+
+For [native tabs](/router/advanced/native-tabs#safe-area-handling), use the `disableAutomaticHorizontalSafeAreaInsets` prop on `NativeTabs` or `NativeTabs.Trigger`.
+
 ## Other layouts
 
 These are just a few examples of common layouts to give you an idea of how it works. There's much more you can do with layout:

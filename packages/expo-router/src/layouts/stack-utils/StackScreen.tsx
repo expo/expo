@@ -62,6 +62,18 @@ export interface StackScreenProps extends PropsWithChildren {
    * Only supported when used inside a Layout component.
    */
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
+
+  /**
+   * When set to `true`, this screen and screens of its nested navigators are not wrapped in a
+   * `SafeAreaView` with left and right insets.
+   *
+   * Only supported when used inside a Layout component.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: StackBaseScreenProps['disableAutomaticHorizontalSafeAreaInsets'];
 }
 
 /**

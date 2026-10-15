@@ -15,9 +15,20 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    * @default false
    */
   activityEnabled?: boolean;
+  /**
+   * When set to `true`, screens in the split view are not wrapped in a `SafeAreaView` with left
+   * and right insets.
+   * @default false
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
 }
 
-function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {
+function SplitViewNavigator({
+  children,
+  activityEnabled,
+  disableAutomaticHorizontalSafeAreaInsets,
+  ...splitViewHostProps
+}: SplitViewProps) {
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
   }
@@ -26,7 +37,12 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
     console.warn(
       'SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.'
     );
-    return <Slot activityEnabled={activityEnabled} />;
+    return (
+      <Slot
+        activityEnabled={activityEnabled}
+        disableAutomaticHorizontalSafeAreaInsets={disableAutomaticHorizontalSafeAreaInsets}
+      />
+    );
   }
 
   const allChildrenArray = React.Children.toArray(children);
@@ -51,7 +67,12 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
 
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
-    return <Slot activityEnabled={activityEnabled} />;
+    return (
+      <Slot
+        activityEnabled={activityEnabled}
+        disableAutomaticHorizontalSafeAreaInsets={disableAutomaticHorizontalSafeAreaInsets}
+      />
+    );
   }
 
   // The key is needed, because number of columns cannot be changed dynamically
@@ -60,7 +81,10 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columnChildren}
         <Split.Column>
-          <Slot activityEnabled={activityEnabled} />
+          <Slot
+            activityEnabled={activityEnabled}
+            disableAutomaticHorizontalSafeAreaInsets={disableAutomaticHorizontalSafeAreaInsets}
+          />
         </Split.Column>
         {inspectorChildren}
       </Split.Host>

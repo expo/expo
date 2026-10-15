@@ -24,6 +24,7 @@ import {
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
+import { DisableAutomaticHorizontalSafeAreaInsetsProvider } from '../views/DisableAutomaticHorizontalSafeAreaInsetsContext';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
@@ -70,6 +71,15 @@ export type TabsProps = ViewProps & {
    * @default false
    */
   activityEnabled?: boolean;
+  /**
+   * When set to `true`, screens of this navigator and of its nested navigators are not wrapped in
+   * a `SafeAreaView` with left and right insets.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
 };
 
 /**
@@ -87,7 +97,14 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export function Tabs(props: TabsProps) {
-  const { children, asChild, options, activityEnabled, ...rest } = props;
+  const {
+    children,
+    asChild,
+    options,
+    activityEnabled,
+    disableAutomaticHorizontalSafeAreaInsets,
+    ...rest
+  } = props;
   const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -106,7 +123,12 @@ export function Tabs(props: TabsProps) {
 
   return (
     <Comp style={styles.tabsRoot} {...rest}>
-      <NavigationContent>{children}</NavigationContent>
+      <NavigationContent>
+        <DisableAutomaticHorizontalSafeAreaInsetsProvider
+          value={disableAutomaticHorizontalSafeAreaInsets}>
+          {children}
+        </DisableAutomaticHorizontalSafeAreaInsetsProvider>
+      </NavigationContent>
     </Comp>
   );
 }

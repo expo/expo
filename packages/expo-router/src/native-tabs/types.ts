@@ -346,6 +346,15 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @default false
    */
   hidden?: boolean;
+  /**
+   * When set to `true`, tab screens and screens of nested navigators are not wrapped in a
+   * `SafeAreaView` with left and right insets.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
   // #endregion common props
   // #region iOS props
   /**
@@ -712,6 +721,16 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   disableAutomaticContentInsets?: boolean;
+  /**
+   * When set to `true`, this tab and screens of its nested navigators are not wrapped in a
+   * `SafeAreaView` with left and right insets. Setting `disableAutomaticContentInsets` to `true`
+   * also turns off these insets.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
   /**
    * The style applied to the content of the tab
    *

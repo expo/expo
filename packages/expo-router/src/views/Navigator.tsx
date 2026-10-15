@@ -13,6 +13,7 @@ import { useNavigationBuilder } from '../react-navigation/native';
 import { getValidInitialRouteName } from '../routeNode';
 import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
+import { DisableAutomaticHorizontalSafeAreaInsetsProvider } from './DisableAutomaticHorizontalSafeAreaInsetsContext';
 import { Screen } from './Screen';
 import type { ErrorBoundaryProps } from './Try';
 
@@ -43,6 +44,15 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
   /** A component to render when an individual screen in this navigator throws an error. */
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * When set to `true`, screens of this navigator and of its nested navigators are not wrapped in
+   * a `SafeAreaView` with left and right insets.
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  disableAutomaticHorizontalSafeAreaInsets?: boolean;
 };
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
@@ -60,6 +70,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   router,
   routerOptions,
   unstable_screenErrorBoundary,
+  disableAutomaticHorizontalSafeAreaInsets,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
@@ -99,9 +110,12 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   }
 
   const content = (
-    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      {nonScreenChildren}
-    </GuardContextProvider>
+    <DisableAutomaticHorizontalSafeAreaInsetsProvider
+      value={disableAutomaticHorizontalSafeAreaInsets}>
+      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        {nonScreenChildren}
+      </GuardContextProvider>
+    </DisableAutomaticHorizontalSafeAreaInsetsProvider>
   );
 
   return (
@@ -194,7 +208,7 @@ export function DefaultNavigator() {
     return <RouterSlot />;
   }
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
       <RouterSlot />
     </SafeAreaView>
   );

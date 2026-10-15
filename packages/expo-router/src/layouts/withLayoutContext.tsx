@@ -14,6 +14,7 @@ import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
+import { DisableAutomaticHorizontalSafeAreaInsetsProvider } from '../views/DisableAutomaticHorizontalSafeAreaInsetsContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
@@ -52,6 +53,9 @@ export function useFilterScreenChildren<
         const options = convertTabPropsToOptions(child.props);
         screens.push({
           ...child.props,
+          ...(child.props.disableAutomaticContentInsets && {
+            disableAutomaticHorizontalSafeAreaInsets: true,
+          }),
           options: exclude ? { ...options, hidden: true } : options,
         } as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
@@ -156,7 +160,8 @@ export function withLayoutContext<
   ) => (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
 ) {
   return Object.assign(
-    forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
+    forwardRef(({ children: userDefinedChildren, ...allProps }: any, ref) => {
+      const { disableAutomaticHorizontalSafeAreaInsets, ...props } = allProps;
       const contextKey = useContextKey();
       const node = useRouteNode();
 
@@ -195,9 +200,12 @@ export function withLayoutContext<
       }
 
       return (
-        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-        </GuardContextProvider>
+        <DisableAutomaticHorizontalSafeAreaInsetsProvider
+          value={disableAutomaticHorizontalSafeAreaInsets}>
+          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          </GuardContextProvider>
+        </DisableAutomaticHorizontalSafeAreaInsetsProvider>
       );
     }),
     {
@@ -205,7 +213,18 @@ export function withLayoutContext<
       Protected,
     }
   ) as ForwardRefExoticComponent<
-    PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
+    PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> &
+      RefAttributes<unknown> & {
+        /**
+         * Turns off the `SafeAreaView` with left and right insets that wraps each screen in this
+         * navigator and in all nested navigators.
+         *
+         * @default false
+         * @platform android
+         * @platform ios
+         */
+        disableAutomaticHorizontalSafeAreaInsets?: boolean;
+      }
   > & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;

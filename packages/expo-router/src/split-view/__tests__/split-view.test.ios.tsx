@@ -123,3 +123,20 @@ it('renders a SplitView nested under a JavaScript navigator', async () => {
   expect(screen.getByTestId('Split.Host')).toBeVisible();
   expect(screen.getByTestId('child')).toBeVisible();
 });
+
+it('does not wrap screens when disableAutomaticHorizontalSafeAreaInsets is set', async () => {
+  await renderRouter({
+    _layout: () => (
+      <SplitView disableAutomaticHorizontalSafeAreaInsets>
+        <SplitView.Column />
+      </SplitView>
+    ),
+    index: () => <Text testID="child">Child</Text>,
+  });
+
+  let node = screen.getByTestId('child');
+  while (node.parent) {
+    node = node.parent;
+    expect(node.type).not.toBe('RNCSafeAreaView');
+  }
+});

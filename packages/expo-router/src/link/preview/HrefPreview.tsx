@@ -22,6 +22,7 @@ import { findRouteNodeAndParamsForState } from '../../routeNode';
 import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
+import { DisableAutomaticHorizontalSafeAreaInsetsContext } from '../../views/DisableAutomaticHorizontalSafeAreaInsetsContext';
 import { getStateForHref } from '../getStateForHref';
 import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
@@ -116,8 +117,11 @@ function PreviewForRootHrefState({
         <NavigationContext value={navigationPropWithWarnings}>
           {/* `getQualifiedRouteComponent` returns a cached component per route node,
               so the identity is stable across renders. */}
-          {/* oxlint-disable-next-line react/static-components */}
-          <Component navigation={navigation} />
+          {/* Previews are not at the screen edges. */}
+          <DisableAutomaticHorizontalSafeAreaInsetsContext value>
+            {/* oxlint-disable-next-line react/static-components */}
+            <Component navigation={navigation} />
+          </DisableAutomaticHorizontalSafeAreaInsetsContext>
         </NavigationContext>
       </CompositionContext>
     </PreviewRouteContext>
