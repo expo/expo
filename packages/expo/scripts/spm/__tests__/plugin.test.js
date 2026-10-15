@@ -1203,11 +1203,13 @@ describe('where precompiled modules and headers come from', () => {
         `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
       );
       expect(thrown.message).not.toContain('but ExpoModulesCore comes from');
-      expect(thrown.message).toContain(prebuildCoreHint);
       expect(thrown.message).toContain('`npx react-native spm update`');
+      // The prebuild writes to the monorepo output, never to EXPO_PRECOMPILED_MODULES_PATH.
       if (coreKind === 'env') {
-        expect(thrown.message).toContain('unset EXPO_PRECOMPILED_MODULES_PATH');
+        expect(thrown.message).toContain('Unset EXPO_PRECOMPILED_MODULES_PATH');
+        expect(thrown.message).not.toContain(prebuildCoreHint);
       } else {
+        expect(thrown.message).toContain(prebuildCoreHint);
         expect(thrown.message).not.toContain('EXPO_PRECOMPILED_MODULES_PATH');
       }
       expect(emitDirectPackage).not.toHaveBeenCalled();
