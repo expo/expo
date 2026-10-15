@@ -85,9 +85,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       handleLocationUpdate(result.locations)
     } else {
       try {
-        mLocationClient.lastLocation.addOnCompleteListener { task ->
-          task.result?.let { handleLocationUpdate(listOf(it)) }
-        }
+        mLocationClient.lastLocation
+          .addOnSuccessListener { location: Location? ->
+            location?.let { handleLocationUpdate(listOf(it)) }
+          }
+          .addOnFailureListener {
+            Log.e(TAG, "Cannot get last location: " + it.message)
+          }
       } catch (e: SecurityException) {
         Log.e(TAG, "Cannot get last location: " + e.message)
       }
