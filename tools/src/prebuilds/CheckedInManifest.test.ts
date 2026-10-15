@@ -8,6 +8,7 @@ import { afterEach, it, type TestContext } from 'node:test';
 import { getExpoRepositoryRootDir } from '../Directories';
 import {
   isFirstPartyPackagePath,
+  resolveCheckedInHeaderDirectoriesAsync,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
@@ -1264,6 +1265,81 @@ it('prefixes implicit C public headers and builds through the source symlink', a
   assert.match(
     execFileSync('swift', ['build', ...options], { encoding: 'utf8', env }),
     /Build complete!/
+  );
+});
+
+function cFixture(publicHeadersPath?: string, files: Record<string, string> = {}) {
+  const declaration =
+    publicHeadersPath == null ? '' : `, publicHeadersPath: "${publicHeadersPath}"`;
+  const input = fixture(`.target(name: "Main", path: "native"${declaration})`, {
+    'native/Thing.c': 'int thing(void) { return 1; }',
+    ...files,
+  });
+  input.product.targets[0].type = 'objc';
+  (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
+  return input;
+}
+
+it('header directories: maps a C target to its public headers directory in the sources', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  assert.deepEqual(
+    await resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    new Map([['Main', fs.realpathSync.native(path.join(input.root, 'native/headers'))]])
+  );
+});
+
+it('header directories: rejects a C target with no publicHeadersPath and no include/ directory', async () => {
+  const input = cFixture();
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/include');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /does not exist, so Package\.swift declares no public headers .* Set publicHeadersPath on target "Main" in Package\.swift .*or add an include\/ directory/,
+        'Main'
+      );
+      assert.ok(
+        error.message.includes(`public headers directory ${missingPath} does not exist`),
+        error.message
+      );
+      return true;
+    }
+  );
+});
+
+it('header directories: rejects a C target whose declared publicHeadersPath is missing', async () => {
+  const input = cFixture('headers/');
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/headers');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(error, / or fix publicHeadersPath on target "Main"/, 'Main');
+      assert.ok(
+        error.message.includes(
+          `the publicHeadersPath "headers" declared in Package.swift does not exist at ${missingPath}`
+        ),
+        error.message
+      );
+      assert.doesNotMatch(error.message, /declares no public headers|include\//);
+      return true;
+    }
+  );
+});
+
+it('header directories: rejects a C target whose public headers spm.config.json disables', async () => {
+  const input = cFixture(undefined, { 'native/include/Thing.h': 'int thing(void);' });
+  (input.product.targets[0] as SourceTarget).publicHeaders = false;
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /spm\.config\.json sets "publicHeaders": false for this target, .* Remove "publicHeaders": false /,
+        'Main'
+      );
+      return true;
+    }
   );
 });
 

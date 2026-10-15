@@ -58,6 +58,7 @@ type DumpedManifest = {
 const SOURCE_EXTENSIONS = /\.(swift|m|mm|c|cc|cpp|cxx|s)$/i;
 const CPP_EXTENSIONS = /\.(mm|cc|cpp|cxx)$/i;
 const PREDEFINED_SOURCE_DIRS = ['Sources', 'Source', 'src', 'srcs'];
+const DEFAULT_PUBLIC_HEADERS_PATH = 'src/include';
 
 /**
  * Whether `packagePath` is a first-party package directory: one level under the repository
@@ -167,6 +168,51 @@ function manifestError(product: string, target: string, what: string, how: strin
   );
 }
 
+/**
+ * PROTOTYPE: a manifest built directly in an app reaches Expo and React Native headers through
+ * local packages that autolinking writes next to its `direct/` symlink, so their `.package(path:)`
+ * locations do not resolve from the package directory. et prebuild already provides the same
+ * modules as spm.config.json dependencies, so each stand-in product becomes a by-name dependency
+ * on that config name, which the reachability check then requires the config to declare.
+ * Keyed by package identity, then product name.
+ */
+const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
+  expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
+  xcframeworks: { ReactHeaders: 'React' },
+};
+
+function substituteDirectBuildStandIns(manifest: DumpedManifest): DumpedManifest {
+  const standInIdentity = (dependency: unknown) => {
+    const entry = isRecord(dependency) ? sole(dependency.fileSystem) : undefined;
+    const identity = isRecord(entry) ? entry.identity : undefined;
+    return typeof identity === 'string' && Object.hasOwn(DIRECT_BUILD_STAND_INS, identity)
+      ? identity
+      : null;
+  };
+  const substitute = (dependency: DumpedDependency): DumpedDependency => {
+    const [productName, packageName] = dependency.product ?? [];
+    const configName =
+      packageName != null && productName != null
+        ? DIRECT_BUILD_STAND_INS[packageName.toLowerCase()]?.[productName]
+        : undefined;
+    return configName ? { byName: [configName, dependency.product?.[3] ?? null] } : dependency;
+  };
+  // Shapes other than lists pass through untouched, so the later checks still report them.
+  return {
+    ...manifest,
+    dependencies: Array.isArray(manifest.dependencies)
+      ? manifest.dependencies.filter((dependency) => !standInIdentity(dependency))
+      : manifest.dependencies,
+    targets: Array.isArray(manifest.targets)
+      ? manifest.targets.map((target) =>
+          Array.isArray(target.dependencies)
+            ? { ...target, dependencies: target.dependencies.map(substitute) }
+            : target
+        )
+      : manifest.targets,
+  };
+}
+
 function dependencyName(dependency: DumpedDependency): string | null {
   return dependency.byName?.[0] ?? dependency.target?.[0] ?? dependency.product?.[0] ?? null;
 }
@@ -256,13 +302,7 @@ const PACKAGE_KEYS: DumpedKeyRules = {
       `the manifest declares default localization ${JSON.stringify(value)}, which the generated target cannot represent.`,
     how: 'Remove the localization, or remove Package.swift to build this product from spm.config.json instead.',
   },
-  swiftLanguageVersions: {
-    default: null,
-    what: declares(
-      'but et prebuild does not apply the Swift language modes in Package.swift. It builds with swiftLanguageVersions of the product in spm.config.json.'
-    ),
-    how: 'Remove swiftLanguageModes or swiftLanguageVersions from the Package(...) call in Package.swift, and set swiftLanguageVersions on the product in spm.config.json instead.',
-  },
+  swiftLanguageVersions: 'supported',
   cLanguageStandard: {
     default: null,
     what: declares(
@@ -415,16 +455,85 @@ function checkDumpedCase(
   if (kind != null && Object.hasOwn(cases, kind)) checkDumpedKeys(object, cases, owner, fail);
 }
 
+/** PROTOTYPE: a directly built manifest must load the ExpoModules macro plugin itself, through
+ * `.unsafeFlags(["-Xfrontend", "-load-plugin-executable", "-Xfrontend", "<dir>/ExpoModulesMacros#ExpoModulesMacros"])`.
+ * The generated manifest already adds that flag to every Swift target that depends on
+ * ExpoModulesCore, and a target that does not cannot use the macros, so the setting is dropped
+ * rather than rejected. Any other setting is still rejected. */
+function withoutMacroPluginLoad(target: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(target.settings)) return target;
+  const isMacroPluginLoad = (setting: unknown) => {
+    if (!isRecord(setting) || setting.tool !== 'swift' || setting.condition != null) return false;
+    const unsafeFlags = isRecord(setting.kind) ? setting.kind.unsafeFlags : undefined;
+    const flags = isRecord(unsafeFlags) ? unsafeFlags._0 : undefined;
+    return (
+      Array.isArray(flags) &&
+      flags.length === 4 &&
+      flags[0] === '-Xfrontend' &&
+      flags[1] === '-load-plugin-executable' &&
+      flags[2] === '-Xfrontend' &&
+      typeof flags[3] === 'string' &&
+      flags[3].endsWith('/ExpoModulesMacros#ExpoModulesMacros')
+    );
+  };
+  return { ...target, settings: target.settings.filter((setting) => !isMacroPluginLoad(setting)) };
+}
+
+/** SwiftPM dumps `.v5` as "5" and `.version("6.0")` as "6.0", so trailing zero components are
+ * dropped before comparing. */
+function normalizeLanguageModes(modes: readonly string[]): string[] {
+  return modes.map((mode) => mode.replace(/(\.0)+$/, '')).sort();
+}
+
+/** et prebuild compiles with the product's swiftLanguageVersions from spm.config.json, so the
+ * manifest must declare the same language modes, or neither may declare any, which keeps a direct
+ * build of Package.swift and the prebuilt framework in the same language mode. */
+function assertSwiftLanguageModes(
+  declared: unknown,
+  configured: readonly string[] | undefined,
+  packageName: string,
+  productName: string,
+  fail: ManifestError
+): void {
+  if (declared == null) {
+    if (!configured?.length) return;
+    throw fail(
+      `package "${packageName}" declares no swiftLanguageModes, but product "${productName}" in spm.config.json sets swiftLanguageVersions ${JSON.stringify(configured)}, so a direct build of Package.swift would compile in the default language mode of its tools version while the prebuilt framework compiles in the configured one.`,
+      'Add swiftLanguageModes with the same versions to the Package(...) call in Package.swift.'
+    );
+  }
+  const subject = `package "${packageName}" declares swiftLanguageVersions ${JSON.stringify(declared)}, `;
+  if (!configured?.length) {
+    throw fail(
+      `${subject}but product "${productName}" in spm.config.json sets no swiftLanguageVersions, so the prebuilt framework would compile in the default language mode of the tools version instead.`,
+      `Set swiftLanguageVersions on product "${productName}" in spm.config.json to the same versions, or remove swiftLanguageModes from the Package(...) call in Package.swift.`
+    );
+  }
+  const readable =
+    Array.isArray(declared) && declared.length > 0 && declared.every(isNonEmptyString);
+  if (
+    !readable ||
+    !isDeepStrictEqual(normalizeLanguageModes(declared), normalizeLanguageModes(configured))
+  ) {
+    throw fail(
+      `${subject}but product "${productName}" in spm.config.json sets swiftLanguageVersions ${JSON.stringify(configured)}, and et prebuild builds with the spm.config.json value, so the prebuilt framework would compile in a different language mode than a direct build of Package.swift.`,
+      'Set the same versions in both places; "5" and "5.0" count as equal.'
+    );
+  }
+}
+
 /**
  * Rejects each dumped key that et prebuild would otherwise ignore: a key it does not know, and a
  * known key whose value differs from what SwiftPM dumps when the manifest leaves it out. Checks
  * the package, its library product `productName`, the targets in `reachedTargets`, and the
- * package dependencies. The values of supported keys are checked where they are read.
+ * package dependencies. The values of supported keys are checked where they are read, except the
+ * language modes, which must equal `configuredSwiftLanguageVersions`.
  */
 export function assertCheckedInManifestKeys(
   manifest: Record<string, unknown>,
   productName: string,
-  reachedTargets: ReadonlySet<string>
+  reachedTargets: ReadonlySet<string>,
+  configuredSwiftLanguageVersions?: readonly string[]
 ): void {
   const libraryProduct = records(manifest.products).find(
     (candidate) =>
@@ -441,6 +550,13 @@ export function assertCheckedInManifestKeys(
     { kind: 'package', name: String(manifest.name) },
     packageError
   );
+  assertSwiftLanguageModes(
+    manifest.swiftLanguageVersions,
+    configuredSwiftLanguageVersions,
+    String(manifest.name),
+    productName,
+    packageError
+  );
   if (libraryProduct) {
     checkDumpedKeys(
       libraryProduct,
@@ -453,8 +569,11 @@ export function assertCheckedInManifestKeys(
   for (const name of reachedTargets) {
     const target = targetsByName.get(name);
     if (!target) continue;
-    checkDumpedKeys(target, TARGET_KEYS, { kind: 'target', name }, (what, how) =>
-      manifestError(productName, name, what, how)
+    checkDumpedKeys(
+      withoutMacroPluginLoad(target),
+      TARGET_KEYS,
+      { kind: 'target', name },
+      (what, how) => manifestError(productName, name, what, how)
     );
   }
   for (const dependency of records(manifest.dependencies)) {
@@ -852,7 +971,7 @@ export async function resolveCheckedInManifestAsync(
 
   let manifest: DumpedManifest;
   try {
-    manifest = await dumpManifest(root);
+    manifest = substituteDirectBuildStandIns(await dumpManifest(root));
   } catch (error) {
     throw manifestError(
       product.name,
@@ -930,7 +1049,7 @@ export async function resolveCheckedInManifestAsync(
     }
   }
 
-  assertCheckedInManifestKeys(manifest, product.name, reachable);
+  assertCheckedInManifestKeys(manifest, product.name, reachable, product.swiftLanguageVersions);
 
   const packagesTargetName =
     libraryProduct.targets?.[0] ??
@@ -1160,9 +1279,62 @@ export async function resolveCheckedInManifestAsync(
       resources,
       publicHeadersPath:
         (language === 'objc' || language === 'cpp') && config?.publicHeaders !== false
-          ? (prefixedHeaders ?? 'src/include')
+          ? (prefixedHeaders ?? DEFAULT_PUBLIC_HEADERS_PATH)
           : undefined,
     });
   }
   return result;
+}
+
+/**
+ * PROTOTYPE: a target built from a checked-in Package.swift has no generated include directory;
+ * its headers stay in its sources. Returns the public headers directory of each ObjC and C++
+ * target of `product`, keyed by target name, or an empty map when `pkg` has no checked-in manifest.
+ * Throws for a target without one, because et prebuild composes the framework's module headers
+ * from that directory.
+ */
+export async function resolveCheckedInHeaderDirectoriesAsync(
+  pkg: SPMPackageSource,
+  product: SPMProduct
+): Promise<Map<string, string>> {
+  const root = resolveCheckedInManifestRoot(pkg);
+  if (root == null) return new Map();
+  const targets = await resolveCheckedInManifestAsync(
+    root,
+    product,
+    getSiblingProductNames(pkg, product)
+  );
+  const directories = new Map<string, string>();
+  for (const target of targets) {
+    if (target.type === 'swift') continue;
+    if (target.publicHeadersPath == null) {
+      throw manifestError(
+        product.name,
+        target.name,
+        'spm.config.json sets "publicHeaders": false for this target, so the generated package declares no public headers directory for it, and et prebuild cannot build the module headers of the framework without one.',
+        'Remove "publicHeaders": false from this target in spm.config.json, or remove Package.swift to build this product from spm.config.json instead.'
+      );
+    }
+    const declared = path.relative('src', target.publicHeadersPath);
+    const directory = path.join(target.sourceRoot, declared);
+    if (!(await fs.stat(directory).catch(() => null))?.isDirectory()) {
+      // A manifest that spells out publicHeadersPath: "include" resolves to the default too, and
+      // the default's advice (add include/) fits it as well.
+      throw target.publicHeadersPath === DEFAULT_PUBLIC_HEADERS_PATH
+        ? manifestError(
+            product.name,
+            target.name,
+            `its public headers directory ${directory} does not exist, so Package.swift declares no public headers for this target, and et prebuild cannot build the module headers of the framework without them.`,
+            `Set publicHeadersPath on target "${target.name}" in Package.swift to the directory that holds its public headers, or add an include/ directory to the target.`
+          )
+        : manifestError(
+            product.name,
+            target.name,
+            `the publicHeadersPath "${declared}" declared in Package.swift does not exist at ${directory}, and et prebuild builds the module headers of the framework from that directory.`,
+            `Add that directory with the public headers of the target, or fix publicHeadersPath on target "${target.name}" in Package.swift.`
+          );
+    }
+    directories.set(target.name, directory);
+  }
+  return directories;
 }

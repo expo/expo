@@ -181,6 +181,51 @@ for (const { object, key, fallback, nonDefault, hint } of DEFAULTS) {
   }
 }
 
+it('dumped keys: accepts language modes that match spm.config.json', () => {
+  const manifest = dump();
+  manifest.swiftLanguageVersions = ['5', '6'];
+  assertCheckedInManifestKeys(manifest, 'ExpoHaptics', new Set(['ExpoHaptics']), ['6.0', '5']);
+});
+
+for (const [label, absent] of [
+  ['absent', undefined],
+  ['null', null],
+] as const) {
+  it(`dumped keys: rejects ${label} language modes when spm.config.json sets swiftLanguageVersions`, () => {
+    const manifest = dump();
+    manifest.swiftLanguageVersions = absent;
+    assert.throws(
+      () => assertCheckedInManifestKeys(manifest, 'ExpoHaptics', new Set(['ExpoHaptics']), ['5']),
+      (error: Error) => {
+        assert.ok(error.message.startsWith(PREFIX), error.message);
+        assert.match(
+          error.message,
+          /: package "fixture" declares no swiftLanguageModes, but product "ExpoHaptics" in spm\.config\.json sets swiftLanguageVersions \["5"\], .*language mode/
+        );
+        assert.match(error.message, / Add swiftLanguageModes .* Package\.swift/);
+        assert.match(error.message, NEXT_STEP);
+        return true;
+      }
+    );
+  });
+}
+
+it('dumped keys: accepts no language modes when spm.config.json sets none either', () => {
+  const manifest = dump();
+  delete manifest.swiftLanguageVersions;
+  assertCheckedInManifestKeys(manifest, 'ExpoHaptics', new Set(['ExpoHaptics']), []);
+  check(manifest);
+});
+
+it('dumped keys: rejects language modes that differ from spm.config.json', () => {
+  const manifest = dump();
+  manifest.swiftLanguageVersions = ['5'];
+  assert.throws(
+    () => assertCheckedInManifestKeys(manifest, 'ExpoHaptics', new Set(['ExpoHaptics']), ['6.0']),
+    /declares swiftLanguageVersions \["5"\], but product "ExpoHaptics" in spm\.config\.json sets swiftLanguageVersions \["6\.0"\]/
+  );
+});
+
 for (const [object, { label, select }] of Object.entries(OBJECTS)) {
   for (const key of ['futureKey', 'constructor', 'toString', '__proto__']) {
     it(`dumped keys: rejects unknown ${object} key ${key}`, () => {
