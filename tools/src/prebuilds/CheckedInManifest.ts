@@ -168,51 +168,6 @@ function manifestError(product: string, target: string, what: string, how: strin
   );
 }
 
-/**
- * PROTOTYPE: a manifest built directly in an app reaches Expo and React Native headers through
- * local packages that autolinking writes next to its `direct/` symlink, so their `.package(path:)`
- * locations do not resolve from the package directory. et prebuild already provides the same
- * modules as spm.config.json dependencies, so each stand-in product becomes a by-name dependency
- * on that config name, which the reachability check then requires the config to declare.
- * Keyed by package identity, then product name.
- */
-const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
-  expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
-  xcframeworks: { ReactHeaders: 'React' },
-};
-
-function substituteDirectBuildStandIns(manifest: DumpedManifest): DumpedManifest {
-  const standInIdentity = (dependency: unknown) => {
-    const entry = isRecord(dependency) ? sole(dependency.fileSystem) : undefined;
-    const identity = isRecord(entry) ? entry.identity : undefined;
-    return typeof identity === 'string' && Object.hasOwn(DIRECT_BUILD_STAND_INS, identity)
-      ? identity
-      : null;
-  };
-  const substitute = (dependency: DumpedDependency): DumpedDependency => {
-    const [productName, packageName] = dependency.product ?? [];
-    const configName =
-      packageName != null && productName != null
-        ? DIRECT_BUILD_STAND_INS[packageName.toLowerCase()]?.[productName]
-        : undefined;
-    return configName ? { byName: [configName, dependency.product?.[3] ?? null] } : dependency;
-  };
-  // Shapes other than lists pass through untouched, so the later checks still report them.
-  return {
-    ...manifest,
-    dependencies: Array.isArray(manifest.dependencies)
-      ? manifest.dependencies.filter((dependency) => !standInIdentity(dependency))
-      : manifest.dependencies,
-    targets: Array.isArray(manifest.targets)
-      ? manifest.targets.map((target) =>
-          Array.isArray(target.dependencies)
-            ? { ...target, dependencies: target.dependencies.map(substitute) }
-            : target
-        )
-      : manifest.targets,
-  };
-}
-
 function dependencyName(dependency: DumpedDependency): string | null {
   return dependency.byName?.[0] ?? dependency.target?.[0] ?? dependency.product?.[0] ?? null;
 }
@@ -971,7 +926,7 @@ export async function resolveCheckedInManifestAsync(
 
   let manifest: DumpedManifest;
   try {
-    manifest = substituteDirectBuildStandIns(await dumpManifest(root));
+    manifest = await dumpManifest(root);
   } catch (error) {
     throw manifestError(
       product.name,
