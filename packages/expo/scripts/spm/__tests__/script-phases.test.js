@@ -1,7 +1,8 @@
 'use strict';
 
-const { execFileSync } = require('child_process');
+const { execFileSync, spawnSync } = require('child_process');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const { scriptPhasesForModules } = require('../script-phases');
@@ -104,6 +105,54 @@ describe('the ExpoModulesJSI build phase', () => {
 
   describe('launcher', () => {
     const { script } = jsiPhase(['expo-modules-jsi']) ?? { script: '' };
+    let tmp;
+    let srcRoot;
+    let rnDir;
+    let jsiDir;
+
+    // pnpm layout: expo-modules-jsi is reachable only from expo-modules-core's real
+    // location in the store, not from the app root.
+    beforeEach(() => {
+      tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-jsi-launcher-')));
+      const app = path.join(tmp, 'app');
+      const store = path.join(app, 'node_modules', '.pnpm', 'expo-modules-core', 'node_modules');
+      const writePackage = (dir, name) => {
+        fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name }));
+        return dir;
+      };
+      srcRoot = path.join(app, 'ios');
+      fs.mkdirSync(srcRoot, { recursive: true });
+      rnDir = writePackage(path.join(app, 'node_modules', 'react-native'), 'react-native');
+      const expoDir = writePackage(path.join(app, 'node_modules', 'expo'), 'expo');
+      const coreDir = writePackage(path.join(store, 'expo-modules-core'), 'expo-modules-core');
+      fs.mkdirSync(path.join(expoDir, 'node_modules'));
+      fs.symlinkSync(coreDir, path.join(expoDir, 'node_modules', 'expo-modules-core'));
+      jsiDir = writePackage(path.join(store, 'expo-modules-jsi'), 'expo-modules-jsi');
+      const stub = path.join(jsiDir, PACKAGE_SCRIPT);
+      fs.mkdirSync(path.dirname(stub), { recursive: true });
+      // Not executable, as after a publish that drops the mode bit.
+      fs.writeFileSync(stub, 'echo "RN_DIR=$RN_DIR"\necho "SCRIPT=$0"\n', { mode: 0o644 });
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    });
+
+    const runLauncher = (env) =>
+      spawnSync('bash', ['-c', script], {
+        // Xcode runs the phase from the project folder. Inside packages/expo, node would
+        // resolve `expo` to this package itself.
+        cwd: srcRoot,
+        encoding: 'utf8',
+        env: {
+          HOME: tmp,
+          PATH: process.env.PATH,
+          SRCROOT: srcRoot,
+          NODE_BINARY: process.execPath,
+          ...env,
+        },
+      });
 
     it('is valid bash with no host-specific path baked in', () => {
       execFileSync('bash', ['-n'], { input: script });
@@ -112,24 +161,34 @@ describe('the ExpoModulesJSI build phase', () => {
       expect(script).not.toMatch(/SPIKE/i);
     });
 
-    // Under pnpm, expo-modules-jsi is not reachable from the app root.
-    it('resolves expo-modules-jsi through expo and expo-modules-core', () => {
-      expect(script).toContain('dir("expo-modules-core", dir("expo", root))');
-      expect(script).toContain('dir("expo-modules-jsi", core)');
-      expect(script).toContain('dir("react-native", root)');
+    it('runs the package script with RN_DIR set, even without its executable bit', () => {
+      const result = runLauncher();
+      expect(result.stderr).toBe('');
+      expect(result.status).toBe(0);
+      expect(result.stdout).toContain(`RN_DIR=${fs.realpathSync(rnDir)}\n`);
+      expect(result.stdout).toContain(`SCRIPT=${path.join(jsiDir, PACKAGE_SCRIPT)}\n`);
     });
 
-    it('execs the build script shipped in expo-modules-jsi', () => {
-      expect(script).toContain(`exec "$JSI_DIR/${PACKAGE_SCRIPT}"`);
-      expect(script).toContain(`[ ! -f "$JSI_DIR/${PACKAGE_SCRIPT}" ]`);
-      expect(script).toMatch(/export [^\n]*RN_DIR/);
+    it('fails with a clear error when expo-modules-jsi has no package script', () => {
+      fs.rmSync(path.join(jsiDir, PACKAGE_SCRIPT));
+      const result = runLauncher();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain(`has no ${PACKAGE_SCRIPT}`);
     });
 
-    it('leaves the build steps to the package script', () => {
-      expect(script).not.toContain('rsync');
-      expect(script).not.toContain('stage_link');
-      expect(script).not.toContain('codesign');
-      expect(script).not.toContain('build-xcframework.sh');
+    it('fails with a clear error when expo-modules-jsi cannot be resolved', () => {
+      fs.rmSync(jsiDir, { recursive: true });
+      const result = runLauncher();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('could not be resolved');
+    });
+
+    const nodeOnSystemPath = ['/usr/bin/node', '/bin/node'].some((p) => fs.existsSync(p));
+    // Skipped where node is installed in /usr/bin or /bin: the case cannot be set up there.
+    (nodeOnSystemPath ? it.skip : it)('fails with a clear error when node is not found', () => {
+      const result = runLauncher({ PATH: '/usr/bin:/bin', NODE_BINARY: undefined });
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('node was not found');
     });
   });
 
@@ -137,6 +196,57 @@ describe('the ExpoModulesJSI build phase', () => {
     it('ships in expo-modules-jsi as an executable bash script', () => {
       fs.accessSync(PACKAGE_SCRIPT_PATH, fs.constants.X_OK);
       execFileSync('bash', ['-n', PACKAGE_SCRIPT_PATH]);
+    });
+
+    // pnpm publish drops the executable bit from every file not listed here.
+    it('keeps its executable bit when expo-modules-jsi is published', () => {
+      const packageJson = JSON.parse(
+        fs.readFileSync(path.join(PACKAGE_SCRIPT_PATH, '..', '..', '..', 'package.json'), 'utf8')
+      );
+      expect(packageJson.publishConfig.executableFiles).toContain(`./${PACKAGE_SCRIPT}`);
+    });
+
+    describe('when run', () => {
+      let tmp;
+
+      beforeEach(() => {
+        tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-jsi-phase-'));
+      });
+
+      afterEach(() => {
+        fs.rmSync(tmp, { recursive: true, force: true });
+      });
+
+      const runPackageScript = (env) =>
+        spawnSync('bash', [PACKAGE_SCRIPT_PATH], {
+          encoding: 'utf8',
+          env: { PATH: process.env.PATH, RN_DIR: tmp, ...env },
+        });
+
+      it('rejects a missing platform with a clear error', () => {
+        const result = runPackageScript();
+        expect(result.status).not.toBe(0);
+        expect(result.stderr).toContain('cannot be built for the platform');
+        expect(result.stderr).not.toContain('unbound variable');
+      });
+
+      it("reads React Native's headers from the slice being built", () => {
+        const reactHeaders = path.join(
+          tmp,
+          'build/xcframeworks/ReactNativeHeaders.xcframework/ios-arm64_x86_64-simulator/Headers'
+        );
+        fs.mkdirSync(path.join(reactHeaders, 'hermes'), { recursive: true });
+        fs.writeFileSync(path.join(reactHeaders, 'hermes', 'hermes.h'), '');
+        const result = runPackageScript({
+          PLATFORM_NAME: 'iphonesimulator',
+          SRCROOT: tmp,
+          OBJROOT: path.join(tmp, 'obj'),
+        });
+        expect(result.status).not.toBe(0);
+        expect(result.stderr).toContain(
+          'ReactNativeDependenciesHeaders.xcframework/ios-arm64_x86_64-simulator/Headers/folly is missing'
+        );
+      });
     });
 
     it('builds, copies, embeds and signs the framework', () => {

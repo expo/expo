@@ -47,6 +47,7 @@
   },
   "publishConfig": {
     "executableFiles": [
+      "./apple/scripts/build-swiftpm-app-phase.sh",
       "./apple/scripts/build-xcframework.sh",
       "./apple/scripts/create-stub-xcframework.sh",
       "./apple/scripts/generate-modulemap.sh",
