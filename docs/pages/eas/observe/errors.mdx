@@ -144,19 +144,19 @@ To store a source map for each build, set `uploadSourceMaps` to `true` in the bu
 
 With this setting, EAS Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
 
-> **Note**: Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
+> **info** Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
 
 The source code embedded in the source map (`sourcesContent`) is removed before upload. Only file names and position mappings are stored. If the upload fails, the build still completes and shows a warning in the build logs.
 
 ### Upload source maps with EAS Update
+
+> **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
 
 To store source maps for an update, pass `--upload-source-maps` to `eas update` command:
 
 <Terminal cmd={['$ eas update --upload-source-maps']} />
 
 With this flag, EAS CLI uploads the Android and iOS source maps produced when your update's JavaScript is bundled, so JavaScript stack traces from that update are symbolicated.
-
-> **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
 
 ### Native stack traces
 
