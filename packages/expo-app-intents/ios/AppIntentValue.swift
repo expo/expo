@@ -48,11 +48,7 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     self = .bool(value)
   }
 
-  /// Converts a value that came from JavaScript through Foundation, such as the value a background
-  /// task resolved with, by encoding it as JSON and decoding it like persisted params. So booleans stay
-  /// booleans and integral numbers become `.int`. JSON cannot hold NaN or infinity, so NaN becomes `.null`
-  /// and infinity the largest finite double of the same sign. Throws for a Foundation type that JSON
-  /// cannot represent.
+  /// Converts a Foundation value from JavaScript through JSON, with NaN as `.null` and infinity as the max double.
   init(foundationValue value: Any?) throws {
     // Wrapped in an array, because JSONSerialization only accepts an array or a dictionary at the top.
     var wrapped: [Any] = [value ?? NSNull()]
