@@ -480,4 +480,11 @@ describe('composeStep', appleToolsOnly, () => {
       headersWritten: true,
     });
   });
+
+  it('writes no headers xcframework for a product that did not opt in', async () => {
+    assert.deepEqual(await composeAsync({}), {
+      composeXCFrameworkCalls: 1,
+      headersWritten: false,
+    });
+  });
 });

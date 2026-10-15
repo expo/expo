@@ -34,7 +34,7 @@ function getFlavors(product) {
     throw new Error(
       `${product.name} has a customBuild, and a custom-build product publishes only its headers ` +
         'XCFramework, so it needs "headersXCFramework": true in spm.config.json. Set it, or ' +
-        'remove "publishPrebuilds" from spm.config.json.'
+        'remove "publishPrebuilds" to stop publishing prebuilds for this package.'
     );
   }
   return headers;

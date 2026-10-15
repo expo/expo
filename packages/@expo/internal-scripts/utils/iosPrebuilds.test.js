@@ -196,7 +196,7 @@ test('a customBuild product that publishes prebuilds requires headersXCFramework
   const message =
     'ExpoCustom has a customBuild, and a custom-build product publishes only its headers ' +
     'XCFramework, so it needs "headersXCFramework": true in spm.config.json. Set it, or remove ' +
-    '"publishPrebuilds" from spm.config.json.';
+    '"publishPrebuilds" to stop publishing prebuilds for this package.';
   assert.throws(() => validateRawIosPrebuilds(root), { message });
   assert.throws(() => stageIosPrebuilds(root), { message });
   assert.throws(() => validatePublishedIosPrebuilds(root), { message });
