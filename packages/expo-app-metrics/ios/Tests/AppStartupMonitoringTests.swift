@@ -122,4 +122,31 @@ struct AppStartupMonitoringTests {
     // Device params come from the OS, not the user-supplied string.
     #expect(params["expo.device.lowPowerMode"] is Bool)
   }
+
+  @Test
+  func `skips startup metrics when the app is launched in the background`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+
+    monitoring.markDidFinishLaunching(launchedInBackground: true)
+    monitoring.markFirstRender()
+    monitoring.markInteractive()
+
+    // Give the dispatched tasks a chance to run before asserting nothing was reported.
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(monitoring.startupState == .interrupted)
+    #expect(receiver.metrics.isEmpty)
+  }
+
+  @Test
+  func `reports startup metrics when the app is launched in the foreground`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+
+    monitoring.markDidFinishLaunching(launchedInBackground: false)
+    monitoring.markInteractive()
+
+    _ = try await ttiMetric(from: receiver)
+    #expect(monitoring.startupState == .launched)
+  }
 }

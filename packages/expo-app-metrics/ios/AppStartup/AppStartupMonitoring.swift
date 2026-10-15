@@ -34,7 +34,10 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  nonisolated func markDidFinishLaunching() {
+  /// - Parameter launchedInBackground: Whether the system launched the app in the background, for example
+  ///   for a background fetch or a silent push notification. Such launches are interrupted right away,
+  ///   otherwise TTR and TTI would include the whole time until the user opens the app.
+  nonisolated func markDidFinishLaunching(launchedInBackground: Bool) {
     // App has finished loading – save the current app launch state
     AppMetricsUserDefaults.lastAppLaunchState = appLaunchState
 
@@ -46,6 +49,10 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
+        return
+      }
+      if launchedInBackground {
+        startupState = .interrupted
         return
       }
       markers.finishedLaunching = currentTime
