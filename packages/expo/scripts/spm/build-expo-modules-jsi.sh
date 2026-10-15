@@ -99,6 +99,8 @@ FRAMEWORK="$JSI_ROOT/custom-build/Products/ExpoModulesJSI.xcframework/$SLICE/Exp
 /usr/bin/rsync -a --delete "$FRAMEWORK/" "$BUILT_PRODUCTS_DIR/ExpoModulesJSI.framework/"
 
 EMBEDDED="$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/ExpoModulesJSI.framework"
+# rsync creates only the last path component, and this phase can run before Xcode creates Frameworks/.
+mkdir -p "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH"
 /usr/bin/rsync -a --delete "$FRAMEWORK/" "$EMBEDDED/"
 if [ "${CODE_SIGNING_ALLOWED:-YES}" != "NO" ]; then
   /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY:--}" --timestamp=none \
