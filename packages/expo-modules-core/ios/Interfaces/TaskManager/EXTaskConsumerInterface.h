@@ -46,7 +46,8 @@
 - (void)didBecomeReadyToExecuteWithData:(nullable NSDictionary *)data;
 
 /**
- *  Called right after the task has been unregistered.
+ *  Called right after the task has been unregistered, and when a task of another consumer class
+ *  replaces it.
  */
 - (void)didUnregister;
 
