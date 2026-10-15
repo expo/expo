@@ -1,10 +1,9 @@
-// Installs the expo global on web
-import './polyfill';
+import { installExpoGlobalPolyfill } from './polyfill/dangerous-internal';
 
 /**
  * Ensures that the native modules are installed in the current runtime.
- * Otherwise, it synchronously calls a native function that installs them.
+ * On web, it installs the `expo` global polyfill.
  */
 export function ensureNativeModulesAreInstalled(): void {
-  // No-op on web
+  installExpoGlobalPolyfill();
 }
