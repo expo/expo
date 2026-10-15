@@ -1,6 +1,5 @@
 import type { NativePlatform } from '@expo/config';
 import { KNOWN_PLATFORMS } from '@expo/platforms';
-import { parse } from 'url';
 
 import { CommandError } from '../../../utils/errors';
 import type { ServerRequest } from './server.types';
@@ -17,9 +16,11 @@ export type RuntimePlatform = NativePlatform;
  * Returns first item in the case of an array.
  */
 export function parsePlatformHeader(req: ServerRequest): string | null {
-  const url = parse(req.url!, /* parseQueryString */ true);
+  const searchParams = URL.parse(req.url!, 'file:')?.searchParams;
   const platform =
-    url.query?.platform || req.headers['expo-platform'] || req.headers['exponent-platform'];
+    searchParams?.get('platform') ||
+    req.headers['expo-platform'] ||
+    req.headers['exponent-platform'];
   return (Array.isArray(platform) ? platform[0] : platform) ?? null;
 }
 
