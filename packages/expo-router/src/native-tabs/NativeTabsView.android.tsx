@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-screens/experimental';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
+  TabsScreen,
   useOnTabSelectedHandler,
   useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
@@ -98,12 +99,13 @@ function Screen(props: InternalTabScreenProps) {
   }, [content, options.disableAutomaticContentInsets]);
 
   return (
-    <Tabs.Screen
+    <TabsScreen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       android={{
-        icon: androidIcon,
-        selectedIcon: androidSelectedIcon,
+        icon: androidIcon?.platform === 'android' ? androidIcon.icon : undefined,
+        selectedIcon:
+          androidSelectedIcon?.platform === 'android' ? androidSelectedIcon.icon : undefined,
         standardAppearance: androidAppearance,
         ...shared.nativeAndroidOverrides,
       }}
@@ -112,7 +114,7 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.nativeRestOverrides}
       screenKey={shared.screenKey}>
       {wrappedContent}
-    </Tabs.Screen>
+    </TabsScreen>
   );
 }
 

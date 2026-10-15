@@ -1,8 +1,11 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { PlatformIconIOS } from 'react-native-screens';
 
 import type { AwaitedIcon } from './icon';
-import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
+import {
+  applyIconSrcOptions,
+  applySelectedColor,
+  type ScreensPropsIcon,
+} from './optionsIconConverter.shared';
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { IconRenderingMode, NativeTabOptions } from '../types';
 
@@ -57,12 +60,9 @@ export function resolveIconRenderingMode(
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined,
   renderingMode?: IconRenderingMode
-): PlatformIconIOS | undefined {
+): Extract<ScreensPropsIcon, { platform: 'ios' }> | undefined {
   if (icon && 'sf' in icon && icon.sf) {
-    return {
-      type: 'sfSymbol',
-      name: icon.sf,
-    };
+    return { platform: 'ios', icon: { type: 'sfSymbol', name: icon.sf } };
   }
   const imageSource = getIconImageSource(icon);
   if (!imageSource) {
@@ -70,9 +70,9 @@ export function convertOptionsIconToScreensPropsIcon(
   }
   const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
   if (effectiveRenderingMode === 'original') {
-    return { type: 'imageSource', imageSource };
+    return { platform: 'ios', icon: { type: 'imageSource', imageSource } };
   }
-  return { type: 'templateSource', templateSource: imageSource };
+  return { platform: 'ios', icon: { type: 'templateSource', templateSource: imageSource } };
 }
 
 function getIconImageSource(icon: AwaitedIcon | undefined): ImageSourcePropType | undefined {

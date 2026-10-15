@@ -41,9 +41,9 @@ function Screen(props) {
         }
         return content;
     }, [content, options.disableAutomaticContentInsets]);
-    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...shared.options, pointerEvents: shared.pointerEvents, android: {
-            icon: androidIcon,
-            selectedIcon: androidSelectedIcon,
+    return ((0, jsx_runtime_1.jsx)(NativeTabsView_shared_1.TabsScreen, { ...shared.options, pointerEvents: shared.pointerEvents, android: {
+            icon: androidIcon?.platform === 'android' ? androidIcon.icon : undefined,
+            selectedIcon: androidSelectedIcon?.platform === 'android' ? androidSelectedIcon.icon : undefined,
             standardAppearance: androidAppearance,
             ...shared.nativeAndroidOverrides,
         }, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
