@@ -410,11 +410,11 @@ function checkDumpedCase(
   if (kind != null && Object.hasOwn(cases, kind)) checkDumpedKeys(object, cases, owner, fail);
 }
 
-/** PROTOTYPE: a directly built manifest must load the ExpoModules macro plugin itself, through
+/** A directly built manifest must load the ExpoModules macro plugin itself, through
  * `.unsafeFlags(["-Xfrontend", "-load-plugin-executable", "-Xfrontend", "<dir>/ExpoModulesMacros#ExpoModulesMacros"])`.
  * The generated manifest already adds that flag to every Swift target that depends on
  * ExpoModulesCore, and a target that does not cannot use the macros, so the setting is dropped
- * rather than rejected. Any other setting is still rejected. */
+ * rather than rejected. */
 function withoutMacroPluginLoad(target: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(target.settings)) return target;
   const isMacroPluginLoad = (setting: unknown) => {
@@ -1242,7 +1242,7 @@ export async function resolveCheckedInManifestAsync(
 }
 
 /**
- * PROTOTYPE: a target built from a checked-in Package.swift has no generated include directory;
+ * A target built from a checked-in Package.swift has no generated include directory;
  * its headers stay in its sources. Returns the public headers directory of each ObjC and C++
  * target of `product`, keyed by target name, or an empty map when `pkg` has no checked-in manifest.
  * Throws for a target without one, because et prebuild composes the framework's module headers
