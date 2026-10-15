@@ -11,8 +11,7 @@ import {
   type PrebuiltFlavor,
 } from '../prebuiltArtifactPaths';
 
-const REPO_ROOT = '/repo';
-const MONOREPO_BASE = `${REPO_ROOT}/packages/precompile/.build`;
+const LOCAL_BUILDS_PATH = '/builds';
 const PACKAGE_ROOT = '/repo/packages/expo-image';
 const VERSION_PREFIX = '1.2.3/0.83.0/1.0.0';
 
@@ -45,28 +44,30 @@ describe(buildVersionPrefix, () => {
 
 describe(getArtifactBase, () => {
   it('appends the output directory to an already-resolved build path', () => {
-    expect(getArtifactBase(`${MONOREPO_BASE}/expo-image`)).toBe(
-      `${MONOREPO_BASE}/expo-image/output`
+    expect(getArtifactBase(`${LOCAL_BUILDS_PATH}/expo-image`)).toBe(
+      `${LOCAL_BUILDS_PATH}/expo-image/output`
     );
   });
 
   it('appends the version prefix below the output directory', () => {
-    expect(getArtifactBase(`${MONOREPO_BASE}/react-native-skia`, VERSION_PREFIX)).toBe(
-      `${MONOREPO_BASE}/react-native-skia/output/${VERSION_PREFIX}`
+    expect(getArtifactBase(`${LOCAL_BUILDS_PATH}/react-native-skia`, VERSION_PREFIX)).toBe(
+      `${LOCAL_BUILDS_PATH}/react-native-skia/output/${VERSION_PREFIX}`
     );
   });
 
   it.each([null, undefined, ''])('ignores a %p version prefix', (versionPrefix) => {
-    expect(getArtifactBase(`${MONOREPO_BASE}/expo-image`, versionPrefix)).toBe(
-      `${MONOREPO_BASE}/expo-image/output`
+    expect(getArtifactBase(`${LOCAL_BUILDS_PATH}/expo-image`, versionPrefix)).toBe(
+      `${LOCAL_BUILDS_PATH}/expo-image/output`
     );
   });
 
   it('keeps both segments of a scoped package name in the build path', () => {
-    expect(getArtifactBase(`${MONOREPO_BASE}/@expo/ui`)).toBe(`${MONOREPO_BASE}/@expo/ui/output`);
+    expect(getArtifactBase(`${LOCAL_BUILDS_PATH}/@expo/ui`)).toBe(
+      `${LOCAL_BUILDS_PATH}/@expo/ui/output`
+    );
   });
 
-  it('accepts a build path outside the monorepo, such as a package-local one', () => {
+  it('accepts any build path, such as a package-local one', () => {
     expect(getArtifactBase(`${PACKAGE_ROOT}/.expo-prebuild`)).toBe(
       `${PACKAGE_ROOT}/.expo-prebuild/output`
     );
@@ -79,42 +80,42 @@ describe(getArtifactBase, () => {
         type: 'internal',
         npmPackage: 'expo-image',
         packageRoot: PACKAGE_ROOT,
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })
     ).toContain(`${PACKAGE_ROOT}/prebuilds/output`);
   });
 });
 
 describe(getArtifactBases, () => {
-  it('puts the monorepo build dir before the npm-bundled dir for internal packages', () => {
+  it('puts the local builds dir before the npm-bundled dir for internal packages', () => {
     expect(
       getArtifactBases({
         type: 'internal',
         npmPackage: 'expo-image',
         packageRoot: PACKAGE_ROOT,
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })
-    ).toEqual([`${MONOREPO_BASE}/expo-image/output`, `${PACKAGE_ROOT}/prebuilds/output`]);
+    ).toEqual([`${LOCAL_BUILDS_PATH}/expo-image/output`, `${PACKAGE_ROOT}/prebuilds/output`]);
   });
 
-  it('lets a custom modules path replace the monorepo build dir', () => {
+  it('lets a custom modules path replace the local builds dir', () => {
     expect(
       getArtifactBases({
         type: 'internal',
         npmPackage: 'expo-image',
         packageRoot: PACKAGE_ROOT,
         customModulesPath: '/custom',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })
     ).toEqual(['/custom/expo-image/output', `${PACKAGE_ROOT}/prebuilds/output`]);
   });
 
-  it('omits the monorepo base when there is no repo root', () => {
+  it('omits the local builds base when there is no local builds path', () => {
     const bases = getArtifactBases({
       type: 'internal',
       npmPackage: 'expo-image',
       packageRoot: PACKAGE_ROOT,
-      repoRoot: null,
+      localBuildsPath: null,
     });
     expect(bases).toEqual([`${PACKAGE_ROOT}/prebuilds/output`]);
     expect(bases.join('\n')).not.toMatch(/null|undefined/);
@@ -126,9 +127,9 @@ describe(getArtifactBases, () => {
         type: 'internal',
         npmPackage: '@expo/ui',
         packageRoot: '/repo/packages/expo-ui',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })[0]
-    ).toBe(`${MONOREPO_BASE}/@expo/ui/output`);
+    ).toBe(`${LOCAL_BUILDS_PATH}/@expo/ui/output`);
   });
 
   it('orders versioned before flat for external packages', () => {
@@ -137,11 +138,11 @@ describe(getArtifactBases, () => {
         type: 'external',
         npmPackage: 'react-native-skia',
         packageRoot: '/app/node_modules/react-native-skia',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
         versionPrefix: VERSION_PREFIX,
       })
     ).toEqual([
-      `${MONOREPO_BASE}/react-native-skia/output/${VERSION_PREFIX}`,
+      `${LOCAL_BUILDS_PATH}/react-native-skia/output/${VERSION_PREFIX}`,
       `/app/node_modules/react-native-skia/prebuilds/output/${VERSION_PREFIX}`,
       '/app/node_modules/react-native-skia/prebuilds/output',
     ]);
@@ -153,11 +154,11 @@ describe(getArtifactBases, () => {
         type: 'external',
         npmPackage: 'react-native-skia',
         packageRoot: '/app/node_modules/react-native-skia',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
         versionPrefix: null,
       })
     ).toEqual([
-      `${MONOREPO_BASE}/react-native-skia/output`,
+      `${LOCAL_BUILDS_PATH}/react-native-skia/output`,
       '/app/node_modules/react-native-skia/prebuilds/output',
     ]);
   });
@@ -216,23 +217,23 @@ describe(getRemoteArtifactKey, () => {
 });
 
 describe(getSharedSpmDepBases, () => {
-  it('orders custom, monorepo, then npm-bundled, and does not let the custom path replace the monorepo one', () => {
+  it('orders custom, local builds, then npm-bundled, and does not let the custom path replace the local builds one', () => {
     expect(
       getSharedSpmDepBases('SDWebImage', {
         packageRoot: PACKAGE_ROOT,
         customModulesPath: '/custom',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })
     ).toEqual([
       '/custom/.spm-deps/SDWebImage',
-      `${MONOREPO_BASE}/.spm-deps/SDWebImage`,
+      `${LOCAL_BUILDS_PATH}/.spm-deps/SDWebImage`,
       `${PACKAGE_ROOT}/prebuilds/spm-deps/SDWebImage`,
     ]);
   });
 
   it('omits candidates whose root is missing', () => {
-    expect(getSharedSpmDepBases('SDWebImage', { repoRoot: REPO_ROOT })).toEqual([
-      `${MONOREPO_BASE}/.spm-deps/SDWebImage`,
+    expect(getSharedSpmDepBases('SDWebImage', { localBuildsPath: LOCAL_BUILDS_PATH })).toEqual([
+      `${LOCAL_BUILDS_PATH}/.spm-deps/SDWebImage`,
     ]);
     expect(getSharedSpmDepBases('SDWebImage', {})).toEqual([]);
   });
@@ -252,19 +253,19 @@ describe('candidate lists never contain a relative or placeholder path', () => {
         type: 'internal',
         npmPackage: 'expo-image',
         packageRoot: '',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
       })
-    ).toEqual([`${MONOREPO_BASE}/expo-image/output`]);
+    ).toEqual([`${LOCAL_BUILDS_PATH}/expo-image/output`]);
   });
 
-  it('drops the monorepo candidate for external packages under a custom modules path', () => {
+  it('drops the local builds candidate for external packages under a custom modules path', () => {
     expect(
       getArtifactBases({
         type: 'external',
         npmPackage: 'react-native-skia',
         packageRoot: '/app/node_modules/react-native-skia',
         customModulesPath: '/custom',
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
         versionPrefix: VERSION_PREFIX,
       })
     ).toEqual([
@@ -281,12 +282,12 @@ describe('candidate lists never contain a relative or placeholder path', () => {
         type: 'internal',
         npmPackage: 'expo-image',
         packageRoot: PACKAGE_ROOT,
-        repoRoot: REPO_ROOT,
+        localBuildsPath: LOCAL_BUILDS_PATH,
         versionPrefix: VERSION_PREFIX,
       }
     );
     expect(bases).toEqual([
-      `${MONOREPO_BASE}/expo-image/output`,
+      `${LOCAL_BUILDS_PATH}/expo-image/output`,
       `${PACKAGE_ROOT}/prebuilds/output`,
     ]);
   });

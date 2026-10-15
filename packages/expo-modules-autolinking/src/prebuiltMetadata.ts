@@ -118,7 +118,7 @@ export interface ResolvePrebuiltMetadataOptions {
 
 /** The parts of the artifact grammar that are the same for every product in one run. */
 interface ArtifactContext {
-  repoRoot: string | null;
+  localBuildsPath: string | null;
   customModulesPath: string | null;
   reactNativeVersion: string | null;
   hermesVersion: string | null;
@@ -149,7 +149,7 @@ export async function resolvePrebuiltMetadataAsync(
         : await findAppPackagesAsync(appRoot, optionsLoader);
 
     const artifactContext: ArtifactContext = {
-      repoRoot,
+      localBuildsPath: repoRoot ? getRepoLocalBuildsPath(repoRoot) : null,
       customModulesPath:
         customModulesPath !== undefined
           ? customModulesPath
@@ -191,6 +191,11 @@ function findExpoRepoRoot(): string | null {
   return fs.existsSync(path.join(repoRoot, 'packages', 'expo-modules-core', 'spm.config.json'))
     ? repoRoot
     : null;
+}
+
+/** The monorepo layout is private to this file, and goes away with catalog mode. */
+function getRepoLocalBuildsPath(repoRoot: string): string {
+  return path.join(repoRoot, 'packages', 'precompile', '.build');
 }
 
 /** Every package in the expo repository, whether or not an app depends on it. */
@@ -587,9 +592,9 @@ function byFlavor<T>(build: (flavor: PrebuiltFlavor) => T): Record<PrebuiltFlavo
 
 function buildArtifactLocator(
   { type, npmPackage, packageRoot, productName, product, versionPrefix }: ProductIdentity,
-  { repoRoot, customModulesPath }: ArtifactContext
+  { localBuildsPath, customModulesPath }: ArtifactContext
 ): PrebuiltArtifactLocator {
-  const common = { npmPackage, packageRoot, customModulesPath, repoRoot };
+  const common = { npmPackage, packageRoot, customModulesPath, localBuildsPath };
   return {
     bases: getArtifactBases(
       type === 'external' ? { ...common, type, versionPrefix } : { ...common, type: 'internal' }
@@ -604,7 +609,7 @@ function buildArtifactLocator(
       sharedSpmDepNames(product).map((depName) => [
         depName,
         {
-          bases: getSharedSpmDepBases(depName, { packageRoot, customModulesPath, repoRoot }),
+          bases: getSharedSpmDepBases(depName, { packageRoot, customModulesPath, localBuildsPath }),
           ...byFlavor((flavor) => getSharedSpmDepSuffix(depName, flavor)),
         },
       ])

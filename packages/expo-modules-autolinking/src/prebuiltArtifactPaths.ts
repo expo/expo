@@ -1,7 +1,7 @@
 import path from 'path';
 
 /**
- * Grammar of the precompiled xcframework artifact layout. The producer (`et prebuild`),
+ * Grammar of the prebuilt xcframework artifact layout. The producer (`et prebuild`),
  * the CocoaPods integrator and the remote artifact cache each still encode their own
  * copy; this module is the one they are being migrated onto.
  *
@@ -15,7 +15,6 @@ export type PrebuiltFlavor = 'debug' | 'release';
 
 export const PREBUILT_FLAVORS: readonly PrebuiltFlavor[] = Object.freeze(['debug', 'release']);
 
-const PRECOMPILE_BUILD_DIR = '.build';
 const SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps';
 const BUNDLED_PREBUILDS_DIR = 'prebuilds';
 const BUNDLED_SHARED_SPM_DEPS_SUBPATH = path.join(BUNDLED_PREBUILDS_DIR, 'spm-deps');
@@ -38,26 +37,12 @@ export function buildVersionPrefix(
   return path.posix.join(packageVersion, reactNativeVersion, hermesVersion);
 }
 
-/**
- * Directory the monorepo builds every precompiled package under. Deliberately not exported:
- * the published surface describes the artifact grammar, and where a package's build directory
- * sits is the producer's business. `tools/src/prebuilds/MonorepoLayout.ts` holds the producer's
- * copy; this one only backs the monorepo candidate of the base lists below.
- */
-function getMonorepoBuildDir(repoRoot: string): string {
-  return path.join(repoRoot, 'packages', 'precompile', PRECOMPILE_BUILD_DIR);
-}
-
-/** Build path of one package within the monorepo build directory. Private, as above. */
-function getPackageBuildDir(repoRoot: string, npmPackage: string): string {
-  return path.join(getMonorepoBuildDir(repoRoot), npmPackage);
-}
-
 interface CommonArtifactBaseOptions {
   npmPackage: string;
   packageRoot: string;
   customModulesPath?: string | null;
-  repoRoot?: string | null;
+  /** Laid out like `customModulesPath`: `<npmPackage>/output/...` and `.spm-deps/<depName>`. */
+  localBuildsPath?: string | null;
 }
 
 export type ArtifactBaseOptions =
@@ -76,12 +61,12 @@ export function getArtifactBases({
   npmPackage,
   packageRoot,
   customModulesPath,
-  repoRoot,
+  localBuildsPath,
   versionPrefix,
 }: ArtifactBaseOptions): string[] {
   const packageBuildDir = customModulesPath
     ? path.join(customModulesPath, npmPackage)
-    : repoRoot && getPackageBuildDir(repoRoot, npmPackage);
+    : localBuildsPath && path.join(localBuildsPath, npmPackage);
   const versioned = type === 'external' ? versionPrefix : null;
 
   const bases: string[] = [];
@@ -124,7 +109,7 @@ export function getArtifactSuffixes(productName: string, flavor: PrebuiltFlavor)
  * Unlike the suffixes above this is not base-relative: it starts at the package
  * name, and it stays slash-separated because it is also a URL path.
  *
- * The version prefix is always included. precompiled_modules.rb derives this key from
+ * The version prefix is always included. The CocoaPods integrator derives this key from
  * the base it resolved the artifact from, so a fall back to the npm-bundled directory
  * silently drops the prefix and points the key at nothing — the remote store is always
  * written with versioned paths. Switching Ruby onto this module fixes that, and changes
@@ -147,37 +132,30 @@ export function getRemoteArtifactKey(
 export interface SharedSpmDepBaseOptions {
   packageRoot?: string | null;
   customModulesPath?: string | null;
-  repoRoot?: string | null;
+  /** Laid out like `customModulesPath`: `<npmPackage>/output/...` and `.spm-deps/<depName>`. */
+  localBuildsPath?: string | null;
 }
 
 /**
  * Ordered candidate base directories for a shared SPM dependency. A custom
- * modules path adds a candidate here instead of replacing the monorepo one, so
+ * modules path adds a candidate here instead of replacing the local builds one, so
  * that a partial override cannot hide a complete build.
  */
 export function getSharedSpmDepBases(
   depName: string,
-  { packageRoot, customModulesPath, repoRoot }: SharedSpmDepBaseOptions
+  { packageRoot, customModulesPath, localBuildsPath }: SharedSpmDepBaseOptions
 ): string[] {
   const bases: string[] = [];
   if (customModulesPath) {
     bases.push(path.join(customModulesPath, SHARED_SPM_DEPS_SOURCE_DIR, depName));
   }
-  if (repoRoot) {
-    bases.push(path.join(getSharedSpmDepsRoot(repoRoot), depName));
+  if (localBuildsPath) {
+    bases.push(path.join(localBuildsPath, SHARED_SPM_DEPS_SOURCE_DIR, depName));
   }
   if (packageRoot) {
     bases.push(path.join(packageRoot, BUNDLED_SHARED_SPM_DEPS_SUBPATH, depName));
   }
   return bases;
-}
-
-/**
- * Directory the producer writes every shared SPM dependency of the monorepo into. Private for
- * the same reason as getMonorepoBuildDir.
- */
-function getSharedSpmDepsRoot(repoRoot: string): string {
-  return path.join(getMonorepoBuildDir(repoRoot), SHARED_SPM_DEPS_SOURCE_DIR);
 }
 
 /** Base-relative, and deliberately not the product grammar: no 'xcframeworks' segment. */
