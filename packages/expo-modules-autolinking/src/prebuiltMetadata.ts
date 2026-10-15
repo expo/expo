@@ -111,7 +111,8 @@ export interface ResolvePrebuiltMetadataOptions {
    * missing, that package's candidates degrade to the unversioned ones, as Ruby does. */
   reactNativeVersion?: string | null;
   hermesVersion?: string | null;
-  /** Overrides the monorepo build directory. Omit it to read `EXPO_PRECOMPILED_MODULES_PATH`,
+  /** Searched before the local builds directory: replaces it for product artifacts, and
+   * precedes it for shared SPM dependencies. Omit it to read `EXPO_PRECOMPILED_MODULES_PATH`,
    * the same variable the CocoaPods integrator reads; pass null to ignore that variable. */
   customModulesPath?: string | null;
 }
