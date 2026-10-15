@@ -1,8 +1,9 @@
 import type { JSONSchema } from './JSONSchema';
+import { validateSchema } from './validate';
 
 export type SchemaVisitor = (schema: JSONSchema, value: unknown, path: string) => void;
 
-const COMBINATOR_KEYWORDS = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'];
+const COMBINATOR_KEYWORDS = ['allOf', 'anyOf', 'oneOf'];
 
 const isSchemaNode = (value: unknown): value is JSONSchema =>
   value != null && typeof value === 'object' && !Array.isArray(value);
@@ -109,6 +110,11 @@ const visitItems = (
   }
 };
 
+// Without a value every branch is a candidate; with one, only branches the value satisfies apply,
+// so a visitor never sees a subschema (e.g. asset metadata) that doesn't describe the value.
+const isApplicable = (schema: JSONSchema, value: unknown, path: string): boolean =>
+  value === undefined || validateSchema(schema, value, path) === null;
+
 const visitCombinators = (
   schema: JSONSchema,
   value: unknown,
@@ -119,13 +125,32 @@ const visitCombinators = (
     const combinator = (schema as Record<string, unknown>)[keyword];
     if (Array.isArray(combinator)) {
       for (const item of combinator) {
-        if (isSchemaNode(item)) {
+        if (isSchemaNode(item) && (keyword === 'allOf' || isApplicable(item, value, path))) {
           visitNode(item, value, visitor, path);
         }
       }
     } else if (isSchemaNode(combinator)) {
       visitNode(combinator, value, visitor, path);
     }
+  }
+};
+
+const visitConditional = (
+  schema: JSONSchema,
+  value: unknown,
+  visitor: SchemaVisitor,
+  path: string
+): void => {
+  const { if: condition, then: consequent, else: alternative } = schema as Record<string, unknown>;
+  if (isSchemaNode(condition)) {
+    visitNode(condition, value, visitor, path);
+  }
+  const matches = !isSchemaNode(condition) || isApplicable(condition, value, path);
+  if (isSchemaNode(consequent) && (value === undefined || matches)) {
+    visitNode(consequent, value, visitor, path);
+  }
+  if (isSchemaNode(alternative) && (value === undefined || !matches)) {
+    visitNode(alternative, value, visitor, path);
   }
 };
 
@@ -176,4 +201,5 @@ export const visitNode = (
   }
 
   visitCombinators(schema, value, visitor, path);
+  visitConditional(schema, value, visitor, path);
 };

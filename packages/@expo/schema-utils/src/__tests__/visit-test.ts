@@ -103,6 +103,31 @@ describe('visitNode', () => {
     expect(collect(schema, { billingAddress: 'x' })).toEqual(['', '.creditCard']);
   });
 
+  it('only enters `oneOf` and `anyOf` branches the present value matches', () => {
+    const directory: JSONSchema = { type: 'string', pattern: '\\.icon$' };
+    const image: JSONSchema = { type: 'string', not: { pattern: '\\.icon$' } };
+    const visited: JSONSchema[] = [];
+    const walk = (schema: JSONSchema, value: unknown) =>
+      visitNode(schema, value, (subSchema) => visited.push(subSchema));
+
+    walk({ oneOf: [directory, image] }, './assets/expo.icon');
+    walk({ anyOf: [directory, image] }, './assets/icon.png');
+    expect(visited).toContain(directory);
+    expect(visited).toContain(image);
+    expect(visited.filter((schema) => schema === directory)).toHaveLength(1);
+    expect(visited.filter((schema) => schema === image)).toHaveLength(1);
+  });
+
+  it('enters `then` or `else` depending on whether the present value matches `if`', () => {
+    const then: JSONSchema = { type: 'string' };
+    const otherwise: JSONSchema = { type: 'number' };
+    const schema: JSONSchema = { if: { type: 'string' }, then, else: otherwise };
+    const visited: JSONSchema[] = [];
+    visitNode(schema, 'x', (subSchema) => visited.push(subSchema));
+    expect(visited).toContain(then);
+    expect(visited).not.toContain(otherwise);
+  });
+
   it('skips value-driven keywords when no value is present', () => {
     const schema: JSONSchema = {
       additionalProperties: { type: 'string' },
