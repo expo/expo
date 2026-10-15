@@ -224,6 +224,12 @@ it('dumped keys: rejects unsafeFlags other than the macro plugin load', () => {
   rejectsTargetSettings([unsafeFlags(['-Xfrontend', '-enable-experimental-feature'])]);
 });
 
+it('dumped keys: rejects loading a macro plugin other than ExpoModulesMacros', () => {
+  rejectsTargetSettings([
+    unsafeFlags([...MACRO_PLUGIN_FLAGS.slice(0, 3), '/x/OtherMacros#OtherMacros']),
+  ]);
+});
+
 it('dumped keys: accepts language modes that match spm.config.json', () => {
   const manifest = dump();
   manifest.swiftLanguageVersions = ['5', '6'];
