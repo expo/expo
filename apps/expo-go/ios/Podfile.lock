@@ -13,7 +13,7 @@ PODS:
   - EXJSONUtils (57.0.2)
   - EXManifests (57.0.2):
     - ExpoModulesCore
-  - Expo (57.0.29):
+  - Expo (57.0.30):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -182,7 +182,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (57.0.2):
     - ExpoModulesCore
-  - ExpoRouter (57.0.27):
+  - ExpoRouter (57.0.28):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (57.0.4):
@@ -239,7 +239,7 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (57.0.2):
     - ExpoModulesCore
-  - ExpoUI (57.0.24):
+  - ExpoUI (57.0.25):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
@@ -4576,7 +4576,7 @@ SPEC CHECKSUMS:
   EXConstants: 8a0eb5e2553569c0e6710b73a8d90d1ce358c153
   EXJSONUtils: a49e3ef80dff762108e5690c7b2f360675dcf7f6
   EXManifests: 4c53b2602e03ccf44d0b4ff9c5d655b2c5acba3f
-  Expo: 778f0b204dbacf03a9d4b5dc8d5e377874521d22
+  Expo: f51eb610e817776228286adeb436604c5e63fd6a
   ExpoAgeRange: b11aaa28e58e736da224be95f5c213444a2b619f
   ExpoAppleAuthentication: 16c2955d33ec7315e5a99d17fb5d62ed33cdb5b9
   ExpoAsset: 2581425f9b581b4fce3c83ffc9f28528d1c4ee68
@@ -4623,7 +4623,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 7a7a7e0123d1ac5efc742b7b29e43102be5634bf
   ExpoNotifications: c1cc56be0a720b0c8d658d547a6538c7770e7bd4
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
-  ExpoRouter: 8f1eb1bf8ac978f760f1c24bd1d14e4933022afd
+  ExpoRouter: 8d2714ac97464bae530003b06b780cd1d01d9c6c
   ExpoScreenCapture: 9895600e6d3aeeadbdfd776f8d7b309b8fd33a33
   ExpoScreenOrientation: 6f1bfe55c5d9e93dfbcfad33f176c388d031954a
   ExpoSecureStore: ff1fd5e073957417ba8f9dec0bebcbd55a60e747
@@ -4637,7 +4637,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 05ee8d4aaba1b6af330f3621e19b39ff9f21e718
   ExpoTaskManager: ede265f5b4a6e075b422eb4d45c8cb393b0dc465
   ExpoTrackingTransparency: 233f97aced6da78301e74e1d9cff2bc3763b40fe
-  ExpoUI: 7d535e830f98dceeac73a3b1d6b4f5fe3b516695
+  ExpoUI: a206a1ca6970e538af0f6969d113a0f38718b95c
   ExpoVideo: 31d5dc617d913808aeba05c3ab900712637b0e47
   ExpoVideoThumbnails: da5d471c170bf4110f681b6649524eace9c95b5b
   ExpoWebBrowser: a4d7c382116fbe33c1ec7f60293f02b7e97042e4

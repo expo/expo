@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (57.0.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (57.0.29):
+  - Expo (57.0.30):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -299,7 +299,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (57.0.29):
+  - Expo/Tests (57.0.30):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
@@ -712,7 +712,7 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (57.0.2):
     - ExpoModulesCore
-  - ExpoUI (57.0.24):
+  - ExpoUI (57.0.25):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
@@ -4059,7 +4059,7 @@ SPEC CHECKSUMS:
   EXConstants: 8a0eb5e2553569c0e6710b73a8d90d1ce358c153
   EXJSONUtils: a49e3ef80dff762108e5690c7b2f360675dcf7f6
   EXManifests: 4c53b2602e03ccf44d0b4ff9c5d655b2c5acba3f
-  Expo: 3bf13bf01a4cd154996b137478cef3e62528d889
+  Expo: 83ceec8498d39a83bfcdf6ad56118bc6c5c81c72
   expo-dev-client: 2a2fe5cdd576b29c097356cb922d2403abe6df8d
   expo-dev-launcher: cd9d8fcf89622f23e21ffb6940fadbe07465785d
   expo-dev-menu: 7fb359361a69f0b5280f530e4f770878cea456f2
@@ -4067,7 +4067,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: b11aaa28e58e736da224be95f5c213444a2b619f
   ExpoAppIntegrity: 6d9a55f47108c742db83df98e06f50ed3c599763
   ExpoAppleAuthentication: 16c2955d33ec7315e5a99d17fb5d62ed33cdb5b9
-  ExpoAppMetrics: 9c2b5c9d8ced24baa78ad65622109e118e77019a
+  ExpoAppMetrics: b65d81cc3c7ba006d6e5a789228197381bdb4ebd
   ExpoAsset: 2581425f9b581b4fce3c83ffc9f28528d1c4ee68
   ExpoAudio: edc9230b788be6f65238a53907d5c176b57a7ce0
   ExpoBackgroundFetch: 6537e9ef8e797ac26f73aa1f6862740a9126c7cc
@@ -4131,7 +4131,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 05ee8d4aaba1b6af330f3621e19b39ff9f21e718
   ExpoTaskManager: ede265f5b4a6e075b422eb4d45c8cb393b0dc465
   ExpoTrackingTransparency: 233f97aced6da78301e74e1d9cff2bc3763b40fe
-  ExpoUI: 7d535e830f98dceeac73a3b1d6b4f5fe3b516695
+  ExpoUI: a206a1ca6970e538af0f6969d113a0f38718b95c
   ExpoVideo: 31d5dc617d913808aeba05c3ab900712637b0e47
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: da5d471c170bf4110f681b6649524eace9c95b5b

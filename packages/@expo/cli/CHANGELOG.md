@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Update minimum required Expo Atlas version to `0.5.0`. ([#51550](https://github.com/expo/expo/pull/51550) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 57.0.31 — 2026-10-15
+
+### 🐛 Bug fixes
+
+- Update minimum required Expo Atlas version to `0.5.0`. ([#51550](https://github.com/expo/expo/pull/51550) by [@byCedric](https://github.com/byCedric))
 
 ## 57.0.30 — 2026-10-14
 
