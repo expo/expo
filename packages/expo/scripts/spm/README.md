@@ -90,8 +90,9 @@ surfaces as a build error, naming the fix:
 
 - **A prebuildable product with no built artifact** — the module declares a
   product in its `spm.config.json`, so it needs no `Package.swift`; the artifact
-  is simply missing. `et prebuild <package>` (both flavors, so omit `--flavor`)
-  fixes it. This is the preferred route for a mixed-language module: the prebuild
+  is simply missing. From the Expo repository root,
+  `node tools/bin/expotools.js prebuild <package>` (both flavors, so omit
+  `--flavor`) fixes it. This is the preferred route for a mixed-language module: the prebuild
   pipeline compiles Swift, Objective-C, and C++ targets into one XCFramework, so
   no source split is required.
 - **Mixed Swift and Objective-C/C++ sources with neither manifest** — SwiftPM
