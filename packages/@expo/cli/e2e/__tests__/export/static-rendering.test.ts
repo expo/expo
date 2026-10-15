@@ -209,6 +209,7 @@ describe('exports static', () => {
     const stylesheets = indexHtml.querySelectorAll('head link[rel="stylesheet"]');
     const stylesheetHrefs = stylesheets.map((link) => link.attributes.href);
     expect(stylesheetHrefs).toEqual([
+      expect.stringMatching(/^\/_expo\/static\/css\/safe-area-[0-9a-f]{32}\.css$/),
       expect.stringMatching(/^\/_expo\/static\/css\/global-[0-9a-f]{32}\.css$/),
       expect.stringMatching(/^\/_expo\/static\/css\/test\.module-[0-9a-f]{32}\.css$/),
     ]);
@@ -228,8 +229,10 @@ describe('exports static', () => {
     }
 
     // CSS Module
+    const cssModuleHref = stylesheetHrefs.find((href) => href?.includes('/test.module-'));
+    expect(cssModuleHref).toBeDefined();
     expect(
-      fs.readFileSync(path.join(outputDir, stylesheets[1]?.attributes.href ?? ''), 'utf-8')
+      fs.readFileSync(path.join(outputDir, cssModuleHref ?? ''), 'utf-8')
     ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
