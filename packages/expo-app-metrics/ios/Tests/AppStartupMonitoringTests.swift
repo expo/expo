@@ -55,6 +55,18 @@ struct AppStartupMonitoringTests {
     throw CancellationError()
   }
 
+  /// Waits until the dispatched tasks bring the monitoring to a state that satisfies the condition.
+  private func waitUntil(_ condition: () -> Bool) async throws {
+    for _ in 0..<20 {
+      if condition() {
+        return
+      }
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    Issue.record("Timed out waiting for the condition")
+    throw CancellationError()
+  }
+
   @Test
   func `forwards user-supplied params to the emitted metric`() async throws {
     let receiver = CapturingReceiver()
@@ -130,6 +142,8 @@ struct AppStartupMonitoringTests {
     let monitoring = makeMonitoring(receiver: receiver)
 
     await monitoring.markDidFinishLaunching(runningInBackground: true)
+    // `markDidFinishLaunching` dispatches via `Task {}`, so wait for it before marking the next steps.
+    try await waitUntil { monitoring.startupState == .interrupted }
     monitoring.markFirstRender()
     monitoring.markInteractive()
 
@@ -145,6 +159,8 @@ struct AppStartupMonitoringTests {
     let monitoring = makeMonitoring(receiver: receiver)
 
     await monitoring.markDidFinishLaunching(runningInBackground: false)
+    try await waitUntil { monitoring.markers.finishedLaunchingDate != nil }
+    #expect(monitoring.startupState == .launching)
     monitoring.markInteractive()
 
     _ = try await ttiMetric(from: receiver)
@@ -158,6 +174,7 @@ struct AppStartupMonitoringTests {
     monitoring.markers.finishedLaunching = CACurrentMediaTime() - 10 * 60
 
     monitoring.markFirstRender()
+    try await waitUntil { monitoring.startupState == .interrupted }
     monitoring.markInteractive()
 
     // Give the dispatched tasks a chance to run before asserting nothing was reported.
@@ -175,8 +192,7 @@ struct AppStartupMonitoringTests {
 
     monitoring.markInteractive()
 
-    try await Task.sleep(for: .milliseconds(100))
-    #expect(monitoring.startupState == .interrupted)
+    try await waitUntil { monitoring.startupState == .interrupted }
     #expect(!receiver.metrics.contains { $0.name == "timeToInteractive" })
   }
 }

@@ -116,12 +116,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       }
       markers.timeToInteractive = currentTime
 
-      if let tti = markers.getTTI(), tti > Self.maxStartupDuration {
-        startupState = .interrupted
-        return
-      }
-
       if let tti = markers.getTTI() {
+        if tti > Self.maxStartupDuration {
+          startupState = .interrupted
+          return
+        }
         let frameMetrics = frameMetricsRecorder.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
