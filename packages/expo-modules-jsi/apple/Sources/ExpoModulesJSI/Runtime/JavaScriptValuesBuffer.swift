@@ -152,6 +152,30 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     )
   }
 
+  /// Allocates an owning buffer of `count` undefined values, which ``emplace(_:at:)`` then replaces.
+  /// Allocates nothing for zero values.
+  @usableFromInline
+  internal static func allocateUndefined(in runtime: JavaScriptRuntime, count: Int) -> JavaScriptValuesBuffer {
+    if count == 0 {
+      return JavaScriptValuesBuffer(runtime, start: nil, count: 0)
+    }
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: count)
+    for index in 0..<count {
+      buffer.initializeElement(at: index, to: .undefined())
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// Moves `value` into the buffer at `index`, without a clone. The slot must hold a value that owns
+  /// nothing, such as the `undefined` that ``allocateUndefined(in:count:)`` puts there.
+  @usableFromInline
+  internal func emplace(_ value: consuming JavaScriptValue, at index: Int) {
+    guard (0..<count).contains(index) else {
+      FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
+    }
+    JavaScriptValue.write(value, to: bufferPointer.baseAddress! + index)
+  }
+
   /// Allocates new values buffer with the given JS representables.
   /// Note that parameter packs still do not support non-copyable types so they need to be passed as `JavaScriptRef`.
   public static func allocate<each T: JavaScriptRepresentable>(
