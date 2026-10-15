@@ -37,6 +37,7 @@ const assertions = ts`
   expectTypeOf({ pathname: '/apple' } as const).toExtend<Href>();
   expectTypeOf({ pathname: '/apple', params: { test: 'true' } } as const).toExtend<Href>();
   expectTypeOf('/invalid' as const).not.toExtend<Href>();
+  expectTypeOf({ pathname: '/invalid' } as const).not.toExtend<Href>();
   expectTypeOf({ pathname: '/apple', params: { ONLY_STRINGS_ALLOWED: true } }).not.toExtend<Href>();
 
   // Href — relative routes
@@ -49,6 +50,7 @@ const assertions = ts`
   // Href — dynamic routes
   expectTypeOf('/colors/blue' as const).toExtend<Href>();
   expectTypeOf('/colors/blue?test=1' as const).toExtend<Href>();
+  expectTypeOf('/colors/blue#hash' as const).toExtend<Href>();
   expectTypeOf('/animals/cat' as const).toExtend<Href>();
   expectTypeOf('/animals/cat/dog?test=1' as const).toExtend<Href>();
   expectTypeOf('/animals/cat/dog#hash' as const).toExtend<Href>();
