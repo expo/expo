@@ -36,7 +36,7 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
     self.name = elements
       .compactMap { $0 as? ViewNameDefinition }
       .last?
-      .name ?? String(describing: viewType)
+      .name ?? unqualifiedTypeName(viewType)
 
     self.eventNames = Array(
       elements
