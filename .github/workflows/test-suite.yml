@@ -267,6 +267,20 @@ jobs:
           xcrun simctl erase all
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
+      - name: 📱 Boot simulator early
+        id: sim-boot
+        background: true
+        # The e2e script boots the simulator again if this step fails.
+        continue-on-error: true
+        # Keep the runtime and device name in sync with apps/bare-expo/scripts/start-ios-e2e-test.ts.
+        run: |
+          udid=$(xcrun simctl list devices iPhone available --json | jq -r '
+            .devices | to_entries[]
+            | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS-26-"))
+            | .value[] | select(.name == "iPhone 17 Pro") | .udid' | head -1)
+          if [ -n "$udid" ]; then
+            xcrun simctl bootstatus "$udid" -b > /dev/null
+          fi
       - name: 🍺 Install Maestro
         uses: ./.github/actions/setup-maestro
         with:
@@ -303,6 +317,8 @@ jobs:
             exit 1
           fi
         working-directory: apps/bare-expo/e2e
+      - name: ⏳ Wait for simulator boot
+        wait: sim-boot
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
