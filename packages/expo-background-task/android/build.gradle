@@ -18,4 +18,8 @@ android {
 dependencies {
   implementation 'androidx.work:work-runtime-ktx:2.9.1'
   implementation 'com.facebook.react:react-android'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
 }
