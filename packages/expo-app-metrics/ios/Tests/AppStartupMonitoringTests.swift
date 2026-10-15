@@ -1,3 +1,4 @@
+import QuartzCore
 import Testing
 
 @testable import ExpoAppMetrics
@@ -24,7 +25,7 @@ struct AppStartupMonitoringTests {
   private func makeMonitoring(receiver: CapturingReceiver) -> AppStartupMonitoring {
     let monitoring = AppStartupMonitoring()
     monitoring.launchType = .cold
-    monitoring.markers.finishedLaunching = 0
+    monitoring.markers.finishedLaunching = CACurrentMediaTime()
     monitoring.addReceiver(receiver)
     // Seed `NetworkPathMonitor.shared` so `markInteractive` doesn't suspend
     // forever waiting for the OS to deliver a real path in the test process.
@@ -148,5 +149,34 @@ struct AppStartupMonitoringTests {
 
     _ = try await ttiMetric(from: receiver)
     #expect(monitoring.startupState == .launched)
+  }
+
+  @Test
+  func `skips TTR and TTI that exceed the max startup duration`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+    monitoring.markers.finishedLaunching = CACurrentMediaTime() - 10 * 60
+
+    monitoring.markFirstRender()
+    monitoring.markInteractive()
+
+    // Give the dispatched tasks a chance to run before asserting nothing was reported.
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(monitoring.startupState == .interrupted)
+    #expect(!receiver.metrics.contains { $0.name == "timeToFirstRender" || $0.name == "timeToInteractive" })
+  }
+
+  @Test
+  func `skips TTI that exceeds the max startup duration`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+    monitoring.markers.finishedLaunching = CACurrentMediaTime() - 10 * 60
+    monitoring.markers.timeToFirstRender = monitoring.markers.finishedLaunching
+
+    monitoring.markInteractive()
+
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(monitoring.startupState == .interrupted)
+    #expect(!receiver.metrics.contains { $0.name == "timeToInteractive" })
   }
 }

@@ -84,6 +84,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       }
       markers.timeToFirstRender = currentTime
 
+      if let ttfr = markers.getTTFR(), ttfr > Self.maxStartupDuration {
+        startupState = .interrupted
+        return
+      }
+
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
       if let bundleLoadTime = markers.getBundleLoadTime() {
@@ -110,6 +115,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToInteractive = currentTime
+
+      if let tti = markers.getTTI(), tti > Self.maxStartupDuration {
+        startupState = .interrupted
+        return
+      }
 
       if let tti = markers.getTTI() {
         let frameMetrics = frameMetricsRecorder.stop()
@@ -203,7 +213,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     return .cold
   }
 
-  // MARK: - Background detection
+  // MARK: - Background launches
+
+  /// TTR and TTI longer than this are dropped. It is a safety guard for background launches that
+  /// `isRunningInBackground` doesn't detect, as their startup times include the whole time until the user opens the app.
+  private static let maxStartupDuration: TimeInterval = 3 * 60
 
   /// Background launches got about 30 seconds in our tests. Apple only documents the foreground value as
   /// "suitably large", so we compare against a threshold rather than `greatestFiniteMagnitude`.
