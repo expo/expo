@@ -71,6 +71,7 @@ const {
   unmappedPodDependencies,
 } = require('./diagnostics');
 const {
+  PRECOMPILED_SOURCE_KINDS,
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
@@ -377,9 +378,6 @@ const SOURCE_LABELS = {
 
 const describeSource = (source) => `${SOURCE_LABELS[source.kind]} (${source.dir})`;
 
-/** The kinds of place, in the order every precompiled artifact lookup tries them. */
-const SOURCE_LOOKUP_ORDER = ['env', 'monorepo', 'bundled'];
-
 /**
  * Compares the kind of place, not the directory: every package has its own directory in
  * each of them. Returns the `pluginError` parts describing the mix, or null when there is
@@ -411,7 +409,7 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
   const { packageName, moduleRoot, productName } = core;
   const lookup = { packageName, moduleRoot, productName };
   const headers = resolveHeadersXCFrameworkWithSource({ ...lookup, cacheDir });
-  const lookupRank = (source) => SOURCE_LOOKUP_ORDER.indexOf(source.kind);
+  const lookupRank = (source) => PRECOMPILED_SOURCE_KINDS.indexOf(source.kind);
   const builtLocally = coreSource?.kind === 'env' || coreSource?.kind === 'monorepo';
   // The lookup stops at the first place that has headers, so headers found past the place
   // ExpoModulesCore comes from, or nowhere, mean that place has none.
