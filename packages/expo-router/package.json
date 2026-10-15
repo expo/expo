@@ -306,7 +306,7 @@
     "nanoid": "^3.3.18",
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
-    "react-native-drawer-layout": "^4.2.2",
+    "react-native-drawer-layout": "^4.2.12",
     "react-native-screens": "^4.30.0 || ^5.0.0-alpha.3",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
