@@ -54,24 +54,23 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
 }
 
 /**
- * Lookup order: EXPO_PRECOMPILED_MODULES_PATH (`env`), monorepo prebuild output (`monorepo`),
- * the npm package's `prebuilds/` copy (`bundled`, skipped without a module root).
+ * The kinds of place every precompiled artifact lookup tries, in order:
+ * EXPO_PRECOMPILED_MODULES_PATH (`env`), monorepo prebuild output (`monorepo`), and the npm
+ * package's `prebuilds/` copy (`bundled`, skipped without a module root).
  */
+const PRECOMPILED_SOURCE_KINDS = Object.freeze(['env', 'monorepo', 'bundled']);
+
 function precompiledBases(buildPath, moduleRoot, bundledPath) {
-  const bases = [];
-  if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push({
-      kind: 'env',
-      dir: path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath),
-    });
-  }
-  bases.push({
-    kind: 'monorepo',
-    dir: path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
-  });
-  if (moduleRoot != null) {
-    bases.push({ kind: 'bundled', dir: path.join(moduleRoot, 'prebuilds', ...bundledPath) });
-  }
+  const envPath = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+  const dirs = {
+    env: envPath ? path.resolve(envPath, ...buildPath) : null,
+    monorepo: path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
+    bundled: moduleRoot != null ? path.join(moduleRoot, 'prebuilds', ...bundledPath) : null,
+  };
+  const bases = PRECOMPILED_SOURCE_KINDS.filter((kind) => dirs[kind] != null).map((kind) => ({
+    kind,
+    dir: dirs[kind],
+  }));
   return bases.filter((base, index) => bases.findIndex((b) => b.dir === base.dir) === index);
 }
 
@@ -601,6 +600,7 @@ function prepareCompileInterfaces(frameworks, destination) {
 
 module.exports = {
   FLAVORS,
+  PRECOMPILED_SOURCE_KINDS,
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   assertHeadersMatchSources,
