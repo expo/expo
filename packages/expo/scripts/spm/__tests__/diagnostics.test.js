@@ -320,6 +320,7 @@ describe('renderUnsupportedReport', () => {
     // The prebuild command builds both flavors when --flavor is omitted, and the plugin
     // requires a complete pair — so the message must not suggest a single flavor.
     expect(text).toContain('node tools/bin/expotools.js prebuild expo-audio');
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('-f Debug');
     expect(text).not.toContain('patch-package');
   });
@@ -353,6 +354,7 @@ describe('renderUnsupportedReport', () => {
     expect(text).toContain(
       'node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi'
     );
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('patch-package');
   });
 
@@ -1214,6 +1216,7 @@ describe('a module with only some pods precompiled', () => {
     expect(report).toContain('ExpoDual ');
     expect(report).toContain('twice');
     expect(report).toContain('node tools/bin/expotools.js prebuild expo-dual');
+    expect(report).toMatch(/in the Expo repository, from its root/i);
     expect(report).toContain('spm.config.json');
     expect(report).toContain('"exclude": ["expo-dual"]');
     expect(report).toContain('Module path: /node_modules/expo-dual');
