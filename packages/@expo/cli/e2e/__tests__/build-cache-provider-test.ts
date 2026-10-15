@@ -14,6 +14,11 @@ beforeAll(async () => {
     path.join(projectRoot, 'package.json'),
     JSON.stringify({ name: 'build-cache-provider-test', version: '1.0.0' })
   );
+  // Without `expo` installed, `getConfig` needs the SDK version from the app config
+  await fs.writeFile(
+    path.join(projectRoot, 'app.json'),
+    JSON.stringify({ expo: { sdkVersion: '58.0.0' } })
+  );
   await fs.writeFile(
     path.join(providerRoot, 'package.json'),
     JSON.stringify({ name: 'eas-build-cache-provider', version: '1.0.0', main: 'build/index.js' })
