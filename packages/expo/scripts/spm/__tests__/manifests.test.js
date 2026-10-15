@@ -13,6 +13,7 @@ const {
   pureSwiftManifest,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
+  emitExpoModulesJSIHeadersPackage,
   raiseFloor,
   spmPackageIdentity,
   documentedPackage,
@@ -2237,5 +2238,108 @@ let package = Package(
         dependencies: [{ form: 'collides-with-injected', identity: 'reactnative', target: null }],
       });
     });
+  });
+});
+
+describe('emitExpoModulesJSIHeadersPackage', () => {
+  let tmp;
+  let outDir;
+
+  const xcframeworkAt = (name) => {
+    const xcframework = path.join(tmp, name, 'ExpoModulesJSIHeaders.xcframework');
+    fs.mkdirSync(xcframework, { recursive: true });
+    fs.writeFileSync(path.join(xcframework, 'Info.plist'), '<plist/>');
+    return xcframework;
+  };
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-jsi-headers-'));
+    outDir = path.join(tmp, 'out');
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('declares the headers as a binary target beside a target that links the real framework', () => {
+    const headers = xcframeworkAt('npm');
+    const pkgDir = emitExpoModulesJSIHeadersPackage(headers, outDir);
+
+    expect(pkgDir).toBe(path.join(outDir, 'ExpoModulesJSIHeaders'));
+    const manifest = fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8');
+    expect(manifest).toContain('name: "ExpoModulesJSIHeaders"');
+    expect(manifest).toContain(
+      '.library(name: "ExpoModulesJSIHeaders", targets: ["ExpoModulesJSIHeaders", "ExpoModulesJSILink"])'
+    );
+    expect(manifest).toContain(
+      '.binaryTarget(name: "ExpoModulesJSIHeaders", path: "ExpoModulesJSIHeaders.xcframework")'
+    );
+    expect(manifest).toMatch(
+      /\.target\(\s*name: "ExpoModulesJSILink",\s*path: "ExpoModulesJSILink",\s*linkerSettings: \[\.linkedFramework\("ExpoModulesJSI"\)\]\s*\)/
+    );
+    expect(fs.readlinkSync(path.join(pkgDir, 'ExpoModulesJSIHeaders.xcframework'))).toBe(headers);
+    expect(
+      fs.readFileSync(path.join(pkgDir, 'ExpoModulesJSILink', 'ExpoModulesJSILink.swift'), 'utf8')
+    ).toBe('');
+  });
+
+  it('replaces the previous emission on a re-run, leaving no stale files', () => {
+    emitExpoModulesJSIHeadersPackage(xcframeworkAt('first'), outDir);
+    const pkgDir = path.join(outDir, 'ExpoModulesJSIHeaders');
+    fs.writeFileSync(path.join(pkgDir, 'stale.txt'), 'left by an older plugin');
+    const second = xcframeworkAt('second');
+
+    emitExpoModulesJSIHeadersPackage(second, outDir);
+
+    expect(fs.readlinkSync(path.join(pkgDir, 'ExpoModulesJSIHeaders.xcframework'))).toBe(second);
+    expect(fs.readdirSync(pkgDir).sort()).toEqual([
+      'ExpoModulesJSIHeaders.xcframework',
+      'ExpoModulesJSILink',
+      'Package.swift',
+    ]);
+    // The old symlink target is untouched: removing the link must not follow it.
+    expect(
+      fs.existsSync(path.join(tmp, 'first', 'ExpoModulesJSIHeaders.xcframework', 'Info.plist'))
+    ).toBe(true);
+  });
+});
+
+describe('the ExpoModulesJSIHeaders dependency of emitted source packages', () => {
+  let tmp;
+  let moduleRoot;
+  let outDir;
+
+  const emitted = (emitContext) => {
+    emitPureSwiftSourcePackage(
+      { moduleRoot, product: 'ExpoAsset' },
+      { frameworkSearchPath: '/abs/interfaces', outDir, ...emitContext }
+    );
+    return fs.readFileSync(path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'), 'utf8');
+  };
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-jsi-dep-'));
+    moduleRoot = path.join(tmp, 'module');
+    outDir = path.join(tmp, 'out');
+    fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+    fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('is declared on the package and every target when the headers package exists', () => {
+    const manifest = emitted({ jsiHeadersPkgPath: '/abs/out/ExpoModulesJSIHeaders' });
+    expect(manifest).toContain(
+      '.package(name: "ExpoModulesJSIHeaders", path: "/abs/out/ExpoModulesJSIHeaders")'
+    );
+    expect(manifest).toContain(
+      '.product(name: "ExpoModulesJSIHeaders", package: "ExpoModulesJSIHeaders")'
+    );
+  });
+
+  it('is absent when there is no headers package', () => {
+    expect(emitted({})).not.toContain('ExpoModulesJSIHeaders');
   });
 });

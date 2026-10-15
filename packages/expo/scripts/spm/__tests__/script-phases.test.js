@@ -1,5 +1,9 @@
 'use strict';
 
+const { execFileSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
 const { scriptPhasesForModules } = require('../script-phases');
 
 const APP_CONFIG_ID = 'expo-constants.app-config';
@@ -65,5 +69,46 @@ describe('scriptPhasesForModules', () => {
     const once = scriptPhasesForModules(['expo-constants']);
     const twice = scriptPhasesForModules(['expo-constants', 'expo', 'expo-constants']);
     expect(twice).toEqual(once);
+  });
+});
+
+describe('the ExpoModulesJSI build phase', () => {
+  const JSI_BUILD_ID = 'expo-modules-jsi.build';
+  const SCRIPT_PATH = path.join(__dirname, '..', 'build-expo-modules-jsi.sh');
+  const jsiPhase = (modules) => scriptPhasesForModules(modules).find((p) => p.id === JSI_BUILD_ID);
+
+  it('is emitted only when expo-modules-jsi is autolinked', () => {
+    expect(jsiPhase(['expo', 'expo-modules-core'])).toBeUndefined();
+    expect(jsiPhase(['expo', 'expo-modules-core', 'expo-modules-jsi'])).toBeDefined();
+  });
+
+  // Source packages compile against the headers XCFramework only; the app's own sources
+  // and its link step need the real framework, so the phase runs before they compile.
+  // It tracks its own inputs, so Xcode must run it on every build.
+  it('builds before the app target compiles, on every build', () => {
+    expect(jsiPhase(['expo-modules-jsi'])).toMatchObject({
+      name: 'Build ExpoModulesJSI',
+      position: 'beforeCompile',
+      alwaysOutOfDate: true,
+    });
+  });
+
+  it('runs build-expo-modules-jsi.sh', () => {
+    expect(jsiPhase(['expo-modules-jsi']).script).toBe(fs.readFileSync(SCRIPT_PATH, 'utf8'));
+  });
+
+  it('is valid bash with no host-specific path baked in', () => {
+    execFileSync('bash', ['-n', SCRIPT_PATH]);
+    const { script } = jsiPhase(['expo-modules-jsi']);
+    expect(script).not.toMatch(/\/Users\//);
+    expect(script).not.toMatch(/SPIKE/i);
+  });
+
+  // Inside node_modules the package directory may be read-only and is shared by every
+  // build folder, so all build state lives under the build folder's OBJROOT.
+  it('keeps the build of expo-modules-jsi under the build folder', () => {
+    const { script } = jsiPhase(['expo-modules-jsi']);
+    expect(script).toContain('JSI_ROOT="$OBJROOT/ExpoModulesJSI"');
+    expect(script).toContain('EXPO_CUSTOM_BUILD_ROOT="$JSI_ROOT/custom-build"');
   });
 });

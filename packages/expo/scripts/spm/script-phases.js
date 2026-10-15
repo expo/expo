@@ -15,6 +15,9 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 // Stable ledger key AND the seed RN derives the phase's pbxproj UUID from, so
 // changing it is a remove + re-add rather than an in-place update. Dot form:
 // RN's contract rejects `:` and, in the currently published preview, `@` and `/`.
@@ -70,8 +73,23 @@ export EXPO_CONSTANTS_ALLOW_NON_PODS=1
 exec "$EXPO_CONSTANTS_DIR/scripts/get-app-config-ios.sh"
 `;
 
+const JSI_BUILD_PHASE_ID = 'expo-modules-jsi.build';
+
 /** Each phase, keyed by the npm package of the module that needs it. */
 const SCRIPT_PHASES = [
+  {
+    packageName: 'expo-modules-jsi',
+    phase: {
+      id: JSI_BUILD_PHASE_ID,
+      name: 'Build ExpoModulesJSI',
+      script: fs.readFileSync(path.join(__dirname, 'build-expo-modules-jsi.sh'), 'utf8'),
+      // Source packages compile against the headers XCFramework alone; the app's own
+      // sources and its link step need the real framework.
+      position: 'beforeCompile',
+      // The script hashes its own inputs and returns early when nothing changed.
+      alwaysOutOfDate: true,
+    },
+  },
   {
     packageName: 'expo-constants',
     phase: {
@@ -101,4 +119,9 @@ function scriptPhasesForModules(modulePackageNames) {
   );
 }
 
-module.exports = { scriptPhasesForModules, APP_CONFIG_PHASE_ID, APP_CONFIG_OUTPUT };
+module.exports = {
+  scriptPhasesForModules,
+  APP_CONFIG_PHASE_ID,
+  APP_CONFIG_OUTPUT,
+  JSI_BUILD_PHASE_ID,
+};
