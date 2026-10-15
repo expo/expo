@@ -103,6 +103,13 @@ describe('emitDirectPackage', () => {
     expect(fs.realpathSync(generated)).toBe(fs.realpathSync(coreHeadersXCFramework));
   });
 
+  it('removes the stubs directory an earlier plugin generated in the package', () => {
+    const stubs = path.join(pkgDir, '.stubs');
+    fs.mkdirSync(path.join(stubs, 'ExpoModulesCore'), { recursive: true });
+    emit();
+    expect(fs.existsSync(stubs)).toBe(false);
+  });
+
   it('moves the xcframework link when the ExpoModulesCore headers come from another path', () => {
     emit();
     coreHeadersXCFramework = path.join(root, 'other', 'ExpoModulesCoreHeaders.xcframework');
