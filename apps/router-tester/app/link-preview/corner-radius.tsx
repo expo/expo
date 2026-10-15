@@ -1,71 +1,48 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
+const colors = ['#ff6a00', '#1e3a8a', '#16a34a', '#c026d3', '#0891b2', '#e11d48'];
 
 export default function CornerRadius() {
-  // `?case=<n>` renders a single case, which keeps docs screenshots focused.
-  const { case: only } = useLocalSearchParams<{ case?: string }>();
-  const show = (n: string) => !only || only === n;
+  // `?case=` selects where `borderRadius` is set. Docs screenshots use each case.
+  const { case: variant = 'none' } = useLocalSearchParams<{ case?: 'none' | 'radius' | 'label' }>();
 
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      contentContainerStyle={{ padding: 24, gap: 12 }}
+      contentContainerStyle={{
+        padding: 24,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        justifyContent: 'center',
+      }}
       contentInsetAdjustmentBehavior="automatic">
-      {show('1') && (
-        <>
-          <Text style={styles.label}>1. Radius only on the inner view</Text>
-          <Link href="/link-preview/one" asChild>
-            <Link.Trigger>
-              <Pressable testID="no-radius" style={styles.card}>
-                <View style={styles.art} />
-                <Text style={styles.caption}>Caption</Text>
+      {colors.map((color) => (
+        <Link key={color} href="/link-preview/one" asChild>
+          <Link.Trigger>
+            {variant === 'label' ? (
+              <Pressable style={{ width: 100, borderRadius: 16 }}>
+                <View style={{ height: 100, borderRadius: 16, backgroundColor: color }} />
+                <Text style={{ textAlign: 'center' }}>Label</Text>
               </Pressable>
-            </Link.Trigger>
-            <Link.Menu>
-              <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
-            </Link.Menu>
-          </Link>
-        </>
-      )}
-      {show('2') && (
-        <>
-          <Text style={styles.label}>2. Background and radius on the Pressable</Text>
-          <Link href="/link-preview/one" asChild>
-            <Link.Trigger>
-              <Pressable testID="background-radius" style={styles.art} />
-            </Link.Trigger>
-            <Link.Menu>
-              <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
-            </Link.Menu>
-          </Link>
-        </>
-      )}
-      {show('3') && (
-        <>
-          <Text style={styles.label}>3. Radius on the Pressable and the inner view</Text>
-          <Link href="/link-preview/one" asChild>
-            <Link.Trigger>
-              <Pressable testID="nested-radius" style={styles.roundedCard}>
-                <View style={styles.art} />
-                <Text style={styles.caption}>Caption</Text>
-              </Pressable>
-            </Link.Trigger>
-            <Link.Menu>
-              <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
-            </Link.Menu>
-          </Link>
-        </>
-      )}
+            ) : (
+              <Pressable
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: variant === 'radius' ? 16 : 0,
+                  backgroundColor: color,
+                }}
+              />
+            )}
+          </Link.Trigger>
+          <Link.Menu>
+            <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
+          </Link.Menu>
+        </Link>
+      ))}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  card: { alignSelf: 'flex-start' },
-  // Link.Trigger with `asChild` rejects style arrays, so this repeats `card`.
-  roundedCard: { alignSelf: 'flex-start', borderRadius: 8 },
-  label: { fontSize: 15, marginTop: 12 },
-  art: { width: 200, height: 120, borderRadius: 8, backgroundColor: '#ff6a00' },
-  caption: { marginTop: 8, fontSize: 15 },
-});

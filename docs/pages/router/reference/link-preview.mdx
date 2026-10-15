@@ -167,14 +167,19 @@ To explore all available customization options, see the API documentation for [`
 
 ## Corner radius
 
-When you press and hold a link, iOS lifts the direct child of `Link.Trigger`. The lifted view uses the `borderRadius` of that child. To keep the same corners when the view is lifted, set `borderRadius` on the direct child.
+When you press and hold a link, iOS lifts the direct child of `Link.Trigger` and applies rounded corners. To preserve the original corner radius, set `borderRadius` on that child.
+
+<ContentSpotlight
+  alt="Square cards at rest and a lifted card with rounded corners."
+  src="/static/images/expo-router/link-preview-corner-radius-1.webp"
+/>
 
 The following example sets `borderRadius` on the `Pressable`:
 
 ```tsx
 <Link href="/about" asChild>
   <Link.Trigger>
-    <Pressable style={{ width: 200, height: 120, borderRadius: 8, backgroundColor: '#ff6a00' }} />
+    <Pressable style={{ width: 100, height: 100, borderRadius: 16, backgroundColor: '#ff6a00' }} />
   </Link.Trigger>
   <Link.Menu>
     <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={handleSharePress} />
@@ -183,7 +188,7 @@ The following example sets `borderRadius` on the `Pressable`:
 ```
 
 <ContentSpotlight
-  alt="A rounded card at rest and lifted, with the same corners in both states."
+  alt="Rounded cards at rest and a lifted card with the same corners."
   src="/static/images/expo-router/link-preview-corner-radius-2.webp"
 />
 
@@ -192,9 +197,9 @@ If a nested view has a `borderRadius`, set the same value on the `Pressable`:
 ```tsx
 <Link href="/about" asChild>
   <Link.Trigger>
-    <Pressable style={{ alignSelf: 'flex-start', borderRadius: 8 }}>
-      <View style={{ width: 200, height: 120, borderRadius: 8, backgroundColor: '#ff6a00' }} />
-      <Text>Caption</Text>
+    <Pressable style={{ width: 100, borderRadius: 16 }}>
+      <View style={{ height: 100, borderRadius: 16, backgroundColor: '#ff6a00' }} />
+      <Text style={{ textAlign: 'center' }}>Label</Text>
     </Pressable>
   </Link.Trigger>
   <Link.Menu>
@@ -204,7 +209,7 @@ If a nested view has a `borderRadius`, set the same value on the `Pressable`:
 ```
 
 <ContentSpotlight
-  alt="A rounded card with a caption at rest and lifted, with the same corners in both states."
+  alt="Rounded cards with labels at rest and a lifted card with the same corners."
   src="/static/images/expo-router/link-preview-corner-radius-3.webp"
 />
 
