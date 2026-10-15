@@ -21,6 +21,7 @@ export {
   type Location,
   type AssetFieldValueMap,
   type AssetInfo,
+  type AssetMetadata,
   type AssetUriOptions,
   type GranularPermission,
   type MediaLibraryAssetsChangeEvent,
