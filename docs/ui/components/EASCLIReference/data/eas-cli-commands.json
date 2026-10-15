@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-10-13T08:18:31.692Z",
-    "cliVersion": "24.13.0"
+    "fetchedAt": "2026-10-15T08:13:07.556Z",
+    "cliVersion": "24.14.0"
   },
   "totalCommands": 164,
   "commands": [
@@ -188,8 +188,8 @@
     },
     {
       "command": "eas channel:protect [NAME]",
-      "description": "protect a channel so only account admins can publish to it",
-      "usage": "USAGE\n  $ eas channel:protect [NAME] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Name of the channel to protect\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  protect a channel so only account admins can publish to it"
+      "description": "protect a channel so only Release Managers, Admins, and Owners can publish to it",
+      "usage": "USAGE\n  $ eas channel:protect [NAME] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Name of the channel to protect\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  protect a channel so only Release Managers, Admins, and Owners can publish to it"
     },
     {
       "command": "eas channel:resume [NAME]",
@@ -203,8 +203,8 @@
     },
     {
       "command": "eas channel:unprotect [NAME]",
-      "description": "remove a channel's admin-only publishing restriction",
-      "usage": "USAGE\n  $ eas channel:unprotect [NAME] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Name of the channel to unprotect\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove a channel's admin-only publishing restriction"
+      "description": "remove a channel's protected publishing restriction",
+      "usage": "USAGE\n  $ eas channel:unprotect [NAME] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Name of the channel to unprotect\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove a channel's protected publishing restriction"
     },
     {
       "command": "eas channel:view [NAME]",
@@ -794,7 +794,7 @@
     {
       "command": "eas workflow:insights:maestro",
       "description": "display Maestro test insights for a time range: pass and flake rates, per-flow stats, and a single flow's history",
-      "usage": "USAGE\n  $ eas workflow:insights:maestro [--workflow <value>...] [--git-ref <value>] [--status PASSED|FLAKY|FAILED... | --flow\n    <value>] [--tag <value>... | ] [--search <value> | ] [--sort fails|runs|flakes|pass-rate|flake-rate|p90|last-run | ]\n    [--sort-direction asc|desc | ] [--days <value> | --start <value> | --end <value>] [--limit <value>] [--project-id\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --days=<value>             Show insights from the last N days (default 7, mutually exclusive with --start/--end).\n  --end=<value>              End of insights time range (ISO date).\n  --flow=<value>             Show one flow's history instead of the overview, by flow path. Cannot be combined with\n                             --status, --tag, --search, --sort, --sort-direction.\n  --git-ref=<value>          Only include runs requested for this git ref, for example main or refs/heads/main, or for\n                             the full 40-character commit SHA that eas workflow:run recorded.\n  --json                     Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>            The number of flows to list, or of recent runs with --flow. Defaults to 50 and is capped at\n                             100.\n  --non-interactive          Run the command in non-interactive mode.\n  --project-id=<value>       EAS project ID (defaults to the project ID of the current directory)\n  --search=<value>           Only list flows whose path contains this text.\n  --sort=<option>            [default: fails] Sort the flows table by this column.\n                             <options: fails|runs|flakes|pass-rate|flake-rate|p90|last-run>\n  --sort-direction=<option>  [default: desc] Sort direction for the flows table.\n                             <options: asc|desc>\n  --start=<value>            Start of insights time range (ISO date).\n  --status=<option>...       Only include flow runs with this status (can be specified multiple times). PASSED means\n                             passed on the first attempt.\n                             <options: PASSED|FLAKY|FAILED>\n  --tag=<value>...           Only include flow runs with this tag (can be specified multiple times).\n  --workflow=<value>...      Only include runs of this workflow file name (can be specified multiple times).\n\nDESCRIPTION\n  display Maestro test insights for a time range: pass and flake rates, per-flow stats, and a single flow's history"
+      "usage": "USAGE\n  $ eas workflow:insights:maestro [--workflow <value>...] [--git-ref <value>] [--platform ios|android...] [--status\n    PASSED|FLAKY|FAILED... | --flow <value>] [--tag <value>... | ] [--search <value> | ] [--sort\n    fails|runs|flakes|pass-rate|flake-rate|p90|last-run | ] [--sort-direction asc|desc | ] [--days <value> | --start\n    <value> | --end <value>] [--limit <value>] [--project-id <value>] [--json] [--non-interactive]\n\nFLAGS\n  --days=<value>             Show insights from the last N days (default 7, mutually exclusive with --start/--end).\n  --end=<value>              End of insights time range (ISO date).\n  --flow=<value>             Show one flow's history instead of the overview, by flow path. Cannot be combined with\n                             --status, --tag, --search, --sort, --sort-direction.\n  --git-ref=<value>          Only include runs requested for this git ref, for example main or refs/heads/main, or for\n                             the full 40-character commit SHA that eas workflow:run recorded.\n  --json                     Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>            The number of flows to list, or of recent runs with --flow. Defaults to 50 and is capped at\n                             100.\n  --non-interactive          Run the command in non-interactive mode.\n  --platform=<option>...     Only include flow runs on this platform (can be specified multiple times).\n                             <options: ios|android>\n  --project-id=<value>       EAS project ID (defaults to the project ID of the current directory)\n  --search=<value>           Only list flows whose path contains this text.\n  --sort=<option>            [default: fails] Sort the flows table by this column.\n                             <options: fails|runs|flakes|pass-rate|flake-rate|p90|last-run>\n  --sort-direction=<option>  [default: desc] Sort direction for the flows table.\n                             <options: asc|desc>\n  --start=<value>            Start of insights time range (ISO date).\n  --status=<option>...       Only include flow runs with this status (can be specified multiple times). PASSED means\n                             passed on the first attempt.\n                             <options: PASSED|FLAKY|FAILED>\n  --tag=<value>...           Only include flow runs with this tag (can be specified multiple times).\n  --workflow=<value>...      Only include runs of this workflow file name (can be specified multiple times).\n\nDESCRIPTION\n  display Maestro test insights for a time range: pass and flake rates, per-flow stats, and a single flow's history"
     },
     {
       "command": "eas workflow:logs [ID]",
