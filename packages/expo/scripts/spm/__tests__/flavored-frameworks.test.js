@@ -495,9 +495,35 @@ describe('resolveHeadersXCFramework', () => {
     expect(fs.existsSync(path.join(resolved, 'Info.plist'))).toBe(true);
   });
 
+  const rebuildHint =
+    'Reinstall test-package, or in the Expo repository run `node tools/bin/expotools.js prebuild test-package`. Then run `npx react-native spm update` again.';
+
   it('rejects an expanded XCFramework with no Info.plist', () => {
     const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
     fs.rmSync(path.join(shipped, 'Info.plist'));
     expect(resolve).toThrow(`${shipped} has no Info.plist`);
+    expect(resolve).toThrow('its build or its extraction did not finish');
+    expect(resolve).toThrow(rebuildHint);
+  });
+
+  itNotWindows('rejects a tarball whose XCFramework has no Info.plist', () => {
+    const source = path.join(root, 'source');
+    fs.rmSync(path.join(headersIn(source), 'Info.plist'));
+    const tarball = packTarball(
+      path.join(source, 'headers', 'xcframeworks'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoPairHeaders.tar.gz'
+      ),
+      ['ExpoPairHeaders.xcframework']
+    );
+
+    expect(resolve).toThrow(`${tarball} holds ExpoPairHeaders.xcframework with no Info.plist`);
+    expect(resolve).toThrow('its build or its extraction did not finish');
+    expect(resolve).toThrow(rebuildHint);
   });
 });

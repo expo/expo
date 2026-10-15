@@ -24,6 +24,8 @@ const CORE_HEADERS = 'ExpoModulesCoreHeaders';
 const JSI_HEADERS = 'ExpoModulesJSIHeaders';
 // A binary target cannot have dependencies, so this source target carries the JSI one.
 const CORE_HEADERS_DEPENDENCIES = 'ExpoModulesCoreHeadersDependencies';
+// Written into the package by an earlier generator; nothing reads it now.
+const LEGACY_STUBS_DIR = '.stubs';
 
 /**
  * Module manifests depend on the product, so it keeps the package's name. ExpoModulesCore's
@@ -89,6 +91,7 @@ function writeIfChanged(file, contents) {
 function emitCoreHeadersPackage(directDir, coreHeadersXCFramework, jsiHeadersPkgPath) {
   const pkgDir = path.join(directDir, CORE_HEADERS);
   fs.mkdirSync(pkgDir, { recursive: true });
+  fs.rmSync(path.join(pkgDir, LEGACY_STUBS_DIR), { recursive: true, force: true });
   relativeSymlink(coreHeadersXCFramework, path.join(pkgDir, `${CORE_HEADERS}.xcframework`));
   const dependenciesDir = path.join(pkgDir, CORE_HEADERS_DEPENDENCIES);
   if (jsiHeadersPkgPath != null) {

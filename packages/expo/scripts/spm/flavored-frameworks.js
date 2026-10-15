@@ -130,7 +130,15 @@ function validateTarEntries(tarballPath, frameworkName) {
   }
 }
 
-function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
+function incompleteXCFrameworkError(what, packageName) {
+  return pluginError({
+    what,
+    why: 'The XCFramework is incomplete because its build or its extraction did not finish, or the file is damaged.',
+    how: `Reinstall ${packageName}, or in the Expo repository run \`node tools/bin/expotools.js prebuild ${packageName}\`. Then run \`npx react-native spm update\` again.`,
+  });
+}
+
+function extractTarball(sourcePath, packageName, frameworkName, cacheDir, flavor) {
   const stat = fs.statSync(sourcePath);
   const destination = path.join(cacheDir, stableFrameworkId(frameworkName), flavor);
   const xcframeworkPath = path.join(destination, `${frameworkName}.xcframework`);
@@ -155,9 +163,10 @@ function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
     execFileSync('tar', ['-xzf', sourcePath, '-C', temp], { stdio: 'pipe' });
     const extracted = path.join(temp, `${frameworkName}.xcframework`);
     if (!fs.existsSync(path.join(extracted, 'Info.plist'))) {
-      throw pluginError({
-        what: `${sourcePath} did not extract ${frameworkName}.xcframework/Info.plist`,
-      });
+      throw incompleteXCFrameworkError(
+        `${sourcePath} holds ${frameworkName}.xcframework with no Info.plist.`,
+        packageName
+      );
     }
     fs.writeFileSync(path.join(temp, '.source.json'), stamp, 'utf8');
   });
@@ -182,9 +191,9 @@ function replaceDirectory(destination, fill) {
   }
 }
 
-function prepareArtifactSource(source, frameworkName, cacheDir, flavor) {
+function prepareArtifactSource(source, packageName, frameworkName, cacheDir, flavor) {
   if (source.type === 'tarball') {
-    return extractTarball(source.path, frameworkName, cacheDir, flavor);
+    return extractTarball(source.path, packageName, frameworkName, cacheDir, flavor);
   }
   return path.resolve(source.path);
 }
@@ -265,8 +274,14 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
       frameworkName,
       linkage: 'dynamic',
       flavors: {
-        debug: prepareArtifactSource(sources.debug, frameworkName, cacheDir, 'debug'),
-        release: prepareArtifactSource(sources.release, frameworkName, cacheDir, 'release'),
+        debug: prepareArtifactSource(sources.debug, packageName, frameworkName, cacheDir, 'debug'),
+        release: prepareArtifactSource(
+          sources.release,
+          packageName,
+          frameworkName,
+          cacheDir,
+          'release'
+        ),
       },
     });
     frameworkSources.set(framework, base);
@@ -299,13 +314,15 @@ function resolveHeadersXCFrameworkWithSource({ packageName, moduleRoot, productN
   for (const base of artifactBases(packageName, moduleRoot)) {
     const artifact = existingArtifactSource(base.dir, HEADERS_FLAVOR, frameworkName);
     if (artifact == null) continue;
-    const xcframework = prepareArtifactSource(artifact, frameworkName, cacheDir, HEADERS_FLAVOR);
+    const xcframework = prepareArtifactSource(
+      artifact,
+      packageName,
+      frameworkName,
+      cacheDir,
+      HEADERS_FLAVOR
+    );
     if (!fs.existsSync(path.join(xcframework, 'Info.plist'))) {
-      throw pluginError({
-        what: `${xcframework} has no Info.plist.`,
-        why: 'The XCFramework is incomplete, so Swift packages cannot compile against it.',
-        how: `Reinstall ${packageName}, or delete it and run the Expo prebuild pipeline for ${packageName} again.`,
-      });
+      throw incompleteXCFrameworkError(`${xcframework} has no Info.plist.`, packageName);
     }
     return { xcframework, source: base };
   }
