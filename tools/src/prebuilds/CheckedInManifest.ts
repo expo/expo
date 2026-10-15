@@ -1272,7 +1272,16 @@ export async function resolveCheckedInHeaderDirectoriesAsync(
     }
     const declared = path.relative('src', target.publicHeadersPath);
     const directory = path.join(target.sourceRoot, declared);
-    if (!(await fs.stat(directory).catch(() => null))?.isDirectory()) {
+    const stat = await fs.stat(directory).catch(() => null);
+    if (stat != null && !stat.isDirectory()) {
+      throw manifestError(
+        product.name,
+        target.name,
+        `its public headers path ${directory} is a file, not a directory, and et prebuild builds the module headers of the framework from a directory.`,
+        `Set publicHeadersPath on target "${target.name}" in Package.swift to the directory that holds its public headers.`
+      );
+    }
+    if (stat == null) {
       // A manifest that spells out publicHeadersPath: "include" resolves to the default too, and
       // the default's advice (add include/) fits it as well.
       throw target.publicHeadersPath === DEFAULT_PUBLIC_HEADERS_PATH

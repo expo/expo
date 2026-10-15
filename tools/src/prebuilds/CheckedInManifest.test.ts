@@ -1349,6 +1349,32 @@ it('header directories: rejects a C target whose declared publicHeadersPath is m
   );
 });
 
+for (const [label, publicHeadersPath, file] of [
+  ['declared publicHeadersPath', 'headers', 'native/headers'],
+  ['default include/ path', undefined, 'native/include'],
+] as const) {
+  it(`header directories: rejects a C target whose ${label} is a file`, async () => {
+    const input = cFixture(publicHeadersPath, { [file]: 'int thing(void);' });
+    const filePath = path.join(fs.realpathSync.native(input.root), file);
+    await assert.rejects(
+      resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+      (error: Error) => {
+        assertManifestDiagnostic(
+          error,
+          / is a file, not a directory, .* Set publicHeadersPath on target "Main" in Package\.swift to the directory that holds its public headers\.$/,
+          'Main'
+        );
+        assert.ok(
+          error.message.includes(`public headers path ${filePath} is a file`),
+          error.message
+        );
+        assert.doesNotMatch(error.message, /does not exist/);
+        return true;
+      }
+    );
+  });
+}
+
 it('header directories: rejects a C target whose public headers spm.config.json disables', async () => {
   const input = cFixture(undefined, { 'native/include/Thing.h': 'int thing(void);' });
   (input.product.targets[0] as SourceTarget).publicHeaders = false;
