@@ -107,6 +107,15 @@ class DeviceDiscovery {
   }
 
   var defaultBackCamera: AVCaptureDevice? {
+    // A virtual device that includes the ultra-wide switches to it when the subject is closer than
+    // the wide lens can focus, as the system Camera app does for macro.
+    for type in [AVCaptureDevice.DeviceType.builtInTripleCamera, .builtInDualWideCamera] {
+      if let virtualBack = AVCaptureDevice.default(type, for: .video, position: .back),
+        self.backCameraLenses.contains(virtualBack) {
+        return virtualBack
+      }
+    }
+
     if let standardBack = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
       if self.backCameraLenses.contains(standardBack) {
         return standardBack
