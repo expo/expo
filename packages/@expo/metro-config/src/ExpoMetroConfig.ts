@@ -296,9 +296,6 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
-  // TODO(@kitten): Replace cache invalidation here with cache-vary invalidation on individual expo-router paths
-  const routerPackageRoot = resolveFrom(projectRoot, 'expo-router', { followSymlinks: true });
-
   const expoMetroConfig = asMetroConfigInput({
     reporter: {
       // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
@@ -421,7 +418,6 @@ export function getDefaultConfig(
     transformer: {
       unstable_workerThreads: true,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist
         ? stableHash(JSON.stringify(pkg?.browserslist)).toString('hex')

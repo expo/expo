@@ -1559,7 +1559,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     source: `
       var values = [process.env.EXPO_OS, process['env']['EXPO_OS'], process.env.EXPO_SERVER, process.env.NODE_ENV, __DEV__, Platform.OS];
       var registry = import.meta.url;
-      var router = [process.env.EXPO_PROJECT_ROOT, process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
+      var router = [process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
       var selected = Platform.select({ web: 'web', native: 'native', ios: 'ios' });
       function shadow(process, Platform, __DEV__) {
         return [process.env.EXPO_OS, Platform.OS, __DEV__];
@@ -1585,7 +1585,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     `var values = ["ios", "ios", false, "production", false, "ios"]`
   );
   expect(result.result.code).toContain('globalThis.__ExpoImportMetaRegistry.url');
-  expect(result.result.code).toContain(`var router = ["/app", "../../app", "sync"]`);
+  expect(result.result.code).toContain(`var router = ["../../app", "sync"]`);
   expect(result.result.code).toContain(`var selected = 'ios'`);
   expect(result.result.code).toContain('return [process.env.EXPO_OS, Platform.OS, __DEV__]');
   expect(result.result.code).toContain(`process.env.NODE_ENV = 'test'`);
@@ -1679,7 +1679,6 @@ it('resolves only encountered public and Router environment properties', async (
           process.env[key],
           (() => { const process = { env: { EXPO_PUBLIC_NOXCTURNAL_I19: 'shadow' } }; return process.env.EXPO_PUBLIC_NOXCTURNAL_I19; })(),
           process.env.EXPO_ROUTER_APP_ROOT,
-          process['env'].EXPO_ROUTER_ABS_APP_ROOT
         ];
       `,
       options: options({
@@ -1696,7 +1695,6 @@ it('resolves only encountered public and Router environment properties', async (
     expect(result.result.code).toContain('process.env[key]');
     expect(result.result.code).toContain('EXPO_PUBLIC_NOXCTURNAL_I19: "shadow"');
     expect(result.result.code).toContain('"../../../routes"');
-    expect(result.result.code).toContain('"/app/routes"');
   } finally {
     if (previous === undefined) delete process.env.EXPO_PUBLIC_NOXCTURNAL_I19;
     else process.env.EXPO_PUBLIC_NOXCTURNAL_I19 = previous;
