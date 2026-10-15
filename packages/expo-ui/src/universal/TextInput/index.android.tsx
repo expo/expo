@@ -206,7 +206,14 @@ export function TextInput({
               <Text
                 color={placeholderTextColor as string | undefined}
                 modifiers={[fillMaxWidth()]}
-                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                style={
+                  textStyle || (textAlign && textAlign !== 'auto')
+                    ? {
+                        ...textStyle,
+                        ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+                      }
+                    : undefined
+                }>
                 {placeholder}
               </Text>
             </BasicTextField.Placeholder>
