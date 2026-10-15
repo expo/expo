@@ -142,29 +142,40 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: 1.x
+      # The ccache key in expo-caches reads `xcodebuild -version`.
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-      - name: 🍺 Install required tools
-        run: |
-          brew install watchman || true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.2
+      # Runs before the background steps so its `brew install` does not race the watchman install.
       - name: Setup ccache
         uses: ./.github/actions/setup-ccache
+      # setup-node needs pnpm on PATH to find the pnpm store.
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
+      - name: 🏗️ Setup Bun
+        id: setup-bun
+        background: true
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.x
+      - name: 🍺 Install required tools
+        id: install-tools
+        background: true
+        run: |
+          brew install watchman || true
+      - name: 💎 Setup Ruby and install gems
+        id: setup-ruby
+        background: true
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
       - name: 🔨 Setup Node
+        id: setup-node
+        background: true
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
@@ -172,10 +183,13 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
+        background: true
         with:
           ccache: 'true'
           bare-expo-pods: 'true'
           ccache-variant: 'e2e-release'
+      - name: ⏳ Wait for setup
+        wait: [setup-bun, install-tools, setup-ruby, setup-node, expo-caches]
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
