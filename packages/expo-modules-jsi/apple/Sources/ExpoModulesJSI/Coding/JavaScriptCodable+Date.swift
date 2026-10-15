@@ -19,7 +19,6 @@ extension Date: JavaScriptCodable {
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Date
   {
     // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
     return try value.withUnownedValue(in: runtime) { unownedValue in
       return try decode(unownedValue, in: runtime)
     }

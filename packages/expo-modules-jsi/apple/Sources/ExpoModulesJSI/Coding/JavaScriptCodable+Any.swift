@@ -253,8 +253,7 @@ extension JavaScriptValue {
       return Optional<Any>.none as Any
     }
     if value.isBigInt() {
-      // The borrowed value has no bigint accessor, so this rare case goes through an owning copy.
-      return try value.copied(in: runtime).getBigInt().asInt64()
+      return try value.getBigInt(in: runtime).asInt64()
     }
     throw TypeError(type: Any.self, reason: unrepresentableValueReason)
   }
