@@ -52,8 +52,11 @@ let headerSearchPaths = [
 // `scripts/generate-modulemap.sh` script writes this file at build time so
 // the absolute header path can be resolved against the runtime PODS_ROOT.
 // Lives outside `.build/` so SwiftPM state can be wiped without losing this
-// file.
-let generatedModuleMap = "\(packageDir)/.generated/module.modulemap"
+// file. `EXPO_CUSTOM_BUILD_ROOT` is forwarded from build-xcframework.sh when
+// the build must not write into the package, e.g. inside a SwiftPM app's
+// node_modules.
+let buildRoot = ProcessInfo.processInfo.environment["EXPO_CUSTOM_BUILD_ROOT"] ?? packageDir
+let generatedModuleMap = "\(buildRoot)/.generated/module.modulemap"
 let apiNotesPath = "\(packageDir)/APINotes"
 
 let cxxIncludeFlags = headerSearchPaths.map({ "-I\($0)" })
