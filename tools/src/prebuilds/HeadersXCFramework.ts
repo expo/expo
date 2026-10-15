@@ -166,7 +166,7 @@ export async function writeHeadersXCFrameworkAsync(
           LibraryPath: stub,
           SupportedArchitectures: library.SupportedArchitectures,
           SupportedPlatform: library.SupportedPlatform,
-          SupportedPlatformVariant: library.SupportedPlatformVariant || undefined,
+          SupportedPlatformVariant: library.SupportedPlatformVariant,
         })),
         CFBundlePackageType: 'XFWK',
         XCFrameworkFormatVersion: '1.0',
@@ -218,6 +218,7 @@ async function writeSliceAsync(
     return false;
   }
 
+  const target = sliceTargetFor(library);
   const slice = path.join(xcframework, library.LibraryIdentifier);
   const headers = path.join(slice, 'Headers', moduleName);
   if (hasHeaders) {
@@ -241,7 +242,8 @@ async function writeSliceAsync(
 
   await buildStubArchiveAsync(
     library,
-    await resolveMinimumVersionAsync(library, framework, product),
+    target,
+    await resolveMinimumVersionAsync(library, target, framework, product),
     product.name,
     path.join(slice, stubLibraryName(product.name)),
     scratch
@@ -275,10 +277,10 @@ function sliceTargetFor(library: XCFrameworkLibrary): SliceTarget {
 
 async function resolveMinimumVersionAsync(
   library: XCFrameworkLibrary,
+  target: SliceTarget,
   framework: string,
   product: HeadersProduct
 ): Promise<string> {
-  const target = sliceTargetFor(library);
   for (const infoPlist of ['Info.plist', path.join('Resources', 'Info.plist')]) {
     const file = path.join(framework, infoPlist);
     if (await fs.pathExists(file)) {
@@ -314,15 +316,15 @@ function parseProductPlatform(platform: string): { name: string; version: string
 
 async function buildStubArchiveAsync(
   library: XCFrameworkLibrary,
+  target: SliceTarget,
   minimumVersion: string,
   productName: string,
   output: string,
   scratch: string
 ): Promise<void> {
-  const target = sliceTargetFor(library);
   const xcrunAsync = async (tool: string, args: string[]) => {
     try {
-      await spawnAsync('xcrun', args);
+      await spawnAsync('xcrun', ['--sdk', target.sdk, tool, ...args]);
     } catch (error) {
       const stderr = (error as { stderr?: string }).stderr?.trim();
       throw new Error(
@@ -343,20 +345,10 @@ async function buildStubArchiveAsync(
   for (const arch of library.SupportedArchitectures) {
     const object = path.join(scratch, `${library.LibraryIdentifier}-${arch}.o`);
     const triple = `${arch}-apple-${target.os}${minimumVersion}${target.environment ? `-${target.environment}` : ''}`;
-    await xcrunAsync('clang', [
-      '--sdk',
-      target.sdk,
-      'clang',
-      '-target',
-      triple,
-      '-c',
-      source,
-      '-o',
-      object,
-    ]);
+    await xcrunAsync('clang', ['-target', triple, '-c', source, '-o', object]);
     objects.push(object);
   }
-  await xcrunAsync('libtool', ['libtool', '-static', '-o', output, ...objects]);
+  await xcrunAsync('libtool', ['-static', '-o', output, ...objects]);
 }
 
 async function readSourceLibrariesAsync(xcframework: string): Promise<XCFrameworkLibrary[]> {

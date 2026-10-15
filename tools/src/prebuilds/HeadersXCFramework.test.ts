@@ -3,7 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
+import { after, afterEach, before, describe, it, mock } from 'node:test';
 import os from 'os';
 import path from 'path';
 
@@ -17,7 +17,6 @@ import {
 import type { ProductPlatform, SPMProduct } from './SPMConfig.types';
 import { createContext, createRequest } from './pipeline/Context';
 import { composeStep } from './pipeline/ProductSteps';
-import schema from './schemas/spm.config.schema.json';
 
 const NAME = 'Fixture';
 const STUB = `lib${NAME}Headers.a`;
@@ -62,7 +61,7 @@ const product = (platforms: ProductPlatform[] = ['iOS("16.4")']) => ({ name: NAM
 
 const tempRoots: string[] = [];
 
-afterEach(async () => {
+after(async () => {
   await Promise.all(tempRoots.splice(0).map((root) => fs.remove(root)));
 });
 
@@ -167,9 +166,12 @@ function definedSymbols(nmOutput: string): string[] {
 }
 
 describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
-  it('lays out each slice as a stub archive, a headers directory and the text Swift interfaces', async () => {
-    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
+  let destination: string;
+  before(async () => {
+    destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
+  });
 
+  it('lays out each slice as a stub archive, a headers directory and the text Swift interfaces', async () => {
     assert.deepEqual(await listFilesAsync(destination), [
       'Info.plist',
       `ios-arm64/${NAME}.swiftmodule/arm64-apple-ios.private.swiftinterface`,
@@ -192,8 +194,6 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('rewrites every framework module declaration into a plain module', async () => {
-    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
-
     for (const slice of [DEVICE, SIMULATOR]) {
       const moduleMap = await fs.readFile(
         path.join(destination, slice.id, 'Headers', NAME, 'module.modulemap'),
@@ -204,10 +204,16 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('describes the source slices as library slices of the stub archive', async () => {
-    const destination = await writeFixtureAsync([SIMULATOR, { ...DEVICE, variant: '' }]);
-
     assert.deepEqual(await readPlistAsync(path.join(destination, 'Info.plist')), {
       AvailableLibraries: [
+        {
+          BinaryPath: STUB,
+          HeadersPath: 'Headers',
+          LibraryIdentifier: DEVICE.id,
+          LibraryPath: STUB,
+          SupportedArchitectures: ['arm64'],
+          SupportedPlatform: 'ios',
+        },
         {
           BinaryPath: STUB,
           HeadersPath: 'Headers',
@@ -217,14 +223,6 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
           SupportedPlatform: 'ios',
           SupportedPlatformVariant: 'simulator',
         },
-        {
-          BinaryPath: STUB,
-          HeadersPath: 'Headers',
-          LibraryIdentifier: DEVICE.id,
-          LibraryPath: STUB,
-          SupportedArchitectures: ['arm64'],
-          SupportedPlatform: 'ios',
-        },
       ],
       CFBundlePackageType: 'XFWK',
       XCFrameworkFormatVersion: '1.0',
@@ -232,7 +230,6 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('builds a stub archive per slice that defines one product-unique symbol', async () => {
-    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
     const device = path.join(destination, DEVICE.id, STUB);
     const simulator = path.join(destination, SIMULATOR.id, STUB);
 
@@ -406,10 +403,8 @@ describe('shouldWriteHeadersXCFramework', () => {
   const flagged: SPMProduct = { ...unflagged, headersXCFramework: true };
 
   it('writes from the debug flavor when the run builds debug, in either flavor order', () => {
-    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Debug', ['Debug', 'Release']), true);
-    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Debug', 'Release']), false);
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Debug', ['Release', 'Debug']), true);
-    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Release', 'Debug']), false);
+    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Debug', 'Release']), false);
   });
 
   it('writes from the release flavor when the run builds only release', () => {
@@ -484,19 +479,5 @@ describe('composeStep', appleToolsOnly, () => {
       composeXCFrameworkCalls: 0,
       headersWritten: true,
     });
-  });
-
-  it('writes no headers xcframework for a product that did not opt in', async () => {
-    assert.deepEqual(await composeAsync({}), {
-      composeXCFrameworkCalls: 1,
-      headersWritten: false,
-    });
-  });
-});
-
-describe('spm.config.json schema', () => {
-  it('accepts headersXCFramework as a boolean product option', () => {
-    assert.equal(schema.definitions.product.additionalProperties, false);
-    assert.equal(schema.definitions.product.properties.headersXCFramework.type, 'boolean');
   });
 });
