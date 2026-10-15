@@ -165,9 +165,9 @@ The following example shows a nested context menu on iOS:
 
 To explore all available customization options, see the API documentation for [`Link.MenuAction`](/versions/latest/sdk/router/link/#linkmenuaction).
 
-## Corner radius
+## Corner radius of the trigger
 
-When you press and hold a link, iOS lifts the direct child of `Link.Trigger` and applies rounded corners. To preserve the original corner radius, set `borderRadius` on that child.
+When you press and hold a link that uses `asChild`, iOS lifts the direct child of `Link.Trigger` and applies rounded corners. To preserve the original corner radius, set `borderRadius` on that child. A child with `borderRadius: 0` still gets rounded corners.
 
 <ContentSpotlight
   alt="Square cards at rest and a lifted card with rounded corners."
