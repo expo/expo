@@ -128,8 +128,7 @@ struct AppStartupMonitoringTests {
     let receiver = CapturingReceiver()
     let monitoring = makeMonitoring(receiver: receiver)
 
-    monitoring.isRunningInBackground = { true }
-    await monitoring.markDidFinishLaunching()
+    await monitoring.markDidFinishLaunching(runningInBackground: true)
     monitoring.markFirstRender()
     monitoring.markInteractive()
 
@@ -144,8 +143,7 @@ struct AppStartupMonitoringTests {
     let receiver = CapturingReceiver()
     let monitoring = makeMonitoring(receiver: receiver)
 
-    monitoring.isRunningInBackground = { false }
-    await monitoring.markDidFinishLaunching()
+    await monitoring.markDidFinishLaunching(runningInBackground: false)
     monitoring.markInteractive()
 
     _ = try await ttiMetric(from: receiver)
