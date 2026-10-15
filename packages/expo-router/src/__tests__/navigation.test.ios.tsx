@@ -1947,3 +1947,37 @@ it.each([
   expect(screen).toHavePathname('/a');
   expect(router.canGoBack()).toBe(false);
 });
+
+it('pushes a new layout when navigating between multi-segment dynamic layouts', async () => {
+  function ProjectLayout() {
+    const { org, project } = useLocalSearchParams();
+    return (
+      <>
+        <Text testID="layout">{`${org}/${project}`}</Text>
+        <Stack />
+      </>
+    );
+  }
+
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[org]/[project]/_layout': ProjectLayout,
+      '[org]/[project]/index': () => <Text testID="index" />,
+    },
+    { initialUrl: '/acme/web' }
+  );
+
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+
+  await act(() => router.navigate('/acme/api'));
+
+  expect(screen).toHavePathname('/acme/api');
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/api');
+  expect(router.canGoBack()).toBe(true);
+
+  await act(() => router.back());
+
+  expect(screen).toHavePathname('/acme/web');
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+});

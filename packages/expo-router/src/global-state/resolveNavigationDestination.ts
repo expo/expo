@@ -324,12 +324,14 @@ function routesMatch(
     return false;
   }
 
-  const dynamic = matchDynamicName(targetRoute.name);
-  return (
-    !dynamic ||
-    (targetRoute.params as Record<string, unknown> | undefined)?.[dynamic.name] ===
-      (currentRoute.params as Record<string, unknown> | undefined)?.[dynamic.name]
-  );
+  return targetRoute.name.split('/').every((segment) => {
+    const dynamic = matchDynamicName(segment);
+    return (
+      !dynamic ||
+      (targetRoute.params as Record<string, unknown> | undefined)?.[dynamic.name] ===
+        (currentRoute.params as Record<string, unknown> | undefined)?.[dynamic.name]
+    );
+  });
 }
 
 function findDestinationNode(routeNode: RouteNode, routeName: string | undefined) {
