@@ -1,40 +1,16 @@
+#!/bin/bash
 set -euo pipefail
 
-# Body of the app target's "Build ExpoModulesJSI" phase (see script-phases.js).
+# Runs the app target's "Build ExpoModulesJSI" phase, which expo's SwiftPM plugin adds to apps
+# that consume Expo modules through Swift Package Manager. The phase resolves react-native and this
+# package at build time, then calls this script with RN_DIR set to the react-native package.
 #
 # npm ships ExpoModulesJSI as a headers-only XCFramework, because the framework must be compiled
 # against the app's React Native. Swift packages compile against those headers; this phase builds
 # the real ExpoModulesJSI.framework and puts it where the app links and embeds it.
 
-if [ -z "${NODE_BINARY:-}" ]; then
-  set +eu
-  if [ -f "$SRCROOT/.xcode.env" ]; then . "$SRCROOT/.xcode.env"; fi
-  if [ -f "$SRCROOT/.xcode.env.local" ]; then . "$SRCROOT/.xcode.env.local"; fi
-  set -eu
-fi
-NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
-if [ -z "$NODE_BINARY" ]; then
-  echo "error: ExpoModulesJSI could not be built because node was not found. The build uses node to find react-native and expo-modules-jsi. Set NODE_BINARY in $SRCROOT/.xcode.env, for example: echo \"export NODE_BINARY=\$(command -v node)\" >> \"$SRCROOT/.xcode.env\"" >&2
-  exit 1
-fi
-
-PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SRCROOT/.." && pwd)}"
-
-# expo-modules-jsi is a dependency of expo-modules-core, not of the app, so it is resolved through
-# that chain: under pnpm it is not reachable from the app root.
-RESOLVED="$("$NODE_BINARY" -e '
-  const path = require("path");
-  const dir = (name, from) => path.dirname(require.resolve(`${name}/package.json`, { paths: [from] }));
-  const root = process.argv[1];
-  const core = dir("expo-modules-core", dir("expo", root));
-  console.log(`${dir("react-native", root)}\n${dir("expo-modules-jsi", core)}`);
-' "$PROJECT_ROOT" || true)"
-RN_DIR="$(printf '%s\n' "$RESOLVED" | sed -n 1p)"
-JSI_DIR="$(printf '%s\n' "$RESOLVED" | sed -n 2p)"
-if [ -z "$RN_DIR" ] || [ -z "$JSI_DIR" ]; then
-  echo "error: ExpoModulesJSI could not be built because react-native, or expo-modules-jsi through expo and expo-modules-core, could not be resolved from $PROJECT_ROOT. The dependencies are not installed, or PROJECT_ROOT does not point at the app. Install the app's dependencies, then build again." >&2
-  exit 1
-fi
+: "${RN_DIR:?RN_DIR must point at the react-native package of the app}"
+JSI_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 case "$PLATFORM_NAME" in
   iphoneos) SLICE=ios-arm64 ;;

@@ -74,7 +74,16 @@ describe('scriptPhasesForModules', () => {
 
 describe('the ExpoModulesJSI build phase', () => {
   const JSI_BUILD_ID = 'expo-modules-jsi.build';
-  const SCRIPT_PATH = path.join(__dirname, '..', 'build-expo-modules-jsi.sh');
+  const PACKAGE_SCRIPT = 'apple/scripts/build-swiftpm-app-phase.sh';
+  const PACKAGE_SCRIPT_PATH = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    '..',
+    'expo-modules-jsi',
+    PACKAGE_SCRIPT
+  );
   const jsiPhase = (modules) => scriptPhasesForModules(modules).find((p) => p.id === JSI_BUILD_ID);
 
   it('is emitted only when expo-modules-jsi is autolinked', () => {
@@ -93,22 +102,65 @@ describe('the ExpoModulesJSI build phase', () => {
     });
   });
 
-  it('runs build-expo-modules-jsi.sh', () => {
-    expect(jsiPhase(['expo-modules-jsi']).script).toBe(fs.readFileSync(SCRIPT_PATH, 'utf8'));
+  describe('launcher', () => {
+    const { script } = jsiPhase(['expo-modules-jsi']) ?? { script: '' };
+
+    it('is valid bash with no host-specific path baked in', () => {
+      execFileSync('bash', ['-n'], { input: script });
+      expect(script).not.toMatch(/\/Users\//);
+      expect(script).not.toMatch(/node_modules/);
+      expect(script).not.toMatch(/SPIKE/i);
+    });
+
+    // Under pnpm, expo-modules-jsi is not reachable from the app root.
+    it('resolves expo-modules-jsi through expo and expo-modules-core', () => {
+      expect(script).toContain('dir("expo-modules-core", dir("expo", root))');
+      expect(script).toContain('dir("expo-modules-jsi", core)');
+      expect(script).toContain('dir("react-native", root)');
+    });
+
+    it('execs the build script shipped in expo-modules-jsi', () => {
+      expect(script).toContain(`exec "$JSI_DIR/${PACKAGE_SCRIPT}"`);
+      expect(script).toContain(`[ ! -f "$JSI_DIR/${PACKAGE_SCRIPT}" ]`);
+      expect(script).toMatch(/export [^\n]*RN_DIR/);
+    });
+
+    it('leaves the build steps to the package script', () => {
+      expect(script).not.toContain('rsync');
+      expect(script).not.toContain('stage_link');
+      expect(script).not.toContain('codesign');
+      expect(script).not.toContain('build-xcframework.sh');
+    });
   });
 
-  it('is valid bash with no host-specific path baked in', () => {
-    execFileSync('bash', ['-n', SCRIPT_PATH]);
-    const { script } = jsiPhase(['expo-modules-jsi']);
-    expect(script).not.toMatch(/\/Users\//);
-    expect(script).not.toMatch(/SPIKE/i);
-  });
+  describe('package script', () => {
+    it('ships in expo-modules-jsi as an executable bash script', () => {
+      fs.accessSync(PACKAGE_SCRIPT_PATH, fs.constants.X_OK);
+      execFileSync('bash', ['-n', PACKAGE_SCRIPT_PATH]);
+    });
 
-  // Inside node_modules the package directory may be read-only and is shared by every
-  // build folder, so all build state lives under the build folder's OBJROOT.
-  it('keeps the build of expo-modules-jsi under the build folder', () => {
-    const { script } = jsiPhase(['expo-modules-jsi']);
-    expect(script).toContain('JSI_ROOT="$OBJROOT/ExpoModulesJSI"');
-    expect(script).toContain('EXPO_CUSTOM_BUILD_ROOT="$JSI_ROOT/custom-build"');
+    it('builds, copies, embeds and signs the framework', () => {
+      const body = fs.readFileSync(PACKAGE_SCRIPT_PATH, 'utf8');
+      expect(body).toContain('"$JSI_DIR/apple/scripts/build-xcframework.sh"');
+      expect(body).toContain('$BUILT_PRODUCTS_DIR/ExpoModulesJSI.framework/');
+      expect(body).toContain(
+        'EMBEDDED="$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/ExpoModulesJSI.framework"'
+      );
+      expect(body).toContain('/usr/bin/codesign');
+    });
+
+    // Inside node_modules the package directory may be read-only and is shared by every
+    // build folder, so all build state lives under the build folder's OBJROOT.
+    it('keeps the build of expo-modules-jsi under the build folder', () => {
+      const body = fs.readFileSync(PACKAGE_SCRIPT_PATH, 'utf8');
+      expect(body).toContain('JSI_ROOT="$OBJROOT/ExpoModulesJSI"');
+      expect(body).toContain('EXPO_CUSTOM_BUILD_ROOT="$JSI_ROOT/custom-build"');
+    });
+
+    it('does not resolve node or packages itself', () => {
+      const body = fs.readFileSync(PACKAGE_SCRIPT_PATH, 'utf8');
+      expect(body).not.toContain('NODE_BINARY');
+      expect(body).not.toContain('require.resolve');
+    });
   });
 });

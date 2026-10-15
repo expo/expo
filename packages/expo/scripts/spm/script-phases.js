@@ -15,9 +15,6 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-
 // Stable ledger key AND the seed RN derives the phase's pbxproj UUID from, so
 // changing it is a remove + re-add rather than an in-place update. Dot form:
 // RN's contract rejects `:` and, in the currently published preview, `@` and `/`.
@@ -73,6 +70,47 @@ export EXPO_CONSTANTS_ALLOW_NON_PODS=1
 exec "$EXPO_CONSTANTS_DIR/scripts/get-app-config-ios.sh"
 `;
 
+// The build itself lives in expo-modules-jsi; this only finds it and the app's react-native.
+const EXPO_MODULES_JSI_SCRIPT = `set -euo pipefail
+
+if [ -z "\${NODE_BINARY:-}" ]; then
+  set +eu
+  if [ -f "$SRCROOT/.xcode.env" ]; then . "$SRCROOT/.xcode.env"; fi
+  if [ -f "$SRCROOT/.xcode.env.local" ]; then . "$SRCROOT/.xcode.env.local"; fi
+  set -eu
+fi
+NODE_BINARY="\${NODE_BINARY:-$(command -v node || true)}"
+if [ -z "$NODE_BINARY" ]; then
+  echo "error: ExpoModulesJSI could not be built because node was not found. The build uses node to find react-native and expo-modules-jsi. Set NODE_BINARY in $SRCROOT/.xcode.env, for example: echo \\"export NODE_BINARY=\\$(command -v node)\\" >> \\"$SRCROOT/.xcode.env\\"" >&2
+  exit 1
+fi
+
+PROJECT_ROOT="\${PROJECT_ROOT:-$(cd "$SRCROOT/.." && pwd)}"
+
+# expo-modules-jsi is a dependency of expo-modules-core, not of the app, so it is resolved through
+# that chain: under pnpm it is not reachable from the app root.
+RESOLVED="$("$NODE_BINARY" -e '
+  const path = require("path");
+  const dir = (name, from) => path.dirname(require.resolve(\`\${name}/package.json\`, { paths: [from] }));
+  const root = process.argv[1];
+  const core = dir("expo-modules-core", dir("expo", root));
+  console.log(\`\${dir("react-native", root)}\\n\${dir("expo-modules-jsi", core)}\`);
+' "$PROJECT_ROOT" || true)"
+RN_DIR="$(printf '%s\\n' "$RESOLVED" | sed -n 1p)"
+JSI_DIR="$(printf '%s\\n' "$RESOLVED" | sed -n 2p)"
+if [ -z "$RN_DIR" ] || [ -z "$JSI_DIR" ]; then
+  echo "error: ExpoModulesJSI could not be built because react-native, or expo-modules-jsi through expo and expo-modules-core, could not be resolved from $PROJECT_ROOT. The dependencies are not installed, or PROJECT_ROOT does not point at the app. Install the app's dependencies, then build again." >&2
+  exit 1
+fi
+if [ ! -f "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh" ]; then
+  echo "error: ExpoModulesJSI could not be built because $JSI_DIR has no apple/scripts/build-swiftpm-app-phase.sh. The installed expo-modules-jsi is older than this version of expo. Update expo-modules-jsi by reinstalling the app's dependencies so they match this version of expo, then build again." >&2
+  exit 1
+fi
+
+export RN_DIR
+exec "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh"
+`;
+
 /** Each phase, keyed by the npm package of the module that needs it. */
 const SCRIPT_PHASES = [
   {
@@ -80,7 +118,7 @@ const SCRIPT_PHASES = [
     phase: {
       id: 'expo-modules-jsi.build',
       name: 'Build ExpoModulesJSI',
-      script: fs.readFileSync(path.join(__dirname, 'build-expo-modules-jsi.sh'), 'utf8'),
+      script: EXPO_MODULES_JSI_SCRIPT,
       // Source packages compile against the headers XCFramework alone; the app's own
       // sources and its link step need the real framework.
       position: 'beforeCompile',
