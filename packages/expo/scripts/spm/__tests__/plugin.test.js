@@ -1099,7 +1099,7 @@ describe('where precompiled modules and headers come from', () => {
     expect(thrown.message).toContain(sourceAt('env', 'ExpoModulesCore').dir);
     expect(thrown.message).toContain('EXPO_PRECOMPILED_MODULES_PATH');
     expect(thrown.message).toContain('crashes');
-    expect(thrown.message).toContain('et prebuild expo-font');
+    expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-font`');
   });
 
   it('never requires an ExpoModulesJSI binary from the place ExpoModulesCore comes from', () => {
@@ -1121,16 +1121,57 @@ describe('where precompiled modules and headers come from', () => {
     expect(result.flavoredFrameworks).toHaveLength(2);
   });
 
-  it('fails when the ExpoModulesCore headers come from a different place than ExpoModulesCore', () => {
-    const { thrown } = sync({
-      frameworks: { ExpoModulesCore: 'env' },
-      headers: { ExpoModulesCore: 'monorepo' },
-    });
-    expect(thrown?.message).toContain('ExpoModulesCoreHeaders.xcframework (expo-modules-core)');
-    expect(thrown.message).toContain(sourceAt('monorepo', 'ExpoModulesCore').dir);
-    expect(thrown.message).toContain(sourceAt('env', 'ExpoModulesCore').dir);
-    expect(emitDirectPackage).not.toHaveBeenCalled();
-  });
+  it.each([
+    ['bundled', 'env'],
+    ['bundled', 'monorepo'],
+    ['monorepo', 'env'],
+  ])(
+    'fails when ExpoModulesCore comes from %s and its headers from %s, a place tried before it',
+    (coreKind, headersKind) => {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: coreKind },
+        headers: { ExpoModulesCore: headersKind },
+      });
+      expect(thrown?.message).toContain('ExpoModulesCoreHeaders.xcframework (expo-modules-core)');
+      expect(thrown.message).toContain(sourceAt(headersKind, 'ExpoModulesCore').dir);
+      expect(thrown.message).toContain(sourceAt(coreKind, 'ExpoModulesCore').dir);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    }
+  );
+
+  const prebuildCoreHint =
+    '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
+
+  // The lookup tries EXPO_PRECOMPILED_MODULES_PATH, then the monorepo, then npm, so headers
+  // found past the place ExpoModulesCore comes from mean that place has none.
+  it.each([
+    ['env', 'monorepo'],
+    ['env', 'bundled'],
+    ['env', null],
+    ['monorepo', 'bundled'],
+    ['monorepo', null],
+  ])(
+    'fails naming the missing headers when ExpoModulesCore comes from %s and its headers from %s',
+    (coreKind, headersKind) => {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: coreKind },
+        headers: { ExpoModulesCore: headersKind },
+      });
+      const coreDir = sourceAt(coreKind, 'ExpoModulesCore').dir;
+      expect(thrown?.message).toContain(
+        `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
+      );
+      expect(thrown.message).not.toContain('but ExpoModulesCore comes from');
+      expect(thrown.message).toContain(prebuildCoreHint);
+      expect(thrown.message).toContain('`npx react-native spm update`');
+      if (coreKind === 'env') {
+        expect(thrown.message).toContain('unset EXPO_PRECOMPILED_MODULES_PATH');
+      } else {
+        expect(thrown.message).not.toContain('EXPO_PRECOMPILED_MODULES_PATH');
+      }
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    }
+  );
 
   it('hands a direct module the ExpoModulesCore headers and the ExpoModulesJSI headers package', () => {
     const { thrown, jsiHeadersPkgPath } = sync({
@@ -1168,7 +1209,7 @@ describe('where precompiled modules and headers come from', () => {
     process.env.EXPO_PRECOMPILED_MODULES_PATH = '/precompiled';
     try {
       const { thrown } = sync({
-        frameworks: { ExpoModulesCore: 'env' },
+        frameworks: { ExpoModulesCore: 'bundled' },
         headers: { ExpoModulesCore: null },
       });
       expect(thrown?.message).toContain('ExpoModulesCoreHeaders.xcframework');
@@ -1180,7 +1221,7 @@ describe('where precompiled modules and headers come from', () => {
       });
       expect(searched.length).toBeGreaterThan(0);
       for (const candidate of searched) expect(thrown.message).toContain(candidate);
-      expect(thrown.message).toContain('et prebuild expo-modules-core');
+      expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-modules-core`');
       expect(emitDirectPackage).not.toHaveBeenCalled();
     } finally {
       if (previous === undefined) {
@@ -3927,7 +3968,7 @@ describe('ExpoModulesJSI', () => {
       expect(thrown.message).toContain('ExpoModulesJSIHeaders');
       expect(thrown.message).toMatch(/only the headers/);
       expect(thrown.message).toMatch(/reinstall/i);
-      expect(thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+      expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-modules-jsi`');
     });
   });
 
