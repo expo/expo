@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Fix a crash when you swipe the drawer on React Native 0.88.
+Fix a crash when swiping the drawer on React Native 0.88.
