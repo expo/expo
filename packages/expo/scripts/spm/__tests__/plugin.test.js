@@ -1016,7 +1016,7 @@ describe.each([
 });
 
 describe('where precompiled modules and headers come from', () => {
-  captureConsole();
+  const logs = captureConsole({ each: true });
   const packageOf = {
     ExpoModulesCore: 'expo-modules-core',
     ExpoModulesJSI: 'expo-modules-jsi',
@@ -1092,14 +1092,38 @@ describe('where precompiled modules and headers come from', () => {
     };
   }
 
-  it('fails when a precompiled module comes from a different place than ExpoModulesCore', () => {
-    const { thrown } = sync({ frameworks: { ExpoModulesCore: 'env', ExpoFont: 'bundled' } });
-    expect(thrown?.message).toContain('ExpoFont (expo-font)');
-    expect(thrown.message).toContain(sourceAt('bundled', 'ExpoFont').dir);
-    expect(thrown.message).toContain(sourceAt('env', 'ExpoModulesCore').dir);
-    expect(thrown.message).toContain('EXPO_PRECOMPILED_MODULES_PATH');
-    expect(thrown.message).toContain('crashes');
-    expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-font`');
+  it('warns, and syncs, when a precompiled module comes from a different place than ExpoModulesCore', () => {
+    const { thrown, result } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'bundled' },
+    });
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks).toHaveLength(2);
+    const warning = printed(logs.warn);
+    expect(warning).toContain('[expo-spm-plugin] WARNING: ExpoFont (expo-font)');
+    expect(warning).toContain(sourceAt('bundled', 'ExpoFont').dir);
+    expect(warning).toContain(sourceAt('env', 'ExpoModulesCore').dir);
+    expect(warning).toContain('EXPO_PRECOMPILED_MODULES_PATH');
+    expect(warning).toContain('can crash the app');
+    expect(warning).toContain('`node tools/bin/expotools.js prebuild expo-font`');
+  });
+
+  it('warns, and emits the direct module, when another precompiled module comes from a different place', () => {
+    const { thrown } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'bundled' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(printed(logs.warn)).toContain('[expo-spm-plugin] WARNING: ExpoFont (expo-font)');
+    expect(emitDirectPackage).toHaveBeenCalled();
+  });
+
+  it('does not warn when every precompiled module comes from the place ExpoModulesCore comes from', () => {
+    const { thrown } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'env' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(printed(logs.warn)).not.toContain('comes from');
   });
 
   it('never requires an ExpoModulesJSI binary from the place ExpoModulesCore comes from', () => {
