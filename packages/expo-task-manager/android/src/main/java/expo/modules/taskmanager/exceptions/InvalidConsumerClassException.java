@@ -1,4 +1,4 @@
-package expo.modules.taskManager.exceptions;
+package expo.modules.taskmanager.exceptions;
 
 public class InvalidConsumerClassException extends Exception {
   public InvalidConsumerClassException(String taskName) {

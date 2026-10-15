@@ -1,4 +1,4 @@
-package expo.modules.taskManager.exceptions;
+package expo.modules.taskmanager.exceptions;
 
 public class TaskRegisteringFailedException extends Exception {
   public TaskRegisteringFailedException(Class consumerClass, Exception parentException) {

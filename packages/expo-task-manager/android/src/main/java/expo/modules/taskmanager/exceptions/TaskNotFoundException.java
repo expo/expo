@@ -1,4 +1,4 @@
-package expo.modules.taskManager.exceptions;
+package expo.modules.taskmanager.exceptions;
 
 public class TaskNotFoundException extends Exception {
   public TaskNotFoundException(String taskName, String appId) {

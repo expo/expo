@@ -1,4 +1,4 @@
-package expo.modules.taskManager.repository;
+package expo.modules.taskmanager.repository;
 
 import android.content.SharedPreferences;
 import android.os.Debug;
@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static expo.modules.taskManager.Utils.exportTaskToMap;
-import static expo.modules.taskManager.Utils.jsonToMap;
+import static expo.modules.taskmanager.Utils.exportTaskToMap;
+import static expo.modules.taskmanager.Utils.jsonToMap;
 
 import expo.modules.interfaces.taskManager.TaskInterface;
 
