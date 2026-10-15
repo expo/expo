@@ -25,6 +25,7 @@ const HomeIndex = () => {
       </View>
       <CaseLink href="/tabs" text="Native Tabs" />
       <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
+      <CaseLink href="/side-column-content-margins/form" text="Side Column Content Margins" />
       <CaseLink href="/link-preview" text="Link Preview" />
       <CaseLink href="/split-view" text="Split View" />
       <CaseLink href="/toolbar" text="Toolbar" />
