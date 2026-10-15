@@ -1,3 +1,16 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 14bdba124ab..30ef6349e33 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -20,7 +20,7 @@
+   </queries>
+ 
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
+-    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
 diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
 index 8a6be077181..1ea9b6464ec 100644
 --- a/templates/expo-template-bare-minimum/android/gitignore
@@ -162,15 +175,15 @@ index 03484edf156..1a7b1969798 100644
  prepare_react_native_project!
  
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index c1632a27f75..3f727f1b609 100644
+index 41904fbc36b..03375b7ebaf 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "55.0.39",
-+  "version": "56.0.26",
+-  "version": "55.0.43",
++  "version": "56.0.37",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -178,11 +191,11 @@ index c1632a27f75..3f727f1b609 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~55.0.27",
+-    "expo": "~55.0.31",
 -    "expo-status-bar": "~55.0.6",
 -    "react": "19.2.0",
 -    "react-native": "0.83.10"
-+    "expo": "~56.0.12",
++    "expo": "~56.0.23",
 +    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
 +    "react-native": "0.85.3"

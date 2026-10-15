@@ -12,7 +12,7 @@ index 3f1c571b679..fc185e53bc3 100644
  
      enableBundleCompression = (findProperty('android.enableBundleCompression') ?: false).toBoolean()
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 150248b6b3c..14bdba124ab 100644
+index 150248b6b3c..30ef6349e33 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -1,12 +1,13 @@
@@ -37,7 +37,7 @@ index 150248b6b3c..14bdba124ab 100644
  
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
 -    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
-+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>
@@ -299,15 +299,15 @@ index 9743535e7ad..1a7b1969798 100644
  prepare_react_native_project!
  
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 2e373904442..f89d9fcac64 100644
+index 31deb3c4283..d3cd5337208 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "54.0.52",
-+  "version": "57.0.3",
+-  "version": "54.0.54",
++  "version": "57.0.30",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -315,14 +315,14 @@ index 2e373904442..f89d9fcac64 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~54.0.35",
+-    "expo": "~54.0.37",
 -    "expo-status-bar": "~3.0.9",
 -    "react": "19.1.0",
 -    "react-native": "0.81.5"
-+    "expo": "~57.0.1",
-+    "expo-status-bar": "~57.0.0",
++    "expo": "~57.0.28",
++    "expo-status-bar": "~57.0.1",
 +    "react": "19.2.3",
-+    "react-native": "0.86.0"
++    "react-native": "0.86.3"
 +  },
 +  "publishConfig": {
 +    "executableFiles": [

@@ -658,8 +658,11 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
     CheckboxColors: '/versions/latest/sdk/ui/jetpack-compose/checkbox/#checkboxcolors',
     CornerRadii: '/versions/latest/sdk/ui/jetpack-compose/shape/#cornerradii',
+    ErrorBoundaryProps: '/versions/latest/sdk/router/#errorboundaryprops',
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/latest/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/latest/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/latest/sdk/router/#hreft',
     HrefObject: '/versions/latest/sdk/router/#hrefobject',
     NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
@@ -669,6 +672,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggericonprops',
     NativeTabsTriggerLabelProps:
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggerlabelprops',
+    RouterActionReducer: '/versions/latest/sdk/router/#routeractionreducerstate-action-context',
+    RouterExtension: '/versions/latest/sdk/router/#routerextensioncontext',
     ScrubbingModeOptions: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     ShapeJSXElement: '/versions/latest/sdk/ui/jetpack-compose/shape/#shapejsxelement',
@@ -679,10 +684,13 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     StackToolbarBadgeProps: '/versions/latest/sdk/router/stack/#stacktoolbarbadgeprops',
     StackToolbarIconProps: '/versions/latest/sdk/router/stack/#stacktoolbariconprops',
     StackToolbarLabelProps: '/versions/latest/sdk/router/stack/#stacktoolbarlabelprops',
+    StandardUseNavigationBuilderOptions:
+      '/versions/latest/sdk/router/#standardusenavigationbuilderoptions',
     SwitchColors: '/versions/latest/sdk/ui/jetpack-compose/switch/#switchcolors',
     TabsProps: '/versions/latest/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/latest/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/latest/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/latest/sdk/ui/swift-ui/usenativestate/#workletcallback',
   },
   unversioned: {
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
