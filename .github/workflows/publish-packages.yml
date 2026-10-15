@@ -268,7 +268,17 @@ jobs:
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Build Expo Tools and workspace dependencies
         run: pnpm turbo run build --filter=expotools...
+      - name: Check pending changesets
+        id: changesets
+        if: github.event_name == 'schedule'
+        run: |
+          if find .changeset -maxdepth 1 -name '*.md' ! -name README.md | grep -q .; then
+            echo "pending=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No pending changesets. Skipping the nightly canary."
+          fi
       - name: Publish canaries
+        if: github.event_name != 'schedule' || steps.changesets.outputs.pending == 'true'
         # Scheduled runs are temporarily dry-run while the Changesets canary flow is validated.
         run: pnpm expotools publish-canary ${{ github.event_name == 'schedule' && '--dry-run' || '' }}
         env:
