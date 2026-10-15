@@ -122,13 +122,23 @@ export function transformToModifiers(
 
     // Sizing (before background so background fills the frame)
     if (style.width != null || style.height != null) {
-      mods.push(
-        frame({
-          width: style.width as number | undefined,
-          height: style.height as number | undefined,
-          alignment: options?.frameAlignment,
-        })
-      );
+      if (typeof style.width === 'string') {
+        __DEV__ &&
+          console.warn(
+            '[expo-ui] width does not accept string values; use the modifiers prop instead.'
+          );
+      }
+      if (typeof style.height === 'string') {
+        __DEV__ &&
+          console.warn(
+            '[expo-ui] height does not accept string values; use the modifiers prop instead.'
+          );
+      }
+      const w = typeof style.width === 'string' ? undefined : style.width;
+      const h = typeof style.height === 'string' ? undefined : style.height;
+      if (w != null || h != null || options?.frameAlignment != null) {
+        mods.push(frame({ width: w, height: h, alignment: options?.frameAlignment }));
+      }
     }
 
     // Background (fills the frame area including padding)
