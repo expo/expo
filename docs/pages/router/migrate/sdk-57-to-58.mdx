@@ -13,6 +13,7 @@ Use the following checklist to find the sections that apply to your app:
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
 - For web apps, remove [deprecated server flags](#remove-deprecated-server-flags), review the [async route defaults](#review-async-route-defaults), and move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html). Review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"` and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
 - For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
+- For screens that add their own horizontal padding or draw content from edge to edge, review the new [horizontal safe area insets](#review-horizontal-safe-area-insets).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
@@ -281,6 +282,26 @@ export default function TabLayout() {
   );
 }
 ```
+
+### Review horizontal safe area insets
+
+In SDK 58, Expo Router wraps each screen that does not render a navigator in a `SafeAreaView` with left and right insets on Android and iOS. This keeps content out of the display cutout when the device is in landscape.
+
+Screens that already pad their content with `useSafeAreaInsets().left` and `useSafeAreaInsets().right` now get double padding. Screens that draw content from edge to edge, such as maps, video, or camera views, now have gaps at the sides. To keep the previous layout, set `disableAutomaticHorizontalSafeAreaInsets` on the navigator or on the screen in the layout:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="map" disableAutomaticHorizontalSafeAreaInsets />
+    </Stack>
+  );
+}
+```
+
+See [Horizontal safe area insets](/router/basics/navigation-layouts/#horizontal-safe-area-insets) for all supported navigators and exceptions.
 
 ### Update protected routes
 
