@@ -53,8 +53,14 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   internal var pointee: facebook.jsi.BigInt
 
   /// Creates a BigInt from an existing JSI BigInt.
-  internal init(_ runtime: JavaScriptRuntime, _ bigInt: consuming facebook.jsi.BigInt) {
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ bigInt: consuming facebook.jsi.BigInt) {
     self.runtimeHandle = runtime.handle
+    self.pointee = bigInt
+  }
+
+  /// Creates a BigInt from an existing JSI BigInt, which belongs to the runtime behind `runtimeHandle`.
+  internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ bigInt: consuming facebook.jsi.BigInt) {
+    self.runtimeHandle = runtimeHandle
     self.pointee = bigInt
   }
 
@@ -63,7 +69,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   /// - Parameters:
   ///   - runtime: The JavaScript runtime
   ///   - value: The Int64 value to convert to BigInt
-  public init(_ runtime: JavaScriptRuntime, fromInt64 value: Int64) {
+  public init(_ runtime: borrowing JavaScriptRuntime, fromInt64 value: Int64) {
     self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.BigInt.fromInt64(runtime.pointee, value)
   }
@@ -73,7 +79,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   /// - Parameters:
   ///   - runtime: The JavaScript runtime
   ///   - value: The UInt64 value to convert to BigInt
-  public init(_ runtime: JavaScriptRuntime, fromUint64 value: UInt64) {
+  public init(_ runtime: borrowing JavaScriptRuntime, fromUint64 value: UInt64) {
     self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.BigInt.fromUint64(runtime.pointee, value)
   }
@@ -125,15 +131,19 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///   print("Failed to parse BigInt: \(error)")
   /// }
   /// ```
-  public init(_ runtime: JavaScriptRuntime, string: String) throws {
+  @JavaScriptActor
+  public init(_ runtime: borrowing JavaScriptRuntime, string: String) throws {
     self.runtimeHandle = runtime.handle
-    self.pointee =
-      try runtime
-      .global()
-      .getPropertyAsFunction("BigInt")
-      .call(arguments: string)
-      .pointee
-      .getBigInt(runtime.pointee)
+    // The global `BigInt` function is looked up once per runtime and cached.
+    self.pointee = try runtime.withCached(
+      bigIntFunctionKey,
+      { try runtime.global().getPropertyAsFunction("BigInt") },
+      { (bigIntFunction: borrowing JavaScriptFunction) in
+        // A single borrowed argument is passed without allocating an arguments buffer.
+        let argument = JavaScriptValue(runtime, string)
+        return try bigIntFunction.call(argument: argument).pointee.getBigInt(runtime.pointee)
+      }
+    )
   }
 
   // MARK: - Conversions to Integer Types
@@ -326,3 +336,6 @@ public enum BigIntConversionError: Error, CustomStringConvertible {
     }
   }
 }
+
+/// Key of the global `BigInt` function in each runtime's cache.
+private let bigIntFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
