@@ -13,6 +13,7 @@ import {
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
+import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync } from './Frameworks';
 import type {
   SPMConfig,
   SPMPackageDependencyConfig,
@@ -1286,6 +1287,27 @@ it('header directories: maps a C target to its public headers directory in the s
     await resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
     new Map([['Main', fs.realpathSync.native(path.join(input.root, 'native/headers'))]])
   );
+});
+
+it('header directories: frameworks copy the public headers from the sources, not the generated include directory', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  const generatedHeaders = SPMGenerator.getHeaderFilesPath(
+    input.pkg,
+    input.product,
+    input.product.targets[0]
+  );
+  fs.mkdirSync(generatedHeaders, { recursive: true });
+  fs.writeFileSync(path.join(generatedHeaders, 'Stale.h'), 'int stale(void);');
+  const xcframework = path.join(input.root, 'Fixture.xcframework');
+
+  const { headerFiles } = await collectAndCopyHeaderFilesFromBuiltFrameworksAsync(
+    input.pkg,
+    input.product,
+    xcframework
+  );
+
+  assert.deepEqual(headerFiles, ['Thing.h']);
+  assert.deepEqual(fs.readdirSync(path.join(xcframework, 'Headers')), ['Thing.h']);
 });
 
 it('header directories: rejects a C target with no publicHeadersPath and no include/ directory', async () => {

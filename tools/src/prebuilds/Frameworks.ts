@@ -1049,7 +1049,7 @@ const composeFrameworkWithXCodeAsync = async (
  * @param product SPM product information
  * @returns Collected header file paths, target module names map, and set of modules needing textual headers
  */
-const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
+export const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
   frameworkOutputPath: string
