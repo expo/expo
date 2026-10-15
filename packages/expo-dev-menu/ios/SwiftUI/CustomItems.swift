@@ -1,28 +1,46 @@
 import SwiftUI
 
 struct CustomItems: View {
-  let callbacks: [String]
+  let callbacks: [DevMenuManager.Callback]
   let onFireCallback: (String) -> Void
 
-  var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Custom Menu Items".uppercased())
-        .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+  struct Group {
+    let name: String?
+    var callbacks: [DevMenuManager.Callback]
+  }
 
-      VStack(spacing: 6) {
-        ForEach(Array(callbacks.enumerated()), id: \.offset) { _, name in
-          Button {
-            onFireCallback(name)
+  static func groups(for callbacks: [DevMenuManager.Callback]) -> [Group] {
+    var groups: [Group] = []
+    for callback in callbacks {
+      if let index = groups.firstIndex(where: { $0.name == callback.group }) {
+        groups[index].callbacks.append(callback)
+      } else {
+        groups.append(Group(name: callback.group, callbacks: [callback]))
+      }
+    }
+    return groups
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 32) {
+      ForEach(Array(Self.groups(for: callbacks).enumerated()), id: \.offset) { _, group in
+        VStack(alignment: .leading, spacing: 8) {
+          Text((group.name ?? "Custom Menu Items").uppercased())
+            .font(.caption)
+            .foregroundColor(.primary.opacity(0.6))
+
+          VStack(spacing: group.name == nil ? 6 : 0) {
+            ForEach(Array(group.callbacks.enumerated()), id: \.offset) { index, callback in
+              if group.name != nil && index > 0 {
+                Divider()
+              }
+              DevMenuActionButton(title: callback.name, icon: callback.icon) {
+                onFireCallback(callback.name)
+              }
+              .clipShape(RoundedRectangle(cornerRadius: group.name == nil ? 12 : 0))
+            }
           }
-          label: {
-            Text(name)
-              .foregroundColor(.primary)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
-          .padding()
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: group.name == nil ? 0 : 18))
         }
       }
     }

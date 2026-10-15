@@ -18,7 +18,11 @@ data class DevMenuCallback(
   @Field
   val name: String,
   @Field
-  val shouldCollapse: Boolean = true
+  val shouldCollapse: Boolean = true,
+  @Field
+  val icon: String? = null,
+  @Field
+  val group: String? = null
 ) : Record
 
 class DevMenuModule : Module() {
@@ -57,8 +61,10 @@ class DevMenuModule : Module() {
       viewModel.updateCustomItems(
         callbacks.map {
           DevMenuState.CustomItem(
-            it.name,
-            it.shouldCollapse
+            name = it.name,
+            shouldCollapse = it.shouldCollapse,
+            icon = it.icon,
+            group = it.group
           ) {
             val eventEmitter = reactContextHolder
               .get()
