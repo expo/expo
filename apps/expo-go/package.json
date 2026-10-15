@@ -61,6 +61,7 @@
     "expo-localization": "workspace:*",
     "expo-location": "workspace:*",
     "expo-mail-composer": "workspace:*",
+    "expo-maps": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-mesh-gradient": "workspace:*",
     "expo-navigation-bar": "workspace:*",
