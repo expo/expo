@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # Runs the app target's "Build ExpoModulesJSI" phase, which expo's SwiftPM plugin adds to apps
-# that consume Expo modules through Swift Package Manager. The phase resolves react-native and this
-# package at build time, then calls this script with RN_DIR set to the react-native package.
+# that consume Expo modules through Swift Package Manager. The plugin's launcher in that phase
+# resolves react-native and this package at build time, then runs this script with RN_DIR set to
+# the react-native package.
 #
 # npm ships ExpoModulesJSI as a headers-only XCFramework, because the framework must be compiled
 # against the app's React Native. Swift packages compile against those headers; this phase builds

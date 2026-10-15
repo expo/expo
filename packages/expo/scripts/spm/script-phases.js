@@ -70,8 +70,7 @@ export EXPO_CONSTANTS_ALLOW_NON_PODS=1
 exec "$EXPO_CONSTANTS_DIR/scripts/get-app-config-ios.sh"
 `;
 
-// The build itself lives in expo-modules-jsi; this only finds it and the app's react-native.
-const EXPO_MODULES_JSI_SCRIPT = `set -euo pipefail
+const EXPO_MODULES_JSI_LAUNCHER_SCRIPT = `set -euo pipefail
 
 if [ -z "\${NODE_BINARY:-}" ]; then
   set +eu
@@ -118,7 +117,7 @@ const SCRIPT_PHASES = [
     phase: {
       id: 'expo-modules-jsi.build',
       name: 'Build ExpoModulesJSI',
-      script: EXPO_MODULES_JSI_SCRIPT,
+      script: EXPO_MODULES_JSI_LAUNCHER_SCRIPT,
       // Source packages compile against the headers XCFramework alone; the app's own
       // sources and its link step need the real framework.
       position: 'beforeCompile',
