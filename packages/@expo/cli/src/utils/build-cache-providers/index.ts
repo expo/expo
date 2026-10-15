@@ -260,6 +260,5 @@ async function manuallyLoadDependency(projectRoot: string, packageName: string) 
     throw new Error(`Package ${packageName} not found in ${possiblePaths}`);
   }
 
-  const { main } = await import(path.join(nodeModulesFolder, packageName, 'package.json'));
-  return import(path.join(nodeModulesFolder, packageName, main));
+  return require(path.join(nodeModulesFolder, packageName));
 }
