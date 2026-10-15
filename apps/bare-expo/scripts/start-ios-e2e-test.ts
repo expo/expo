@@ -24,6 +24,8 @@ import {
 } from './lib/e2e-common';
 import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
+// Keep the device and iOS version in sync with the "Boot simulator early" steps in
+// .github/workflows/test-suite.yml and .github/workflows/test-suite-nightly.yml.
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
 const APP_ID = 'dev.expo.Payments';
