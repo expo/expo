@@ -51,6 +51,7 @@ const assertions = ts`
   expectTypeOf('/colors/blue?test=1' as const).toExtend<Href>();
   expectTypeOf('/animals/cat' as const).toExtend<Href>();
   expectTypeOf('/animals/cat/dog?test=1' as const).toExtend<Href>();
+  expectTypeOf('/animals/cat/dog#hash' as const).toExtend<Href>();
   expectTypeOf('/(group)/(a)/folder/slug1' as const).toExtend<Href>();
   expectTypeOf('/(group)/(b)/folder/slug1/slug2' as const).toExtend<Href>();
   expectTypeOf('/(group)/(a)/folder/slug1/slug2/slug2' as const).toExtend<Href>();
