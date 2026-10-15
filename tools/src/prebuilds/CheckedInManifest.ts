@@ -457,7 +457,7 @@ function assertSwiftLanguageModes(
       'Add swiftLanguageModes with the same versions to the Package(...) call in Package.swift.'
     );
   }
-  const subject = `package "${packageName}" declares swiftLanguageVersions ${JSON.stringify(declared)}, `;
+  const subject = `package "${packageName}" declares swiftLanguageModes ${JSON.stringify(declared)}, `;
   if (!configured?.length) {
     throw fail(
       `${subject}but product "${productName}" in spm.config.json sets no swiftLanguageVersions, so the prebuilt framework would compile in the default language mode of the tools version instead.`,
@@ -472,7 +472,7 @@ function assertSwiftLanguageModes(
   ) {
     throw fail(
       `${subject}but product "${productName}" in spm.config.json sets swiftLanguageVersions ${JSON.stringify(configured)}, and et prebuild builds with the spm.config.json value, so the prebuilt framework would compile in a different language mode than a direct build of Package.swift.`,
-      'Set the same versions in both places; "5" and "5.0" count as equal.'
+      `Set swiftLanguageModes in Package.swift and swiftLanguageVersions on product "${productName}" in spm.config.json to the same versions; "5" and "5.0" count as equal.`
     );
   }
 }

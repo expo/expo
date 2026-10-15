@@ -111,6 +111,8 @@ type DefaultCase = {
   nonDefault: unknown;
   /** Replaced checks keep their old hint; every other key is named in the message. */
   hint?: RegExp;
+  /** The Package.swift spelling the message uses, where it differs from the dumped key. */
+  term?: string;
 };
 
 const DEFAULTS: DefaultCase[] = [
@@ -121,7 +123,13 @@ const DEFAULTS: DefaultCase[] = [
     nonDefault: 'en',
     hint: /Remove the localization, or remove Package\.swift to build this product from spm\.config\.json instead\.$/,
   },
-  { object: 'package', key: 'swiftLanguageVersions', fallback: null, nonDefault: ['5'] },
+  {
+    object: 'package',
+    key: 'swiftLanguageVersions',
+    term: 'swiftLanguageModes',
+    fallback: null,
+    nonDefault: ['5'],
+  },
   { object: 'package', key: 'cLanguageStandard', fallback: null, nonDefault: 'c11' },
   { object: 'package', key: 'cxxLanguageStandard', fallback: null, nonDefault: 'c++17' },
   { object: 'package', key: 'pkgConfig', fallback: null, nonDefault: 'zlib' },
@@ -152,10 +160,10 @@ const DEFAULTS: DefaultCase[] = [
 
 const PROBES: unknown[] = ['', 0, 1, false, true, 'true', null, {}, [], [null]];
 
-for (const { object, key, fallback, nonDefault, hint } of DEFAULTS) {
+for (const { object, key, fallback, nonDefault, hint, term = key } of DEFAULTS) {
   const { label, select } = OBJECTS[object];
   const detail = (value: unknown) =>
-    hint ?? new RegExp(`: ${escape(label)} declares ${key} ${escape(JSON.stringify(value))}, `);
+    hint ?? new RegExp(`: ${escape(label)} declares ${term} ${escape(JSON.stringify(value))}, `);
 
   it(`dumped keys: accepts ${object} ${key} when absent`, () => {
     const manifest = dump();
@@ -252,12 +260,33 @@ it('dumped keys: accepts no language modes when spm.config.json sets none either
   check(manifest);
 });
 
+it('dumped keys: rejects language modes when spm.config.json sets none', () => {
+  const manifest = dump();
+  manifest.swiftLanguageVersions = ['5'];
+  rejects(
+    manifest,
+    /: package "fixture" declares swiftLanguageModes \["5"\], but product "ExpoHaptics" in spm\.config\.json sets no swiftLanguageVersions, .*language mode.* Set swiftLanguageVersions on product "ExpoHaptics" in spm\.config\.json .* or remove swiftLanguageModes from .*Package\.swift\.$/
+  );
+});
+
 it('dumped keys: rejects language modes that differ from spm.config.json', () => {
   const manifest = dump();
   manifest.swiftLanguageVersions = ['5'];
   assert.throws(
     () => assertCheckedInManifestKeys(manifest, 'ExpoHaptics', new Set(['ExpoHaptics']), ['6.0']),
-    /declares swiftLanguageVersions \["5"\], but product "ExpoHaptics" in spm\.config\.json sets swiftLanguageVersions \["6\.0"\]/
+    (error: Error) => {
+      assert.ok(error.message.startsWith(PREFIX), error.message);
+      assert.match(
+        error.message,
+        /: package "fixture" declares swiftLanguageModes \["5"\], but product "ExpoHaptics" in spm\.config\.json sets swiftLanguageVersions \["6\.0"\], .*language mode/
+      );
+      assert.match(
+        error.message,
+        / Set swiftLanguageModes in Package\.swift and swiftLanguageVersions on product "ExpoHaptics" in spm\.config\.json to the same versions/
+      );
+      assert.match(error.message, NEXT_STEP);
+      return true;
+    }
   );
 });
 
