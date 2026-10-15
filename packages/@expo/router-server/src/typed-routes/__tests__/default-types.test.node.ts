@@ -159,6 +159,7 @@ const assertions = ts`
   expectTypeOf(router.setParams<'/folder/[...slug]'>({ slug: ['test'] })).toEqualTypeOf<void>();
   expectTypeOf(router.setParams<'/folder/[slug]'>({ hello: 'world' })).toEqualTypeOf<void>();
   expectTypeOf(router.setParams({ hello: 'world' })).toEqualTypeOf<void>();
+  expectTypeOf(router.setParams<'/static'>({ hello: 'world' })).toEqualTypeOf<void>();
   // @ts-expect-error a single-segment param must be a string
   router.setParams<'/folder/[slug]'>({ slug: ['test'] });
   // @ts-expect-error a catch-all param must be an array
