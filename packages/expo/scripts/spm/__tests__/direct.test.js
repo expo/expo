@@ -82,10 +82,15 @@ describe('emitDirectPackage', () => {
     );
   });
 
-  it('depends on no JSI headers package when there is none', () => {
+  it('fails, writing no package, when there is no JSI headers package', () => {
     jsiHeadersPkgPath = null;
-    emit();
-    expect(manifest()).not.toContain('ExpoModulesJSIHeaders');
+    expect(emit).toThrow(
+      'expo-haptics is built from its own Package.swift and needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.'
+    );
+    expect(emit).toThrow('re-export ExpoModulesJSI');
+    expect(emit).toThrow('"expo": { "autolinking": { "exclude": [...] } }');
+    expect(emit).toThrow('`npx react-native spm update`');
+    expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
   });
 
   it('places the ExpoModulesCore headers xcframework in the package by link', () => {
