@@ -2,8 +2,8 @@
 
 import { type PropsWithChildren, Fragment, type ComponentType, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { SafeAreaProvider } from './SafeAreaProvider';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';

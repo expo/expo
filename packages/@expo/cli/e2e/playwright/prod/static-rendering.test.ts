@@ -100,6 +100,7 @@ test.describe('static rendering in production', () => {
     const pageErrors = pageCollectErrors(page);
 
     await page.goto(new URL('/suspense', expoServe.url).href);
+    await expect(page.getByTestId('hydration-status')).toHaveText('mounted');
     await page.getByTestId('increment').click();
     await expect(page.getByTestId('count')).toHaveText('Count: 1');
     expect(pageErrors.all).toEqual([]);

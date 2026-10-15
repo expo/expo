@@ -1,4 +1,4 @@
-import { Suspense, use, useState } from 'react';
+import { Suspense, use, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 let content: Promise<string> | undefined;
@@ -7,9 +7,15 @@ function DelayedContent() {
   content ??= new Promise((resolve) => setTimeout(() => resolve('x'.repeat(30_000)), 25));
   const text = use(content);
   const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <View testID="resolved-suspense">
+      <Text testID="hydration-status">{mounted ? 'mounted' : 'unmounted'}</Text>
       <Text testID="suspense-content" style={{ color: 'green' }}>
         {text}
         FINAL_SUSPENSE_SENTINEL
