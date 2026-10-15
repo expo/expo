@@ -24,6 +24,13 @@ type DownloadPromiseCallbacks = {
   reject: (error: Error) => void;
 };
 
+// @docsMissing
+interface VirtualAssetModule {
+  uri: string;
+  width: number;
+  height: number;
+}
+
 export type { AssetMetadata } from './AssetSources';
 
 /**
@@ -144,9 +151,7 @@ export class Asset {
    * network URL
    * @return The [`Asset`](#asset) instance for the asset.
    */
-  static fromModule(
-    virtualAssetModule: number | string | { uri: string; width: number; height: number }
-  ): Asset {
+  static fromModule(virtualAssetModule: number | string | VirtualAssetModule): Asset {
     if (typeof virtualAssetModule === 'string') {
       return Asset.fromURI(virtualAssetModule);
     }
@@ -166,6 +171,7 @@ export class Asset {
       });
     }
 
+    // @ts-expect-error - VirtualAssetModule is supported in Expo but can't be typed correctly on closed `AssetRegistry` types from generated React Native types.
     const meta = AssetRegistry.getAssetByID(virtualAssetModule);
     if (!meta) {
       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
