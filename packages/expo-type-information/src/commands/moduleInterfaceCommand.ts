@@ -1,7 +1,7 @@
 import commander from 'commander';
 import path from 'path';
 
-import { generateFullTsInterface } from '../typescriptGeneration';
+import { generateFullTsInterface, OutputFile } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -37,24 +37,39 @@ export function moduleInterfaceCommand(cli: commander.Command) {
         if (!typeInfo) {
           return;
         }
-        const generatedFiles = await generateFullTsInterface(typeInfo);
-        if (!generatedFiles) {
-          return;
-        }
-        const { moduleTypesFile, moduleViewsFiles, moduleNativeFile, indexFile } = generatedFiles;
-
+        const moduleInterfaceFiles = await generateFullTsInterface(typeInfo);
         const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
         const writeFilePromises = [];
-        for (const outputFile of [
-          moduleTypesFile,
-          ...moduleViewsFiles,
-          moduleNativeFile,
-          indexFile,
-        ]) {
-          const outputFilePath = path.resolve(dirName, outputFile.name);
-          writeFilePromises.push(
-            writeToStableFile({ filePath: outputFilePath, content: outputFile.content })
-          );
+        const finalIndexFile: OutputFile = {
+          content: '',
+          name: 'index.ts',
+        };
+        for (const moduleGeneratedFiles of moduleInterfaceFiles.moduleInterfaces) {
+          const { moduleTypesFile, moduleViewsFiles, moduleNativeFile, indexFile } =
+            moduleGeneratedFiles;
+
+          for (const outputFile of [moduleTypesFile, ...moduleViewsFiles, moduleNativeFile]) {
+            const outputFilePath = path.resolve(dirName, outputFile.name);
+            writeFilePromises.push(
+              writeToStableFile({
+                filePath: outputFilePath,
+                content: outputFile.content,
+              })
+            );
+          }
+          finalIndexFile.content += indexFile.content;
+        }
+        const indexFilePath = path.resolve(dirName, finalIndexFile.name);
+        writeFilePromises.push(
+          writeToStableFile({
+            filePath: indexFilePath,
+            content: finalIndexFile.content,
+          })
+        );
+        const commonInterface = moduleInterfaceFiles.commonTypesInterface;
+        if (commonInterface) {
+          const filePath = path.resolve(dirName, commonInterface.name);
+          writeFilePromises.push(writeToStableFile({ filePath, content: commonInterface.content }));
         }
         await Promise.all(writeFilePromises);
       };
