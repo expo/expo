@@ -5,6 +5,7 @@
     {
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
+      "headersXCFramework": true,
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
