@@ -6,7 +6,7 @@ import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext'
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import { type Alignment, type CommonViewModifierProps } from '../types';
 
 export interface HostProps extends CommonViewModifierProps {
   /**
@@ -15,6 +15,16 @@ export interface HostProps extends CommonViewModifierProps {
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
+
+  /**
+   * Where the SwiftUI content sits inside the host when the two sizes differ: when the host is
+   * larger than its content, and while the content of a `matchContents` host animates to a new size.
+   * Set it to the edge that the host is anchored to in its React Native layout, for example
+   * `'trailing'` for a host at the end of a row, so that edge stays still. It also aligns the host's
+   * children with each other. Leading and trailing follow `layoutDirection`.
+   * @default 'topLeading'
+   */
+  alignment?: Alignment;
 
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for SwiftUI layout.

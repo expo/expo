@@ -60,6 +60,7 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
+  @Field var alignment: AlignmentOptions?
   @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
   @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
@@ -75,7 +76,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
-    let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let alignment = physicalAlignment(props.alignment?.toAlignment() ?? .topLeading, layoutDirection: layoutDirection)
     let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
     let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
     let pinHorizontal = !props.useViewportSizeMeasurement && props.matchContentsHorizontal
@@ -134,6 +135,24 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     }
   }
 
+}
+
+/**
+ Mirrors the horizontal edge of `alignment` for a right-to-left `Host`. `FillAlignmentModifier` sits
+ outside `LayoutDirectionModifier`, so it reads leading and trailing in the hosting controller's
+ own direction.
+ */
+private func physicalAlignment(_ alignment: Alignment, layoutDirection: LayoutDirection) -> Alignment {
+  guard layoutDirection == .rightToLeft else {
+    return alignment
+  }
+  if alignment.horizontal == .leading {
+    return Alignment(horizontal: .trailing, vertical: alignment.vertical)
+  }
+  if alignment.horizontal == .trailing {
+    return Alignment(horizontal: .leading, vertical: alignment.vertical)
+  }
+  return alignment
 }
 
 /**
