@@ -42,12 +42,14 @@ export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOp
     cwd: cwdPath,
     env: {
       ...process.env,
-      // NOTE(@kitten): pnpm currently passes on and consumes all its workspace configs, which breaks isolation
-      npm_config_minimum_release_age: '0',
       // Force non-interactive mode for CI
       CI: '1',
       // Disable telemetry
       EXPO_NO_TELEMETRY: '1',
+      // Keep scaffolding independent of the runner's package manager and personal Git profile.
+      npm_config_user_agent: 'npm',
+      GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: '1',
       // Set INIT_CWD to ensure the CLI uses the correct working directory
       // (the CLI checks INIT_CWD first before process.cwd())
       INIT_CWD: cwdPath,
@@ -62,6 +64,23 @@ export async function executePassing(args: string[], options?: SpawnOptions) {
 
   try {
     result = await execute(args, options);
+  } catch (error: any) {
+    result = error;
+  }
+
+  return expectExecutePassing(result!);
+}
+
+/** Run a `package.json` script of a created project, and validate the status is `0` */
+export async function runScriptPassing(projectName: string, script: string) {
+  let result: SpawnResult | null = null;
+
+  try {
+    result = await spawnAsync('npm', ['run', script], {
+      cwd: getTestPath(projectName),
+      // Run scripts once, without the interactive watch mode
+      env: { ...process.env, CI: '1' },
+    });
   } catch (error: any) {
     result = error;
   }

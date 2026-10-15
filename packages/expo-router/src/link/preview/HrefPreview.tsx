@@ -3,20 +3,22 @@
 import { use, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import { findRouteNodeAndParamsForState, type RouteNode } from '../../Route';
+import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
-import { store } from '../../global-state/router-store';
-import { StoreContext } from '../../global-state/storeContext';
+import { RouterConfigContext } from '../../global-state/routerConfigContext';
+import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
+import { RootNavigationStateContext } from '../../react-navigation/core/RootNavigationStateContext';
 import {
   NavigationContext,
   type NavigationProp,
   type ParamListBase,
 } from '../../react-navigation/native';
+import { findRouteNodeAndParamsForState } from '../../routeNode';
 import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
@@ -27,7 +29,8 @@ import { PreviewRouteContext } from './PreviewRouteContext';
 export function HrefPreview({ href }: { href: Href }) {
   // TODO(@ubax): Extract `linking` and `routeNode` into separate contexts to avoid unrelated rerenders.
   const { segments: routeSegments } = useRouteInfo();
-  const { linking, routeNode } = use(StoreContext) ?? {};
+  const { linking, routeNode } = use(RouterConfigContext) ?? {};
+  const rootNavigationState = use(RootNavigationStateContext);
   const hrefState = useMemo(
     () => getStateForHref(href, { segments: routeSegments }, linking),
     [href, routeSegments, linking]
@@ -37,7 +40,7 @@ export function HrefPreview({ href }: { href: Href }) {
   let isProtected = false;
   if (hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME) {
     let routerState: typeof hrefState | undefined = hrefState;
-    let rnState = store.state;
+    let rnState: ReactNavigationState | undefined = rootNavigationState;
     while (routerState && rnState) {
       const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
       // When the route we want to show is not present in react-navigation state
@@ -111,6 +114,9 @@ function PreviewForRootHrefState({
       <CompositionContext value={{ set: () => {}, unset: () => {} }}>
         {/* Using NavigationContext to override useNavigation */}
         <NavigationContext value={navigationPropWithWarnings}>
+          {/* `getQualifiedRouteComponent` returns a cached component per route node,
+              so the identity is stable across renders. */}
+          {/* oxlint-disable-next-line react/static-components */}
           <Component navigation={navigation} />
         </NavigationContext>
       </CompositionContext>

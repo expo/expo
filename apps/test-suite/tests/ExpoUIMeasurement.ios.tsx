@@ -1,7 +1,12 @@
 import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
-import { padding } from '@expo/ui/swift-ui/modifiers';
+import { onGeometryChange, padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Modal, ScrollView, View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// React Native types `View` as a function component, so the instance type is its ref type.
+type ViewRef = React.ComponentRef<typeof View>;
+type ScrollViewRef = React.ComponentRef<typeof ScrollView>;
 
 // Tests that the actual placement of the UI matches what RN's measure API returns.
 // UI is placed by SwiftUI and not Yoga, so these tests check that the placement reported to RN is correct and Pressability works.
@@ -23,7 +28,7 @@ type Measurement = {
   pageY: number;
 };
 
-function measureAsync(ref: React.RefObject<View | null>, label = 'view'): Promise<Measurement> {
+function measureAsync(ref: React.RefObject<ViewRef | null>, label = 'view'): Promise<Measurement> {
   return new Promise((resolve, reject) => {
     const node = ref.current;
     if (!node) {
@@ -45,7 +50,7 @@ function delay(ms: number): Promise<void> {
  * mounts when it is on screen and animates in, so there is no single layout callback to wait on.
  */
 async function measureWhenPresented(
-  ref: React.RefObject<View | null>,
+  ref: React.RefObject<ViewRef | null>,
   label: string,
   timeoutMs = 5000
 ): Promise<Measurement> {
@@ -62,8 +67,155 @@ async function measureWhenPresented(
   throw new Error(`Timed out waiting for ${label} to be presented and laid out`);
 }
 
+/**
+ * Measures until the result stops changing. SwiftUI publishes where it drew a hosted view after it
+ * lays it out, so a single measure right after a state change can read the previous frame.
+ */
+async function measureSettled(
+  ref: React.RefObject<ViewRef | null>,
+  label: string,
+  timeoutMs = 3000
+): Promise<Measurement> {
+  const started = Date.now();
+  let last = await measureAsync(ref, label);
+  let stableReads = 0;
+  while (Date.now() - started < timeoutMs) {
+    await delay(100);
+    const next = await measureAsync(ref, label);
+    stableReads = next.pageX === last.pageX && next.pageY === last.pageY ? stableReads + 1 : 0;
+    last = next;
+    if (stableReads >= 3) {
+      return last;
+    }
+  }
+  return last;
+}
+
+type WindowFrame = { x: number; y: number; width: number; height: number };
+
+function measureInWindowAsync(ref: React.RefObject<ViewRef | null>): Promise<WindowFrame> {
+  return new Promise((resolve, reject) => {
+    if (!ref.current) {
+      reject(new Error('Cannot measure the view in the window: it is not mounted'));
+      return;
+    }
+    ref.current.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
+  });
+}
+
+type InsetGeometry = { insetTop: number; wrapperTop: number };
+
+// A fill `Host` that starts halfway down the status bar of a full-screen modal.
+function InsetHost({
+  safeArea,
+  hostWrapperRef,
+  hostedRef,
+  drawnRef,
+  geometryRef,
+}: {
+  safeArea: boolean;
+  hostWrapperRef: React.RefObject<ViewRef | null>;
+  hostedRef: React.RefObject<ViewRef | null>;
+  drawnRef: { current: WindowFrame | null };
+  geometryRef: { current: InsetGeometry | null };
+}) {
+  const insets = useSafeAreaInsets();
+  const wrapperTop = Math.round(insets.top / 2);
+  geometryRef.current = { insetTop: insets.top, wrapperTop };
+  return (
+    <View
+      ref={hostWrapperRef}
+      collapsable={false}
+      style={{ position: 'absolute', top: wrapperTop, left: 0, right: 0, height: 120 }}>
+      <Host style={{ flex: 1 }} ignoreSafeArea={safeArea ? undefined : 'container'}>
+        <VStack modifiers={[onGeometryChange((frame) => (drawnRef.current = frame))]}>
+          <RNHostView matchContents>
+            <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+          </RNHostView>
+        </VStack>
+      </Host>
+    </View>
+  );
+}
+
+async function mountInsetHost(setPortalChild: any, safeArea: boolean) {
+  const hostWrapperRef = React.createRef<ViewRef>();
+  const hostedRef = React.createRef<ViewRef>();
+  const drawnRef: { current: WindowFrame | null } = { current: null };
+  const geometryRef: { current: InsetGeometry | null } = { current: null };
+
+  setPortalChild(
+    <Modal visible presentationStyle="fullScreen" animationType="none">
+      <SafeAreaProvider>
+        <InsetHost
+          safeArea={safeArea}
+          hostWrapperRef={hostWrapperRef}
+          hostedRef={hostedRef}
+          drawnRef={drawnRef}
+          geometryRef={geometryRef}
+        />
+      </SafeAreaProvider>
+    </Modal>
+  );
+
+  await measureWhenPresented(hostedRef, 'the hosted box');
+  let result: { host: WindowFrame; hosted: WindowFrame; drawn: WindowFrame } & InsetGeometry;
+  for (let attempt = 0; ; attempt++) {
+    const drawn = drawnRef.current;
+    if (drawn && geometryRef.current) {
+      const host = await measureInWindowAsync(hostWrapperRef);
+      const hosted = await measureInWindowAsync(hostedRef);
+      result = { host, hosted, drawn, ...geometryRef.current };
+      // `SafeAreaProvider` can render with a zero inset before it publishes the real one, so with the
+      // safe area on, a frame is ready only once the inset is in and the wrapper has moved to it.
+      const insetReady =
+        !safeArea || (result.insetTop > 0 && Math.abs(host.y - result.wrapperTop) < 0.5);
+      if ((insetReady && Math.abs(hosted.y - drawn.y) < 0.5) || attempt >= 40) {
+        return result;
+      }
+    } else if (attempt >= 40) {
+      throw new Error('SwiftUI never reported where it drew the hosted view');
+    }
+    await delay(50);
+  }
+}
+
+function ScrolledHostProbe({
+  scrollRef,
+  viewportRef,
+  hostWrapperRef,
+  hostedRef,
+  setSizeRef,
+}: {
+  scrollRef: React.RefObject<ScrollViewRef | null>;
+  viewportRef: React.RefObject<ViewRef | null>;
+  hostWrapperRef: React.RefObject<ViewRef | null>;
+  hostedRef: React.RefObject<ViewRef | null>;
+  setSizeRef: { current: ((size: number) => void) | null };
+}) {
+  const [size, setSize] = React.useState(BOX);
+  setSizeRef.current = setSize;
+  return (
+    <View ref={viewportRef} collapsable={false} style={{ flex: 1 }}>
+      <ScrollView ref={scrollRef} contentInsetAdjustmentBehavior="never">
+        <View style={{ height: SCROLL_LEAD }} />
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <VStack modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View ref={hostedRef} style={{ width: size, height: size }} />
+              </RNHostView>
+            </VStack>
+          </Host>
+        </View>
+        <View style={{ height: SCROLL_TAIL }} />
+      </ScrollView>
+    </View>
+  );
+}
+
 export async function test(
-  { it, describe, expect, afterEach }: any,
+  { it, describe, expect, afterEach, pending }: any,
   { setPortalChild, cleanupPortal }: any
 ) {
   afterEach(async () => {
@@ -72,8 +224,8 @@ export async function test(
 
   describe(name, () => {
     it('measures a hosted view where SwiftUI placed it, not where Yoga put its box', async () => {
-      const hostWrapperRef = React.createRef<View>();
-      const hostedRef = React.createRef<View>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
 
       let onLaidOut: () => void;
       const laidOut = new Promise<void>((resolve) => {
@@ -105,9 +257,9 @@ export async function test(
     });
 
     it('measures a hosted view stacked below another hosted view', async () => {
-      const hostWrapperRef = React.createRef<View>();
-      const firstRef = React.createRef<View>();
-      const secondRef = React.createRef<View>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
 
       let onLaidOut: () => void;
       const laidOut = new Promise<void>((resolve) => {
@@ -141,9 +293,51 @@ export async function test(
       expect(second.pageY - host.pageY).toBe(host.height - PADDING - BOX);
     });
 
+    it('measures hosted views in stacks placed beside each other in a row', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      let onLaidOut: () => void;
+      const laidOut = new Promise<void>((resolve) => {
+        onLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onLaidOut()}>
+            <HStack modifiers={[padding({ all: PADDING })]}>
+              <VStack>
+                <RNHostView matchContents>
+                  <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+                </RNHostView>
+              </VStack>
+              <VStack>
+                <RNHostView matchContents>
+                  <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </VStack>
+            </HStack>
+          </Host>
+        </View>
+      );
+
+      await laidOut;
+
+      const host = await measureAsync(hostWrapperRef);
+      const first = await measureAsync(firstRef);
+      const second = await measureAsync(secondRef);
+
+      const rowHeight = Math.max(SHORT, BOX);
+      expect(first.pageX - host.pageX).toBe(PADDING);
+      expect(first.pageY - host.pageY).toBe(PADDING + (rowHeight - SHORT) / 2);
+      expect(second.pageX - host.pageX).toBe(host.width - PADDING - BOX);
+      expect(second.pageY - host.pageY).toBe(PADDING + (rowHeight - BOX) / 2);
+    });
+
     it('measures a hosted view in a row, beside a SwiftUI-only sibling', async () => {
-      const hostWrapperRef = React.createRef<View>();
-      const hostedRef = React.createRef<View>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
 
       let onLaidOut: () => void;
       const laidOut = new Promise<void>((resolve) => {
@@ -173,9 +367,9 @@ export async function test(
     });
 
     it('measures a hosted view in a row, beside another hosted view', async () => {
-      const hostWrapperRef = React.createRef<View>();
-      const firstRef = React.createRef<View>();
-      const secondRef = React.createRef<View>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
 
       let onLaidOut: () => void;
       const laidOut = new Promise<void>((resolve) => {
@@ -209,15 +403,114 @@ export async function test(
       expect(second.pageY - host.pageY).toBe(PADDING + (rowHeight - BOX) / 2);
     });
 
+    // A `Host` inside SwiftUI goes in an `RNHostView`, which reports where SwiftUI placed it. The
+    // nested `Host` then measures from that position, including the outer stack's padding.
+    it('measures a hosted view in a Host nested through an RNHostView below a hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      let onOuterLaidOut: () => void;
+      const outerLaidOut = new Promise<void>((resolve) => {
+        onOuterLaidOut = resolve;
+      });
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onOuterLaidOut()}>
+            <VStack spacing={0} alignment="leading" modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ padding: PADDING }}>
+                  <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                    <RNHostView matchContents>
+                      <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                    </RNHostView>
+                  </Host>
+                </View>
+              </RNHostView>
+            </VStack>
+          </Host>
+        </View>
+      );
+
+      await Promise.all([outerLaidOut, nestedLaidOut]);
+
+      const host = await measureAsync(hostWrapperRef);
+      const nested = await measureAsync(nestedRef);
+
+      expect(nested.pageX - host.pageX).toBe(PADDING * 2);
+      expect(nested.pageY - host.pageY).toBe(PADDING * 2 + SHORT);
+    });
+
+    // The inner stack holds a hosted view and the `RNHostView` around the nested `Host`. Both report
+    // their own position, so the stack's zero content origin is right for both.
+    it('measures a hosted view in a nested Host beside a hosted view in the same stack', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const siblingRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      let onOuterLaidOut: () => void;
+      const outerLaidOut = new Promise<void>((resolve) => {
+        onOuterLaidOut = resolve;
+      });
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents onLayoutContent={() => onOuterLaidOut()}>
+            <VStack spacing={0} alignment="leading" modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <VStack spacing={0} alignment="leading">
+                <RNHostView matchContents>
+                  <View ref={siblingRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+                <RNHostView matchContents>
+                  <View collapsable={false} style={{ padding: PADDING }}>
+                    <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                      <RNHostView matchContents>
+                        <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                      </RNHostView>
+                    </Host>
+                  </View>
+                </RNHostView>
+              </VStack>
+            </VStack>
+          </Host>
+        </View>
+      );
+
+      await Promise.all([outerLaidOut, nestedLaidOut]);
+
+      const host = await measureAsync(hostWrapperRef);
+      const sibling = await measureAsync(siblingRef);
+      const nested = await measureAsync(nestedRef);
+
+      expect(sibling.pageX - host.pageX).toBe(PADDING);
+      expect(sibling.pageY - host.pageY).toBe(PADDING + SHORT);
+      expect(nested.pageX - host.pageX).toBe(PADDING * 2);
+      expect(nested.pageY - host.pageY).toBe(PADDING * 2 + SHORT + BOX);
+    });
+
     it('measures a hosted view when the Host is inside a React Native ScrollView', async () => {
-      const scrollRef = React.createRef<ScrollView>();
+      const scrollRef = React.createRef<ScrollViewRef>();
       // Anchored outside the `ScrollView`, so it does not move when the content does. Measuring
       // against it gives the box's real position on screen, which is what a touch is compared
       // against — a difference between two views that scroll together would cancel the scroll
       // offset out and never notice if it were wrong.
-      const viewportRef = React.createRef<View>();
-      const hostWrapperRef = React.createRef<View>();
-      const hostedRef = React.createRef<View>();
+      const viewportRef = React.createRef<ViewRef>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
 
       let onLaidOut: () => void;
       const laidOut = new Promise<void>((resolve) => {
@@ -294,9 +587,73 @@ export async function test(
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
     });
 
+    it('measures a hosted view where SwiftUI drew it when the Host is inset by the safe area', async () => {
+      const { host, hosted, drawn, insetTop, wrapperTop } = await mountInsetHost(
+        setPortalChild,
+        true
+      );
+      if (insetTop === 0) {
+        // `pending` throws to abort the spec, so nothing below it runs.
+        pending('the screen has no top safe-area inset to put the Host under');
+      }
+      // Proves that SwiftUI inset the content by the part of the status bar the Host is under.
+      expect(drawn.y - host.y).toBeCloseTo(insetTop - wrapperTop, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+    });
+
+    it('measures a hosted view where SwiftUI drew it when the Host ignores the safe area', async () => {
+      const { host, hosted, drawn } = await mountInsetHost(setPortalChild, false);
+      expect(drawn.y - host.y).toBeCloseTo(0, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+    });
+
+    it('measures a hosted view after a SwiftUI layout that follows a scroll', async () => {
+      const scrollRef = React.createRef<ScrollViewRef>();
+      const viewportRef = React.createRef<ViewRef>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+      const setSizeRef: { current: ((size: number) => void) | null } = { current: null };
+
+      setPortalChild(
+        <ScrolledHostProbe
+          scrollRef={scrollRef}
+          viewportRef={viewportRef}
+          hostWrapperRef={hostWrapperRef}
+          hostedRef={hostedRef}
+          setSizeRef={setSizeRef}
+        />
+      );
+      await measureWhenPresented(hostedRef, 'the hosted box');
+      const viewport = await measureSettled(viewportRef, 'the scroll viewport');
+      const hostBefore = await measureSettled(hostWrapperRef, 'the Host wrapper');
+
+      scrollRef.current?.scrollTo({ y: SCROLL_BY, animated: false });
+      let hostAfter = hostBefore;
+      for (let attempt = 0; attempt < 40; attempt++) {
+        hostAfter = await measureAsync(hostWrapperRef);
+        if (Math.abs(hostBefore.pageY - hostAfter.pageY - SCROLL_BY) < 0.5) {
+          break;
+        }
+        await delay(50);
+      }
+      expect(hostBefore.pageY - hostAfter.pageY).toBeCloseTo(SCROLL_BY, 0);
+
+      // Forces a SwiftUI layout pass after UIKit moved the Host.
+      setSizeRef.current?.(BOX * 2);
+      await delay(300);
+      const hosted = await measureSettled(hostedRef, 'the hosted box');
+      const host = await measureAsync(hostWrapperRef);
+
+      expect(hosted.width).toBeCloseTo(BOX * 2, 0);
+      expect(hosted.pageY - host.pageY).toBe(PADDING);
+      expect(hosted.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
+    });
+
     // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
     it('measures a hosted view in a sheet relative to itself', async () => {
-      const hostedRef = React.createRef<View>();
+      const hostedRef = React.createRef<ViewRef>();
 
       setPortalChild(
         <Host matchContents>
@@ -324,7 +681,7 @@ export async function test(
     });
 
     it('measures a hosted view nested inside sheet content from the outer hosted view', async () => {
-      const nestedRef = React.createRef<View>();
+      const nestedRef = React.createRef<ViewRef>();
 
       setPortalChild(
         <Host matchContents>

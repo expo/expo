@@ -7,6 +7,7 @@ import {
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useEffect, useRef, useState } from 'react';
 
+import { useIsInsideNativeTree } from '../../NativeTreeContext';
 import type { BottomSheetProps, SnapPoint } from './types';
 import { resolveContentPadding } from './utils';
 
@@ -43,7 +44,10 @@ export function BottomSheet({
   shouldDismissOnClickOutside = true,
   scrimColor,
   contentPadding,
+  containerColor,
+  contentColor,
 }: BottomSheetProps) {
+  const isInsideHost = useIsInsideNativeTree();
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
 
@@ -77,18 +81,29 @@ export function BottomSheet({
   if (shouldFillMaxHeight(snapPoints)) contentModifiers.push(fillMaxHeight());
   if (testID) contentModifiers.push(testIDModifier(testID));
 
+  const sheet = (
+    <ModalBottomSheet
+      ref={sheetRef}
+      onDismissRequest={onDismiss}
+      showDragHandle={showDragIndicator}
+      skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
+      properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
+      scrimColor={scrimColor}
+      containerColor={containerColor}
+      contentColor={contentColor}
+      modifiers={modifiers}>
+      <Column modifiers={contentModifiers}>{children}</Column>
+    </ModalBottomSheet>
+  );
+
+  // Already inside a `Host`, for example nested in another sheet's content: a `Host` of its own
+  // would be a `Host` directly inside Compose.
+  if (isInsideHost) {
+    return sheet;
+  }
   return (
     <Host style={{ position: 'absolute' }} pointerEvents="none">
-      <ModalBottomSheet
-        ref={sheetRef}
-        onDismissRequest={onDismiss}
-        showDragHandle={showDragIndicator}
-        skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
-        properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
-        scrimColor={scrimColor}
-        modifiers={modifiers}>
-        <Column modifiers={contentModifiers}>{children}</Column>
-      </ModalBottomSheet>
+      {sheet}
     </Host>
   );
 }

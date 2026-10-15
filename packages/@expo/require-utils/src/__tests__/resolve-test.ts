@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import Module from 'node:module';
 import path from 'node:path';
 
-import { resolveFrom } from '../resolve';
+import { nativeResolveFrom, resolveFrom } from '../resolve';
 
 const toNativePath = (posixPath: string) => path.resolve(posixPath);
 
@@ -212,6 +212,42 @@ describe('followSymlinks option', () => {
     );
   });
 
+  it('returns the symlinked direct match when followSymlinks is false', () => {
+    vol.fromJSON({ '/real/pkg': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg', '/proj/node_modules/pkg');
+    expect(resolveFrom('/proj', 'pkg', { followSymlinks: false, skipNodePath: true })).toBe(
+      toNativePath('/proj/node_modules/pkg')
+    );
+  });
+
+  it('returns the realpath of a direct match when followSymlinks is true', () => {
+    vol.fromJSON({ '/real/pkg': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg', '/proj/node_modules/pkg');
+    expect(resolveFrom('/proj', 'pkg', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/pkg'
+    );
+  });
+
+  it('returns the realpath of a direct match with an explicit extension', () => {
+    vol.fromJSON({ '/real/pkg.js': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg.js', '/proj/node_modules/pkg.js');
+    expect(resolveFrom('/proj', 'pkg.js', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/pkg.js'
+    );
+  });
+
+  it('returns the realpath of a subpath direct match', () => {
+    vol.fromJSON({ '/real/sub.js': '' });
+    vol.mkdirSync('/proj/node_modules/pkg', { recursive: true });
+    vol.symlinkSync('/real/sub.js', '/proj/node_modules/pkg/sub.js');
+    expect(resolveFrom('/proj', 'pkg/sub.js', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/sub.js'
+    );
+  });
+
   it('returns the realpath of an extension match when followSymlinks is true', () => {
     vol.fromJSON({ '/real/pkg.js': '' });
     vol.mkdirSync('/proj/node_modules', { recursive: true });
@@ -313,6 +349,30 @@ describe('native Node fallback', () => {
     try {
       expect(resolveFrom('/proj', 'pkg', { skipNodePath: true })).toBeNull();
       expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
+describe('nativeResolveFrom', () => {
+  test('should return the path Node resolves', () => {
+    const spy = jest.spyOn(Module, '_resolveFilename').mockReturnValue('/native/pkg/app.plugin.js');
+    try {
+      expect(nativeResolveFrom('/proj', 'pkg/app.plugin.js')).toBe('/native/pkg/app.plugin.js');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test('should return null when Node refuses the path', () => {
+    const spy = jest.spyOn(Module, '_resolveFilename').mockImplementation(() => {
+      throw Object.assign(new Error('Package subpath is not defined by "exports"'), {
+        code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+      });
+    });
+    try {
+      expect(nativeResolveFrom('/proj', 'pkg/app.plugin.js')).toBeNull();
     } finally {
       spy.mockRestore();
     }

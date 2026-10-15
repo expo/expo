@@ -4,54 +4,61 @@ import XCTest
 @testable import Expo_Go
 
 final class DeviceSessionExpiryTests: XCTestCase {
-  private let defaults = UserDefaults.standard
-
   override func setUp() {
     super.setUp()
-    AuthenticationService.clearSession()
+    SessionStore.shared.removeAll()
   }
 
   override func tearDown() {
-    AuthenticationService.clearSession()
+    SessionStore.shared.removeAll()
     super.tearDown()
   }
 
-  func testNoStoredExpiryIsNotExpired() {
+  func testNoSessionIsNotExpired() {
     XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
   func testFutureExpiryIsNotExpired() {
-    defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+    SessionStore.shared.add(sessionSecret: "secret", expiresAt: Date().addingTimeInterval(60))
     XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
   func testPastExpiryIsExpired() {
-    defaults.set(Date().addingTimeInterval(-1).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+    SessionStore.shared.add(sessionSecret: "secret", expiresAt: Date().addingTimeInterval(-1))
     XCTAssertTrue(AuthenticationService.isSessionExpired())
   }
 
   func testNilExpiryIsNeverExpired() {
-    defaults.removeObject(forKey: AuthenticationService.sessionExpiresAtKey)
+    SessionStore.shared.add(sessionSecret: "secret")
     XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
-  func testClearSessionRemovesEveryKey() {
-    defaults.set("secret", forKey: AuthenticationService.sessionKey)
-    defaults.set("test-user", forKey: AuthenticationService.usernameKey)
-    defaults.set("acc1", forKey: AuthenticationService.selectedAccountKey)
-    defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+  func testDeactivateExpiredSessionKeepsItListed() {
+    SessionStore.shared.add(sessionSecret: "secret", expiresAt: Date().addingTimeInterval(-1), username: "test-user")
 
-    AuthenticationService.clearSession()
+    AuthenticationService.deactivateExpiredSession()
 
-    XCTAssertNil(defaults.string(forKey: AuthenticationService.sessionKey))
-    XCTAssertNil(defaults.string(forKey: AuthenticationService.usernameKey))
-    XCTAssertNil(defaults.string(forKey: AuthenticationService.selectedAccountKey))
-    XCTAssertNil(defaults.object(forKey: AuthenticationService.sessionExpiresAtKey))
+    XCTAssertFalse(AuthenticationService.isSessionExpired())
+    XCTAssertNil(SessionStore.shared.activeSession)
+    XCTAssertEqual(SessionStore.shared.sessions.map(\.username), ["test-user"])
   }
 
-  func testClearSessionPostsSessionDidChange() {
+  func testDeactivateExpiredSessionPostsSessionDidChange() {
     let expectation = expectation(forNotification: .expoSessionDidChange, object: nil)
-    AuthenticationService.clearSession()
+    AuthenticationService.deactivateExpiredSession()
     wait(for: [expectation], timeout: 1)
+  }
+
+  func testRemovingDeviceLoginGrantsOnlyRemovesThatUser() {
+    AuthenticationService.recordDeviceLoginGrant(username: "alan", forVerificationHost: "a.example")
+    AuthenticationService.recordDeviceLoginGrant(username: "other", forVerificationHost: "b.example")
+    SessionStore.shared.add(sessionSecret: "secret", username: "other")
+
+    AuthenticationService.removeDeviceLoginGrants(forUsername: "alan")
+
+    XCTAssertTrue(AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: "b.example"))
+    SessionStore.shared.add(sessionSecret: "secret-2", username: "alan")
+    XCTAssertFalse(AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: "a.example"))
+    UserDefaults.standard.removeObject(forKey: AuthenticationService.deviceLoginGrantsKey)
   }
 }

@@ -16,6 +16,7 @@ import url from 'node:url';
 
 import { toPosixPath } from '../utils/filePath';
 import { getUniversalAssetData } from './getAssets';
+import type { ExpoCustomTransformOptions } from './types';
 
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template.statement(
@@ -58,14 +59,17 @@ export async function transform(
     projectRoot: '',
   };
 
+  const customTransformOptions = options.customTransformOptions as
+    | ExpoCustomTransformOptions
+    | undefined;
+
   // Is bundling for webview.
-  const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
-  const useMd5Filename = options.customTransformOptions?.useMd5Filename;
+  const isDomComponent = options.platform === 'web' && customTransformOptions?.dom;
+  const useMd5Filename = customTransformOptions?.useMd5Filename;
   const isExport = options.publicPath.includes('?export_path=');
-  const isHosted =
-    options.platform === 'web' || (options.customTransformOptions?.hosted && isExport);
-  const isReactServer = options.customTransformOptions?.environment === 'react-server';
-  const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
+  const isHosted = options.platform === 'web' || (customTransformOptions?.hosted && isExport);
+  const isReactServer = customTransformOptions?.environment === 'react-server';
+  const isServerEnv = isReactServer || customTransformOptions?.environment === 'node';
 
   const absolutePath = path.resolve(options.projectRoot, filename);
 

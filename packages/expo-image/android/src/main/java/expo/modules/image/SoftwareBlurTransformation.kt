@@ -37,7 +37,9 @@ class SoftwareBlurTransformation(
     outHeight: Int
   ): Bitmap {
     // FastBlur returns null for radius < 1, so skip the blur and return the source unchanged.
-    if (radius < 1) return toTransform
+    if (radius < 1) {
+      return toTransform
+    }
 
     val downsample = max(1, sampling)
     val scaledWidth = max(1, toTransform.width / downsample)

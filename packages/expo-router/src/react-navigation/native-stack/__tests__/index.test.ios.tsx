@@ -42,7 +42,7 @@ test('renders a native-stack navigator with screens', async () => {
 
   const Stack = createNativeStackNavigator<StackParamList>();
 
-  const { getByText, queryByText } = render(
+  const { getByText, queryByText } = await render(
     <NavigationContainer initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
@@ -55,7 +55,7 @@ test('renders a native-stack navigator with screens', async () => {
   expect(queryByText('Screen B')).toBeNull();
 
   await act(async () => {
-    fireEvent.press(getByText(/go to b/i));
+    await fireEvent.press(getByText(/go to b/i));
   });
 
   expect(isHiddenFromAccessibility(queryByText('Screen A'))).toBe(true);
@@ -74,7 +74,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -85,7 +85,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -101,7 +101,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -112,7 +112,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(44);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(44);
   });
@@ -128,7 +128,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -139,7 +139,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -155,7 +155,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -172,7 +172,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(44);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(56);
   });
@@ -188,7 +188,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen
@@ -212,7 +212,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(44);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(56);
   });
@@ -228,7 +228,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen
@@ -252,7 +252,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -268,7 +268,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
@@ -279,7 +279,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(44);
   });
@@ -295,7 +295,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
@@ -306,7 +306,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -322,7 +322,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     const Stack = createNativeStackNavigator<StackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
@@ -333,7 +333,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -350,7 +350,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -367,7 +367,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(44);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(44);
   });
@@ -384,7 +384,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -401,7 +401,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(44);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(44);
   });
@@ -418,7 +418,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
@@ -435,7 +435,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(0);
   });
@@ -452,7 +452,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -469,7 +469,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -486,7 +486,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -503,7 +503,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -520,7 +520,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
@@ -537,7 +537,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(0);
   });
@@ -554,7 +554,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -571,7 +571,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -588,7 +588,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
@@ -605,7 +605,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(64);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(64);
   });
@@ -622,7 +622,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
-    const { findByText } = render(
+    const { findByText } = await render(
       <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
@@ -639,7 +639,7 @@ describe('useHeaderHeight in native-stack', () => {
 
     expect(headerHeight).toBe(0);
     await act(async () => {
-      fireEvent.press(await findByText(/go to b/i));
+      await fireEvent.press(await findByText(/go to b/i));
     });
     expect(headerHeight).toBe(0);
   });

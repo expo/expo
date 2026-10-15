@@ -19,7 +19,7 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import { NavigationProvider, type Route, usePreventRemoveContext, useTheme } from '../../native';
+import { NavigationProvider, type Route, useTheme } from '../../native';
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
@@ -46,6 +46,7 @@ type SceneViewProps = {
   nextDescriptor?: NativeStackDescriptor;
   isPresentationModal?: boolean;
   isPreloaded?: boolean;
+  isRemovalPrevented: boolean;
   onWillDisappear: () => void;
   onWillAppear: () => void;
   onAppear: () => void;
@@ -68,6 +69,7 @@ const SceneView = ({
   nextDescriptor,
   isPresentationModal,
   isPreloaded,
+  isRemovalPrevented,
   onWillDisappear,
   onWillAppear,
   onAppear,
@@ -188,8 +190,6 @@ const SceneView = ({
     })
   );
 
-  const { preventedRoutes } = usePreventRemoveContext();
-
   const [headerHeight, setHeaderHeight] = React.useState(defaultHeaderHeight);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -248,13 +248,10 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
-  const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
-
   const headerConfig = useHeaderConfigProps({
     ...options,
     route,
-    headerBackButtonMenuEnabled:
-      isRemovePrevented !== undefined ? !isRemovePrevented : headerBackButtonMenuEnabled,
+    headerBackButtonMenuEnabled: isRemovalPrevented ? false : headerBackButtonMenuEnabled,
     headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
     headerHeight,
     headerShown: header !== undefined ? false : headerShown,
@@ -374,7 +371,7 @@ const SceneView = ({
         gestureResponseDistance={gestureResponseDistance}
         nativeBackButtonDismissalEnabled={false} // on Android
         onHeaderBackButtonClicked={onHeaderBackButtonClicked}
-        preventNativeDismiss={isRemovePrevented} // on iOS
+        preventNativeDismiss={isRemovalPrevented} // on iOS
         scrollEdgeEffects={{
           bottom: scrollEdgeEffects?.bottom ?? 'automatic',
           top: scrollEdgeEffects?.top ?? 'automatic',
@@ -446,12 +443,22 @@ type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
   emit: NativeStackViewEmit;
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
-export function NativeStackView({ state, descriptors, emit, pop, unstable_nativeProps }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  emit,
+  pop,
+  isPreloaded,
+  isRemovalPrevented,
+  unstable_nativeProps,
+}: Props) {
   const { colors } = useTheme();
-  const { setNextDismissedKey } = useDismissedRouteError(state);
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   const parentPresentation = use(ScreenPresentationContext);
   const isInTransparentPresentation =
@@ -459,11 +466,10 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
     parentPresentation === 'transparentModal' ||
     parentPresentation === 'containedTransparentModal';
 
-  useInvalidPreventRemoveError(descriptors);
+  useInvalidPreventRemoveError(descriptors, isRemovalPrevented);
 
-  // Routes after `index` are preloaded and rendered natively-detached. Only the routes up to the
-  // focused one participate in back-affordance and modal-grouping computations.
-  const activeRoutes = state.routes.slice(0, state.index + 1);
+  // Preloaded routes are detached and don't participate in back-affordance or modal grouping.
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
   const modalRouteKeys = getModalRouteKeys(activeRoutes, descriptors);
 
   return (
@@ -477,9 +483,12 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const isFocused = state.index === index;
-          const isPreloaded = index > state.index;
-          const previousKey = activeRoutes[index - 1]?.key;
-          const nextKey = activeRoutes[index + 1]?.key;
+          const routeIsPreloaded = isPreloaded(route.key);
+          const activeIndex = activeRoutes.findIndex(
+            (activeRoute) => activeRoute.key === route.key
+          );
+          const previousKey = activeIndex > 0 ? activeRoutes[activeIndex - 1]?.key : undefined;
+          const nextKey = activeIndex >= 0 ? activeRoutes[activeIndex + 1]?.key : undefined;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
 
@@ -495,7 +504,8 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}
               isPresentationModal={isModal}
-              isPreloaded={isPreloaded}
+              isPreloaded={routeIsPreloaded}
+              isRemovalPrevented={isRemovalPrevented(route.key)}
               onWillDisappear={() => {
                 emit({
                   type: 'transitionStart',

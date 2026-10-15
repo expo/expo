@@ -1,0 +1,2 @@
+# Written next to the tests by UserDefaults(suiteName: #file) during native test runs.
+ios/Tests/*.swift.plist

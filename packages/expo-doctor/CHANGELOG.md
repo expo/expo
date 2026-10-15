@@ -1,6 +1,31 @@
 # Changelog
 
-## Unpublished
+## 1.21.4
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 1.21.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Exit with a non-zero code when Doctor can't run its checks, for example because the app config fails to load. ([#50325](https://github.com/expo/expo/pull/50325) by [@tahakocal](https://github.com/tahakocal))
+
+## 1.21.2 — 2026-09-28
+
+### 💡 Others
+
+- [Internal] Type the Metro config loader from `expo/metro-config` and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
+
+## 1.21.1 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 1.21.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
@@ -15,8 +40,12 @@
 
 - [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
 - Keep loaded `.env` values out of `expo install --check`. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Report a stale `@expo/dom-webview` left over from an older SDK in the overridden dependency check. ([#49345](https://github.com/expo/expo/pull/49345) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 1.20.1 - 2026-07-15
 

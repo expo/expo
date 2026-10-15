@@ -1,6 +1,6 @@
 'use client';
-import { Icon, IconButton } from '@expo/ui/jetpack-compose';
 
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
@@ -22,6 +22,11 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     }
     return null;
   }
+  const {
+    expoUI: { Icon, IconButton },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   // `tint={null}` tells `<Icon>` to draw the source in its original colors.
   // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's

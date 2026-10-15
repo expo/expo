@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/android-instrumentation-tests.yml
       - apps/expo-go/android/**
       - fastlane/**
@@ -24,25 +24,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
-    paths:
-      - .github/workflows/android-instrumentation-tests.yml
-      - apps/expo-go/android/**
-      - fastlane/**
-      # - packages/**/android/**
-      - packages/expo-eas-client/android/**
-      - packages/expo-file-system/android/**
-      - packages/expo-font/android/**
-      - packages/expo-json-utils/android/**
-      - packages/expo-manifests/android/**
-      - packages/expo-notifications/android/**
-      - packages/expo-updates/android/**
-      - packages/expo-modules-core/**
-      - tools/src/commands/AndroidNativeUnitTests.ts
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!**.md'
-      - '!**/__tests__/**'
-      - '!**/__mocks__/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -50,6 +32,10 @@ concurrency:
 
 jobs:
   test:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     env:
@@ -62,9 +48,9 @@ jobs:
       - name: 👀 Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: ⬢ Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:

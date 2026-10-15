@@ -4,7 +4,7 @@ description: Learn how to use headless tab components to create custom tab layou
 sidebar_title: Custom tabs
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -22,14 +22,14 @@ For other tab layouts see:
   title="Native tabs"
   href="/router/advanced/native-tabs/"
   description="See native tabs if you want to achieve a native look and feel for your tab bar."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="JavaScript tabs"
   href="/router/advanced/tabs/"
   description="See JavaScript tabs if you already use React Navigation's tabs."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Anatomy of custom Tabs components
@@ -43,7 +43,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 | `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
 | `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
+A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a `TabSlot`, all within the `Tabs` component, as shown here:
 
 ```tsx src/app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';

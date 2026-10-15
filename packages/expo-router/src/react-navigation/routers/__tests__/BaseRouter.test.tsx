@@ -2,7 +2,8 @@ import { expect, jest, test } from '@jest/globals';
 
 import { BaseRouter } from '../BaseRouter';
 import * as CommonActions from '../CommonActions';
-import type { NavigationState } from '../types';
+import { type CommonNavigationAction, type NavigationState, RouterActionHandling } from '../types';
+import { expectHandled } from './__fixtures__/expectHandled';
 
 const STATE = {
   stale: false as const,
@@ -18,8 +19,12 @@ const STATE = {
   routeNames: ['foo', 'bar', 'baz', 'qux'],
 };
 
+const router = BaseRouter({});
+const getStateForAction = (state: NavigationState, action: CommonNavigationAction) =>
+  router.getStateForAction(state, action, { routeNames: state.routeNames, routeGetIdList: {} });
+
 test('sets params for the focused screen with SET_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, CommonActions.setParams({ answer: 42 }));
+  const result = expectHandled(getStateForAction(STATE, CommonActions.setParams({ answer: 42 })));
 
   expect(result?.state).toEqual({
     stale: false,
@@ -38,10 +43,12 @@ test('sets params for the focused screen with SET_PARAMS', () => {
 });
 
 test('merges params for the source screen with SET_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, {
-    ...CommonActions.setParams({ user: 'jane' }),
-    source: 'baz',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.setParams({ user: 'jane' }),
+      source: 'baz',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -60,10 +67,12 @@ test('merges params for the source screen with SET_PARAMS', () => {
 });
 
 test('sets params for the source screen with SET_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, {
-    ...CommonActions.setParams({ user: 'jane' }),
-    source: 'foo',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.setParams({ user: 'jane' }),
+      source: 'foo',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -82,16 +91,18 @@ test('sets params for the source screen with SET_PARAMS', () => {
 });
 
 test("doesn't handle SET_PARAMS if source key isn't present", () => {
-  const result = BaseRouter.getStateForAction(STATE, {
+  const result = getStateForAction(STATE, {
     ...CommonActions.setParams({ answer: 42 }),
     source: 'magic',
   });
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test('replaces params for the focused screen with REPLACE_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }));
+  const result = expectHandled(
+    getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }))
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -110,10 +121,12 @@ test('replaces params for the focused screen with REPLACE_PARAMS', () => {
 });
 
 test('adds params for the source screen with REPLACE_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, {
-    ...CommonActions.replaceParams({ user: 'jane' }),
-    source: 'foo',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.replaceParams({ user: 'jane' }),
+      source: 'foo',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -132,10 +145,12 @@ test('adds params for the source screen with REPLACE_PARAMS', () => {
 });
 
 test('replaces params for the source screen with REPLACE_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(STATE, {
-    ...CommonActions.replaceParams({ user: 'jane' }),
-    source: 'baz',
-  });
+  const result = expectHandled(
+    getStateForAction(STATE, {
+      ...CommonActions.replaceParams({ user: 'jane' }),
+      source: 'baz',
+    })
+  );
 
   expect(result?.state).toEqual({
     stale: false,
@@ -154,12 +169,12 @@ test('replaces params for the source screen with REPLACE_PARAMS', () => {
 });
 
 test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
-  const result = BaseRouter.getStateForAction(STATE, {
+  const result = getStateForAction(STATE, {
     ...CommonActions.replaceParams({ answer: 42 }),
     source: 'magic',
   });
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test('resets to a complete state with RESET', () => {
@@ -170,13 +185,15 @@ test('resets to a complete state with RESET', () => {
     { key: 'qux-1', name: 'qux' },
   ];
 
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      index: 0,
-      routes,
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        index: 0,
+        routes,
+      })
+    )
   );
 
   expect(result?.state).toEqual({ ...STATE, index: 0, routes });
@@ -186,12 +203,9 @@ test('resets to a complete state with RESET', () => {
 test('warns and ignores a partial RESET state', () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.reset({ routes: [{ name: 'foo' }] })
-  );
+  const result = getStateForAction(STATE, CommonActions.reset({ routes: [{ name: 'foo' }] }));
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
   expect(warn).toHaveBeenCalledWith(
     expect.stringContaining('The RESET action payload must contain a complete navigation state.')
   );
@@ -199,12 +213,14 @@ test('warns and ignores a partial RESET state', () => {
 });
 
 test('adds keys to routes missing keys during RESET', () => {
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      routes: [...STATE.routes, { name: 'qux' }],
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        routes: [...STATE.routes, { name: 'qux' }],
+      })
+    )
   );
 
   expect(result?.state).toEqual({
@@ -216,13 +232,15 @@ test('adds keys to routes missing keys during RESET', () => {
 });
 
 test('adds RESET route keys using the current navigator key', () => {
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.reset({
-      ...STATE,
-      key: 'navigator:incoming',
-      routes: [...STATE.routes, { name: 'qux' }],
-    })
+  const result = expectHandled(
+    getStateForAction(
+      STATE,
+      CommonActions.reset({
+        ...STATE,
+        key: 'navigator:incoming',
+        routes: [...STATE.routes, { name: 'qux' }],
+      })
+    )
   );
 
   expect(result?.state.routes[3]).toEqual({ key: 'qux:0', name: 'qux' });
@@ -235,7 +253,7 @@ test('starts the route key sequence when RESET omits routeKeySeq', () => {
     ...stateWithoutRouteKeySeq,
     routes: [...STATE.routes, { name: 'qux' }],
   } as Parameters<typeof CommonActions.reset>[0];
-  const result = BaseRouter.getStateForAction(STATE, CommonActions.reset(resetState));
+  const result = expectHandled(getStateForAction(STATE, CommonActions.reset(resetState)));
 
   expect(result?.state).toEqual({
     ...STATE,
@@ -250,9 +268,7 @@ test('creates the same RESET result for the same state and action', () => {
     routes: [...STATE.routes, { name: 'qux' }],
   });
 
-  expect(BaseRouter.getStateForAction(STATE, action)).toEqual(
-    BaseRouter.getStateForAction(STATE, action)
-  );
+  expect(getStateForAction(STATE, action)).toEqual(getStateForAction(STATE, action));
 });
 
 test("doesn't handle RESET if routes don't match routeNames", () => {
@@ -262,7 +278,7 @@ test("doesn't handle RESET if routes don't match routeNames", () => {
     { key: 'qux', name: 'quz' },
   ];
 
-  const result = BaseRouter.getStateForAction(
+  const result = getStateForAction(
     STATE,
     CommonActions.reset({
       index: 0,
@@ -270,11 +286,11 @@ test("doesn't handle RESET if routes don't match routeNames", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't handle RESET if routeNames don't match", () => {
-  const result = BaseRouter.getStateForAction(
+  const result = getStateForAction(
     STATE,
     CommonActions.reset({
       ...STATE,
@@ -282,11 +298,11 @@ test("doesn't handle RESET if routeNames don't match", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 test("doesn't handle RESET if there are no routes", () => {
-  const result = BaseRouter.getStateForAction(
+  const result = getStateForAction(
     STATE,
     CommonActions.reset({
       index: 0,
@@ -294,7 +310,7 @@ test("doesn't handle RESET if there are no routes", () => {
     })
   );
 
-  expect(result).toBeNull();
+  expect(result).toBe(RouterActionHandling.Unhandled);
 });
 
 const DECLARED_ROUTES_STATE: NavigationState = {
@@ -315,12 +331,12 @@ const DECLARED_ROUTES_STATE: NavigationState = {
 
 test('getStateForDeclaredRoutes returns the same state when every route is declared', () => {
   expect(
-    BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, DECLARED_ROUTES_STATE.routeNames)
+    router.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, DECLARED_ROUTES_STATE.routeNames)
   ).toBe(DECLARED_ROUTES_STATE);
 });
 
 test('getStateForDeclaredRoutes returns an empty state when no route is declared', () => {
-  expect(BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, ['replacement'])).toEqual({
+  expect(router.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, ['replacement'])).toEqual({
     ...DECLARED_ROUTES_STATE,
     index: -1,
     routes: [],
@@ -328,7 +344,7 @@ test('getStateForDeclaredRoutes returns an empty state when no route is declared
 });
 
 test('getStateForDeclaredRoutes filters routes without reordering or changing unrelated state', () => {
-  const result = BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
+  const result = router.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
     'last',
     'focused',
     'first',
@@ -348,7 +364,7 @@ test('getStateForDeclaredRoutes filters routes without reordering or changing un
 });
 
 test('getStateForDeclaredRoutes falls back to the first survivor when the focused route is removed', () => {
-  const result = BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
+  const result = router.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
     'first',
     'removed',
     'last',
@@ -359,7 +375,7 @@ test('getStateForDeclaredRoutes falls back to the first survivor when the focuse
 });
 
 test('getStateForDeclaredRoutes falls back to the first survivor when no earlier route survives', () => {
-  const result = BaseRouter.getStateForDeclaredRoutes({ ...DECLARED_ROUTES_STATE, index: 0 }, [
+  const result = router.getStateForDeclaredRoutes({ ...DECLARED_ROUTES_STATE, index: 0 }, [
     'focused',
     'last',
   ]);

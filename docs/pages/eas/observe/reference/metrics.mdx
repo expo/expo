@@ -296,6 +296,30 @@ When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigat
 
 For setup instructions and the full event params for each metric, see the integration page for [Expo Router](/eas/observe/integrations/expo-router/#metrics) or [React Navigation](/eas/observe/integrations/react-navigation/#metrics).
 
+## Memory warnings
+
+> **info** Memory warnings require SDK 57 and later, and are recorded on iOS only.
+
+When iOS delivers a low-memory warning to the app, EAS Observe records an `expo.memory.warning` event with `warn` severity. The event marks the moment the system came under memory pressure. It carries a memory usage snapshot taken as the warning is received, before other parts of the app react to it and free memory.
+
+A memory warning means the OS is running low on memory and may terminate the app to reclaim it. A session that ends shortly after this event is likely an out-of-memory termination, which is not reported as a crash.
+
+This event is recorded automatically. No instrumentation is needed. It appears in the session timeline and in [`eas observe:events`](/eas/observe/eas-cli/#eas-observeevents), alongside your user-defined events.
+
+### Event params
+
+- **`expo.memory.allocated`** (bytes): The memory footprint charged to the app process. This is the value the system compares against the app's memory limit, so it is the number to watch.
+- **`expo.memory.physical`** (bytes): Resident memory, that is, the app's pages currently held in physical RAM.
+- **`expo.memory.available`** (bytes): The memory the app can still allocate before it reaches its limit. Omitted on the iOS Simulator, which enforces no limit.
+- **`expo.memory.warningsCount`** (count): The number of warnings recorded in the session so far, including this one. A count that climbs within a single session points to a leak or a cache that never releases memory.
+
+**How to improve:**
+
+- Downscale large images to the size they are displayed at before decoding them. Full-resolution assets held in memory are a common cause of memory pressure.
+- Release caches and other non-visible resources when the app moves to the background.
+- Avoid holding entire network responses or file contents in memory. Stream or paginate them instead.
+- Check for retain cycles and event listeners that are never removed.
+
 ## Data handling
 
 ### Offline collection

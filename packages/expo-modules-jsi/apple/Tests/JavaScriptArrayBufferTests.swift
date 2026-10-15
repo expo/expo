@@ -182,8 +182,7 @@ struct JavaScriptArrayBufferTests {
       // Buffer goes out of scope here
     }
 
-    // Hermes collects synchronously, so the buffer should be collected immediately.
-    runtime.collectGarbage()
+    runtime.collectGarbage { flag.pointee }
 
     cleanupCalled = flag.pointee
     flag.deallocate()

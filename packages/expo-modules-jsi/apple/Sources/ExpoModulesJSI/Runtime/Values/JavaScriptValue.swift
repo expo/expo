@@ -3,79 +3,116 @@ import Foundation
 internal import jsi
 
 /// Represents any JS value (undefined, null, boolean, number, bigint, symbol, string, or object).
-/// As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
-/// this one is a reference type so can be safely captured in closures, passed to other isolation context,
-/// and stored in containers that don't support non-copyable types etc.
-public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
-  internal weak let runtime: JavaScriptRuntime?
-  internal let pointee: facebook.jsi.Value
+///
+/// Like the other value wrappers (`JavaScriptObject`, `JavaScriptFunction`, ...), this is a non-copyable
+/// struct that owns its `jsi::Value`: creating one costs no heap allocation, and moving it is a copy of
+/// a few words. It cannot be duplicated implicitly; `copy()` asks the engine to clone the handle. To
+/// capture a value in an escaping closure, send it to another isolation context, or store it in a
+/// container that takes copyable elements only, promote it to a `JavaScriptValue.Ref`.
+public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
+  /// Handle to the runtime the value belongs to. `nil` only for runtime-free values (undefined, null,
+  /// booleans and numbers).
+  internal let runtimeHandle: JavaScriptRuntimeHandle?
+  /// Mutable so that ``write(_:to:)`` can move the engine value out of a consumed value.
+  internal var pointee: facebook.jsi.Value
 
-  /// Initializer from the existing JSI value.
-  internal init(_ runtime: JavaScriptRuntime?, _ pointee: consuming facebook.jsi.Value) {
-    self.runtime = runtime
+  /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
+  /// Prefer ``jsiRuntime`` on hot paths: it costs no reference counting.
+  internal var runtime: JavaScriptRuntime? {
+    return runtimeHandle?.runtime
+  }
+
+  /// The engine runtime the value belongs to, or `nil` if the runtime has been deallocated or the value
+  /// is runtime-free.
+  internal var jsiRuntime: facebook.jsi.IRuntime? {
+    return runtimeHandle?.pointee
+  }
+
+  /// Takes ownership of the given JSI value, which belongs to the runtime behind `runtimeHandle`.
+  internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ pointee: consuming facebook.jsi.Value) {
+    self.runtimeHandle = runtimeHandle
     self.pointee = pointee
   }
 
-  /// Copy initializer from the existing JSI value.
-  internal init(_ runtime: JavaScriptRuntime, _ pointee: borrowing facebook.jsi.Value) {
-    self.runtime = runtime
+  /// Takes ownership of the given runtime-free JSI value (undefined, null, a boolean or a number).
+  internal init(_ pointee: consuming facebook.jsi.Value) {
+    self.runtimeHandle = nil
+    self.pointee = pointee
+  }
+
+  /// Takes ownership of the given JSI value.
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ pointee: consuming facebook.jsi.Value) {
+    self.runtimeHandle = runtime.handle
+    self.pointee = pointee
+  }
+
+  /// Copies the given JSI value, which asks the engine to clone the handle for pointer values.
+  /// The `copying:` label keeps this initializer from being picked for temporaries: with a plain
+  /// second argument, a non-optional runtime used to win overload resolution over the consuming
+  /// initializer above, cloning every freshly returned value instead of taking it over.
+  internal init(_ runtime: borrowing JavaScriptRuntime, copying pointee: borrowing facebook.jsi.Value) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.Value(runtime.pointee, pointee)
   }
 
   /// Creates a boolean JS value.
-  public init(_ runtime: JavaScriptRuntime, _ bool: Bool) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, _ bool: Bool) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.Value(bool)
   }
 
   /// Creates a string JS value.
-  public init(_ runtime: JavaScriptRuntime, _ string: String) {
-    self.runtime = runtime
-    self.pointee = facebook.jsi.Value(
-      runtime.pointee,
-      facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string))
-    )
+  public init(_ runtime: borrowing JavaScriptRuntime, _ string: String) {
+    self.runtimeHandle = runtime.handle
+    self.pointee = string.toJSIValue(in: runtime.pointee)
   }
 
   /// Creates a BigInt JS value from an Int64.
-  public init(_ runtime: JavaScriptRuntime, bigInt: Int64) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, bigInt: Int64) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.Value(runtime.pointee, facebook.jsi.BigInt.fromInt64(runtime.pointee, bigInt))
   }
 
   /// Creates a BigInt JS value from a UInt64.
-  public init(_ runtime: JavaScriptRuntime, bigInt: UInt64) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, bigInt: UInt64) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.Value(runtime.pointee, facebook.jsi.BigInt.fromUint64(runtime.pointee, bigInt))
   }
 
   /// Creates a JS value from a JS representable.
-  public init(_ runtime: JavaScriptRuntime, _ value: JavaScriptRepresentable) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, _ value: JavaScriptRepresentable) {
+    self.runtimeHandle = runtime.handle
     self.pointee = value.toJavaScriptValue(in: runtime).toJSIValue(in: runtime.pointee)
   }
 
   /// Creates a JS value from a JSI representable.
-  internal init(_ runtime: JavaScriptRuntime, _ value: JSIRepresentable) {
-    self.runtime = runtime
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ value: JSIRepresentable) {
+    self.runtimeHandle = runtime.handle
     self.pointee = value.toJSIValue(in: runtime.pointee)
+  }
+
+  /// Whether the value may be used with the given runtime: it belongs to it, or it is runtime-free
+  /// (undefined, null, a boolean or a number) and so fits any runtime.
+  internal func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
   /// Copies the value.
   public func copy() -> JavaScriptValue {
-    if let runtime {
-      return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
+    if let runtimeHandle, let jsiRuntime = runtimeHandle.pointee {
+      assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+      return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
     }
     // Some simple value kinds do not require the runtime.
     switch kind {
     case .undefined:
-      return .undefined
+      return .undefined()
     case .null:
-      return .null
+      return .null()
     case .bool:
-      return .init(nil, facebook.jsi.Value(getBool()))
+      return .init(facebook.jsi.Value(getBool()))
     case .number:
-      return .init(nil, facebook.jsi.Value(getDouble()))
+      return .init(facebook.jsi.Value(getDouble()))
     default:
       FatalError.runtimeLost()
     }
@@ -91,6 +128,45 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
       // which can't happen since facebook.jsi.Value has a non-zero size.
       return try body(bytes.baseAddress!)
     }
+  }
+
+  /// Calls `body` with a `JavaScriptUnownedValue` that borrows this value's `jsi::Value`, without
+  /// copying it. The unowned value is valid only for the duration of the closure and must not be
+  /// stored or escaped.
+  ///
+  /// `runtime` must be the runtime the value belongs to. It is passed in because a runtime-free value
+  /// (undefined, null, a boolean or a number) doesn't hold one.
+  ///
+  /// Inlinable, so the closure and `R` specialize in the caller; only `borrowUnownedValue(in:)` is a
+  /// call into this module.
+  @inlinable
+  public func withUnownedValue<R: ~Copyable>(
+    in runtime: borrowing JavaScriptRuntime,
+    _ body: (borrowing JavaScriptUnownedValue) throws -> R
+  ) rethrows -> R {
+    let unownedValue = borrowUnownedValue(in: runtime)
+    // The unowned value points into `self`, so `self` must outlive `body`.
+    defer { withExtendedLifetime(self) {} }
+    return try body(unownedValue)
+  }
+
+  /// A `JavaScriptUnownedValue` pointing at the stored `jsi::Value`. It stays valid while `self` is
+  /// alive: the value is a stored property of this instance, so its address doesn't change, and
+  /// `withUnsafeBytes(of:)` yields that address because a `jsi::Value` can't be copied. Not inlinable,
+  /// since it touches the JSI types; `withUnownedValue(in:_:)` is the only caller.
+  @usableFromInline
+  internal func borrowUnownedValue(in runtime: borrowing JavaScriptRuntime) -> JavaScriptUnownedValue {
+    let pointer = withUnsafeBytes(of: pointee) { bytes in
+      // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
+      // `withUnsafePointee(_:)` avoids.
+      guard let baseAddress = bytes.baseAddress else {
+        preconditionFailure(
+          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+        )
+      }
+      return baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+    }
+    return JavaScriptUnownedValue(runtime.pointee, pointer)
   }
 
   // MARK: - Type checks
@@ -128,21 +204,35 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   }
 
   public func isArray() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     return pointee.isObject() && pointee.getObject(jsiRuntime).isArray(jsiRuntime)
   }
 
   public func isFunction() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     return pointee.isObject() && pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
   }
 
+  /// Whether the value is a thenable: an object with a callable `then`, such as a promise.
+  @JavaScriptActor
+  public func isThenable() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a thenable.
+    guard pointee.isObject() else {
+      return false
+    }
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let then = getObject().getProperty(.cached(runtime, "then"))
+    return then.isObject() && then.isFunction()
+  }
+
   public func isTypedArray() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     return pointee.isObject() && expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
@@ -150,7 +240,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Checks whether the value is an `ArrayBuffer`.
   public func isArrayBuffer() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
@@ -249,50 +339,54 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiStringValue: pointee, in: jsiRuntime)
   }
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.
   public func getBigInt() -> JavaScriptBigInt {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isBigInt(), "Value is not a BigInt")
-    return JavaScriptBigInt(runtime, pointee.getBigInt(runtime.pointee))
+    return JavaScriptBigInt(runtimeHandle, pointee.getBigInt(jsiRuntime))
   }
 
   /// Returns the value as an object, or asserts if not an object.
   public func getObject() -> JavaScriptObject {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isObject(), "Value is not an object")
-    return JavaScriptObject(runtime, pointee.getObject(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptObject(runtimeHandle, pointee.getObject(jsiRuntime))
   }
 
   /// Returns the value as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Value is not an array")
-    return JavaScriptArray(runtime, pointee.getObject(runtime.pointee).getArray(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptArray(runtimeHandle, pointee.getObject(jsiRuntime).getArray(jsiRuntime))
   }
 
   /// Returns the value as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Value is not a function")
-    return JavaScriptFunction(runtime, pointee.getObject(runtime.pointee).getFunction(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptFunction(runtimeHandle, expo.functionFromValue(jsiRuntime, pointee))
   }
 
   /// Returns the value as a typed array, or asserts if it is not a typed array.
+  @JavaScriptActor
   public func getTypedArray() -> JavaScriptTypedArray {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -303,11 +397,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns the value as an array buffer, or asserts if it is not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Value is not an array buffer")
-    return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+    return JavaScriptArrayBuffer(runtimeHandle, expo.arrayBufferFromValue(jsiRuntime, pointee))
   }
 
   /// Returns the value as a promise, or asserts if it is not a promise.
@@ -417,10 +512,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns a string representing the value. Same as calling `toString()` in JS.
   public func toString() -> String {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
+    return String(jsiString: pointee.toString(jsiRuntime), in: jsiRuntime)
   }
 
   /// Converts the JavaScript value to a JSON string representation.
@@ -467,7 +562,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
   ///
   /// // Undefined returns nil
-  /// let undefined = JavaScriptValue.undefined
+  /// let undefined = JavaScriptValue.undefined()
   /// try undefined.jsonStringify() // nil
   /// ```
   ///
@@ -476,7 +571,9 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   ///   `JSON.stringify()`.
   ///
   /// - SeeAlso: [MDN: JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
-  public func jsonStringify(replacer: JavaScriptValue? = nil, space: JavaScriptValue? = nil) throws -> String? {
+  public func jsonStringify(replacer: consuming JavaScriptValue? = nil, space: consuming JavaScriptValue? = nil) throws
+    -> String?
+  {
     guard let runtime else {
       // Some types do not need the runtime. Handle them before crashing due to missing runtime.
       switch kind {
@@ -492,12 +589,17 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
         FatalError.runtimeLost()
       }
     }
-    let value =
-      try runtime
-      .global()
-      .getPropertyAsObject("JSON")
-      .getPropertyAsFunction("stringify")
-      .call(arguments: self, replacer, space)
+    let stringify = try runtime.global().getPropertyAsObject("JSON").getPropertyAsFunction("stringify")
+    let value: JavaScriptValue
+    if replacer == nil && space == nil {
+      value = try stringify.call(argument: self)
+    } else {
+      var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
+      arguments = arguments.set(value: self, atIndex: 0)
+      arguments = arguments.set(value: replacer ?? .undefined(), atIndex: 1)
+      arguments = arguments.set(value: space ?? .undefined(), atIndex: 2)
+      value = try stringify.call(arguments: arguments)
+    }
     return value.isString() ? value.getString() : nil
   }
 
@@ -508,9 +610,31 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     return copy()
   }
 
+  /// Writes `value` into a host callback's result slot. The value is consumed, so its engine value is
+  /// moved out instead of cloned. A value without a runtime (undefined, null, a boolean or a number)
+  /// is emplaced with the engine's inline constructors, so the common results skip the out-of-line
+  /// `jsi::Value` move and destroy. The slot must hold a value with nothing to release (see
+  /// `emplaceUndefined`).
+  internal static func write(_ value: consuming JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if value.runtimeHandle != nil {
+      expo.emplaceMovedValue(slot, &value.pointee)
+    } else if value.pointee.isUndefined() {
+      expo.emplaceUndefined(slot)
+    } else if value.pointee.isNumber() {
+      expo.emplaceNumber(slot, value.pointee.getNumber())
+    } else if value.pointee.isBool() {
+      expo.emplaceBool(slot, value.pointee.getBool())
+    } else if value.pointee.isNull() {
+      expo.emplaceNull(slot)
+    } else {
+      FatalError.runtimeLost()
+    }
+  }
+
   internal func asJSIValue() -> facebook.jsi.Value {
-    if let runtime {
-      return facebook.jsi.Value(runtime.pointee, pointee)
+    if let jsiRuntime {
+      assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
+      return facebook.jsi.Value(jsiRuntime, pointee)
     }
     // Some simple value kinds do not require the runtime.
     switch kind {
@@ -568,9 +692,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   // MARK: - Equality
 
+  // The type does not conform to `Equatable`: that protocol requires `Copyable`, and the value is
+  // non-copyable. The operators below provide the same syntax on borrowed operands.
+
   /// Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
-  public func isEqual(to another: JavaScriptValue) -> Bool {
-    if let jsiRuntime = runtime?.pointee ?? another.runtime?.pointee {
+  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
+    if let jsiRuntime = jsiRuntime ?? another.jsiRuntime {
       return facebook.jsi.Value.strictEquals(jsiRuntime, pointee, another.pointee)
     }
     // Some types don't have to be tied to any runtime. Since `strictEquals` needs a runtime, we need to handle this case ourselves.
@@ -591,48 +718,56 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   }
 
   /// Same as `isEqual(to:)`.
-  public static func == (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
+  public static func == (lhs: borrowing JavaScriptValue, rhs: borrowing JavaScriptValue) -> Bool {
     return lhs.isEqual(to: rhs)
   }
 
   /// Negates the result of `isEqual(to:)`.
-  public static func != (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
+  public static func != (lhs: borrowing JavaScriptValue, rhs: borrowing JavaScriptValue) -> Bool {
     return !lhs.isEqual(to: rhs)
   }
 
   // MARK: - Runtime-free initializers
 
+  // The runtime-free kinds are plain initializations with a trivial `jsi::Value` and no runtime
+  // handle: no allocation, no reference counting, usable from any isolation context.
+  //
+  // They are functions, like `true()`, `false()` and `number(_:)`, rather than static properties: a
+  // client module compiled against the resilient library cannot take ownership of a non-copyable value
+  // read from a static property or a subscript (Swift 6.4 reports "'unknown' is borrowed and cannot be
+  // consumed"), and `return .undefined()` is the most common statement in host functions.
+
   /// This is a lightweight way to create an undefined value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value can be passed to
   /// JavaScript functions or used in comparisons.
-  public static var undefined: JavaScriptValue {
-    JavaScriptValue(nil, facebook.jsi.Value.undefined())
+  public static func undefined() -> JavaScriptValue {
+    return JavaScriptValue(facebook.jsi.Value.undefined())
   }
 
   /// This is a lightweight way to create a null value that can be used in contexts
   /// where a runtime is not available or needed. The resulting value represents
   /// JavaScript's `null`, which is distinct from `undefined`.
-  public static var null: JavaScriptValue {
-    JavaScriptValue(nil, facebook.jsi.Value.null())
+  public static func null() -> JavaScriptValue {
+    return JavaScriptValue(facebook.jsi.Value.null())
   }
 
   /// This is a lightweight way to create a boolean true value that can be used in contexts
   /// where a runtime is not available or needed.
   public static func `true`() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value(true))
+    return JavaScriptValue(facebook.jsi.Value(true))
   }
 
   /// This is a lightweight way to create a boolean false value that can be used in contexts
   /// where a runtime is not available or needed.
   public static func `false`() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value(false))
+    return JavaScriptValue(facebook.jsi.Value(false))
   }
 
   /// This is a lightweight way to create a numeric value that can be used in contexts
   /// where a runtime is not available or needed. JavaScript numbers are represented
   /// as double-precision floating-point values following the IEEE 754 standard.
   public static func number(_ number: Double) -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value(number))
+    return JavaScriptValue(facebook.jsi.Value(number))
   }
 
   public static func representing(value: JavaScriptRepresentable, in runtime: JavaScriptRuntime) -> JavaScriptValue {
@@ -644,12 +779,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     if let value = value as? JavaScriptRepresentable {
       return value.toJavaScriptValue(in: runtime)
     }
-    return .undefined
+    return .undefined()
   }
 }
 
 extension JavaScriptValue: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptValue {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptValue {
     return value.copy()
   }
 
@@ -666,6 +801,10 @@ extension JavaScriptValue: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
+    assert(
+      self.runtime?.isOnOwningThread() ?? true,
+      "A JavaScript value was copied off its runtime's JavaScript thread"
+    )
     return facebook.jsi.Value(runtime, pointee)
   }
 }
@@ -675,9 +814,18 @@ extension JavaScriptValue: JSIRepresentable {
 extension JavaScriptValue {
   public struct TypeError: Error, CustomStringConvertible {
     let type: any ~Copyable.Type
+    /// A specific explanation that replaces the generic message, when the failure needs one.
+    var reason: String? = nil
+    /// Where inside the converted value the failure happened, such as `.user.tags[1]`. Empty when it's
+    /// the value itself.
+    var path: String = ""
 
     public var description: String {
-      return "TypeError: Value cannot be represented as \(type)"
+      let message = "TypeError: \(reason ?? "Value cannot be represented as \(type)")"
+      guard !path.isEmpty else {
+        return message
+      }
+      return "\(message) (path: \(path.hasPrefix(".") ? path.dropFirst() : Substring(path)))"
     }
   }
 }

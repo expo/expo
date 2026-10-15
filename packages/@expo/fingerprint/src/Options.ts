@@ -62,9 +62,6 @@ export const DEFAULT_IGNORE_PATHS = [
   // expo-modules-jsi has build artifacts
   '**/node_modules/expo-modules-jsi/apple/{Products,.build,.DerivedData,.generated}/**/*',
 
-  // Ignore nested node_modules
-  '**/node_modules/**/node_modules/**',
-
   // Ignore node binaries that might be platform dependent
   '**/node_modules/**/*.node',
   '**/node_modules/@img/sharp-*/**/*',

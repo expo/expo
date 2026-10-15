@@ -10,8 +10,10 @@ import { type CommonViewModifierProps } from '../types';
  * - `default` - The default button role.
  * - `cancel` - A button that cancels the current operation.
  * - `destructive` - A button that deletes data or performs a destructive action.
+ * - `close` - A button that closes the view it is presented in. Given no `label` and no children,
+ *   the system draws it as an xmark.
  */
-export type ButtonRole = 'default' | 'cancel' | 'destructive';
+export type ButtonRole = 'default' | 'cancel' | 'destructive' | 'close';
 
 export interface ButtonProps extends CommonViewModifierProps {
   /**

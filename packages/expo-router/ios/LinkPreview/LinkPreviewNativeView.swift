@@ -7,12 +7,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   var directChild: UIView?
-  var nextScreenId: String? {
-    didSet {
-      performUpdateOfPreloadedView()
-    }
-  }
-  var tabPath: TabPathPayload? {
+  var previewActivationPath: PreviewActivationPathPayload? {
     didSet {
       performUpdateOfPreloadedView()
     }
@@ -44,14 +39,12 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   // MARK: - Props
 
   func performUpdateOfPreloadedView() {
-    if nextScreenId == nil && tabPath?.path.isEmpty != false {
-      // If we have no tab to change and no screen to push, then we can't update the preloaded view
+    guard let path = previewActivationPath?.path, !path.isEmpty else {
+      linkPreviewNativeNavigation.clearPreloadedView()
       return
     }
-    // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
-      screenId: nextScreenId,
-      tabPath: tabPath,
+      path: path.map { PreviewActivationRoute(key: $0.key) },
       responder: self
     )
   }
@@ -121,6 +114,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
     cancelReactNativeTouches()
+    linkPreviewNativeNavigation.beginInteraction()
     onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
@@ -185,9 +179,16 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     animator: UIContextMenuInteractionCommitAnimating
   ) {
     if preview != nil {
-      self.onPreviewTapped()
+      let activation = linkPreviewNativeNavigation.captureActivation()
+      if let screenId = activation?.screenId {
+        self.onPreviewTapped(["screenId": screenId])
+      } else {
+        self.onPreviewTapped()
+      }
       animator.addCompletion { [weak self] in
-        self?.linkPreviewNativeNavigation.pushPreloadedView()
+        if UIDevice.current.userInterfaceIdiom != .pad {
+          activation?.commit()
+        }
         self?.onPreviewTappedAnimationCompleted()
       }
     }

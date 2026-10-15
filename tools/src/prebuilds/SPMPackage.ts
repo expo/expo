@@ -12,18 +12,21 @@ import path from 'path';
 import { getPrecompileDir } from '../Directories';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
+import {
+  type CheckedInResolvedTarget,
+  getSiblingProductNames,
+  isCheckedInResolvedTarget,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
-import {
-  ObjcTarget,
-  SwiftTarget,
-  CppTarget,
-  SPMProduct,
-  CompilerFlags,
-  CompilerFlagsVariant,
-} from './SPMConfig.types';
+import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
+import { derivePackageNameFromUrl } from './SPMGitUrl';
+import { parseLinkedFrameworks } from './SPMIdentifier';
 import {
   ExternalDependencyConfig,
   PackageSwiftContext,
@@ -32,7 +35,7 @@ import {
   ResolvedTargetDependency,
   SPMPackageVersion,
 } from './SPMPackage.types';
-import { createAsyncSpinner, SpinnerError } from './Utils';
+import { createAsyncSpinner, resolveFrameworkTargetPath, SpinnerError } from './Utils';
 import { resolvePackagePath } from './resolvePackage';
 
 /**
@@ -88,19 +91,6 @@ function findModularHeadersDir(xcframeworkPath: string): string | null {
     }
   }
   return null;
-}
-
-/**
- * Detects whether a React artifact still uses the legacy VFS overlay. The modern modular artifact
- * ships ReactNativeHeaders.xcframework (and drops the React-VFS template that the overlay was
- * generated from), so its absence means we should fall back to the VFS path.
- * @param basePath Flavor-specific artifact base path (contains React.xcframework)
- */
-function reactArtifactIsModular(basePath?: string): boolean {
-  if (!basePath) {
-    return false;
-  }
-  return fs.existsSync(path.join(basePath, 'ReactNativeHeaders.xcframework'));
 }
 
 /**
@@ -162,17 +152,16 @@ function getExpoModulesMacroPluginFlags(): string[] {
     throw new Error(
       `Could not locate the "expo-modules-core" package while generating Package.swift. ` +
         `The ExpoModules macros plugin executable (used to expand @OptimizedFunction etc.) ships ` +
-        `under "expo-modules-core/node_modules/@expo/expo-modules-macros-plugin/apple". ` +
+        `under "expo-modules-core/node_modules/expo-modules-macros/apple". ` +
         `Ensure expo-modules-core is installed in the workspace before running the prebuild.`
     );
   }
   const macrosToolPath = path.join(
     corePkg.path,
     'node_modules',
-    '@expo',
-    'expo-modules-macros-plugin',
+    'expo-modules-macros',
     'apple',
-    'ExpoModulesMacros-tool'
+    'ExpoModulesMacros'
   );
   _macroPluginFlagsCache = [
     '-Xfrontend',
@@ -278,17 +267,102 @@ function formatSPMVersionRequirement(version: SPMPackageVersion): string {
   throw new Error(`Invalid SPM version specification: ${JSON.stringify(version)}`);
 }
 
-/**
- * Derives the package name from an SPM URL.
- * e.g., "https://github.com/airbnb/lottie-spm.git" -> "lottie-spm"
- */
-function derivePackageNameFromUrl(url: string): string {
-  const lastSlash = url.lastIndexOf('/');
-  let name = url.substring(lastSlash + 1);
-  if (name.endsWith('.git')) {
-    name = name.slice(0, -4);
+const BUILD_VARIANT_KEYS = ['common', 'debug', 'release'] as const;
+const LANGUAGE_KEYS = ['c', 'cxx'] as const;
+
+type BuildVariantKey = (typeof BUILD_VARIANT_KEYS)[number];
+type LanguageKey = (typeof LANGUAGE_KEYS)[number];
+
+function isBuildVariantKey(key: string): key is BuildVariantKey {
+  return (BUILD_VARIANT_KEYS as readonly string[]).includes(key);
+}
+
+function isLanguageKey(key: string): key is LanguageKey {
+  return (LANGUAGE_KEYS as readonly string[]).includes(key);
+}
+
+function isUnknownArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
+function isUnknownRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function describeJsonValue(value: unknown): string {
+  return value === undefined ? 'undefined' : JSON.stringify(value);
+}
+
+function compilerFlagsError(targetName: string, problem: string): Error {
+  return new Error(
+    `Cannot read "compilerFlags" for target "${targetName}": ${problem}. The config schema does ` +
+      `not allow that shape, and the flags it holds would never reach the compiler, so the target ` +
+      `would build without them. Write the flags in its spm.config.json as either\n` +
+      `  "compilerFlags": ["-DFOO=1"]\n` +
+      `or\n` +
+      `  "compilerFlags": { "common": [...], "debug": [...], "release": [...] }\n` +
+      `where each build variant is itself either a list of flag strings or ` +
+      `{ "c": [...], "cxx": [...] }.`
+  );
+}
+
+function linkerFlagsError(targetName: string, problem: string): Error {
+  return new Error(
+    `Cannot read "linkerFlags" for target "${targetName}": ${problem}. The flags are passed to ` +
+      `the linker through .unsafeFlags() in the generated Package.swift, which takes only a list ` +
+      `of strings. Write them in the package's spm.config.json as, for example\n` +
+      `  "linkerFlags": ["-lz", "-all_load"]`
+  );
+}
+
+function parseFlagList(
+  value: unknown,
+  label: string,
+  targetName: string,
+  flagsError: (targetName: string, problem: string) => Error = compilerFlagsError
+): string[] {
+  if (!isUnknownArray(value)) {
+    throw flagsError(targetName, `${label} is ${describeJsonValue(value)}, not a list of flags`);
   }
-  return name;
+  return value.map((flag) => {
+    if (typeof flag !== 'string') {
+      throw flagsError(
+        targetName,
+        `${label} contains ${describeJsonValue(flag)}, which is not a flag string`
+      );
+    }
+    return flag;
+  });
+}
+
+function parseVariant(
+  value: unknown,
+  label: string,
+  targetName: string
+): { c: string[]; cxx: string[] } {
+  if (isUnknownArray(value)) {
+    const flags = parseFlagList(value, label, targetName);
+    return { c: flags, cxx: [...flags] };
+  }
+  if (!isUnknownRecord(value)) {
+    throw compilerFlagsError(
+      targetName,
+      `${label} is ${describeJsonValue(value)}, neither a list of flags nor a per-language object`
+    );
+  }
+  for (const key of Object.keys(value)) {
+    if (!isLanguageKey(key)) {
+      throw compilerFlagsError(
+        targetName,
+        `${label} has the key "${key}", and a build variant names only the languages ` +
+          `${LANGUAGE_KEYS.map((language) => `"${language}"`).join(' and ')}`
+      );
+    }
+  }
+  return {
+    c: value.c === undefined ? [] : parseFlagList(value.c, `${label}.c`, targetName),
+    cxx: value.cxx === undefined ? [] : parseFlagList(value.cxx, `${label}.cxx`, targetName),
+  };
 }
 
 /**
@@ -298,38 +372,49 @@ function derivePackageNameFromUrl(url: string): string {
  * - Array shorthand: `["-DFOO=1"]` → common flags for both c and cxx
  * - Object with common/debug/release: `{ common: [...], debug: [...], release: [...] }`
  * - Each variant can be array (both c/cxx) or per-language: `{ c: [...], cxx: [...] }`
+ *
+ * The flags arrive as unvalidated JSON, so every other shape is rejected here rather than
+ * resolving to no flags at all: a target that silently drops its defines still builds, and
+ * fails much later at a `#ifdef` guard that never opened.
  */
-function resolveCompilerFlags(
-  flags: CompilerFlags,
-  buildType: BuildFlavor
+export function resolveCompilerFlags(
+  flags: unknown,
+  buildType: BuildFlavor,
+  targetName: string
 ): { c: string[]; cxx: string[] } {
+  if (isUnknownArray(flags)) {
+    const common = parseFlagList(flags, '"compilerFlags"', targetName);
+    return { c: common, cxx: [...common] };
+  }
+  if (!isUnknownRecord(flags)) {
+    throw compilerFlagsError(
+      targetName,
+      `"compilerFlags" is ${describeJsonValue(flags)}, neither a list of flags nor an object of ` +
+        `build variants`
+    );
+  }
+
   const result = { c: [] as string[], cxx: [] as string[] };
-
-  // Helper to add a variant's flags to the result
-  const addVariant = (variant: CompilerFlagsVariant | undefined) => {
-    if (!variant) return;
-    if (Array.isArray(variant)) {
-      // Array shorthand: apply to both c and cxx
-      result.c.push(...variant);
-      result.cxx.push(...variant);
-    } else {
-      // Object with c/cxx keys
-      if (variant.c) result.c.push(...variant.c);
-      if (variant.cxx) result.cxx.push(...variant.cxx);
+  // Every variant is parsed, including the one this build will not apply, so a Release-only
+  // mistake surfaces on a Debug build too.
+  const variants = new Map<BuildVariantKey, { c: string[]; cxx: string[] }>();
+  for (const [key, value] of Object.entries(flags)) {
+    if (!isBuildVariantKey(key)) {
+      throw compilerFlagsError(
+        targetName,
+        isLanguageKey(key)
+          ? `"${key}" names a language, which belongs inside a build variant`
+          : `"${key}" is not a build variant`
+      );
     }
-  };
+    variants.set(key, parseVariant(value, `"${key}"`, targetName));
+  }
 
-  if (Array.isArray(flags)) {
-    // Top-level array shorthand: treat as common flags for both c and cxx
-    result.c.push(...flags);
-    result.cxx.push(...flags);
-  } else {
-    // Object with common/debug/release keys
-    addVariant(flags.common);
-    if (buildType === 'Debug') {
-      addVariant(flags.debug);
-    } else {
-      addVariant(flags.release);
+  for (const key of ['common', buildType === 'Debug' ? 'debug' : 'release'] as const) {
+    const variant = variants.get(key);
+    if (variant) {
+      result.c.push(...variant.c);
+      result.cxx.push(...variant.cxx);
     }
   }
 
@@ -531,13 +616,12 @@ const ARTIFACT_RELATIVE_PATHS: Record<
   string,
   {
     xcframeworkPath: string;
-    includeDirectories: string[];
-    vfsOverlayFile?: string;
+    /** Include roots relative to the xcframework, for dependencies without a clang module map. */
+    includeDirectories?: string[];
     /**
      * Headers-only xcframework (e.g. ReactNativeHeaders.xcframework) shipping a flattened clang
-     * module map under <slice>/Headers/module.modulemap. When present in the artifact, this is the
-     * modern modular replacement for the VFS overlay: consumers get `-fmodule-map-file` + `-I` to
-     * the headers dir instead of `-ivfsoverlay`.
+     * module map under <slice>/Headers/module.modulemap. Consumers get `-fmodule-map-file` plus
+     * `-I` to the headers dir.
      */
     moduleMapXcframework?: string;
     /** Display name used in Package.swift */
@@ -560,8 +644,6 @@ const ARTIFACT_RELATIVE_PATHS: Record<
   },
   react: {
     xcframeworkPath: 'React.xcframework',
-    includeDirectories: ['Headers', 'React_Core'],
-    vfsOverlayFile: 'React-VFS.yaml',
     moduleMapXcframework: 'ReactNativeHeaders.xcframework',
     displayName: 'React',
     artifactKey: 'react',
@@ -616,7 +698,6 @@ function getExternalDependencyConfig(
     name: config.displayName,
     path: relativePath,
     includeDirectories: config.includeDirectories,
-    hasVfsOverlay: !!config.vfsOverlayFile,
     debugBasePath: path.join(artifactPaths.cachePath, config.cacheDirName, version, 'debug'),
     releaseBasePath: path.join(artifactPaths.cachePath, config.cacheDirName, version, 'release'),
   };
@@ -698,6 +779,14 @@ function generatePackageSwiftContent(context: PackageSwiftContext): string {
   return lines.join('\n');
 }
 
+function quoteSwiftPath(value: string): string {
+  return `"${value.replace(/[\\"\x00-\x1f\x7f]/g, (character) =>
+    character === '\\' || character === '"'
+      ? `\\${character}`
+      : `\\u{${character.charCodeAt(0).toString(16)}}`
+  )}"`;
+}
+
 /**
  * Generates a single target declaration for Package.swift
  */
@@ -724,23 +813,35 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
     }
 
     // Path
-    lines.push(`            path: "${target.path}",`);
+    lines.push(
+      `            path: ${isCheckedInResolvedTarget(target) ? quoteSwiftPath(target.path) : `"${target.path}"`},`
+    );
 
-    // Sources - exclude everything except the expected source files (must come before publicHeadersPath)
-    lines.push(`            sources: nil,`);
+    if (isCheckedInResolvedTarget(target)) {
+      if (target.exclude.length > 0) {
+        lines.push(`            exclude: [${target.exclude.map(quoteSwiftPath).join(', ')}],`);
+      }
+      lines.push(`            sources: [${target.sources.map(quoteSwiftPath).join(', ')}],`);
+    } else {
+      lines.push(`            sources: nil,`);
+    }
 
     // Resources
     if (target.resources && target.resources.length > 0) {
       lines.push(`            resources: [`);
       for (const res of target.resources) {
-        lines.push(`                .${res.rule}("${res.path}"),`);
+        lines.push(
+          `                .${res.rule}(${isCheckedInResolvedTarget(target) ? quoteSwiftPath(res.path) : `"${res.path}"`}),`
+        );
       }
       lines.push(`            ],`);
     }
 
     // Public headers path for ObjC/C++ targets (required for module map generation)
     if ((target.type === 'objc' || target.type === 'cpp') && target.publicHeadersPath) {
-      lines.push(`            publicHeadersPath: "${target.publicHeadersPath}",`);
+      lines.push(
+        `            publicHeadersPath: ${isCheckedInResolvedTarget(target) ? quoteSwiftPath(target.publicHeadersPath) : `"${target.publicHeadersPath}"`},`
+      );
     }
 
     // C settings for ObjC and C++ targets
@@ -793,6 +894,23 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
   return lines.join('\n');
 }
 
+export function buildLinkerSettings(
+  linkedFrameworks: string[],
+  linkerFlags: unknown,
+  targetName: string
+): string[] | undefined {
+  const settings = linkedFrameworks.map((fw) => `.linkedFramework("${fw}")`);
+  const flags =
+    linkerFlags === undefined
+      ? []
+      : parseFlagList(linkerFlags, '"linkerFlags"', targetName, linkerFlagsError);
+  if (flags.length > 0) {
+    const quotedFlags = flags.map((f) => `"${escapeSwiftString(f)}"`).join(', ');
+    settings.push(`.unsafeFlags([${quotedFlags}])`);
+  }
+  return settings.length > 0 ? settings : undefined;
+}
+
 // Target Resolution
 
 /**
@@ -841,7 +959,7 @@ async function resolveSourceTarget(
     name: target.name,
     path: path.relative(packageSwiftDir, path.join(packageSwiftDir, target.name)),
     dependencies: resolvedDependencies,
-    linkedFrameworks: target.linkedFrameworks || [],
+    linkedFrameworks: parseLinkedFrameworks(target.linkedFrameworks, target.name),
   };
 
   // Build settings based on target type
@@ -878,19 +996,11 @@ async function resolveSourceTarget(
     }
   }
 
-  // Linker settings for linked frameworks and libraries
-  if (resolved.linkedFrameworks.length > 0) {
-    resolved.linkerSettings = resolved.linkedFrameworks.map((fw) => `.linkedFramework("${fw}")`);
-  }
-
-  // Linker flags (unsafe flags)
-  if (target.linkerFlags && target.linkerFlags.length > 0) {
-    if (!resolved.linkerSettings) {
-      resolved.linkerSettings = [];
-    }
-    const quotedFlags = target.linkerFlags.map((f) => `"${f}"`).join(', ');
-    resolved.linkerSettings.push(`.unsafeFlags([${quotedFlags}])`);
-  }
+  resolved.linkerSettings = buildLinkerSettings(
+    resolved.linkedFrameworks,
+    target.linkerFlags,
+    target.name
+  );
 
   // Resolve resources: expand globs against package root and remap paths
   // to the copied location in the generated target folder (resources/ subdirectory)
@@ -938,13 +1048,18 @@ export function buildSwiftSettings(
   // Define RCT_NEW_ARCH_ENABLED for Fabric support
   settings.push('.define("RCT_NEW_ARCH_ENABLED")');
 
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge) behind it, so the prebuild must match.
+  settings.push('.define("RCT_REMOVE_LEGACY_ARCH")');
+
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).
   const commonCxxFlags: string[] = ['-Xcc', '-fmodules'];
 
-  // Add VFS overlays and header maps per configuration
+  // Add module maps and header maps per configuration
   // For Swift, each flag needs to be wrapped with -Xcc to pass it to the underlying Clang compiler
-  const { debug, release } = collectVfsAndHeaderMapFlags(
+  const { debug, release } = collectHeaderMapFlags(
     externalDeps,
     artifactPaths,
     packageSwiftDir,
@@ -977,8 +1092,8 @@ export function buildSwiftSettings(
   // to Clang when the Swift compiler processes C module imports.
   // This is necessary for C targets with #ifdef-guarded APIs (e.g., SQLITE_ENABLE_SESSION)
   // where the defines must be visible during Swift's module import, not just C compilation.
-  if (target?.compilerFlags) {
-    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType);
+  if (target?.compilerFlags !== undefined) {
+    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType, target.name);
     const xccFlags: string[] = [];
     for (const flag of resolvedFlags.c) {
       xccFlags.push('-Xcc', flag);
@@ -1003,7 +1118,7 @@ export function buildSwiftSettings(
  * @param buildType - Debug or Release build flavor
  * @param xcframeworkPaths - Map of dependency name to absolute xcframework path (for auto-resolving headers)
  */
-function buildCSettings(
+export function buildCSettings(
   target: ObjcTarget | CppTarget,
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
@@ -1067,10 +1182,16 @@ function buildCSettings(
   cSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
   cxxSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
 
-  // Enable Clang modules for ObjC/React module maps (VFS overlays).
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge in react-native-skia) behind it, so the prebuild must match.
+  cSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+  cxxSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+
+  // Enable Clang modules for ObjC/React module maps.
   // Note: -fcxx-modules is intentionally omitted — it enforces strict C++ standard library
   // module imports (e.g. "must import 'std.optional'"), which breaks third-party code that
-  // relies on transitive includes. Only -fmodules is needed for React's VFS module maps.
+  // relies on transitive includes. Only -fmodules is needed for React's module maps.
   cSettings.push('.unsafeFlags(["-fmodules"])');
   cxxSettings.push('.unsafeFlags(["-fmodules"])');
 
@@ -1082,6 +1203,18 @@ function buildCSettings(
   // The includeDirectories in the config are relative to the target's original path (target.path),
   // which is relative to pkg.path. So we resolve: pkg.path + target.path + includeDir
   if (target.includeDirectories && target.includeDirectories.length > 0) {
+    // Defence in depth: a target built from a checked-in Package.swift reaches this code with
+    // `path` already set to its absolute source root, so only a target built from spm.config.json can trip this.
+    if (!target.path) {
+      throw new Error(
+        `Cannot resolve "includeDirectories" for product "${productName}", target ` +
+          `"${target.name}": the target declares no "path", and include directories are relative ` +
+          `to it, so ${target.includeDirectories.map((dir) => `"${dir}"`).join(', ')} resolves ` +
+          `against nothing. Only a checked-in Package.swift may leave a target without a "path", ` +
+          `and its layout is not read here. Give the target a "path" in its spm.config.json, or ` +
+          `drop its "includeDirectories".`
+      );
+    }
     const includeFlags: string[] = [];
     for (const includeDir of target.includeDirectories) {
       // Resolve relative to the original target path.
@@ -1158,8 +1291,8 @@ function buildCSettings(
   // - Array shorthand: ["-DFOO=1"] → common flags for both c and cxx
   // - Object with common/debug/release: { common: [...], debug: [...], release: [...] }
   // - Each variant can be array or { c: [...], cxx: [...] }
-  if (target.compilerFlags) {
-    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType);
+  if (target.compilerFlags !== undefined) {
+    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType, target.name);
     // Substitute variables like ${REACT_NATIVE_MINOR_VERSION} in compiler flags
     const cFlags = substituteCompilerFlagVariables(resolvedFlags.c, pkgPath);
     const cxxFlags = substituteCompilerFlagVariables(resolvedFlags.cxx, pkgPath);
@@ -1197,72 +1330,31 @@ function buildCSettings(
     addDefinesAndFlags(cxxFlags, cxxSettings);
   }
 
-  // Add VFS overlays and header maps for React if present
+  // Add module maps and header maps for React if present
   // Returns separate flag sets for debug and release configurations
-  const { debug: vfsDebug, release: vfsRelease } = collectVfsAndHeaderMapFlags(
+  const { debug: headerDebug, release: headerRelease } = collectHeaderMapFlags(
     externalDeps,
     artifactPaths,
     packageSwiftDir,
     buildType
   );
 
-  // Debug/release-specific VFS overlay and header map flags
-  pushUnsafeFlags([cSettings, cxxSettings], vfsDebug, 'debug');
-  pushUnsafeFlags([cSettings, cxxSettings], vfsRelease, 'release');
+  pushUnsafeFlags([cSettings, cxxSettings], headerDebug, 'debug');
+  pushUnsafeFlags([cSettings, cxxSettings], headerRelease, 'release');
 
   return { cSettings, cxxSettings };
 }
 
 /**
- * Extracts the root path from a VFS overlay YAML file.
- * The VFS overlay YAML has a structure like:
- * ```
- * version: 0
- * case-sensitive: false
- * roots:
- *   - name: '/path/to/root'
- * ```
- * This function parses the YAML and returns the first root's name path.
- */
-function extractVFSOverlayRootPath(vfsOverlayPath: string): string | null {
-  try {
-    const yamlContent = fs.readFileSync(vfsOverlayPath, 'utf-8');
-    const lines = yamlContent.split('\n');
-    let inRoots = false;
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-
-      if (trimmed === 'roots:') {
-        inRoots = true;
-        continue;
-      }
-
-      if (inRoots && trimmed.startsWith('- name:')) {
-        // Extract the path from "- name: '/path/to/root'" or "- name: '/path/to/root'"
-        const nameValue = trimmed.substring('- name:'.length).trim();
-        // Remove quotes if present
-        const cleanPath = nameValue.replace(/^['"]|['"]$/g, '');
-        return cleanPath;
-      }
-    }
-  } catch (error) {
-    console.warn(`[WARNING] Could not read VFS overlay file: ${vfsOverlayPath}`, error);
-  }
-
-  return null;
-}
-
-/**
- * Collects VFS overlay, header map, and include directory flags for external dependencies.
+ * Collects module map, header map, and include directory flags for external dependencies.
  * Returns separate flag sets for debug and release configurations.
  * All paths use .when(configuration:) so a single Package.swift works for both flavors.
  * @param externalDeps - External dependency names
  * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift is located (for computing relative paths)
- * @param buildType - Current build flavor (for reading VFS overlay from the built flavor)
+ * @param buildType - Current build flavor
  */
-function collectVfsAndHeaderMapFlags(
+function collectHeaderMapFlags(
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
@@ -1286,82 +1378,58 @@ function collectVfsAndHeaderMapFlags(
       const lowerName = depName.toLowerCase();
       const artifactConfig = ARTIFACT_RELATIVE_PATHS[lowerName];
 
-      // Modern modular React: when the artifact ships ReactNativeHeaders.xcframework, the lowercase
-      // `react/`, `yoga/`, … namespaces are served by its flattened clang module map instead of a
-      // VFS overlay. Activate the module map (so the includes are modular) and add the headers dir
-      // to the search path (so they resolve). `<React/X.h>` keeps resolving via the React.framework
-      // binary target. This replaces the entire -ivfsoverlay + -I roots dance below.
+      // React's lowercase `react/`, `yoga/`, … namespaces are served by the flattened clang module
+      // map in ReactNativeHeaders.xcframework. Activate the module map (so the includes are
+      // modular) and add the headers dir to the search path (so they resolve). `<React/X.h>` keeps
+      // resolving via the React.framework binary target.
       //
-      // The `continue` also skips `config.includeDirectories`, which on the legacy path contributes
-      // `-I React.xcframework/Headers` and `-I React.xcframework/React_Core`. Both are genuinely
-      // redundant here — verified by prebuilding ExpoModulesCore (C++ target, consumes the react/
-      // and yoga/ namespaces) and ExpoCrypto against 0.87.0-rc.3 artifacts: neither root is emitted
-      // and both flavors compose and verify. Keep them out when the VFS branch below is deleted;
-      // dropping the `continue` without replacing it would silently reintroduce them.
-      if (lowerName === 'react' && artifactConfig?.moduleMapXcframework) {
-        const isModular =
-          reactArtifactIsModular(config.debugBasePath) ||
-          reactArtifactIsModular(config.releaseBasePath);
-        if (isModular) {
-          const pushModularFlags = (flags: string[], basePath?: string) => {
-            if (!basePath) {
+      // The `continue` keeps React out of the include-directory branch below: an include root into
+      // React.xcframework is redundant once the module map is active — verified by prebuilding
+      // ExpoModulesCore (C++ target, consumes the react/ and yoga/ namespaces) and ExpoCrypto
+      // against 0.87.0-rc.3 artifacts, where both flavors compose and verify without one.
+      const moduleMapXcframework = artifactConfig?.moduleMapXcframework;
+      if (lowerName === 'react' && moduleMapXcframework) {
+        const pushModularFlags = (
+          flags: string[],
+          basePath: string | undefined,
+          flavor: BuildFlavor
+        ) => {
+          if (!basePath) {
+            return;
+          }
+          const headersDir = findModularHeadersDir(path.join(basePath, moduleMapXcframework));
+          if (!headersDir) {
+            // Both flavors' flags are emitted every run, but only the one being built has to be on
+            // disk. The other may be mid-download — Artifacts.downloadArtifactAsync creates the
+            // flavor directory before it extracts into it, and the pipeline downloads flavors
+            // concurrently — or simply absent, since `et prebuild --flavor Debug` never fetches
+            // release. Its flags are inert here either way, so only fail for the built flavor.
+            if (flavor !== buildType) {
               return;
             }
-            const headersDir = findModularHeadersDir(
-              path.join(basePath, artifactConfig.moduleMapXcframework!)
+            throw new Error(
+              `The React Native artifact at ${basePath} has no usable ${moduleMapXcframework}, so ` +
+                `the lowercase react/ and yoga/ header namespaces cannot be resolved.\n` +
+                `React Native 0.87 and newer ship that headers-only sidecar next to React.xcframework; ` +
+                `an artifact without it is incomplete or predates that layout.\n` +
+                `Delete that folder and re-run the prebuild to download the artifact again, or check ` +
+                `that the pinned React Native version is 0.87 or newer.`
             );
-            if (headersDir) {
-              // clang requires the joined `-fmodule-map-file=<path>` form (unlike `-ivfsoverlay`,
-              // it rejects the space-separated variant). `-I` adds the headers dir to the search
-              // path so the `<react/…>`, `<yoga/…>` includes resolve.
-              flags.push(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`);
-              flags.push('-I', headersDir);
-            }
-          };
-          pushModularFlags(debug, config.debugBasePath);
-          pushModularFlags(release, config.releaseBasePath);
-          continue;
-        }
-      }
-
-      // Add VFS overlay per configuration — each flavor has its own VFS YAML
-      // with absolute paths pointing to its specific artifact directory.
-      // Paths are emitted as absolute strings since Package.swift is a generated file.
-      if (config.hasVfsOverlay) {
-        const artifactConfig = ARTIFACT_RELATIVE_PATHS[depName.toLowerCase()];
-        const vfsFile = artifactConfig?.vfsOverlayFile;
-        if (vfsFile) {
-          // Debug VFS overlay
-          if (config.debugBasePath) {
-            const debugVfsAbsPath = path.join(config.debugBasePath, vfsFile);
-            if (fs.existsSync(debugVfsAbsPath)) {
-              debug.push('-ivfsoverlay', debugVfsAbsPath);
-
-              const vfsRootPath = extractVFSOverlayRootPath(debugVfsAbsPath);
-              if (vfsRootPath) {
-                debug.push('-I', vfsRootPath);
-              }
-            }
           }
-
-          // Release VFS overlay
-          if (config.releaseBasePath) {
-            const releaseVfsAbsPath = path.join(config.releaseBasePath, vfsFile);
-            if (fs.existsSync(releaseVfsAbsPath)) {
-              release.push('-ivfsoverlay', releaseVfsAbsPath);
-
-              const vfsRootPath = extractVFSOverlayRootPath(releaseVfsAbsPath);
-              if (vfsRootPath) {
-                release.push('-I', vfsRootPath);
-              }
-            }
-          }
-        }
+          // clang requires the joined `-fmodule-map-file=<path>` form; it rejects the
+          // space-separated variant. `-I` adds the headers dir to the search path so the
+          // `<react/…>`, `<yoga/…>` includes resolve.
+          flags.push(`-fmodule-map-file=${path.join(headersDir, 'module.modulemap')}`);
+          flags.push('-I', headersDir);
+        };
+        pushModularFlags(debug, config.debugBasePath, 'Debug');
+        pushModularFlags(release, config.releaseBasePath, 'Release');
+        continue;
       }
 
       // Add include directories per configuration (debug/release) as absolute paths.
       // Hermes is excluded here because its destroot/include/ contains jsi/ headers
-      // that conflict with the identical jsi/ headers provided by the React VFS overlay.
+      // that conflict with the identical jsi/ headers provided by React.
       // Hermes include paths are instead passed via xcodebuild OTHER_CFLAGS, which
       // makes them available to the compiler but invisible to the Clang dependency scanner.
       if (config.includeDirectories && depName.toLowerCase() !== 'hermes') {
@@ -1393,6 +1461,71 @@ function collectVfsAndHeaderMapFlags(
 // Context Building
 
 /**
+ * The keys a checked-in `Package.swift` owns: its file set and layout. Everything else on a
+ * resolved target — dependencies and the four compiler settings — is computed from config and
+ * the build flavor, and stays as `resolveSourceTarget` left it.
+ */
+const CHECKED_IN_TARGET_KEYS = [
+  'type',
+  'name',
+  'path',
+  'sourceRoot',
+  'productMember',
+  'sources',
+  'exclude',
+  'linkedFrameworks',
+  'resources',
+  'publicHeadersPath',
+] as const satisfies readonly (keyof CheckedInResolvedTarget)[];
+
+/**
+ * The target a checked-in `Package.swift` describes, merged over the one the config resolved.
+ *
+ * A key present on `checkedIn` wins even when its value is `undefined`: a Swift target, and any
+ * target opting out with `publicHeaders: false`, carries `publicHeadersPath` present and unset,
+ * and that has to clear the path config resolved rather than leave it standing.
+ */
+export function applyCheckedInTarget(
+  resolved: ResolvedTarget,
+  checkedIn: CheckedInResolvedTarget
+): ResolvedTarget {
+  const merged = { ...resolved };
+  for (const key of CHECKED_IN_TARGET_KEYS) {
+    if (key in checkedIn) (merged as Record<string, unknown>)[key] = checkedIn[key];
+  }
+  return merged;
+}
+
+/**
+ * Throws on the first name shared by two targets of the generated package, since SwiftPM
+ * rejects a package that declares the same target name twice.
+ */
+export function assertUniqueTargetNames(
+  productName: string,
+  names: { frameworkTargets: string[]; siblingProducts: string[]; sourceTargets: string[] }
+): void {
+  const roleByName = new Map<string, string>();
+  const entries: [string[], string][] = [
+    [names.frameworkTargets, 'vendored framework target'],
+    [names.siblingProducts, 'sibling product'],
+    [names.sourceTargets, 'source target'],
+  ];
+  for (const [targetNames, role] of entries) {
+    for (const name of targetNames) {
+      const existingRole = roleByName.get(name);
+      if (existingRole) {
+        throw new Error(
+          `Product "${productName}" declares "${name}" as both a ${existingRole} and a ${role}. ` +
+            `SwiftPM requires every target name in a package to be unique and rejects a package that repeats one. ` +
+            `Rename one of them in spm.config.json, or in the checked-in Package.swift if the product has one.`
+        );
+      }
+      roleByName.set(name, role);
+    }
+  }
+}
+
+/**
  * Builds the complete context needed for Package.swift generation
  */
 async function buildPackageSwiftContext(
@@ -1404,19 +1537,26 @@ async function buildPackageSwiftContext(
   artifactPaths?: ArtifactPaths
 ): Promise<PackageSwiftContext> {
   let spinner = createAsyncSpinner(`Build Package Swift context`, pkg, product);
+  const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+  const checkedInTargets = checkedInRoot
+    ? await resolveCheckedInManifestAsync(
+        checkedInRoot,
+        product,
+        getSiblingProductNames(pkg, product)
+      )
+    : null;
 
   // Get root directory for the Package.swift file
   const packageSwiftDir = path.dirname(packageSwiftPath);
 
   // Collect all resolved targets
   const resolvedTargets: ResolvedTarget[] = [];
-  const addedTargets = new Set<string>();
 
   // Map of dependency name -> build info for xcframework binary deps.
   // Used to auto-resolve header include paths with .when(configuration:) modifiers
   // so a single Package.swift works for both debug and release builds.
   // Only includes flavor-dependent deps (expo/external packages), not RN ecosystem deps
-  // whose headers are already handled by collectVfsAndHeaderMapFlags.
+  // whose headers are already handled by collectHeaderMapFlags.
   const xcframeworkPaths = new Map<
     string,
     { buildPath: string; productName: string; versionPrefix?: string }
@@ -1427,6 +1567,17 @@ async function buildPackageSwiftContext(
   // needs sibling's transitive deps to resolve imports in their .swiftinterface.
   const spmConfig = pkg.getSwiftPMConfiguration();
   const siblingDeps = findSiblingProductDependencies(product, spmConfig.products);
+  assertUniqueTargetNames(product.name, {
+    frameworkTargets: product.targets
+      .filter((target) => target.type === 'framework')
+      .map((target) => target.name),
+    siblingProducts: siblingDeps,
+    sourceTargets: checkedInTargets
+      ? checkedInTargets.map((target) => target.name)
+      : product.targets
+          .filter((target) => target.type !== 'framework')
+          .map((target) => target.name),
+  });
   const transitiveExternalDeps = siblingDeps.flatMap((dep) => {
     const sibling = spmConfig.products.find((p) => p.name === dep);
     return sibling?.externalDependencies || [];
@@ -1458,7 +1609,7 @@ async function buildPackageSwiftContext(
         linkedFrameworks: [],
       });
       // RN ecosystem deps (Hermes, React, etc.) don't need xcframeworkPaths tracking —
-      // their headers are already resolved via collectVfsAndHeaderMapFlags.
+      // their headers are already resolved via collectHeaderMapFlags.
       continue;
     }
 
@@ -1471,7 +1622,11 @@ async function buildPackageSwiftContext(
       const productName = isScoped ? parts[2] : parts[1];
 
       // XCFrameworks are in the centralized build directory
-      const depBuildPath = path.join(getPrecompileDir(), '.build', packageName);
+      const dependencyPackage = getPackageByName(packageName);
+      const depBuildPath =
+        usesPackageLocalBuildPath(pkg) && dependencyPackage
+          ? getPackageLocalBuildPath(dependencyPackage)
+          : path.join(getPrecompileDir(), '.build', packageName);
       const xcframeworkPath = Frameworks.getFrameworkPath(depBuildPath, productName, buildType);
 
       if (await fs.pathExists(xcframeworkPath)) {
@@ -1556,15 +1711,22 @@ async function buildPackageSwiftContext(
       const packageName = spmPkg.packageName || derivePackageNameFromUrl(spmPkg.url);
 
       // Check if this SPM dep has been built as a shared xcframework
-      const sharedXCFrameworkPath = Frameworks.getSharedSPMDepFrameworkPath(
-        spmPkg.productName,
-        buildType
-      );
-      if (fs.existsSync(sharedXCFrameworkPath)) {
+      const packageLocal = usesPackageLocalBuildPath(pkg);
+      const preparedXCFrameworkPath = packageLocal
+        ? path.join(
+            pkg.buildPath,
+            'intermediates',
+            'spm-deps',
+            spmPkg.productName,
+            buildType.toLowerCase(),
+            `${spmPkg.productName}.xcframework`
+          )
+        : Frameworks.getSharedSPMDepFrameworkPath(spmPkg.productName, buildType);
+      if (fs.existsSync(preparedXCFrameworkPath)) {
         // Use as binary target instead of SPM package dependency
-        const relativePath = path.relative(packageSwiftDir, sharedXCFrameworkPath);
+        const relativePath = path.relative(packageSwiftDir, preparedXCFrameworkPath);
         spinner.info(
-          `Using shared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
+          `Using prepared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
         );
         resolvedTargets.push({
           type: 'binary',
@@ -1598,7 +1760,7 @@ async function buildPackageSwiftContext(
   // These are binary targets that other source targets can depend on
   for (const target of product.targets) {
     if (target.type === 'framework') {
-      const frameworkPath = path.join(pkg.path, target.path);
+      const frameworkPath = resolveFrameworkTargetPath(pkg.path, target);
       const relativePath = path.relative(packageSwiftDir, frameworkPath);
       spinner.info(`Adding vendored framework target: ${target.name} at ${relativePath}`);
       resolvedTargets.push({
@@ -1606,16 +1768,14 @@ async function buildPackageSwiftContext(
         name: target.name,
         path: relativePath,
         dependencies: [],
-        linkedFrameworks: target.linkedFrameworks || [],
+        linkedFrameworks: parseLinkedFrameworks(target.linkedFrameworks, target.name),
       });
-      addedTargets.add(target.name);
     }
   }
 
   // Add sibling products (other products in the same spm.config.json) as binary targets.
   // Products are built in definition order, so the dependency's xcframework must already exist.
   for (const dep of siblingDeps) {
-    if (addedTargets.has(dep)) continue;
     const xcframeworkPath = Frameworks.getFrameworkPath(pkg.buildPath, dep, buildType);
     if (!(await fs.pathExists(xcframeworkPath))) {
       throw new SpinnerError(
@@ -1633,7 +1793,6 @@ async function buildPackageSwiftContext(
       dependencies: [],
       linkedFrameworks: [],
     });
-    addedTargets.add(dep);
     xcframeworkPaths.set(dep, { buildPath: pkg.buildPath, productName: dep });
   }
 
@@ -1651,7 +1810,7 @@ async function buildPackageSwiftContext(
 
   // Inject cross-package transitive external deps into source target deps so
   // the Swift compiler can resolve `@_exported import` chains through them.
-  for (const target of product.targets) {
+  for (const target of checkedInTargets == null ? product.targets : []) {
     if (target.type === 'framework') continue;
     const deps = target.dependencies ?? [];
     const expanded = expandTransitiveExternalDeps(deps, resolveExternalDepsFromMonorepo);
@@ -1660,16 +1819,37 @@ async function buildPackageSwiftContext(
 
   // Process each product's targets
   spinner = createAsyncSpinner(`Resolving product targets`, pkg, product);
-  for (const target of product.targets) {
-    if (addedTargets.has(target.name)) {
-      continue;
-    }
-
-    // Skip framework targets - already processed above
-    if (target.type === 'framework') {
-      continue;
-    }
-
+  const sourceTargets: (ObjcTarget | SwiftTarget | CppTarget)[] = checkedInTargets
+    ? checkedInTargets.map((target) => {
+        const configured = product.targets.find(
+          (candidate) => candidate.type !== 'framework' && candidate.name === target.name
+        );
+        const declaredDependencies = target.dependencies.filter(
+          (dependency): dependency is string => typeof dependency === 'string'
+        );
+        const withSiblingTransitives = declaredDependencies.some((dependency) =>
+          siblingDeps.includes(dependency)
+        )
+          ? [...declaredDependencies, ...transitiveExternalDeps]
+          : declaredDependencies;
+        return {
+          ...(configured ?? {}),
+          type: target.type,
+          name: target.name,
+          // Absolute manifest roots let unchanged include resolution bypass config's package-relative/.build paths.
+          path: target.sourceRoot,
+          resources: [],
+          dependencies: expandTransitiveExternalDeps(
+            withSiblingTransitives,
+            resolveExternalDepsFromMonorepo
+          ),
+          linkedFrameworks: target.linkedFrameworks,
+        } as ObjcTarget | SwiftTarget | CppTarget;
+      })
+    : product.targets.filter(
+        (target): target is ObjcTarget | SwiftTarget | CppTarget => target.type !== 'framework'
+      );
+  for (const target of sourceTargets) {
     spinner.info(`Resolving target: ${target.name}`);
 
     const resolved = await resolveSourceTarget(
@@ -1684,11 +1864,22 @@ async function buildPackageSwiftContext(
       spmProductToPackage,
       xcframeworkPaths
     );
-    resolvedTargets.push(resolved);
-    addedTargets.add(target.name);
+    const checkedIn = checkedInTargets?.find((candidate) => candidate.name === target.name);
+    resolvedTargets.push(checkedIn ? applyCheckedInTarget(resolved, checkedIn) : resolved);
   }
 
   spinner.succeed(`Resolved targets`);
+
+  const resolvedProduct = checkedInTargets
+    ? {
+        ...product,
+        targets: sourceTargets.filter((target) =>
+          checkedInTargets.some(
+            (candidate) => candidate.name === target.name && candidate.productMember
+          )
+        ),
+      }
+    : product;
 
   return {
     packageName: pkg.packageName,
@@ -1696,7 +1887,7 @@ async function buildPackageSwiftContext(
     packageRootPath: pkg.path,
     platforms: product.platforms,
     swiftLanguageVersions: product.swiftLanguageVersions,
-    product,
+    product: resolvedProduct,
     targets: resolvedTargets,
     spmPackages: resolvedSPMPackages.length > 0 ? resolvedSPMPackages : undefined,
     artifactPaths,

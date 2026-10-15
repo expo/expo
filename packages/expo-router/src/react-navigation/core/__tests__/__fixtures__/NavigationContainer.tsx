@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { NavigationContainer as NavigationContainerImpl } from '../../../../fork/NavigationContainer';
 import { getStateFromPath, type ResultState } from '../../../../fork/getStateFromPath';
-import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
+import { RemovalPreventionProvider } from '../../../../global-state/removalPrevention';
+import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
 import type { NavigationState } from '../../../routers';
 
 type Props = React.ComponentProps<typeof NavigationContainerImpl> & {
@@ -32,8 +33,10 @@ export const NavigationContainer = React.forwardRef(function NavigationContainer
     : linking;
 
   return (
-    <RouterRegistryProvider>
-      <NavigationContainerImpl {...props} linking={linkingWithInitialState} ref={ref} />
-    </RouterRegistryProvider>
+    <RoutingQueueProvider>
+      <RemovalPreventionProvider>
+        <NavigationContainerImpl {...props} linking={linkingWithInitialState} ref={ref} />
+      </RemovalPreventionProvider>
+    </RoutingQueueProvider>
   );
 });

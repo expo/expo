@@ -1,30 +1,40 @@
 // expo-router is an optional peerDependency of expo-observe. When the host app
 // hasn't installed it, `require` throws and the integration becomes a no-op.
-interface RouterPageEvent {
+export interface RouterPageMarkDetail {
   pathname: string;
-  params: Record<string, string | string[]>;
+  params: Record<string, string | string[] | undefined>;
   screenId: string;
   segments: string[];
 }
 
-interface RouterActionDispatchedEvent {
-  actionType: string;
-}
+export type RouterPerformanceMark =
+  | { name: 'expo-router:action-enqueued'; startTime: number; detail: { actionId: number } }
+  | {
+      name: 'expo-router:action-dispatched';
+      startTime: number;
+      // `actionId` is missing in expo-router versions without the action-enqueued mark.
+      detail: { actionType: string; actionId?: number };
+    }
+  | {
+      name:
+        | 'expo-router:page-preloaded'
+        | 'expo-router:page-focused'
+        | 'expo-router:page-blurred'
+        | 'expo-router:page-removed';
+      startTime: number;
+      detail: RouterPageMarkDetail;
+    };
 
-interface RouterNavigationEvents {
-  addListener(
-    eventType: 'actionDispatched',
-    callback: (event: RouterActionDispatchedEvent) => void
-  ): () => void;
-  addListener(
-    eventType: 'pagePreloaded' | 'pageFocused',
-    callback: (event: RouterPageEvent) => void
-  ): () => void;
-  enable(): void;
-}
+export type RouterPerformanceObserver = new (
+  callback: (list: { getEntries(): Pick<PerformanceEntry, 'name' | 'startTime'>[] }) => void
+) => {
+  observe(options: { type: 'mark' }): void;
+  disconnect(): void;
+};
 
 interface OptionalRouter {
-  unstable_navigationEvents: RouterNavigationEvents;
+  unstable_enablePerformanceIntegration(): void;
+  unstable_PerformanceObserver: RouterPerformanceObserver;
   useCurrentRouteInfo(): {
     pathname: string;
     params: Record<string, string | string[]>;

@@ -1,10 +1,9 @@
 'use client';
 
-import React, { use, useEffect } from 'react';
+import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  getValidInitialRouteName,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -14,17 +13,19 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
-import { unstable_navigationEvents } from './navigationEvents';
+import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
+import { resolveLoaderPath } from './loaders/resolveLoaderPath';
+import { getContextKey } from './matchers';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   removeParams,
 } from './navigationParams';
+import { isEnabled as isPerformanceEnabled, mark } from './performance';
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
@@ -40,8 +41,13 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
+import { getValidInitialRouteName } from './routeNode';
 import type { UnknownOutputParams } from './types';
+import { useIsFocused } from './useIsFocused';
+import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
+import { useActivityThreshold } from './views/NavigationActivityContext';
+import { NavigationAwareActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -75,6 +81,12 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator. For stack navigators, a number
+   * specifies how many screens must be above this route before its content is hidden.
+   */
+  activityEnabled?: TState extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type SingularOptions =
@@ -102,7 +114,7 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular, activityEnabled }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -140,7 +152,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId },
+          props: { listeners, options, getId, activityEnabled },
           routeSource: 'layout' as const,
         };
       }
@@ -264,7 +276,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-  if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
+  if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
       const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
       // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
@@ -319,14 +331,24 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       getState(): NavigationState | undefined;
     };
   }) {
-    const isFocused = navigation.isFocused();
+    const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
+    const isRouteType = value.type === 'route';
+    const resolvedLoaderPath = useMemo(() => {
+      if (!isRouteType || isGuarded) {
+        return null;
+      }
+      // NOTE(@hassankhan): `RouteNode` does not expose whether its module has a loader without
+      // eagerly loading it. Static loader metadata would let loader-free routes skip this work.
+      return resolveLoaderPath(getContextKey(value.contextKey), routeInfo);
+    }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =
-      EXPO_ROUTER_IMPORT_MODE === 'lazy'
+      process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy'
         ? DefaultSuspenseFallback
         : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =
@@ -350,15 +372,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
-    useEffect(() => {
-      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
-        console.warn(
-          'All routes in this navigator are protected. Ensure at least one route is accessible.'
-        );
-      }
-    }, [isFocused, isGuarded, redirectHref]);
-
-    const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
     if (isGuarded) {
@@ -367,7 +380,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
+          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
         </Route>
       );
     }
@@ -380,11 +393,21 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
+    const screenContent =
+      ScreenErrorBoundary && isRouteType ? (
+        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+      ) : (
+        screenComponent
+      );
 
     return (
       <Route node={value} params={route?.params}>
         <SuspenseFallbackContext value={providedSuspenseFallback}>
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+          {/* This committed-shell signal is intentionally best-effort. A navigator may unmount a
+              retained route shell, which aborts pending work and causes a later visit to refetch.
+              Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
+          {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
+          {isPerformanceEnabled() && isRouteType && hasRouteKey && (
             <AnalyticsListeners navigation={navigation} screenId={route.key} />
           )}
           <ZoomTransitionTargetContextProvider route={route}>
@@ -392,15 +415,20 @@ export function getQualifiedRouteComponent(value: RouteNode) {
             <React.Suspense
               name={route ? `Route(${route.name})` : undefined}
               fallback={
+                // `ResolvedSuspenseFallback` only selects between statically defined
+                // components; nothing is created during render.
+                // oxlint-disable-next-line react/static-components
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary && isRouteType ? (
-                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              {isRouteType && typeof activityThreshold === 'number' ? (
+                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                  {screenContent}
+                </NavigationAwareActivity>
               ) : (
-                screenComponent
+                screenContent
               )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
@@ -417,37 +445,57 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   return BaseRoute;
 }
 
+// A separate component, so reading focus does not rerender the screen on focus changes.
+function AllRoutesProtectedWarning() {
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (__DEV__ && isFocused) {
+      console.warn(
+        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      );
+    }
+  }, [isFocused]);
+  return null;
+}
+
 function AnalyticsListeners({
   navigation,
   screenId,
 }: {
-  navigation: EventConsumer<EventMapBase> & {
-    isFocused(): boolean;
-  };
+  navigation: EventConsumer<EventMapBase>;
   screenId: string;
 }) {
-  const isFirstRenderRef = React.useRef(true);
+  const hasEmittedPagePreloadedRef = React.useRef(false);
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
-  const isFocused = navigation.isFocused();
+  // Read focus from render context. `navigation.isFocused()` can return the navigator's
+  // previous state during render, so a first push would look like a preload.
+  const isFocused = useIsFocused();
 
-  if (isFirstRenderRef.current) {
-    isFirstRenderRef.current = false;
+  const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {
-      unstable_navigationEvents.emit('pagePreloaded', {
+      mark('expo-router:page-preloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
         screenId,
       });
     }
-  }
+  });
+
+  useEffect(() => {
+    // We only one to emit once
+    if (!hasEmittedPagePreloadedRef.current) {
+      hasEmittedPagePreloadedRef.current = true;
+      emitPagePreloaded();
+    }
+  }, []);
 
   useEffect(() => {
     if (routeInfo) {
       return () => {
-        unstable_navigationEvents.emit('pageRemoved', {
+        mark('expo-router:page-removed', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,
@@ -462,7 +510,7 @@ function AnalyticsListeners({
   // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
   useEffect(() => {
     if (isFocused && routeInfo && hasBlurredRef.current) {
-      unstable_navigationEvents.emit('pageFocused', {
+      mark('expo-router:page-focused', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
@@ -478,7 +526,7 @@ function AnalyticsListeners({
         // If the screen was not blurred, don't emit focused again
         // hasBlurredRef will be false when the screen was initially focused
         if (hasBlurredRef.current) {
-          unstable_navigationEvents.emit('pageFocused', {
+          mark('expo-router:page-focused', {
             pathname: routeInfo.pathname,
             params: routeInfo.params,
             segments: routeInfo.segments,
@@ -488,7 +536,7 @@ function AnalyticsListeners({
         }
       });
       const cleanBlur = navigation.addListener('blur', () => {
-        unstable_navigationEvents.emit('pageBlurred', {
+        mark('expo-router:page-blurred', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,
@@ -507,17 +555,20 @@ function AnalyticsListeners({
   return null;
 }
 
-export function screenOptionsFactory(
+export function screenOptionsFactory<TOptions extends object = Record<string, any>>(
   route: RouteNode,
-  options?: ScreenProps['options'],
+  options?: ScreenProps<TOptions>['options'],
   isGuarded?: boolean
-): ScreenProps['options'] {
+): ScreenProps<TOptions>['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    // Route modules are untyped, while callers define the option shape for their navigator.
+    const staticResult = (
+      typeof staticOptions === 'function' ? staticOptions(args) : staticOptions
+    ) as TOptions | null | undefined;
     const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-    const output = {
+    const output: Partial<TOptions> & { hidden?: boolean } = {
       ...staticResult,
       ...dynamicResult,
     };
@@ -529,7 +580,8 @@ export function screenOptionsFactory(
       output.hidden = true;
     }
 
-    return output;
+    // The merged object may contain only part of `TOptions`.
+    return output as TOptions;
   };
 }
 
@@ -557,17 +609,4 @@ export function routeToScreen<
   );
 }
 
-export function getSingularId(name: string, options: Record<string, any> = {}) {
-  return name
-    .split('/')
-    .map((segment) => {
-      if (segment.startsWith('[...')) {
-        return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
-      } else if (segment.startsWith('[') && segment.endsWith(']')) {
-        return options.params?.[segment.slice(1, -1)] || segment;
-      } else {
-        return segment;
-      }
-    })
-    .join('/');
-}
+export { getSingularId } from './utils/getSingularId';

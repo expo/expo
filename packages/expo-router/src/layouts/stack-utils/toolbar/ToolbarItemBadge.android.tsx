@@ -1,8 +1,7 @@
 'use client';
-import { Badge, Box, Text as ComposeText } from '@expo/ui/jetpack-compose';
-import { alpha as alphaModifier } from '@expo/ui/jetpack-compose/modifiers';
 import type { ReactElement, ReactNode } from 'react';
 
+import { requireExpoUI } from '../../../optional-libraries/expo-ui';
 import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
 import { convertFontWeightToComposeFontWeight } from '../../../utils/font';
 
@@ -45,6 +44,12 @@ export function ToolbarItemBadge({
   if (!badge) {
     return <>{children}</>;
   }
+  const {
+    expoUI: { Badge, Box, Text: ComposeText },
+    modifiers: { alpha: alphaModifier },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   return (
     <Box contentAlignment="topEnd">
       {children}

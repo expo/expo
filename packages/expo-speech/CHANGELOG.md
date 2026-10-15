@@ -1,14 +1,26 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Resolve queued `getVoices`/`speak` calls when the TTS engine fails to initialize, instead of leaving their promises pending forever. ([#49228](https://github.com/expo/expo/pull/49228) by [@henryj](https://github.com/henryj))
 
 ## 57.0.1 - 2026-07-15
 

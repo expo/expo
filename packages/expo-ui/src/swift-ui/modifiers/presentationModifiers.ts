@@ -3,6 +3,7 @@ import {
   createModifierWithEventListener,
   type ModifierConfig,
 } from './createModifier';
+import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
 
 /**
  * Presentation detent type for controlling sheet heights.
@@ -57,6 +58,16 @@ export const presentationDragIndicator = (visibility: 'automatic' | 'visible' | 
   createModifier('presentationDragIndicator', { visibility });
 
 /**
+ * Sets the corner radius of a sheet presentation.
+ * @param cornerRadius - The corner radius in points, or `null` to use the system default.
+ * @platform ios 16.4+
+ * @platform tvos 16.4+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationcornerradius(_:)).
+ */
+export const presentationCornerRadius = (cornerRadius: number | null) =>
+  createModifier('presentationCornerRadius', { cornerRadius });
+
+/**
  * Presentation background interaction type.
  */
 export type PresentationBackgroundInteractionType =
@@ -88,13 +99,16 @@ export const presentationBackgroundInteraction = (
  * Sets the background of a sheet presentation. Paints the entire sheet chrome
  * including the drag-indicator zone and home-indicator safe-area inset, which
  * a regular `background()` modifier cannot reach.
- * @param color - The background color (hex string). For example, `#FF0000`.
+ *
+ * > **Note:** iOS 26 renders a material as a flat color rather than a translucent blur.
+ * @param style - Any [`ShapeStyle`](#shapestyle): a color, a hierarchical style, a material, or a gradient.
  * @platform ios 16.4+
+ * @platform tvos 16.4+
  * @see Official [SwiftUI
 documentation](https://developer.apple.com/documentation/swiftui/view/presentationbackground(_:)).
  */
-export const presentationBackground = (color: string) =>
-  createModifier('presentationBackground', { color });
+export const presentationBackground = (style: ShapeStyle) =>
+  createModifier('presentationBackground', { style: resolveShapeStyle(style) });
 
 /**
  * Disables interactive dismissal of a sheet.
@@ -117,11 +131,27 @@ export const interactiveDismissDisabled = (isDisabled: boolean = true) =>
 export type PresentationSizingType = 'automatic' | 'fitted' | 'form' | 'page';
 
 /**
+ * Options for the `presentationSizing` modifier.
+ */
+export type PresentationSizingOptions = {
+  /**
+   * The axes on which the sheet fits its content. An axis that is not set keeps the size from
+   * `sizing`. For example, `{ horizontal: false, vertical: true }` fits the height to the content
+   * and lets the system choose the width.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/presentationsizing/fitted(horizontal:vertical:)).
+   */
+  fitted?: { horizontal?: boolean; vertical?: boolean };
+};
+
+/**
  * Sets the sizing of a sheet presentation.
  * @param sizing - The sizing behavior to apply.
+ * @param options - Additional sizing options.
  * @platform ios 18.0+
  * @platform tvos 18.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationsizing(_:)).
  */
-export const presentationSizing = (sizing: PresentationSizingType) =>
-  createModifier('presentationSizing', { sizing });
+export const presentationSizing = (
+  sizing: PresentationSizingType,
+  options?: PresentationSizingOptions
+) => createModifier('presentationSizing', { sizing, ...options });

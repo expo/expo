@@ -1,14 +1,17 @@
 import { useEffect, useMemo } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
-import { router } from '../imperative-api';
+import { useRouteNode } from '../Route';
+import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { useRouterActions } from '../global-state/useRouterActions';
 import { useGuardRedirect } from '../layouts/GuardContext';
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import {
   type Descriptor,
   type ParamListBase,
   type RouteProp,
   useIsFocused,
 } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
 import { orderRoutesByRouteNames } from '../utils/orderRoutesByRouteNames';
 import type { StandardNavigatorDescriptor } from './types';
 import { useBuildHref } from './useBuildHref';
@@ -39,6 +42,8 @@ export function useVisibleTabsWithRedirect<
   descriptors: Record<string, TabDescriptor<Options>>;
 }) {
   const buildHref = useBuildHref();
+  const router = useRouterActions();
+  const isPreview = useIsPreview();
   const isFocused = useIsFocused();
   const routeNode = useRouteNode();
   const focusedRoute = routes.find((route) => route.key === focusedRouteKey);
@@ -58,6 +63,10 @@ export function useVisibleTabsWithRedirect<
     () => visibleRoutes.findIndex((route) => route.key === focusedRouteKey),
     [focusedRouteKey, visibleRoutes]
   );
+  const focusedFallbackRoute =
+    visibleFocusedIndex < 0 && focusedRoute?.name === NOT_FOUND_ROUTE_NAME
+      ? focusedRoute
+      : undefined;
   // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996409
   const focusedIndex = visibleFocusedIndex;
 
@@ -98,12 +107,18 @@ export function useVisibleTabsWithRedirect<
     // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
     // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
     // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
-    if (isFocused && visibleFocusedIndex < 0 && redirectHref != null) {
+    if (
+      !isPreview &&
+      isFocused &&
+      visibleFocusedIndex < 0 &&
+      focusedFallbackRoute === undefined &&
+      redirectHref != null
+    ) {
       router.replace(redirectHref);
     }
-  }, [isFocused, redirectHref, visibleFocusedIndex]);
+  }, [focusedFallbackRoute, isFocused, isPreview, redirectHref, router, visibleFocusedIndex]);
 
-  return { visibleRoutes, focusedIndex };
+  return { visibleRoutes, focusedIndex, focusedFallbackRoute };
 }
 
 function isDeclaredInLayout<Options extends object>(

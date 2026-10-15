@@ -14,6 +14,8 @@ import type {
 import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
   popNestedStackToTop: (routeKey: string) => void;
   preload: (name: string) => void;
@@ -34,12 +36,14 @@ function BottomTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
   popNestedStackToTop,
   preload,
   ...rest
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
@@ -66,6 +70,10 @@ function BottomTabNavigatorContent({
     preload,
     lazyByDefault: true,
   });
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;

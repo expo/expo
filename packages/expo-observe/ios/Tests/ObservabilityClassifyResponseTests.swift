@@ -22,6 +22,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: 3,
       rejectedLogRecords: nil,
+      rejectedSpans: nil,
       errorMessage: "metric_kind_mismatch"
     )
     let result = DispatchUtils.classifyResponse(
@@ -39,6 +40,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: nil,
       rejectedLogRecords: 1,
+      rejectedSpans: nil,
       errorMessage: "log_too_large"
     )
     let result = DispatchUtils.classifyResponse(
@@ -56,6 +58,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: 0,
       rejectedLogRecords: 0,
+      rejectedSpans: nil,
       errorMessage: "deprecation_warning"
     )
     let result = DispatchUtils.classifyResponse(

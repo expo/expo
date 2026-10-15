@@ -30,7 +30,7 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
-test("lets parent handle the action if child didn't", () => {
+test("lets parent handle the action if child didn't", async () => {
   function CurrentRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const ParentRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -74,7 +74,7 @@ test("lets parent handle the action if child didn't", () => {
 
   const onStateChange = jest.fn();
 
-  render(
+  await render(
     <BaseNavigationContainer
       initialState={{
         type: 'test',
@@ -109,7 +109,7 @@ test("lets parent handle the action if child didn't", () => {
 
   onStateChange.mockClear();
 
-  act(() => dispatch({ type: 'REVERSE' }));
+  await act(() => dispatch({ type: 'REVERSE' }));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange.mock.calls[0]![0]).toMatchObject({
@@ -123,9 +123,8 @@ test("lets parent handle the action if child didn't", () => {
   });
 });
 
-test('handles an unsupported targeted action as a no-op without bubbling', () => {
+test('handles an unsupported targeted action as a no-op without bubbling', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const onUnhandledAction = jest.fn();
 
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
@@ -135,8 +134,8 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
     );
   };
 
-  render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={onUnhandledAction}>
+  await render(
+    <BaseNavigationContainer ref={ref}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -145,75 +144,78 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
 
   const state = ref.current!.getRootState();
 
-  act(() => ref.dispatchSync({ type: 'POP_TO_TOP', target: state.key }));
+  await act(() => ref.dispatchSync({ type: 'POP_TO_TOP', target: state.key }));
 
   expect(ref.current!.getRootState()).toBe(state);
-  expect(onUnhandledAction).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("doesn't let a child handle an untargeted navigate action", () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+describe('unhandled action warnings', () => {
+  let error: jest.SpyInstance;
 
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
+  beforeEach(() => {
+    error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    error.mockRestore();
+  });
+
+  test("doesn't let a child handle an untargeted navigate action", async () => {
+    const TestNavigator = (props: any) => {
+      const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+      return (
+        <NavigationContent>
+          {state.routes.map((route) => descriptors[route.key]!.render())}
+        </NavigationContent>
+      );
+    };
+
+    const TestScreen = () => null;
+
+    const onStateChange = jest.fn();
+    const navigation = createNavigationContainerRef<ParamListBase>();
+
+    const element = (
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          routes: [
+            { name: 'foo' },
+            { name: 'bar' },
+            { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
+          ],
+        }}
+        onStateChange={onStateChange}>
+        <TestNavigator>
+          <Screen name="foo" component={TestScreen} />
+          <Screen name="bar" component={TestScreen} />
+          <Screen name="baz">
+            {() => (
+              <TestNavigator>
+                <Screen name="qux" component={TestScreen} />
+                <Screen name="lex" component={TestScreen} />
+              </TestNavigator>
+            )}
+          </Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
     );
-  };
 
-  const TestScreen = () => null;
+    await render(element);
 
-  const onStateChange = jest.fn();
-  const onUnhandledAction = jest.fn();
+    await act(() => navigation.navigate('lex'));
 
-  const navigation = createNavigationContainerRef<ParamListBase>();
-
-  const element = (
-    <BaseNavigationContainer
-      ref={navigation}
-      initialState={{
-        routes: [
-          { name: 'foo' },
-          { name: 'bar' },
-          { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
-        ],
-      }}
-      onStateChange={onStateChange}
-      onUnhandledAction={onUnhandledAction}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">
-          {() => (
-            <TestNavigator>
-              <Screen name="qux" component={TestScreen} />
-              <Screen name="lex" component={TestScreen} />
-            </TestNavigator>
-          )}
-        </Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
-
-  act(() => navigation.navigate('lex'));
-
-  expect(onStateChange).not.toHaveBeenCalled();
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledWith(
-    expect.objectContaining({
-      type: 'NAVIGATE',
-      payload: { name: 'lex' },
-    })
-  );
-
-  expect(navigation.getCurrentRoute()?.name).toBe('foo');
+    expect(onStateChange).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining('was not handled by any navigator.')
+    );
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(navigation.getCurrentRoute()?.name).toBe('foo');
+  });
 });
 
-test('action goes to correct parent navigator if target is specified', () => {
+test('action goes to correct parent navigator if target is specified', async () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -299,8 +301,8 @@ test('action goes to correct parent navigator if target is specified', () => {
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
-  act(() => dispatch({ type: 'REVERSE', target: '0' }));
+  await render(element);
+  await act(() => dispatch({ type: 'REVERSE', target: '0' }));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
@@ -333,7 +335,7 @@ test('action goes to correct parent navigator if target is specified', () => {
   });
 });
 
-test('action goes to correct child navigator if target is specified', () => {
+test('action goes to correct child navigator if target is specified', async () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -413,9 +415,9 @@ test('action goes to correct child navigator if target is specified', () => {
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
+  await render(element);
 
-  act(() => {
+  await act(() => {
     ref.dispatchSync({ type: 'REVERSE', target: '1' });
   });
 
@@ -450,7 +452,7 @@ test('action goes to correct child navigator if target is specified', () => {
   });
 });
 
-test("action doesn't bubble if target is specified", () => {
+test("action doesn't bubble if target is specified", async () => {
   const CurrentParentRouter = MockRouter;
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
@@ -530,13 +532,12 @@ test("action doesn't bubble if target is specified", () => {
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
+  await render(element);
 
   expect(onStateChange).not.toHaveBeenCalled();
 });
 
-// TODO(@ubax): Restore unhandled action callbacks after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip('logs error if no navigator handled the action', () => {
+test('logs error if no navigator handled the action', async () => {
   const TestRouter = MockRouter;
 
   const TestNavigator = (props: any) => {
@@ -592,8 +593,8 @@ test.skip('logs error if no navigator handled the action', () => {
 
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  render(element).update(element);
-  act(() => dispatch({ type: 'UNKNOWN' }));
+  await render(element);
+  await act(() => dispatch({ type: 'UNKNOWN' }));
 
   expect(spy).toHaveBeenCalledTimes(1);
   expect(spy).toHaveBeenCalledWith(
@@ -603,8 +604,7 @@ test.skip('logs error if no navigator handled the action', () => {
   spy.mockRestore();
 });
 
-// TODO(@ubax): Restore removePrevented handling after reducer dispatch supports it. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a screen with 'removePrevented' event", () => {
+test("prevents removing a screen with 'removePrevented' event", async () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -650,9 +650,9 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     </BaseNavigationContainer>
   );
 
-  render(element);
+  await render(element);
 
-  act(() => ref.current?.navigate('bar'));
+  await act(() => ref.current?.navigate('bar'));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
@@ -668,7 +668,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     routeKeySeq: 1,
   });
 
-  act(() => ref.current?.navigate('baz'));
+  await act(() => ref.current?.navigate('baz'));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
@@ -690,7 +690,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     routeKeySeq: 2,
   });
 
-  act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
+  await act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
@@ -709,10 +709,11 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
     routeKeySeq: 2,
   });
 
-  act(() => {
+  await act(() => {
     setPreventRemove(false);
   });
 
+  // The screen re-dispatches the blocked action with this render's removal-prevention state.
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     type: 'stack',
@@ -725,8 +726,7 @@ test.skip("prevents removing a screen with 'removePrevented' event", () => {
   });
 });
 
-// TODO(@ubax): Restore child removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event", () => {
+test("prevents removing a child screen with 'removePrevented' event", async () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -794,21 +794,21 @@ test.skip("prevents removing a child screen with 'removePrevented' event", () =>
     </BaseNavigationContainer>
   );
 
-  render(element);
+  await render(element);
   onStateChange.mockClear();
 
-  act(() => ref.current?.navigate('bar'));
+  await act(() => ref.current?.navigate('bar'));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith(ref.current!.getRootState());
 
-  act(() => ref.current?.navigate('baz'));
+  await act(() => ref.current?.navigate('baz'));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   const preventedState = ref.current!.getRootState();
   expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
-  act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
+  await act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
@@ -816,8 +816,7 @@ test.skip("prevents removing a child screen with 'removePrevented' event", () =>
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore grandchild removePrevented propagation after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a grand child screen with 'removePrevented' event", () => {
+test("prevents removing a grand child screen with 'removePrevented' event", async () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -889,21 +888,21 @@ test.skip("prevents removing a grand child screen with 'removePrevented' event",
     </BaseNavigationContainer>
   );
 
-  render(element);
+  await render(element);
   onStateChange.mockClear();
 
-  act(() => ref.current?.navigate('bar'));
+  await act(() => ref.current?.navigate('bar'));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith(ref.current!.getRootState());
 
-  act(() => ref.current?.navigate('baz'));
+  await act(() => ref.current?.navigate('baz'));
   const preventedState = ref.current!.getRootState();
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
-  act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
+  await act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
@@ -911,8 +910,7 @@ test.skip("prevents removing a grand child screen with 'removePrevented' event",
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore multiple removePrevented handlers after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing by multiple screens with 'removePrevented' event", () => {
+test("prevents removing by multiple screens with 'removePrevented' event", async () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -994,9 +992,9 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
     </BaseNavigationContainer>
   );
 
-  render(element);
+  await render(element);
 
-  act(() => {
+  await act(() => {
     ref.current?.navigate('bar');
     ref.current?.navigate('baz');
     ref.current?.navigate('bax');
@@ -1007,34 +1005,36 @@ test.skip("prevents removing by multiple screens with 'removePrevented' event", 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith(preventedState);
 
-  act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
+  await act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onBeforeRemove.lex).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
-  act(() => {
+  await act(() => {
     setPreventRemove.lex!(false);
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.baz).toHaveBeenCalledTimes(2);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(2);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 
-  act(() => {
+  await act(() => {
     setPreventRemove.baz!(false);
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
+  expect(onBeforeRemove.bar).toHaveBeenCalledTimes(3);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-// TODO(@ubax): Restore targeted reset prevention after the reducer migration. https://linear.app/expo/issue/ENG-26123
-test.skip("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
+test("prevents removing a child screen with 'removePrevented' event with targeted reset", async () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -1092,16 +1092,16 @@ test.skip("prevents removing a child screen with 'removePrevented' event with ta
     </BaseNavigationContainer>
   );
 
-  render(element);
+  await render(element);
   onStateChange.mockClear();
 
-  act(() => ref.current?.navigate('baz'));
+  await act(() => ref.current?.navigate('baz'));
   const preventedState = ref.current!.getRootState();
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
-  act(() =>
+  await act(() =>
     ref.current?.dispatch({
       ...CommonActions.reset({
         index: 0,

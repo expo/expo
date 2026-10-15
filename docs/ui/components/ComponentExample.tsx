@@ -1,9 +1,8 @@
-import { useTheme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-utilities';
-import { prefersDarkTheme } from '~/common/window';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { LightboxImage } from '~/ui/components/ContentSpotlight/LightboxImage';
 import { PlatformTabs } from '~/ui/components/PlatformTabs';
@@ -57,6 +56,13 @@ const DEVICE_FRAMES = {
       { side: 'right', top: '26%', height: '11%' },
     ] satisfies SideButton[],
   },
+  duo: {
+    width: 2853,
+    height: 2007,
+    frameRadius: 24,
+    screenRadius: 18,
+    buttons: [] satisfies SideButton[],
+  },
 };
 
 function resolveImages({
@@ -87,32 +93,32 @@ function resolveImages({
  * The screenshot sits inside a device bezel so it reads as a phone screen
  * rather than a floating image. The platform comes from the file name, which
  * every capture carries as `-ios-` or `-android-`, so pages need no extra prop.
+ * An iPhone Duo capture (`-duo-`) is landscape, so it sits below the code.
  */
 export function ComponentExample({ title, src, darkSrc, alt, android, ios, children }: Props) {
-  const { themeName } = useTheme();
   const context = usePageApiVersion();
-  const [isDark, setDark] = useState(false);
 
   const images = resolveImages({ src, darkSrc, alt, android, ios });
   const available = orderPlatforms(images);
   const { active, select } = usePlatformSelection(available);
 
-  useEffect(() => {
-    if (themeName === 'auto') {
-      setDark(prefersDarkTheme());
-    } else {
-      setDark(themeName === 'dark');
-    }
-  }, [themeName]);
-
   const { value } = getCodeBlockDataFromChildren(children);
   const image = images[active];
-  const activeSrc = image && isDark && image.darkSrc ? image.darkSrc : image?.src;
-  const device = active === 'android' ? DEVICE_FRAMES.android : DEVICE_FRAMES.ios;
+  const device =
+    active === 'android'
+      ? DEVICE_FRAMES.android
+      : image?.src.includes('-duo-')
+        ? DEVICE_FRAMES.duo
+        : DEVICE_FRAMES.ios;
+  const isLandscape = device.width > device.height;
 
   return (
-    <Snippet className="mb-4 flex flex-col prose-pre:m-0! prose-pre:rounded-none! prose-pre:border-0!">
-      <div className="flex overflow-hidden rounded-md border border-default max-lg:flex-col">
+    <Snippet className="mb-4 flex flex-col [&_.code-block-wrapper]:m-0! [&_.code-block-wrapper]:rounded-none! [&_.code-block-wrapper]:border-0!">
+      <div
+        className={mergeClasses(
+          'flex overflow-hidden rounded-3xl border border-default max-lg:flex-col',
+          isLandscape && 'flex-col'
+        )}>
         <div className="flex min-w-0 flex-1 flex-col [&>div:first-child]:rounded-none [&>div:first-child]:border-0 [&>div:first-child]:border-b [&>div:first-child]:border-default">
           <SnippetHeader title={title} Icon={FileCode01Icon}>
             <CopyAction text={cleanCopyValue(value, context.version)} />
@@ -120,11 +126,18 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
           </SnippetHeader>
           <SnippetContent className="flex-1 rounded-none border-0 p-0">{children}</SnippetContent>
         </div>
-        {image && activeSrc && (
-          <div className="flex w-56 shrink-0 flex-col items-center justify-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
+        {image && (
+          <div
+            className={mergeClasses(
+              'flex w-56 shrink-0 flex-col items-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0',
+              isLandscape && 'w-full border-t border-l-0'
+            )}>
             <PlatformTabs available={available} active={active} select={select} />
             <div
-              className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]"
+              className={mergeClasses(
+                'relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]',
+                isLandscape && 'max-w-md'
+              )}
               style={{ borderRadius: device.frameRadius }}>
               {device.buttons.map(button => (
                 <span
@@ -143,7 +156,8 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
                 className="overflow-hidden [&_button]:block [&_button]:w-full [&_button]:cursor-pointer"
                 style={{ borderRadius: device.screenRadius }}>
                 <LightboxImage
-                  src={activeSrc}
+                  src={image.src}
+                  darkSrc={image.darkSrc}
                   alt={image.alt}
                   width={device.width}
                   height={device.height}

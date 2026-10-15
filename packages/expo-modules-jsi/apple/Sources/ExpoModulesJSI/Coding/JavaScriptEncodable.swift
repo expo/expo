@@ -9,7 +9,7 @@
 ///
 /// The conversion runs on the JavaScript thread; conformers are called under `@JavaScriptActor`.
 /// See `JavaScriptDecodable` for why `runtime` is `borrowing`.
-public protocol JavaScriptEncodable {
+public protocol JavaScriptEncodable: ~Copyable {
   @JavaScriptActor
-  static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
+  static func encode(_ value: consuming Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
 }

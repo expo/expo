@@ -1,5 +1,6 @@
 import { getRoutes } from '../getRoutes';
 import type { RedirectConfig } from '../getRoutesCore';
+import { getValidInitialRouteName } from '../routeNode';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 const originalEnv = process.env.NODE_ENV;
@@ -183,6 +184,25 @@ describe('getRoutes', () => {
     );
   });
 
+  // NOTE(@hassankhan): Should we throw an error for invalid platforms for
+  // `_layout` like we do for `+not-found`?
+  it(`does not treat an unsupported dotted suffix as a layout qualifier`, () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        './_layout.custom.tsx': () => null,
+      }),
+      { internal_stripLoadRoute: true, skipGenerated: true }
+    );
+
+    expect(routes?.children).toContainEqual(
+      expect.objectContaining({
+        contextKey: './_layout.custom.tsx',
+        route: '_layout.custom',
+        type: 'route',
+      })
+    );
+  });
+
   it(`should name routes relative to the closest _layout`, () => {
     expect(
       getRoutes(
@@ -198,6 +218,7 @@ describe('getRoutes', () => {
           contextKey: './(b)/_layout.js',
           type: 'layout',
           dynamic: null,
+          groupName: 'b',
           route: '(b)',
           children: [
             {
@@ -341,6 +362,16 @@ describe('+html', () => {
 });
 
 describe('+not-found', () => {
+  it(`rejects an unsupported dotted suffix`, () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './+not-found.custom.tsx': () => null,
+        })
+      )
+    ).toThrow("Route nodes cannot start with the '+' character");
+  });
+
   it(`should not append a +not-found if there already is a top level +not+found`, () => {
     expect(
       getRoutes(
@@ -505,6 +536,7 @@ describe('entry points', () => {
                   contextKey: './a/b/(c,d)/_layout.js',
                   type: 'layout',
                   dynamic: null,
+                  groupName: 'c',
                   route: '(c)',
                   children: [
                     {
@@ -527,6 +559,7 @@ describe('entry points', () => {
                   contextKey: './a/b/(c,d)/_layout.js',
                   type: 'layout',
                   dynamic: null,
+                  groupName: 'd',
                   route: '(d)',
                   children: [
                     {
@@ -555,6 +588,29 @@ describe('entry points', () => {
 });
 
 describe('anchor', () => {
+  it('warns when using the deprecated initialRouteName setting', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const routes = getRoutes(
+      inMemoryContext({
+        _layout: {
+          unstable_settings: { initialRouteName: 'a' },
+          default: () => null,
+        },
+        a: () => null,
+        b: () => null,
+      }),
+      { skipGenerated: true }
+    );
+
+    expect(getValidInitialRouteName(routes!)).toBe('a');
+    expect(warn).toHaveBeenCalledWith(
+      '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
+    );
+
+    warn.mockRestore();
+  });
+
   it(`should append entry points for all parent _layouts`, () => {
     expect(
       getRoutes(
@@ -594,7 +650,6 @@ describe('anchor', () => {
       loadRoute: expect.any(Function),
       contextKey: './_layout.js',
       dynamic: null,
-      initialRouteName: 'a',
       route: '',
       type: 'layout',
     });
@@ -614,7 +669,7 @@ describe('anchor', () => {
         { skipGenerated: true }
       )
     ).toThrow(
-      'The initial route name "c" was not found in the layout at "./_layout.js". Available routes are: "a", "b". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "c" was not found in the layout at "./_layout.js". Available routes are: "a", "b". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
@@ -638,7 +693,7 @@ describe('anchor', () => {
         { skipGenerated: true }
       )
     ).toThrow(
-      'The initial route name "d" for group "b" was not found in the layout at "./(a,b)/_layout.js". Available routes are: "c". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "d" for group "b" was not found in the layout at "./(a,b)/_layout.js". Available routes are: "c". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
@@ -672,8 +727,33 @@ describe('anchor', () => {
       { skipGenerated: true }
     );
 
-    expect(routes?.initialRouteName).toBe('a/index');
+    expect(getValidInitialRouteName(routes!)).toBe('a/index');
     expect(routes?.children[0]?.entryPoints).toContain('./a/index.js');
+  });
+
+  it(`appends entry points for an anchor that is a layout with its own anchor`, () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        _layout: {
+          unstable_settings: { anchor: 'a' },
+          default: () => null,
+        },
+        'a/_layout': {
+          unstable_settings: { anchor: 'b' },
+          default: () => null,
+        },
+        'a/b': () => null,
+        c: () => null,
+      }),
+      { skipGenerated: true }
+    );
+
+    expect(routes?.children.find(({ route }) => route === 'c')?.entryPoints).toEqual([
+      './_layout.js',
+      './a/_layout.js',
+      './a/b.js',
+      './c.js',
+    ]);
   });
 });
 

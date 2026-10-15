@@ -1,0 +1,38 @@
+{
+  "cli": {
+    "version": ">= 21.3.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "pnpm": "12.2.1",
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "android-apk": {
+      "pnpm": "12.2.1",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "ios-simulator": {
+      "pnpm": "12.2.1",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "ios-testflight": {
+      "pnpm": "12.2.1",
+      "distribution": "store",
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "ios-testflight": {}
+  }
+}

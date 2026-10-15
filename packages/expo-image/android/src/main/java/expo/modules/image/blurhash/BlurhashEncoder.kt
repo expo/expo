@@ -51,7 +51,11 @@ object BlurhashEncoder {
     val factors = mutableListOf<Triple<Float, Float, Float>>()
     for (y in 0 until numberOfComponents.second) {
       for (x in 0 until numberOfComponents.first) {
-        val normalisation = if (x == 0 && y == 0) 1f else 2f
+        val normalisation = if (x == 0 && y == 0) {
+          1f
+        } else {
+          2f
+        }
         val factor = multiplyBasisFunction(pixels, width, height, x, y, normalisation)
         factors.add(factor)
       }

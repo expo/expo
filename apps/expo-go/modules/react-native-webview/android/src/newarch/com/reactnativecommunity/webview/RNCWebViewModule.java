@@ -6,7 +6,6 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -20,17 +19,8 @@ public class RNCWebViewModule extends NativeRNCWebViewModuleSpec {
     }
 
     @Override
-    public void isFileUploadSupported(final Promise promise) {
-        promise.resolve(mRNCWebViewModuleImpl.isFileUploadSupported());
-    }
-
-    @Override
     public void shouldStartLoadWithLockIdentifier(boolean shouldStart, double lockIdentifier) {
         mRNCWebViewModuleImpl.shouldStartLoadWithLockIdentifier(shouldStart, lockIdentifier);
-    }
-
-    public void startPhotoPickerIntent(ValueCallback<Uri> filePathCallback, String acceptType) {
-        mRNCWebViewModuleImpl.startPhotoPickerIntent(acceptType, filePathCallback);
     }
 
     public boolean startPhotoPickerIntent(final ValueCallback<Uri[]> callback, final String[] acceptTypes, final boolean allowMultiple, final boolean isCaptureEnabled) {

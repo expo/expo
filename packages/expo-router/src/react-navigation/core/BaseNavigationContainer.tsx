@@ -1,25 +1,36 @@
 'use client';
-import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { BrowserHistorySync } from '../../global-state/BrowserHistorySync';
 import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
+import { createBrowserHistoryAdapter } from '../../global-state/browserHistoryAdapter';
 import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
+import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
-import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
-import { StoreContext } from '../../global-state/storeContext';
+import { RouterConfigContext } from '../../global-state/routerConfigContext';
+import {
+  RouterRegistrySettersContext,
+  type RouterRegistry,
+  type RouterRegistrySetters,
+} from '../../global-state/routerRegistry';
+import {
+  ImperativeRoutingQueueBridge,
+  NavigationPendingContext,
+  RoutingQueueApiContext,
+} from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
+import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
   type InitialState,
   type NavigationAction,
-  type NavigationState,
   type ParamListBase,
   type Route,
 } from '../routers';
@@ -27,6 +38,7 @@ import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationStateContext } from './NavigationStateContext';
+import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
@@ -39,14 +51,12 @@ import type {
 import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useEventEmitter } from './useEventEmitter';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useOptionsGetters } from './useOptionsGetters';
 
 type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialState'> & {
   initialState: InitialState;
   ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
   UNSTABLE_routeNode?: RouteNode;
-  UNSTABLE_onStateChangeInsertion?: (state: NavigationState) => void;
 };
 
 const serializableWarnings: string[] = [];
@@ -57,41 +67,18 @@ const duplicateNameWarnings: string[] = [];
  * This should be rendered at the root wrapping the whole app.
  *
  * @param props.initialState Initial state object for the navigation tree.
- * @param props.onReady Callback which is called after the navigation tree mounts.
- * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
- * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
-  const registry = use(RouterRegistryContext);
-
-  // TODO(@ubax): investigate if this is really needed
-  if (registry === undefined) {
-    return (
-      <RouterRegistryProvider>
-        <BaseNavigationContainerInner {...props} />
-      </RouterRegistryProvider>
-    );
-  }
-
-  return <BaseNavigationContainerInner {...props} />;
-}
-
-function BaseNavigationContainerInner({
-  ref,
-  initialState,
-  onStateChange,
-  onReady,
-  UNSTABLE_routeNode,
-  UNSTABLE_onStateChangeInsertion,
-  theme,
-  children,
-}: InternalNavigationContainerProps) {
+  const { ref, initialState, UNSTABLE_routeNode, theme, children } = props;
   const parent = use(NavigationStateContext);
   const inheritedRouteInfo = use(RouteInfoContext);
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
+  const routingQueue = use(RoutingQueueApiContext);
+  const isNavigationPending = use(NavigationPendingContext);
+  const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
     throw new Error(
@@ -99,36 +86,59 @@ function BaseNavigationContainerInner({
     );
   }
 
-  const registry = use(RouterRegistryContext)!;
+  if (routingQueue === undefined || routesWithRemovalPrevented === undefined) {
+    throw new Error(
+      'The navigation container requires the shared routing state provided by `ExpoRoot`. Render the navigation container inside `ExpoRoot`.'
+    );
+  }
+
   const emitter = useEventEmitter<NavigationContainerEventMap>();
-  // TODO(@ubax): investigate if this is really needed
-  const stackRef = React.useRef<string | undefined>(undefined);
-  // TODO(@ubax): invoke this callback from global reducer dispatches.
-  // https://linear.app/expo/issue/ENG-26123
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
+  const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, getState, getStateForKey, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      linking: store?.linking,
-      redirects: store?.redirects,
-      onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
-    });
-
-  const hasNotifiedInitialStateRef = React.useRef(false);
-  const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
+  const {
+    state,
+    isWaitingForLayouts,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    handleAction,
+    processIntent,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
+  const [browserHistory] = React.useState(createBrowserHistoryAdapter);
+  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
+  const registrySetters = React.useMemo<RouterRegistrySetters>(
+    () => ({
+      register(stateKey, entry) {
+        setRegistry((previous) => {
+          if (previous.get(stateKey) === entry) {
+            return previous;
+          }
+          return new Map(previous).set(stateKey, entry);
+        });
+      },
+      unregister(stateKey, entry) {
+        setRegistry((previous) => {
+          if (previous.get(stateKey) !== entry) {
+            return previous;
+          }
+          const next = new Map(previous);
+          next.delete(stateKey);
+          return next;
+        });
+      },
+    }),
+    []
+  );
 
   const { listeners, addListener } = useChildListeners();
-
-  const { addKeyedListener } = useKeyedChildListeners();
 
   const dispatch = useLatestCallback((action: NavigationAction) => {
     if (listeners.focus[0] == null) {
@@ -139,6 +149,9 @@ function BaseNavigationContainerInner({
   });
 
   const dispatchSync = useLatestCallback((action: NavigationAction) => {
+    // TODO(@ubax): Throw if this is called from a `removePrevented` callback.
+    // TODO(@ubax): Review urgent dispatches interleaved with pending navigation transitions. React
+    // rebases the queued actions, but intermediate state can reflect only the urgent action.
     handleAction(action);
   });
 
@@ -156,9 +169,7 @@ function BaseNavigationContainerInner({
     }
   });
 
-  const getRootState = useLatestCallback(() => {
-    return getState();
-  });
+  const getRootState = useLatestCallback(() => state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -171,10 +182,6 @@ function BaseNavigationContainerInner({
 
     return route as Route<string> | undefined;
   });
-
-  const isReady = useLatestCallback(
-    () => listeners.focus[0] != null && registry.has(getState().key)
-  );
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -192,73 +199,28 @@ function BaseNavigationContainerInner({
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
-      getState,
+      getState: getRootState,
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
-      isReady,
+      // Kept for compatibility. There is no ready state to report.
+      isReady: () => true,
       setOptions: () => {
         throw new Error('Cannot call setOptions outside a screen');
       },
     }),
-    [
-      canGoBack,
-      dispatch,
-      dispatchSync,
-      emitter,
-      getCurrentOptions,
-      getCurrentRoute,
-      getRootState,
-      getState,
-      isReady,
-    ]
+    [canGoBack, dispatch, dispatchSync, emitter, getCurrentOptions, getCurrentRoute, getRootState]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
 
-  const lastEmittedOptionsRef = React.useRef<
-    { options: object; routeKey: string | undefined } | undefined
-  >(undefined);
-
-  // TODO(@ubax): investigate if there is better way to implemnet this and wether this is really needed,
-  const onOptionsChange = useLatestCallback((options: object, routeKey?: string) => {
-    const lastEmittedOptions = lastEmittedOptionsRef.current;
-    if (
-      lastEmittedOptions?.routeKey === routeKey &&
-      lastEmittedOptions !== undefined &&
-      isEqual(lastEmittedOptions.options, options)
-    ) {
-      return;
-    }
-
-    lastEmittedOptionsRef.current = { options, routeKey };
-
-    emitter.emit({
-      type: 'options',
-      data: { options },
-    });
-  });
-
   const builderContext = React.useMemo(
     () => ({
       addListener,
-      addKeyedListener,
       handleAction,
-      getStateForKey,
       resetNavigator,
-      onDispatchAction,
-      onOptionsChange,
-      stackRef,
     }),
-    [
-      addListener,
-      addKeyedListener,
-      getStateForKey,
-      handleAction,
-      onDispatchAction,
-      onOptionsChange,
-      resetNavigator,
-    ]
+    [addListener, handleAction, resetNavigator]
   );
 
   const context = React.useMemo(
@@ -278,24 +240,6 @@ function BaseNavigationContainerInner({
   if (!areUrlObjectsEqual(routeInfo, nextRouteInfo)) {
     setRouteInfo(nextRouteInfo);
   }
-
-  const onReadyRef = React.useRef(onReady);
-  const onStateChangeRef = React.useRef(onStateChange);
-
-  React.useEffect(() => {
-    onStateChangeRef.current = onStateChange;
-    onReadyRef.current = onReady;
-  });
-
-  const onReadyCalledRef = React.useRef(false);
-
-  React.useEffect(() => {
-    if (!onReadyCalledRef.current && isReady()) {
-      onReadyCalledRef.current = true;
-      onReadyRef.current?.();
-      emitter.emit({ type: 'ready' });
-    }
-  }, [state, registry, isReady, emitter]);
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -339,7 +283,7 @@ function BaseNavigationContainerInner({
             }
           }
 
-          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. See https://reactnavigation.org/docs/troubleshooting#i-get-the-warning-non-serializable-values-were-found-in-the-navigation-state for more details.`;
+          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. Pass only serializable values in route params.`;
 
           if (!serializableWarnings.includes(message)) {
             serializableWarnings.push(message);
@@ -364,34 +308,29 @@ function BaseNavigationContainerInner({
   }, [getRootState, state]);
 
   useClientLayoutEffect(() => {
-    const hydratedState = getRootState();
-
-    // TODO(@ubax): invesitagte if there is cleaner way to do it
-    // If not consider deprecating the prop
-    const onStateChange = onStateChangeRef.current;
-    const shouldNotifyStateChange =
-      hasNotifiedInitialStateRef.current &&
-      lastNotifiedStateRef.current !== hydratedState &&
-      onStateChange !== undefined;
-    hasNotifiedInitialStateRef.current = true;
-    lastNotifiedStateRef.current = hydratedState;
-
     emitter.emit({ type: 'state', data: { state } });
-
-    if (shouldNotifyStateChange) {
-      onStateChange(hydratedState);
-    }
-  }, [getRootState, emitter, state]);
+  }, [emitter, state]);
 
   return (
     <NavigationContainerRefContext.Provider value={navigation}>
       <NavigationBuilderContext.Provider value={builderContext}>
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
-            <EnsureSingleNavigator>
-              <ThemeProvider value={theme}>{children}</ThemeProvider>
-            </EnsureSingleNavigator>
-            <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+            <RootNavigationStateContext.Provider value={state}>
+              <RouterRegistrySettersContext.Provider value={registrySetters}>
+                <EnsureSingleNavigator>
+                  <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                    <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  </NavigationPendingContext>
+                </EnsureSingleNavigator>
+              </RouterRegistrySettersContext.Provider>
+              <ImperativeRoutingQueueBridge
+                enqueue={routingQueue.enqueue}
+                setTransitionMode={routingQueue.setTransitionMode}
+              />
+              <RoutingQueueDrainer processIntent={processIntent} />
+              <BrowserHistorySync adapter={browserHistory} />
+            </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>

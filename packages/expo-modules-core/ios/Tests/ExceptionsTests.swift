@@ -1,5 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -25,6 +26,25 @@ struct ExceptionsTests {
   func `has reason`() {
     let error = TestException()
     #expect(error.reason == "This is the test exception")
+  }
+
+  @Test
+  func `has reason from the description it was created with`() {
+    let error = TestCodedException()
+    #expect(error.reason == "This is a test Exception with a code")
+  }
+
+  @Test
+  func `includes the description it was created with in the debug description`() {
+    let error = TestCodedException()
+    #expect(error.debugDescription.contains("TestException: This is a test Exception with a code"))
+  }
+
+  @Test
+  func `includes cause description when created with a description`() {
+    let error = TestCodedException().causedBy(TestExceptionCause())
+    #expect(error.description.contains("This is a test Exception with a code"))
+    #expect(error.description.contains("This is the cause of the test exception"))
   }
 
   @Test
@@ -100,8 +120,21 @@ struct ExceptionsTests {
     Self.registerTestModule(on: appContext)
 
     let error = try runtime.eval("try { expo.modules.TestModule.codedException() } catch (error) { error }").asObject()
-    #expect(error.getProperty("message").getString().contains("FunctionCallException: Calling the 'codedException' function has failed"))
+    let message = error.getProperty("message").getString()
+    #expect(message.hasPrefix("Calling the 'codedException' function has failed"))
+    #expect(message.contains("This is a test Exception with a code"))
     #expect(error.getProperty("code").getString() == "E_TEST_CODE")
+  }
+
+  @Test
+  func `sync function throw does not leak the debug description to JS`() throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let message = try runtime.eval("try { expo.modules.TestModule.codedException() } catch (error) { error.message }").getString()
+    #expect(!message.contains("FunctionCallException:"))
+    #expect(!message.contains("(at "))
   }
 
   @Test
@@ -131,8 +164,34 @@ struct ExceptionsTests {
   }
 
   @Test
+  func `async function reject exposes the description as the message to JS`() async throws {
+    let appContext = TestAppContext()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    // The JS message must be exactly the exception's `description`, not its `debugDescription`
+    // (type name + native file:line), so JS code can rely on it as written by the module.
+    let message = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedExceptionRejectAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
+    )
+    #expect(message.getString() == "This is a test Exception with a code")
+  }
+
+  @Test
+  func `exception subclass can override the message exposed to JS`() async throws {
+    let appContext = TestAppContext()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let message = try await runtime.evalAsync(
+      "expo.modules.TestModule.customMessageRejectAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
+    )
+    #expect(message.getString() == "Custom JS message")
+  }
+
+  @Test
   func `concurrent async function throw exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
@@ -140,6 +199,18 @@ struct ExceptionsTests {
       "expo.modules.TestModule.codedExceptionConcurrentAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
     )
     #expect(code.getString() == "E_TEST_CODE")
+  }
+
+  @Test
+  func `async function reject with a code and a description exposes the description to JS`() async throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let message = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedRejectWithDescriptionAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
+    )
+    #expect(message.getString().contains("This is the rejection description"))
   }
 
   private static func registerTestModule(on appContext: AppContext) {
@@ -156,6 +227,14 @@ struct ExceptionsTests {
 
       AsyncFunction("codedExceptionRejectAsync") { (promise: Promise) in
         promise.reject(TestCodedException())
+      }
+
+      AsyncFunction("codedRejectWithDescriptionAsync") { (promise: Promise) in
+        promise.reject("E_TEST_CODE", "This is the rejection description")
+      }
+
+      AsyncFunction("customMessageRejectAsync") { (promise: Promise) in
+        promise.reject(TestCustomMessageException())
       }
 
       AsyncFunction("codedExceptionConcurrentAsync") { () async throws in
@@ -184,6 +263,16 @@ final class TestCodedException: Exception {
     super.init(name: "TestException",
                description: "This is a test Exception with a code",
                code: "E_TEST_CODE")
+  }
+}
+
+final class TestCustomMessageException: Exception {
+  override var reason: String {
+    "This reason is not shown to JS"
+  }
+
+  override var message: String {
+    "Custom JS message"
   }
 }
 

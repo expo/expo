@@ -46,7 +46,7 @@ export function PlatformTabs({ available, active, select, className }: Props) {
               select(platform);
             }}
             className={mergeClasses(
-              'flex cursor-pointer items-center gap-1.5 rounded-md border px-2 py-1 transition-colors',
+              'flex cursor-pointer items-center gap-1.5 rounded-lg border px-2 py-1 transition-colors',
               isActive
                 ? 'border-default bg-default shadow-xs dark:bg-subtle'
                 : 'border-transparent dark:hocus:bg-subtle hocus:bg-element'

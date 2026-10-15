@@ -184,7 +184,7 @@ export function UIComponentCard({
       href={resolvedHref}
       data-md-description={description}
       className={mergeClasses(
-        'group flex flex-col overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        'group flex flex-col overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
         'hocus:shadow-sm'
       )}
       isStyled>

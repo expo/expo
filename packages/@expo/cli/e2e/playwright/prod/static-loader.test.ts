@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
+import { pageCollectErrors, waitForLoaderData } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -26,7 +26,6 @@ test.describe('static loaders in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
       },
     });
     console.timeEnd('expo export');
@@ -51,13 +50,49 @@ test.describe('static loaders in production', () => {
     expect(loaderRequests).toHaveLength(0);
 
     await page.click('a[href="/posts/static-post-1"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
+    await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
     expect(loaderRequests).toContainEqual(
       expect.stringContaining('/_expo/loaders/posts/static-post-1')
     );
 
     const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
+  });
+
+  test('loads grouped loader data on client-side navigation', async ({ page }) => {
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/')) {
+        loaderRequests.push(request.url());
+      }
+    });
+
+    await page.goto(expoServe.url.href);
+    await page.getByText('Go to Grouped Index').click();
+    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+      JSON.stringify({ data: 'grouped-index' }, null, 2)
+    );
+    expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/(group)/index'));
+  });
+
+  test('loads a platform-specific catch-all loader on client-side navigation', async ({ page }) => {
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/')) {
+        loaderRequests.push(request.url());
+      }
+    });
+
+    await page.goto(expoServe.url.href);
+    await page.getByText('Go to Platform Catch-all').click();
+    await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
+    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+      JSON.stringify({ data: 'platform-catch-all' }, null, 2)
+    );
+    expect(loaderRequests).toContainEqual(
+      expect.stringContaining('/_expo/loaders/(group)/platform/alpha/beta')
+    );
+    expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
   });
 
   test('revalidates headerless loader data on every fresh mount', async ({ page }) => {
@@ -71,17 +106,19 @@ test.describe('static loaders in production', () => {
     await page.goto(expoServe.url.href);
 
     await page.click('a[href="/posts/static-post-1"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
+    await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
     await page.click('a[href="/"]');
+    await waitForLoaderData(page, { data: 'root-index' });
 
     await page.click('a[href="/posts/static-post-2"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
+    await waitForLoaderData(page, { params: { postId: 'static-post-2' } });
 
     await page.click('a[href="/"]');
+    await waitForLoaderData(page, { data: 'root-index' });
 
     await page.click('a[href="/posts/static-post-1"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
+    await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
     expect(loaderRequests).toEqual([
       expect.stringContaining('/_expo/loaders/posts/static-post-1'),
@@ -128,11 +165,11 @@ test.describe('static loaders in production', () => {
     url.pathname = '/no-loader';
 
     // Start on no loader route
-    await page.goto(url.toString());
+    await page.goto(url.toString(), { waitUntil: 'networkidle' });
 
     // Navigate to index route (has loader)
     await page.click('a[href="/"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
+    await waitForLoaderData(page, { data: 'root-index' });
 
     const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
     expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'root-index' });
@@ -157,6 +194,7 @@ test.describe('static loaders in production', () => {
 
     // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
+    await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
     const postsLoaderDataContent = await page
       .locator('[data-testid="loader-result"]')
       .textContent();

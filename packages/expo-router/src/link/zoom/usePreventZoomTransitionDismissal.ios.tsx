@@ -5,8 +5,8 @@ import { use } from 'react';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
 import { useRoute } from '../../react-navigation/native';
+import { useIsFocused } from '../../useIsFocused';
 import { useNavigation } from '../../useNavigation';
-import { isRoutePreloadedInStack } from '../../utils/stack';
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import { useIsPreview } from '../preview/PreviewRouteContext';
@@ -20,8 +20,8 @@ export function usePreventZoomTransitionDismissal(
   const route = useRoute();
   const navigation = useNavigation();
   const isPreview = useIsPreview();
-  const isFocused = navigation.isFocused();
-  const isPreloaded = isPreview ? false : isRoutePreloadedInStack(navigation.getState(), route);
+  const isFocused = useIsFocused();
+  const isPreloaded = !isPreview && route.isPreloaded === true;
 
   const descriptorsMap = use(DescriptorsContext);
   const currentDescriptor = descriptorsMap[route.key];

@@ -11,6 +11,8 @@ export {
 } from './js';
 
 export {
+  AlbumType,
+  type AlbumMetadata,
   AssetField,
   AssetUriVersion,
   MediaSubtype,

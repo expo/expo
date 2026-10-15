@@ -52,7 +52,13 @@ export class LegacyEventEmitter {
     }
 
     this._listenerCount++;
-    const nativeEmitterSubscription = this._eventEmitter.addListener(eventName, listener);
+    // The cast keeps this compiling under both the legacy and the strict
+    // react-native API: the strict EventEmitter wants `(...args: readonly
+    // Object[]) => unknown` listeners. This EventEmitter is deprecated anyway.
+    const nativeEmitterSubscription = this._eventEmitter.addListener(
+      eventName,
+      listener as (...args: any[]) => any
+    );
     const subscription: SubscriptionState = {
       [nativeEmitterSubscriptionKey]: nativeEmitterSubscription,
       remove: () => {

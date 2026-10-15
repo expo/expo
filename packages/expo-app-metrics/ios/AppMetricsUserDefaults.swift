@@ -8,6 +8,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
   private enum Keys: String {
     case lastAppLaunchState
     case environment
+    case networkTracesConfiguration
   }
 
   private init() {
@@ -39,6 +40,17 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
     set {
       defaults.set(codable: newValue, forKey: Keys.lastAppLaunchState.rawValue)
+    }
+  }
+
+  /// Last-applied network traces policy, or `nil` when JS never configured one. Persisted so
+  /// early-startup requests follow the last-known setting.
+  static var networkTracesConfiguration: NetworkTracesConfiguration? {
+    get {
+      return defaults.codable(forKey: Keys.networkTracesConfiguration.rawValue, as: NetworkTracesConfiguration.self)
+    }
+    set {
+      defaults.set(codable: newValue, forKey: Keys.networkTracesConfiguration.rawValue)
     }
   }
 }

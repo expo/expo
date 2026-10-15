@@ -10,6 +10,7 @@ export type {
   NativeTabsBottomAccessoryProps,
 } from './common/elements';
 export type {
+  IconRenderingMode,
   NativeTabsProps,
   NativeTabTriggerProps,
   NativeTabsLabelStyle,
@@ -22,3 +23,4 @@ export type {
 } from './types';
 export { NativeTabTrigger } from './NativeTabTrigger';
 export { NativeTabs } from './NativeTabs';
+export { createNativeTabsProps } from './NativeBottomTabsNavigator';

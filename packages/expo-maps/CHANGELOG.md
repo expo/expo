@@ -1,12 +1,61 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.8
+
+### Patch Changes
+
+- Correct `setCameraPosition` return types to `Promise<void>`. Android reports animation completion and cancellation; iOS resolves after scheduling the camera update. ([#51102](https://github.com/expo/expo/pull/51102) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.7
+
+### Patch Changes
+
+- Support immediate Android camera updates with duration 0 and reject negative durations. ([#51101](https://github.com/expo/expo/pull/51101) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.6
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.5
+
+### Patch Changes
+
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
 - Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
+- [iOS] Added `anchor` to `AppleMaps.View` annotations, so a pin-shaped icon can point at its coordinates instead of being centered on them. Matches the `anchor` that `GoogleMaps.View` markers already support. ([#49315](https://github.com/expo/expo/pull/49315) by [@jensdev](https://github.com/jensdev))
 
 ### 🐛 Bug fixes
 

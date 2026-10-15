@@ -156,6 +156,7 @@ const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
   { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
   { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
   { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
+  { pattern: /^\/preview\/eas-simulator\/(.*)$/, replacement: '/preview/simulators/$1' },
 ];
 
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
@@ -209,6 +210,12 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/unversioned/sdk/ui/jetpack-compose/textfield/',
   '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
+
+  // Expo UI guides merged into the versioned reference
+  '/guides/expo-ui-swift-ui/': '/versions/latest/sdk/ui/swift-ui/',
+  '/guides/expo-ui-swift-ui/extending/': '/versions/latest/sdk/ui/swift-ui/extending/',
+  '/guides/expo-ui-jetpack-compose/extending/':
+    '/versions/latest/sdk/ui/jetpack-compose/extending/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
@@ -429,10 +436,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
 
-  // Preview section
-  '/preview/support/': '/preview/introduction/',
-  '/preview/react-compiler/': '/guides/react-compiler/',
-
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
 
@@ -543,9 +546,6 @@ const RENAMED_PAGES: Record<string, string> = {
   // After merging registerRootComponent info in `expo` API reference
   '/versions/latest/sdk/register-root-component/':
     '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
-
-  // Temporary redirects
-  '/router/advanced/singular/': '/preview/singular/',
 
   // After adding System bars
   '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',

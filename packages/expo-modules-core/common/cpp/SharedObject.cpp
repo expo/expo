@@ -38,8 +38,13 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser) {
 
         releaser(nativeState->objectId);
 
-        // Should we reset the native state?
-        thisObject.setNativeState(runtime, nullptr);
+        // Resetting the native state throws when the object is frozen, for example a shared object
+        // passed as a view prop, which React Native deep-freezes in development. The native object
+        // is already released, so the native state can stay.
+        try {
+          thisObject.setNativeState(runtime, nullptr);
+        } catch (const jsi::JSIException &) {
+        }
       }
       return jsi::Value::undefined();
     });

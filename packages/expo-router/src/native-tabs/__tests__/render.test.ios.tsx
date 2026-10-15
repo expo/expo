@@ -1,18 +1,21 @@
 import { screen } from '@testing-library/react-native';
-import React, { isValidElement } from 'react';
+import React, { isValidElement, use } from 'react';
 import { Button, View } from 'react-native';
-import { Tabs } from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { usePathname } from '../../hooks';
 import { router } from '../../imperative-api';
 import { Stack } from '../../layouts/Stack';
 import { Redirect } from '../../link/Redirect';
 import { usePreventRemove } from '../../react-navigation/core';
+import { IsWithinNativeNavigator } from '../../standard-navigation';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
 import { BottomAccessoryPlacementContext } from '../hooks';
 import { SUPPORTED_BLUR_EFFECTS, SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS } from '../types';
+
+afterEach(() => router.setTransitionMode('preload-only'));
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -49,14 +52,22 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
-const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+// `NativeTabsView` passes `nativeID`, which is not in `TabsScreenProps`.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<
+  (props: TabsScreenProps & { nativeID?: string }) => React.ReactNode
+>;
+const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => React.ReactNode>;
 
 const warn = jest.fn();
 const error = jest.fn();
 
 const originalWarn = console.warn;
 const originalError = console.error;
+
+function NativeNavigatorContextProbe() {
+  return <View testID={String(use(IsWithinNativeNavigator))} />;
+}
 
 beforeEach(() => {
   console.warn = warn;
@@ -67,8 +78,8 @@ afterEach(() => {
   console.error = originalError;
 });
 
-it('renders tabs correctly', () => {
-  renderRouter({
+it('renders tabs correctly', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -84,11 +95,24 @@ it('renders tabs correctly', () => {
   expect(TabsScreen).toHaveBeenCalledTimes(4);
 });
 
-it('does not rerender the focused screen while preloading other tabs', () => {
+it('marks its routes as nested inside a native navigator', async () => {
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: NativeNavigatorContextProbe,
+  });
+
+  expect(screen.getByTestId('true')).toBeVisible();
+});
+
+it('does not rerender the focused screen while preloading other tabs', async () => {
   const Index = jest.fn(() => <View testID="index" />);
   const Second = jest.fn(() => <View testID="second" />);
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -104,9 +128,47 @@ it('does not rerender the focused screen while preloading other tabs', () => {
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
+it('does not remount the focused screen while preloading other tabs after a deep link', async () => {
+  const mount = jest.fn();
+  const unmount = jest.fn();
+
+  function Run() {
+    React.useEffect(() => {
+      mount();
+      return unmount;
+    }, []);
+
+    return <View testID="run" />;
+  }
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="test-suite" />
+          <NativeTabs.Trigger name="apis" />
+          <NativeTabs.Trigger name="playground" />
+          <NativeTabs.Trigger name="components" />
+        </NativeTabs>
+      ),
+      'test-suite/_layout': () => <Stack />,
+      'test-suite/index': () => <View testID="test-suite" />,
+      'test-suite/run': Run,
+      apis: () => <View testID="apis" />,
+      playground: () => <View testID="playground" />,
+      components: () => <View testID="components" />,
+    },
+    { initialUrl: '/test-suite/run?tests=AppMetrics' }
+  );
+
+  expect(screen.getByTestId('run')).toBeVisible();
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
+});
+
 describe('Tabs visibility', () => {
-  it('does not render tab, when not specified', () => {
-    renderRouter({
+  it('does not render tab, when not specified', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -124,8 +186,8 @@ describe('Tabs visibility', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(4);
   });
 
-  it('does not render hidden tabs', () => {
-    renderRouter({
+  it('does not render hidden tabs', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -149,8 +211,8 @@ describe('Tabs visibility', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
-  it('does not render tabs, when route does not exist', () => {
-    renderRouter({
+  it('does not render tabs, when route does not exist', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -171,8 +233,8 @@ describe('Tabs visibility', () => {
 });
 
 describe('First focused tab', () => {
-  it('index tab is focused when it is first tab', () => {
-    renderRouter({
+  it('index tab is focused when it is first tab', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -186,14 +248,15 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[0]![0].nativeID).toMatch(/^expo-router-tab:index:/);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('index');
   });
 
-  it('index tab is focused when it is second tab', () => {
-    renderRouter({
+  it('index tab is focused when it is second tab', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="second" />
@@ -207,15 +270,15 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('index');
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('index');
   });
 
   describe('First tab is used, when index is hidden', () => {
-    it('by not specifying an index route', () => {
-      renderRouter({
+    it('by not specifying an index route', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="first" />
@@ -228,8 +291,8 @@ describe('First focused tab', () => {
       });
     });
 
-    it('by using hidden: true', () => {
-      renderRouter({
+    it('by using hidden: true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" hidden />
@@ -252,8 +315,8 @@ describe('First focused tab', () => {
     });
   });
 
-  it('404 is shown, when index does not exist', () => {
-    renderRouter({
+  it('404 is shown, when index does not exist', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="first" />
@@ -270,8 +333,8 @@ describe('First focused tab', () => {
     expect(TabsScreen).not.toHaveBeenCalled();
   });
 
-  it('Correct tab is shown, when index is hidden and redirect is set in layout', () => {
-    renderRouter({
+  it('Correct tab is shown, when index is hidden and redirect is set in layout', async () => {
+    await renderRouter({
       _layout: function Layout() {
         const pathname = usePathname();
 
@@ -292,16 +355,16 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    // TODO(@ubax): rework the ROUTE_NAMES_CHANGED and change this back to 4
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(3);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
+    // TODO(@ubax): when ROUTE_NAMES_CHANGED is reworked check if this can be reduced
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('first');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
+    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
-  it('Correct tab is shown, when index does not exist, redirect is set in layout and +not-found is specified', () => {
-    renderRouter({
+  it('Correct tab is shown, when index does not exist, redirect is set in layout and +not-found is specified', async () => {
+    await renderRouter({
       _layout: function Layout() {
         const pathname = usePathname();
 
@@ -322,15 +385,15 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(3);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('first');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
+    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
-  it('404 is shown, when index does not exist, redirect is set in layout and no +not-found is specified', () => {
-    renderRouter({
+  it('404 is shown, when index does not exist, redirect is set in layout and no +not-found is specified', async () => {
+    await renderRouter({
       _layout: function Layout() {
         const pathname = usePathname();
 
@@ -355,7 +418,7 @@ describe('First focused tab', () => {
   });
 
   it('Can remove the last tab, when it is focused', async () => {
-    renderRouter({
+    await renderRouter({
       _layout: function Layout() {
         const [isSecondTabVisible, setIsSecondTabVisible] = React.useState(true);
 
@@ -382,42 +445,42 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('index');
 
+    await act(() => router.setTransitionMode('always'));
     TabsScreen.mockClear();
     TabsHost.mockClear();
-    act(() => router.navigate('/second'));
+    await act(() => router.navigate('/second'));
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[3][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toBe('second');
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('second');
 
     TabsScreen.mockClear();
     TabsHost.mockClear();
-    act(() => {
-      fireEvent.press(screen.getByTestId('remove'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('remove'));
     });
 
     expect(screen.queryByTestId('second')).toBeNull();
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
+    expect(TabsHost.mock.calls[0]![0].navStateRequest.selectedScreenKey).toBe('index');
   });
 });
 
 describe('Dynamic tab visibility remounting', () => {
   describe('Plain tabs structure', () => {
-    it('navigator remounts when tab is hidden dynamically', () => {
+    it('navigator remounts when tab is hidden dynamically', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -427,7 +490,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [isHidden, setIsHidden] = React.useState(false);
           return (
@@ -451,8 +514,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Clear mock and trigger state change (hide second tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - index remounts due to navigator remount
@@ -460,7 +523,7 @@ describe('Dynamic tab visibility remounting', () => {
       expect(onMount).toHaveBeenCalledWith('index');
     });
 
-    it('navigator remounts when tab is shown dynamically', () => {
+    it('navigator remounts when tab is shown dynamically', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -470,7 +533,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [isHidden, setIsHidden] = React.useState(true);
           return (
@@ -493,8 +556,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Clear mock and trigger state change (show second tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - both screens mount after showing
@@ -503,7 +566,7 @@ describe('Dynamic tab visibility remounting', () => {
       expect(onMount).toHaveBeenCalledWith('second');
     });
 
-    it('navigator remounts when tab Trigger is conditionally mounted', () => {
+    it('navigator remounts when tab Trigger is conditionally mounted', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -513,7 +576,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [showThird, setShowThird] = React.useState(false);
           return (
@@ -539,8 +602,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Clear mock and trigger state change (add third tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - all screens remount when adding trigger
@@ -550,7 +613,7 @@ describe('Dynamic tab visibility remounting', () => {
       expect(onMount).toHaveBeenCalledWith('third');
     });
 
-    it('navigator remounts when tab Trigger is conditionally unmounted', () => {
+    it('navigator remounts when tab Trigger is conditionally unmounted', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -560,7 +623,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [showThird, setShowThird] = React.useState(true);
           return (
@@ -579,16 +642,16 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across three screens.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
 
       // Clear mock and trigger state change (remove third tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - remaining screens remount
@@ -599,7 +662,7 @@ describe('Dynamic tab visibility remounting', () => {
   });
 
   describe('Stack nested inside tabs', () => {
-    it('navigator remounts with nested Stack when tab is hidden', () => {
+    it('navigator remounts with nested Stack when tab is hidden', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -609,7 +672,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [isHidden, setIsHidden] = React.useState(false);
           return (
@@ -630,16 +693,16 @@ describe('Dynamic tab visibility remounting', () => {
         third: () => <ScreenWithMount testID="third" />,
       });
 
-      // Initial render records four mounts across index, stack-index, and third.
-      expect(onMount).toHaveBeenCalledTimes(4);
+      // Initial render mounts each screen once.
+      expect(onMount).toHaveBeenCalledTimes(3);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');
 
       // Clear mock and trigger state change (hide third tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - Stack screens remount
@@ -650,7 +713,7 @@ describe('Dynamic tab visibility remounting', () => {
 
     // TODO(@ubax): Investigate why this test fails in the test environment
     // When testing in the actual app, it works as expected.
-    it.skip('Stack navigation state is reset when parent tabs remount', () => {
+    it.skip('Stack navigation state is reset when parent tabs remount', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -660,7 +723,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [isHidden, setIsHidden] = React.useState(false);
           return (
@@ -698,8 +761,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Navigate to stack/details
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('navigate-details'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('navigate-details'));
       });
 
       expect(onMount).toHaveBeenCalledTimes(1);
@@ -708,8 +771,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Clear mock and trigger state change (hide third tab)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       // Verify remount occurred - all Stack screens remount including details (state is restored)
@@ -720,7 +783,7 @@ describe('Dynamic tab visibility remounting', () => {
       expect(screen.getByTestId('stack-index')).toBeVisible();
     });
 
-    it('navigator remounts when focused nested Stack tab is hidden', () => {
+    it('navigator remounts when focused nested Stack tab is hidden', async () => {
       const onMount = jest.fn();
 
       function ScreenWithMount({ testID }: { testID: string }) {
@@ -730,7 +793,7 @@ describe('Dynamic tab visibility remounting', () => {
         return <View testID={testID} />;
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           const [isHidden, setIsHidden] = React.useState(false);
           return (
@@ -765,11 +828,11 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Navigate to stack tab and then to stack/details
       onMount.mockClear();
-      act(() => {
+      await act(() => {
         router.navigate('/stack');
       });
-      act(() => {
-        fireEvent.press(screen.getByTestId('navigate-details'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('navigate-details'));
       });
 
       expect(onMount).toHaveBeenCalledTimes(1);
@@ -778,8 +841,8 @@ describe('Dynamic tab visibility remounting', () => {
 
       // Clear mock and trigger state change (hide stack tab while focused on nested screen)
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       expect(onMount).toHaveBeenCalledWith('index');
@@ -788,8 +851,8 @@ describe('Dynamic tab visibility remounting', () => {
       expect(screen.getByTestId('index')).toBeVisible();
 
       onMount.mockClear();
-      act(() => {
-        fireEvent.press(screen.getByTestId('toggle'));
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
       });
 
       expect(onMount).toHaveBeenCalledTimes(2);
@@ -799,24 +862,25 @@ describe('Dynamic tab visibility remounting', () => {
   });
 });
 
-it('when nesting NativeTabs, it throws an Error', () => {
-  expect(() =>
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="nested" />
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-      'nested/_layout': () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-        </NativeTabs>
-      ),
-      'nested/index': () => <View testID="index-nested" />,
-    })
-  ).toThrow(
+it('when nesting NativeTabs, it throws an Error', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="nested" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        'nested/_layout': () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        'nested/index': () => <View testID="index-nested" />,
+      })
+  ).rejects.toThrow(
     'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
   );
 });
@@ -826,8 +890,8 @@ describe('Native props validation', () => {
   beforeEach(() => {
     warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
-  it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', (blurEffect) => {
-    renderRouter({
+  it.each(SUPPORTED_BLUR_EFFECTS)('supports %s blur effect', async (blurEffect) => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs blurEffect={blurEffect}>
           <NativeTabs.Trigger name="index" />
@@ -838,13 +902,13 @@ describe('Native props validation', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
-    expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
+    expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
+    expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
   });
   it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
     'warns when unsupported %s blur effect is used',
-    (blurEffect) => {
-      renderRouter({
+    async (blurEffect) => {
+      await renderRouter({
         _layout: () => (
           // @ts-expect-error
           <NativeTabs blurEffect={blurEffect}>
@@ -858,14 +922,16 @@ describe('Native props validation', () => {
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0].ios?.standardAppearance?.tabBarBlurEffect).toBe(undefined);
-      expect(TabsScreen.mock.calls[0][0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
+      expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance?.tabBarBlurEffect).toBe(
+        undefined
+      );
+      expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
     }
   );
   it.each(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS)(
     'supports %s minimize behavior',
-    (minimizeBehavior) => {
-      renderRouter({
+    async (minimizeBehavior) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs minimizeBehavior={minimizeBehavior}>
             <NativeTabs.Trigger name="index" />
@@ -876,15 +942,15 @@ describe('Native props validation', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsHost).toHaveBeenCalledTimes(1);
-      expect(TabsHost.mock.calls[0][0].ios?.tabBarMinimizeBehavior).toBe(minimizeBehavior);
+      expect(TabsHost.mock.calls[0]![0].ios?.tabBarMinimizeBehavior).toBe(minimizeBehavior);
     }
   );
   it.each([
     'test',
     'wrongValue',
     ...SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((x) => x.toUpperCase()),
-  ])('warns when unsupported %s minimize behavior is used', (minimizeBehavior) => {
-    renderRouter({
+  ])('warns when unsupported %s minimize behavior is used', async (minimizeBehavior) => {
+    await renderRouter({
       _layout: () => (
         // @ts-expect-error
         <NativeTabs minimizeBehavior={minimizeBehavior}>
@@ -898,13 +964,13 @@ describe('Native props validation', () => {
       `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
     );
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].ios?.tabBarMinimizeBehavior).toBe(undefined);
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarMinimizeBehavior).toBe(undefined);
   });
 });
 
 describe('Misc', () => {
-  it('usePreventRemove can be used inside the stack nested in tabs', () => {
-    renderRouter({
+  it('usePreventRemove can be used inside the stack nested in tabs', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -921,13 +987,13 @@ describe('Misc', () => {
       },
     });
 
-    act(() => router.navigate('/stack'));
+    await act(() => router.navigate('/stack'));
     expect(screen.getByTestId('stack-index')).toBeVisible();
   });
 
-  it('passes the bottom accessory to NativeTabsView', () => {
+  it('passes the bottom accessory to NativeTabsView', async () => {
     const BottomAccessoryContent = jest.fn(() => <View testID="bottom-accessory" />);
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.BottomAccessory>
@@ -940,9 +1006,9 @@ describe('Misc', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].ios?.bottomAccessory).toBeDefined();
+    expect(TabsHost.mock.calls[0]![0].ios?.bottomAccessory).toBeDefined();
 
-    const bottomAccessoryFn = TabsHost.mock.calls[0][0].ios!.bottomAccessory!;
+    const bottomAccessoryFn = TabsHost.mock.calls[0]![0].ios!.bottomAccessory!;
     const regularRender = bottomAccessoryFn('regular');
     const inlineRender = bottomAccessoryFn('inline');
 
@@ -961,8 +1027,8 @@ describe('Misc', () => {
     { hidden: true, expected: true },
     { hidden: false, expected: false },
     { hidden: undefined, expected: undefined },
-  ])('passes hidden=$hidden prop to TabsHost', ({ hidden, expected }) => {
-    renderRouter({
+  ])('passes hidden=$hidden prop to TabsHost', async ({ hidden, expected }) => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs hidden={hidden}>
           <NativeTabs.Trigger name="index" />
@@ -976,13 +1042,13 @@ describe('Misc', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(expected);
+    expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(expected);
   });
 });
 
 describe('SafeAreaProvider', () => {
-  it('wraps tab content with SafeAreaProvider on iOS', () => {
-    renderRouter({
+  it('wraps tab content with SafeAreaProvider on iOS', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />

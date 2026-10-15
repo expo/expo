@@ -1,6 +1,6 @@
-import isEqual from 'fast-deep-equal';
+import isEqual from 'react-fast-compare';
 
-import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
@@ -15,11 +15,14 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
+import { isActionHandled } from '../react-navigation/routers/utils';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
-import type { RouterRegistry } from './routerRegistry';
+import type { RouterRegistry, RouterRegistryEntry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
   payload: {
+    __internal__PreviewKey?: string;
     name?: string;
     params?: object;
     path?: string;
@@ -98,9 +101,7 @@ export function resolveNavigationDestination({
         params: appendInternalExpoRouterParams(childRoute.params, internalParams),
       },
     };
-    if (
-      getSelectedRoute(registry.get(childState.key)?.reduce(childState, probeAction)) === undefined
-    ) {
+    if (getSelection(registry.get(childState.key)?.reduce(childState, probeAction)) === undefined) {
       break;
     }
 
@@ -149,7 +150,7 @@ function createResolvedAction({
   };
   const baseAction = { ...action, payload };
   const result = registry.get(navigationState.key)?.reduce(navigationState, baseAction);
-  const selectedRoute = getSelectedRoute(result);
+  const selectedRoute = getSelection(result)?.route;
   const childTarget = targetRoute.state;
   const childNode = findDestinationNode(routeNode, targetRoute.name);
 
@@ -169,6 +170,7 @@ function createResolvedAction({
     withAnchor,
     internalParams,
     parentChain,
+    previewKey: action.payload.__internal__PreviewKey,
   });
 
   return {
@@ -188,6 +190,7 @@ function resolveState({
   withAnchor,
   internalParams,
   parentChain,
+  previewKey,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
@@ -196,6 +199,7 @@ function resolveState({
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
   parentChain: string;
+  previewKey?: string;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
@@ -211,16 +215,20 @@ function resolveState({
     navigationState,
     routeNode,
     registry,
-    action: { type: 'NAVIGATE', payload: {} },
+    action: {
+      type: 'NAVIGATE',
+      payload: { __internal__PreviewKey: previewKey },
+    },
     withAnchor,
     internalParams,
   });
   const result = registry.get(navigationState.key)?.reduce(navigationState, action);
-  if (result?.state.stale !== false || getSelectedRoute(result) === undefined) {
+  const selection = getSelection(result);
+  if (!selection) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
-  return isEqual(result.state, navigationState) ? navigationState : result.state;
+  return isEqual(selection.state, navigationState) ? navigationState : selection.state;
 }
 
 function createDestinationState(
@@ -328,19 +336,17 @@ function findDestinationNode(routeNode: RouteNode, routeName: string | undefined
   return routeName === INTERNAL_SLOT_NAME ? routeNode : findRouteNodeByName(routeNode, routeName);
 }
 
-function getSelectedRoute(
-  result:
-    | {
-        state: NavigationState | PartialState<NavigationState>;
-        affectedRouteKey: string | undefined;
-      }
-    | null
-    | undefined
-) {
-  if (result?.state.stale !== false || result.affectedRouteKey === undefined) {
+function getSelection(result: ReturnType<RouterRegistryEntry['reduce']> | undefined) {
+  if (
+    result === undefined ||
+    !isActionHandled(result) ||
+    result.state.stale !== false ||
+    result.affectedRouteKey === undefined
+  ) {
     return undefined;
   }
-  return result.state.routes.find((route) => route.key === result.affectedRouteKey);
+  const route = result.state.routes.find((route) => route.key === result.affectedRouteKey);
+  return route && { state: result.state, route };
 }
 
 function markState<T extends NavigationState>(state: T): T & RouteState {

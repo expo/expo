@@ -76,6 +76,7 @@ class NativeDatabase {
   initSync = jest.fn();
   isInTransactionSync = jest.fn().mockImplementation(() => this.nodeDb.isTransaction);
   closeSync = jest.fn().mockImplementation(() => this._close());
+  interruptSync = jest.fn();
   execSync = jest.fn().mockImplementation((source: string) => this.nodeDb.exec(source));
   serializeSync = jest.fn().mockImplementation((databaseName: string) => this._serialize());
   prepareSync = jest.fn().mockImplementation((nativeStatement: NativeStatement, source: string) => {

@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/v54.0.0/sdk/media-library/) を使用します。
+この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/v57.0.0/sdk/media-library/) を使用します。
 
 > **info** ここまで、`react-native-gesture-handler` や `react-native-reanimated` などのサードパーティのライブラリを使用してきました。用途に応じて、[React Native Directory](https://reactnative.directory/) で他にも数百のサードパーティのライブラリを見つけることができます。
 
@@ -85,7 +85,7 @@ export default function Index() {
 3. `<ImageViewer>` と `<EmojiSticker>` コンポーネントを `<View>` で囲み、それに参照変数を渡します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=440
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import { useState, /* @tutinfo `react` から `useRef` フックをインポートします。 */useRef/* @end */ } from 'react';
 /* @tutinfo `react-native-view-shot` から `captureRef` をインポートします。 */import { captureRef } from 'react-native-view-shot';/* @end */
 
@@ -118,12 +118,12 @@ export default function Index() {
 
 `onSaveImageAsync()` 関数の中で `react-native-view-shot` の `captureRef()` メソッドを呼び出すことで、ビューのスクリーンショットを撮影できます。このメソッドは省略可能な引数を受け取り、スクリーンショットを撮影する領域の `width` と `height` を渡せます。利用可能なオプションの詳細については、[ライブラリのドキュメント](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) を参照してください。
 
-また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/v54.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
+また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/v57.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
 
-**app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
+**src/app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=440
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
 /* @tutinfo `expo-media-library` から `MediaLibrary` をインポートします。 */import * as MediaLibrary from 'expo-media-library';/* @end */
 import { useEffect, useRef, useState } from 'react';
@@ -131,14 +131,14 @@ import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { captureRef } from 'react-native-view-shot';
 
-import Button from '@/components/Button';
-import CircleButton from '@/components/CircleButton';
-import EmojiList from '@/components/EmojiList';
-import EmojiPicker from '@/components/EmojiPicker';
-import IconButton from '@/components/IconButton';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import CircleButton from '@/components/circle-button';
+import EmojiList from '@/components/emoji-list';
+import EmojiPicker from '@/components/emoji-picker';
+import IconButton from '@/components/icon-button';
+import ImageViewer from '@/components/image-viewer';
 
-import EmojiSticker from '@/components/EmojiSticker';
+import EmojiSticker from '@/components/emoji-sticker';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

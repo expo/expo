@@ -33,7 +33,11 @@ fun ActionButton(
     onClick = onClick,
     enabled = enabled,
     shape = RoundedCornerShape(borderRadius),
-    backgroundColor = if (enabled) background else background.copy(alpha = 0.5f),
+    backgroundColor = if (enabled) {
+      background
+    } else {
+      background.copy(alpha = 0.5f)
+    },
     indication = ripple(color = foreground)
   ) {
     Box(

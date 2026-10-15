@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.1
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
 - Add `visit` to walk a value against a JSON schema ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 57.0.2 - 2026-07-15
 

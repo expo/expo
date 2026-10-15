@@ -30,6 +30,10 @@ const dependencyChains: [...string[], string, string][] = [
   // @expo/metro-runtime is a peer, and often resolved to mute peer warnings, instead of being upgraded
   ['expo-router', '@expo/metro-runtime'],
 
+  // @expo/dom-webview is an optional peer of expo with a wildcard range, so package managers may
+  // keep a previous SDK's version installed after an upgrade, which breaks the Android build
+  ['expo', '@expo/dom-webview'],
+
   // metro packages are commonly resolved, and this will cause issues
   ['expo', '@expo/metro', 'metro'],
   ['expo', '@expo/metro', 'metro-babel-transformer'],

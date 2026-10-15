@@ -2,32 +2,57 @@ import {
   render as renderWithoutStore,
   renderHook as renderHookWithoutStore,
 } from '@testing-library/react-native';
-import type { ReactElement, ReactNode } from 'react';
+import { use, type ReactElement, type ReactNode } from 'react';
 
-import { storeRef } from '../../../global-state/store';
-import { StoreContext, type StoreContextValue } from '../../../global-state/storeContext';
+import {
+  PendingIntentsContext,
+  RoutingQueueProvider,
+} from '../../../global-state/routingQueueContext';
+import type { RoutingIntent } from '../../../global-state/routingQueue';
+import type { RouteNode } from '../../../Route';
+import { defaultRouteInfo, getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
+import { RouteInfoContext } from '../../../global-state/routeInfoContext';
+import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
+import { RouterConfigContext } from '../../../global-state/routerConfigContext';
+import type { NavigationState } from '../../../react-navigation/routers';
 
-function EmptyScreen() {
+let routeNode: RouteNode | null = null;
+let navigationState: NavigationState | undefined;
+
+export function setRouteNode(value: RouteNode | null) {
+  routeNode = value;
+}
+
+export function setNavigationState(value: NavigationState | undefined) {
+  navigationState = value;
+}
+
+let pendingIntents: RoutingIntent[] = [];
+
+function PendingIntentsProbe() {
+  pendingIntents = use(PendingIntentsContext);
   return null;
 }
 
-export const storeValue: StoreContextValue = {
-  get navigationRef() {
-    return storeRef.current.navigationRef;
-  },
-  linking: undefined,
-  get state() {
-    return storeRef.current.state;
-  },
-  rootComponent: EmptyScreen,
-  get routeNode() {
-    return storeRef.current.routeNode;
-  },
-  redirects: [],
-};
+export function getPendingIntents() {
+  return pendingIntents;
+}
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
+  const routeInfo =
+    navigationState?.routes[0]?.name === '__root'
+      ? getRouteInfoFromState(navigationState)
+      : defaultRouteInfo;
+  return (
+    <RoutingQueueProvider>
+      <RouterConfigContext.Provider value={{ linking: undefined, redirects: [], routeNode }}>
+        <RemovalPreventionProvider>
+          <RouteInfoContext.Provider value={routeInfo}>{children}</RouteInfoContext.Provider>
+        </RemovalPreventionProvider>
+        <PendingIntentsProbe />
+      </RouterConfigContext.Provider>
+    </RoutingQueueProvider>
+  );
 }
 
 export function render(element: ReactElement): ReturnType<typeof renderWithoutStore> {

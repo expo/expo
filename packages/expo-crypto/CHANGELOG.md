@@ -1,18 +1,48 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Fix `digest()` failing on Android and iOS when `data` is an `ArrayBuffer` or `DataView`. Both are valid `BufferSource` inputs and are now wrapped in a `Uint8Array` before reaching the native module. ([#51136](https://github.com/expo/expo/pull/51136) by [@devauntea](https://github.com/devauntea))
+
+## 58.0.5
+
+### Patch Changes
+
+- [Android] Migrate the main module to the Expo Modules API 2.0. ([#51091](https://github.com/expo/expo/pull/51091) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it. ([#50280](https://github.com/expo/expo/pull/50280) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- [iOS] Migrate the main module to the Expo Modules API 2.0 macros. ([#49894](https://github.com/expo/expo/pull/49894) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - [Web] Respect the bounds of typed-array views in `Crypto.AES`, so sealed data passed as a `Uint8Array` that views part of a larger buffer no longer reads the wrong bytes and fails to decrypt. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
 - [Web] Reject sealed data that is too short to hold its IV and authentication tag in `AESSealedData.fromCombined()`, matching iOS and Android. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
 - Fix `AESSealedData.fromCombined()` throwing on Android when given a base64-encoded string. ([#47317](https://github.com/expo/expo/pull/47317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

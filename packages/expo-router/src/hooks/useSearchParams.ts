@@ -7,9 +7,9 @@ import { useLocalSearchParams } from './useLocalSearchParams';
 
 // TODO(@ubax): Add missing JSDoc
 export function useSearchParams({ global = false } = {}): URLSearchParams {
-  const globalRef = React.useRef(global);
+  const [initialGlobal] = React.useState(global);
   if (process.env.NODE_ENV !== 'production') {
-    if (global !== globalRef.current) {
+    if (global !== initialGlobal) {
       console.warn(
         `Detected change in 'global' option of useSearchParams. This value cannot change between renders`
       );
@@ -19,6 +19,9 @@ export function useSearchParams({ global = false } = {}): URLSearchParams {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const params = global ? useGlobalSearchParams() : useLocalSearchParams();
   const entries = Object.entries(params).flatMap(([key, value]) => {
+    if (value === undefined) {
+      return [];
+    }
     return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
   });
 

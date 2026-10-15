@@ -1,165 +1,209 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
-import { routingQueue, type RoutingIntent } from '../routingQueue';
+import { RoutingQueueDrainer, shouldUseTransition } from '../RoutingQueueDrainer';
+import type { RoutingIntent } from '../routingQueue';
+import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
 
-const multipleDrainersError = [
-  'Looks like you have multiple navigation containers draining the shared routing queue. Only one container will receive queued actions, while the others will drop them. Make sure that:',
-  "- You don't have multiple NavigationContainers in the app",
-  '- Only a single instance of the root component is rendered',
-].join('\n');
+function actionIntent(type: string, inTransition?: boolean): RoutingIntent {
+  return { type: 'ACTION', payload: { action: { type } }, inTransition };
+}
 
-let error: jest.SpyInstance | undefined;
+// The queue tags each intent with the id reported by the `expo-router:action-enqueued` mark.
+function queued(intent: RoutingIntent) {
+  return { ...intent, actionId: expect.any(Number) };
+}
 
-beforeEach(() => {
-  routingQueue.queue = [];
-  routingQueue.subscribers.clear();
-});
-
-afterEach(() => {
-  error?.mockRestore();
-});
-
-function actionIntent(type: string): RoutingIntent {
-  return { type: 'ACTION', payload: { action: { type } } };
+function navigate(event: string, inTransition?: boolean): RoutingIntent {
+  return {
+    type: 'NAVIGATE_TO_HREF',
+    payload: { href: '/test', options: { event } },
+    inTransition,
+  };
 }
 
 function actionType(intent: RoutingIntent): string {
-  if (intent.type === 'NAVIGATE_TO_HREF') {
+  if (intent.type !== 'ACTION') {
     throw new Error('Expected an action intent.');
   }
   return intent.payload.action.type;
 }
 
-it('isolates queue notifications from its parent', () => {
+async function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  const result = await render(
+    <RoutingQueueProvider>
+      <CaptureEnqueue />
+      <RoutingQueueDrainer processIntent={processIntent} />
+    </RoutingQueueProvider>
+  );
+
+  return { ...result, enqueue: (intent: RoutingIntent) => enqueue(intent) };
+}
+
+it('isolates queue notifications from its parent', async () => {
   const parentRender = jest.fn();
   const processIntent = jest.fn();
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
+
+  function Consumer() {
+    enqueue = useEnqueueRoutingIntent();
+    return <RoutingQueueDrainer processIntent={processIntent} />;
+  }
 
   function Parent() {
     parentRender();
-    return <RoutingQueueDrainer ready processIntent={processIntent} />;
+    return (
+      <RoutingQueueProvider>
+        <Consumer />
+      </RoutingQueueProvider>
+    );
   }
 
-  render(<Parent />);
-  act(() => routingQueue.add(actionIntent('TEST')));
+  await render(<Parent />);
+  await act(() => enqueue(actionIntent('TEST')));
 
   expect(parentRender).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
+  expect(processIntent).toHaveBeenCalledWith(queued(actionIntent('TEST')), false);
 });
 
-it('logs an error when multiple drainers are mounted', () => {
-  error = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(multipleDrainersError);
-});
-
-it('cleans up the mounted drainer when it unmounts', () => {
-  error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const first = render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  first.unmount();
-  render(<RoutingQueueDrainer ready processIntent={jest.fn()} />);
-
-  expect(error).not.toHaveBeenCalled();
-});
-
-it('keeps intents queued until ready', () => {
-  const processIntent = jest.fn();
-  const result = render(<RoutingQueueDrainer ready={false} processIntent={processIntent} />);
-
-  act(() => routingQueue.add(actionIntent('TEST')));
-
-  expect(processIntent).not.toHaveBeenCalled();
-  expect(routingQueue.snapshot()).toEqual([actionIntent('TEST')]);
-
-  result.rerender(<RoutingQueueDrainer ready processIntent={processIntent} />);
-
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
-  expect(routingQueue.snapshot()).toEqual([]);
-});
-
-it('processes a queued batch in FIFO order', () => {
+it('processes a queued batch in FIFO order', async () => {
   const calls: string[] = [];
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
-  const dispatchSync = jest.fn(() => calls.push('NAVIGATOR_ACTION'));
-  const onDispatch = jest.fn(() => calls.push('onDispatch'));
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = await renderDrainer(processIntent);
 
-  act(() => {
-    routingQueue.add(actionIntent('FIRST'));
-    routingQueue.add({
-      type: 'NAVIGATOR_ACTION',
-      payload: { action: { type: 'SECOND' }, dispatchSync },
-      onDispatch,
-    });
-    routingQueue.add(actionIntent('THIRD'));
+  await act(() => {
+    result.enqueue(actionIntent('FIRST'));
+    result.enqueue(actionIntent('SECOND'));
+    result.enqueue(actionIntent('THIRD'));
   });
 
-  expect(calls).toEqual(['FIRST', 'onDispatch', 'NAVIGATOR_ACTION', 'THIRD']);
-  expect(dispatchSync).toHaveBeenCalledWith({ type: 'SECOND' });
+  expect(calls).toEqual(['FIRST', 'SECOND', 'THIRD']);
 });
 
-it('does not process a snapshot twice in Strict Mode', () => {
+it('does not process a batch twice in Strict Mode', async () => {
   const processIntent = jest.fn();
-  routingQueue.add(actionIntent('TEST'));
+  let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
-  render(
+  function CaptureEnqueue() {
+    enqueue = useEnqueueRoutingIntent();
+    return null;
+  }
+
+  const result = await render(
     <React.StrictMode>
-      <RoutingQueueDrainer ready processIntent={processIntent} />
+      <RoutingQueueProvider>
+        <CaptureEnqueue />
+      </RoutingQueueProvider>
+    </React.StrictMode>
+  );
+  await act(() => enqueue(actionIntent('TEST')));
+  await result.rerender(
+    <React.StrictMode>
+      <RoutingQueueProvider>
+        <CaptureEnqueue />
+        <RoutingQueueDrainer processIntent={processIntent} />
+      </RoutingQueueProvider>
     </React.StrictMode>
   );
 
   expect(processIntent).toHaveBeenCalledTimes(1);
 });
 
-it('processes intents added while draining in a later batch', () => {
+it('processes intents added while draining in a later batch', async () => {
   const processed: string[] = [];
+  let enqueue: (intent: RoutingIntent) => void;
   const processIntent = jest.fn((intent: RoutingIntent) => {
     processed.push(actionType(intent));
     if (actionType(intent) === 'FIRST') {
-      routingQueue.add(actionIntent('SECOND'));
+      enqueue(actionIntent('SECOND'));
     }
   });
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = await renderDrainer(processIntent);
+  enqueue = result.enqueue;
 
-  act(() => routingQueue.add(actionIntent('FIRST')));
+  await act(() => enqueue(actionIntent('FIRST')));
 
   expect(processed).toEqual(['FIRST', 'SECOND']);
 });
 
-it('unsubscribes when unmounted', () => {
-  const processIntent = jest.fn();
-  const result = render(<RoutingQueueDrainer ready processIntent={processIntent} />);
-  expect(routingQueue.subscribers.size).toBe(1);
-  result.unmount();
-
-  act(() => routingQueue.add(actionIntent('TEST')));
-
-  expect(routingQueue.subscribers.size).toBe(0);
-  expect(processIntent).not.toHaveBeenCalled();
-  expect(routingQueue.snapshot()).toEqual([actionIntent('TEST')]);
-});
-
-it('continues after processIntent throws synchronously', () => {
+it('continues after processIntent throws synchronously', async () => {
   const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const processIntent = jest.fn((intent: RoutingIntent) => {
     if (actionType(intent) === 'FIRST') {
       throw new Error('failed');
     }
   });
-  render(<RoutingQueueDrainer ready processIntent={processIntent} />);
+  const result = await renderDrainer(processIntent);
 
-  act(() => {
-    routingQueue.add(actionIntent('FIRST'));
-    routingQueue.add(actionIntent('SECOND'));
+  await act(() => {
+    result.enqueue(actionIntent('FIRST'));
+    result.enqueue(actionIntent('SECOND'));
   });
 
   expect(processIntent).toHaveBeenCalledTimes(2);
   expect(warning).toHaveBeenCalledWith(expect.stringContaining('failed'));
   warning.mockRestore();
+});
+
+describe(shouldUseTransition, () => {
+  const operations = [
+    ['push', navigate('PUSH')],
+    ['navigate', navigate('NAVIGATE')],
+    ['replace', navigate('REPLACE')],
+    ['dismissTo', navigate('POP_TO')],
+    ['back', actionIntent('GO_BACK')],
+    ['dismiss', actionIntent('POP')],
+    ['dismissAll', actionIntent('POP_TO_TOP')],
+    ['preload', navigate('PRELOAD')],
+  ] as const;
+
+  describe('always', () => {
+    it.each(operations)('uses a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'always')).toBe(true);
+    });
+
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'always')).toBe(false);
+    });
+  });
+
+  describe('preload-only', () => {
+    it('uses a transition when the entire batch consists of preloads', () => {
+      expect(shouldUseTransition([navigate('PRELOAD'), navigate('PRELOAD')], 'preload-only')).toBe(
+        true
+      );
+    });
+
+    it.each(operations.slice(0, -1))('does not use a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'preload-only')).toBe(false);
+    });
+
+    it.each(operations)('allows %s to opt in', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'preload-only')).toBe(true);
+    });
+
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'preload-only')).toBe(false);
+    });
+
+    it.each([
+      ['preload followed by an opted-in operation', navigate('PRELOAD'), navigate('PUSH', true)],
+      ['opted-in operation followed by a preload', navigate('PUSH', true), navigate('PRELOAD')],
+    ])('allows %s in one transition', (_, first, second) => {
+      expect(shouldUseTransition([first, second], 'preload-only')).toBe(true);
+    });
+  });
+
+  describe('never', () => {
+    it.each(operations)('does not use a transition for %s', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'never')).toBe(false);
+    });
+  });
 });

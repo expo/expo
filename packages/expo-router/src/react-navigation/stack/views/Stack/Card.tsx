@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Animated, Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
-import { Color } from '../../../../utils/color';
+import { alpha } from '../../../../utils/color';
 import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { LocaleDirection } from '../../../native';
 import type {
@@ -462,8 +462,7 @@ function Card({
 
   const { backgroundColor } = StyleSheet.flatten(contentStyle || {});
 
-  const isTransparent =
-    typeof backgroundColor === 'string' ? Color(backgroundColor)?.alpha() === 0 : false;
+  const isTransparent = typeof backgroundColor === 'string' ? alpha(backgroundColor) === 0 : false;
 
   return (
     <CardAnimationContext.Provider value={interpolationProps}>

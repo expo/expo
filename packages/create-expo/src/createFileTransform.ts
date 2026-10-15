@@ -1,14 +1,36 @@
 import { TarTypeFlag } from 'multitars';
 import path from 'path';
 import picomatch from 'picomatch';
+import slugify from 'slugify';
 
 const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 
+const NEITHER_LETTER_NOR_NUMBER = /[^\p{L}\p{N}]+/gu;
+const COMBINING_MARKS = /\p{M}+/gu;
+const NOT_ASCII_ALPHANUMERIC = /[\W_]+/g;
+
+/**
+ * Returns an ASCII identifier for `name`, used as the native project and target name.
+ * Symbols carry no name information and are dropped ('A & B' -> 'AB', 'Expo®' -> 'Expo').
+ * Letters keep their base form ('Árbók' -> 'Arbok', 'Æøå' -> 'AEoa', 'Ǉubljana' -> 'LJubljana').
+ * A name with no usable letters falls back to a slugify of the whole name
+ * ('♥' -> 'love'), then to 'app'.
+ *
+ * Keep in sync with `sanitizedName` in `@expo/config-plugins` (src/ios/utils/Xcodeproj.ts)
+ * so create-expo and prebuild derive the same project name.
+ */
 export function sanitizedName(name: string) {
-  return name
-    .replace(/[\W_]+/g, '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  // NFKD before slugify, or letters are lost: 'Ċ' decomposes to 'C' + a combining mark
+  // that the next line drops, while slugify deletes it outright.
+  const lettersAndNumbers = name
+    .replace(NEITHER_LETTER_NOR_NUMBER, '')
+    .normalize('NFKD')
+    .replace(COMBINING_MARKS, '');
+  return toAsciiIdentifier(slugify(lettersAndNumbers)) || toAsciiIdentifier(slugify(name)) || 'app';
+}
+
+function toAsciiIdentifier(name: string) {
+  return name.replace(NOT_ASCII_ALPHANUMERIC, '');
 }
 
 // Directories that can be added to the template with an underscore instead of a dot, e.g. `.vscode` and be added with `_vscode`.
@@ -39,11 +61,12 @@ function renameConfigs(input: string, typeflag: TarTypeFlag): string {
 export function createEntryRenamer(name: string) {
   return (input: string, typeflag: TarTypeFlag): string => {
     if (name) {
-      // Rewrite paths for bare workflow
+      // Rewrite paths for bare workflow. Lowercase after sanitizing so the result
+      // always matches content renames (slugify's charmap is case-asymmetric).
       input = input
         .replace(
           /HelloWorld/g,
-          input.includes('android') ? sanitizedName(name.toLowerCase()) : sanitizedName(name)
+          input.includes('android') ? sanitizedName(name).toLowerCase() : sanitizedName(name)
         )
         .replace(/helloworld/g, sanitizedName(name).toLowerCase());
     }

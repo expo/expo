@@ -2,7 +2,8 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { routingQueue } from '../../global-state/routingQueue';
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
+import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
   type NavigationAction,
@@ -10,6 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { isActionHandled } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -21,7 +23,7 @@ PrivateValueStore;
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
   handleAction: (action: NavigationAction) => void;
-  getState: () => State;
+  state: State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
 };
@@ -35,8 +37,11 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({ id: navigatorId, handleAction, getState, emitter, router }: Options<State, Action>) {
+>({ id: navigatorId, handleAction, state, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
+  const enqueue = useEnqueueRoutingIntent();
+  // Unlike handler-only Effect Events, the public accessor can be called during render.
+  const getState = useLatestCallback(() => state);
 
   return React.useMemo(() => {
     const dispatchSync = (action: Action) => {
@@ -44,13 +49,9 @@ export function useNavigationHelpers<
     };
 
     const dispatch = (action: Action) => {
-      routingQueue.add({
-        type: 'NAVIGATOR_ACTION',
-        payload: {
-          action,
-          // The queued action was already constrained to this navigator's action type.
-          dispatchSync: (queuedAction) => dispatchSync(queuedAction as Action),
-        },
+      enqueue({
+        type: 'ACTION',
+        payload: { action, originKey: getState().key },
       });
     };
 
@@ -74,15 +75,12 @@ export function useNavigationHelpers<
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
         const state = getState();
+        const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
+          routeNames: state.routeNames,
+          routeGetIdList: {},
+        });
 
-        return (
-          router.getStateForAction(state, CommonActions.goBack() as Action, {
-            routeNames: state.routeNames,
-            routeGetIdList: {},
-          }) !== null ||
-          parentNavigationHelpers?.canGoBack() ||
-          false
-        );
+        return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
       },
       getId: () => navigatorId,
       getParent: (id?: string) => {
@@ -104,5 +102,5 @@ export function useNavigationHelpers<
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [router, parentNavigationHelpers, emitter.emit, getState, handleAction, navigatorId]);
+  }, [enqueue, router, parentNavigationHelpers, emitter.emit, handleAction, navigatorId]);
 }

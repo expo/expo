@@ -7,8 +7,8 @@ import { isValidElementType } from 'react-is';
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
-import { routingQueue } from '../../global-state/routingQueue';
-import { resetNavigatorState } from '../../global-state/stateUtils';
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
+import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -26,7 +26,7 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { NavigatorTypeContext } from './NavigatorTypeContext';
-import { PreventRemoveContext } from './PreventRemoveContext';
+import { RootNavigationStateContext } from './RootNavigationStateContext';
 import { Screen } from './Screen';
 import { isArrayEqual } from './isArrayEqual';
 import {
@@ -45,17 +45,9 @@ import { useEventEmitter } from './useEventEmitter';
 import { useFocusEvents } from './useFocusEvents';
 import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
 import { FocusedRouteKeyContext } from './useIsFocused';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
-import { NavigationStateListenerProvider } from './useNavigationState';
-import {
-  emitBeforeRemove,
-  getPreventableRoutes,
-  shouldPreventRemove,
-  useOnPreventRemove,
-} from './useOnPreventRemove';
-import { usePreventRemoveState } from './usePreventRemoveState';
+import { NavigatorStateContext } from './useNavigationState';
 import { useRegisterNavigator } from './useRegisterNavigator';
 
 // This is to make TypeScript compiler happy
@@ -258,13 +250,16 @@ export function useNavigationBuilder<
     EventMap,
     any
   > &
-    RouterOptions
+    RouterOptions,
+  { activityDefaultThreshold = 1 }: { activityDefaultThreshold?: number } = {}
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
+  const enqueue = useEnqueueRoutingIntent();
 
   const {
     children,
+    activityEnabled,
     layout,
     screenOptions,
     screenLayout,
@@ -290,6 +285,7 @@ export function useNavigationBuilder<
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
 
+      // TODO(@ubax): Remove the UNSTABLE_router prop
       return {
         ...original,
         ...overrides,
@@ -327,9 +323,13 @@ export function useNavigationBuilder<
     );
   }
 
-  const { state: currentState } = use(NavigationStateContext);
+  // Track screen-list changes without recalculating state when only the array identity changes.
+  const routeNamesKey = routeNames.join('\0');
 
-  const { getStateForKey, resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { state: currentState } = use(NavigationStateContext);
+  const rootState = use(RootNavigationStateContext);
+
+  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -341,51 +341,28 @@ export function useNavigationBuilder<
     );
   }
 
-  const isForeignType = currentState.type !== undefined && currentState.type !== router.type;
+  const treeState = rootState
+    ? (findStateByKey(rootState, currentState.key) ?? currentState)
+    : currentState;
+  const isForeignType = treeState.type !== undefined && treeState.type !== router.type;
   // The reset keeps the complete fields required by every navigator state.
   const committedState = (
-    isForeignType ? resetNavigatorState(currentState, router.type) : currentState
+    isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
-  const state = router.getStateForDeclaredRoutes(committedState, routeNames);
-  // TODO(@ubax): Check whether this ref can be safely removed.
-  const stateKeyRef = React.useRef(committedState.key);
-
-  React.useInsertionEffect(() => {
-    stateKeyRef.current = committedState.key;
-  });
-
-  // TODO(@ubax): find a better way to implement this then ref approach
-  const registryConfigRef = React.useRef({ routeNames, routeGetIdList });
-  React.useInsertionEffect(() => {
-    registryConfigRef.current = { routeNames, routeGetIdList };
-  });
-  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
-  const routeNamesKey = routeNames.join('\0');
-  const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
-    (registryState, action) =>
-      // The registry stores states from different router types; this entry only receives its own state key.
-      router.getStateForAction(registryState as State, action, {
-        routeNames: registryConfigRef.current.routeNames,
-        routeGetIdList: registryConfigRef.current.routeGetIdList,
-      }),
-    [routeNamesKey, router]
+  const state = React.useMemo(() => {
+    const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
+    // The seeded state cannot know the order declared by mounted screens yet.
+    return isArrayEqual(declaredState.routeNames, routeNames)
+      ? declaredState
+      : { ...declaredState, routeNames };
+  }, [committedState, routeNamesKey, router]);
+  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
+    // The registry stores states from different router types; this entry only receives its own state key.
+    router.getStateForAction(registryState as State, action, {
+      routeNames,
+      routeGetIdList,
+    })
   );
-  const getState = useLatestCallback((): State => {
-    const currentState = getStateForKey(stateKeyRef.current);
-    if (currentState === undefined) {
-      return committedState;
-    }
-    if (currentState.stale !== false) {
-      throw new Error(
-        'The mounted navigator no longer has complete state in the global navigation tree.'
-      );
-    }
-    if (currentState.type !== undefined && currentState.type !== router.type) {
-      // The reset keeps the complete fields required by every navigator state.
-      return resetNavigatorState(currentState, router.type) as State;
-    }
-    return currentState as State;
-  });
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 
@@ -449,30 +426,11 @@ export function useNavigationBuilder<
 
   useFocusEvents({ state, emitter });
 
-  React.useEffect(() => {
-    emitter.emit({ type: 'state', data: { state } });
-  }, [emitter, state]);
-
   const { listeners: childListeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
-
-  const { isRoutePrevented, preventRemoveContextValue } = usePreventRemoveState({
-    getState,
-    state,
-  });
-
-  useOnPreventRemove({
-    getState,
-    isRoutePrevented,
-    emitter,
-    preventRemoveListeners: keyedListeners.preventRemove,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
-  });
-
-  const onAction = React.useCallback(
-    (action: NavigationAction) => handleAction(action, stateKeyRef.current),
-    [handleAction]
+  // TODO(@ubax): Check whether this ref can be safely removed.
+  const onAction = useLatestCallback((action: NavigationAction) =>
+    handleAction(action, committedState.key)
   );
 
   const registryEntry = React.useMemo<RouterRegistryEntry>(
@@ -481,28 +439,11 @@ export function useNavigationBuilder<
       shouldActionChangeFocus: router.shouldActionChangeFocus,
       getStateForRouteFocus: (registryState, routeKey) =>
         router.getStateForRouteFocus(registryState as State, routeKey),
-      // TODO(@ubax): invoke removal-prevention callbacks from the global reducer.
-      // https://linear.app/expo/issue/ENG-26123
-      shouldPreventRemove: (prev, next, action) =>
-        shouldPreventRemove(
-          emitter,
-          keyedListeners.preventRemove,
-          isRoutePrevented,
-          getPreventableRoutes(prev),
-          getPreventableRoutes(next, prev.type),
-          action
-        ),
-      emitBeforeRemove: (prev, next, action) =>
-        emitBeforeRemove(
-          emitter,
-          keyedListeners.beforeRemove,
-          getPreventableRoutes(prev),
-          getPreventableRoutes(next, prev.type),
-          action
-        ),
+      getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
+        router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
     }),
-    [emitter, isRoutePrevented, keyedListeners, reduce, routeNode, routeNamesKey, router]
+    [reduce, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);
@@ -520,13 +461,13 @@ export function useNavigationBuilder<
     if (isForeignType) {
       return;
     }
-    const committed = getState();
+    const committed = committedState;
 
     if (isArrayEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
     } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
-      routingQueue.add({
+      enqueue({
         type: 'ACTION',
         payload: {
           action: {
@@ -543,10 +484,16 @@ export function useNavigationBuilder<
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     handleAction: onAction,
-    getState,
+    state: committedState,
     emitter,
     router,
   });
+
+  // Declared after `useNavigationHelpers` so that `navigation.getState()` already
+  // returns the new state when `state` listeners run.
+  React.useEffect(() => {
+    emitter.emit({ type: 'state', data: { state } });
+  }, [emitter, state]);
 
   useFocusedListenersChildrenAdapter({
     navigation,
@@ -557,19 +504,18 @@ export function useNavigationBuilder<
     routes: state.routes,
     routeNames: state.routeNames,
     screens,
+    activityEnabled,
+    activityDefaultThreshold,
     navigation,
     screenOptions,
     screenLayout,
-    getState,
+    state: committedState,
     addListener,
-    addKeyedListener,
     router,
-    // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
   });
   useCurrentRender({
     state,
-    navigation,
     descriptors,
   });
 
@@ -587,15 +533,13 @@ export function useNavigationBuilder<
     return (
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
-          <NavigationStateListenerProvider state={state}>
+          <NavigatorStateContext.Provider value={state}>
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
-              <PreventRemoveContext.Provider value={preventRemoveContextValue}>
-                <NavigatorTypeContext.Provider value={router.type}>
-                  {element}
-                </NavigatorTypeContext.Provider>
-              </PreventRemoveContext.Provider>
+              <NavigatorTypeContext.Provider value={router.type}>
+                {element}
+              </NavigatorTypeContext.Provider>
             </FocusedRouteKeyContext.Provider>
-          </NavigationStateListenerProvider>
+          </NavigatorStateContext.Provider>
         </NavigationHelpersContext.Provider>
       </NavigationMetaContext.Provider>
     );

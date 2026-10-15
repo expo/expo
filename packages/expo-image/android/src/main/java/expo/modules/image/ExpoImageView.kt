@@ -7,30 +7,62 @@ import android.graphics.PorterDuff
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
+import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.svg.SVGPictureDrawable
 
 @OptIn(UnstableReactNativeAPI::class)
 @SuppressLint("ViewConstructor")
 class ExpoImageView(
   context: Context
 ) : AppCompatImageView(context) {
+  internal var targetBindingId = 0L
+    private set
+
   var currentTarget: ImageViewWrapperTarget? = null
+    set(value) {
+      field = value
+      targetBindingId += 1
+    }
+
   var isPlaceholder: Boolean = false
 
-  fun recycleView(): ImageViewWrapperTarget? {
-    setImageDrawable(null)
+  internal fun recycleViewIfBindingMatches(
+    target: ImageViewWrapperTarget?,
+    bindingId: Long
+  ): ImageViewWrapperTarget? {
+    if (currentTarget !== target || targetBindingId != bindingId) {
+      return null
+    }
+    return recycleView()
+  }
 
+  fun recycleView(): ImageViewWrapperTarget? {
     val target = currentTarget?.apply {
       isUsed = false
     }
-
+    // Cleared before the animation is cancelled, so the cancellation callback of a transition
+    // still running on this view sees that the view no longer holds that target and skips its
+    // cleanup instead of re-entering this method.
     currentTarget = null
+
+    // A view can be recycled midway through a fade. Without this the view keeps animating towards
+    // an alpha it no longer wants, and can be left partially or fully transparent once it is bound
+    // to its next image.
+    animate().cancel()
+    // ViewPropertyAnimator keeps its listener across animations, so leaving it attached can run
+    // cleanup from the previous image after this view has been rebound to a new one.
+    animate().setListener(null)
+    alpha = 1f
+    setImageDrawable(null)
+
     isVisible = false
     isPlaceholder = false
 
@@ -41,6 +73,8 @@ class ExpoImageView(
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     super.onLayout(changed, left, top, right, bottom)
+
+    updateImageRenderingLayer()
     applyTransformationMatrix()
   }
 
@@ -87,6 +121,35 @@ class ExpoImageView(
   init {
     clipToOutline = true
     scaleType = ScaleType.MATRIX
+  }
+
+  override fun setImageDrawable(drawable: Drawable?) {
+    super.setImageDrawable(drawable)
+
+    updateImageRenderingLayer()
+  }
+
+  private fun updateImageRenderingLayer() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      // On older Android renderers, hardware drawing of the SVG PictureDrawable can appear blurry.
+      // Large views cannot fit in a software layer and would otherwise render blank.
+      // Recheck on layout and when a reused view receives a different image.
+      val maximumDrawingCacheSize = ViewConfiguration.get(context).scaledMaximumDrawingCacheSize
+
+      val svgLayerType = if (
+        drawable is SVGPictureDrawable &&
+        width > 0 && height > 0 &&
+        width.toLong() * height <= maximumDrawingCacheSize / 4 // Each pixel needs four bytes. Divide the limit to avoid overflowing the view area.
+      ) {
+        LAYER_TYPE_SOFTWARE
+      } else {
+        LAYER_TYPE_NONE
+      }
+
+      if (layerType != svgLayerType) {
+        setLayerType(svgLayerType, null)
+      }
+    }
   }
 
   // region Component Props

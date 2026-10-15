@@ -1,18 +1,18 @@
-import { type RefObject, use, useCallback, useEffect, useRef } from 'react';
+import { type RefObject, use, useCallback, useEffect, useEffectEvent } from 'react';
 import { Linking } from 'react-native';
 
 import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { routingQueue } from '../global-state/routingQueue';
-import { StoreContext } from '../global-state/storeContext';
+import { getRouteSegmentsFromState } from '../global-state/getRouteInfoFromState';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
+import { withLoadedLayouts } from '../layoutAnchor';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
-  type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
@@ -56,10 +56,10 @@ export function useLinking(
       };
     },
     getStateFromPath = getStateFromPathDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+  }: Options
 ) {
-  const store = use(StoreContext);
+  const routerConfig = use(RouterConfigContext);
+  const enqueue = useEnqueueRoutingIntent();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -91,80 +91,40 @@ export function useLinking(
     };
   }, []);
 
-  // We store these options in refs to keep getInitialState stable across renders.
-  const prefixesRef = useRef(prefixes);
-  const filterRef = useRef(filter);
-  const configRef = useRef(config);
-  const getStateFromPathRef = useRef(getStateFromPath);
-
-  useEffect(() => {
-    prefixesRef.current = prefixes;
-    filterRef.current = filter;
-    configRef.current = config;
-    getStateFromPathRef.current = getStateFromPath;
-  });
-
-  const getStateFromURL = useCallback((url: string | null | undefined) => {
-    if (!url || (filterRef.current && !filterRef.current(url))) {
+  const getStateFromURL = useEffectEvent((url: string | null | undefined) => {
+    if (!url || (filter && !filter(url))) {
       return undefined;
     }
 
-    const path = extractExpoPathFromURL(prefixesRef.current, url);
-
-    return path !== undefined
-      ? getStateFromPathRef.current(
-          path,
-          configRef.current,
-          getRouteInfoFromState(store?.state).segments
-        )
-      : undefined;
-  }, []);
+    const path = extractExpoPathFromURL(prefixes, url);
+    if (path !== undefined) {
+      // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
+      const segments = getRouteSegmentsFromState(ref.current?.getRootState());
+      return getStateFromPath(path, config, segments);
+    }
+    return undefined;
+  });
 
   const getInitialState = useCallback(() => {
     const url = getInitialURL();
     const createInitialState = (url: string | null | undefined) => {
-      let parsedState;
-      if (url && (!filter || filter(url))) {
-        const path = getInitialPath(prefixes, url);
-        parsedState = getStateFromPath(path, config);
-      }
+      const shouldParseURL = url && (!filter || filter(url));
+      const parsedState = shouldParseURL
+        ? getStateFromPath(getInitialPath(prefixes, url), config)
+        : undefined;
 
-      const routeNode = store?.routeNode;
+      const routeNode = routerConfig?.routeNode;
       return routeNode
-        ? createSeededRootState(parsedState, routeNode)
+        ? withLoadedLayouts(() => createSeededRootState(parsedState, routeNode))
         : completeParsedState(parsedState, ROOT_CHAIN);
     };
 
-    if (url != null) {
-      if (typeof url !== 'string') {
-        return url.then((url) => {
-          const state = createInitialState(url);
-
-          if (typeof url === 'string') {
-            // If the link were handled, it gets cleared in NavigationContainer
-            onUnhandledLinking(getInitialPath(prefixes, url));
-          }
-
-          return state;
-        });
-      } else {
-        onUnhandledLinking(getInitialPath(prefixes, url));
-      }
+    if (url != null && typeof url !== 'string') {
+      return url.then(createInitialState);
     }
 
-    const state = createInitialState(url);
-
-    const thenable = {
-      then(onfulfilled?: (state: NavigationState | undefined) => void) {
-        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
-      },
-      catch() {
-        return thenable;
-      },
-    };
-
-    return thenable as PromiseLike<NavigationState | undefined>;
-  }, [config, filter, getInitialURL, getStateFromPath, onUnhandledLinking, prefixes, store]);
+    return createInitialState(url);
+  }, [config, filter, getInitialURL, getStateFromPath, prefixes, routerConfig]);
 
   useEffect(() => {
     const listener = (url: string) => {
@@ -173,14 +133,12 @@ export function useLinking(
       const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
-        // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(path);
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;
         }
 
-        routingQueue.add({
+        enqueue({
           type: 'NAVIGATE_TO_HREF',
           payload: {
             href: path,
@@ -192,7 +150,7 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enqueue, prefixes, ref, subscribe]);
 
   return {
     getInitialState,

@@ -53,7 +53,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-このコマンドでビルドがキューに入ります。EAS ダッシュボードで **Version Code** が自動的にインクリメントされていることに注目してください。
+このコマンドでビルドがキューに入ります。EAS ダッシュボードの **Version** 列に、自動的にインクリメントされたバージョンコードが括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
 
 </Step>
 
@@ -127,7 +127,7 @@ EAS が本番ビルドを作成し終えたら、次のようにします。
 
 <ContentSpotlight
   alt="Downloading the aab file"
-  src="/static/images/tutorial/eas/play-store-07.png"
+  src="/static/images/tutorial/eas/android-production-build-artifact.webp"
 />
 
 - Google Play Console に戻り、**テストとリリース** > **テスト** > **内部テスト** に移動します。
@@ -223,7 +223,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 - **Service Credentials** の下で **Add a Google Service Account Key** をクリックします。
 
 <ContentSpotlight
-  alt="Uploading the Google Service Account key to EAS dashboard under Change Google Service Account Key"
+  alt="Add a Google Service Account Key button under Service Credentials in EAS dashboard"
   src="/static/images/tutorial/eas/credentials-02.png"
   className="max-w-[640px]"
 />
@@ -262,7 +262,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 }
 ```
 
-上のスニペットでは [`track`](/eas/json/#track) プロパティを追加し、その値を `internal` に設定しています。これにより `eas submit` コマンドで本番ビルドをアップロードし、Google Play ストアの内部テスト向けにリリースできるようになります。
+上のスニペットでは [`track`](/eas/json/#track) プロパティを追加し、その値を `internal` に設定しています。これはデフォルト値でもあります。この値により、`eas submit` コマンドは本番ビルドをアップロードし、Google Play ストアの内部テスト向けにリリースします。
 
 - では `eas submit` コマンドを実行して、新しい内部テストバージョンをリリースしましょう。
 

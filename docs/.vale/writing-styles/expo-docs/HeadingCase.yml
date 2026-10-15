@@ -43,6 +43,7 @@ exceptions:
   - '.*AppDelegate.*'
   - '.*App Store.*'
   - '.*App Store Connect.*'
+  - '.*Appium.*'
   - '.*Apple.*'
   - '.*Apple App Store.*'
   - '.*Apple Developer.*'
@@ -90,6 +91,7 @@ exceptions:
   - '.*detach.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
+  - '.*DOM.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -143,6 +145,7 @@ exceptions:
   - '.*HTTPS.*'
   - '.*Info\.plist.*'
   - '.*iOS.*Simulator.*'
+  - '.*iPad.*'
   - '.*JDK.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
@@ -155,6 +158,7 @@ exceptions:
   - '.*Legend-State.*'
   - '.*Link component.*'
   - '.*Linking.*'
+  - '.*Linux.*'
   - '.*MCP*'
   - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
@@ -230,6 +234,7 @@ exceptions:
   - '.*TypeScript module.*'
   - '.*Watchman.*'
   - '.*UI.*'
+  - '.*Unity.*'
   - '.*USB.*'
   - '.*URI.*'
   - '.*URL.*'
@@ -238,6 +243,7 @@ exceptions:
   - '.*VS Code.*'
   - '.*WebGL.*'
   - '.*WebView.*'
+  - '.*Windows.*'
   - '.*Wix.*'
   - '.*webpack.*'
   - '.*Xcode.*'
@@ -335,3 +341,5 @@ exceptions:
   - HorizontalUncontainedCarousel
   - Serving Markdown to AI Agents
   - Clerk Publishable Key
+  - Compose
+  - Pressable

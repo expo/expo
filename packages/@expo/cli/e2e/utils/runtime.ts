@@ -54,7 +54,6 @@ export type ServerTestOptions = {
  * describe.each(
  *   prepareServers(['expo serve', 'workerd'], {
  *     fixtureName: 'server-middleware-async',
- *     export: { env: { E2E_ROUTER_SERVER_MIDDLEWARE: 'true' } },
  *   })
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);

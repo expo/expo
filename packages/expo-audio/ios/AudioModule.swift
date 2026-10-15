@@ -136,14 +136,13 @@ public class AudioModule: Module {
           avPlayer = cachedPlayer
         } else {
           avPlayer = AudioUtils.createAVPlayer(from: source)
-          if preferredForwardBufferDuration > 0 {
-            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
-          }
         }
         avPlayer.allowsExternalPlayback = allowsExternalPlayback
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
+        // Store the preference so it is re-applied whenever the item is replaced.
+        player.preferredForwardBufferDuration = preferredForwardBufferDuration
         let playerId = player.id
         player.onRelease = { [weak audioModule = self] in
           audioModule?.unregisterAudioSessionActivityKeeper(playerId)
@@ -485,6 +484,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
+        try AudioRecordingRequester.requireUsageDescription()
         let deactivateSessionOnFailure = sessionQueue.sync {
           !sessionIsActive && audioSessionActivityKeepers.isEmpty
         }
@@ -503,18 +503,15 @@ public class AudioModule: Module {
         case let (atTime?, forDuration?):
           // Convert relative delay to absolute device time
           let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-          recorder.ref.record(atTime: absoluteTime, forDuration: TimeInterval(forDuration))
-          recorder.updateStateForDirectRecording()
+          recorder.recordForDuration(TimeInterval(forDuration), atTime: absoluteTime)
           return recorder.getRecordingStatus()
         case let (atTime?, nil):
           // Convert relative delay to absolute device time
           let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-          recorder.ref.record(atTime: absoluteTime)
-          recorder.updateStateForDirectRecording()
+          recorder.record(atTime: absoluteTime)
           return recorder.getRecordingStatus()
         case let (nil, forDuration?):
-          recorder.ref.record(forDuration: TimeInterval(forDuration))
-          recorder.updateStateForDirectRecording()
+          recorder.recordForDuration(TimeInterval(forDuration))
           return recorder.getRecordingStatus()
         case (nil, nil):
           return try recorder.startRecording()
@@ -537,12 +534,12 @@ public class AudioModule: Module {
 
       Function("startRecordingAtTime") { (recorder, seconds: Double) in
         try checkPermissions()
-        recorder.ref.record(atTime: TimeInterval(seconds))
+        recorder.record(atTime: TimeInterval(seconds))
       }
 
       Function("recordForDuration") { (recorder, seconds: Double) in
         try checkPermissions()
-        recorder.ref.record(forDuration: TimeInterval(seconds))
+        recorder.recordForDuration(TimeInterval(seconds))
       }
 
       Function("getAvailableInputs") {
@@ -687,9 +684,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
 
@@ -776,9 +771,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
 
@@ -807,9 +800,7 @@ public class AudioModule: Module {
   private func pauseAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
   }
@@ -817,9 +808,7 @@ public class AudioModule: Module {
   private func resumeAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
   }
@@ -1020,6 +1009,8 @@ public class AudioModule: Module {
 
   private func checkPermissions() throws {
     #if os(iOS)
+    try AudioRecordingRequester.requireUsageDescription()
+
     if #available(iOS 17.0, *) {
       switch AVAudioApplication.shared.recordPermission {
       case .denied, .undetermined:

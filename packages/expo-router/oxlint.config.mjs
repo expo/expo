@@ -1,10 +1,17 @@
-import base from 'expo-module-scripts/oxlint.config.base';
+import base from '@expo/internal-scripts/oxlint.config.base';
 import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   extends: [base],
   ignorePatterns: base.ignorePatterns,
   overrides: [
+    {
+      // Vendored React Navigation code; keep the diff against upstream minimal.
+      files: ['src/react-navigation/**'],
+      rules: {
+        'react/preserve-manual-memoization': 'off',
+      },
+    },
     {
       files: ['src/loaders/LoaderClient.ts'],
       rules: {

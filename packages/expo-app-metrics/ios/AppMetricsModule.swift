@@ -64,6 +64,23 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       GlobalAttributes.set(attributes)
     }
 
+    Function("setNetworkTracesConfig") { (config: NetworkTracesConfigParam) in
+      let configuration = NetworkTracesConfiguration(
+        enabled: config.enabled,
+        hosts: config.filter?.hosts,
+        methods: config.filter?.methods
+      )
+      // Persisted before the hop, so a configure racing startup is either read from
+      // `UserDefaults` by the installing producer or applied to the live one below.
+      AppMetricsUserDefaults.networkTracesConfiguration = configuration
+      AppMetricsActor.isolated {
+        // Re-read rather than captured: actor hops are unordered, so two rapid calls could
+        // otherwise apply out of order. Android captures, since its queue is a single thread.
+        let latest = AppMetricsUserDefaults.networkTracesConfiguration ?? NetworkTracesConfiguration()
+        NetworkRequestMonitor.shared.persistence?.setConfiguration(latest)
+      }
+    }
+
     AsyncFunction("getAppStartupTimesAsync") {
       return await AppMetrics.mainSession.appStartupMonitor.metrics
     }
@@ -193,6 +210,14 @@ private func storedSession(id: String) throws -> StoredSession? {
     return nil
   }
   return StoredSession(from: row)
+}
+
+/// Payload of `setNetworkTracesConfig`: the normalized `networkTraces` setting pushed down by
+/// `Observe.configure`.
+@Record
+internal struct NetworkTracesConfigParam {
+  var enabled: Bool = true
+  var filter: NetworkRequestFilter?
 }
 
 struct MetricAttributes: Record {

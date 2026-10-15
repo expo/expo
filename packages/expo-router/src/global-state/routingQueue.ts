@@ -1,4 +1,6 @@
-import type { NavigationAction } from '../react-navigation/native';
+import { mark } from '../performance';
+import type { NavigationAction, NavigationState } from '../react-navigation/native';
+import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions } from './types';
 
 interface NavigateToHrefIntent {
@@ -8,60 +10,42 @@ interface NavigateToHrefIntent {
     href: string;
     originalHref?: string;
   };
-  metadata?: RoutingIntentMetadata;
-  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
 }
 
-interface RoutingIntentMetadata {
-  history?: {
-    path: string;
-  };
-}
+type RoutingIntentOptions = {
+  inTransition?: boolean;
+};
 
-export type RoutingIntent =
+export type RoutingIntent = (
   | NavigateToHrefIntent
   | {
-      type: 'NAVIGATOR_ACTION';
+      type: 'COMPUTED_ACTION';
       payload: {
-        action: NavigationAction;
-        dispatchSync: (action: NavigationAction) => void;
+        compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
+        originKey?: string;
       };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     }
   | {
       type: 'ACTION';
       payload: { action: NavigationAction; originKey?: string };
-      metadata?: RoutingIntentMetadata;
-      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
-    };
+    }
+  | {
+      // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in
+      // `history.state`, `null` when the browser created the entry without the router.
+      type: 'BROWSER_HISTORY_CHANGED';
+      payload: { id: string | null; path: string };
+    }
+) &
+  RoutingIntentOptions;
 
-export const routingQueue = {
-  queue: [] as RoutingIntent[],
-  subscribers: new Set<() => void>(),
-  subscribe(callback: () => void) {
-    routingQueue.subscribers.add(callback);
-    return () => {
-      routingQueue.subscribers.delete(callback);
-    };
-  },
-  snapshot() {
-    return routingQueue.queue;
-  },
-  add(intent: RoutingIntent) {
-    routingQueue.queue = [...routingQueue.queue, intent];
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-  },
-  drain(snapshot: RoutingIntent[]) {
-    if (snapshot !== routingQueue.queue) {
-      return [];
-    }
-    routingQueue.queue = [];
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-    return snapshot;
-  },
-};
+// The queue tags each intent with the id reported by the action-enqueued and action-dispatched marks.
+export type QueuedRoutingIntent = RoutingIntent & { actionId: number };
+
+let lastActionId = 0;
+
+/** Marks `expo-router:action-enqueued` and returns the id of the new action. */
+export function markActionEnqueuedAndReturnId(): number {
+  const actionId = ++lastActionId;
+  mark('expo-router:action-enqueued', { actionId });
+  return actionId;
+}

@@ -8,10 +8,11 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI Background matches the official SwiftUI [background](<https://developer.apple.com/documentation/swiftui/view/background(alignment:content:)>) modifier and draws background content behind a view, positioned with a specified alignment. The base view keeps its own size.
 
-> **info** To fill a view with a solid color, use the [`background`](modifiers/#backgroundcolor-shape) modifier from `@expo/ui/swift-ui/modifiers`.
+> **info** To fill a view with a color, material, or gradient, use the [`background`](modifiers/#backgroundstyle-options) modifier from `@expo/ui/swift-ui/modifiers`.
 
 ## Installation
 
@@ -21,7 +22,13 @@ Expo UI Background matches the official SwiftUI [background](<https://developer.
 
 ### Basic background
 
-```tsx BackgroundExample.tsx
+<ComponentExample
+  title="BackgroundExample.tsx"
+  src="/static/images/expo-ui/examples/background-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/background-basic-ios-dark.webp"
+  alt="A Card title label on a light blue rounded rectangle background">
+
+```tsx
 import {
   Background,
   Host,
@@ -47,6 +54,7 @@ export default function BackgroundExample() {
           modifiers={[
             font({ size: 17, weight: 'semibold' }),
             padding({ all: 16 }),
+            foregroundStyle('#1C1C1E'),
           ]}>
           Card title
         </Text>
@@ -62,11 +70,19 @@ export default function BackgroundExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Background alignment
 
 Use the `alignment` prop to position the background content relative to the base view. Because the background does not affect the layout of the base view, a smaller background can be pinned to one of its edges.
 
-```tsx BackgroundAlignmentExample.tsx
+<ComponentExample
+  title="BackgroundAlignmentExample.tsx"
+  src="/static/images/expo-ui/examples/background-alignment-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/background-alignment-ios-dark.webp"
+  alt="A label with a blue bar aligned to the bottom edge of its background">
+
+```tsx
 import {
   Background,
   Host,
@@ -104,6 +120,8 @@ export default function BackgroundAlignmentExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

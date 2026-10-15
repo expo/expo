@@ -36,6 +36,7 @@ export function createMetroLiveBindingsPlugin(
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,

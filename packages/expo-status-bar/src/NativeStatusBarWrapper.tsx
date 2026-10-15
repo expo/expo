@@ -21,7 +21,10 @@ export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: 
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
-  const barStyle = React.useMemo(() => styleToBarStyle(style, colorScheme), [style, colorScheme]);
+  const barStyle = React.useMemo(
+    () => styleToBarStyle(style, colorScheme ?? undefined),
+    [style, colorScheme]
+  );
 
   return (
     <NativeStatusBar

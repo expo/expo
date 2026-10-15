@@ -14,6 +14,7 @@ import type {
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -336,6 +337,15 @@ export type NativeStackNavigationOptions = {
    * @platform ios
    */
   headerBlurEffect?: ScreenStackHeaderConfigProps['blurEffect'];
+  /**
+   * Interface style of the native header. Defaults to the navigation theme's style. The native
+   * header does not support changes to this option while the screen is visible.
+   *
+   * Only supported on iOS.
+   *
+   * @platform ios
+   */
+  headerUserInterfaceStyle?: 'light' | 'dark';
   /**
    * Tint color for the header. Changes the color of back button and title.
    */
@@ -758,7 +768,6 @@ export type NativeStackNavigationOptions = {
    * * `none` - there will be dimming view for all detents levels,
    * * `last` - there won't be a dimming view for any detent level.
    *
-   * @remark
    * On iOS, the native implementation might resize the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
    * In case after such resize the sheet exceeds height for which in regular scenario a dimming view would be applied - it will be applied,
    * even if the detent has not effectively been changed.
@@ -841,7 +850,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform ios
    *
-   * @supported iOS 26 or higher
+   * Only supported on iOS 26 and later.
    */
   scrollEdgeEffects?: {
     bottom?: ScrollEdgeEffect;
@@ -1216,20 +1225,7 @@ export type NativeStackHeaderItem =
 
 export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
 
-export type NativeStackViewEmit = (
-  event:
-    | {
-        type: 'transitionStart' | 'transitionEnd';
-        target?: string;
-        data: { closing: boolean };
-      }
-    | { type: 'gestureCancel'; target?: string; data?: undefined }
-    | {
-        type: 'sheetDetentChange';
-        target?: string;
-        data: { index: number; stable: boolean };
-      }
-) => void;
+export type NativeStackViewEmit = StandardNavigatorEmit<NativeStackNavigationEventMap>;
 
 /**
  * The navigator-level state consumed by `NativeStackView`.

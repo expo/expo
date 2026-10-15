@@ -77,6 +77,34 @@ All metrics are grouped by environment. The environment value is derived from `p
 
 The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.
 
+## Network traces
+
+> **info** Network traces require SDK 58 and later.
+
+Completed network requests can be recorded as trace spans. Recording is off by default, because each span counts toward your event quota. Turn it on with:
+
+```ts
+import { Observe } from 'expo-observe';
+
+Observe.configure({ networkTraces: true });
+```
+
+Pass an object to record only the requests you care about. Hosts match exactly and case-insensitively, so subdomains are not implied. An omitted field matches every request, and an empty array matches none:
+
+```ts
+Observe.configure({
+  networkTraces: { filter: { hosts: ['api.myapp.com'], methods: ['GET', 'POST'] } },
+});
+```
+
+The object form records unless you say otherwise, so set `enabled: false` to keep a filter configured while recording nothing.
+
+A request that is turned off or filtered out never reaches the local database, so nothing is stored and nothing is exported. The setting applies to future requests, so spans recorded earlier in the launch are still sent. It also persists across launches, so requests observed before `configure` runs on the next launch follow the last value you set.
+
+Because the value persists, removing the option takes effect the next time `configure` runs, not immediately. The same applies to a narrow `hosts` list: it keeps suppressing early-startup requests until a `configure` widens it.
+
+URLs are redacted before they are stored. A username and password in the URL are replaced with `REDACTED`, as are the query parameters `AWSAccessKeyId`, `Signature`, `sig`, `X-Amz-Signature`, `X-Amz-Credential`, `X-Amz-Security-Token`, and `X-Goog-Signature`. A secret in any other query parameter is stored as-is.
+
 ## Turn off data ingestion
 
 The options above control what your app sends. You can also stop EAS Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the EAS dashboard:
