@@ -410,11 +410,13 @@ function checkDumpedCase(
   if (kind != null && Object.hasOwn(cases, kind)) checkDumpedKeys(object, cases, owner, fail);
 }
 
-/** A directly built manifest must load the ExpoModules macro plugin itself, through
+/**
+ * A directly built manifest must load the ExpoModules macro plugin itself, through
  * `.unsafeFlags(["-Xfrontend", "-load-plugin-executable", "-Xfrontend", "<dir>/ExpoModulesMacros#ExpoModulesMacros"])`.
  * The generated manifest already adds that flag to every Swift target that depends on
  * ExpoModulesCore, and a target that does not cannot use the macros, so the setting is dropped
- * rather than rejected. */
+ * rather than rejected.
+ */
 function withoutMacroPluginLoad(target: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(target.settings)) return target;
   const isMacroPluginLoad = (setting: unknown) => {
@@ -440,9 +442,11 @@ function normalizeLanguageModes(modes: readonly string[]): string[] {
   return modes.map((mode) => mode.replace(/(\.0)+$/, '')).sort();
 }
 
-/** et prebuild compiles with the product's swiftLanguageVersions from spm.config.json, so the
+/**
+ * et prebuild compiles with the product's swiftLanguageVersions from spm.config.json, so the
  * manifest must declare the same language modes, or neither may declare any, which keeps a direct
- * build of Package.swift and the prebuilt framework in the same language mode. */
+ * build of Package.swift and the prebuilt framework in the same language mode.
+ */
 function assertSwiftLanguageModes(
   declared: unknown,
   configured: readonly string[] | undefined,
