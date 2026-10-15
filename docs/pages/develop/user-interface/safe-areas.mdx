@@ -19,8 +19,6 @@ Here's an example of an app screen's content getting concealed by the status bar
 
 ## Use `react-native-safe-area-context` library
 
-On Android and iOS, use `react-native-safe-area-context` to handle safe areas. On web, use [CSS safe-area insets](#usage-with-web) for spacing.
-
 [`react-native-safe-area-context`](https://github.com/AppAndFlow/react-native-safe-area-context) provides a flexible API for handling Android and iOS device's safe area insets. It also provides a `SafeAreaView` component that you can use instead of a [`<View>`](https://reactnative.dev/docs/view) to account for safe areas automatically in your screen components.
 
 Using the library, the result of the previous example changes as it displays the content inside a safe area, as shown below:
@@ -150,7 +148,7 @@ By default, React Navigation supports safe areas and uses `react-native-safe-are
 
 ### Usage with web
 
-On web, use CSS `env(safe-area-inset-*)` values for safe-area spacing. The browser applies these values across client rendering, server rendering, and static generation. CSS safe-area spacing does not require `SafeAreaProvider`.
+On web, use CSS `env(safe-area-inset-*)` values for safe-area spacing. The browser applies these values across client rendering, server rendering, and static generation. CSS safe-area spacing does not require the `react-native-safe-area-context` library.
 
 With Expo Router, create **src/safe-area.css** and import it in your existing [root layout](/router/basics/navigation-layouts/#root-layout):
 
@@ -166,7 +164,7 @@ export default function HomeScreen() {
 }
 ```
 
-Add the safe-area styles to **src/safe-area.css**:
+In **src/safe-area.css**, define the spacing for the `safe-area-content` class:
 
 ```css src/safe-area.css
 .safe-area-content {
@@ -177,13 +175,15 @@ Add the safe-area styles to **src/safe-area.css**:
 }
 ```
 
+The browser provides the `safe-area-inset-top`, `safe-area-inset-right`, `safe-area-inset-bottom`, and `safe-area-inset-left` environment variables. Each value specifies the distance from that edge of the viewport to the safe area, keeping content clear of notches and rounded corners. The `env()` function reads these values. Its second argument, `0px`, is the fallback when the variable is unavailable. See the [CSS `env()` reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env) for details.
+
 The browser updates this spacing without a React state update. Keep a corresponding **src/app/index.tsx** route using `react-native-safe-area-context` for Android and iOS.
 
 Static and server exports include the stylesheet in the initial HTML.
 
 In development, [async routes](/router/web/async-routes/) can load layout CSS after streamed content and cause a layout shift. To avoid this development limitation, render the rules in a `<style>` element inside the `<head>` of your [Root HTML component](/router/web/static-rendering/#root-html). Use **src/app/+html.tsx** for this component. CSS imports in **+html.tsx** are not supported.
 
-Expo Router disables automatic safe-area measurements on web to preserve streamed content during hydration. Do not add another `SafeAreaProvider` to restore these measurements. Its updates can discard pending streamed content.
+In SDK 58 and later, Expo Router disables automatic safe-area measurements on web to preserve streamed content during hydration. Do not add another `SafeAreaProvider` to restore these measurements. Its updates can interrupt hydration and discard pending streamed content, even if you provide `initialMetrics`.
 
 See the [safe-area context reference](/versions/latest/sdk/safe-area-context/#context) for the behavior of its hooks and components. CSS values do not change the numbers returned by these hooks.
 
