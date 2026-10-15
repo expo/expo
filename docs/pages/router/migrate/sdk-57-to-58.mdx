@@ -396,7 +396,7 @@ To navigate somewhere other than the blocked destination, retain the `disablePre
 
 ### Review the iOS header appearance
 
-In SDK 58, `Stack` headers on iOS 26 and later use the system bar appearance by default. The header is transparent with Liquid Glass, and screen content goes under the header. The default value of `headerTransparent` is `{ ios: true, android: false }`. On iOS, this default applies only when Liquid Glass is available and the screen does not set `headerStyle.backgroundColor` or `headerBackground`. Earlier iOS versions keep the opaque header. Apps that turn off Liquid Glass also keep the opaque header. Android headers are unchanged.
+In SDK 58, `Stack` headers on iOS 26 and later use the system bar appearance by default. The header is transparent with Liquid Glass, and screen content goes under the header. The default value of `headerTransparent` is `{ ios: true, android: false, web: false }`. On iOS, this default applies only when Liquid Glass is available and the screen does not set `headerStyle.backgroundColor` or `headerBackground`. Earlier iOS versions keep the opaque header. Apps that turn off Liquid Glass also keep the opaque header. Android headers are unchanged.
 
 If content is hidden under the header, add `contentInsetAdjustmentBehavior="automatic"` to the root `ScrollView`, `FlatList`, or `SectionList` of the screen:
 
@@ -412,7 +412,7 @@ export default function Home() {
 }
 ```
 
-For a screen without a scroll view, add top padding with the value from `useHeaderHeight()` from `expo-router/react-navigation`. To keep an opaque header on one screen, set `headerTransparent: false` in its options.
+For a screen without a scroll view, use `SafeAreaView`. To keep an opaque header on one screen, set `headerTransparent: false` in its options.
 
 On iOS 26 and later, headers now use the system fonts instead of the theme fonts. To keep a custom font, set `fontFamily` in `headerTitleStyle`, `headerBackTitleStyle`, or `headerLargeTitleStyle`.
 

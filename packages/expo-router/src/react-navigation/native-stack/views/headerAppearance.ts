@@ -10,6 +10,10 @@ let isLegacyHeaderAppearance = false;
  * keep this appearance. Call it before the root layout renders, for example at the top level of
  * the root `_layout` file.
  *
+ * > **Note:** Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/toolbars)
+ * > recommend that apps reduce custom navigation bar backgrounds, because they can interfere
+ * > with the background effects that the system provides.
+ *
  * @deprecated In a future release, the native iOS header appearance becomes the only behavior
  * and this function will be removed.
  * @platform ios
