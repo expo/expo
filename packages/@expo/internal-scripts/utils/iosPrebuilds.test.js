@@ -44,6 +44,9 @@ function flaggedFixture() {
   return root;
 }
 
+const REBUILD_HINT =
+  'Run `et prebuild-package-for-publish` in this package to rebuild the prebuilds.';
+
 function stagedHeadersTarball(root) {
   return path.join(root, 'prebuilds/output/headers/xcframeworks/ExpoOneHeaders.tar.gz');
 }
@@ -64,7 +67,10 @@ test('raw validation rejects a missing product', () => {
   const root = fixture([{ name: 'ExpoOne' }, { name: 'ExpoTwo' }]);
   framework(root, 'ExpoOne', 'debug');
   framework(root, 'ExpoOne', 'release');
-  assert.throws(() => validateRawIosPrebuilds(root), /ExpoTwo debug XCFramework is missing/);
+  const missing = path.join(root, '.expo-prebuild/output/debug/xcframeworks/ExpoTwo.xcframework');
+  assert.throws(() => validateRawIosPrebuilds(root), {
+    message: `ExpoTwo debug XCFramework is missing: ${missing}\n${REBUILD_HINT}`,
+  });
 });
 
 test('raw validation rejects a missing SPM runtime dependency', () => {
@@ -116,18 +122,13 @@ test('raw validation rejects an incomplete or missing headers XCFramework', () =
     '.expo-prebuild/output/headers/xcframeworks/ExpoOneHeaders.xcframework'
   );
   fs.rmSync(path.join(headers, 'Info.plist'));
-  assert.throws(
-    () => validateRawIosPrebuilds(root),
-    (error) =>
-      error.message.startsWith(`ExpoOne headers XCFramework has no Info.plist: ${headers}\n`)
-  );
+  assert.throws(() => validateRawIosPrebuilds(root), {
+    message: `ExpoOne headers XCFramework has no Info.plist: ${headers}\n${REBUILD_HINT}`,
+  });
   fs.rmSync(headers, { recursive: true });
-  assert.throws(
-    () => validateRawIosPrebuilds(root),
-    (error) =>
-      error.message.startsWith(`ExpoOne headers XCFramework is missing: ${headers}\n`) &&
-      error.message.includes('et prebuild-package-for-publish')
-  );
+  assert.throws(() => validateRawIosPrebuilds(root), {
+    message: `ExpoOne headers XCFramework is missing: ${headers}\n${REBUILD_HINT}`,
+  });
 });
 
 test('stages a headers tarball beside the flavored tarballs for a flagged product', () => {
@@ -190,20 +191,15 @@ test('a customBuild product stages only its headers tarball, never its built bin
   assert.equal(validatePublishedIosPrebuilds(root), true);
 });
 
-test('a customBuild product without headersXCFramework contributes nothing to staging', () => {
-  const root = fixture([{ name: 'ExpoOne' }, { name: 'ExpoCustom', customBuild }]);
-  framework(root, 'ExpoOne', 'debug');
-  framework(root, 'ExpoOne', 'release');
-  assert.equal(stageIosPrebuilds(root), true);
-  for (const flavor of ['debug', 'release']) {
-    assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output', flavor, 'xcframeworks')), [
-      'ExpoOne.tar.gz',
-    ]);
-  }
-  assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output')).sort(), [
-    'debug',
-    'release',
-  ]);
+test('a customBuild product that publishes prebuilds requires headersXCFramework', () => {
+  const root = fixture([{ name: 'ExpoCustom', customBuild }]);
+  const message =
+    'ExpoCustom has a customBuild, and a custom-build product publishes only its headers ' +
+    'XCFramework, so it needs "headersXCFramework": true in spm.config.json. Set it, or remove ' +
+    '"publishPrebuilds" from spm.config.json.';
+  assert.throws(() => validateRawIosPrebuilds(root), { message });
+  assert.throws(() => stageIosPrebuilds(root), { message });
+  assert.throws(() => validatePublishedIosPrebuilds(root), { message });
 });
 
 test('a customBuild product skips its SPM dependencies unless another product shares them', () => {

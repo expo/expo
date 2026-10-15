@@ -26,10 +26,18 @@ function getSpmDependencyNames(products) {
 
 function getFlavors(product) {
   const headers = product.headersXCFramework === true ? ['headers'] : [];
+  if (!product.customBuild) return [...FLAVORS, ...headers];
   // CocoaPods precompiled mode, including released autolinking versions, picks up any
   // `<flavor>/xcframeworks/<Product>.tar.gz` but cannot consume a pod that vendors its own
   // xcframework, so a custom-build product publishes its headers only.
-  return product.customBuild ? headers : [...FLAVORS, ...headers];
+  if (headers.length === 0) {
+    throw new Error(
+      `${product.name} has a customBuild, and a custom-build product publishes only its headers ` +
+        'XCFramework, so it needs "headersXCFramework": true in spm.config.json. Set it, or ' +
+        'remove "publishPrebuilds" from spm.config.json.'
+    );
+  }
+  return headers;
 }
 
 function expectedPaths(packageRoot, product, flavor, root) {
@@ -43,15 +51,24 @@ function expectedPaths(packageRoot, product, flavor, root) {
   };
 }
 
-function requireDirectory(directory, description, hint) {
-  const details = hint ? `\n${hint}` : '';
+function requireDirectory(directory, description) {
   let stat;
   try {
     stat = fs.statSync(directory);
   } catch {}
-  if (!stat?.isDirectory()) throw new Error(`${description} is missing: ${directory}${details}`);
+  if (!stat?.isDirectory()) throw new Error(`${description} is missing: ${directory}`);
   if (!fs.existsSync(path.join(directory, 'Info.plist'))) {
-    throw new Error(`${description} has no Info.plist: ${directory}${details}`);
+    throw new Error(`${description} has no Info.plist: ${directory}`);
+  }
+}
+
+function requireRawXCFramework(directory, description) {
+  try {
+    requireDirectory(directory, description);
+  } catch (error) {
+    throw new Error(
+      `${error.message}\nRun \`et prebuild-package-for-publish\` in this package to rebuild the prebuilds.`
+    );
   }
 }
 
@@ -61,13 +78,7 @@ export function validateRawIosPrebuilds(packageRoot = process.cwd()) {
   for (const product of products) {
     for (const flavor of getFlavors(product)) {
       const { framework } = expectedPaths(packageRoot, product, flavor, '.expo-prebuild/output');
-      const hint =
-        flavor === 'headers'
-          ? `spm.config.json sets "headersXCFramework": true for ${product.name}, but the ` +
-            'prebuild did not produce its headers XCFramework. Run ' +
-            '`et prebuild-package-for-publish` in this package to rebuild the prebuilds.'
-          : undefined;
-      requireDirectory(framework, `${product.name} ${flavor} XCFramework`, hint);
+      requireRawXCFramework(framework, `${product.name} ${flavor} XCFramework`);
     }
   }
   for (const dependencyName of getSpmDependencyNames(products)) {
@@ -79,7 +90,7 @@ export function validateRawIosPrebuilds(packageRoot = process.cwd()) {
         'xcframeworks',
         `${dependencyName}.xcframework`
       );
-      requireDirectory(directory, `${dependencyName} ${flavor} SPM dependency XCFramework`);
+      requireRawXCFramework(directory, `${dependencyName} ${flavor} SPM dependency XCFramework`);
     }
   }
   return true;
