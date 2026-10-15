@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix universal `TextInput` placeholders ignoring `textStyle`. ([#51563](https://github.com/expo/expo/pull/51563) by [@sync](https://github.com/sync))
+
 ### 💡 Others
 
 ## 57.0.24 — 2026-10-14
