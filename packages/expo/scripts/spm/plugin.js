@@ -73,6 +73,7 @@ const {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
@@ -321,9 +322,7 @@ function linkExpoModulesJSI(records, outDir, cacheDir) {
   const { packageName, moduleRoot, productName } = record.identity;
   const headers = resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir });
   if (headers == null) {
-    const searched = artifactBaseDirs(packageName, moduleRoot).map((base) =>
-      path.join(base, 'headers', 'xcframeworks')
-    );
+    const searched = headersXCFrameworkDirs(packageName, moduleRoot);
     throw pluginError({
       what: `${productName}Headers.xcframework (or .tar.gz) was not found in ${searched.join(', ')}.`,
       why: `npm ships only the headers of ${productName}, because the framework must be compiled against the app's React Native: Swift packages compile against those headers, and the app's "Build ${productName}" phase builds the framework.`,

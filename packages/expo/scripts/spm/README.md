@@ -37,10 +37,10 @@ prebuild command builds Debug and Release by default; do not use a single-flavor
 prebuild for an app that consumes the SwiftPM plugin.
 
 Lookup runs for **every** resolved pod except ExpoModulesJSI (see below), not
-just the core frameworks. Any module
-with a `spm.config.json` product is consumed as a precompiled framework the
-moment its artifact exists — no `Package.swift` is generated for it, and none is
-needed. Path 3 is the published-package case: a module shipping
+just the core frameworks. Any module with a `spm.config.json` product is
+consumed as a precompiled framework the moment its artifact exists — no
+`Package.swift` is generated for it, and none is needed. Path 3 is the
+published-package case: a module shipping
 `prebuilds/output/<flavor>/xcframeworks` is picked up with no local build.
 
 React Native normalizes the declared pairs into immutable app-local Debug and
