@@ -15,6 +15,7 @@ import { Stack } from '../../../layouts/Stack';
 import type { NavigationProp } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
+import { enableAutomaticHorizontalSafeAreaInsets } from '../../../views/DisableAutomaticHorizontalSafeAreaInsetsContext';
 import { Redirect } from '../../Redirect';
 import { ZoomTransitionEnabler } from '../../zoom/ZoomTransitionEnabler';
 import { usePreventZoomTransitionDismissal } from '../../zoom/usePreventZoomTransitionDismissal';
@@ -631,6 +632,7 @@ describe('ZoomTransitionEnabler in preview', () => {
 });
 
 it('does not wrap the previewed screen in a SafeAreaView', async () => {
+  enableAutomaticHorizontalSafeAreaInsets();
   await renderRouter({
     index: () => (
       <View testID="index">

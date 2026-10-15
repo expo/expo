@@ -280,9 +280,23 @@ export default function Layout() {
 
 > **info** This feature is available in SDK 58 and later.
 
-On Android and iOS, Expo Router wraps each screen that does not render a navigator in a `SafeAreaView` with left and right insets. This keeps content out of the display cutout and rounded corners when the device is in landscape. Layout routes do not get the wrapper, so nested navigators do not add the insets twice.
+On Android and iOS, Expo Router can wrap each screen that does not render a navigator in a `SafeAreaView` with left and right insets. This keeps content out of the display cutout and rounded corners when the device is in landscape. Layout routes do not get the wrapper, so nested navigators do not add the insets twice.
 
-Form sheets that size to their content do not get the wrapper either, including screens of navigators nested in that sheet. Expo Router skips the wrapper when `sheetAllowedDetents: 'fitToContents'` is set in the `options` of the screen in the layout, or in the navigator `screenOptions`. If a page sets `sheetAllowedDetents: 'fitToContents'` with `Stack.Screen`, the wrapper stays. In that case, set `disableAutomaticHorizontalSafeAreaInsets` on the screen in the layout.
+To turn on the insets for all screens, call `enableAutomaticHorizontalSafeAreaInsets()` before the root layout mounts, for example at the top level of the root layout file:
+
+```tsx src/app/_layout.tsx
+import { enableAutomaticHorizontalSafeAreaInsets, Stack } from 'expo-router';
+
+enableAutomaticHorizontalSafeAreaInsets();
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+If you do not call this function, screens do not get the insets. To turn them on only for part of the app, set `disableAutomaticHorizontalSafeAreaInsets={false}` on a navigator or on a screen in the layout. The value applies to all nested navigators until one of them sets `disableAutomaticHorizontalSafeAreaInsets` again.
+
+Form sheets that size to their content do not get the wrapper, including screens of navigators nested in that sheet. Expo Router skips the wrapper when `sheetAllowedDetents: 'fitToContents'` is set in the `options` of the screen in the layout, or in the navigator `screenOptions`. If a page sets `sheetAllowedDetents: 'fitToContents'` with `Stack.Screen`, the wrapper stays. In that case, set `disableAutomaticHorizontalSafeAreaInsets` on the screen in the layout.
 
 If a screen already pads its content with `useSafeAreaInsets().left` and `useSafeAreaInsets().right`, or draws content from edge to edge (for example, a map, video, or camera), set `disableAutomaticHorizontalSafeAreaInsets` to avoid double padding or gaps at the sides.
 
@@ -296,7 +310,7 @@ export default function Layout() {
 }
 ```
 
-To turn off the insets for one screen, set `disableAutomaticHorizontalSafeAreaInsets` on its `Stack.Screen` in the layout. Set it to `false` to turn the insets on again for a screen inside a navigator that turns them off. The prop has no effect on a `Stack.Screen` rendered inside a page:
+To turn off the insets for one screen, set `disableAutomaticHorizontalSafeAreaInsets` on its `Stack.Screen` in the layout. Set it to `false` to turn the insets on for a screen inside a navigator that turns them off. The prop has no effect on a `Stack.Screen` rendered inside a page:
 
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';

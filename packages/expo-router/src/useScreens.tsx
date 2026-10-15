@@ -93,7 +93,9 @@ export type ScreenProps<
    * When set to `true`, this screen and screens of its nested navigators are not wrapped in a
    * `SafeAreaView` with left and right insets. Only supported when used inside a Layout component.
    *
-   * @default false
+   * When not set, inherits from the parent. At the root, defaults to `true` unless
+   * `enableAutomaticHorizontalSafeAreaInsets()` is called.
+   *
    * @platform android
    * @platform ios
    */

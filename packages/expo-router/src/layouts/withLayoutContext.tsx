@@ -219,7 +219,9 @@ export function withLayoutContext<
          * Turns off the `SafeAreaView` with left and right insets that wraps each screen in this
          * navigator and in all nested navigators.
          *
-         * @default false
+         * When not set, inherits from the parent. At the root, defaults to `true` unless
+         * `enableAutomaticHorizontalSafeAreaInsets()` is called.
+         *
          * @platform android
          * @platform ios
          */

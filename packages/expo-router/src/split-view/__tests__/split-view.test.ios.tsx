@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 import { Text } from 'react-native';
 
-import { IsWithinNativeNavigator } from '../../exports';
+import { enableAutomaticHorizontalSafeAreaInsets, IsWithinNativeNavigator } from '../../exports';
 import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/StackClient';
 import { renderRouter } from '../../testing-library';
@@ -125,6 +125,7 @@ it('renders a SplitView nested under a JavaScript navigator', async () => {
 });
 
 it('does not wrap screens when disableAutomaticHorizontalSafeAreaInsets is set', async () => {
+  enableAutomaticHorizontalSafeAreaInsets();
   await renderRouter({
     _layout: () => (
       <SplitView disableAutomaticHorizontalSafeAreaInsets>

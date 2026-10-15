@@ -1335,12 +1335,12 @@ export default function TabLayout() {
 
 Native tabs automatically handle safe area insets, with platform-specific behavior:
 
-- **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. You must handle the top inset manually.
+- **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. Other insets (top, left, right) must be handled manually.
 - **iOS**: The first `ScrollView` nested inside a native tabs screen has [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled. This ensures content scrolls correctly behind the tab bar.
 
-In SDK 58 and later, on both platforms, a tab screen that does not render a navigator is also wrapped in a `SafeAreaView` that applies the **left** and **right** insets.
+In SDK 58 and later, Expo Router can also apply the **left** and **right** insets on both platforms. Call `enableAutomaticHorizontalSafeAreaInsets()` in the root layout to wrap each tab screen that does not render a navigator in a `SafeAreaView` with these insets.
 
-To turn off only the left and right insets, set `disableAutomaticHorizontalSafeAreaInsets` on `NativeTabs` for all tabs, or on `NativeTabs.Trigger` for one tab. For more information, see [Horizontal safe area insets](/router/basics/navigation-layouts#horizontal-safe-area-insets).
+To turn the left and right insets off, set `disableAutomaticHorizontalSafeAreaInsets` on `NativeTabs` for all tabs, or on `NativeTabs.Trigger` for one tab. To turn them on without calling `enableAutomaticHorizontalSafeAreaInsets()`, set the prop to `false`. For more information, see [Horizontal safe area insets](/router/basics/navigation-layouts#horizontal-safe-area-insets).
 
 #### Disabling automatic content insets
 
@@ -1404,7 +1404,7 @@ export default function TabLayout() {
 
 </Tabs>
 
-When `disableAutomaticContentInsets` is set to `true`, the left and right insets are also turned off, and you must manage safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
+When `disableAutomaticContentInsets` is set to `true`, the automatic left and right insets are also turned off, and you must manage safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
 
 ```tsx src/app/index.tsx
 import { SafeAreaView } from 'react-native-screens/experimental';

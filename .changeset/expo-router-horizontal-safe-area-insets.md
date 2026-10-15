@@ -1,5 +1,5 @@
 ---
-"expo-router": patch
+"expo-router": minor
 ---
 
-[Android][iOS] Screens now get left and right safe area insets by default. Set `disableAutomaticHorizontalSafeAreaInsets` on a navigator or screen to turn this off.
+[Android][iOS] Add `enableAutomaticHorizontalSafeAreaInsets()` to wrap screens in left and right safe area insets.

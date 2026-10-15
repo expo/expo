@@ -1,14 +1,15 @@
-import { act, screen } from '@testing-library/react-native';
+import { act } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
 
-import { router } from '../exports';
+import { enableAutomaticHorizontalSafeAreaInsets, router } from '../exports';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { NativeTabs } from '../native-tabs/NativeTabs';
 import { renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 import { Navigator, Slot } from '../views/Navigator';
+import { getSafeAreaViewEdges, HORIZONTAL_EDGES } from './getSafeAreaViewEdges';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -24,20 +25,7 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const HORIZONTAL_EDGES = { top: 'off', right: 'additive', bottom: 'off', left: 'additive' };
-
-// Edges of every `SafeAreaView` from `react-native-safe-area-context` above the element.
-function getSafeAreaViewEdges(testID: string) {
-  const edges: { left?: string }[] = [];
-  let node = screen.getByTestId(testID, { includeHiddenElements: true });
-  while (node.parent) {
-    node = node.parent;
-    if (node.type === 'RNCSafeAreaView') {
-      edges.push(node.props.edges);
-    }
-  }
-  return edges;
-}
+enableAutomaticHorizontalSafeAreaInsets();
 
 it('wraps only the leaf screen in a horizontal SafeAreaView', async () => {
   await renderRouter({
@@ -234,8 +222,12 @@ it('applies the horizontal insets once when there is no root layout', async () =
     index: () => <Text testID="index" />,
   });
 
-  const edges = getSafeAreaViewEdges('index');
-  expect(edges.filter(({ left }) => left === 'additive')).toEqual([HORIZONTAL_EDGES]);
+  // The default navigator has no `SafeAreaView` on Android.
+  expect(getSafeAreaViewEdges('index')).toEqual(
+    process.env.EXPO_OS === 'android'
+      ? [HORIZONTAL_EDGES]
+      : [HORIZONTAL_EDGES, { top: 'additive', right: 'off', bottom: 'additive', left: 'off' }]
+  );
 });
 
 describe('NativeTabs', () => {

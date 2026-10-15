@@ -14,6 +14,7 @@ import { getValidInitialRouteName } from '../routeNode';
 import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { DisableAutomaticHorizontalSafeAreaInsetsProvider } from './DisableAutomaticHorizontalSafeAreaInsetsContext';
+import { useDefaultNavigatorSafeAreaEdges } from './HorizontalSafeAreaView';
 import { Screen } from './Screen';
 import type { ErrorBoundaryProps } from './Try';
 
@@ -48,7 +49,9 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
    * When set to `true`, screens of this navigator and of its nested navigators are not wrapped in
    * a `SafeAreaView` with left and right insets.
    *
-   * @default false
+   * When not set, inherits from the parent. At the root, defaults to `true` unless
+   * `enableAutomaticHorizontalSafeAreaInsets()` is called.
+   *
    * @platform android
    * @platform ios
    */
@@ -204,11 +207,12 @@ function NavigatorSlot() {
  * The default navigator for the app when no root _layout is provided.
  */
 export function DefaultNavigator() {
+  const edges = useDefaultNavigatorSafeAreaEdges();
   if (process.env.EXPO_OS === 'android') {
     return <RouterSlot />;
   }
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1 }} edges={edges}>
       <RouterSlot />
     </SafeAreaView>
   );

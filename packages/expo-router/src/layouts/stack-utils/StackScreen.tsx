@@ -69,7 +69,9 @@ export interface StackScreenProps extends PropsWithChildren {
    *
    * Only supported when used inside a Layout component.
    *
-   * @default false
+   * When not set, inherits from the parent. At the root, defaults to `true` unless
+   * `enableAutomaticHorizontalSafeAreaInsets()` is called.
+   *
    * @platform android
    * @platform ios
    */

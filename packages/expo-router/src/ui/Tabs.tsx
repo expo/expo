@@ -75,7 +75,9 @@ export type TabsProps = ViewProps & {
    * When set to `true`, screens of this navigator and of its nested navigators are not wrapped in
    * a `SafeAreaView` with left and right insets.
    *
-   * @default false
+   * When not set, inherits from the parent. At the root, defaults to `true` unless
+   * `enableAutomaticHorizontalSafeAreaInsets()` is called.
+   *
    * @platform android
    * @platform ios
    */

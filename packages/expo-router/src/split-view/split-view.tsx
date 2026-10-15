@@ -18,7 +18,9 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   /**
    * When set to `true`, screens in the split view are not wrapped in a `SafeAreaView` with left
    * and right insets.
-   * @default false
+   *
+   * When not set, inherits from the parent. At the root, defaults to `true` unless
+   * `enableAutomaticHorizontalSafeAreaInsets()` is called.
    */
   disableAutomaticHorizontalSafeAreaInsets?: boolean;
 }
