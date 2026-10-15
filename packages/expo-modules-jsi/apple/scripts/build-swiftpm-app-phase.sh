@@ -13,11 +13,11 @@ set -euo pipefail
 : "${RN_DIR:?RN_DIR must point at the react-native package of the app}"
 JSI_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
-case "$PLATFORM_NAME" in
+case "${PLATFORM_NAME:-}" in
   iphoneos) SLICE=ios-arm64 ;;
   iphonesimulator) SLICE=ios-arm64_x86_64-simulator ;;
   *)
-    echo "error: ExpoModulesJSI cannot be built for the platform '$PLATFORM_NAME'. Swift Package Manager support in Expo covers iOS and the iOS Simulator only. Build for one of those." >&2
+    echo "error: ExpoModulesJSI cannot be built for the platform '${PLATFORM_NAME:-}'. Swift Package Manager support in Expo covers iOS and the iOS Simulator only. Build for one of those." >&2
     exit 1
     ;;
 esac
@@ -32,8 +32,8 @@ JSI_ROOT="$OBJROOT/ExpoModulesJSI"
 STAGE="$JSI_ROOT/pods-stage"
 PUBLIC="$STAGE/Headers/Public"
 XCFRAMEWORKS="$SRCROOT/build/xcframeworks"
-REACT_HEADERS="$XCFRAMEWORKS/ReactNativeHeaders.xcframework/ios-arm64/Headers"
-DEPENDENCIES_HEADERS="$XCFRAMEWORKS/${RN_SPM_FLAVOR:-release}/ReactNativeDependencies.xcframework/Headers"
+REACT_HEADERS="$XCFRAMEWORKS/ReactNativeHeaders.xcframework/$SLICE/Headers"
+DEPENDENCIES_HEADERS="$XCFRAMEWORKS/ReactNativeDependenciesHeaders.xcframework/$SLICE/Headers"
 for required in "$REACT_HEADERS/hermes/hermes.h" "$DEPENDENCIES_HEADERS/folly"; do
   if [ ! -e "$required" ]; then
     echo "error: ExpoModulesJSI could not be built because $required is missing. It comes from React Native's Swift Package Manager artifacts, which are not set up for this app. Run \`npx react-native spm update\` in $SRCROOT, then build again." >&2

@@ -107,7 +107,7 @@ if [ ! -f "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh" ]; then
 fi
 
 export RN_DIR
-exec "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh"
+exec /bin/bash "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh"
 `;
 
 /** Each phase, keyed by the npm package of the module that needs it. */
