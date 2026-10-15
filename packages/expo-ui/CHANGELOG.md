@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix the universal `ListItem` ignoring `testID`. The prop was never passed to Compose, so end-to-end tools such as Maestro could not find list rows on Android. It is now applied as the `testID` modifier, like the universal `Button` and `Checkbox` do. ([#51480](https://github.com/expo/expo/pull/51480) by [@devonik](https://github.com/devonik))
+- [Android] Bump Jetpack Compose UI and Foundation to 1.12.1 and Material3 to 1.5.0-beta01. Add `preferredItemWidth` to `HorizontalCenteredHeroCarousel` and deprecate `maxItemWidth`, matching the Material3 rename. Add `TimePickerElementColors` props without the `Unselected` infix (for example `clockDialContentColor`) and deprecate the old names. ([#51426](https://github.com/expo/expo/pull/51426) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.16
 
 ### Patch Changes

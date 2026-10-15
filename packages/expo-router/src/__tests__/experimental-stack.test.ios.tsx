@@ -1,7 +1,7 @@
 import { act, screen } from '@testing-library/react-native';
 import { use, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { Text, type NativeSyntheticEvent } from 'react-native';
-import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
+import type { TabSelectedEvent, TabsHostProps, TabsScreenProps } from 'react-native-screens';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
@@ -222,7 +222,7 @@ describe('ExperimentalStack — basic navigation', () => {
     const mockedScreens: typeof import('react-native-screens') & {
       __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
       Tabs: {
-        Screen: jest.MockedFunction<typeof import('react-native-screens').Tabs.Screen>;
+        Screen: jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
       };
     } = jest.requireMock('react-native-screens');
     const homeTabKey = mockedScreens.Tabs.Screen.mock.calls.at(-1)![0].screenKey!;

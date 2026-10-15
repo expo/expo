@@ -43,6 +43,7 @@ import {
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { getValidInitialRouteName } from './routeNode';
 import type { UnknownOutputParams } from './types';
+import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
 import { useActivityThreshold } from './views/NavigationActivityContext';
@@ -331,7 +332,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     };
   }) {
     const routeInfo = useCurrentRouteInfo();
-    const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const activityThreshold = useActivityThreshold();
@@ -372,14 +372,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
-    useEffect(() => {
-      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
-        console.warn(
-          'All routes in this navigator are protected. Ensure at least one route is accessible.'
-        );
-      }
-    }, [isFocused, isGuarded, redirectHref]);
-
     const hasRouteKey = !!route?.key;
 
     if (isGuarded) {
@@ -388,7 +380,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
+          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
         </Route>
       );
     }
@@ -453,20 +445,33 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   return BaseRoute;
 }
 
+// A separate component, so reading focus does not rerender the screen on focus changes.
+function AllRoutesProtectedWarning() {
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (__DEV__ && isFocused) {
+      console.warn(
+        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      );
+    }
+  }, [isFocused]);
+  return null;
+}
+
 function AnalyticsListeners({
   navigation,
   screenId,
 }: {
-  navigation: EventConsumer<EventMapBase> & {
-    isFocused(): boolean;
-  };
+  navigation: EventConsumer<EventMapBase>;
   screenId: string;
 }) {
   const hasEmittedPagePreloadedRef = React.useRef(false);
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
-  const isFocused = navigation.isFocused();
+  // Read focus from render context. `navigation.isFocused()` can return the navigator's
+  // previous state during render, so a first push would look like a preload.
+  const isFocused = useIsFocused();
 
   const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {

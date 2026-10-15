@@ -119,6 +119,12 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    # Xcode releases can share a Swift compiler but ship different SDKs (Xcode
+    # 27.0 and 27.1 print the same swiftc --version). A binary module records the
+    # SDK it was built against and Swift won't load it with another SDK, so every
+    # importer would compile ExpoModulesJSI again from its stripped
+    # .swiftinterface. Key the cache on the Xcode build, which pins its SDKs.
+    echo "XCODE_VERSION=$(xcodebuild -version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -228,7 +234,12 @@ build_slice() {
   # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
   # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
   # .DerivedData. The .swiftinterface and the dSYM are unaffected.
+  #
+  # DEVELOPER_DIR and TOOLCHAINS are forwarded so the nested build uses the same Xcode and
+  # Swift toolchain as compute_hash and the app build, not the xcode-select Xcode or the
+  # default toolchain.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+    ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \

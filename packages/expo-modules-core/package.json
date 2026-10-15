@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "58.0.17",
+  "version": "58.0.18",
   "description": "The core of Expo Modules architecture",
   "keywords": [
     "expo",
@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "expo-modules-jsi": "workspace:~",
-    "expo-modules-macros": "0.19.1",
+    "expo-modules-macros": "0.20.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

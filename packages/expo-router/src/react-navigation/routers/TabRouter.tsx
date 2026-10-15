@@ -3,17 +3,22 @@ import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import {
+  extendRouter,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
-import type {
-  CommonNavigationAction,
-  DefaultRouterOptions,
-  NavigationState,
-  ParamListBase,
-  Route,
-  Router,
-  RouterBrowserHistoryAction,
+import {
+  type CommonNavigationAction,
+  type DefaultRouterOptions,
+  type NavigationState,
+  type ParamListBase,
+  type Route,
+  RouterActionHandling,
+  type RouterBrowserHistoryAction,
 } from './types';
+import { isActionHandled } from './utils';
 
 export type TabActionType =
   | {
@@ -356,7 +361,10 @@ function tabRouterExtension({
 
   // TODO: Simplify the action handling in this router.
   const router: Omit<
-    Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>,
+    RouterExtensionMembers<
+      TabNavigationState<ParamListBase>,
+      TabActionType | CommonNavigationAction
+    >,
     'shouldActionChangeFocus' | 'getStateForDeclaredRoutes'
   > = {
     normalizeState: clearFocusedPreloadedRoute,
@@ -382,7 +390,7 @@ function tabRouterExtension({
       const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Unhandled;
       }
 
       switch (action.type) {
@@ -483,7 +491,7 @@ function tabRouterExtension({
         case 'JUMP_TO':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
@@ -554,7 +562,7 @@ function tabRouterExtension({
         case 'REPLACE_PARAMS': {
           const actionResult = baseRouter.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             const index = nextState.index;
 
@@ -589,12 +597,12 @@ function tabRouterExtension({
 
         case 'GO_BACK': {
           if (backBehavior === 'none') {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const focusedRoute = state.routes[state.index];
           if (!focusedRoute) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
           let backTargetName: string | undefined;
 
@@ -628,7 +636,7 @@ function tabRouterExtension({
           }
 
           if (state.history.length === 1) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const previousHistoryItem = state.history[state.history.length - 2];
@@ -636,7 +644,7 @@ function tabRouterExtension({
           const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
           if (index === -1) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           let routes = state.routes;
@@ -665,7 +673,7 @@ function tabRouterExtension({
 
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
@@ -758,7 +766,7 @@ function tabRouterExtension({
         default: {
           const result = baseRouter.getStateForAction(state, action, options);
 
-          if (result === null) {
+          if (!isActionHandled(result)) {
             return result;
           }
 

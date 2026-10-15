@@ -101,6 +101,8 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
+  isActionHandled,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from './react-navigation/routers';
@@ -144,6 +146,7 @@ export type {
   RouterPageFocusedMark,
   RouterPageBlurredMark,
   RouterPageRemovedMark,
+  RouterActionEnqueuedMark,
   RouterActionDispatchedMark,
   RouterPerformanceMark,
   RouterPerformanceMarkByName,

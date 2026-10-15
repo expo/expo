@@ -1,6 +1,11 @@
 import { NativeLocationUpdatesHandle } from '../native';
 import type { NativeLocationUpdatesHandleClass } from '../native';
-import type { LocationProfile, LocationTaskOptions, Position } from '../types';
+import type {
+  BackgroundTaskStatus,
+  LocationProfile,
+  LocationTaskOptions,
+  Position,
+} from '../types';
 
 const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
 
@@ -10,7 +15,9 @@ const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
  * moving to the background and, with the background permission, the app being terminated.
  *
  * On Android, positions keep arriving after the app process ended. Requires the background
- * permission.
+ * permission. While the app is in the background and no location foreground service is running,
+ * Android throttles the delivery. The handle keeps the provider selected during construction; to
+ * use a different provider, construct a new handle.
  *
  * On iOS, positions come from `CLLocationUpdate.liveUpdates`. Requires the `location` background
  * mode and the foreground permission.
@@ -41,9 +48,12 @@ export class LocationUpdatesHandle {
 
   /**
    * Registers the delivery with the system and starts sending positions to the task.
-   * @throws When location services are off or the required permission is missing: the background
-   * permission on Android, the foreground permission on iOS, where the `location` background mode
-   * is also required.
+   *
+   * On Android the promise resolves even when the provider refuses the request for updates.
+   *
+   * @throws On Android, when the foreground or background permission is not granted, or when
+   * `RECEIVE_BOOT_COMPLETED` is missing from the manifest. On iOS, when location services are off
+   * or the foreground permission is missing, where the `location` background mode is also required.
    */
   start(): Promise<void> {
     return this.nativeHandle.start();
@@ -62,6 +72,16 @@ export class LocationUpdatesHandle {
    */
   hasStarted(): Promise<boolean> {
     return this.nativeHandle.hasStarted();
+  }
+
+  /**
+   * Reads the state of the task. The state lives in the app process, so it resets whenever the
+   * process restarts, even while the task stays registered with the system.
+   *
+   * @platform android
+   */
+  status(): BackgroundTaskStatus {
+    return this.nativeHandle.status();
   }
 }
 

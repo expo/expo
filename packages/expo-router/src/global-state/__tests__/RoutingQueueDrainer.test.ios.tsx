@@ -9,6 +9,11 @@ function actionIntent(type: string, inTransition?: boolean): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } }, inTransition };
 }
 
+// The queue tags each intent with the id reported by the `expo-router:action-enqueued` mark.
+function queued(intent: RoutingIntent) {
+  return { ...intent, actionId: expect.any(Number) };
+}
+
 function navigate(event: string, inTransition?: boolean): RoutingIntent {
   return {
     type: 'NAVIGATE_TO_HREF',
@@ -65,7 +70,7 @@ it('isolates queue notifications from its parent', async () => {
   await act(() => enqueue(actionIntent('TEST')));
 
   expect(parentRender).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
+  expect(processIntent).toHaveBeenCalledWith(queued(actionIntent('TEST')), false);
 });
 
 it('processes a queued batch in FIFO order', async () => {

@@ -13,6 +13,10 @@ import type {
 /**
  * Controls a running position watcher. Use `watchPosition()` to create one.
  *
+ * On Android 8 and later, the watcher stops emitting fixes when the app is backgrounded and
+ * resumes when it enters the foreground. A background session keeps it running in the background.
+ * See [Start a background session](#start-a-background-session).
+ *
  * See [Show live position on a screen](#show-live-position-on-a-screen).
  */
 export class PositionWatchHandle {
@@ -40,6 +44,9 @@ export class PositionWatchHandle {
    *
    * @return `false` when the provider rejects the request right away. Later failures, including
    *   every failure on iOS and with Google Play services, arrive through `onError`.
+   *   `true` means that no failure occurred, not that the watcher is subscribed. On Android, it
+   *   also returns `true` when the watcher makes no request, for example while the app is in the
+   *   background.
    * @throws After `dispose()`, like every other call on a disposed handle.
    */
   resume(): boolean {
@@ -47,7 +54,9 @@ export class PositionWatchHandle {
   }
 
   /**
-   * Stages a new profile for the watcher. It has no effect until `restart()`.
+   * Stages a new profile for the watcher. It has no effect until `restart()`. On Android it
+   * overwrites an interval staged by an earlier `withInterval()`; call `withInterval()` afterwards
+   * to set both.
    *
    * @return The same handle, for chaining.
    */
@@ -77,7 +86,9 @@ export class PositionWatchHandle {
    * It does not resume a paused watcher.
    *
    * @return `false` when the provider rejects the request right away. Later failures arrive through
-   *   `onError`.
+   *   `onError`. `true` means that no failure occurred, not that the watcher is subscribed. On
+   *   Android, it also returns `true` when the watcher makes no request, for example while the app
+   *   is in the background.
    */
   restart(): boolean {
     return this.nativeHandle.restart();

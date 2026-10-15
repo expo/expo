@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
-import { vol } from 'memfs';
+import { fs, vol } from 'memfs';
 
 import type { ExportAssetMap } from '../../../../export/saveAssets';
 import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
@@ -10,6 +10,7 @@ import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
 import { instantiateMetroAsync } from '../instantiateMetro';
+import { HAS_LOGGED_SYMBOL, IS_METRO_BUNDLE_ERROR_SYMBOL } from '../metroErrorInterface';
 import { warnInvalidWebOutput } from '../router';
 import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
@@ -109,6 +110,105 @@ function createDevServerForStaticPageTests() {
   devServer['getDevServerUrlOrAssert'] = jest.fn(() => 'http://localhost:8081');
   return devServer;
 }
+
+describe('Metro error reporting', () => {
+  it.each([true, false])(
+    'reports only the final outcome after validating serializer output (valid: %s)',
+    async (valid) => {
+      const devServer = createDevServerForStaticPageTests();
+      const update = jest.fn();
+      const revision = {
+        id: 'revision',
+        date: new Date(),
+        prepend: [],
+        graph: { dependencies: new Map() },
+      };
+      devServer['metro'] = {
+        _config: {
+          transformer: { asyncRequireModulePath: 'asyncRequire' },
+          serializer: { getModulesRunBeforeMainModule: () => [] },
+          server: {},
+        },
+        _reporter: { update },
+        _shouldAddModuleToIgnoreList: () => false,
+        _resolveRelativePath: async () => '/app/asyncRequire.js',
+        getNewBuildNumber: () => 1,
+        getBundler: () => ({
+          updateGraph: async () => ({ revision, delta: { reset: true, added: new Map() } }),
+        }),
+      } as any;
+      devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
+      devServer['getMetroSerializer'] = jest
+        .fn()
+        .mockReturnValue(async () =>
+          valid ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] } : {}
+        );
+      const result = devServer['_bundleDirectAsync']('/app/index.js', {
+        transformOptions: {
+          dev: true,
+          minify: false,
+          platform: 'web',
+          type: 'module',
+          unstable_transformProfile: 'default',
+        },
+        resolverOptions: { customResolverOptions: {}, dev: true },
+        graphOptions: { lazy: false, shallow: false },
+        serializerOptions: { output: 'static' } as any,
+      });
+      if (valid) {
+        await expect(result).resolves.toMatchObject({ bundle: 'code' });
+        expect(update.mock.calls.map(([event]) => event.type)).toEqual([
+          'bundle_build_started',
+          'bundle_build_done',
+        ]);
+      } else {
+        await expect(result).rejects.toMatchObject({
+          message: expect.stringContaining('Serializer did not return expected format'),
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        });
+        expect(update.mock.calls.map(([event]) => event.type)).toEqual([
+          'bundle_build_started',
+          'bundle_build_failed',
+          'bundling_error',
+        ]);
+      }
+    }
+  );
+
+  it.each(['bundleApiRoute', 'bundleLoader'] as const)(
+    '%s preserves reporting flags when wrapping an error',
+    async (method) => {
+      const devServer = createDevServerForStaticPageTests();
+      const error = Object.assign(new Error('transform failed'), {
+        [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        [HAS_LOGGED_SYMBOL]: true,
+      });
+      devServer['ssrLoadModuleContents'] = jest.fn().mockRejectedValue(error);
+      await expect(devServer[method]('/app/index.ts', { platform: 'web' })).rejects.toMatchObject({
+        [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        [HAS_LOGGED_SYMBOL]: true,
+      });
+    }
+  );
+
+  it('preserves reporting flags when loader execution wraps a bundle failure', async () => {
+    const devServer = createDevServerForStaticPageTests();
+    const error = Object.assign(new Error('transform failed'), {
+      [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+      [HAS_LOGGED_SYMBOL]: true,
+    });
+    devServer['ssrLoadModule'] = jest.fn().mockRejectedValue(error);
+    await expect(
+      devServer.executeServerDataLoaderAsync(new URL('http://localhost/'), {
+        file: 'index.ts',
+        params: {},
+      } as any)
+    ).rejects.toMatchObject({
+      [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+      [HAS_LOGGED_SYMBOL]: true,
+    });
+  });
+});
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
   const devServer = new MetroBundlerDevServer(
@@ -292,6 +392,53 @@ describe('watchEnvironmentVariables', () => {
     expect(getEnvFiles).toHaveBeenCalledWith('/', 'production');
     jest.mocked(observeFileChanges).mock.calls[0]![2]();
     expect(reloadEnvFiles).toHaveBeenCalledWith('/', 'production');
+  });
+});
+
+describe('watchConfig', () => {
+  let watchFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    watchFile = jest.spyOn(fs, 'watchFile').mockImplementation(() => ({ unref: jest.fn() }) as any);
+  });
+
+  afterEach(() => {
+    watchFile.mockRestore();
+  });
+
+  // Every file that `@expo/metro-config/src/config/resolveMetroUserConfig.ts` can load a Metro config from.
+  it.each([
+    'metro.config.js',
+    'metro.config.cjs',
+    'metro.config.mjs',
+    'metro.config.json',
+    'metro.config.ts',
+    'metro.config.cts',
+    'metro.config.mts',
+    '.config/metro.js',
+    '.config/metro.ts',
+  ])('watches %s for changes', (configFile) => {
+    vol.fromJSON({ [`/${configFile}`]: '' }, '/');
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+
+    devServer['watchConfig']();
+
+    expect(watchFile).toHaveBeenCalledWith(`/${configFile}`, expect.any(Function));
+  });
+
+  it('does not watch rn-cli.config.js, which `@expo/metro-config` never loads', () => {
+    vol.fromJSON({ '/rn-cli.config.js': '' }, '/');
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+
+    devServer['watchConfig']();
+
+    expect(watchFile).not.toHaveBeenCalled();
   });
 });
 

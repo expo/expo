@@ -40,7 +40,10 @@ export type RenderedSurface = {
 
 export type RenderedDeclaration = {
   kind: 'enum' | 'record' | 'union' | 'shared object' | 'module';
-  /** The TypeScript name: the JS name for modules and shared objects, the native name otherwise. */
+  /**
+   * The TypeScript name: the JS name for modules and shared objects, the native name without the
+   * types it is nested in otherwise.
+   */
   name: string;
   /** The name of the declaration in the native source. */
   nativeName: string;
@@ -168,22 +171,23 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
       declaredNames.add(name);
       return true;
     });
-  const enums = declarable(surface.enums, (enumeration) => enumeration.name);
-  const records = declarable(surface.records, (record) => record.name);
-  const unions = declarable(surface.unions, (union) => union.name);
+  const enums = declarable(surface.enums, (enumeration) => typeName(enumeration.name));
+  const records = declarable(surface.records, (record) => typeName(record.name));
+  const unions = declarable(surface.unions, (union) => typeName(union.name));
   const sharedObjects = declarable(surface.sharedObjects, (sharedObject) => sharedObject.jsName);
   const modules = declarable(surface.modules, (module) => module.jsName);
 
-  // Swift type name -> the TS name it is declared under in this file.
+  // Qualified Swift type name -> the TS name it is declared under in this file. The scanner reports
+  // a resolved ref under the qualified name of its declaration.
   const refs = new Map<string, string>();
   for (const enumeration of enums) {
-    refs.set(enumeration.name, enumeration.name);
+    refs.set(enumeration.name, typeName(enumeration.name));
   }
   for (const record of records) {
-    refs.set(record.name, record.name);
+    refs.set(record.name, typeName(record.name));
   }
   for (const union of unions) {
-    refs.set(union.name, union.name);
+    refs.set(union.name, typeName(union.name));
   }
   for (const sharedObject of sharedObjects) {
     refs.set(sharedObject.name, sharedObject.jsName);
@@ -253,19 +257,19 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
   const rendered: RenderedDeclaration[] = [
     ...enums.map((e) => ({
       kind: 'enum' as const,
-      name: e.name,
+      name: typeName(e.name),
       nativeName: e.name,
       file: e.file,
     })),
     ...records.map((r) => ({
       kind: 'record' as const,
-      name: r.name,
+      name: typeName(r.name),
       nativeName: r.name,
       file: r.file,
     })),
     ...unions.map((u) => ({
       kind: 'union' as const,
-      name: u.name,
+      name: typeName(u.name),
       nativeName: u.name,
       file: u.file,
     })),
@@ -299,8 +303,9 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
  * more than the predecessor for each next one.
  */
 function renderEnum(enumeration: ExportedEnum, makeContext: ContextFactory): string {
-  const { name, file, rawType, cases } = enumeration;
-  const ctx = makeContext(file, name);
+  const { file, rawType, cases } = enumeration;
+  const name = typeName(enumeration.name);
+  const ctx = makeContext(file, enumeration.name);
   if (!rawType) {
     ctx.warn(
       'unknown',
@@ -400,15 +405,16 @@ function stringLiteral(value: string): string {
  * member types. Member names are Swift-side only and do not appear.
  */
 function renderUnion(union: ExportedUnion, makeContext: ContextFactory): string {
+  const name = typeName(union.name);
   const ctx = makeContext(union.file, union.name);
   if (union.members.length === 0) {
     ctx.warn('loosened', 'the union has no members, so it was rendered as never');
-    return `export type ${union.name} = never;\n`;
+    return `export type ${name} = never;\n`;
   }
   const members = union.members.map((member) =>
     renderType(member.type, makeContext(union.file, `${union.name}.${member.name}`))
   );
-  return `export type ${union.name} = ${members.join(' | ')};\n`;
+  return `export type ${name} = ${members.join(' | ')};\n`;
 }
 
 function renderRecord(record: ExportedRecord, makeContext: ContextFactory): string {
@@ -423,7 +429,7 @@ function renderRecord(record: ExportedRecord, makeContext: ContextFactory): stri
     const type = renderType(property.type, ctx);
     members.push(`${memberName(property.name)}${property.required ? '' : '?'}: ${type};`);
   }
-  return block(`export type ${record.name} = {`, members, '};');
+  return block(`export type ${typeName(record.name)} = {`, members, '};');
 }
 
 /** The events type (when it got its own declaration) and the class, in that order. */
@@ -434,9 +440,9 @@ function renderSharedObject(
 ): string[] {
   const members: string[] = [];
   const names = new MemberNames();
-  if (sharedObject.constructorParameters) {
+  if (sharedObject.initializer) {
     const parameters = renderParameters(
-      sharedObject.constructorParameters,
+      sharedObject.initializer.parameters,
       sharedObject.file,
       `${sharedObject.name}.init`,
       makeContext
@@ -619,6 +625,14 @@ function renderParameters(
     .join(', ');
 }
 
+/**
+ * The TypeScript name of an enum, record, or union: its Swift name without the types it is nested
+ * in (`Encoding` for `Options.Encoding`), the way JS sees a nested shared object by default.
+ */
+function typeName(qualifiedName: string): string {
+  return qualifiedName.slice(qualifiedName.lastIndexOf('.') + 1);
+}
+
 /** The namespace-qualified key a member occupies in its body. */
 function memberKey(jsName: string, isStatic: boolean): string {
   return isStatic ? `static ${jsName}` : jsName;
@@ -679,7 +693,10 @@ function withoutBackticks(surface: ExportedSurface): ExportedSurface {
       ...so,
       name: stripBackticks(so.name),
       jsName: stripBackticks(so.jsName),
-      constructorParameters: so.constructorParameters?.map(parameter),
+      initializer: so.initializer && {
+        ...so.initializer,
+        parameters: so.initializer.parameters.map(parameter),
+      },
       functions: so.functions.map(fn),
       properties: so.properties.map(property),
       events: so.events.map(event),

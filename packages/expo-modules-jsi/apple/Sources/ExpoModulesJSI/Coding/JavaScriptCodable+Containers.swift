@@ -22,7 +22,6 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
     -> [Element]
   {
     // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
     return try value.withUnownedValue(in: runtime) { unownedValue in
       return try decode(unownedValue, in: runtime)
     }
@@ -121,7 +120,6 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
     -> [String: Value]
   {
     // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
     return try value.withUnownedValue(in: runtime) { unownedValue in
       return try decode(unownedValue, in: runtime)
     }

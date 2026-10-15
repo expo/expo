@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Adjust router integration to use `unstable_PerformanceObserver` instead of `unstable_navigationEvents` ([#51068](https://github.com/expo/expo/pull/51068) by [@Ubax](https://github.com/Ubax))
+- Measure Expo Router navigation TTR and TTI from when the navigation action is queued. ([#51485](https://github.com/expo/expo/pull/51485) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#51538](https://github.com/expo/expo/pull/51538))
+  - expo-app-metrics@58.0.12
+
 ## 58.0.13
 
 ### Patch Changes

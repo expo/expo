@@ -1,3 +1,5 @@
+import { Platform, UnavailabilityError } from 'expo';
+import type { PermissionResponse } from 'expo';
 import { createPermissionHook } from 'expo-modules-core';
 
 import { NativeLocationModuleNext } from '../native';
@@ -34,7 +36,8 @@ export async function requestForegroundPermissions(
  * Checks the background location permission without asking the user.
  *
  * @return A promise that resolves to the current permission. `scope` is `always` when it is
- *   granted.
+ *   granted. `granted` is true only when the foreground permission is granted as well, while
+ *   `status` reflects the background permission alone.
  */
 export async function getBackgroundPermissions(): Promise<LocationPermissionResponse> {
   return NativeLocationModuleNext.getBackgroundPermissions();
@@ -42,8 +45,9 @@ export async function getBackgroundPermissions(): Promise<LocationPermissionResp
 
 /**
  * Asks the user for permission to read the location while the app is in the background.
- * On Android, it requires the foreground permission first. On iOS, answering
- * **Keep Only While Using** resolves with `status` `denied` and `scope` `whenInUse`.
+ * On Android, it throws when `ACCESS_BACKGROUND_LOCATION` is missing from the manifest or the
+ * foreground permission is not granted. On iOS, answering **Keep Only While Using** resolves with
+ * `status` `denied` and `scope` `whenInUse`.
  *
  * See [Request the background permission](#request-the-background-permission).
  *
@@ -54,6 +58,38 @@ export async function requestBackgroundPermissions(
   options?: RequestPermissionsOptions
 ): Promise<LocationPermissionResponse> {
   return NativeLocationModuleNext.requestBackgroundPermissions(options);
+}
+
+/**
+ * Checks the user's permission for posting notifications.
+ * See [Start a background session](#start-a-background-session).
+ *
+ * @return A promise that fulfills with an object of type `PermissionResponse`.
+ * @platform android
+ */
+export async function getNotificationPermissions(): Promise<PermissionResponse> {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('expo-location', 'getNotificationPermissions');
+  }
+
+  return NativeLocationModuleNext.getNotificationPermissions();
+}
+
+/**
+ * Asks the user to grant the permission for posting notifications. On Android 12 and lower, no
+ * dialog appears, and the result reports whether notifications are on for the app.
+ *
+ * See [Start a background session](#start-a-background-session).
+ *
+ * @return A promise that fulfills with an object of type `PermissionResponse`.
+ * @platform android
+ */
+export async function requestNotificationPermissions(): Promise<PermissionResponse> {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('expo-location', 'requestNotificationPermissions');
+  }
+
+  return NativeLocationModuleNext.requestNotificationPermissions();
 }
 
 /**
@@ -94,4 +130,13 @@ export const useForegroundLocationPermissions = createPermissionHook({
 export const useBackgroundLocationPermissions = createPermissionHook({
   getMethod: getBackgroundPermissions,
   requestMethod: requestBackgroundPermissions,
+});
+
+/**
+ * Checks or requests the permission for posting notifications.
+ * @platform android
+ */
+export const useNotificationPermissions = createPermissionHook({
+  getMethod: getNotificationPermissions,
+  requestMethod: requestNotificationPermissions,
 });

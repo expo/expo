@@ -1,5 +1,18 @@
 # expo-template-tabs
 
+## 58.0.19
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Update `react-native-reanimated` to 4.7.1, `react-native-safe-area-context` to ~5.10.1, and `react-native-gesture-handler` to ~3.3.0 to match `bundledNativeModules.json`. ([#51488](https://github.com/expo/expo/pull/51488) by [@Kudo](https://github.com/Kudo))
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51485](https://github.com/expo/expo/pull/51485), [#51446](https://github.com/expo/expo/pull/51446), [#51508](https://github.com/expo/expo/pull/51508), [#51068](https://github.com/expo/expo/pull/51068), [#51464](https://github.com/expo/expo/pull/51464))
+  - expo@58.0.10
+  - expo-router@58.0.19
+  - expo-constants@58.0.12
+  - expo-linking@58.0.13
+  - expo-splash-screen@58.0.9
+
 ## 58.0.18
 
 ### Patch Changes

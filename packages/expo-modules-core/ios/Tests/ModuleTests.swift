@@ -141,7 +141,7 @@ struct ModuleTests {
 
     @Test
     func `does not crash when emitting from a module not associated with a JS object`() throws {
-      // A module that was never registered has no holder in the registry, so `withEventTarget`
+      // A module that was never registered has no holder, so `withEventTarget`
       // resolves to nil and the defensive branches in the public `emit` overloads should log and
       // return cleanly rather than crash.
       let detached = TestModule(appContext: appContext)

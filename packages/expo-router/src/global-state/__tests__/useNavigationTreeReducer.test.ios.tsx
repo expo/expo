@@ -361,10 +361,12 @@ it('reduces consecutive queued intents against accumulated state', async () => {
   await act(() => {
     result.result.current.processIntent({
       type: 'ACTION',
+      actionId: 0,
       payload: { action: { type: 'NEXT' } },
     });
     result.result.current.processIntent({
       type: 'ACTION',
+      actionId: 0,
       payload: { action: { type: 'NEXT' } },
     });
   });
@@ -388,7 +390,11 @@ it('uses the registry from the render that reduces an operation', async () => {
     routesWithRemovalPrevented: new Set(),
   });
   await act(() =>
-    processIntent({ type: 'ACTION', payload: { action: { type: 'USE_CURRENT_REGISTRY' } } })
+    processIntent({
+      type: 'ACTION',
+      actionId: 0,
+      payload: { action: { type: 'USE_CURRENT_REGISTRY' } },
+    })
   );
 
   expect(result.result.current.processIntent).toBe(processIntent);
@@ -409,7 +415,9 @@ it('uses removal prevention from the render that reduces an operation', async ()
     registry: new Map([['root', entry(reduce)]]),
     routesWithRemovalPrevented: new Set(['third']),
   });
-  await act(() => processIntent({ type: 'ACTION', payload: { action: { type: 'REMOVE' } } }));
+  await act(() =>
+    processIntent({ type: 'ACTION', actionId: 0, payload: { action: { type: 'REMOVE' } } })
+  );
 
   expect(result.result.current.state).toBe(initialState);
   expect(result.result.current.report?.events).toEqual([
@@ -444,10 +452,12 @@ it('computes a queued action from accumulated state', async () => {
   await act(() => {
     result.result.current.processIntent({
       type: 'ACTION',
+      actionId: 0,
       payload: { action: { type: 'FOCUS_SECOND' } },
     });
     result.result.current.processIntent({
       type: 'COMPUTED_ACTION',
+      actionId: 0,
       payload: {
         originKey: 'root',
         compute: (state) => ({
@@ -471,6 +481,7 @@ it('warns and keeps the state when computing a queued action throws', async () =
   await act(() =>
     result.result.current.processIntent({
       type: 'COMPUTED_ACTION',
+      actionId: 0,
       payload: {
         compute() {
           throw new Error('boom');
@@ -646,6 +657,7 @@ describe('NAVIGATE_TO_HREF', () => {
     await act(() =>
       result.result.current.processIntent({
         type: 'NAVIGATE_TO_HREF',
+        actionId: 0,
         payload: { href: '/second', options: {}, ...payload },
       })
     );

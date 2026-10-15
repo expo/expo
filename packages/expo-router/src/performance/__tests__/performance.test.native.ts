@@ -41,7 +41,7 @@ it('delivers marks to observers synchronously with startTime and detail', () => 
   });
   observer.observe({ type: 'mark' });
 
-  api.mark('expo-router:action-dispatched', { actionType: 'NAVIGATE' });
+  api.mark('expo-router:action-dispatched', { actionType: 'NAVIGATE', actionId: 1 });
 
   expect(actionTypes).toEqual(['NAVIGATE']);
   expect(api.unstable_performance.getEntriesByType('mark').map((entry) => entry.toJSON())).toEqual([
@@ -50,7 +50,7 @@ it('delivers marks to observers synchronously with startTime and detail', () => 
       name: 'expo-router:action-dispatched',
       startTime: 42,
       duration: 0,
-      detail: { actionType: 'NAVIGATE' },
+      detail: { actionType: 'NAVIGATE', actionId: 1 },
     },
   ]);
 });
@@ -105,7 +105,7 @@ it('stops delivery after disconnect()', () => {
 it('drops the oldest entries above the buffer cap', () => {
   api.unstable_enablePerformanceIntegration();
   for (let i = 0; i < 251; i++) {
-    api.mark('expo-router:action-dispatched', { actionType: `ACTION_${i}` });
+    api.mark('expo-router:action-dispatched', { actionType: `ACTION_${i}`, actionId: i });
   }
 
   const entries = api.unstable_performance.getEntriesByName('expo-router:action-dispatched');

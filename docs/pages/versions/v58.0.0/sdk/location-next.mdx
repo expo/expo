@@ -26,7 +26,7 @@ import { CODE } from '~/ui/components/Text';
 
 <Collapsible summary="Request the precise location">
 
-By default, a permission request asks for the precise location. On Android, this requests `ACCESS_FINE_LOCATION`. On iOS, when the user has turned **Precise Location** off for the app, the request also shows the system prompt for temporary full accuracy.
+By default, a permission request asks for the precise location. On Android, this requests both `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION`; when the user has already granted the approximate location, the dialog asks to change it to the precise one. On iOS, when the user has turned **Precise Location** off for the app, the request also shows the system prompt for temporary full accuracy.
 
 ```tsx
 import { Location, LocationAccuracy } from 'expo-location/next';
@@ -103,6 +103,8 @@ async function requestApproximateLocation() {
 
 `getPosition` resolves with a single fix. It returns a cached fix when one is younger than `maxCachedAge`. Otherwise, it waits up to `timeout` seconds for a new one and falls back to the last known location when none arrives. Both values are in seconds. Check `timestamp` when freshness matters.
 
+When `timeout` is set to `0`, the call resolves immediately with the last known position, without asking for a new fix.
+
 ```tsx
 import { Location, LocationProfile } from 'expo-location/next';
 
@@ -150,7 +152,7 @@ async function ensureForegroundPermission() {
 
 <Collapsible summary="Request the background permission">
 
-On Android, the background permission requires the foreground permission first. Receiving positions in the background also needs the background permission declared on Android and the background mode on iOS. Enable both in the config plugin:
+On Android, the background permission requires the foreground permission first. The request throws when the foreground permission is not granted. Receiving positions in the background also needs the background permission declared on Android and the background mode on iOS. Enable both in the config plugin:
 
 ```json app.json
 {
@@ -169,6 +171,8 @@ On Android, the background permission requires the foreground permission first. 
 ```
 
 On Android 11 and later, the system opens the app's settings page instead of a dialog. The request resolves when the user comes back.
+
+`isAndroidBackgroundLocationEnabled` adds five permissions: `ACCESS_BACKGROUND_LOCATION`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION`, and `POST_NOTIFICATIONS`. The last three are for the location foreground service; set `isAndroidForegroundServiceEnabled` to `false` to leave them out.
 
 On iOS, the request shows the **Change to Always Allow** dialog. Answering **Keep Only While Using** resolves with `status: "denied"` and `scope: "whenInUse"`, because the foreground permission stays granted.
 
@@ -189,7 +193,7 @@ async function requestBackgroundPermission() {
 
 <Collapsible summary="Show live position on a screen">
 
-`watchPosition` returns a handle that controls the native watcher. Pause it when the screen loses focus, resume it when the screen is back, and dispose it when the screen unmounts. A screen that loses focus stays mounted behind another tab, a pushed screen, or a modal. On Android, the watcher also pauses on its own while the app is in the background.
+`watchPosition` returns a handle that controls the native watcher. Pause it when the screen loses focus, resume it when the screen is back, and dispose it when the screen unmounts. A screen that loses focus stays mounted behind another tab, a pushed screen, or a modal. On Android, the watcher also pauses on its own while the app is in the background, unless a location foreground service is running.
 
 ```tsx
 import { Location, LocationProfile, PositionWatchHandle } from 'expo-location/next';
@@ -226,7 +230,7 @@ export default function LiveMapScreen() {
 
 <Collapsible summary="Handle location services turned off">
 
-Location services are a device-wide switch, separate from the app's permission. With services off, no app receives a position. On Android, `enableLocationServices` asks the user to turn them on: Google Play services shows an in-app prompt, and the Android provider opens the system settings. On iOS, only the user can turn them on in Settings.
+Location services are a device-wide switch, separate from the app's permission. With services off, no app receives a position. On Android, `enableLocationServices` asks the user to turn them on: Google Play services shows an in-app prompt, and the Android provider opens the system settings. Both require the app to be in the foreground with a current Activity. On iOS, only the user can turn them on in Settings.
 
 ```tsx
 import { Location } from 'expo-location/next';
@@ -251,7 +255,7 @@ async function ensureLocationServices() {
 
 <Collapsible summary="Receive positions in the background">
 
-To receive positions while the app is in the background, define a task with `defineLocationTask` at the top level of a module. Then start the delivery with `LocationUpdatesHandle`. This requires `expo-task-manager`, the background permission, `ACCESS_BACKGROUND_LOCATION` declared on Android, and the `location` background mode on iOS. Enable the last two in the config plugin:
+To receive positions while the app is in the background, define a task with `defineLocationTask` at the top level of a module. Then start the delivery with `LocationUpdatesHandle`. This requires `expo-task-manager`, the background permission, `ACCESS_BACKGROUND_LOCATION` and `RECEIVE_BOOT_COMPLETED` declared on Android, and the `location` background mode on iOS. Enable the last two in the config plugin:
 
 ```json app.json
 {
@@ -268,6 +272,8 @@ To receive positions while the app is in the background, define a task with `def
   }
 }
 ```
+
+Positions keep arriving after the app process has ended; the system starts the app in the background to deliver them. While the app is in the background, Android delivers positions only a few times each hour.
 
 ```ts locationTask.ts
 import { defineLocationTask } from 'expo-location/next';
@@ -338,7 +344,47 @@ export default function TrackingScreen() {
 }
 ```
 
+On Android, a profile means something different for a background task than for a watcher. `LOW_POWER` waits much longer between positions, batches them, and skips positions close to the last one, so a device that stays put may produce none. `AUTOMOTIVE_NAVIGATION` delivers as often as the system allows, with no batching and no distance filter.
+
 Both sides default to the same task name, so you can omit it. To run several tasks, give each task its own name and pass that name to both `defineLocationTask` and the `LocationUpdatesHandle` constructor.
+
+</Collapsible>
+
+<Collapsible summary="Start a background session">
+
+On Android 8 and later, while the app is backgrounded, the watchers stop and location tasks trigger rarely. If you want a steady stream of position fixes in the background, start a background session with `ensureBackgroundSessionStarted`.
+The session runs as a location foreground service with a notification. You can start it only while the app is in the foreground. It needs the `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_LOCATION` permissions, so set `isAndroidForegroundServiceEnabled` to `true` in the config plugin.
+
+The call to `ensureBackgroundSessionStarted` persists the configuration passed to it. With the configuration present, the module restarts the background session whenever the app enters the foreground, even after the app is closed and reopened.
+
+```tsx
+import { Location } from 'expo-location/next';
+import { Platform } from 'react-native';
+
+async function startTracking() {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+  const { granted } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return;
+  }
+  await Location.requestNotificationPermissions();
+  await Location.ensureBackgroundSessionStarted({
+    notificationTitle: 'Tracking your route',
+    notificationBody: 'Tap to return to the app',
+  });
+}
+
+async function stopTracking() {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+  await Location.stopBackgroundSession();
+}
+```
+
+If you no longer need the background session, you need to manually stop it using `stopBackgroundSession`.
 
 </Collapsible>
 
@@ -354,17 +400,20 @@ import { Location } from 'expo-location/next';
 
 ### Android
 
-Installing `expo-location` adds the following permissions:
+Installing `expo-location` adds `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION`.
 
-- `ACCESS_COARSE_LOCATION`: for the approximate device location
-- `ACCESS_FINE_LOCATION`: for the precise device location
-
-The following permissions are optional and enabled through the config plugin:
-
-- `ACCESS_BACKGROUND_LOCATION`: to read the location while the app is in the background or closed. Enabling it in a new build requires [submitting the app for review](https://support.google.com/googleplay/android-developer/answer/9799150).
+The config plugin adds the rest when `isAndroidBackgroundLocationEnabled` is `true`. Enabling `ACCESS_BACKGROUND_LOCATION` or the location foreground service in a new build requires submitting the app for review. See Google Play's requirements for [background location permissions](https://support.google.com/googleplay/android-developer/answer/9799150) and [foreground services](https://support.google.com/googleplay/android-developer/answer/13392821).
 
 <AndroidPermissions
-  permissions={['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'ACCESS_BACKGROUND_LOCATION']}
+  permissions={[
+    'ACCESS_COARSE_LOCATION',
+    'ACCESS_FINE_LOCATION',
+    'ACCESS_BACKGROUND_LOCATION',
+    'RECEIVE_BOOT_COMPLETED',
+    { name: 'FOREGROUND_SERVICE', explanation: undefined },
+    { name: 'FOREGROUND_SERVICE_LOCATION', explanation: undefined },
+    'POST_NOTIFICATIONS',
+  ]}
 />
 
 ### iOS

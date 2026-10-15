@@ -4,15 +4,16 @@ import { NativeLocationModuleNext, NativeLocationProvider } from '../native';
 import type { LocationProviderRefType } from '../types';
 
 /**
- * The backends that can serve positions on Android. The default tries Google Play services first
- * and falls back to the Android framework, so most apps never need this. Pass the result to
- * `setLocationProvider`.
+ * A location provider is the backend that serves location requests on Android. Each static method
+ * returns a provider to pass to `setLocationProvider`. The default tries Google Play services first
+ * and falls back to the Android framework, so most apps never need this.
  *
  * @platform android
  */
 export class LocationProvider {
   /**
-   * The fused location provider from Google Play services.
+   * The fused location provider from Google Play services. When Google Play services are absent,
+   * location requests that use this provider throw.
    *
    * @platform android
    */

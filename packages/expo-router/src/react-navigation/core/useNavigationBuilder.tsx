@@ -516,7 +516,6 @@ export function useNavigationBuilder<
   });
   useCurrentRender({
     state,
-    navigation,
     descriptors,
   });
 

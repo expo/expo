@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Accept `jest@^29` again as a peer dependency. ([#51462](https://github.com/expo/expo/pull/51462) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.9
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import type { SharedRef } from 'expo';
+import type { PermissionResponse, SharedRef } from 'expo';
 
 import type {
   GetPositionOptions,
@@ -9,6 +9,7 @@ import type {
   Position,
   RequestPermissionsOptions,
 } from '../../types';
+import type { NativeBackgroundSessionClass } from './NativeBackgroundSessionClass.types';
 import type { NativeLocationProviderClass } from './NativeLocationProviderClass.types';
 import type { NativeLocationUpdatesHandleClass } from './NativeLocationUpdatesHandleClass.types';
 import type { NativePositionWatchHandleClass } from './NativePositionWatchHandleClass.types';
@@ -22,6 +23,8 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
     options?: RequestPermissionsOptions
   ): Promise<LocationPermissionResponse>;
   getBackgroundPermissions(): Promise<LocationPermissionResponse>;
+  requestNotificationPermissions(): Promise<PermissionResponse>;
+  getNotificationPermissions(): Promise<PermissionResponse>;
   setLocationProvider(provider: SharedRef<LocationProviderRefType>): void;
   getSelectedLocationProviderName(): string;
   hasLocationServicesEnabled(): boolean;
@@ -31,4 +34,5 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
   LocationProvider: typeof NativeLocationProviderClass;
   PositionWatchHandle: typeof NativePositionWatchHandleClass;
   LocationUpdatesHandle: typeof NativeLocationUpdatesHandleClass;
+  BackgroundSession: typeof NativeBackgroundSessionClass;
 }
