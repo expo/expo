@@ -33,6 +33,7 @@ import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
+import { getPlatformHeaderTransparent } from './headerAppearance';
 import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
@@ -260,6 +261,8 @@ const SceneView = ({
     headerBack,
   });
 
+  const isHeaderTransparent = getPlatformHeaderTransparent(headerTransparent);
+
   const onHeaderHeightChange = hasCustomHeader
     ? // If we have a custom header, don't use native header height
       undefined
@@ -403,7 +406,7 @@ const SceneView = ({
                 <View
                   style={[
                     styles.background,
-                    headerTransparent ? styles.translucent : null,
+                    isHeaderTransparent ? styles.translucent : null,
                     { height: headerHeight },
                   ]}>
                   {headerBackground()}
@@ -417,7 +420,7 @@ const SceneView = ({
                     setHeaderHeight(headerHeight);
                     rawAnimatedHeaderHeight.setValue(headerHeight);
                   }}
-                  style={[styles.header, headerTransparent ? styles.absolute : null]}>
+                  style={[styles.header, isHeaderTransparent ? styles.absolute : null]}>
                   {header({
                     back: headerBack,
                     options,

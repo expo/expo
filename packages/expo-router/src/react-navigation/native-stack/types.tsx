@@ -324,8 +324,10 @@ export type NativeStackNavigationOptions = {
    * Boolean indicating whether the navigation bar is translucent.
    * Setting this to `true` makes the header absolutely positioned,
    * and changes the background color to `transparent` unless specified in `headerStyle`.
+   * Pass an object to set a different value on each platform.
+   * Defaults to `{ ios: true, android: false, web: false }`. On iOS, the default applies only on iOS 26+ with Liquid Glass, and only when no header background is set.
    */
-  headerTransparent?: boolean;
+  headerTransparent?: boolean | { ios?: boolean; android?: boolean; web?: boolean };
   /**
    * Blur effect for the translucent header.
    * The `headerTransparent` option needs to be set to `true` for this to work.
