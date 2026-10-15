@@ -77,7 +77,8 @@ export interface TaskManagerTask {
    * values emitted by Expo SDK libraries are `'location'` and `'geofencing'`
    * (`expo-location`), `'backgroundFetch'` (`expo-background-fetch`),
    * `'expo-background-task'` on Android or `'backgroundTask'` on iOS
-   * (`expo-background-task`), and `'remote-notification'`
+   * (`expo-background-task`), `'onDemandTask'` on iOS for tasks that native code runs on demand
+   * (for example, App Intents), and `'remote-notification'`
    * (`expo-notifications`). User-registered tasks may have any string value.
    */
   taskType: string;
