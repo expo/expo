@@ -23,6 +23,21 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
   lazy var launchType: AppLaunchType = getAppLaunchType()
 
+  /// Returns whether the app is currently running in the background. Replaceable in tests.
+  ///
+  /// `UIApplication.applicationState` can't be used here, because apps using the scene-based life cycle report
+  /// `.background` in `didFinishLaunching` even when the user launches them from the home screen.
+  /// In the foreground there is no limit on the background execution time, so `backgroundTimeRemaining` is very large.
+  var isRunningInBackground: () -> Bool = {
+    return MainActor.runSynchronously {
+      return UIApplication.shared.backgroundTimeRemaining < AppStartupMonitoring.backgroundTimeRemainingThreshold
+    }
+  }
+
+  /// Background launches got about 30 seconds in our tests. Apple only documents the foreground value as
+  /// "suitably large", so we compare against a threshold rather than `greatestFiniteMagnitude`.
+  private static let backgroundTimeRemainingThreshold: TimeInterval = 60 * 60
+
   nonisolated func markMain() {
     if launchType == .prewarmed {
       return
@@ -34,10 +49,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  /// - Parameter launchedInBackground: Whether the system launched the app in the background, for example
-  ///   for a background fetch or a silent push notification. Such launches are interrupted right away,
-  ///   otherwise TTR and TTI would include the whole time until the user opens the app.
-  nonisolated func markDidFinishLaunching(launchedInBackground: Bool) {
+  nonisolated func markDidFinishLaunching() {
     // App has finished loading – save the current app launch state
     AppMetricsUserDefaults.lastAppLaunchState = appLaunchState
 
@@ -46,6 +58,9 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
     let currentTime = CACurrentMediaTime()
     let currentDate = Date()
+    // The system may launch the app in the background, for example for a background fetch or a silent push notification.
+    // Such launches are interrupted right away, otherwise TTR and TTI would include the whole time until the user opens the app.
+    let launchedInBackground = isRunningInBackground()
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {

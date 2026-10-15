@@ -29,9 +29,7 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    AppMetrics.mainSession.appStartupMonitor.markDidFinishLaunching(
-      launchedInBackground: TaskRole.isBackgroundApplication()
-    )
+    AppMetrics.mainSession.appStartupMonitor.markDidFinishLaunching()
     return true
   }
 
