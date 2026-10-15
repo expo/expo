@@ -2048,6 +2048,13 @@ for (const [rule, dumped] of [
   });
 }
 
+it('rejects a dumped manifest whose targets is not a list as naming an unknown target', async () => {
+  const input = fixture();
+  await withSwiftOnPath(stubSwiftDump(input, {}, { targets: null }), () =>
+    rejectsManifest(input, /: the product references an unknown target /)
+  );
+});
+
 // Swift rejects absolute sources, excludes and resources itself, so our guard never sees them
 // from a real manifest. It stays as defence in depth for dumps we do not control; the four
 // `rejects an absolute ... path reported by a dumped manifest` tests above reach it.
