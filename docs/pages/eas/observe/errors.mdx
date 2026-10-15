@@ -7,7 +7,7 @@ description: Record JavaScript errors and native crashes from your app and inves
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. More features are still to come.
+> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
 
 The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
@@ -150,13 +150,13 @@ The source code embedded in the source map (`sourcesContent`) is removed before 
 
 ### Upload source maps with EAS Update
 
-To store source maps for an update, pass `--upload-source-maps` to `eas update`:
+To store source maps for an update, pass `--upload-source-maps` to `eas update` command:
 
 <Terminal cmd={['$ eas update --upload-source-maps']} />
 
 With this flag, EAS CLI uploads the Android and iOS source maps produced when your update's JavaScript is bundled, so JavaScript stack traces from that update are symbolicated.
 
-> **Note**: Source map upload for updates requires EAS CLI version 24.9.0 or later.
+> **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
 
 ### Native stack traces
 
