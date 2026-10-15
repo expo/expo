@@ -181,6 +181,41 @@ for (const { object, key, fallback, nonDefault, hint } of DEFAULTS) {
   }
 }
 
+const MACRO_PLUGIN_FLAGS = [
+  '-Xfrontend',
+  '-load-plugin-executable',
+  '-Xfrontend',
+  '/macros/ExpoModulesMacros#ExpoModulesMacros',
+];
+const unsafeFlags = (flags: string[], condition?: DumpedObject) => ({
+  kind: { unsafeFlags: { _0: flags } },
+  tool: 'swift',
+  ...(condition && { condition }),
+});
+
+function rejectsTargetSettings(settings: DumpedObject[]) {
+  const manifest = dump();
+  manifest.targets[0].settings = settings;
+  rejects(
+    manifest,
+    new RegExp(`: target "ExpoHaptics" declares settings ${escape(JSON.stringify(settings))}, `)
+  );
+}
+
+it('dumped keys: accepts the unconditional macro plugin load flag', () => {
+  const manifest = dump();
+  manifest.targets[0].settings = [unsafeFlags(MACRO_PLUGIN_FLAGS)];
+  check(manifest);
+});
+
+it('dumped keys: rejects the macro plugin load flag under a condition', () => {
+  rejectsTargetSettings([unsafeFlags(MACRO_PLUGIN_FLAGS, { config: 'debug' })]);
+});
+
+it('dumped keys: rejects unsafeFlags other than the macro plugin load', () => {
+  rejectsTargetSettings([unsafeFlags(['-Xfrontend', '-enable-experimental-feature'])]);
+});
+
 it('dumped keys: accepts language modes that match spm.config.json', () => {
   const manifest = dump();
   manifest.swiftLanguageVersions = ['5', '6'];
