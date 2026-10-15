@@ -13,7 +13,7 @@ Use the following checklist to find the sections that apply to your app:
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
 - For web apps, remove [deprecated server flags](#remove-deprecated-server-flags), review the [async route defaults](#review-async-route-defaults), and move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html). Review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"` and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
 - If your web app uses `SafeAreaView` or safe-area hooks for spacing, [migrate to CSS safe-area insets](#use-css-for-web-safe-area-spacing).
-- For iOS apps that use `Stack`, review the [native header appearance](#review-the-ios-header-appearance).
+- For iOS apps that use `Stack`, review the [native header appearance on iOS 26 and later](#review-the-ios-header-appearance).
 - For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
@@ -396,7 +396,7 @@ To navigate somewhere other than the blocked destination, retain the `disablePre
 
 ### Review the iOS header appearance
 
-In SDK 58, `Stack` headers on iOS use the system bar appearance by default. The header is transparent, uses Liquid Glass on iOS 26 and later or a `systemChromeMaterial` blur on earlier versions, and screen content goes under the header. The default value of `headerTransparent` is `{ ios: true, android: false }`. On iOS, this default applies only when the screen does not set `headerStyle.backgroundColor` or `headerBackground`. Android headers are unchanged.
+In SDK 58, `Stack` headers on iOS 26 and later use the system bar appearance by default. The header is transparent with Liquid Glass, and screen content goes under the header. The default value of `headerTransparent` is `{ ios: true, android: false }`. On iOS, this default applies only when Liquid Glass is available and the screen does not set `headerStyle.backgroundColor` or `headerBackground`. Earlier iOS versions keep the opaque header. Apps that turn off Liquid Glass also keep the opaque header. Android headers are unchanged.
 
 If content is hidden under the header, add `contentInsetAdjustmentBehavior="automatic"` to the root `ScrollView`, `FlatList`, or `SectionList` of the screen:
 
@@ -414,9 +414,9 @@ export default function Home() {
 
 For a screen without a scroll view, add top padding with the value from `useHeaderHeight()` from `expo-router/react-navigation`. To keep an opaque header on one screen, set `headerTransparent: false` in its options.
 
-iOS headers now use the system fonts instead of the theme fonts. To keep a custom font, set `fontFamily` in `headerTitleStyle`, `headerBackTitleStyle`, or `headerLargeTitleStyle`.
+On iOS 26 and later, headers now use the system fonts instead of the theme fonts. To keep a custom font, set `fontFamily` in `headerTitleStyle`, `headerBackTitleStyle`, or `headerLargeTitleStyle`.
 
-To restore the previous iOS header appearance for all screens, call `enableLegacyHeaderAppearance()` at the top level of the root layout:
+To restore the previous header appearance on iOS 26 and later for all screens, call `enableLegacyHeaderAppearance()` at the top level of the root layout:
 
 ```tsx app/_layout.tsx
 import { enableLegacyHeaderAppearance, Stack } from 'expo-router';

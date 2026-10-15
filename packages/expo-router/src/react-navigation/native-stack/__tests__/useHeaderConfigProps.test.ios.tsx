@@ -81,31 +81,37 @@ beforeEach(() => {
 // ─── native defaults ────────────────────────────────────────────────────────────
 
 describe('unconfigured header', () => {
-  test.each([
-    { glass: true, blurEffect: undefined },
-    { glass: false, blurEffect: 'systemChromeMaterial' },
-  ])(
-    'uses the system bar appearance when Liquid Glass is $glass',
-    async ({ glass, blurEffect }) => {
-      mockedIsLiquidGlassAvailable.mockReturnValue(glass);
-      const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
-      expect(result.current).toMatchObject({
-        backgroundColor: 'transparent',
-        // Scroll edge appearance: transparent until content scrolls under the header
-        largeTitleBackgroundColor: 'transparent',
-        blurEffect,
-        translucent: true,
-        titleFontFamily: undefined,
-        titleFontWeight: undefined,
-        largeTitleFontFamily: undefined,
-        largeTitleFontWeight: undefined,
-        backTitleFontFamily: undefined,
-      });
-    }
-  );
+  test('uses the system bar appearance when Liquid Glass is available', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current).toMatchObject({
+      backgroundColor: 'transparent',
+      // Scroll edge appearance: transparent until content scrolls under the header
+      largeTitleBackgroundColor: 'transparent',
+      blurEffect: undefined,
+      translucent: true,
+      titleFontFamily: undefined,
+      titleFontWeight: undefined,
+      largeTitleFontFamily: undefined,
+      largeTitleFontWeight: undefined,
+      backTitleFontFamily: undefined,
+    });
+  });
+
+  test('keeps the opaque header with theme fonts when Liquid Glass is unavailable', async () => {
+    mockedIsLiquidGlassAvailable.mockReturnValue(false);
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current).toMatchObject({
+      backgroundColor: DEFAULT_COLORS.card,
+      largeTitleBackgroundColor: undefined,
+      blurEffect: undefined,
+      translucent: false,
+      titleFontFamily: DEFAULT_FONTS.bold.fontFamily,
+      titleFontWeight: DEFAULT_FONTS.bold.fontWeight,
+      backTitleFontFamily: DEFAULT_FONTS.regular.fontFamily,
+    });
+  });
 
   test('explicit header background options keep their appearance', async () => {
-    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerStyle: { backgroundColor: 'pink' } }))
     );
@@ -120,7 +126,6 @@ describe('unconfigured header', () => {
   test.each([false, { ios: false }, { ios: false, android: true }])(
     'headerTransparent %o keeps the opaque theme background',
     async (headerTransparent) => {
-      mockedIsLiquidGlassAvailable.mockReturnValue(false);
       const { result } = await renderHook(() =>
         useHeaderConfigProps(defaultProps({ headerTransparent }))
       );
@@ -133,35 +138,13 @@ describe('unconfigured header', () => {
   );
 
   test('headerTransparent without an iOS value uses the system bar appearance', async () => {
-    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: { android: false } }))
     );
     expect(result.current).toMatchObject({
       backgroundColor: 'transparent',
-      blurEffect: 'systemChromeMaterial',
       translucent: true,
     });
-  });
-
-  test('headerTransparent true does not add the system blur', async () => {
-    mockedIsLiquidGlassAvailable.mockReturnValue(false);
-    const { result } = await renderHook(() =>
-      useHeaderConfigProps(defaultProps({ headerTransparent: true }))
-    );
-    expect(result.current).toMatchObject({
-      backgroundColor: 'transparent',
-      blurEffect: undefined,
-      translucent: true,
-    });
-  });
-
-  test('headerBackground does not add the system blur', async () => {
-    mockedIsLiquidGlassAvailable.mockReturnValue(false);
-    const { result } = await renderHook(() =>
-      useHeaderConfigProps(defaultProps({ headerBackground: () => <View /> }))
-    );
-    expect(result.current.blurEffect).toBeUndefined();
   });
 });
 

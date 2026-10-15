@@ -5,9 +5,10 @@ import type { NativeStackNavigationOptions } from '../types';
 let isLegacyHeaderAppearance = false;
 
 /**
- * Restores the previous iOS header appearance for all native stack screens: an opaque header
- * that uses the theme fonts, with content below the header. Call it before the root layout
- * renders, for example at the top level of the root `_layout` file.
+ * Restores the previous header appearance on iOS 26+ for all native stack screens: an opaque
+ * header that uses the theme fonts, with content below the header. Earlier iOS versions already
+ * keep this appearance. Call it before the root layout renders, for example at the top level of
+ * the root `_layout` file.
  *
  * @deprecated In a future release, the native iOS header appearance becomes the only behavior
  * and this function will be removed.

@@ -208,8 +208,10 @@ export function useHeaderConfigProps({
   const headerNativeProps = unstable_nativeProps?.headerConfig;
 
   const platformHeaderTransparent = getPlatformHeaderTransparent(headerTransparentOption);
-  // On iOS, the native header uses the system fonts unless the legacy appearance is enabled
-  const usesThemeFonts = Platform.OS !== 'ios' || isLegacyHeaderAppearanceEnabled();
+  // With Liquid Glass, the header uses the system fonts and bar unless the legacy appearance is enabled
+  const usesNativeAppearance =
+    Platform.OS === 'ios' && isLiquidGlassAvailable() && !isLegacyHeaderAppearanceEnabled();
+  const usesThemeFonts = !usesNativeAppearance;
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([usesThemeFonts && fonts.regular, headerBackTitleStyle]) || {};
@@ -226,11 +228,9 @@ export function useHeaderConfigProps({
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
 
-  // When nothing sets the header background, iOS uses the system bar: Liquid Glass on iOS 26+,
-  // and a blur that is transparent at the scroll edge on earlier versions.
+  // When nothing sets the header background, the native appearance uses the Liquid Glass system bar
   const usesSystemBackground =
-    Platform.OS === 'ios' &&
-    !isLegacyHeaderAppearanceEnabled() &&
+    usesNativeAppearance &&
     platformHeaderTransparent == null &&
     headerStyleFlattened.backgroundColor == null &&
     headerBackground == null;
@@ -474,9 +474,7 @@ export function useHeaderConfigProps({
       : undefined,
     backTitleFontFamily,
     backTitleFontSize,
-    blurEffect:
-      headerBlurEffect ??
-      (usesSystemBackground && !isLiquidGlassAvailable() ? 'systemChromeMaterial' : undefined),
+    blurEffect: headerBlurEffect,
     color: tintColor,
     direction,
     disableBackButtonMenu: headerBackButtonMenuEnabled === false,
