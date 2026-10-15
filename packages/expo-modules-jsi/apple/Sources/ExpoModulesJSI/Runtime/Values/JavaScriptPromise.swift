@@ -31,10 +31,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private final class LongLivedState: LongLivedObject {
     // Stored as values, not as `JavaScriptObject` and `JavaScriptFunction`: the deferred promise's
     // triple hands out values, and converting each one when the promise is created would clone it in
-    // the engine. Only the function that actually gets called is converted, when it is called.
-    let object = JavaScriptValue.Ref()
-    let resolveFunction = JavaScriptValue.Ref()
-    let rejectFunction = JavaScriptValue.Ref()
+    // the engine. Only the function that actually gets called is converted, when it is called. Stored
+    // inline rather than in `JavaScriptValue.Ref`s, which would cost an allocation each per promise.
+    nonisolated(unsafe) var object: JavaScriptValue?
+    nonisolated(unsafe) var resolveFunction: JavaScriptValue?
+    nonisolated(unsafe) var rejectFunction: JavaScriptValue?
     /// The Swift-side receiver `await()` suspends on, created together with the `then` callbacks that
     /// feed it on the first `await()`. Not created at construction: a promise that is only handed to
     /// JavaScript and settled from Swift never needs it, and the callbacks are two host functions plus
@@ -46,9 +47,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     var settledValue: DeferredPromise.SettledValue?
 
     func allowRelease() {
-      object.release()
-      resolveFunction.release()
-      rejectFunction.release()
+      object = nil
+      resolveFunction = nil
+      rejectFunction = nil
       settledValue?.handOut.release()
       settledValue?.kept.release()
     }
@@ -76,12 +77,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// Initializes a promise from the existing object. The promise may already be settled.
   /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
+    self.runtime = copy runtime
     // Reject a non-thenable here rather than at the first `await()`, which is where the `then`
     // callbacks are actually installed (see `deferredPromiseForAwait()`).
     _ = try object.getPropertyAsFunction(.cached(runtime, "then"))
-    longLivedState.object.reset(object.asValue())
+    longLivedState.object = object.asValue()
     // Register only after validation succeeds, so a failed initializer doesn't leave the state pinned
     // in the collection until teardown. Owns the promise's JSI values from here until teardown (see
     // `LongLivedState`).
@@ -90,8 +91,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
   /// Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
   @JavaScriptActor
-  public init(_ runtime: JavaScriptRuntime) throws {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime) throws {
+    self.runtime = copy runtime
 
     // The promise and its two settle functions come from a JavaScript closure that returns all three
     // at once, rather than from `new Promise(executor)` with a host function as the executor. The
@@ -99,20 +100,20 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // from the engine into Swift while the constructor runs, and an owning copy of each settle
     // function on the way back. The closure route is one JS call and three array reads.
     let triple = try runtime.createDeferredPromiseTriple()
-    longLivedState.object.reset(try triple.getValue(at: 0))
-    longLivedState.resolveFunction.reset(try triple.getValue(at: 1))
-    longLivedState.rejectFunction.reset(try triple.getValue(at: 2))
+    longLivedState.object = try triple.getValue(at: 0)
+    longLivedState.resolveFunction = try triple.getValue(at: 1)
+    longLivedState.rejectFunction = try triple.getValue(at: 2)
     // Owns the promise's JSI values from here until teardown (see `LongLivedState`).
     runtime.longLivedObjects.add(longLivedState)
   }
 
   @JavaScriptActor
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) throws {
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) throws {
     try self.init(runtime, JavaScriptObject(runtime, object))
   }
 
   public var isDeferred: Bool {
-    return !longLivedState.resolveFunction.isEmpty && !longLivedState.rejectFunction.isEmpty
+    return longLivedState.resolveFunction != nil && longLivedState.rejectFunction != nil
   }
 
   @JavaScriptActor
@@ -137,10 +138,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   public func asValue() -> JavaScriptValue {
-    // Read without consuming, so the state keeps owning the object (unlike `Ref.asValue()`).
-    return longLivedState.object.withUnwrappedValue { (object: borrowing JavaScriptValue) in
+    // Read without consuming, so the state keeps owning the object.
+    switch longLivedState.object {
+    case .some(let object):
       return object.copy()
-    } ?? .undefined()
+    case .none:
+      return .undefined()
+    }
   }
 
   /// Resolves the promise with a JavaScript value. The value is consumed and moved into a
@@ -171,18 +175,18 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       do {
         // Call the actual resolver. If `await()` has installed the `then` callbacks, they forward
         // the settlement to `deferredPromise`.
-        _ = try resolver.getFunction().call(arguments: value)
+        _ = try resolver.getFunction().call(argument: value.toJavaScriptValue(in: runtime))
 
         // The rejecter can't be called anymore. The state stays registered so it keeps owning the
         // object until the wrapper is dropped (or the teardown sweep runs).
-        longLivedState.rejectFunction.release()
+        longLivedState.rejectFunction = nil
       } catch {
         // The resolver call failed; reject with the error instead. The rejecter call itself can
         // realistically only throw when the runtime is being torn down, where dropping the settle
         // is harmless because the JS world is going away.
         let errorValue = JavaScriptError.from(error, in: runtime).toValue()
         _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
-        longLivedState.resolveFunction.release()
+        longLivedState.resolveFunction = nil
       }
     }
   }
@@ -212,14 +216,14 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         // the settlement to `deferredPromise`.
         _ = try resolver.getFunction().call(argument: encoded)
         // The state stays registered so it keeps owning the object until the wrapper is dropped.
-        longLivedState.rejectFunction.release()
+        longLivedState.rejectFunction = nil
       } catch {
         // Encoding or the resolver call failed; reject with the error instead. The rejecter call
         // itself can realistically only throw when the runtime is being torn down, where dropping
         // the settle is harmless because the JS world is going away.
         let errorValue = JavaScriptError.from(error, in: runtime).toValue()
         _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
-        longLivedState.resolveFunction.release()
+        longLivedState.resolveFunction = nil
       }
     }
   }
@@ -249,7 +253,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
       // The resolver can't be called anymore. The state stays registered so it keeps owning the
       // object until the wrapper is dropped (or the teardown sweep runs).
-      longLivedState.resolveFunction.release()
+      longLivedState.resolveFunction = nil
     }
   }
 
@@ -298,8 +302,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // Parameter packs take copyable elements only, so the callbacks travel as refs.
       let onFulfilledRef = onFulfilled.ref()
       let onRejectedRef = onRejected.ref()
-      _ = try longLivedState.object.withUnwrappedValue { (object: borrowing JavaScriptValue) in
+      switch longLivedState.object {
+      case .some(let object):
         try object.getObject().callFunction(.cached(runtime, "then"), arguments: onFulfilledRef, onRejectedRef)
+      case .none:
+        break
       }
       // Stored only once the callbacks are in place, so a failed install (e.g. `then` unavailable) is
       // retried by the next `await()` instead of leaving a receiver nothing will ever settle.
