@@ -111,6 +111,60 @@ describe('visitNode', () => {
     };
     expect(collect(schema)).toEqual(['']);
   });
+  describe('combinators with a value', () => {
+    const tagged = (tag: string, schema: JSONSchema): JSONSchema => ({ ...schema, tag });
+    const tagsFor = (schema: JSONSchema, value: unknown): unknown[] => {
+      const tags: unknown[] = [];
+      visitNode(schema, value, (visited) => visited.tag !== undefined && tags.push(visited.tag));
+      return tags;
+    };
+    // The shape of `ios.icon`: a `.icon` directory, any other string as an image.
+    const icon: JSONSchema = {
+      oneOf: [
+        tagged('directory', { type: 'string', pattern: '\\.icon$' }),
+        tagged('image', { type: 'string', not: { pattern: '\\.icon$' } }),
+        tagged('object', { type: 'object' }),
+      ],
+    };
+
+    it('visits only the `oneOf` branch the value matches', () => {
+      expect(tagsFor(icon, './assets/app.icon')).toEqual(['directory']);
+      expect(tagsFor(icon, './assets/icon.png')).toEqual(['image']);
+      expect(tagsFor(icon, { light: './assets/icon.png' })).toEqual(['object']);
+    });
+
+    it('visits every `anyOf` branch the value matches', () => {
+      const schema: JSONSchema = {
+        anyOf: [
+          tagged('string', { type: 'string' }),
+          tagged('png', { type: 'string', pattern: '\\.png$' }),
+          tagged('number', { type: 'number' }),
+        ],
+      };
+      expect(tagsFor(schema, './icon.png')).toEqual(['string', 'png']);
+    });
+
+    it('visits `then` or `else` by the value, not both', () => {
+      const schema: JSONSchema = {
+        if: { type: 'string' },
+        then: tagged('then', {}),
+        else: tagged('else', {}),
+      };
+      expect(tagsFor(schema, 'text')).toEqual(['then']);
+      expect(tagsFor(schema, 3)).toEqual(['else']);
+    });
+
+    it('always visits every `allOf` branch', () => {
+      const schema: JSONSchema = {
+        allOf: [tagged('a', { type: 'string' }), tagged('b', { type: 'number' })],
+      };
+      expect(tagsFor(schema, 'text')).toEqual(['a', 'b']);
+    });
+
+    it('visits every branch when there is no value to match', () => {
+      expect(tagsFor(icon, undefined)).toEqual(['directory', 'image', 'object']);
+    });
+  });
 });
 
 describe('visit', () => {

@@ -1,8 +1,7 @@
 import type { JSONSchema } from './JSONSchema';
+import { validateSchema } from './validate';
 
 export type SchemaVisitor = (schema: JSONSchema, value: unknown, path: string) => void;
-
-const COMBINATOR_KEYWORDS = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'];
 
 const isSchemaNode = (value: unknown): value is JSONSchema =>
   value != null && typeof value === 'object' && !Array.isArray(value);
@@ -109,23 +108,59 @@ const visitItems = (
   }
 };
 
+const matches = (schema: JSONSchema, value: unknown, path: string): boolean =>
+  validateSchema(schema, value, path) === null;
+
+const visitEach = (
+  schemas: unknown,
+  value: unknown,
+  visitor: SchemaVisitor,
+  path: string,
+  applies: (schema: JSONSchema) => boolean = () => true
+): void => {
+  if (!Array.isArray(schemas)) {
+    return;
+  }
+  for (const item of schemas) {
+    if (isSchemaNode(item) && applies(item)) {
+      visitNode(item, value, visitor, path);
+    }
+  }
+};
+
+// Only the subschemas that apply to `value` are visited. A `oneOf`/`anyOf`
+// branch the value does not match, or the `then`/`else` its `if` did not
+// select, describes some other value: visiting it reported, for example, the
+// image branch of `ios.icon` for a `.icon` directory. Without a value there is
+// nothing to match against, so every subschema is visited.
 const visitCombinators = (
   schema: JSONSchema,
   value: unknown,
   visitor: SchemaVisitor,
   path: string
 ): void => {
-  for (const keyword of COMBINATOR_KEYWORDS) {
-    const combinator = (schema as Record<string, unknown>)[keyword];
-    if (Array.isArray(combinator)) {
-      for (const item of combinator) {
-        if (isSchemaNode(item)) {
-          visitNode(item, value, visitor, path);
-        }
+  const hasValue = value !== undefined;
+  const applies = (branch: JSONSchema) => !hasValue || matches(branch, value, path);
+
+  visitEach(schema.allOf, value, visitor, path);
+  visitEach(schema.anyOf, value, visitor, path, applies);
+  visitEach(schema.oneOf, value, visitor, path, applies);
+
+  const { if: condition, then: consequent, else: alternative } = schema;
+  if (!isSchemaNode(condition)) {
+    return;
+  }
+  if (!hasValue) {
+    for (const branch of [condition, consequent, alternative]) {
+      if (isSchemaNode(branch)) {
+        visitNode(branch, value, visitor, path);
       }
-    } else if (isSchemaNode(combinator)) {
-      visitNode(combinator, value, visitor, path);
     }
+    return;
+  }
+  const branch = matches(condition, value, path) ? consequent : alternative;
+  if (isSchemaNode(branch)) {
+    visitNode(branch, value, visitor, path);
   }
 };
 

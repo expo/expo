@@ -197,6 +197,63 @@ describe('Manual Validation Individual Unit Tests', () => {
       })
     );
   });
+  describe('iOS icon as either a .icon directory or an image', () => {
+    // The shape of `ios.icon` in the app config schema: a `oneOf` whose string
+    // branches are told apart by the `.icon` suffix.
+    const iconValidator = new Schemer(
+      {
+        properties: {
+          icon: {
+            oneOf: [
+              {
+                type: 'string',
+                pattern: '\\.icon$',
+                meta: {
+                  asset: true,
+                  contentTypePattern: 'directory',
+                  contentTypeHuman: '.icon directory',
+                },
+              },
+              {
+                type: 'string',
+                not: { pattern: '\\.icon$' },
+                meta: {
+                  asset: true,
+                  contentTypePattern: '^image/png$',
+                  contentTypeHuman: '.png image',
+                },
+              },
+            ],
+          },
+        },
+      },
+      { rootDir: __dirname }
+    );
+
+    it('checks a .icon directory only as a directory', async () => {
+      expect(
+        await iconValidator.validateAssetsAsync({ icon: './fixtures/test.icon' })
+      ).toBeUndefined();
+    });
+
+    it('checks a .png only as an image', async () => {
+      expect(
+        await iconValidator.validateAssetsAsync({ icon: './fixtures/check.png' })
+      ).toBeUndefined();
+    });
+
+    it('still reports a missing .icon directory', async () => {
+      const error = await expectSchemerToThrowAsync(() =>
+        iconValidator.validateAssetsAsync({ icon: './fixtures/nonexistent.icon' })
+      );
+      expect(error.errors).toEqual([
+        expect.objectContaining({
+          errorCode: ErrorCodes.INVALID_ASSET_URI,
+          message: "directory does not exist at './fixtures/nonexistent.icon'",
+        }),
+      ]);
+    });
+  });
 });
 
 describe('Individual Unit Tests', () => {
