@@ -422,7 +422,7 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
       why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
       how:
         coreSource.kind === 'env'
-          ? `In the Expo repository, run ${prebuild}, or unset EXPO_PRECOMPILED_MODULES_PATH. Then run \`npx react-native spm update\` again.`
+          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. Then run \`npx react-native spm update\` again.`
           : `In the Expo repository, run ${prebuild}. Then run \`npx react-native spm update\` again.`,
     });
   }
