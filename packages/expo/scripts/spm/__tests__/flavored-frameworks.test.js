@@ -8,6 +8,7 @@ const path = require('path');
 const {
   FLAVORS,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
@@ -384,6 +385,26 @@ describe('resolveHeadersXCFramework', () => {
 
   it('returns null when no lookup base has the headers', () => {
     expect(resolve()).toBeNull();
+  });
+
+  it('names the directories it searches, in lookup order', () => {
+    expect(headersXCFrameworkDirs('test-package', moduleRoot)).toEqual([
+      path.join(root, 'override', 'test-package', 'output', 'headers', 'xcframeworks'),
+      path.resolve(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'precompile',
+        '.build',
+        'test-package',
+        'output',
+        'headers',
+        'xcframeworks'
+      ),
+      path.join(moduleRoot, 'prebuilds', 'output', 'headers', 'xcframeworks'),
+    ]);
   });
 
   it('finds the headers the installed package ships under prebuilds/output', () => {

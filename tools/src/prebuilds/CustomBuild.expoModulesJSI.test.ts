@@ -92,4 +92,49 @@ describe('expo-modules-jsi generated module map', appleToolsOnly, () => {
       path.join(packageDir, '.generated', 'module.modulemap')
     );
   });
+
+  it('treats an empty EXPO_CUSTOM_BUILD_ROOT as unset in Package.swift, as the scripts do', async () => {
+    assert.equal(
+      await manifestModuleMapAsync({ EXPO_CUSTOM_BUILD_ROOT: '' }),
+      path.join(packageDir, '.generated', 'module.modulemap')
+    );
+  });
+
+  // build-xcframework.sh runs xcodebuild under `env -i`, so Package.swift sees only what the
+  // script forwards. A stand-in xcodebuild records that environment, then stops the build.
+  it('forwards EXPO_CUSTOM_BUILD_ROOT to the xcodebuild that evaluates Package.swift', async () => {
+    const scriptsDir = path.join(packageDir, 'scripts');
+    await fs.copy(path.join(JSI_APPLE_DIR, 'scripts'), scriptsDir);
+    for (const source of [
+      'Sources/ExpoModulesJSI/A.swift',
+      'Sources/ExpoModulesJSI-Cxx/A.cpp',
+      'APINotes/jsi.apinotes',
+    ]) {
+      await fs.outputFile(path.join(packageDir, source), '');
+    }
+    const fakeBin = path.join(tmpDir, 'bin');
+    const recordedEnv = path.join(tmpDir, 'xcodebuild.env');
+    await fs.outputFile(
+      path.join(fakeBin, 'xcodebuild'),
+      `#!/bin/bash\nenv > "${recordedEnv}"\nexit 1\n`,
+      { mode: 0o755 }
+    );
+
+    await assert.rejects(
+      spawnAsync(path.join(scriptsDir, 'build-xcframework.sh'), [], {
+        env: {
+          PATH: `${fakeBin}:${process.env.PATH}`,
+          HOME: process.env.HOME,
+          PODS_ROOT: podsRoot,
+          REACT_NATIVE_PATH: tmpDir,
+          PLATFORM_NAME: 'iphonesimulator',
+          EXPO_CUSTOM_BUILD_ROOT: buildRoot,
+        },
+      })
+    );
+
+    const env = await fs.readFile(recordedEnv, 'utf8');
+    assert.match(env, new RegExp(`^EXPO_CUSTOM_BUILD_ROOT=${buildRoot}$`, 'm'));
+    assert.equal(fs.existsSync(path.join(packageDir, '.generated')), false);
+  });
 });

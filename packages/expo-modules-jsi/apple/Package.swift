@@ -55,7 +55,8 @@ let headerSearchPaths = [
 // file. `EXPO_CUSTOM_BUILD_ROOT` is forwarded from build-xcframework.sh when
 // the build must not write into the package, e.g. inside a SwiftPM app's
 // node_modules.
-let buildRoot = ProcessInfo.processInfo.environment["EXPO_CUSTOM_BUILD_ROOT"] ?? packageDir
+let customBuildRoot = ProcessInfo.processInfo.environment["EXPO_CUSTOM_BUILD_ROOT"] ?? ""
+let buildRoot = customBuildRoot.isEmpty ? packageDir : customBuildRoot
 let generatedModuleMap = "\(buildRoot)/.generated/module.modulemap"
 let apiNotesPath = "\(packageDir)/APINotes"
 

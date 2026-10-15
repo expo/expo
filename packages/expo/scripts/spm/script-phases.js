@@ -73,20 +73,19 @@ export EXPO_CONSTANTS_ALLOW_NON_PODS=1
 exec "$EXPO_CONSTANTS_DIR/scripts/get-app-config-ios.sh"
 `;
 
-const JSI_BUILD_PHASE_ID = 'expo-modules-jsi.build';
-
 /** Each phase, keyed by the npm package of the module that needs it. */
 const SCRIPT_PHASES = [
   {
     packageName: 'expo-modules-jsi',
     phase: {
-      id: JSI_BUILD_PHASE_ID,
+      id: 'expo-modules-jsi.build',
       name: 'Build ExpoModulesJSI',
       script: fs.readFileSync(path.join(__dirname, 'build-expo-modules-jsi.sh'), 'utf8'),
       // Source packages compile against the headers XCFramework alone; the app's own
       // sources and its link step need the real framework.
       position: 'beforeCompile',
-      // The script hashes its own inputs and returns early when nothing changed.
+      // Xcode cannot see the framework's inputs. build-xcframework.sh skips the build
+      // when its source hash is unchanged; the copy and codesign run on every build.
       alwaysOutOfDate: true,
     },
   },
@@ -119,9 +118,4 @@ function scriptPhasesForModules(modulePackageNames) {
   );
 }
 
-module.exports = {
-  scriptPhasesForModules,
-  APP_CONFIG_PHASE_ID,
-  APP_CONFIG_OUTPUT,
-  JSI_BUILD_PHASE_ID,
-};
+module.exports = { scriptPhasesForModules, APP_CONFIG_PHASE_ID, APP_CONFIG_OUTPUT };

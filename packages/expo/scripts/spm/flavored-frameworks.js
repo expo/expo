@@ -31,8 +31,10 @@ function stableFrameworkId(frameworkName) {
   return kebab.startsWith('expo-') ? kebab : `expo-${kebab}`;
 }
 
+const artifactDir = (baseDir, flavor) => path.join(baseDir, flavor, 'xcframeworks');
+
 function artifactCandidates(baseDir, flavor, frameworkName) {
-  const dir = path.join(baseDir, flavor, 'xcframeworks');
+  const dir = artifactDir(baseDir, flavor);
   return {
     xcframework: path.join(dir, `${frameworkName}.xcframework`),
     tarball: path.join(dir, `${frameworkName}.tar.gz`),
@@ -276,6 +278,13 @@ function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cache
   return null;
 }
 
+/** The directories `resolveHeadersXCFramework` searches, in lookup order. */
+function headersXCFrameworkDirs(packageName, moduleRoot) {
+  return artifactBaseDirs(packageName, moduleRoot).map((baseDir) =>
+    artifactDir(baseDir, 'headers')
+  );
+}
+
 /**
  * Candidate parents (each holding `<flavor>/<Dep>.xcframework`) for a SwiftPM
  * package a precompiled module links. The bundled copy lives in the npm package
@@ -497,6 +506,7 @@ module.exports = {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
