@@ -45,6 +45,7 @@ import {
   type VlqMap,
 } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
+import { pruneUnusedImports } from '../transform-plugins/pruneUnusedImports';
 import * as assetTransformer from './asset-transformer';
 import type {
   Dependency,
@@ -429,6 +430,11 @@ async function transformJS(
     ast = performConstantFolding(ast, { filename: file.filename });
   }
 
+  if (optimize && file.performConstantFolding) {
+    // Graph optimization skips the import transform that normally removes unused imports.
+    pruneUnusedImports(ast);
+  }
+
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!optimize) {
     ast = applyImportSupport(ast, {
@@ -793,6 +799,7 @@ async function completeFullNoxcturnalTransform(
         ...file,
         code: fullNoxcturnal.result.code,
         ast: null,
+        performConstantFolding: fullNoxcturnal.result.metadata.performConstantFolding === true,
         inputSourceMap: {
           ...fullNoxcturnal.result.map,
           originalCode: file.code,
@@ -1083,6 +1090,7 @@ export function getCacheKey(
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
+    require.resolve('../transform-plugins/pruneUnusedImports'),
     require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
     require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
