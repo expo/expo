@@ -145,7 +145,7 @@ struct JavaScriptCodableRecordTests {
   func `encodes a nil optional field as JS null`() throws {
     let runtime = try runtime
     let encoded = try CodableLabeledPoint.encode(CodableLabeledPoint(x: 1, label: nil, note: "b"), in: runtime)
-    #expect(encoded.getObject().getProperty("label").isNull())
+    #expect(encoded.getObject().getProperty("label").isNull() == true)
   }
 
   @Test
@@ -223,7 +223,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableEmpty.decode(value, in: runtime)
     #expect(decoded == CodableEmpty())
     let reencoded = try CodableEmpty.encode(decoded, in: runtime)
-    #expect(reencoded.isObject())
+    #expect(reencoded.isObject() == true)
   }
 
   // MARK: - Binary fields
@@ -255,7 +255,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableBinary.decode(value, in: runtime)
     let encoded = try CodableBinary.encode(decoded, in: runtime)
     runtime.global().setProperty("encodedBinary", value: encoded)
-    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool())
-    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool())
+    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool() == true)
+    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool() == true)
   }
 }

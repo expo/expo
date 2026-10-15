@@ -52,6 +52,9 @@ include ':app'
 // Linked manually to used version from our RN fork
 includeBuild(new File(rootDir, "../../../react-native-lab/react-native/packages/gradle-plugin").toString())
 
+// Custom ktlint rules loaded by Spotless (see `customRuleSets` in build.gradle)
+includeBuild("../../../packages/expo-ktlint-rules")
+
 include ':expoview'
 
 include(":packages")

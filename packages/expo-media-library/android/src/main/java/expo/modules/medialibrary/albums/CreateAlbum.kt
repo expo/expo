@@ -22,7 +22,11 @@ suspend fun createAlbum(
   copyAsset: Boolean
 ): Bundle? = withContext(Dispatchers.IO) {
   try {
-    val mStrategy = if (copyAsset) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
+    val mStrategy = if (copyAsset) {
+      AssetFileStrategy.copyStrategy
+    } else {
+      AssetFileStrategy.moveStrategy
+    }
     val files = MediaLibraryUtils.getAssetsById(context, assetId)
     val albumCreator = files[0]
     val album = createAlbumFile(albumCreator.mimeType, albumName)

@@ -32,17 +32,17 @@ const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof Scre
  * This file is for testing Stack specific functionality
  */
 describe('canDismiss', () => {
-  it('works with fresh stack state', () => {
-    renderRouter({ index: () => null, b: () => null });
+  it('works with fresh stack state', async () => {
+    await renderRouter({ index: () => null, b: () => null });
 
     expect(router.canDismiss()).toBe(false);
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     expect(router.canDismiss()).toBe(true);
   });
 
   // TODO(ENG-22019): Detect typeless stacks created by the default Stack.
-  it.skip('should work within the default Stack', () => {
-    renderRouter(
+  it.skip('should work within the default Stack', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -53,12 +53,12 @@ describe('canDismiss', () => {
     );
 
     expect(router.canDismiss()).toBe(false);
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     expect(router.canDismiss()).toBe(true);
   });
 
-  it('should always return false while not within a stack', () => {
-    renderRouter(
+  it('should always return false while not within a stack', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -75,12 +75,12 @@ describe('canDismiss', () => {
     );
 
     expect(router.canDismiss()).toBe(false);
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     expect(router.canDismiss()).toBe(false);
   });
 
-  it('does not treat an anchored tab state as a stack', () => {
-    renderRouter(
+  it('does not treat an anchored tab state as a stack', async () => {
+    await renderRouter(
       {
         _layout: {
           unstable_settings: { initialRouteName: 'a' },
@@ -101,8 +101,8 @@ describe('canDismiss', () => {
   });
 });
 
-test('dismiss', () => {
-  renderRouter(
+test('dismiss', async () => {
+  await renderRouter(
     {
       a: () => null,
       b: () => null,
@@ -114,21 +114,21 @@ test('dismiss', () => {
     }
   );
 
-  act(() => router.push('/b'));
-  act(() => router.push('/c'));
-  act(() => router.push('/d'));
+  await act(() => router.push('/b'));
+  await act(() => router.push('/c'));
+  await act(() => router.push('/d'));
 
   expect(screen).toHavePathname('/d');
 
-  act(() => router.dismiss());
+  await act(() => router.dismiss());
   expect(screen).toHavePathname('/c');
 
-  act(() => router.dismiss(2));
+  await act(() => router.dismiss(2));
   expect(screen).toHavePathname('/a');
 });
 
-test('dismissAll', () => {
-  renderRouter(
+test('dismissAll', async () => {
+  await renderRouter(
     {
       a: () => null,
       b: () => null,
@@ -140,19 +140,19 @@ test('dismissAll', () => {
     }
   );
 
-  act(() => router.push('/b'));
-  act(() => router.push('/c'));
-  act(() => router.push('/d'));
+  await act(() => router.push('/b'));
+  await act(() => router.push('/c'));
+  await act(() => router.push('/d'));
 
   expect(screen).toHavePathname('/d');
 
-  act(() => router.dismissAll());
+  await act(() => router.dismissAll());
   expect(screen).toHavePathname('/a');
   expect(router.canDismiss()).toBe(false);
 });
 
-test('dismissAll nested', () => {
-  renderRouter(
+test('dismissAll nested', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -175,15 +175,15 @@ test('dismissAll nested', () => {
     }
   );
 
-  testRouter.push('/b');
+  await testRouter.push('/b');
 
-  testRouter.push('/one');
-  testRouter.push('/one/page');
-  testRouter.push('/one/page');
+  await testRouter.push('/one');
+  await testRouter.push('/one/page');
+  await testRouter.push('/one/page');
 
-  testRouter.push('/one/two');
-  testRouter.push('/one/two/page');
-  testRouter.push('/one/two/page');
+  await testRouter.push('/one/two');
+  await testRouter.push('/one/two/page');
+  await testRouter.push('/one/two/page');
 
   // We should have three top level routes (/a, /b, /one)
   // The last route should include a sub-state for /one/_layout
@@ -302,7 +302,7 @@ test('dismissAll nested', () => {
   });
 
   // This should only dismissing the sub-state for /one/two/_layout
-  testRouter.dismissAll();
+  await testRouter.dismissAll();
   expect(screen).toHavePathname('/one/two');
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -405,7 +405,7 @@ test('dismissAll nested', () => {
   });
 
   // This should only dismissing the sub-state for /one/_layout
-  testRouter.dismissAll();
+  await testRouter.dismissAll();
   expect(screen).toHavePathname('/one');
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -477,12 +477,12 @@ test('dismissAll nested', () => {
   expect(router.canDismiss()).toBe(false);
 });
 
-test('pushing in a nested stack should only rerender the nested stack', () => {
+test('pushing in a nested stack should only rerender the nested stack', async () => {
   const RootLayout = jest.fn(() => <Stack />);
   const NestedLayout = jest.fn(() => <Stack />);
   const NestedNestedLayout = jest.fn(() => <Stack />);
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: RootLayout,
       '[one]/_layout': NestedLayout,
@@ -496,19 +496,19 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
     }
   );
 
-  testRouter.push('/one/b');
+  await testRouter.push('/one/b');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(0);
 
-  testRouter.push('/one/two/a');
+  await testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
 });
 
-test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
-  renderRouter({
+test('can preserve the nested initialRouteName when navigating to a nested stack', async () => {
+  await renderRouter({
     index: () => <Text testID="link">Index</Text>,
     '/fruit/_layout': {
       unstable_settings: {
@@ -522,16 +522,16 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
     '/fruit/banana': () => <Text testID="banana">Banana</Text>,
   });
 
-  act(() => router.push('/fruit/banana', { withAnchor: true }));
+  await act(() => router.push('/fruit/banana', { withAnchor: true }));
   expect(screen.getByTestId('banana')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('apple')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-test('push should cascade anchor routes through multiple nested stacks', () => {
-  renderRouter({
+test('push should cascade anchor routes through multiple nested stacks', async () => {
+  await renderRouter({
     index: () => <Text testID="a">A</Text>,
     'funnel/_layout': {
       unstable_settings: { anchor: 'ba' },
@@ -546,20 +546,20 @@ test('push should cascade anchor routes through multiple nested stacks', () => {
     'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
   });
 
-  act(() => router.push('/funnel/bb/bc', { withAnchor: true }));
+  await act(() => router.push('/funnel/bb/bc', { withAnchor: true }));
 
   expect(screen).toHavePathname('/funnel/bb/bc');
   expect(screen.getByTestId('bc')).toBeVisible();
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/funnel/bb');
   expect(screen.getByTestId('bb')).toBeVisible();
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/funnel/ba');
   expect(screen.getByTestId('ba')).toBeVisible();
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('a')).toBeVisible();
 });
@@ -567,7 +567,7 @@ test('push should cascade anchor routes through multiple nested stacks', () => {
 // TODO: SDK 57 already had this issue. It has little user-facing impact because the visible
 // navigation and back behavior are unchanged. Revisit whether matching sequential state is
 // feasible and worth the added complexity.
-test.skip('three pushes queued in one tick build the same stack as three separate pushes', () => {
+test.skip('three pushes queued in one tick build the same stack as three separate pushes', async () => {
   const routes = {
     index: () => <Text testID="a">A</Text>,
     'funnel/_layout': {
@@ -583,10 +583,10 @@ test.skip('three pushes queued in one tick build the same stack as three separat
     'funnel/bb/bc': () => <Text testID="bc">BC</Text>,
   };
 
-  renderRouter(routes);
+  await renderRouter(routes);
 
   // Keep these pushes in one callback so the routing queue drains them as one batch.
-  act(() => {
+  await act(() => {
     router.push('/funnel/ba');
     router.push('/funnel/bb');
     router.push('/funnel/bb/bc');
@@ -594,12 +594,12 @@ test.skip('three pushes queued in one tick build the same stack as three separat
 
   const batchedState = structuredClone(navigationRef.getRootState());
 
-  screen.unmount();
-  renderRouter(routes);
+  await screen.unmount();
+  await renderRouter(routes);
 
-  act(() => router.push('/funnel/ba'));
-  act(() => router.push('/funnel/bb'));
-  act(() => router.push('/funnel/bb/bc'));
+  await act(() => router.push('/funnel/ba'));
+  await act(() => router.push('/funnel/bb'));
+  await act(() => router.push('/funnel/bb/bc'));
 
   expect(batchedState).toStrictEqual(navigationRef.getRootState());
 });
@@ -615,18 +615,18 @@ describe('presentation validation', () => {
     consoleSpy.mockRestore();
   });
 
-  it('throws when an invalid presentation is set via screen options', () => {
-    expect(() => {
-      renderRouter({
+  it('throws when an invalid presentation is set via screen options', async () => {
+    await expect(async () => {
+      await renderRouter({
         _layout: () => <Stack screenOptions={{ presentation: 'xyz' as any }} />,
         index: () => <Text>Index</Text>,
       });
-    }).toThrow('Invalid presentation value "xyz"');
+    }).rejects.toThrow('Invalid presentation value "xyz"');
   });
 
-  it('throws when an invalid presentation is set via layout options', () => {
-    expect(() => {
-      renderRouter({
+  it('throws when an invalid presentation is set via layout options', async () => {
+    await expect(async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index" options={{ presentation: 'xyz' as any }} />
@@ -634,12 +634,12 @@ describe('presentation validation', () => {
         ),
         index: () => <Text>Index</Text>,
       });
-    }).toThrow('Invalid presentation value "xyz"');
+    }).rejects.toThrow('Invalid presentation value "xyz"');
   });
 
-  it('throws when an invalid presentation is set via page-level Stack.Screen', () => {
-    expect(() => {
-      renderRouter({
+  it('throws when an invalid presentation is set via page-level Stack.Screen', async () => {
+    await expect(async () => {
+      await renderRouter({
         index: () => (
           <>
             <Stack.Screen options={{ presentation: 'xyz' as any }} />
@@ -647,13 +647,13 @@ describe('presentation validation', () => {
           </>
         ),
       });
-    }).toThrow('Invalid presentation value "xyz"');
+    }).rejects.toThrow('Invalid presentation value "xyz"');
   });
 });
 
 describe('singular', () => {
-  test('singular should only allow one instance of a screen', () => {
-    renderRouter(
+  test('singular should only allow one instance of a screen', async () => {
+    await renderRouter(
       {
         _layout: () => (
           <Stack>
@@ -703,7 +703,7 @@ describe('singular', () => {
 
     // Normally pushing would add a new route, but since we have singular set to true
     // Nothing should happen, as the current route is already the same as the target route
-    act(() => router.push('/apple'));
+    await act(() => router.push('/apple'));
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
@@ -741,7 +741,7 @@ describe('singular', () => {
     });
 
     // Adding a new screen with different params should work
-    act(() => router.push('/banana'));
+    await act(() => router.push('/banana'));
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
@@ -788,7 +788,7 @@ describe('singular', () => {
 
     // Normally pushing would add a new route, but since we have singular set to true
     // It rearranges the Stack to move /apple to the current route
-    act(() => router.push('/apple'));
+    await act(() => router.push('/apple'));
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
@@ -873,8 +873,8 @@ describe('Stack.Screen types', () => {
   });
 });
 
-it('does not deregister screens when passed the removed redirect prop', () => {
-  renderRouter(
+it('does not deregister screens when passed the removed redirect prop', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Stack>
@@ -895,8 +895,8 @@ describe('function-form options', () => {
     MockedScreenStackItem.mockClear();
   });
 
-  it('passes resolved function-form options to ScreenStackItem', () => {
-    renderRouter({
+  it('passes resolved function-form options to ScreenStackItem', async () => {
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen name="index" options={({ route }) => ({ title: `Page: ${route.name}` })} />
@@ -909,10 +909,10 @@ describe('function-form options', () => {
     expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('Page: index');
   });
 
-  it('calls function-form options with route and navigation', () => {
+  it('calls function-form options with route and navigation', async () => {
     const optionsFn = jest.fn(({ route }) => ({ title: `Page: ${route.name}` }));
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen name="index" options={optionsFn} />
@@ -928,8 +928,8 @@ describe('function-form options', () => {
     expect(arg.route).toHaveProperty('name', 'index');
   });
 
-  it('passes updated options to ScreenStackItem after navigation', () => {
-    renderRouter({
+  it('passes updated options to ScreenStackItem after navigation', async () => {
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen name="index" options={({ route }) => ({ title: `Page: ${route.name}` })} />
@@ -943,17 +943,17 @@ describe('function-form options', () => {
       profile: () => <Text testID="profile">Profile</Text>,
     });
 
-    act(() => router.push('/profile'));
+    await act(() => router.push('/profile'));
 
     expect(screen.getByTestId('profile')).toBeVisible();
 
     expect(MockedScreenStackItem.mock.calls[2]![0].headerConfig?.title).toBe('Page: profile');
   });
 
-  it('warns when function-form options are used in page context', () => {
+  it('warns when function-form options are used in page context', async () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    renderRouter({
+    await renderRouter({
       index: () => (
         <>
           <Stack.Screen options={({ route }) => ({ title: `Page: ${route.name}` })} />
@@ -972,10 +972,10 @@ describe('function-form options', () => {
 });
 
 describe('Screen options with /index suffix normalization', () => {
-  it('should apply Screen options when name omits /index suffix', () => {
+  it('should apply Screen options when name omits /index suffix', async () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => (
           <Stack id={undefined}>
@@ -1003,10 +1003,10 @@ describe('Screen options with /index suffix normalization', () => {
     spy.mockRestore();
   });
 
-  it('should apply options when _layout exists alongside index', () => {
+  it('should apply options when _layout exists alongside index', async () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => (
           <Stack id={undefined}>
@@ -1035,10 +1035,10 @@ describe('Screen options with /index suffix normalization', () => {
     spy.mockRestore();
   });
 
-  it('should apply options when _layout exists without index', () => {
+  it('should apply options when _layout exists without index', async () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => (
           <Stack id={undefined}>
@@ -1067,22 +1067,23 @@ describe('Screen options with /index suffix normalization', () => {
     spy.mockRestore();
   });
 
-  it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
-    expect(() =>
-      renderRouter(
-        {
-          _layout: () => (
-            <Stack id={undefined}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
-              <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
-            </Stack>
-          ),
-          index: () => <Text testID="index">Index</Text>,
-          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
-        },
-        { initialUrl: '/otp/signin' }
-      )
-    ).toThrow('Screen names must be unique');
+  it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', async () => {
+    await expect(
+      async () =>
+        await renderRouter(
+          {
+            _layout: () => (
+              <Stack id={undefined}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
+                <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
+              </Stack>
+            ),
+            index: () => <Text testID="index">Index</Text>,
+            'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+          },
+          { initialUrl: '/otp/signin' }
+        )
+    ).rejects.toThrow('Screen names must be unique');
   });
 });

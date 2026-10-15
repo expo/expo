@@ -14,6 +14,7 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
+import { isOutOfTreePlatform } from '@expo/platforms';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -37,6 +38,11 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+  withMetroCacheVary,
+} from './withMetroCacheVary';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 declare module '2g' {
@@ -119,10 +125,14 @@ class LogRespectingTerminal extends Terminal {
       this.flush();
     };
 
-    const sendStderr = (...msg: any[]) => {
+    const sendStderr = (level: 'warn' | 'error', ...msg: any[]) => {
       if (!msg.length) {
         this.logStderr('');
       } else {
+        event('server_log', {
+          level,
+          data: msg.map((value) => (value instanceof Error ? event.error(value) : value)),
+        });
         const [format, ...args] = msg;
         this.logStderr(require('util').format(format, ...args));
       }
@@ -130,8 +140,8 @@ class LogRespectingTerminal extends Terminal {
 
     console.log = sendLog;
     console.info = sendLog;
-    console.warn = sendStderr;
-    console.error = sendStderr;
+    console.warn = (...msg) => sendStderr('warn', ...msg);
+    console.error = (...msg) => sendStderr('error', ...msg);
 
     // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
     process.on('exit', () => {
@@ -203,8 +213,8 @@ export async function loadMetroConfigAsync(
 
   // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
   // react-native package to their support package, and require autolinking module resolution
-  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
-    (platform) => platform === 'tvos' || platform === 'macos'
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some((platform) =>
+    isOutOfTreePlatform(platform)
   );
 
   // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
@@ -325,6 +335,9 @@ export async function loadMetroConfigAsync(
     isReactServerComponentsEnabled: serverComponentsEnabled,
     getMetroBundler,
   });
+
+  // Post-resolution: `loadUserConfig` has already resolved function-form `cacheStores` to an array.
+  config = withMetroCacheVary(config);
 
   event('config', {
     serverRoot: event.path(serverRoot),
@@ -528,6 +541,10 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
+
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   // Warm the transform worker pool during the idle window before the first bundle request
   if (!isExporting) {

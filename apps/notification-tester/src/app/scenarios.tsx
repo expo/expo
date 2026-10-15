@@ -2,7 +2,6 @@ import * as Notifications from 'expo-notifications';
 import { sendPushNotificationsAsync } from 'native-component-list/src/api/sendPushNotificationsAsync';
 import HeadingText from 'native-component-list/src/components/HeadingText';
 import ListButton from 'native-component-list/src/components/ListButton';
-import React from 'react';
 
 import { ScrollView } from '../misc/Themed';
 

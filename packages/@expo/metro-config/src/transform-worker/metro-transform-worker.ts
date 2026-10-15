@@ -31,6 +31,7 @@ import {
 import assert from 'node:assert';
 
 import type { ExpoBabelTransformer as ExpoBabelTransformerWithCacheKey } from '../babel-transformer';
+import { embedCurrentFingerprints, type CacheVaryDim } from '../cache-vary/ambient';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
   composeSourceMaps,
@@ -97,6 +98,7 @@ interface JSFile extends BaseFile {
     readonly names: string[];
     readonly originalCode: string;
   };
+  readonly cacheVary?: readonly CacheVaryDim[];
 }
 
 interface JSONFile extends BaseFile {
@@ -649,6 +651,7 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         loaderReference: file.loaderReference,
+        expoCacheVary: await embedCurrentFingerprints(file.cacheVary),
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -783,6 +786,7 @@ async function completeFullNoxcturnalTransform(
   context: TransformationContext,
   fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
 ): Promise<TransformResponse> {
+  const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
   if (String(context.options.customTransformOptions?.optimize) === 'true') {
     return transformJS(
       {
@@ -814,6 +818,7 @@ async function completeFullNoxcturnalTransform(
             ? fullNoxcturnal.result.metadata.loaderReference
             : file.loaderReference,
         functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
+        cacheVary,
       },
       context
     );
@@ -878,6 +883,7 @@ async function completeFullNoxcturnalTransform(
             typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
               ? fullNoxcturnal.result.metadata.loaderReference
               : file.loaderReference,
+          expoCacheVary: await embedCurrentFingerprints(cacheVary),
         },
       },
     ],
@@ -916,6 +922,7 @@ async function transformJSWithBabelFallback(
     expoDomComponentReference: metadata?.expoDomComponentReference,
     loaderReference: metadata?.loaderReference,
     performConstantFolding: metadata?.performConstantFolding,
+    cacheVary: metadata?.cacheVary,
   };
 
   return await transformJS(jsFile, context);
@@ -1053,7 +1060,8 @@ export async function transform(
 // NOTE: Increment if cache becomes incompatible (original value would be '')
 // 1. Added new packed source map format
 // 3. Replaced the packed source map format with Metro's compact `VlqMap`
-const CACHE_VERSION = '3';
+// 4. `expoCacheVary` is embedded in cached transform results
+const CACHE_VERSION = '4';
 
 export function getCacheKey(
   config: ExpoJsTransformerConfig,

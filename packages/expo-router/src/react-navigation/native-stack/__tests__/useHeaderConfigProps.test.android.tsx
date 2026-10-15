@@ -73,13 +73,13 @@ beforeEach(() => {
 // ─── tintColor ──────────────────────────────────────────────────────────────────
 
 describe('tintColor', () => {
-  test('defaults to colors.text on Android', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('defaults to colors.text on Android', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.color).toBe(DEFAULT_COLORS.text);
   });
 
-  test('custom headerTintColor overrides default', () => {
-    const { result } = renderHook(() =>
+  test('custom headerTintColor overrides default', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTintColor: 'green' }))
     );
     expect(result.current.color).toBe('green');
@@ -89,8 +89,8 @@ describe('tintColor', () => {
 // ─── backgroundColor ────────────────────────────────────────────────────────────
 
 describe('backgroundColor', () => {
-  test('not transparent when headerLargeTitleEnabled on Android', () => {
-    const { result } = renderHook(() =>
+  test('not transparent when headerLargeTitleEnabled on Android', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true }))
     );
     expect(result.current.backgroundColor).toBe(DEFAULT_COLORS.card);
@@ -100,8 +100,8 @@ describe('backgroundColor', () => {
 // ─── translucent ────────────────────────────────────────────────────────────────
 
 describe('translucent', () => {
-  test('false with large title (no iOS-specific translucency)', () => {
-    const { result } = renderHook(() =>
+  test('false with large title (no iOS-specific translucency)', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true }))
     );
     expect(result.current.translucent).toBe(false);
@@ -111,8 +111,8 @@ describe('translucent', () => {
 // ─── backButtonDisplayMode ──────────────────────────────────────────────────────
 
 describe('backButtonDisplayMode', () => {
-  test('falls back on Android (not iOS)', () => {
-    const { result } = renderHook(() =>
+  test('falls back on Android (not iOS)', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonDisplayMode: 'minimal' }))
     );
     expect(result.current.backButtonDisplayMode).toBeUndefined();
@@ -122,15 +122,15 @@ describe('backButtonDisplayMode', () => {
 // ─── backButtonInCustomView ─────────────────────────────────────────────────────
 
 describe('backButtonInCustomView', () => {
-  test('true when headerTitle is a function and no headerLeft', () => {
-    const { result } = renderHook(() =>
+  test('true when headerTitle is a function and no headerLeft', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitle: () => <View /> }))
     );
     expect(result.current.backButtonInCustomView).toBe(true);
   });
 
-  test('false when headerTitle is function but headerLeft is provided', () => {
-    const { result } = renderHook(() =>
+  test('false when headerTitle is function but headerLeft is provided', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({ headerTitle: () => <View />, headerLeft: () => <View /> })
       )
@@ -142,26 +142,26 @@ describe('backButtonInCustomView', () => {
 // ─── headerLeft / headerRight receive backgroundColor ────────────────────────────
 
 describe('headerLeft and headerRight receive backgroundColor', () => {
-  test('headerLeft receives default backgroundColor (colors.card)', () => {
+  test('headerLeft receives default backgroundColor (colors.card)', async () => {
     const headerLeft = jest.fn(() => <View />);
-    renderHook(() => useHeaderConfigProps(defaultProps({ headerLeft })));
+    await renderHook(() => useHeaderConfigProps(defaultProps({ headerLeft })));
     expect(headerLeft).toHaveBeenCalledWith(
       expect.objectContaining({ backgroundColor: DEFAULT_COLORS.card })
     );
   });
 
-  test('headerRight receives default backgroundColor (colors.card)', () => {
+  test('headerRight receives default backgroundColor (colors.card)', async () => {
     const headerRight = jest.fn(() => <View />);
-    renderHook(() => useHeaderConfigProps(defaultProps({ headerRight })));
+    await renderHook(() => useHeaderConfigProps(defaultProps({ headerRight })));
     expect(headerRight).toHaveBeenCalledWith(
       expect.objectContaining({ backgroundColor: DEFAULT_COLORS.card })
     );
   });
 
-  test('custom headerStyle.backgroundColor flows to headerLeft and headerRight', () => {
+  test('custom headerStyle.backgroundColor flows to headerLeft and headerRight', async () => {
     const headerLeft = jest.fn(() => <View />);
     const headerRight = jest.fn(() => <View />);
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerLeft,
@@ -180,8 +180,8 @@ describe('headerLeft and headerRight receive backgroundColor', () => {
 // ─── children rendering (Android) ───────────────────────────────────────────────
 
 describe('children rendering', () => {
-  test('headerLeft and headerTitle function in ScreenStackHeaderLeftView', () => {
-    const { result } = renderHook(() =>
+  test('headerLeft and headerTitle function in ScreenStackHeaderLeftView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerLeft: () => <View testID="left" />,
@@ -189,34 +189,34 @@ describe('children rendering', () => {
         })
       )
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const leftView = getByTestId('ScreenStackHeaderLeftView');
     expect(within(leftView).getByTestId('left')).toBeTruthy();
     expect(within(leftView).getByTestId('title-fn')).toBeTruthy();
   });
 
-  test('headerTitleAlign center renders title in ScreenStackHeaderCenterView', () => {
-    const { result } = renderHook(() =>
+  test('headerTitleAlign center renders title in ScreenStackHeaderCenterView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitleAlign: 'center' }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderCenterView')).toBeTruthy();
   });
 
-  test('headerRight renders in ScreenStackHeaderRightView', () => {
-    const { result } = renderHook(() =>
+  test('headerRight renders in ScreenStackHeaderRightView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerRight: () => <View testID="header-right" /> }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const rightView = getByTestId('ScreenStackHeaderRightView');
     expect(within(rightView).getByTestId('header-right')).toBeTruthy();
   });
 
-  test('headerTitle function without headerLeft renders in ScreenStackHeaderLeftView', () => {
-    const { result } = renderHook(() =>
+  test('headerTitle function without headerLeft renders in ScreenStackHeaderLeftView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitle: () => <View testID="title-only" /> }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const leftView = getByTestId('ScreenStackHeaderLeftView');
     expect(within(leftView).getByTestId('title-only')).toBeTruthy();
   });

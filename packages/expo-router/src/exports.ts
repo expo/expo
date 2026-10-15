@@ -118,6 +118,7 @@ export type {
   RouterActionContext,
   RouterActionReducer,
   RouterActionResult,
+  RouterBrowserHistoryAction,
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
@@ -131,15 +132,24 @@ export type {
   TabRouterOptions,
 } from './react-navigation/routers';
 
-export { unstable_navigationEvents } from './navigationEvents';
+export {
+  unstable_enablePerformanceIntegration,
+  unstable_performance,
+  unstable_PerformanceObserver,
+} from './performance';
 export type {
-  PagePreloadedEvent,
-  PageFocusedEvent,
-  PageBlurredEvent,
-  PageRemoved,
-  ActionDispatchedEvent,
-  AnalyticsEvent,
-} from './navigationEvents';
+  RouterPageMarkDetail,
+  RouterActionMarkDetail,
+  RouterPagePreloadedMark,
+  RouterPageFocusedMark,
+  RouterPageBlurredMark,
+  RouterPageRemovedMark,
+  RouterActionEnqueuedMark,
+  RouterActionDispatchedMark,
+  RouterPerformanceMark,
+  RouterPerformanceMarkByName,
+  BaseRouterPerformanceMark,
+} from './performance';
 
 /**
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.

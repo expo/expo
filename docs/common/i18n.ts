@@ -37,14 +37,10 @@ export function buildLocalePath(currentPath: string, targetLocale: SupportedLoca
   return `/ja${englishPath}`;
 }
 
-/**
- * Every page with a Japanese translation, mapped to its Japanese sidebar title.
- *
- * This is the single source of truth: a page is translated when it appears here,
- * and `checks/ja/sync.test.ts` keeps the list and `pages/ja/**` from drifting apart.
- * Keys are English canonical paths, matching the file layout under `pages/ja`.
- */
-const JA_TRANSLATED_PAGES: Record<string, string> = {
+type EnglishCanonicalPath = string;
+type JapaneseSidebarTitle = string;
+
+const JA_TRANSLATED_PAGES: Record<EnglishCanonicalPath, JapaneseSidebarTitle> = {
   '/tutorial/overview': '概要',
   '/tutorial/introduction': 'はじめに',
   '/tutorial/create-your-first-app': '最初のアプリを作成する',

@@ -280,10 +280,12 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
         @"You're signed in to Expo CLI as \"%@\" and to Expo Go as \"%@\" — these accounts need to match to open this project.",
         manifestUsername, expoGoUsername];
     }
-    _error = [NSError errorWithDomain:@"EXAppLoader"
-                                 code:1027
-                             userInfo:@{NSLocalizedDescriptionKey: message,
-                                        EXShowTryAgainButtonKey: @YES}];
+    NSMutableDictionary *userInfo = [@{NSLocalizedDescriptionKey: message,
+                                       EXShowTryAgainButtonKey: @YES} mutableCopy];
+    if (!hasPendingDeviceAuth) {
+      userInfo[EXAccountMismatchUsernameKey] = manifestUsername;
+    }
+    _error = [NSError errorWithDomain:@"EXAppLoader" code:1027 userInfo:userInfo];
     if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
     return;
   }

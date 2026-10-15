@@ -194,6 +194,14 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification Permissions</HeadingText>
         <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
         <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+        <ListButton
+          onPress={this.getExactAlarmPermissionsAsync}
+          title="Get exact alarm permissions"
+        />
+        <ListButton
+          onPress={this.requestExactAlarmPermissionsAsync}
+          title="Request exact alarm permissions"
+        />
 
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
@@ -266,6 +274,16 @@ export default class NotificationScreen extends React.Component<
 
   private requestPermissionsAsync = async () => {
     const permission = await Notifications.requestPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
+  private getExactAlarmPermissionsAsync = async () => {
+    const permission = await Notifications.getExactAlarmPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestExactAlarmPermissionsAsync = async () => {
+    const permission = await Notifications.requestExactAlarmPermissionsAsync();
     alert(`Status: ${permission.status}`);
   };
 
@@ -390,7 +408,7 @@ export default class NotificationScreen extends React.Component<
     const actualNumber = await Notifications.getBadgeCountAsync();
     const message = didIncrement
       ? `Incremented from ${previousNumber} to ${actualNumber} (expected: ${previousNumber + 1}).`
-      : "You don't have notification permissions.";
+      : 'Could not update the badge. The launcher may not support badge counts, or badge permissions may be disabled.';
     Alert.alert(message);
   };
 

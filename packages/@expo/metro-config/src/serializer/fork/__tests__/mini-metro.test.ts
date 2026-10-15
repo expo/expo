@@ -1,5 +1,41 @@
 import { microBundle } from './mini-metro';
 
+it('resolves weak IDs without traversing weak-only targets', async () => {
+  const [, , graph] = await microBundle({
+    fs: {
+      'index.js': `require.resolveWeak('./weak');`,
+      'weak.js': `import './hidden';`,
+      'hidden.js': '',
+    },
+  });
+  expect([...graph.dependencies.keys()]).toEqual(['/app/index.js']);
+  expect([...graph.dependencies.get('/app/index.js')!.dependencies.values()][0]).toMatchObject({
+    absolutePath: '/app/weak.js',
+  });
+});
+
+it('resolves every edge to a previously visited module, including nested cycles', async () => {
+  const [, , graph] = await microBundle({
+    fs: {
+      'index.js': `import './nested/a'; import './nested/b';`,
+      'nested/a.js': `import './b';`,
+      'nested/b.js': `import './a';`,
+    },
+  });
+  expect(
+    [...graph.dependencies].map(([modulePath, module]) => [
+      modulePath,
+      [...module.dependencies.values()].map((dependency) =>
+        'absolutePath' in dependency ? dependency.absolutePath : undefined
+      ),
+    ])
+  ).toEqual([
+    ['/app/index.js', ['/app/nested/a.js', '/app/nested/b.js']],
+    ['/app/nested/a.js', ['/app/nested/b.js']],
+    ['/app/nested/b.js', ['/app/nested/a.js']],
+  ]);
+});
+
 const fs = {
   'index.js': `
     import { foo } from './foo';
@@ -62,6 +98,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       var _foo = require(_dependencyMap[0], "./foo");
       console.log(_foo.foo);
     });",
+                  "expoCacheVary": undefined,
                   "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",
@@ -114,6 +151,7 @@ it(`can create a micro Metro graph fixture`, async () => {
       });
       const foo = 'foo';
     });",
+                  "expoCacheVary": undefined,
                   "expoDomComponentReference": undefined,
                   "functionMap": {
                     "mappings": "AAA",

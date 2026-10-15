@@ -147,7 +147,7 @@ export function getMimeType(srcPath: string): string | null {
     srcPath = url.pathname;
   } catch {}
 
-  const ext = path.extname(srcPath).replace(/^\./, '');
+  const ext = path.extname(srcPath).replace(/^\./, '').toLowerCase();
   return types[ext] ?? null;
 }
 

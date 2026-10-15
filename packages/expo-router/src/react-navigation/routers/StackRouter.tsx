@@ -10,6 +10,8 @@ import type {
   ParamListBase,
   Route,
   Router,
+  RouterBrowserHistoryAction,
+  NavigationAction,
 } from './types';
 
 export type StackActionType =
@@ -107,6 +109,39 @@ function reconcileStackRoutes<ParamList extends ParamListBase>(
     index: activeRoutes.length - 1,
     routes: activeRoutes.concat(preloadedRoutes.filter((route) => !activeKeys.has(route.key))),
   };
+}
+
+/** Uses the active index change, except NAVIGATE can create a visit without growing the stack. */
+export function getStackBrowserHistoryAction(
+  previous: NavigationState,
+  next: NavigationState,
+  action: NavigationAction
+): RouterBrowserHistoryAction | undefined {
+  switch (action.type) {
+    case 'NAVIGATE': {
+      // Moving a singular route to the top is a new visit even when filtering keeps
+      // the stack the same size. NAVIGATE(pop) is an explicit traversal instead.
+      const isPop = action.payload && 'pop' in action.payload && action.payload.pop;
+      if (!isPop) {
+        return next.routes[next.index]?.key !== previous.routes[previous.index]?.key
+          ? { type: 'push' }
+          : undefined;
+      }
+      break;
+    }
+  }
+  const delta = next.index - previous.index;
+  if (delta > 0) {
+    return { type: 'push' };
+  }
+  if (delta < 0) {
+    return {
+      type: 'pop',
+      count: -delta,
+      target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+    };
+  }
+  return undefined;
 }
 
 export type StackActionHelpers<ParamList extends ParamListBase> = {
@@ -219,6 +254,11 @@ function stackRouterExtension({
     'shouldActionChangeFocus'
   > = {
     normalizeState: markPreloadedRoutes,
+    getBrowserHistoryForAction: getStackBrowserHistoryAction,
+
+    getBrowserHistoryForRouteFocus(previous, next) {
+      return getStackBrowserHistoryAction(previous, next, { type: 'POP' });
+    },
 
     getStateForDeclaredRoutes(state, routeNames) {
       const filteredState = baseRouter.getStateForDeclaredRoutes(state, routeNames);

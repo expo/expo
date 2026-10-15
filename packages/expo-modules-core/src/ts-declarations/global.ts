@@ -78,6 +78,11 @@ declare namespace ExpoGlobal {
    */
   export const documentsDir: undefined | string;
 
+  /**
+   * Whether the app is running on a Meta Quest device. Always `false` on iOS and web.
+   */
+  export const isRunningOnQuest: boolean;
+
   // Utils
 
   /**

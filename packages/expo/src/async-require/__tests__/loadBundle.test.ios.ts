@@ -42,8 +42,8 @@ it('asserts in production when attempting to load a bundle and the user-defined 
       'Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion='
     )
   ).rejects.toThrow();
-  expect(HMRClient.registerBundle).not.toBeCalled();
-  expect(fetchThenEvalAsync).not.toBeCalled();
+  expect(HMRClient.registerBundle).not.toHaveBeenCalled();
+  expect(fetchThenEvalAsync).not.toHaveBeenCalled();
 });
 
 it('loads a bundle in production with user-defined location.origin', async () => {

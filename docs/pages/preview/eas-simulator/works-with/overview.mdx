@@ -1,0 +1,61 @@
+---
+title: Which apps and frameworks work with EAS Simulator
+sidebar_title: Overview
+description: EAS Simulator runs any app built for the Android Emulator or the iOS Simulator, including Expo, React Native, native, Flutter, and Unity apps, with React Native features only for React Native apps.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator works with any app that is built for the Android Emulator or the iOS Simulator. The remote device is a stock Android Emulator or iOS Simulator. The device has no Expo or React Native requirement. The toolchain that made the app changes only two things: how you get the app onto the device, and which controller features work.
+
+## Compatibility
+
+| Toolchain                                                                           | Application sources                                            | Device-level control | React Native features |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------- | --------------------- |
+| [Expo and React Native](/preview/eas-simulator/works-with/expo-and-react-native/)   | EAS Build ID, fingerprint, archive URL, local build            | Yes                  | Yes                   |
+| [Expo Go](/preview/eas-simulator/works-with/expo-go/)                               | `--expo-go`                                                    | Yes                  | Yes                   |
+| [Native Android and iOS](/preview/eas-simulator/works-with/native-ios-and-android/) | Archive URL, local build, EAS Build ID for EAS Build artifacts | Yes                  | No                    |
+| [Flutter](/preview/eas-simulator/works-with/flutter/)                               | Archive URL, local build                                       | Yes                  | No                    |
+| [Unity and hybrid](/preview/eas-simulator/works-with/unity-and-hybrid/)             | Archive URL, local build                                       | Yes                  | No                    |
+
+**Device-level control** acts through the operating system. It includes opening apps, reading the accessibility tree, pressing elements, entering text, screenshots, and recordings. Accessibility-based actions need an app that exposes an accessibility tree, which Unity apps do not do by default.
+
+**React Native features** need a React Native app and a running Metro server. They include Fast Refresh, React component inspection, and React render profiling.
+
+## Test frameworks
+
+| Framework                                             | How it connects                                                             |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| [Appium](/preview/eas-simulator/works-with/appium/)   | An `appium` session gives your Appium client a server URL and capabilities. |
+| [Maestro](/preview/eas-simulator/works-with/maestro/) | agent-device can run supported Maestro YAML.                                |
+| [e2e](/guides/using-e2e/#run-e2e-on-eas-simulator)    | The `@e2e-dev/eas` integration starts one session for each e2e worker.      |
+
+## Build requirements for every toolchain
+
+| Platform | Required build                                                                                                       | Fails to install                             |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Android  | An **.apk** whose native libraries, if any, include an emulator application binary interface (ABI), such as `x86_64` | An **.aab**                                  |
+| iOS      | A **.app** built against the `iphonesimulator` SDK. For an archive URL, a **.tar.gz** or **.tgz** of the **.app**.   | An **.ipa** device build, a **.zip** archive |
+
+See [Which build to install on EAS Simulator](/preview/eas-simulator/how-it-works/builds-and-bundles/).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Does my app need the expo package?">
+
+No. The device runs any simulator or emulator build. EAS CLI needs a project directory with **package.json** and an app config that contains the EAS project ID. The REST API needs only the project ID.
+
+</Collapsible>
+
+<Collapsible summary="Which features do I lose with an app that is not React Native?">
+
+Fast Refresh, Metro, React DevTools, component inspection, and React render profiling do not work. See [EAS Simulator limitations](/preview/eas-simulator/limitations/).
+
+</Collapsible>
+
+</FAQ>

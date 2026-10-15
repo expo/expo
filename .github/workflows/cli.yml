@@ -3,7 +3,7 @@ name: CLI
 on:
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/cli.yml
       - apps/router-e2e/**
       - packages/@expo/cli/**
@@ -24,26 +24,7 @@ on:
       - packages/expo-server/**
       - '!**.md'
   pull_request:
-    paths:
-      - .github/workflows/cli.yml
-      - apps/router-e2e/**
-      - packages/@expo/cli/**
-      - packages/@expo/metro-runtime/**
-      - packages/@expo/metro-config/src/**
-      - packages/@expo/config/src/**
-      - packages/@expo/config-plugins/src/**
-      - packages/@expo/env/src/**
-      - packages/@expo/json-file/src/**
-      - packages/@expo/package-manager/src/**
-      - packages/@expo/prebuild-config/src/**
-      - packages/@expo/router-server/**
-      - packages/@expo/log-box/**
-      - packages/@expo/metro-file-map/**
-      - packages/eslint-config-expo/**
-      - packages/eslint-plugin-expo/**
-      - packages/expo-router/**
-      - packages/expo-server/**
-      - '!**.md'
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 
@@ -57,7 +38,11 @@ env:
 
 jobs:
   install-e2e-debian:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'expo/expo') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     runs-on: ubuntu-24.04
     container: node:24-bookworm
     strategy:
@@ -100,7 +85,11 @@ jobs:
           E2E_INSTALL_PM: ${{ matrix.pm }}
 
   fallback-watcher-windows:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'expo/expo') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     runs-on: windows-2022
     timeout-minutes: 25
     steps:
@@ -135,7 +124,11 @@ jobs:
         run: pnpm exec jest src/watchers/__tests__/FallbackWatcher.test.ts --runInBand
 
   jest-ubuntu:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'expo/expo') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -245,7 +238,11 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   playwright-ubuntu:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'expo/expo') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false

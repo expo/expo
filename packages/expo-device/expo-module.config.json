@@ -4,6 +4,11 @@
     "modules": ["DeviceModule"]
   },
   "android": {
-    "modules": ["expo.modules.device.DeviceModule"]
+    "modules": ["expo.modules.device.DeviceModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.device",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -14,6 +14,10 @@ import { resolveSource } from './utils/resolveSources';
  * It loads a new image every time the `uri` of the provided source changes.
  * To trigger reloads in some other scenarios, you can provide an additional dependency list.
  *
+ * On Android, when neither `maxWidth` nor `maxHeight` is provided, large images may be
+ * downsampled to fit the platform's bitmap size limit. The returned `ImageRef.width` and
+ * `ImageRef.height` reflect the decoded size and may differ from the original dimensions or iOS.
+ *
  * > **warning** Avoid using this hook for large images without specifying size constraints,
  * > as it may cause crashes due to excessive memory usage. It is recommended to use either
  * > `maxWidth` or `maxHeight` option to scale down the image appropriately for your use case.

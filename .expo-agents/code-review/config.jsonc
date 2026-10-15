@@ -5,13 +5,13 @@
   // below for the credential. Override per-agent via frontmatter in the agent's
   // markdown, or at runtime with the REVIEWER_MODEL env var
   // (e.g. REVIEWER_MODEL=anthropic/claude-haiku-4-5).
-  "model": "anthropic/claude-sonnet-5",
+  "model": "anthropic/claude-opus-5-5",
 
   // Agents: every markdown file in agents/ is one reviewer (id = filename).
   // Add or remove files to change the roster — no list needed here.
   // shared.md (prepended to every agent + coordinator) and coordinator.md are
   // reserved filenames. Per-agent overrides go in each file's YAML frontmatter,
-  // e.g. `---\nmodel: anthropic/claude-opus-5\n---`.
+  // e.g. `---\nmodel: anthropic/claude-opus-5-5\n---`.
 
   // @ref LLP 0009#config-and-prompt-templates [implements] — suggestions off by default, not a schema limit
   "policy": {

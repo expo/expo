@@ -23,6 +23,10 @@ let package = Package(
       dependencies: [],
       path: "ios/ExpoObjC",
       publicHeadersPath: "include",
+      // CocoaPods gets this from the build environment; under Swift Package Manager
+      // nothing sets it, and EXAppDefinesLoader would then report the old architecture.
+      cSettings: [.define("RCT_NEW_ARCH_ENABLED", to: "1")],
+      cxxSettings: [.define("RCT_NEW_ARCH_ENABLED", to: "1")],
     ),
     // The ObjC `+load` bootstrap that registers app-delegate subscribers before any
     // life-cycle event fires. It needs BOTH halves — `EXLegacyAppDelegateWrapper` from

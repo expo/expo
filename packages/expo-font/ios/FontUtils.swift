@@ -143,23 +143,25 @@ internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: C
 
 /**
  Registers the given font to make it discoverable through font descriptor matching.
+ Returns whether this URL owns a registration, rather than relying on a duplicate name at another URL.
  */
-internal func registerFont(fontUrl: CFURL, fontFamilyAlias: String) throws {
+internal func registerFont(fontUrl: CFURL, fontFamilyAlias: String) throws -> Bool {
   var error: Unmanaged<CFError>?
 
   if !CTFontManagerRegisterFontsForURL(fontUrl, .process, &error), let error = error?.takeRetainedValue() {
     let fontError = CTFontManagerError(rawValue: CFErrorGetCode(error))
 
     switch fontError {
-    case .alreadyRegistered, .duplicatedName:
-      // Ignore the error if:
-      // - this exact font instance was already registered or
-      // - another instance already registered with the same name (assuming it's most likely the same font anyway)
-      return
+    case .alreadyRegistered:
+      return true
+    case .duplicatedName:
+      // The requested URL was not registered. A different URL still owns this font name.
+      return false
     default:
       throw FontRegistrationFailedException(FontRegistrationErrorInfo(fontFamilyAlias: fontFamilyAlias, cfError: error, ctFontManagerError: fontError))
     }
   }
+  return true
 }
 
 /**

@@ -2,7 +2,7 @@ import AppIntents
 internal import ExpoAppIntents
 import Foundation
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 @AppEntity(schema: .mail.draft)
 struct MailDraftEntity {
   static let defaultQuery = MailDraftEntityQuery()

@@ -1,7 +1,8 @@
 /**
- * Tests for composed xcframeworks:
- *  - copyResourceBundlesIntoXCFrameworkAsync — resource bundle placement
- *  - Frameworks.findFrameworkAtAnyVersion — locating a built product on disk
+ * Tests for xcframework composition:
+ *  - copyResourceBundlesIntoXCFrameworkAsync (resource bundle placement)
+ *  - rewriteInternalTargetModuleReferences (.swiftinterface module rewriting)
+ *  - Frameworks.findFrameworkAtAnyVersion (locating a built product on disk)
  */
 import fs from 'fs-extra';
 import assert from 'node:assert/strict';
@@ -10,7 +11,11 @@ import os from 'os';
 import path from 'path';
 
 import type { SPMPackageSource } from './ExternalPackage';
-import { copyResourceBundlesIntoXCFrameworkAsync, Frameworks } from './Frameworks';
+import {
+  copyResourceBundlesIntoXCFrameworkAsync,
+  Frameworks,
+  rewriteInternalTargetModuleReferences,
+} from './Frameworks';
 import { SPMBuild } from './SPMBuild';
 import type { SPMConfig, SPMProduct } from './SPMConfig.types';
 import { setForceNonInteractive } from './Utils';
@@ -299,5 +304,115 @@ describe('findFrameworkAtAnyVersion', () => {
     ]);
 
     assert.equal(Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Release'), null);
+  });
+});
+
+describe('rewriteInternalTargetModuleReferences', () => {
+  const CORE_CONFIG: SPMConfig = {
+    products: [
+      {
+        name: 'ExpoModulesCore',
+        podName: 'ExpoModulesCore',
+        platforms: ['iOS(.v15)'],
+        targets: [
+          { type: 'swift', name: 'ExpoModulesCore', path: 'ios' },
+          { type: 'objc', name: 'ExpoModulesCore_ios_objc', path: 'ios/ObjC' },
+        ],
+      },
+    ],
+  };
+
+  it('rewrites module selector references, keeping the `::` separator', () => {
+    assert.equal(
+      rewriteInternalTargetModuleReferences(
+        'public func register(_ registry: ExpoModulesCore_ios_objc::EXModuleRegistry)',
+        CORE_CONFIG
+      ),
+      'public func register(_ registry: ExpoModulesCore::EXModuleRegistry)'
+    );
+  });
+
+  it('rewrites dot-qualified references, keeping the `.` separator', () => {
+    assert.equal(
+      rewriteInternalTargetModuleReferences(
+        'public func register(_ registry: ExpoModulesCore_ios_objc.EXModuleRegistry)',
+        CORE_CONFIG
+      ),
+      'public func register(_ registry: ExpoModulesCore.EXModuleRegistry)'
+    );
+  });
+
+  it('rewrites both separators in the same interface, each keeping its own', () => {
+    const contents = [
+      'public var registry: ExpoModulesCore_ios_objc::EXModuleRegistry',
+      'public var legacyRegistry: ExpoModulesCore_ios_objc.EXModuleRegistry',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, CORE_CONFIG),
+      [
+        'public var registry: ExpoModulesCore::EXModuleRegistry',
+        'public var legacyRegistry: ExpoModulesCore.EXModuleRegistry',
+      ].join('\n')
+    );
+  });
+
+  it('rewrites imports of the internal target to the product module', () => {
+    const contents = [
+      '@_exported import ExpoModulesCore_ios_objc',
+      'import ExpoModulesCore_ios_objc',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, CORE_CONFIG),
+      ['@_exported import ExpoModulesCore', 'import ExpoModulesCore'].join('\n')
+    );
+  });
+
+  it('leaves references to the target named after the product untouched', () => {
+    const contents = [
+      '@_exported import ExpoModulesCore',
+      'public var view: ExpoModulesCore::ExpoView',
+    ].join('\n');
+
+    assert.equal(rewriteInternalTargetModuleReferences(contents, CORE_CONFIG), contents);
+  });
+
+  it('does not let a target corrupt the sibling target whose name it prefixes', () => {
+    const siblingConfig: SPMConfig = {
+      products: [
+        {
+          name: 'ExpoModulesCore',
+          podName: 'ExpoModulesCore',
+          platforms: ['iOS(.v15)'],
+          targets: [
+            { type: 'swift', name: 'ExpoModulesCore_ios', path: 'ios' },
+            { type: 'objc', name: 'ExpoModulesCore_ios_objc', path: 'ios/ObjC' },
+          ],
+        },
+      ],
+    };
+    const contents = [
+      'public var registry: ExpoModulesCore_ios_objc::EXModuleRegistry',
+      'public var view: ExpoModulesCore_ios::ExpoView',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, siblingConfig),
+      [
+        'public var registry: ExpoModulesCore::EXModuleRegistry',
+        'public var view: ExpoModulesCore::ExpoView',
+      ].join('\n')
+    );
+  });
+
+  it('leaves qualified references to other modules untouched', () => {
+    const contents = [
+      'public var name: Swift::String',
+      '/// Wraps expo::createReactSchedulerHandle from the C++ runtime.',
+      'public var jsi: ExpoModulesJSI::JavaScriptRuntime',
+    ].join('\n');
+
+    assert.equal(rewriteInternalTargetModuleReferences(contents, CORE_CONFIG), contents);
   });
 });

@@ -8,7 +8,7 @@ import {
   LazyColumn,
   LazyRow,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
+import { fillMaxWidth, height, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable, FlatList } from 'react-native';
 
@@ -167,6 +167,64 @@ export default function HostingRNViewsScreen() {
                     borderRadius: 10,
                   }}
                 />
+              </RNHostView>
+            </Row>
+          </Column>
+        </Card>
+
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>{'matchContents: { vertical: true }'}</ComposeText>
+            <ComposeText>
+              Width comes from the card, height from the text. The purple box must stay inside the
+              card and grow to fit every line.
+            </ComposeText>
+            <RNHostView matchContents={{ vertical: true }}>
+              <View style={{ padding: 12, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                <RNText style={{ color: 'white' }}>
+                  This long React Native text wraps at the parent width and grows vertically. Before
+                  per-axis matchContents it laid out on one line and overflowed its parent.
+                </RNText>
+              </View>
+            </RNHostView>
+            <ComposeText>{'matchContents: { horizontal: true }'}</ComposeText>
+            <ComposeText>
+              Height comes from the 60dp row, width from the text. The purple box must be 60dp tall
+              and only as wide as its label.
+            </ComposeText>
+            <Row modifiers={[height(60)]}>
+              <RNHostView matchContents={{ horizontal: true }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    paddingHorizontal: 12,
+                    backgroundColor: '#9B59B6',
+                    borderRadius: 10,
+                  }}>
+                  <RNText style={{ color: 'white' }}>Hugs its label</RNText>
+                </View>
+              </RNHostView>
+            </Row>
+          </Column>
+        </Card>
+
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Text wrapping without matchContents</ComposeText>
+            <ComposeText>
+              The host fills the 100dp row, and flex: 1 fills the host. The text wraps at the row
+              width, but the height comes from the row, not from the text.
+            </ComposeText>
+            <Row modifiers={[fillMaxWidth(), height(100)]}>
+              <RNHostView>
+                <View
+                  style={{ flex: 1, padding: 12, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                  <RNText style={{ color: 'white' }}>
+                    This text wraps at the parent width. The host has no matchContents, so its size
+                    comes from the parent.
+                  </RNText>
+                </View>
               </RNHostView>
             </Row>
           </Column>

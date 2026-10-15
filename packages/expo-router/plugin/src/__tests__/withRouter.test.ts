@@ -23,3 +23,69 @@ describe('apiRoutes', () => {
     }
   );
 });
+
+describe('asyncRoutes', () => {
+  it('defaults to enabled only on web', () => {
+    const config = withRouter({ name: 'test', slug: 'test' });
+    expect(config.extra?.router.asyncRoutes).toEqual({ web: true });
+  });
+
+  it('adds the web default to a partial platform configuration', () => {
+    const config = withRouter(
+      { name: 'test', slug: 'test' },
+      { asyncRoutes: { android: 'development' } }
+    );
+    expect(config.extra?.router.asyncRoutes).toEqual({ android: 'development', web: true });
+  });
+
+  it.each([true, false, 'development', 'production'] as const)(
+    'preserves the scalar value %p',
+    (asyncRoutes) => {
+      const config = withRouter({ name: 'test', slug: 'test' }, { asyncRoutes });
+      expect(config.extra?.router.asyncRoutes).toBe(asyncRoutes);
+    }
+  );
+
+  it.each([
+    { default: false },
+    { default: 'development' as const },
+    { web: false },
+    { default: false, web: true },
+  ])('preserves an explicit web or default value: %p', (asyncRoutes) => {
+    const config = withRouter({ name: 'test', slug: 'test' }, { asyncRoutes });
+    expect(config.extra?.router.asyncRoutes).toEqual(asyncRoutes);
+  });
+
+  it('normalizes an existing router configuration', () => {
+    const config = withRouter({
+      name: 'test',
+      slug: 'test',
+      extra: { router: { asyncRoutes: { ios: 'development' } } },
+    });
+    expect(config.extra?.router.asyncRoutes).toEqual({ ios: 'development', web: true });
+  });
+
+  it('preserves an explicit value from an existing router configuration', () => {
+    const config = withRouter({
+      name: 'test',
+      slug: 'test',
+      extra: { router: { asyncRoutes: false } },
+    });
+    expect(config.extra?.router.asyncRoutes).toBe(false);
+  });
+
+  it('lets plugin options override existing router settings while preserving other extra values', () => {
+    const config = withRouter(
+      {
+        name: 'test',
+        slug: 'test',
+        extra: { custom: 'value', router: { asyncRoutes: false, origin: 'https://example.com' } },
+      },
+      { asyncRoutes: { ios: 'development' } }
+    );
+    expect(config.extra).toEqual({
+      custom: 'value',
+      router: { origin: 'https://example.com', asyncRoutes: { ios: 'development', web: true } },
+    });
+  });
+});

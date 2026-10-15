@@ -1,14 +1,32 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-25
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Sized the screenshot and recording blockers from the window they protect rather than the device's main screen, so they still cover the content on a two-display device such as iPhone Duo. ([#50570](https://github.com/expo/expo/pull/50570) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.2 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `OnDestroy` removing the app-switcher privacy overlay off the main thread on reload. ([#49562](https://github.com/expo/expo/pull/49562) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

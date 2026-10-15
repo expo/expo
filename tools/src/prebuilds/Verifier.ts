@@ -1114,6 +1114,76 @@ const collectModulesFromXcframeworks = (xcframeworkPaths: string[]): Set<string>
 };
 
 /**
+ * Suffixes naming the kind of an internal SPM target. They are build-time module names: nothing
+ * outside the build can import them. The match is deliberately not narrowed further; the cases
+ * that keeps working, and the ones it must not start rejecting, are pinned in Verifier.test.ts.
+ */
+const INTERNAL_TARGET_SUFFIXES = [
+  '_common_cpp',
+  '_ios_objc',
+  '_codegen_components',
+  '_codegen_modules',
+  '_cpp',
+];
+
+/**
+ * Matches an identifier qualifying a type, in the `Module.Type` form and in the `Module::Type`
+ * module selector Swift 6.4 prints. Only qualified positions count, so prose and C++ namespaces
+ * in doc comments are left alone.
+ */
+const QUALIFIED_MODULE_REFERENCE_REGEX = /\b(\w+)(::|\.)(?=\w)/g;
+
+/**
+ * An internal target is named either after its kind (`ExpoModulesCore_ios_objc`) or after the
+ * product it belongs to (`ExpoSQLite_c`, `RNReanimated_view`), so both forms have to be caught.
+ */
+const isInternalTargetModule = (module: string, frameworkName: string): boolean =>
+  INTERNAL_TARGET_SUFFIXES.some((suffix) => module.endsWith(suffix)) ||
+  // Without the length guard an empty framework name degrades the prefix to `_`, which matches
+  // `_Concurrency` and every other compiler-internal module in every interface at once.
+  (frameworkName.length > 0 && module.startsWith(`${frameworkName}_`));
+
+/** A module-qualified reference to an internal SPM target, found in a `.swiftinterface`. */
+export interface InternalTargetModuleReference {
+  /** The internal target module still named by the interface. */
+  module: string;
+  /** How many times it qualifies a type. */
+  count: number;
+  /** Separators it was qualified with, in order of first appearance. */
+  separators: string[];
+}
+
+/**
+ * Finds the internal SPM targets a `.swiftinterface` still names in a qualified position, one
+ * entry per module. Imports of such a module are caught separately; a qualified reference is the
+ * harder case, because the interface's imports stay legal while it fails in every consumer.
+ *
+ * @param content Contents of the .swiftinterface file
+ * @param frameworkName Name of the framework being verified; its own internal targets are prefixed with it
+ */
+export function findInternalTargetModuleReferences(
+  content: string,
+  frameworkName: string
+): InternalTargetModuleReference[] {
+  const references = new Map<string, InternalTargetModuleReference>();
+
+  for (const [, module, separator] of content.matchAll(QUALIFIED_MODULE_REFERENCE_REGEX)) {
+    if (!isInternalTargetModule(module, frameworkName)) {
+      continue;
+    }
+
+    const reference = references.get(module) ?? { module, count: 0, separators: [] };
+    reference.count += 1;
+    if (!reference.separators.includes(separator)) {
+      reference.separators.push(separator);
+    }
+    references.set(module, reference);
+  }
+
+  return [...references.values()];
+}
+
+/**
  * Verifies that imports in a swiftinterface file are valid.
  * Checks that:
  * 1. Imported modules are either well-known system/SDK modules or defined in the framework's modulemap
@@ -1124,7 +1194,7 @@ const collectModulesFromXcframeworks = (xcframeworkPaths: string[]): Set<string>
  * @param dependencyModules Modules declared by sibling xcframeworks; treated as defined
  * @returns Array of issue descriptions (empty if all imports are valid)
  */
-const verifySwiftInterfaceImports = async (
+export const verifySwiftInterfaceImports = async (
   swiftInterfacePath: string,
   frameworkPath: string,
   dependencyModules: Set<string> = new Set()
@@ -1272,17 +1342,6 @@ const verifySwiftInterfaceImports = async (
     'FBReactNativeSpec',
   ]);
 
-  // Pattern to detect internal SPM target names that should have been rewritten
-  // to product module names during post-processing.
-  // These suffixes indicate internal build-time target names, not real module names.
-  const internalTargetSuffixes = [
-    '_common_cpp',
-    '_ios_objc',
-    '_codegen_components',
-    '_codegen_modules',
-    '_cpp',
-  ];
-
   // Find all import statements
   const importPattern = /^(?:@_exported\s+)?import\s+(\w+)\s*$/gm;
   let match;
@@ -1293,7 +1352,7 @@ const verifySwiftInterfaceImports = async (
 
     // Check for internal SPM target names that should have been rewritten
     // during post-processing. Their presence indicates post-processing failed.
-    const hasInternalSuffix = internalTargetSuffixes.some((suffix) =>
+    const hasInternalSuffix = INTERNAL_TARGET_SUFFIXES.some((suffix) =>
       importedModule.endsWith(suffix)
     );
     if (hasInternalSuffix) {
@@ -1329,6 +1388,25 @@ const verifySwiftInterfaceImports = async (
         // (External dependencies should be handled at a higher level)
       }
     }
+  }
+
+  for (const { module, count, separators } of findInternalTargetModuleReferences(
+    content,
+    frameworkName
+  )) {
+    const occurrences = count === 1 ? '1 reference' : `${count} references`;
+    const separatorList = separators.map((separator) => `'${separator}'`).join(' and ');
+    const separatorLabel = separators.length === 1 ? 'separator' : 'separators';
+    issues.push(
+      `${interfaceFileName}: ${occurrences} to '${module}' qualified with the ${separatorList} ` +
+        `${separatorLabel}, and that is an internal SPM build target, not a module anyone can ` +
+        `import. Every build that imports ${frameworkName} fails with "is not imported through ` +
+        `module '${module}'". Either the reference form is one that ` +
+        `rewriteInternalTargetModuleReferences in tools/src/prebuilds/Frameworks.ts does not match ` +
+        `yet, or '${module}' belongs to another package, whose spm.config.json this build never ` +
+        `sees - in that case rebuild that package so the type is exposed through its product ` +
+        `module, then rebuild this one`
+    );
   }
 
   return issues;

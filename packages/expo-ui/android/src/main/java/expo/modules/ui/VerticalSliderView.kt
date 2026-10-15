@@ -49,7 +49,7 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     SliderState(
       value = localValue.coerceIn(effectiveLower, effectiveUpper),
       steps = props.steps,
-      valueRange = props.min..props.max
+      trackRange = props.min..props.max
     )
   }
 
@@ -77,16 +77,17 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     globalEventDispatcher
   )
 
+  val handleValueChange: (Float) -> Unit = {
+    val clamped = it.coerceIn(effectiveLower, effectiveUpper)
+    localValue = clamped
+    sliderState.value = clamped
+    onValueChange(SliderValueChangedEvent(clamped))
+  }
+  val handleValueChangeFinished: () -> Unit = {
+    onValueChangeFinished(Unit)
+  }
+
   SideEffect {
-    sliderState.onValueChange = {
-      val clamped = it.coerceIn(effectiveLower, effectiveUpper)
-      localValue = clamped
-      sliderState.value = clamped
-      onValueChange(SliderValueChangedEvent(clamped))
-    }
-    sliderState.onValueChangeFinished = {
-      onValueChangeFinished(Unit)
-    }
     val target = localValue.coerceIn(effectiveLower, effectiveUpper)
     if (sliderState.value != target) {
       sliderState.value = target
@@ -97,7 +98,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     thumbSlotView != null && trackSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       thumb = {
@@ -112,7 +115,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     thumbSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       thumb = {
@@ -124,7 +129,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     trackSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       track = {
@@ -136,7 +143,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     else -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       modifier = modifier

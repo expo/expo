@@ -14,7 +14,7 @@
   <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
-  <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
+  <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
   <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />

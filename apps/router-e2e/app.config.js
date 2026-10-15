@@ -29,6 +29,9 @@ module.exports = {
   jsEngine: 'hermes',
   newArchEnabled: true,
   experiments: {
+    chunking: {
+      mode: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'granular' ? 'granular' : 'legacy',
+    },
     noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
@@ -68,7 +71,7 @@ module.exports = {
             ? true
             : process.env.E2E_ROUTER_ASYNC === 'false'
               ? false
-              : process.env.E2E_ROUTER_ASYNC || false,
+              : process.env.E2E_ROUTER_ASYNC,
         root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
         origin: 'http://localhost:8081/',
         sitemap:

@@ -25,7 +25,7 @@ import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
-  const mode = options.configuration === 'Release' ? 'production' : 'development';
+  const mode = (options.configuration ?? 'Debug').includes('Debug') ? 'development' : 'production';
   loadEnvFiles(projectRoot, { mode });
 
   assertPlatform();

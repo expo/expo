@@ -145,7 +145,11 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   // then asked for light system bars, which turned the navigation bar white.
   val resolvedContentColor = props.contentColor.composeOrNull
     ?: MaterialTheme.colorScheme.contentColorFor(resolvedContainerColor).takeOrElse {
-      if (resolvedContainerColor.luminance() > 0.5f) ComposeColor.Black else ComposeColor.White
+      if (resolvedContainerColor.luminance() > 0.5f) {
+        ComposeColor.Black
+      } else {
+        ComposeColor.White
+      }
     }
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor
   val dragHandleSlotView = findChildSlotView(view, "dragHandle")

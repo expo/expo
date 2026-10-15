@@ -22,7 +22,7 @@ class RESTApiClient(private val sessionRepository: SessionRepository) {
 
   @OptIn(ExperimentalStdlibApi::class)
   suspend fun <T> sendAuthenticatedApiV2Request(route: String, type: KType): T {
-    val sessionSecret = sessionRepository.getSessionSecret()
+    val sessionSecret = sessionRepository.getActiveSessionSecret()
       ?: throw IllegalStateException("Must be logged in to perform request")
 
     val url = API_V2_BASE_URL + route

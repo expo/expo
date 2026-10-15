@@ -13,7 +13,7 @@ class ReminderMapperTest {
   private val mapper = ReminderMapper()
 
   @Test
-  fun `given ReminderEntity, when toRecord, then maps Method to RecordAlarmMethod`() {
+  fun `given ReminderEntity, when toRecord, then maps Method and negates minutes to relativeOffset`() {
     // Given
     val entity = ReminderEntity(
       id = ReminderId(5L),
@@ -26,7 +26,7 @@ class ReminderMapperTest {
     val result = mapper.toRecord(entity)
 
     // Then
-    Assert.assertEquals(30, result.relativeOffset)
+    Assert.assertEquals(-30, result.relativeOffset)
     Assert.assertEquals(RecordAlarmMethod.SMS, result.method)
   }
 
@@ -44,15 +44,15 @@ class ReminderMapperTest {
     val result = mapper.toRecord(entity)
 
     // Then
-    Assert.assertEquals(30, result.relativeOffset)
+    Assert.assertEquals(-30, result.relativeOffset)
     Assert.assertNull(result.method)
   }
 
   @Test
-  fun `given AlarmRecord, when toDomain, then maps method and minutes`() {
+  fun `given AlarmRecord, when toDomain, then maps method and negates relativeOffset to minutes`() {
     // Given
     val record = AlarmRecord(
-      relativeOffset = 15,
+      relativeOffset = -15,
       method = RecordAlarmMethod.EMAIL
     )
 
@@ -68,7 +68,7 @@ class ReminderMapperTest {
   fun `given AlarmRecord with null method, when toDomain, then maps method to null`() {
     // Given
     val record = AlarmRecord(
-      relativeOffset = 15,
+      relativeOffset = -15,
       method = null
     )
 

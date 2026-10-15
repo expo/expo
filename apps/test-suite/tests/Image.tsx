@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { requireNotNull } from '../utils/requireNotNull';
-import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './helpers';
+import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError, waitFor } from './helpers';
 
 export const name = 'Image';
 
@@ -16,9 +16,7 @@ const REMOTE_SOURCE = {
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
 // Blurhash of `../assets/icons/app.png` at 4x3 components.
 const LOCAL_ASSET_BLURHASH = 'L4BYE^o#9GkXIrfQNGay0Lay~Uj[';
-const ANIMATED_IMAGE_SOURCE = {
-  uri: 'https://media1.giphy.com/media/gZEBpuOkPuydi/giphy.gif?cid=ecf05e47fc23hje74g3ryyry6xnui81pej12o4eojtd9ruax&ep=v1_gifs_search&rid=giphy.gif&ct=g',
-};
+const ANIMATED_IMAGE_SOURCE = require('../assets/animated-test.gif');
 
 export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal }: TestPortal) {
   const throws = async (run: () => Promise<unknown>) => {
@@ -155,6 +153,33 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
         t.expect(event.source.isAnimated).toBe(true);
       });
     });
+
+    if (Platform.OS === 'android') {
+      t.describe('recycling', () => {
+        t.it('reuses an image while alternating animated and static sources', async () => {
+          for (let iteration = 0; iteration < 20; iteration++) {
+            await mountAndWaitForWithTimeout(
+              <Image
+                recyclingKey={`image-recycling-${iteration}`}
+                source={
+                  iteration % 2 === 0 ? ANIMATED_IMAGE_SOURCE : require('../assets/icons/app.png')
+                }
+                style={{ height: 100, width: 100 }}
+                transition={iteration % 2 === 0 ? 0 : 100}
+              />,
+              'onDisplay',
+              setPortalChild,
+              5000
+            );
+
+            // Replace the 100 ms transition first, then give any stale callbacks time to run.
+            if (iteration > 0 && iteration % 2 === 0) {
+              await waitFor(150);
+            }
+          }
+        });
+      });
+    }
 
     t.describe('onError', () => {
       t.it('emits an event when the image fails to load successfully', async () => {

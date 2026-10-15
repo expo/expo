@@ -38,7 +38,9 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
 
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   EXKernelAppRecord *destinationApp = nil;
-  NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
+  // Resolve the reserved `__expo_*` launch params once, here. The pending device login below and the app
+  // record are keyed by the result, and nothing downstream parses it again.
+  NSURL *urlToRoute = [[self class] uriTransformedForLinking:[[self class] resolveLaunchUrl:url] isUniversalLink:isUniversalLink];
 
   // Strip on any change, so stray or invalid device auth params are cleared too.
   BOOL promptRequested = [EXDeviceLoginLink promptRequestedInURL:urlToRoute];
@@ -206,6 +208,15 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
     return nil;
   }
   return [self _uriNormalizedForLinking:uri];
+}
+
++ (NSURL *)resolveLaunchUrl:(NSURL *)url
+{
+  NSURL *launchUrl = [[DevMenuManager shared] applyLaunchParamsFromURL:url];
+  if ([launchUrl isEqual:url]) {
+    return url;
+  }
+  return [self uriTransformedForLinking:launchUrl isUniversalLink:NO];
 }
 
 + (NSURL *)initialUriWithManifestUrl:(NSURL *)manifestUrl

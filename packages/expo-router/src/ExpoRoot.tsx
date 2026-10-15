@@ -55,33 +55,27 @@ const INITIAL_METRICS =
  */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   initScreensFeatureFlags();
-  /*
-   * Due to static rendering we need to wrap these top level views in second wrapper
-   * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
-   * is a HTML document, we need to ensure its inside the <body>
-   */
-  const wrapper = useMemo(
-    () =>
-      ({ children }: PropsWithChildren) => {
-        return (
-          <ParentWrapper>
-            <LinkPreviewContextProvider>
-              <SafeAreaProvider
-                // SSR support
-                initialMetrics={INITIAL_METRICS}>
-                {children}
-              </SafeAreaProvider>
-            </LinkPreviewContextProvider>
-          </ParentWrapper>
-        );
-      },
-    [ParentWrapper]
-  );
-
+  // On the server, the parent wrapper renders the HTML document and `<div id="root">`. It stays
+  // outside the navigation container, so the container's Suspense boundary is inside `#root`
+  // like in the browser.
   return (
-    <RoutingQueueProvider>
-      <ContextNavigator {...props} wrapper={wrapper} />
-    </RoutingQueueProvider>
+    <ParentWrapper>
+      <RoutingQueueProvider>
+        <ContextNavigator {...props} wrapper={AppWrapper} />
+      </RoutingQueueProvider>
+    </ParentWrapper>
+  );
+}
+
+function AppWrapper({ children }: PropsWithChildren) {
+  return (
+    <LinkPreviewContextProvider>
+      <SafeAreaProvider
+        // SSR support
+        initialMetrics={INITIAL_METRICS}>
+        {children}
+      </SafeAreaProvider>
+    </LinkPreviewContextProvider>
   );
 }
 

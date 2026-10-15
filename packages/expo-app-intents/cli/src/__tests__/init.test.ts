@@ -26,6 +26,10 @@ const TEMPLATES = {
   'examples/mail/Entities/MailAccountEntity.swift': 'mail account entity',
   'examples/mail/Queries/MailDraftEntityQuery.swift': 'mail draft query',
   'examples/mail/Queries/MailAccountEntityQuery.swift': 'mail account query',
+  'examples/donations/IncreaseCounterIntent+Donation.swift': 'counter donation',
+  'examples/donations/OrderFoodIntent+Donation.swift': 'restaurant donation',
+  'examples/donations/CreateDraftIntent+Donation.swift': 'mail donation',
+  'examples/donations/OpenMailDraftIntent+Donation.swift': 'vi donation',
 };
 
 describe(resolveExamples, () => {
@@ -61,9 +65,10 @@ describe(resolveExamplesAsync, () => {
   });
 
   it('never prompts when examples are passed on the command line', async () => {
-    await expect(resolveExamplesAsync(true, ['mail'], true)).resolves.toEqual({
+    await expect(resolveExamplesAsync(true, ['mail'], true, true)).resolves.toEqual({
       examples: ['mail'],
       visualIntelligence: true,
+      donations: true,
     });
     expect(mockedPrompts).not.toHaveBeenCalled();
   });
@@ -72,16 +77,15 @@ describe(resolveExamplesAsync, () => {
     await expect(resolveExamplesAsync(false, undefined)).resolves.toEqual({
       examples: ['minimal'],
       visualIntelligence: false,
+      donations: false,
     });
     expect(mockedPrompts).not.toHaveBeenCalled();
   });
 
   it('asks for examples with a cancellable multiselect prompt', async () => {
-    // `counter` rather than `mail`, so the visual-intelligence follow-up does not run — this test
-    // is about the shape of the examples prompt itself.
-    mockedPrompts.mockResolvedValueOnce({ examples: ['minimal', 'counter'] });
+    mockedPrompts.mockResolvedValueOnce({ examples: ['minimal'] });
 
-    await expect(resolveExamplesAsync(true, [])).resolves.toMatchObject({ examples: ['counter'] });
+    await expect(resolveExamplesAsync(true, [])).resolves.toMatchObject({ examples: ['minimal'] });
     expect(mockedPrompts).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'examples', type: 'multiselect' }),
       expect.objectContaining({ onCancel: expect.any(Function) })
@@ -89,37 +93,96 @@ describe(resolveExamplesAsync, () => {
   });
 
   it('does not ask about visual intelligence unless the mail example was picked', async () => {
-    mockedPrompts.mockResolvedValueOnce({ examples: ['counter'] });
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['counter'] })
+      .mockResolvedValueOnce({ donations: false });
 
     await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
       examples: ['counter'],
       visualIntelligence: false,
+      donations: false,
     });
-    expect(mockedPrompts).toHaveBeenCalledTimes(1);
+    const promptNames = mockedPrompts.mock.calls.map((call) => (call[0] as { name: string }).name);
+    expect(promptNames).not.toContain('visualIntelligence');
   });
 
   it('asks about visual intelligence once the mail example was picked', async () => {
     mockedPrompts
       .mockResolvedValueOnce({ examples: ['counter', 'mail'] })
-      .mockResolvedValueOnce({ visualIntelligence: true });
+      .mockResolvedValueOnce({ visualIntelligence: true })
+      .mockResolvedValueOnce({ donations: false });
 
     await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
       examples: ['counter', 'mail'],
       visualIntelligence: true,
+      donations: false,
     });
-    expect(mockedPrompts).toHaveBeenCalledTimes(2);
     expect(mockedPrompts.mock.calls[1]![0]).toMatchObject({
       type: 'confirm',
       name: 'visualIntelligence',
     });
   });
 
-  it('skips the follow-up when the flag was already passed', async () => {
-    mockedPrompts.mockResolvedValueOnce({ examples: ['mail'] });
+  it('skips the visual intelligence follow-up when the flag was already passed', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['mail'] })
+      .mockResolvedValueOnce({ donations: false });
 
     await expect(resolveExamplesAsync(true, undefined, true)).resolves.toEqual({
       examples: ['mail'],
       visualIntelligence: true,
+      donations: false,
+    });
+    const promptNames = mockedPrompts.mock.calls.map((call) => (call[0] as { name: string }).name);
+    expect(promptNames).not.toContain('visualIntelligence');
+  });
+
+  it('asks about donation code after the examples were picked', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['counter'] })
+      .mockResolvedValueOnce({ donations: true });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter'],
+      visualIntelligence: false,
+      donations: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(2);
+    expect(mockedPrompts.mock.calls[1]![0]).toMatchObject({ type: 'confirm', name: 'donations' });
+  });
+
+  it('asks about donation code after visual intelligence', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: false })
+      .mockResolvedValueOnce({ donations: true });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: false,
+      donations: true,
+    });
+    expect(mockedPrompts.mock.calls[2]![0]).toMatchObject({ name: 'donations' });
+  });
+
+  it('does not ask about donation code when only minimal was picked', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['minimal'] });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['minimal'],
+      visualIntelligence: false,
+      donations: false,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips the donation follow-up when the flag was already passed', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['counter'] });
+
+    await expect(resolveExamplesAsync(true, undefined, false, true)).resolves.toEqual({
+      examples: ['counter'],
+      visualIntelligence: false,
+      donations: true,
     });
     expect(mockedPrompts).toHaveBeenCalledTimes(1);
   });
@@ -378,6 +441,109 @@ describe(runInit, () => {
         templatesDir,
       })
     ).rejects.toThrow(/--visual-intelligence extends the mail example/);
+  });
+
+  it('adds donation code and registrations for the selected examples when requested', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter', 'restaurant'],
+      donations: true,
+      templatesDir,
+    });
+
+    // The base examples are still scaffolded unchanged, with the donation extensions next to them.
+    expect(read('app-intents/IncreaseCounterIntent.swift')).toBe('counter');
+    expect(read('app-intents/IncreaseCounterIntent+Donation.swift')).toBe('counter donation');
+    expect(read('app-intents/OrderFoodIntent+Donation.swift')).toBe('restaurant donation');
+    expect(exists('app-intents/CreateDraftIntent+Donation.swift')).toBe(false);
+
+    const setup = read('app-intents/AppIntentsSetup.swift');
+    expect(setup).toContain(
+      'AppIntentDonationRegistry.shared.register("increaseCounter", as: IncreaseCounterIntent.self)'
+    );
+    expect(setup).toContain(
+      'AppIntentDonationRegistry.shared.register("orderFood", as: OrderFoodIntent.self)'
+    );
+    expect(setup).not.toContain('createMailDraft');
+    // The provider refresh is still wired up next to the registrations.
+    expect(setup).toContain('setShortcutsRefreshHandler');
+  });
+
+  it('adds donation code for the mail example and its visual intelligence layer', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      donations: true,
+      templatesDir,
+    });
+
+    expect(exists('app-intents/CreateDraftIntent+Donation.swift')).toBe(true);
+    expect(exists('app-intents/OpenMailDraftIntent+Donation.swift')).toBe(true);
+
+    const setup = read('app-intents/AppIntentsSetup.swift');
+    expect(setup).toContain(
+      'AppIntentDonationRegistry.shared.register("createMailDraft", as: CreateDraftIntent.self)'
+    );
+    expect(setup).toContain(
+      'AppIntentDonationRegistry.shared.register("openMailDraft", as: OpenMailDraftIntent.self)'
+    );
+    // OpenMailDraftIntent only exists when compiled with the iOS 27 SDK.
+    expect(setup).toContain('#if compiler(>=6.4)');
+    expect(setup).toContain('AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft"');
+  });
+
+  it('adds no visual intelligence donation code without visual intelligence', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      donations: true,
+      templatesDir,
+    });
+
+    expect(exists('app-intents/CreateDraftIntent+Donation.swift')).toBe(true);
+    expect(exists('app-intents/OpenMailDraftIntent+Donation.swift')).toBe(false);
+    expect(read('app-intents/AppIntentsSetup.swift')).not.toContain('openMailDraft');
+  });
+
+  it('scaffolds no donation code by default', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter', 'restaurant', 'mail'],
+      templatesDir,
+    });
+
+    expect(exists('app-intents/IncreaseCounterIntent+Donation.swift')).toBe(false);
+    expect(exists('app-intents/OrderFoodIntent+Donation.swift')).toBe(false);
+    expect(exists('app-intents/CreateDraftIntent+Donation.swift')).toBe(false);
+    expect(read('app-intents/AppIntentsSetup.swift')).not.toContain('AppIntentDonationRegistry');
+  });
+
+  it('rejects donation code without an example that has intents', async () => {
+    writeProject(staticConfig());
+
+    await expect(
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['minimal'],
+        donations: true,
+        templatesDir,
+      })
+    ).rejects.toThrow(/--donations adds donation code to the selected examples/);
+    expect(exists('app-intents')).toBe(false);
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {
@@ -742,6 +908,54 @@ describe(runInit, () => {
         'registerIndexed(\n          "mailDraft",\n          as: MailDraftEntity.self\n        )'
       )
     );
+    warn.mockClear();
+    await runInit(options);
+
+    expect(messages(warn)).toBe('');
+  });
+
+  // `init` never overwrites AppIntentsSetup.swift, so adding --donations to an existing setup copies
+  // the extensions but leaves the intents unregistered, and donateIntentAsync() rejects their names.
+  it('warns when donation code is added to an existing setup module', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['restaurant'],
+      templatesDir,
+    });
+    warn.mockClear();
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['restaurant'],
+      donations: true,
+      templatesDir,
+    });
+
+    expect(exists('app-intents/OrderFoodIntent+Donation.swift')).toBe(true);
+    expect(read('app-intents/AppIntentsSetup.swift')).not.toContain('AppIntentDonationRegistry');
+
+    const warned = messages(warn);
+    expect(warned).toContain('AppIntentsSetup.swift');
+    expect(warned).toContain('donateIntentAsync()');
+    expect(warned).toContain(
+      'AppIntentDonationRegistry.shared.register("orderFood", as: OrderFoodIntent.self)'
+    );
+  });
+
+  it('does not warn about donation registrations that the existing setup module has', async () => {
+    writeProject(staticConfig());
+
+    const options = {
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter', 'mail'] as ['counter', 'mail'],
+      donations: true,
+      templatesDir,
+    };
+    await runInit(options);
     warn.mockClear();
     await runInit(options);
 

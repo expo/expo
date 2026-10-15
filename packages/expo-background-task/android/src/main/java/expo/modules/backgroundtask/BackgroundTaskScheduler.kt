@@ -136,7 +136,11 @@ object BackgroundTaskScheduler {
           // This is where we decide if we should cancel or replace the task - cancelling is done
           // when spawning the first task, while appending is when we spawn from a running task
           // to set up the next periodic run of the task
-          if (cancelExisting) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.APPEND,
+          if (cancelExisting) {
+            ExistingWorkPolicy.REPLACE
+          } else {
+            ExistingWorkPolicy.APPEND
+          },
           workRequest
         ).await()
 

@@ -46,12 +46,7 @@ import {
 
 export default function OverlayExample() {
   return (
-    <Host
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
+    <Host matchContents>
       <Overlay alignment="topTrailing">
         <Image
           systemName="bell.fill"

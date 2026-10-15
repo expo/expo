@@ -1,6 +1,153 @@
 # Changelog
 
-## Unpublished
+## 58.0.19
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Add the `expo-router:action-enqueued` performance mark, recorded when a navigation action is queued. ([#51485](https://github.com/expo/expo/pull/51485) by [@Ubax](https://github.com/Ubax))
+- Fixed the first push to a screen being reported as `pagePreloaded`. ([#51446](https://github.com/expo/expo/pull/51446) by [@Ubax](https://github.com/Ubax))
+- [Internal] Return platform-tagged icons from the NativeTabs icon converter so tab icons type-check with `react-native-screens` 4.30.0. ([#51508](https://github.com/expo/expo/pull/51508) by [@Ubax](https://github.com/Ubax))
+- Replace the experimental `unstable_navigationEvents` API with `unstable_performance` and `unstable_PerformanceObserver`. ([#51068](https://github.com/expo/expo/pull/51068) by [@Ubax](https://github.com/Ubax))
+- Added a development warning when `navigation.isFocused()` is called during render. ([#51464](https://github.com/expo/expo/pull/51464) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.18
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.29.0. ([#51354](https://github.com/expo/expo/pull/51354) by [@Ubax](https://github.com/Ubax))
+- Allow interfaces extending `UnknownOutputParams` to declare optional params, so an omitted query parameter can be typed as optional, e.g. `interface MyParams extends UnknownOutputParams { id?: string }`. ([#51219](https://github.com/expo/expo/pull/51219) by [@Ubax](https://github.com/Ubax))
+- Fix `navigation.getState()` returning the previous state inside a `state` event listener. ([#51194](https://github.com/expo/expo/pull/51194) by [@drakeo338](https://github.com/drakeo338))
+- Read `unstable_settings.anchor` only when a layout is first needed, so async routes apply anchors and startup no longer loads every layout. ([#51124](https://github.com/expo/expo/pull/51124) by [@Ubax](https://github.com/Ubax))
+- Reduce route info processing overhead. ([#50737](https://github.com/expo/expo/pull/50737) by [@Ubax](https://github.com/Ubax))
+- Point the `useFocusEffect` diagnostic links to the new focus handling guide. ([#50874](https://github.com/expo/expo/pull/50874) by [@Ubax](https://github.com/Ubax))
+- Pass the current `pathname` and `params` props to the `+html` component. ([#51255](https://github.com/expo/expo/pull/51255) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix header title not adapting its color to content scrolling underneath a transparent header on iOS 26 Liquid Glass. ([#49639](https://github.com/expo/expo/pull/49639) by [@Jonas-C](https://github.com/Jonas-C))
+- Wait for the initial navigation state with Suspense. ([#51239](https://github.com/expo/expo/pull/51239) by [@Ubax](https://github.com/Ubax))
+- Fix Tabs and Drawer routes with `dangerouslySingular` keeping the nested navigator state of the previous ID after navigating to a new ID. ([#51270](https://github.com/expo/expo/pull/51270) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#46526](https://github.com/expo/expo/pull/46526))
+  - expo-server@58.0.5
+
+## 58.0.17
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Fix the dev server error page for routes that throw during server rendering, which showed an "Internal Error" instead of the error overlay. ([#51185](https://github.com/expo/expo/pull/51185) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522))
+  - @expo/log-box@58.0.12
+  - expo-server@58.0.4
+  - @expo/metro-runtime@58.0.14
+
+## 58.0.16
+
+### Patch Changes
+
+- Remove `isInitial` from the `SitemapType` returned by `useSitemap`. ([#51115](https://github.com/expo/expo/pull/51115) by [@Ubax](https://github.com/Ubax))
+- Mark `Stack.Toolbar` as stable. ([#51084](https://github.com/expo/expo/pull/51084) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/log-box@58.0.11
+  - @expo/metro-runtime@58.0.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50976](https://github.com/expo/expo/pull/50976))
+  - @expo/log-box@58.0.10
+  - @expo/metro-runtime@58.0.12
+
+## 58.0.14
+
+### Patch Changes
+
+- Export the `RouterBrowserHistoryAction` type. The public `Router` and `RouterActionResult` types reference it, so custom routers can now type the browser history instruction they return. ([#51053](https://github.com/expo/expo/pull/51053) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+## 58.0.13
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+- Fix platform-specific route parsing and loader keys. ([#49035](https://github.com/expo/expo/pull/49035) by [@hassankhan](https://github.com/hassankhan))
+- Generated route query strings now encode spaces as `+`, leave `*` unescaped, encode `~` as `%7E`, and write raw null values as `key=`. ([#50725](https://github.com/expo/expo/pull/50725) by [@Ubax](https://github.com/Ubax))
+- [Internal] Expose config plugin types. ([#50442](https://github.com/expo/expo/pull/50442) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50016](https://github.com/expo/expo/pull/50016), [#50458](https://github.com/expo/expo/pull/50458))
+  - expo-server@58.0.3
+  - @expo/log-box@58.0.9
+  - @expo/metro-runtime@58.0.11
+
+## 58.0.12
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Update `expo-router/testing-library` to use `@testing-library/react-native` v14. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.11
+
+### Patch Changes
+
+- Fix missing back animation after opening a screen from a link preview on iOS. ([#50839](https://github.com/expo/expo/pull/50839) by [@Ubax](https://github.com/Ubax))
+- Allow setting the native header's light or dark interface style per `Stack` screen on iOS. ([#50765](https://github.com/expo/expo/pull/50765) by [@Ubax](https://github.com/Ubax))
+- [Internal] Remove the `import-mode` module and read `process.env.EXPO_ROUTER_IMPORT_MODE` directly in `useScreens`. ([#50826](https://github.com/expo/expo/pull/50826) by [@Ubax](https://github.com/Ubax))
+- Fix a crash on launch in production when the app has no `scheme`. ([#50708](https://github.com/expo/expo/pull/50708) by [@expo-bot](https://github.com/expo-bot))
+- Resolve Native Tabs `xcasset` icon names through the iOS asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- Fixes a minor grammatical issue in the error message when `NativeTabs` is used on an unsupported platform. ([#46202](https://github.com/expo/expo/pull/46202) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#49529](https://github.com/expo/expo/pull/49529))
+  - @expo/log-box@58.0.8
+  - @expo/metro-runtime@58.0.10
+
+## 58.0.10
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Use `unwrapDevLaunchURL` from `expo-linking` instead of a private copy of the `expo-development-client` URL handling. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove obsolete fork annotations and commented-out path conversion code. ([#50726](https://github.com/expo/expo/pull/50726) by [@Ubax](https://github.com/Ubax))
+- Update Expo Router navigation guidance in API comments and diagnostics to point to Expo documentation. ([#50732](https://github.com/expo/expo/pull/50732) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/log-box@58.0.7
+  - @expo/metro-runtime@58.0.9
+  - @expo/schema-utils@58.0.1
+  - expo-glass-effect@58.0.3
+  - expo-server@58.0.2
+
+## 58.0.9 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+### 🎉 New features
+
+- Prevent browser unloads on web while `usePreventRemove` is active. ([#50260](https://github.com/expo/expo/pull/50260) by [@Ubax](https://github.com/Ubax))
+- Stabilize async routes on web and enable them by default. Native async routes remain experimental and opt-in. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens to 4.28.0 (by [@Ubax](https://github.com/Ubax)) ([#50328](https://github.com/expo/expo/pull/50328) by [@Ubax](https://github.com/Ubax))
+- Add support for react-native-screens 5.0.0-alpha.3. ([#50330](https://github.com/expo/expo/pull/50330) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Deprecate `withLayoutContext`. Use `integrateWithRouter` instead. ([#50337](https://github.com/expo/expo/pull/50337) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.4 — 2026-09-16
 
 ### 🛠 Breaking changes
 
@@ -11,10 +158,6 @@
 - Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
 - Enable server rendering by default for `web.output: "server"` ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
 - Add the `apiRoutes` config plugin option to support API routes with static rendering. ([#50148](https://github.com/expo/expo/pull/50148) by [@hassankhan](https://github.com/hassankhan))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 58.0.3 — 2026-09-15
 
@@ -97,6 +240,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add a `routePreloaded` navigation event that reports the route affected by each committed preload. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Add `activityEnabled` to navigators and screens to hide deeply nested route content with React Activity. ([#49913](https://github.com/expo/expo/pull/49913) by [@Ubax](https://github.com/Ubax))
 - Support application-defined screen options in custom standard navigators. ([#49984](https://github.com/expo/expo/pull/49984) by [@Ubax](https://github.com/Ubax))
 - Export `createBaseTabProps`, `createNativeStackProps`, `createJSStackProps`, `createJSTabsProps`, `createJSTopTabsProps`, and `createNativeTabsProps` for integrating navigators with Expo Router. ([#49966](https://github.com/expo/expo/pull/49966) by [@Ubax](https://github.com/Ubax))
@@ -129,8 +273,10 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [ios] Fix link previews failing to activate preloaded screens or switch native tabs, including nested stacks and repeated preview openings. ([#49593](https://github.com/expo/expo/pull/49593) by [@Ubax](https://github.com/Ubax))
 - Mark routes after the focused one as preloaded in states returned by the singular `Stack` router. ([#49914](https://github.com/expo/expo/pull/49914) by [@Ubax](https://github.com/Ubax))
 - Remove guarded history entries from JavaScript and experimental stacks. ([#49985](https://github.com/expo/expo/pull/49985) by [@Ubax](https://github.com/Ubax))
+- Test not-found routes in navigators. ([#49989](https://github.com/expo/expo/pull/49989) by [@Ubax](https://github.com/Ubax))
 - Test `createProps` dispatch timing. ([#49955](https://github.com/expo/expo/pull/49955) by [@Ubax](https://github.com/Ubax))
 - Re-export missing bottom tab types from `expo-router/js-tabs`. ([#49954](https://github.com/expo/expo/pull/49954) by [@Ubax](https://github.com/Ubax))
 - Oder tabs by `.Trigger` order during initial render ([#49848](https://github.com/expo/expo/pull/49848) by [@Ubax](https://github.com/Ubax))

@@ -13,7 +13,11 @@ class MediaStoreQueryFormatter {
         return parse(value.get(MediaType::class))
       }
       if (value.`is`(Boolean::class)) {
-        return if (value.get(Boolean::class)) "1" else "0"
+        return if (value.get(Boolean::class)) {
+          "1"
+        } else {
+          "0"
+        }
       }
       return parse(field, value.get(Long::class))
     }

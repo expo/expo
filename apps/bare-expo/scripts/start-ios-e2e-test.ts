@@ -8,6 +8,7 @@ import * as path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 import {
   annotate,
   createMaestroFlowAsync,
@@ -22,7 +23,6 @@ import {
   startGroup,
   endGroup,
 } from './lib/e2e-common';
-import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
@@ -289,6 +289,8 @@ async function testAsync(
     } finally {
       console.timeEnd(TEST_DURATION_LABEL);
     }
+    // Not reached when maestro fails without results, so a driver that failed to start gets
+    // reinstalled by the retry.
     reinstallMaestroDriver = false;
 
     if (failedFlows.length > 0) {

@@ -10,7 +10,8 @@ import {
   PermissionStatus,
 } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -26,7 +27,19 @@ interface State {
 }
 
 export default function CameraScreenLenses() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <View style={styles.noPermissions}>
+        <Text>Camera lens selection is only available on iOS.</Text>
+      </View>
+    );
+  }
+  return <CameraScreenLensesIOS />;
+}
+
+function CameraScreenLensesIOS() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const [availableLenses, setAvailableLenses] = useState<LensInfo[]>([]);
 
   const [state, setState] = useState<State>({
@@ -103,7 +116,7 @@ export default function CameraScreenLenses() {
   );
 
   const renderBottomBar = () => (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', paddingBottom: insets.bottom }}>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons

@@ -40,6 +40,12 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
   return jsi::Value(runtime, function);
 }
 
+// Clones the function's handle into an object. The intermediate value is a C++ temporary, so its
+// rvalue `getObject` moves the handle on instead of cloning it a second time.
+inline jsi::Object objectFromFunction(jsi::IRuntime &runtime, const jsi::Function &function) {
+  return jsi::Value(runtime, function).getObject(runtime);
+}
+
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
 // They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
 // which mangles non-ASCII property names coming from Swift strings.
@@ -87,6 +93,27 @@ inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Object &object,
 
 inline jsi::Value valueFromArray(jsi::IRuntime &runtime, const jsi::Array &array) {
   return jsi::Value(runtime, array);
+}
+
+// Move an object's or an array's handle into a new value, without the clone of the copying
+// counterparts above. The source is left empty, so it must not be used afterwards.
+inline jsi::Value takeValueFromObject(jsi::Object &object) noexcept {
+  return jsi::Value(std::move(object));
+}
+
+inline jsi::Value takeValueFromArray(jsi::Array &array) noexcept {
+  return jsi::Value(std::move(array));
+}
+
+// Clones a value's handle into a function or an array buffer. `value.getObject(runtime)` clones the
+// handle once, and the rvalue `getFunction` and `getArrayBuffer` move it on. Calling the two steps
+// from Swift clones it twice, since Swift only calls the `const&` overloads.
+inline jsi::Function functionFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  return value.getObject(runtime).getFunction(runtime);
+}
+
+inline jsi::ArrayBuffer arrayBufferFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  return value.getObject(runtime).getArrayBuffer(runtime);
 }
 
 inline const jsi::Value valueFromError(jsi::IRuntime &runtime, const jsi::JSError &error) {
@@ -163,8 +190,9 @@ inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
 //
 // Placement new does not destroy the slot's previous contents, so the slot must hold a value that
 // owns nothing; an object or string there would leak its engine handle. Both callers,
-// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
-// the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
+// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side,
+// `JavaScriptValue.write(_:to:)`, picks the helper by kind for a value without a runtime and moves
+// any other value's handle into the slot the same way, through `emplaceMovedValue`.
 inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
   ::new (slot) jsi::Value();
 }
@@ -181,6 +209,31 @@ inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
   ::new (slot) jsi::Value(value);
 }
 
+/**
+ Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
+ helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
+ pointer, so destroying it afterwards releases nothing.
+ */
+inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Creates a string value straight from UTF-8 bytes. The `jsi::String` returned by `createFromUtf8`
+ is moved into the value, so the engine allocates one handle. Going through `jsi::Value(runtime,
+ const jsi::String &)` from Swift instead clones the handle and then releases the original.
+ */
+inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
+ Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
+ */
+inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
+  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
+}
+
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
@@ -190,6 +243,47 @@ inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &func
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);
+  });
+}
+
+/**
+ Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
+ JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
+ and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
+ */
+inline void defineProperty(
+  jsi::IRuntime &runtime,
+  const jsi::Function &defineProperty,
+  const jsi::PropNameID &configurableKey,
+  const jsi::PropNameID &enumerableKey,
+  const jsi::PropNameID &writableKey,
+  const jsi::PropNameID &valueKey,
+  const jsi::Object &object,
+  const uint8_t *_Nonnull nameUtf8,
+  size_t nameLength,
+  const jsi::Value &value,
+  bool hasValue,
+  bool writable,
+  bool enumerable,
+  bool configurable
+) {
+  expo::CppError::tryCatch(runtime, [&] {
+    jsi::Object descriptor(runtime);
+    if (configurable) {
+      descriptor.setProperty(runtime, configurableKey, true);
+    }
+    if (enumerable) {
+      descriptor.setProperty(runtime, enumerableKey, true);
+    }
+    if (writable) {
+      descriptor.setProperty(runtime, writableKey, true);
+    }
+    if (hasValue) {
+      descriptor.setProperty(runtime, valueKey, value);
+    }
+    defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
+    return jsi::Value::undefined();
   });
 }
 
@@ -226,6 +320,62 @@ inline void getStringData(
   };
   string.getStringData(runtime, forward);
 #endif
+}
+
+/**
+ Same as `getStringData`, but for a `jsi::PropNameID`.
+ */
+inline void getPropNameIdData(
+  jsi::IRuntime &runtime,
+  const jsi::PropNameID &propNameId,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getPropNameIdData(propNameId, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  propNameId.getPropNameIdData(runtime, forward);
+#endif
+}
+
+/**
+ Reaches the protected `jsi::Runtime` statics that let a derived class wrap a `PointerValue` in a
+ `jsi::Pointer` subclass. Never instantiated: it derives from `jsi::Runtime` only for that access.
+ */
+class PointerValueAccess : public jsi::Runtime {
+ public:
+  PointerValueAccess() = delete;
+
+  /**
+   A `jsi::String` holding the pointer of the given string value without cloning it. The string
+   shares the pointer with `value`, so it must never be destroyed: its destructor would release a
+   reference it doesn't own.
+   */
+  static jsi::String borrowString(const jsi::Value &value) noexcept {
+    return make<jsi::String>(const_cast<PointerValue *>(getPointerValue(value)));
+  }
+} __attribute__((availability(swift, unavailable)));
+
+/**
+ Same as `getStringData`, but reads the string straight from a string `jsi::Value`. `value.getString(runtime)`
+ clones the handle into a `jsi::String` for the call and releases it after; this lends the value's
+ own pointer instead, so the read costs no reference counting.
+ */
+inline void getStringDataFromValue(
+  jsi::IRuntime &runtime,
+  const jsi::Value &value,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+  // The borrowed string lives in raw storage that is never destroyed, so it doesn't release the
+  // pointer `value` still owns. Nothing else is left behind: a `jsi::String` holds just the pointer.
+  alignas(jsi::String) unsigned char storage[sizeof(jsi::String)];
+  const jsi::String *string = new (storage) jsi::String(PointerValueAccess::borrowString(value));
+  getStringData(runtime, *string, ctx, callback);
 }
 
 // MARK: - ArrayBuffer

@@ -96,7 +96,11 @@ class CodeSigningConfiguration(
     }.verify(Base64.decode(info.signature, Base64.DEFAULT))
 
     return SignatureValidationResult(
-      if (isValid) ValidationResult.VALID else ValidationResult.INVALID,
+      if (isValid) {
+        ValidationResult.VALID
+      } else {
+        ValidationResult.INVALID
+      },
       certificateChain.codeSigningCertificate.expoProjectInformation()
     )
   }

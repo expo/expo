@@ -1,0 +1,529 @@
+---
+title: Using e2e by TesterArmy
+sidebar_title: Using e2e
+description: Learn how to test your Expo app with e2e, TesterArmy's open source end-to-end testing framework, on an Android Emulator or iOS Simulator.
+hasVideoLink: true
+---
+
+import { Globe01Icon } from '@expo/styleguide-icons/outline/Globe01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+[e2e](https://e2e.tester.army/docs) is TesterArmy's open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
+
+- **Exact steps** to find an element with a locator, act on it, and assert the result, like other E2E frameworks.
+- **Agent steps** to describe a goal in plain language and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
+
+This guide shows how to set up e2e in an Expo project and run it on your computer. e2e does not need a TesterArmy account. To run tests on TesterArmy's hosted platform instead, see [Using TesterArmy](/guides/using-testerarmy/).
+
+<VideoBoxLink
+  videoId="2OFB4B7Vy10"
+  title="Introduction to Verification Engineering"
+  description="Set up e2e on your computer, then run it on each pull request with EAS Workflows and EAS Simulator."
+/>
+
+---
+
+<Prerequisites>
+  <Requirement title="Node.js 22.12 or later">
+    e2e requires Node.js 22.12 or later. On Windows, run e2e in Windows Subsystem for Linux (WSL).
+  </Requirement>
+  <Requirement title="An Android Emulator or iOS Simulator">
+    Install the Android SDK with an emulator, or Xcode with an iOS Simulator runtime. Run `npx
+    agent-device doctor` to check your setup.
+  </Requirement>
+  <Requirement title="A model for agent steps">
+    A ChatGPT Plus or Pro, GitHub Copilot, or SuperGrok subscription, an API key for a model
+    provider, or a local model. Tests that only use exact steps do not need a model.
+  </Requirement>
+</Prerequisites>
+
+## Run E2E tests with the e2e framework
+
+<Step label="1">
+
+### Build and install a release build
+
+Set `android.package` and `ios.bundleIdentifier` in your [app config](/workflow/configuration/). e2e uses these values to open your app.
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.example.testerarmye2e"
+    },
+    "android": {
+      "package": "com.example.testerarmye2e"
+    }
+  }
+}
+```
+
+Create a release build and install it on an emulator or simulator. A release build includes the JavaScript bundle, so tests do not need a running development server.
+
+<Terminal
+  cmd={[
+    '# Build and install on an Android Emulator',
+    '$ npx expo run:android --variant release',
+    '',
+    '# Build and install on an iOS Simulator',
+    '$ npx expo run:ios --configuration Release',
+  ]}
+/>
+
+The Android build writes the APK to **android/app/build/outputs/apk/release/app-release.apk**. You can use this path to install the build on a new emulator in a later step.
+
+</Step>
+
+<Step label="2">
+
+### Add e2e to your project
+
+In your project directory, run the setup command:
+
+<Terminal cmd={['$ npx e2e init']} />
+
+Then, answer the following prompts:
+
+1. For the engine, select **Mobile (iOS/Android)**.
+2. For the model gateway, select the subscription or provider you use for agent steps. Select **None** to add a model later.
+3. Keep the default locations for the agent skill and the Model Context Protocol (MCP) server configuration.
+4. Confirm the file changes and install the dependencies.
+
+The command adds `e2e` and `@e2e-dev/mobile` to your development dependencies and a `test:e2e` script to **package.json**. It also creates these files:
+
+- **e2e.config.ts**: The test configuration.
+- **tests/example.e2e.ts**: An example test that opens the iOS Settings app. Delete it after you add your own tests.
+- **.agents/skills/e2e/**: A skill that tells coding agents how to write and run e2e tests. **.claude/skills/e2e/** links to it for Claude Code.
+- **.mcp.json** and **.cursor/mcp.json**: The e2e MCP server configuration for coding agents.
+
+</Step>
+
+<Step label="3">
+
+### Configure your app
+
+Open **e2e.config.ts** and add a target for each platform. Set `app.bundleId` to your package name or bundle identifier, and set `device` in `mobile()` to the emulator or simulator to use:
+
+```ts e2e.config.ts|collapseHeight=300
+import type { E2EConfig } from 'e2e';
+import { mobile } from '@e2e-dev/mobile';
+
+export default {
+  targets: [
+    {
+      name: 'ios',
+      engine: mobile({
+        platform: 'ios',
+        device: 'iPhone 17 Pro',
+      }),
+      app: { bundleId: 'com.example.testerarmye2e' },
+    },
+    {
+      name: 'android',
+      engine: mobile({
+        platform: 'android',
+        device: 'Medium Phone',
+      }),
+      app: {
+        bundleId: 'com.example.testerarmye2e',
+        appPath: 'android/app/build/outputs/apk/release/app-release.apk',
+      },
+    },
+  ],
+  workers: 1,
+} satisfies E2EConfig;
+```
+
+> **info** For an Android Emulator, use the name that `npx agent-device devices` shows for the running emulator, such as `Medium Phone`. The Android Virtual Device (AVD) name with underscores, such as `Medium_Phone`, fails after the emulator boots.
+
+`app.appPath` names the build to install. e2e does not install it on its own. On a new emulator or simulator, such as on a CI machine, call `await device.installApp()` at the start of a test to install the build from `app.appPath`. When you install the app with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`, it is already on the emulator or simulator.
+
+</Step>
+
+<Step label="4">
+
+### Write a test with exact steps
+
+Create **tests/home.e2e.ts**. Each test starts with `app.open()`, which launches the app set in `app.bundleId`. Without it, a test starts on the screen the previous test left open.
+
+```ts tests/home.e2e.ts
+import { test } from '@e2e-dev/mobile';
+import { expect } from 'e2e';
+
+test('home screen shows the welcome title', async ({ app, screen }) => {
+  await app.open();
+  await expect(screen.getByText('Welcome to Expo')).toBeVisible();
+});
+
+test('explore tab expands file-based routing', async ({ app, screen }) => {
+  await app.open();
+  await screen.getByText('Explore').tap();
+  await screen.getByText('File-based routing', { exact: false }).tap();
+  await expect(screen.getByText('This app has two screens', { exact: false })).toBeVisible();
+});
+```
+
+In the above example snippet, these tests use the screens from the [default Expo template](/more/create-expo/#--template). For your own app, change the text to match your screens. Then, run the tests on both platforms:
+
+<Terminal cmd={['$ npx e2e run']} />
+
+e2e boots the configured emulator or simulator if it is not running, runs each test on each target, and writes the results to **.e2e/report.json**.
+
+</Step>
+
+<Step label="5">
+
+### Add an agent step
+
+An agent step needs a model, such as one from the subscriptions and providers listed in the [prerequisites](#prerequisites). If you selected a subscription or provider during setup, **e2e.config.ts** already has a default agent. To use a subscription, sign in and select your provider:
+
+<Terminal cmd={['$ npx e2e login']} />
+
+To use an API key, set the environment variable that your provider needs. If you selected **None** during setup, add a model to **e2e.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models). To see the model IDs that your subscriptions can use, run `npx e2e models`.
+
+Then, create **tests/agent.e2e.ts** with one goal per `agent.act()` call, followed by an exact assertion:
+
+```ts tests/agent.e2e.ts
+import { test } from '@e2e-dev/mobile';
+import { expect } from 'e2e';
+
+test('agent expands file-based routing on the explore tab', async ({ agent, app, screen }) => {
+  await app.open();
+  await agent.act('open the Explore tab, then expand the File-based routing section');
+  await expect(screen.getByText('This app has two screens', { exact: false })).toBeVisible();
+});
+```
+
+Run the test:
+
+<Terminal cmd={['$ npx e2e run tests/agent.e2e.ts']} />
+
+On the first run, the agent calls the model to decide each action. The output shows the token count. e2e saves the actions in **.e2e/cache**. On the next run, e2e replays them without a model call and prints `Cache 2 replayed` for the two targets. When the screen changes, the agent calls the model again.
+
+</Step>
+
+<Step label="6">
+
+### Read the results
+
+When a test fails, the output names the failing locator and links to the files e2e saved for the attempt in **.e2e/artifacts**. Each failure includes a screenshot and **screen.txt**, which lists every element e2e found on the screen with its role and text. Use **screen.txt** to fix a locator.
+
+To record a video of each test, add `--video`:
+
+<Terminal cmd={['$ npx e2e run --target ios --video']} />
+
+For more options, see [e2e's debugging guide](https://e2e.tester.army/docs/debugging).
+
+</Step>
+
+<Collapsible summary="Tips for Expo apps">
+
+- **Native tabs:** The role that Expo Router [native tabs](/router/advanced/native-tabs/) report depends on the platform and the simulator runtime. Use `screen.getByText('Explore')` to find a tab on both platforms.
+- **Pressable elements:** A `Pressable` without an `accessibilityRole` combines the labels of its children. For example, a row with a chevron icon and a title has the label "Forward, File-based routing". Use `{ exact: false }`, or set `accessibilityRole` and `accessibilityLabel` on the `Pressable`.
+- **Text styles:** Tests match the text that the platform reports. With `textTransform: 'uppercase'`, match the uppercase text, such as "GET STARTED".
+- **Deep links:** `device.openLink()` opens a link with your app's `scheme`. On iOS, the system asks "Open in [app name]?" until the link is approved once on that simulator, so a test must handle both cases:
+
+<Tabs>
+<Tab label="Android">
+
+```ts tests/deep-link.e2e.ts
+test(
+  'deep link opens the explore screen on Android',
+  { platforms: ['android'] },
+  async ({ device, screen }) => {
+    await device.openLink('testerarmye2eexample://explore');
+    await expect(
+      screen.getByText('This starter app includes example', { exact: false })
+    ).toBeVisible();
+  }
+);
+```
+
+</Tab>
+<Tab label="iOS">
+
+```ts tests/deep-link.e2e.ts|collapseHeight=300
+test(
+  'deep link opens the explore screen on iOS',
+  { platforms: ['ios'] },
+  async ({ device, screen }) => {
+    const openInApp = screen.getByRole('button', { name: 'Open' });
+    const exploreIntro = screen.getByText('This starter app includes example', { exact: false });
+    await device.openLink('testerarmye2eexample://explore');
+    await expect
+      .poll(async () => (await openInApp.count()) + (await exploreIntro.count()))
+      .toBeGreaterThan(0);
+    if ((await openInApp.count()) > 0) {
+      await openInApp.tap();
+    }
+    await expect(exploreIntro).toBeVisible();
+  }
+);
+```
+
+</Tab>
+</Tabs>
+
+</Collapsible>
+
+<Collapsible summary="Use e2e with a coding agent">
+
+The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code, Codex, and Cursor how to write and run e2e tests. The `e2e mcp` server lets an agent open the app and check a locator before it adds the locator to a test. For more information, see [e2e's coding agents guide](https://e2e.tester.army/docs/coding-agents).
+
+</Collapsible>
+
+## Run e2e on EAS Workflows
+
+[EAS Workflows](/eas/workflows/introduction/) can run e2e on a macOS worker with an iOS Simulator. The following workflow builds your app, boots a simulator on the worker, installs the app, and runs the tests.
+
+<Step label="1">
+
+### Add an iOS Simulator build profile
+
+Add an iOS Simulator build profile to **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "e2e-ios-simulator": {
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Create an e2e configuration for the worker
+
+Create **e2e.ci.config.ts** with one iOS target. It does not set `device`, because the worker has one booted simulator:
+
+```ts e2e.ci.config.ts
+import type { E2EConfig } from 'e2e';
+import { mobile } from '@e2e-dev/mobile';
+
+export default {
+  targets: [
+    {
+      name: 'ios',
+      engine: mobile({ platform: 'ios' }),
+      app: { bundleId: 'com.example.testerarmye2e' },
+    },
+  ],
+  workers: 1,
+} satisfies E2EConfig;
+```
+
+</Step>
+
+<Step label="3">
+
+### Create the workflow
+
+Create **.eas/workflows/e2e-tests.yml**:
+
+```yaml .eas/workflows/e2e-tests.yml|collapseHeight=300
+name: e2e tests
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build_ios:
+    name: Build iOS Simulator app
+    type: build
+    params:
+      platform: ios
+      profile: e2e-ios-simulator
+
+  e2e_ios:
+    name: Run e2e tests on iOS
+    needs: [build_ios]
+    runs_on: macos-medium
+    environment: preview
+    steps:
+      - uses: eas/checkout
+
+      - uses: eas/install_node_modules
+
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+          extensions: [app]
+
+      - name: Boot a simulator and install the app
+        run: |
+          UDID=$(xcrun simctl list devices available --json | node -e "const d=JSON.parse(require('fs').readFileSync(0,'utf8')).devices; const all=Object.values(d).flat(); console.log(all.find(x=>x.name.startsWith('iPhone')).udid)")
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" "${{ steps.download_build.outputs.artifact_path }}"
+
+      - name: Run e2e
+        run: npx e2e run --config e2e.ci.config.ts
+
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: e2e-report
+          path: |
+            .e2e/report.json
+            .e2e/artifacts/**/*
+```
+
+</Step>
+
+<Step label="4">
+
+### Run the workflow
+
+To start the workflow, run the following command:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
+
+The workflow uploads **.e2e/report.json** and the failure files in the **Artifacts** section of the workflow run. To run it on each pull request, add a [`pull_request`](/eas/workflows/syntax/#onpull_request) trigger.
+
+</Step>
+
+<Step label="5">
+
+### Use agent steps on the worker
+
+Tests with only exact steps need no model.
+
+For agent steps:
+
+- It is recommended to use an API key from your provider instead of a subscription login because the login expires on the worker. e2e can read a subscription login from the `E2E_OAUTH_CREDENTIALS` environment variable, which holds the contents of your local **~/.config/e2e/oauth.json** file. However, e2e does not save refreshed tokens back to the variable. Add an agent for the API key to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
+- The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
+- `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.tester.army/docs/cache#commit-your-traces).
+- A replay needs the recorded elements on the screen. The simulator on the worker can report a different accessibility tree than your own simulator, and then the agent calls the model.
+
+</Step>
+
+## Run e2e on EAS Simulator
+
+EAS Simulator runs Android Emulators and iOS Simulators on EAS infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an EAS Simulator session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+
+> **important** EAS Simulator is a limited-access preview. For more information, see the [EAS Simulator documentation](/preview/eas-simulator/introduction/).
+
+<Step label="1">
+
+### Install the EAS Simulator integration
+
+Install `@e2e-dev/eas` as a development dependency:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev @e2e-dev/eas'],
+    yarn: ['$ yarn add --dev @e2e-dev/eas'],
+    pnpm: ['$ pnpm add --save-dev @e2e-dev/eas'],
+    bun: ['$ bun add --dev @e2e-dev/eas'],
+  }}
+/>
+
+Link your project to EAS and check that your account can use EAS Simulator:
+
+<Terminal cmd={['$ eas init', '$ eas simulator:availability --json']} />
+
+`eas init` sets `extra.eas.projectId` in your app config. The integration uses this project ID to start sessions.
+
+The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. It does not use the account that you signed in to with `eas login`. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
+
+</Step>
+
+<Step label="2">
+
+### Create an iOS Simulator build
+
+EAS installs your app on the remote iOS Simulator from an EAS Build. Create a build with the `e2e-ios-simulator` profile from [Add an iOS Simulator build profile](#add-an-ios-simulator-build-profile):
+
+<Terminal cmd={['$ eas build --platform ios --profile e2e-ios-simulator']} />
+
+Record the build ID from the command output, or find a completed simulator build:
+
+<Terminal
+  cmd={['$ eas build:list --platform ios --simulator --status finished --json --non-interactive']}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Create an e2e configuration for EAS Simulator
+
+Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that gets its device from EAS Simulator through `easSimulators()`:
+
+```ts e2e.eas.config.ts
+import type { E2EConfig } from 'e2e';
+import { mobile } from '@e2e-dev/mobile';
+import { easSimulators } from '@e2e-dev/eas';
+
+import config from './e2e.config';
+
+export default {
+  ...config,
+  targets: [
+    {
+      name: 'ios',
+      engine: mobile({
+        platform: 'ios',
+        device: easSimulators({
+          projectId: '<your-eas-project-id>',
+          buildId: process.env.IOS_SIMULATOR_BUILD_ID,
+        }),
+        videoTouches: false,
+      }),
+      app: { bundleId: 'com.example.testerarmye2e' },
+    },
+  ],
+} satisfies E2EConfig;
+```
+
+Replace `<your-eas-project-id>` with the `extra.eas.projectId` value from your app config. EAS installs and launches the build from `buildId` before each session is ready.
+
+`videoTouches: false` turns off the touch indicator in video recordings. On a remote iOS Simulator, the indicator takes minutes to draw, so e2e saves no video.
+
+Each session counts toward your EAS Simulator usage. This configuration keeps `workers: 1` from **e2e.config.ts**, so a run uses one session.
+
+</Step>
+
+<Step label="4">
+
+### Run the tests
+
+Replace `<your-access-token>` with your personal access token and `<build-id>` with the build ID from step 2. Then, run the tests:
+
+<Terminal
+  cmd={[
+    '$ EXPO_TOKEN=<your-access-token> IOS_SIMULATOR_BUILD_ID=<build-id> npx e2e run --config e2e.eas.config.ts',
+  ]}
+/>
+
+The session is ready after EAS boots the remote iOS Simulator and installs your build. Boot time varies with device capacity. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+
+If the run exits before e2e stops the session, EAS stops it after 10 minutes without activity. A session also has a maximum duration that depends on your plan, so the run must finish before the session reaches it.
+
+Agent steps that you recorded on your own simulator can replay on the remote iOS Simulator without a model call.
+
+</Step>
+
+## Additional resources
+
+<BoxLink
+  title="e2e documentation"
+  description="Learn about e2e's test API, models, trace cache, and migration guides from Maestro and Detox."
+  href="https://e2e.tester.army/docs"
+  Icon={Globe01Icon}
+/>

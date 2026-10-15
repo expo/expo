@@ -1,6 +1,6 @@
 import isEqual from 'react-fast-compare';
 
-import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
@@ -15,11 +15,13 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import type { RouterRegistry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
   payload: {
+    __internal__PreviewKey?: string;
     name?: string;
     params?: object;
     path?: string;
@@ -169,6 +171,7 @@ function createResolvedAction({
     withAnchor,
     internalParams,
     parentChain,
+    previewKey: action.payload.__internal__PreviewKey,
   });
 
   return {
@@ -188,6 +191,7 @@ function resolveState({
   withAnchor,
   internalParams,
   parentChain,
+  previewKey,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
@@ -196,6 +200,7 @@ function resolveState({
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
   parentChain: string;
+  previewKey?: string;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
@@ -211,7 +216,10 @@ function resolveState({
     navigationState,
     routeNode,
     registry,
-    action: { type: 'NAVIGATE', payload: {} },
+    action: {
+      type: 'NAVIGATE',
+      payload: { __internal__PreviewKey: previewKey },
+    },
     withAnchor,
     internalParams,
   });

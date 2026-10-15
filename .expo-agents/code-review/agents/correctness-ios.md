@@ -1,5 +1,5 @@
 ---
-model: anthropic/claude-opus-5
+model: anthropic/claude-opus-5-5
 description: Correctness of changed Swift and Objective-C — logic and algorithm defects, Apple framework semantics, promises that never settle, work outliving a runtime reload, thread and main-actor correctness, resource teardown, availability gating, and Expo Modules API contract mistakes on iOS, tvOS and macOS.
 ---
 

@@ -8,6 +8,7 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
 import type { CommonNavigationAction, ParamListBase, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
@@ -142,6 +143,41 @@ function drawerRouterExtension({
   };
 
   return {
+    getBrowserHistoryForAction(previous, next, action) {
+      switch (action.type) {
+        case 'OPEN_DRAWER':
+        case 'CLOSE_DRAWER':
+        case 'TOGGLE_DRAWER':
+          return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+        case 'PUSH':
+        case 'NAVIGATE':
+        case 'JUMP_TO':
+          if (
+            isDrawerInHistory(previous) &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+            previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+          ) {
+            // Switching routes closes the drawer and reuses its browser entry.
+            return undefined;
+          }
+      }
+      return router.getBrowserHistoryForAction?.(previous, next, action);
+    },
+
+    getBrowserHistoryForRouteFocus(previous, next, childAction) {
+      if (
+        isDrawerInHistory(previous) &&
+        !isDrawerInHistory(next) &&
+        (childAction?.type === 'push' ||
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key)
+      ) {
+        // Pushing Details from an open drawer replaces the drawer entry with Details.
+        // Back then returns to the page with the drawer closed.
+        return { type: 'replace' };
+      }
+      return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+    },
+
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(ensureDrawerStateHistory(state), key);
 

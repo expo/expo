@@ -33,13 +33,18 @@ public:
       jsi::Runtime &rt,
       std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
       std::optional<jsi::Function> resolveHolder,
-      std::optional<jsi::Function> rejectHolder
+      std::optional<jsi::Function> rejectHolder,
+      std::vector<jsi::Value> retainedValues = {}
     );
 
     jsi::Runtime &rt;
     std::weak_ptr<react::CallInvoker> jsCallInvokerHolder;
     std::optional<jsi::Function> resolveHolder;
     std::optional<jsi::Function> rejectHolder;
+    /**
+     * JS values that have to stay alive until the promise is settled.
+     */
+    std::vector<jsi::Value> retainedValues;
 
     void invalidate();
   };

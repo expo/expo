@@ -46,7 +46,7 @@
           "type": "boolean"
         },
         "asyncRoutes": {
-          "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+          "description": "Enable async routes. Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native.",
           "oneOf": [
             {
               "$ref": "#/definitions/AsyncRouteOption"

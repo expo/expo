@@ -1,4 +1,4 @@
-# react-native-view-shot ![](https://img.shields.io/npm/v/react-native-view-shot.svg) ![](https://img.shields.io/badge/react--native-0.76%2B-05F561.svg)
+# react-native-view-shot ![](https://img.shields.io/npm/v/react-native-view-shot.svg) ![](https://img.shields.io/badge/react--native-0.80%2B-05F561.svg)
 
 Capture a React Native view to an image.
 
@@ -10,7 +10,7 @@ This library fully supports React Native's **new architecture** (Fabric + TurboM
 
 **Requirements:**
 
-- React Native >= 0.76.0
+- React Native >= 0.80.0
 - Node.js >= 20
 
 Both old and new architectures are supported for seamless migration.
@@ -33,32 +33,59 @@ npx expo install react-native-view-shot
 npx pod-install
 ```
 
+### Web
+
+On web (`react-native-web`, Expo web), captures are rendered with [html2canvas-pro](https://github.com/yorickshan/html2canvas-pro). It is an optional peer dependency, so it is not installed on native-only projects — add it yourself when targeting the web:
+
+```bash
+npm install html2canvas-pro
+```
+
+It is loaded lazily on the first capture. If it is missing, your bundler (webpack, Metro) fails at build time with `Can't resolve 'html2canvas-pro'`; in environments that resolve modules at runtime, `captureRef` rejects with an explicit install hint instead.
+
+`react-native` is also an optional peer dependency, so a web-only project can install `react-native-web` without pulling `react-native` (alias `react-native` to `react-native-web` in your bundler as usual).
+
+The library reads the `__DEV__` global, as React Native code does. Metro and Expo define it for you; with a custom webpack/esbuild setup you must define it yourself, otherwise the page throws `ReferenceError: __DEV__ is not defined`:
+
+```js
+// webpack.config.js
+new webpack.DefinePlugin({ __DEV__: JSON.stringify(process.env.NODE_ENV !== "production") })
+// esbuild
+--define:__DEV__=false
+```
+
 ## High Level API
 
 ```js
+import React, {useCallback, useEffect, useRef} from "react";
+import {Image, ScrollView, Text} from "react-native";
 import ViewShot from "react-native-view-shot";
 
-function ExampleCaptureOnMountManually {
+function ExampleCaptureOnMountManually() {
   const ref = useRef();
 
   useEffect(() => {
     // on mount
-    ref.current.capture().then(uri => {
-      console.log("do something with ", uri);
-    });
+    ref.current
+      .capture()
+      .then(uri => {
+        console.log("do something with ", uri);
+      })
+      .catch(console.error);
   }, []);
 
   return (
-    <ViewShot ref={ref} options={{ fileName: "Your-File-Name", format: "jpg", quality: 0.9 }}>
+    <ViewShot
+      ref={ref}
+      options={{fileName: "Your-File-Name", format: "jpg", quality: 0.9}}
+    >
       <Text>...Something to rasterize...</Text>
     </ViewShot>
   );
 }
 
 // alternative
-function ExampleCaptureOnMountSimpler {
-  const ref = useRef();
-
+function ExampleCaptureOnMountSimpler() {
   const onCapture = useCallback(uri => {
     console.log("do something with ", uri);
   }, []);
@@ -72,28 +99,29 @@ function ExampleCaptureOnMountSimpler {
 
 // waiting an image
 
-function ExampleWaitingCapture {
+function ExampleWaitingCapture({imageSource}) {
   const ref = useRef();
 
   const onImageLoad = useCallback(() => {
-    ref.current.capture().then(uri => {
-      console.log("do something with ", uri);
-    })
+    ref.current
+      .capture()
+      .then(uri => {
+        console.log("do something with ", uri);
+      })
+      .catch(console.error);
   }, []);
 
   return (
     <ViewShot ref={ref}>
       <Text>...Something to rasterize...</Text>
-      <Image ... onLoad={onImageLoad} />
+      <Image source={imageSource} onLoad={onImageLoad} />
     </ViewShot>
   );
 }
 
 // capture ScrollView content
 // NB: you may need to go the "imperative way" to use snapshotContentContainer with the scrollview ref instead
-function ExampleCaptureOnMountSimpler {
-  const ref = useRef();
-
+function ExampleCaptureScrollContent() {
   const onCapture = useCallback(uri => {
     console.log("do something with ", uri);
   }, []);
@@ -114,7 +142,7 @@ function ExampleCaptureOnMountSimpler {
 - **`options`**: the same options as in `captureRef` method.
 - **`captureMode`** (string):
   - if not defined (default). the capture is not automatic and you need to use the ref and call `capture()` yourself.
-  - `"mount"`. Capture the view once at mount. (It is important to understand image loading won't be waited, in such case you want to use `"none"` with `viewShotRef.capture()` after `Image#onLoad`.)
+  - `"mount"`. Capture the view once at mount. Image loading is not awaited; omit `captureMode` and call `viewShotRef.current.capture()` after `Image#onLoad` when needed.
   - `"continuous"` EXPERIMENTAL, this will capture A LOT of images continuously. For very specific use-cases.
   - `"update"` EXPERIMENTAL, this will capture images each time React redraw (on did update). For very specific use-cases.
 - **`onCapture`**: when a `captureMode` is defined, this callback will be called with the capture result.
@@ -140,7 +168,7 @@ Returns a Promise of the image URI.
 - **`options`** may include:
   - **`fileName`** _(string)_: (Android only) the file name of the file. Must be at least 3 characters long.
   - **`width`** / **`height`** _(number)_: the width and height of the final image (resized from the View bound. don't provide it if you want the original pixel size).
-  - **`format`** _(string)_: either `png` or `jpg` or `webm` (Android). Defaults to `png`.
+  - **`format`** _(string)_: `png` or `jpg`, plus `webp` and `raw` on Android. Defaults to `png`. `webm` is a deprecated alias for `webp`; it produces WebP image data, not a video.
   - **`quality`** _(number)_: the quality. 0.0 - 1.0 (default). (only available on lossy formats like jpg)
   - **`result`** _(string)_, the method you want to use to save the snapshot, one of:
     - `"tmpfile"` (default): save to a temporary file _(that will only exist for as long as the app is running)_.
@@ -183,7 +211,7 @@ Returns a Promise of the image URI.
 
 ### Web Example
 
-[Checkout react-native-view-shot-web-example](example-web) - Web example demonstrating how the library works in browsers using html2canvas.
+[Checkout react-native-view-shot-web-example](example-web) - Web example demonstrating how the library works in browsers using html2canvas-pro.
 
 ## Interoperability Table
 
@@ -207,7 +235,7 @@ Model tested: iPhone 6 (iOS), Nexus 5 (Android).
 2. It returns an empty image (not a failure Promise).
 3. Component itself lacks platform support.
 4. But you can just use the react-native-maps snapshot function: https://github.com/airbnb/react-native-maps#take-snapshot-of-map
-5. Web support via html2canvas has limitations with SVG rendering. Basic SVG works, complex SVG may have issues.
+5. Web support via html2canvas-pro has limitations with SVG rendering. Basic SVG works, complex SVG may have issues.
 
 ## Performance Optimization
 
@@ -232,11 +260,11 @@ Introduced a new image format RAW. it correspond a ARGB array of pixels.
 
 Advantages:
 
-- no compression, so its supper quick. Screenshot taking is less than 16ms;
+- avoids PNG/JPEG compression; capture time still depends on the view and device.
 
 RAW format supported for `zip-base64`, `base64` and `tmpfile` result types.
 
-RAW file on disk saved in format: `${width}:${height}|${base64}` string.
+RAW files contain an ASCII `${width}:${height}|` header followed by binary pixel bytes. The `base64` result instead returns that header followed by base64-encoded pixels; `zip-base64` returns the header followed by base64-encoded, zlib-compressed pixels.
 
 ### zip-base64
 
@@ -246,45 +274,60 @@ approach for capturing screen views and deliver them to the react side.
 
 ### How to work with zip-base64 and RAW format?
 
+Capture in React Native, then send the result and format to a Node.js process for conversion. Node's `fs` and `zlib` modules are not built into React Native.
+
 ```js
-const fs = require("fs");
-const zlib = require("zlib");
-const PNG = require("pngjs").PNG;
-const Buffer = require("buffer").Buffer;
+import {Platform} from "react-native";
+import {captureRef} from "react-native-view-shot";
 
 const format = Platform.OS === "android" ? "raw" : "png";
 const result = Platform.OS === "android" ? "zip-base64" : "base64";
 
-captureRef(this.ref, {result, format}).then(data => {
-  // expected pattern 'width:height|', example: '1080:1731|'
-  const resolution = /^(\d+):(\d+)\|/g.exec(data);
-  const width = (resolution || ["", 0, 0])[1];
-  const height = (resolution || ["", 0, 0])[2];
-  const base64 = data.substr((resolution || [""])[0].length || 0);
+captureRef(viewRef, {result, format})
+  .then(data => {
+    // Send {data, format} to your Node.js conversion process.
+  })
+  .catch(console.error);
+```
 
-  // convert from base64 to Buffer
-  const buffer = Buffer.from(base64, "base64");
-  // un-compress data
-  const inflated = zlib.inflateSync(buffer);
-  // compose PNG
-  const png = new PNG({width, height});
-  png.data = inflated;
-  const pngData = PNG.sync.write(png);
-  // save composed PNG
-  fs.writeFileSync(output, pngData);
-});
+In Node.js:
+
+```js
+const fs = require("node:fs");
+const zlib = require("node:zlib");
+const {PNG} = require("pngjs");
+
+function saveCapture(data, format, outputPath) {
+  let pngData;
+  if (format === "raw") {
+    const resolution = /^(\d+):(\d+)\|/.exec(data);
+    if (!resolution) throw new Error("Missing RAW dimensions");
+    const width = Number(resolution[1]);
+    const height = Number(resolution[2]);
+    const compressed = Buffer.from(data.slice(resolution[0].length), "base64");
+    const pixels = zlib.inflateSync(compressed);
+    if (!width || !height || pixels.length !== width * height * 4) {
+      throw new Error("Invalid RAW dimensions or pixel data");
+    }
+    const png = new PNG({width, height});
+    png.data = pixels;
+    pngData = PNG.sync.write(png);
+  } else {
+    // The iOS/Windows fallback is already PNG, not zlib-compressed RAW.
+    pngData = Buffer.from(data, "base64");
+  }
+  fs.writeFileSync(outputPath, pngData);
+}
 ```
 
 Keep in mind that packaging PNG data is a CPU consuming operation as a `zlib.inflate`.
 
 Hint: use `process.fork()` approach for converting raw data into PNGs.
 
-> Note: code is tested in large commercial project.
-
-> Note #2: Don't forget to add packages into your project:
+> Install the PNG encoder in your Node.js conversion project (`zlib` is built in):
 >
 > ```bash
-> npm install pngjs zlib
+> npm install pngjs
 > ```
 
 ## Troubleshooting / FAQ
@@ -328,20 +371,23 @@ This is because the snapshot image result is in real pixel size where the width/
 A prop may be necessary to properly capture GL Surface View in the view tree:
 
 ```js
-/**
-  * if true and when view is a SurfaceView or have it in the view tree, view will be captured.
-  * False by default, because it can have signoficant performance impact
-  */
-handleGLSurfaceViewOnAndroid?: boolean;
+// Opt in to SurfaceView capture; it can have a significant performance cost.
+captureRef(viewRef, {handleGLSurfaceViewOnAndroid: true});
 ```
 
 ### Trying to share the capture result with `expo-sharing`?
 
-`tmpfile` or the default capture result works best for this. Just be sure to prepend `file://` to result before you call `shareAsync`.
+`tmpfile` or the default capture result works best for this. Add `file://` only when it is absent; Android already returns a file URI.
 
 ```js
 captureRef(viewRef)
-  .then((uri) => Sharing.shareAsync(`file://${uri}`, options)
+  .then(uri =>
+    Sharing.shareAsync(
+      uri.startsWith("file://") ? uri : `file://${uri}`,
+      options,
+    ),
+  )
+  .catch(console.error);
 ```
 
 ---

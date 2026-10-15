@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 1`] = `
 "Usage: expo-brownfield tasks:android [options]

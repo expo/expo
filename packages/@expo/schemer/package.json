@@ -1,6 +1,6 @@
 {
   "name": "@expo/schemer",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Centralized scheme validation library for Expo",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "bugs": {
@@ -36,7 +36,7 @@
     "probe-image-size": "^7.1.0"
   },
   "devDependencies": {
-    "@types/probe-image-size": "^7.2.4",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/probe-image-size": "^7.2.4"
   }
 }

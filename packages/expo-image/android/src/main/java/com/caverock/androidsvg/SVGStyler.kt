@@ -4,10 +4,16 @@ import com.caverock.androidsvg.SVG.SPECIFIED_COLOR
 import com.caverock.androidsvg.SVG.SPECIFIED_FILL
 import com.caverock.androidsvg.SVG.SvgElementBase
 
-internal fun replaceColor(paint: SVG.SvgPaint?, newColor: Int) {
+internal fun replaceColor(paint: SVG.SvgPaint?, newColor: Int): SVG.SvgPaint? {
+  if (paint is SVG.CurrentColor) {
+    return SVG.Colour(newColor)
+  }
+
   if (paint is SVG.Colour && paint !== SVG.Colour.TRANSPARENT) {
     paint.colour = newColor
   }
+
+  return paint
 }
 
 internal fun replaceStyles(style: SVG.Style?, newColor: Int) {
@@ -16,11 +22,11 @@ internal fun replaceStyles(style: SVG.Style?, newColor: Int) {
   }
 
   replaceColor(style.color, newColor)
-  replaceColor(style.fill, newColor)
-  replaceColor(style.stroke, newColor)
-  replaceColor(style.stopColor, newColor)
-  replaceColor(style.solidColor, newColor)
-  replaceColor(style.viewportFill, newColor)
+  style.fill = replaceColor(style.fill, newColor)
+  style.stroke = replaceColor(style.stroke, newColor)
+  style.stopColor = replaceColor(style.stopColor, newColor)
+  style.solidColor = replaceColor(style.solidColor, newColor)
+  style.viewportFill = replaceColor(style.viewportFill, newColor)
 }
 
 internal fun hasStyle(element: SvgElementBase): Boolean {

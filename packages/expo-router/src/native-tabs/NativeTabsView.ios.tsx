@@ -6,6 +6,7 @@ import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
+  TabsScreen,
   useOnTabSelectedHandler,
   useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
@@ -66,6 +67,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     <Screen
       key={tab.name}
       name={tab.name}
+      routeKey={tab.routeKey}
       options={tab.options}
       isFocused={selectedScreenKey === tab.name}
       standardAppearance={iosAppearances[index]!.standardAppearance}
@@ -101,6 +103,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 }
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
+  routeKey?: string;
   standardAppearance: TabsScreenAppearanceIOS;
   scrollEdgeAppearance: TabsScreenAppearanceIOS;
 }
@@ -150,12 +153,12 @@ function Screen(props: InternalTabScreenProps) {
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
   return (
-    <Tabs.Screen
+    <TabsScreen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       ios={{
-        icon: iosIcon,
-        selectedIcon: iosSelectedIcon,
+        icon: iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
+        selectedIcon: iosSelectedIcon?.platform === 'ios' ? iosSelectedIcon.icon : undefined,
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
@@ -165,9 +168,10 @@ function Screen(props: InternalTabScreenProps) {
       title={shared.title}
       preventNativeSelection={options.disabled}
       {...shared.nativeRestOverrides}
-      screenKey={shared.screenKey}>
+      screenKey={shared.screenKey}
+      nativeID={props.routeKey ? `expo-router-tab:${props.routeKey}` : undefined}>
       {wrappedContent}
-    </Tabs.Screen>
+    </TabsScreen>
   );
 }
 

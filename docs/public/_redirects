@@ -30,6 +30,14 @@
 /develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /develop/development-builds/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 
+# Expo UI guides merged into the versioned reference
+/guides/expo-ui-swift-ui /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/ /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/extending /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-swift-ui/extending/ /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-jetpack-compose/extending /versions/latest/sdk/ui/jetpack-compose/extending 301
+/guides/expo-ui-jetpack-compose/extending/ /versions/latest/sdk/ui/jetpack-compose/extending 301
+
 # Guides that have been deleted
 /guides/web-performance /guides/analyzing-bundles 301
 /guides/web-performance/ /guides/analyzing-bundles 301
@@ -303,12 +311,6 @@
 /develop/user-interface/app-icons/ /develop/user-interface/splash-screen-and-app-icon 301
 /develop/user-interface/splash-screen /develop/user-interface/splash-screen-and-app-icon 301
 /develop/user-interface/splash-screen/ /develop/user-interface/splash-screen-and-app-icon 301
-
-# Preview section
-/preview/support /preview/introduction 301
-/preview/support/ /preview/introduction 301
-/preview/react-compiler /guides/react-compiler 301
-/preview/react-compiler/ /guides/react-compiler 301
 
 # Archived
 /guides/using-flipper /debugging/tools 301
@@ -801,3 +803,9 @@
 /api/ /versions/latest 301
 /developers / 301
 /developers/ / 301
+/contact https://expo.dev/contact 301
+/contact/ https://expo.dev/contact 301
+/privacy https://expo.dev/privacy 301
+/privacy/ https://expo.dev/privacy 301
+/about https://expo.dev/about 301
+/about/ https://expo.dev/about 301

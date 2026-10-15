@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import Foundation
 import Testing
 
 @testable import ExpoModulesCore
@@ -24,6 +25,12 @@ private final class MacroEmitter: Module {
 
   @Event
   var onDone: () -> Void
+
+  @Event
+  var onCount: (Int64) -> Void
+
+  @Event
+  var onTimestamp: (Date) -> Void
 }
 
 @Suite("Macro event")
@@ -65,6 +72,30 @@ private struct MacroEventTests {
     module.onDone()
 
     try await expectResult(equals: 1)
+  }
+
+  @Test
+  func `emits a 64-bit integer payload as a bigint`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('count', payload => { globalThis.result = typeof payload + ':' + payload })
+      """)
+    module.onCount(42)
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "bigint:42")
+  }
+
+  @Test
+  func `emits a date payload as a JS Date`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('timestamp', payload => {
+        globalThis.result = Object.prototype.toString.call(payload) + ':' + (payload instanceof Date ? payload.getTime() : payload)
+      })
+      """)
+    module.onTimestamp(Date(timeIntervalSince1970: 1_700_000_000))
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "[object Date]:1700000000000")
   }
 
   @Test

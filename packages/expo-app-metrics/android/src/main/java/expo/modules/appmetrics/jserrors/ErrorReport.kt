@@ -110,7 +110,13 @@ private fun makeExceptionLogRecord(
     sessionId = sessionId,
     timestamp = timestamp,
     name = "js.exception",
-    severity = (if (isFatal) Severity.FATAL else Severity.ERROR).rawValue,
+    severity = (
+      if (isFatal) {
+        Severity.FATAL
+      } else {
+        Severity.ERROR
+      }
+      ).rawValue,
     attributes = JsonAny.encodeMapToJsonString(attributes)
   )
 }

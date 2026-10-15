@@ -3,7 +3,7 @@ title: metro.config.js
 description: A reference of available configurations in Metro.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
@@ -223,7 +223,7 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
   title="Tailwind CSS"
   description="Learn how to configure and use Tailwind CSS in your Expo project."
   href="/guides/tailwind/"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />
 
 ## Extending the Babel transformer
@@ -554,7 +554,7 @@ module.exports = config;
 
 When assets are imported, a virtual module is created to represent the data required for importing the asset.
 
-On native platforms, an asset will be a numeric ID: `1`, `2`, `3`, and so on, which can be looked up using `require("@react-native/assets-registry/registry").getAssetByID(<NUMBER>)`. On web and server platforms, the asset will change depending on the file type. If the file is an image, then the asset will be `{ uri: string, width?: number, height?: number }`, otherwise the asset will be a `string` representing the remote URL for the asset. As of SDK 55, you can use `String(asset)` to get the public URL of any asset on web, this excludes React Server Component environments which cannot contain a `toString` function.
+On native platforms, an asset will be a numeric ID: `1`, `2`, `3`, and so on, which can be looked up using `AssetRegistry.getAssetByID(<NUMBER>)` from `react-native`. On web and server platforms, the asset will change depending on the file type. If the file is an image, then the asset will be `{ uri: string, width?: number, height?: number }`, otherwise the asset will be a `string` representing the remote URL for the asset. As of SDK 55, you can use `String(asset)` to get the public URL of any asset on web, this excludes React Server Component environments which cannot contain a `toString` function.
 
 The assets can be used as follows:
 

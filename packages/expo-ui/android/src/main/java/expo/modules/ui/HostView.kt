@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.Layout
@@ -80,17 +82,33 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 
   fun toColorScheme(context: Context): ColorScheme {
     return when (this) {
-      LIGHT -> if (isDynamicColorSupported) dynamicLightColorScheme(context) else lightColorScheme()
-      DARK -> if (isDynamicColorSupported) dynamicDarkColorScheme(context) else darkColorScheme()
+      LIGHT -> if (isDynamicColorSupported) {
+        dynamicLightColorScheme(context)
+      } else {
+        lightColorScheme()
+      }
+      DARK -> if (isDynamicColorSupported) {
+        dynamicDarkColorScheme(context)
+      } else {
+        darkColorScheme()
+      }
     }
   }
 
   companion object {
     fun defaultColorScheme(context: Context, isSystemInDarkTheme: Boolean): ColorScheme {
       return if (isDynamicColorSupported) {
-        if (isSystemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        if (isSystemInDarkTheme) {
+          dynamicDarkColorScheme(context)
+        } else {
+          dynamicLightColorScheme(context)
+        }
       } else {
-        if (isSystemInDarkTheme) darkColorScheme() else lightColorScheme()
+        if (isSystemInDarkTheme) {
+          darkColorScheme()
+        } else {
+          lightColorScheme()
+        }
       }
     }
   }
@@ -103,6 +121,26 @@ internal class HostView(context: Context, appContext: AppContext) :
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
 
+  /**
+   * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
+   * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
+   * the JS responder's view intercepting the stream, which cancels its native children.
+   */
+  internal var isDispatchingCancelFromParent = false
+    private set
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      return super.dispatchTouchEvent(ev)
+    }
+    isDispatchingCancelFromParent = true
+    try {
+      return super.dispatchTouchEvent(ev)
+    } finally {
+      isDispatchingCancelFromParent = false
+    }
+  }
+
   @Composable
   override fun ComposableScope.Content() {
     val context = LocalContext.current
@@ -112,11 +150,12 @@ internal class HostView(context: Context, appContext: AppContext) :
       null -> isSystemInDarkTheme()
     }
     val seedArgb = props.seedColor.value?.composeOrNull?.toArgb()
-    val colorScheme = when {
-      seedArgb != null -> seedColorScheme(seedArgb, isDark)
-      else -> props.colorScheme.value?.toColorScheme(context)
-        ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val seededScheme = remember(seedArgb, isDark) {
+      seedArgb?.let { seedColorScheme(it, isDark) }
     }
+    val colorScheme = seededScheme
+      ?: props.colorScheme.value?.toColorScheme(context)
+      ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     // Material3's `MaterialTheme` does not provide `LocalContentColor` — only `Surface` does — so
@@ -157,8 +196,20 @@ internal class HostView(context: Context, appContext: AppContext) :
 
     Layout(
       modifier = Modifier
-        .then(if (props.matchContentsHorizontal.value == true) Modifier.wrapContentWidth() else Modifier)
-        .then(if (props.matchContentsVertical.value == true) Modifier.wrapContentHeight() else Modifier)
+        .then(
+          if (props.matchContentsHorizontal.value == true) {
+            Modifier.wrapContentWidth()
+          } else {
+            Modifier
+          }
+        )
+        .then(
+          if (props.matchContentsVertical.value == true) {
+            Modifier.wrapContentHeight()
+          } else {
+            Modifier
+          }
+        )
         .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
       content = content
     ) { measurables, constraints ->
@@ -197,8 +248,16 @@ internal class HostView(context: Context, appContext: AppContext) :
           val heightDp = contentHeightPx.toDp().value.toDouble()
 
           shadowNodeProxy.setViewSize(
-            if (constraints.maxWidth == 0) widthDp else Double.NaN,
-            if (constraints.maxHeight == 0) heightDp else Double.NaN
+            if (constraints.maxWidth == 0) {
+              widthDp
+            } else {
+              Double.NaN
+            },
+            if (constraints.maxHeight == 0) {
+              heightDp
+            } else {
+              Double.NaN
+            }
           )
         }
       }
@@ -225,12 +284,26 @@ internal class HostView(context: Context, appContext: AppContext) :
       val height = size.height.toDp().value
 
       if (matchContentsHorizontal == true || matchContentsVertical == true) {
-        val styleWidth = if (matchContentsHorizontal == true && width > 0) width else null
-        val styleHeight = if (matchContentsVertical == true && height > 0) height else null
+        val styleWidth = if (matchContentsHorizontal == true && width > 0) {
+          width
+        } else {
+          null
+        }
+        val styleHeight = if (matchContentsVertical == true && height > 0) {
+          height
+        } else {
+          null
+        }
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
       }
 
-      onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))
+      // `onSizeChanged` runs inside the Compose measure pass. Emitting the event here reaches
+      // Fabric event listeners synchronously (e.g. reanimated's `onEventDispatch` hook), which
+      // can flush mount items and re-enter `onMeasure` of a view that is mid-measure — Compose
+      // then throws "performMeasureAndLayout called during measure layout" and takes down the
+      // ReactHost. Post the dispatch so it runs after the measure pass completes.
+      // See https://github.com/expo/expo/issues/47625.
+      post { onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble())) }
     }
   }
 
@@ -261,8 +334,16 @@ internal class HostView(context: Context, appContext: AppContext) :
     val matchContentsVertical = props.matchContentsVertical.value
     val composeView = findComposeView()
     composeView.layoutParams = LayoutParams(
-      if (matchContentsHorizontal == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT,
-      if (matchContentsVertical == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT
+      if (matchContentsHorizontal == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      },
+      if (matchContentsVertical == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      }
     )
   }
 

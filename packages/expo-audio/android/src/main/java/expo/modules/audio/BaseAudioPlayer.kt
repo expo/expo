@@ -41,6 +41,7 @@ abstract class BaseAudioPlayer(
   override var previousVolume = 1f
   override var onPlaybackStateChange: ((Boolean) -> Unit)? = null
   override var onRelease: (() -> Unit)? = null
+  override var onPlayRequest: (() -> Unit)? = null
   override val player get() = ref
 
   protected var playerScope = CoroutineScope(Dispatchers.Main)

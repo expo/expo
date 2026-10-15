@@ -4,9 +4,11 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.IUpdatesEventManagerObserver
+import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import org.json.JSONObject
@@ -51,6 +53,29 @@ class UpdatesStateMachineInstrumentationTest {
 
   private val androidContext = InstrumentationRegistry.getInstrumentation().context
   private val logger = UpdatesLogger(androidContext.filesDir)
+
+  /**
+   * Waits for the warning the state machine writes when it drops an event. The persistent file log
+   * handler writes asynchronously, so the entry may not be readable the moment the event returns.
+   */
+  private fun assertDroppedEventWarning(
+    since: Date,
+    state: UpdatesStateValue,
+    eventType: UpdatesStateEventType
+  ) {
+    val expected = "invalid transition requested, event dropped: state = $state, event = $eventType"
+    val reader = UpdatesLogReader(androidContext.filesDir)
+    val deadline = System.currentTimeMillis() + 5000
+    var logs: List<String> = emptyList()
+    while (System.currentTimeMillis() < deadline) {
+      logs = reader.getLogEntries(since)
+      if (logs.any { it.contains(expected) }) {
+        return
+      }
+      Thread.sleep(100)
+    }
+    Assert.fail("Expected a warning \"$expected\", got: $logs")
+  }
 
   // Test classes
   class TestStateChangeEventManager : IUpdatesEventManager {
@@ -292,16 +317,18 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEventTest(UpdatesStateEvent.Check())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
 
-    // Test invalid transitions and ensure that state does not change
-    Assert.assertThrows(AssertionError::class.java) {
-      machine.processEventTest(UpdatesStateEvent.Download())
-    }
+    // An event that is not allowed from the current state is dropped with a warning rather than
+    // throwing, and the state does not change
+    val since = Date(Date().time - 1000)
+
+    machine.processEventTest(UpdatesStateEvent.Download())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
 
-    Assert.assertThrows(AssertionError::class.java) {
-      machine.processEventTest(UpdatesStateEvent.DownloadCompleteUnavailable())
-    }
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteUnavailable())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
+
+    assertDroppedEventWarning(since, UpdatesStateValue.Checking, UpdatesStateEventType.Download)
+    assertDroppedEventWarning(since, UpdatesStateValue.Checking, UpdatesStateEventType.DownloadCompleteUnavailable)
   }
 
   @Test
@@ -310,10 +337,12 @@ class UpdatesStateMachineInstrumentationTest {
     // can only be idle
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, setOf(UpdatesStateValue.Idle))
 
-    // Test invalid value and ensure that state does not change
-    Assert.assertThrows(AssertionError::class.java) {
-      machine.processEventTest(UpdatesStateEvent.Download())
-    }
+    // An event whose destination state is not a valid state value is dropped the same way
+    val since = Date(Date().time - 1000)
+
+    machine.processEventTest(UpdatesStateEvent.Download())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+
+    assertDroppedEventWarning(since, UpdatesStateValue.Idle, UpdatesStateEventType.Download)
   }
 }

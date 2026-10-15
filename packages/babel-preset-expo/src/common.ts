@@ -5,7 +5,7 @@ import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer
 import path from 'node:path';
 
 /** Determine which bundler is being used. */
-export function getBundler(caller?: any) {
+export function getBundler(caller?: any): 'metro' | 'webpack' | 'jest' | null {
   assertExpoBabelCaller(caller);
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;

@@ -242,6 +242,39 @@ test('returns the regenerated route key when the route ID changes', () => {
   expect(result?.affectedRouteKey).toBe('baz:tab-0');
 });
 
+test.each([
+  CommonActions.navigate('baz', { id: 'two' }),
+  CommonActions.preload('baz', { id: 'two' }),
+])('$type drops the nested state of a route re-keyed for a new ID', (action) => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: { baz: ({ params }) => params?.id as string | undefined },
+  };
+  const state = {
+    ...createTabState(options),
+    routes: [
+      { key: 'bar-key', name: 'bar' },
+      {
+        key: 'baz-one',
+        name: 'baz',
+        params: { id: 'one' },
+        state: { routes: [{ name: 'child', params: { id: 'one' } }] },
+      },
+    ],
+    history: [{ type: 'route' as const, key: 'bar-key' }],
+  };
+
+  const result = router.getStateForAction(state, action, options);
+
+  expect(result?.state.routes[1]).toEqual({
+    key: 'baz:tab-0',
+    name: 'baz',
+    params: { id: 'two' },
+    ...(action.type === 'PRELOAD' ? { isPreloaded: true } : { path: undefined }),
+  });
+});
+
 test('returns the preloaded route key while focus differs', () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
