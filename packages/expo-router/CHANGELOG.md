@@ -1,5 +1,44 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Add the `expo-router:action-enqueued` performance mark, recorded when a navigation action is queued. ([#51485](https://github.com/expo/expo/pull/51485) by [@Ubax](https://github.com/Ubax))
+- Fixed the first push to a screen being reported as `pagePreloaded`. ([#51446](https://github.com/expo/expo/pull/51446) by [@Ubax](https://github.com/Ubax))
+- [Internal] Return platform-tagged icons from the NativeTabs icon converter so tab icons type-check with `react-native-screens` 4.30.0. ([#51508](https://github.com/expo/expo/pull/51508) by [@Ubax](https://github.com/Ubax))
+- Replace the experimental `unstable_navigationEvents` API with `unstable_performance` and `unstable_PerformanceObserver`. ([#51068](https://github.com/expo/expo/pull/51068) by [@Ubax](https://github.com/Ubax))
+- Added a development warning when `navigation.isFocused()` is called during render. ([#51464](https://github.com/expo/expo/pull/51464) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.18
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.29.0. ([#51354](https://github.com/expo/expo/pull/51354) by [@Ubax](https://github.com/Ubax))
+- Allow interfaces extending `UnknownOutputParams` to declare optional params, so an omitted query parameter can be typed as optional, e.g. `interface MyParams extends UnknownOutputParams { id?: string }`. ([#51219](https://github.com/expo/expo/pull/51219) by [@Ubax](https://github.com/Ubax))
+- Fix `navigation.getState()` returning the previous state inside a `state` event listener. ([#51194](https://github.com/expo/expo/pull/51194) by [@drakeo338](https://github.com/drakeo338))
+- Read `unstable_settings.anchor` only when a layout is first needed, so async routes apply anchors and startup no longer loads every layout. ([#51124](https://github.com/expo/expo/pull/51124) by [@Ubax](https://github.com/Ubax))
+- Reduce route info processing overhead. ([#50737](https://github.com/expo/expo/pull/50737) by [@Ubax](https://github.com/Ubax))
+- Point the `useFocusEffect` diagnostic links to the new focus handling guide. ([#50874](https://github.com/expo/expo/pull/50874) by [@Ubax](https://github.com/Ubax))
+- Pass the current `pathname` and `params` props to the `+html` component. ([#51255](https://github.com/expo/expo/pull/51255) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix header title not adapting its color to content scrolling underneath a transparent header on iOS 26 Liquid Glass. ([#49639](https://github.com/expo/expo/pull/49639) by [@Jonas-C](https://github.com/Jonas-C))
+- Wait for the initial navigation state with Suspense. ([#51239](https://github.com/expo/expo/pull/51239) by [@Ubax](https://github.com/Ubax))
+- Fix Tabs and Drawer routes with `dangerouslySingular` keeping the nested navigator state of the previous ID after navigating to a new ID. ([#51270](https://github.com/expo/expo/pull/51270) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#46526](https://github.com/expo/expo/pull/46526))
+  - expo-server@58.0.5
+
+## 58.0.17
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Fix the dev server error page for routes that throw during server rendering, which showed an "Internal Error" instead of the error overlay. ([#51185](https://github.com/expo/expo/pull/51185) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522))
+  - @expo/log-box@58.0.12
+  - expo-server@58.0.4
+  - @expo/metro-runtime@58.0.14
+
 ## 58.0.16
 
 ### Patch Changes

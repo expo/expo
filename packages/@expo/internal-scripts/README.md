@@ -15,7 +15,7 @@ Add it as a workspace development dependency:
 The package provides:
 
 - `expo-build` for compiling JavaScript and TypeScript with SWC.
-- `expo-module` for shared tasks such as configuration, testing, type checking, formatting, and cleaning.
+- `expo-module` for shared tasks such as configuration, dependency checking, formatting, cleaning, and publishing.
 - TypeScript configurations: `@expo/internal-scripts/tsconfig.base`, `tsconfig.node`, and `tsconfig.plugin`.
 - The shared lint configuration at `@expo/internal-scripts/oxlint.config.base`.
 - Jest presets and helpers for internal module, Node, and config plugin tests.

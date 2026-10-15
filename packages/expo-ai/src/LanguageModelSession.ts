@@ -23,7 +23,7 @@ import {
   type CompletedToolObservation,
 } from './compatibility';
 import { snapshotImages } from './images';
-import { compileSchema, hasNumericBounds, parseResponse } from './schema';
+import { compileSchema, parseResponse } from './schema';
 import { authorizeToolCall, snapshotToolArguments } from './toolAuthorization';
 import type { RuntimeTool } from './tools';
 import { aggregateUsage, generateNativeCompletion } from './usage';
@@ -265,13 +265,7 @@ export class LanguageModelSession {
     const nativeTools =
       this.tools.length > 0 && this.capabilities.runtimeToolDeclarations === 'supported';
     const compatibilityTools = this.tools.length > 0 && !nativeTools;
-    const browserWithNumericBounds =
-      this.capabilities.provider === 'browser-prompt-api' &&
-      [schema, ...this.tools.map((tool) => tool.inputSchema)].some(
-        (definition) => definition !== undefined && hasNumericBounds(definition)
-      );
-    const nativeSchema =
-      this.capabilities.constrainedOutput === 'supported' && !browserWithNumericBounds;
+    const nativeSchema = this.capabilities.constrainedOutput === 'supported';
     const compatibility = compatibilityTools || (schema !== undefined && !nativeSchema);
     if (nativeTools && options.maximumSteps !== undefined) {
       throw new LanguageModelError(

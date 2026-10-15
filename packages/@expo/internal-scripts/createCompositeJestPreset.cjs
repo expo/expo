@@ -17,7 +17,7 @@ const createJestPreset = require('./createJestPreset.cjs');
 // - `watchPlugins` is root-only in multi-project mode, so it's kept at the
 //   root (from the module preset) and stripped from each sub-project config.
 // - `rootDir` is forced to the sub-folder so the sub-configs don't need to be invoked with an
-//   external `--rootDir` (as `expo-module test <target>` does).
+//   external `--rootDir`.
 // `opts.srcProjects` overrides the default `src` projects — used by packages whose `src`
 // tests are platform-specific (e.g. iOS-only) rather than the full multi-platform set.
 // `opts.rsc` appends the React Server Component per-platform projects (from
@@ -33,8 +33,8 @@ module.exports = function createCompositeJestPreset(
     projects: [
       // `src` — flattened per-platform projects from the module preset (or a custom set).
       ...(srcProjects ?? basePreset.projects),
-      // Each build sub-target as its own project, rooted at its folder. Mirrors
-      // `expo-module test <target>`: use the sub-folder's own `jest.config.js` if present,
+      // Each build sub-target as its own project, rooted at its folder.
+      // Use the sub-folder's own `jest.config.js` if present,
       // otherwise fall back to the default preset for that target (`jest-preset-<target>`).
       ...subdirs.map((dir) => {
         const localConfig = path.join(rootDir, dir, 'jest.config.js');

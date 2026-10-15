@@ -56,7 +56,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
-  public func instanceOf(_ constructor: JavaScriptValue) -> Bool {
+  public func instanceOf(_ constructor: borrowing JavaScriptValue) -> Bool {
     return instanceOf(constructor.getFunction())
   }
 
@@ -102,11 +102,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as an array buffer, or asserts if not an array buffer.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isArrayBuffer(), "Object is not an ArrayBuffer")
-    return JavaScriptArrayBuffer(runtime, pointee.getArrayBuffer(runtime.pointee))
+    return JavaScriptArrayBuffer(runtimeHandle, pointee.getArrayBuffer(jsiRuntime))
   }
 
   /// Returns the object as an array, or asserts if not an array.
@@ -120,11 +120,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as a function, or asserts if not a function.
   public func getFunction() -> JavaScriptFunction {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isFunction(), "Object is not a function")
-    return JavaScriptFunction(runtime, pointee.getFunction(runtime.pointee))
+    return JavaScriptFunction(runtimeHandle, pointee.getFunction(jsiRuntime))
   }
 
   // MARK: - Accessing object properties
@@ -266,7 +266,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
-  public func setPrototype(_ prototype: JavaScriptValue) {
+  public func setPrototype(_ prototype: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -275,7 +275,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Modifying object properties
 
-  public func setProperty(_ name: String, value: JavaScriptValue) {
+  public func setProperty(_ name: String, value: borrowing JavaScriptValue) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -347,6 +347,16 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     setProperty(name, value: runtime.createFunction(name, function))
   }
 
+  /// Sets a property to a host function created from a ``JavaScriptRuntime/VoidFunctionClosure``.
+  @_disfavoredOverload
+  @JavaScriptActor
+  public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.VoidFunctionClosure) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    setProperty(name, value: runtime.createFunction(name, function))
+  }
+
   /// Sets a property named after it to an asynchronous host function created from the given closure.
   /// Equivalent to `setProperty(name, runtime.createAsyncFunction(name) { … })`. Returning an
   /// ``JavaScriptRuntime/AsyncFunctionBody`` from the closure selects this overload over the
@@ -375,9 +385,13 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // Filled with borrowed values, rather than passed as a pack, which takes copyable refs only.
+    var arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 3)
+    arguments = arguments.set(value: self, atIndex: 0)
+    arguments = arguments.set(value: name, atIndex: 1)
+    arguments = arguments.set(value: descriptor, atIndex: 2)
     do {
-      try definePropertyFunction(in: runtime).function
-        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+      try definePropertyFunction(in: runtime).function.call(arguments: arguments)
     } catch {
       FatalError.definePropertyFailed(name, error)
     }
@@ -465,7 +479,14 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
+  }
+
+  /// Moves the object into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  @usableFromInline
+  internal consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
   }
 
   /// Returns the object as a `facebook.jsi.Value` instance.
@@ -632,7 +653,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       configurable: Bool = false,
       enumerable: Bool = false,
       writable: Bool = false,
-      value: JavaScriptValue? = nil
+      value: consuming JavaScriptValue? = nil
     ) {
       self.configurable = configurable
       self.enumerable = enumerable
@@ -657,8 +678,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       if writable {
         object.setProperty("writable", value: true)
       }
-      if let value {
+      switch value {
+      case .some(let value):
         object.setProperty("value", value: value)
+      case .none:
+        break
       }
       return object
     }
@@ -666,7 +690,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 }
 
 extension JavaScriptObject: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptObject {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptObject {
     return value.getObject()
   }
 
@@ -683,6 +707,46 @@ extension JavaScriptObject: JSIRepresentable {
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptObject` argument receives the JS value unconverted, like `JavaScriptValue`, but checked for
+// its kind: decoding anything else throws a `TypeError`. The typed wrapper is what the macros steer to
+// in place of a free-form `[String: Any]`.
+//
+// The unowned overload is the one a host function argument takes: it reads the kind off the borrowed
+// `jsi::Value` and clones it straight into the wrapper, where the default would first clone it into an
+// owning `JavaScriptValue` and then again into the wrapper.
+extension JavaScriptObject: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptObject
+  {
+    return try value.asObject()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptObject
+  {
+    return try value.asObject(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptObject, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }
 

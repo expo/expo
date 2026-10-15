@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Disable the React Native shake gesture with its public API instead of replacing the shake listener through reflection. ([#51130](https://github.com/expo/expo/pull/51130) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.10
 
 ### Patch Changes

@@ -156,7 +156,7 @@ class LocalizationModule : Module() {
     return listOf(
       mapOf(
         "calendar" to getCalendarType(),
-        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
+        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android
         "firstWeekday" to Calendar.getInstance().firstDayOfWeek,
         "timeZone" to Calendar.getInstance().timeZone.id
       )

@@ -1,5 +1,36 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix the universal `ListItem` ignoring `testID`. The prop was never passed to Compose, so end-to-end tools such as Maestro could not find list rows on Android. It is now applied as the `testID` modifier, like the universal `Button` and `Checkbox` do. ([#51480](https://github.com/expo/expo/pull/51480) by [@devonik](https://github.com/devonik))
+- [Android] Bump Jetpack Compose UI and Foundation to 1.12.1 and Material3 to 1.5.0-beta01. Add `preferredItemWidth` to `HorizontalCenteredHeroCarousel` and deprecate `maxItemWidth`, matching the Material3 rename. Add `TimePickerElementColors` props without the `Unselected` infix (for example `clockDialContentColor`) and deprecate the old names. ([#51426](https://github.com/expo/expo/pull/51426) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the community `BottomSheet` clipping its content when the sheet is narrower than the window, as on iPhone Duo. When the sheet sized itself to its content, the content was pinned to the window width and centered in the sheet, so its leading edge was cut off. The content now takes its width from the sheet and its height from the content. `presentationSizing` takes a `fitted` option (`{ horizontal, vertical }`) to fit a sheet to its content on one axis only. ([#51319](https://github.com/expo/expo/pull/51319) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix an `RNHostView` that ignores touches when a Compose button with a ripple in the same `Host` was pressed earlier. The ripple container that Compose adds was found first during React Native's touch-target search, so the touch went to the `Host` instead of the hosted view. ([#51237](https://github.com/expo/expo/pull/51237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Fixed `measure()` of views hosted in `RNHostView` inside SwiftUI and Jetpack Compose containers. ([#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Added a development warning when a `Host` renders directly inside another `Host` without an `RNHostView`. The universal `BottomSheet` no longer adds its own `Host` when it renders inside one. ([#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `measure()` of views hosted in `RNHostView` when SwiftUI insets the `Host`'s content, for example by the safe area. ([#50727](https://github.com/expo/expo/pull/50727) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix the community `MenuView` opening detached above its anchor near the bottom of the screen, and add a `properties` prop to the Jetpack Compose `DropdownMenu`. ([#51412](https://github.com/expo/expo/pull/51412) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix a numeric `width()` modifier crashing the app on launch with `FieldCastException: Cannot cast value for field 'width'` since the `IntrinsicSize` support added in 57.0.22 / 58.0.9. JS numbers reach the modifier record as `Double`, which matched neither branch of `Either<Int, IntrinsicSizeType>`; the field is now `Either<Double, IntrinsicSizeType>`, so numeric widths convert again and `width(IntrinsicSize.Min|Max)` keeps working. ([#51322](https://github.com/expo/expo/pull/51322) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `cornerRadius` and `opacity` to `Chart`'s `pieStyle`. Pie slices could not have rounded corners, and their opacity was fixed at 0.8, so a chart drawn in solid colors always looked washed out. Both default to the previous behavior. Rounded corners let a single-slice donut work as a progress ring with rounded ends. ([#51351](https://github.com/expo/expo/pull/51351) by [@jsg2021](https://github.com/jsg2021))
+
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix `Chart` ignoring `lineStyle.width` on line charts. The line mark applied `.lineStyle` twice (once for the dash pattern, once for the width), and the first one wins, so lines always rendered at 1 pt. The width and the dash pattern are now set in one `StrokeStyle`. ([#51283](https://github.com/expo/expo/pull/51283) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
+- [Android] Fix a `Pressable` (or any JS responder) being cancelled when a `MaskedView`, or any other component that renders a `Host`, is laid over it. Once React Native grants the JS responder, the responder's view intercepts the touch stream and sends `ACTION_CANCEL` to its native children, including that `Host`. The `Host` reported this cancel as Compose claiming the gesture, which cancelled the press it belonged to. Holds longer than about 30 ms never fired `onPress`. ([#51163](https://github.com/expo/expo/pull/51163) by [@1kuko3](https://github.com/1kuko3))
+- Fix iOS `Picker` not reporting a selection that equals the last `selection` prop when the user changes it again before the prop updates. ([#51196](https://github.com/expo/expo/pull/51196) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.14
 
 ### Patch Changes

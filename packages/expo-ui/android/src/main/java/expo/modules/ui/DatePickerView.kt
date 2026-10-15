@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -122,6 +123,8 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val clockDialSelectedContentColor: AndroidColor? = null
 
+  @Field val clockDialContentColor: AndroidColor? = null
+
   @Field val clockDialUnselectedContentColor: AndroidColor? = null
 
   @Field val selectorColor: AndroidColor? = null
@@ -130,17 +133,25 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val periodSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val periodSelectorContainerColor: AndroidColor? = null
+
   @Field val periodSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val periodSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val periodSelectorContentColor: AndroidColor? = null
 
   @Field val periodSelectorUnselectedContentColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val timeSelectorContainerColor: AndroidColor? = null
+
   @Field val timeSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val timeSelectorContentColor: AndroidColor? = null
 
   @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
 }
@@ -158,6 +169,8 @@ data class DateTimePickerProps(
   val variant: Variant = Variant.PICKER,
   val displayedComponents: DisplayedComponents = DisplayedComponents.DATE,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val is24Hour: Boolean = true,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
@@ -170,6 +183,8 @@ data class DatePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
@@ -318,17 +333,17 @@ fun buildTimePickerColors(
     containerColor = elementColors.containerColor.composeOrNull ?: defaults.containerColor,
     clockDialColor = elementColors.clockDialColor.composeOrNull ?: colorProp?.copy(alpha = 0.3f) ?: defaults.clockDialColor,
     clockDialSelectedContentColor = elementColors.clockDialSelectedContentColor.composeOrNull ?: defaults.clockDialSelectedContentColor,
-    clockDialUnselectedContentColor = elementColors.clockDialUnselectedContentColor.composeOrNull ?: defaults.clockDialUnselectedContentColor,
+    clockDialContentColor = (elementColors.clockDialContentColor ?: elementColors.clockDialUnselectedContentColor).composeOrNull ?: defaults.clockDialContentColor,
     selectorColor = elementColors.selectorColor.composeOrNull ?: colorProp ?: defaults.selectorColor,
     periodSelectorBorderColor = elementColors.periodSelectorBorderColor.composeOrNull ?: defaults.periodSelectorBorderColor,
     periodSelectorSelectedContainerColor = elementColors.periodSelectorSelectedContainerColor.composeOrNull ?: defaults.periodSelectorSelectedContainerColor,
-    periodSelectorUnselectedContainerColor = elementColors.periodSelectorUnselectedContainerColor.composeOrNull ?: defaults.periodSelectorUnselectedContainerColor,
+    periodSelectorContainerColor = (elementColors.periodSelectorContainerColor ?: elementColors.periodSelectorUnselectedContainerColor).composeOrNull ?: defaults.periodSelectorContainerColor,
     periodSelectorSelectedContentColor = elementColors.periodSelectorSelectedContentColor.composeOrNull ?: defaults.periodSelectorSelectedContentColor,
-    periodSelectorUnselectedContentColor = elementColors.periodSelectorUnselectedContentColor.composeOrNull ?: defaults.periodSelectorUnselectedContentColor,
+    periodSelectorContentColor = (elementColors.periodSelectorContentColor ?: elementColors.periodSelectorUnselectedContentColor).composeOrNull ?: defaults.periodSelectorContentColor,
     timeSelectorSelectedContainerColor = elementColors.timeSelectorSelectedContainerColor.composeOrNull ?: colorProp ?: defaults.timeSelectorSelectedContainerColor,
-    timeSelectorUnselectedContainerColor = elementColors.timeSelectorUnselectedContainerColor.composeOrNull ?: defaults.timeSelectorUnselectedContainerColor,
+    timeSelectorContainerColor = (elementColors.timeSelectorContainerColor ?: elementColors.timeSelectorUnselectedContainerColor).composeOrNull ?: defaults.timeSelectorContainerColor,
     timeSelectorSelectedContentColor = elementColors.timeSelectorSelectedContentColor.composeOrNull ?: defaults.timeSelectorSelectedContentColor,
-    timeSelectorUnselectedContentColor = elementColors.timeSelectorUnselectedContentColor.composeOrNull ?: defaults.timeSelectorUnselectedContentColor
+    timeSelectorContentColor = (elementColors.timeSelectorContentColor ?: elementColors.timeSelectorUnselectedContentColor).composeOrNull ?: defaults.timeSelectorContentColor
   )
 }
 
@@ -396,7 +411,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-      DatePicker(
+      MaterialDatePicker(
         modifier = if (displayMode == DisplayMode.Picker) {
           Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true)
         } else {
@@ -404,6 +419,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
         },
         state = state,
         showModeToggle = props.showVariantToggle,
+        showTitle = props.showTitle,
+        showHeadline = props.showHeadline,
         colors = colors
       )
     }
@@ -507,12 +524,38 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
   // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
   CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-    DatePicker(
+    MaterialDatePicker(
       modifier = modifier,
       state = state,
       showModeToggle = props.showVariantToggle,
+      showTitle = props.showTitle,
+      showHeadline = props.showHeadline,
       colors = colors
     )
+  }
+}
+
+// Material 3 hides the title or headline when its slot is `null`. Its default slots pad themselves
+// with private constants, so branch on the call instead of copying them, keeping the defaults exact.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialDatePicker(
+  modifier: Modifier = Modifier,
+  state: DatePickerState,
+  showModeToggle: Boolean,
+  showTitle: Boolean,
+  showHeadline: Boolean,
+  colors: DatePickerColors
+) {
+  when {
+    showTitle && showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, showModeToggle = showModeToggle)
+    showTitle ->
+      DatePicker(state = state, modifier = modifier, colors = colors, headline = null, showModeToggle = showModeToggle)
+    showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, showModeToggle = showModeToggle)
+    else ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, headline = null, showModeToggle = showModeToggle)
   }
 }
 

@@ -5,14 +5,14 @@ import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { getRouteSegmentsFromState } from '../global-state/getRouteInfoFromState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
+import { withLoadedLayouts } from '../layoutAnchor';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
-  type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
@@ -98,9 +98,8 @@ export function useLinking(
 
     const path = extractExpoPathFromURL(prefixes, url);
     if (path !== undefined) {
-      // TODO(@ubax): check if this is performant
       // TODO(@ubax): check if ref.current?.getRootState() can be replaced with the context read
-      const segments = getRouteInfoFromState(ref.current?.getRootState()).segments;
+      const segments = getRouteSegmentsFromState(ref.current?.getRootState());
       return getStateFromPath(path, config, segments);
     }
     return undefined;
@@ -109,15 +108,14 @@ export function useLinking(
   const getInitialState = useCallback(() => {
     const url = getInitialURL();
     const createInitialState = (url: string | null | undefined) => {
-      let parsedState;
-      if (url && (!filter || filter(url))) {
-        const path = getInitialPath(prefixes, url);
-        parsedState = getStateFromPath(path, config);
-      }
+      const shouldParseURL = url && (!filter || filter(url));
+      const parsedState = shouldParseURL
+        ? getStateFromPath(getInitialPath(prefixes, url), config)
+        : undefined;
 
       const routeNode = routerConfig?.routeNode;
       return routeNode
-        ? createSeededRootState(parsedState, routeNode)
+        ? withLoadedLayouts(() => createSeededRootState(parsedState, routeNode))
         : completeParsedState(parsedState, ROOT_CHAIN);
     };
 
@@ -125,18 +123,7 @@ export function useLinking(
       return url.then(createInitialState);
     }
 
-    const state = createInitialState(url);
-
-    const thenable = {
-      then(onfulfilled?: (state: NavigationState | undefined) => void) {
-        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
-      },
-      catch() {
-        return thenable;
-      },
-    };
-
-    return thenable as PromiseLike<NavigationState | undefined>;
+    return createInitialState(url);
   }, [config, filter, getInitialURL, getStateFromPath, prefixes, routerConfig]);
 
   useEffect(() => {

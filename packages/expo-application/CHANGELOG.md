@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.1.1
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] Add `getAppleStoreEnvironmentAsync()`, which returns StoreKit's App Store environment for the running build (`'production'`, `'sandbox'` or `'xcode'`), so apps can tell TestFlight, App Review and development builds apart from App Store releases. ([#51209](https://github.com/expo/expo/pull/51209) by [@huntie](https://github.com/huntie))
+
 ## 58.0.4
 
 ### Patch Changes

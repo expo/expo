@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.4
+
+### Patch Changes
+
+- `expo serve` now refuses to start on development exports that include server code. ([#50522](https://github.com/expo/expo/pull/50522) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.3
 
 ### Patch Changes

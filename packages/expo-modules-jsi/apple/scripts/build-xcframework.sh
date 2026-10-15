@@ -36,6 +36,13 @@ SPM_BUILD_PATH="${BUILD_ROOT}/.build"
 SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
+# Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
+# their symbols with Xcode 26.4 (Xcode 27 hides them). A precompiled expo-modules-core then binds
+# _swift_allocateMetadataPack to this framework, and crashes at launch when the user's Xcode
+# rebuilds this framework without the export.
+# ld documents wildcards for symbol list files only, hence the list file.
+UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
+
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 resolve_pods_root "$PACKAGE_DIR"
@@ -81,6 +88,7 @@ SOURCE_FILES=(
   # Defines the `jsi` module the slices compile against, so its contents change
   # the build output the same way a source file does.
   "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+  "${UNEXPORTED_SYMBOLS_LIST}"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
@@ -111,6 +119,12 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    # Xcode releases can share a Swift compiler but ship different SDKs (Xcode
+    # 27.0 and 27.1 print the same swiftc --version). A binary module records the
+    # SDK it was built against and Swift won't load it with another SDK, so every
+    # importer would compile ExpoModulesJSI again from its stripped
+    # .swiftinterface. Key the cache on the Xcode build, which pins its SDKs.
+    echo "XCODE_VERSION=$(xcodebuild -version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -220,7 +234,12 @@ build_slice() {
   # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
   # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
   # .DerivedData. The .swiftinterface and the dSYM are unaffected.
+  #
+  # DEVELOPER_DIR and TOOLCHAINS are forwarded so the nested build uses the same Xcode and
+  # Swift toolchain as compute_hash and the app build, not the xcode-select Xcode or the
+  # default toolchain.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+    ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
@@ -245,6 +264,7 @@ build_slice() {
     CLANG_COVERAGE_MAPPING=NO \
     SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
     SWIFT_ENABLE_EXPLICIT_MODULES=NO \
+    "OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\"" \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

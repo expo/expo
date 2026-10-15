@@ -12,7 +12,11 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import {
+  getRouteInfoForLocation,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
 import { normalizeCssAssets, type AssetInfo } from 'expo-server/private';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -52,15 +56,15 @@ export type GetStreamingContentOptions = {
   request?: Request;
   /** Assets for hydration bundles and development-only inline CSS. */
   assets?: AssetInfo;
+  /** Sets the output mode when exporting. */
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 };
 
-/**
- * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
- * tree, resets server contexts, and computes loader data.
- */
 function prepareRenderContext(location: URL, options?: GetStreamingContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
+  const { pathname, params } = getRouteInfoForLocation(ctx, location);
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -71,14 +75,12 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
     location,
     context: ctx,
     wrapper: ({ children }: React.ComponentProps<any>) => (
-      <Root>
+      <Root pathname={pathname} params={params}>
         <div id="root">{children}</div>
       </Root>
     ),
   });
 
-  // This MUST be run before `ReactDOMServer.renderToString` to prevent
-  // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
   const loaderKey = options?.loader ? options.loader.key + location.search : null;
@@ -101,14 +103,22 @@ function FontResources() {
 }
 
 /**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
+ * Renders the document using `renderToReadableStream`. Static output waits for Suspense
+ * and returns HTML; server output returns a progressive stream.
  */
+export function getStreamingContent(
+  location: URL,
+  options: GetStreamingContentOptions & { output: 'static' }
+): Promise<string>;
+export function getStreamingContent(
+  location: URL,
+  options?: GetStreamingContentOptions & { output?: 'server' }
+): Promise<ReadableStream<Uint8Array>>;
 export async function getStreamingContent(
   location: URL,
   options?: GetStreamingContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  return Font.withServerContext(() => {
+): Promise<string | ReadableStream<Uint8Array>> {
+  return Font.withServerContext(async () => {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
       location,
       options
@@ -136,26 +146,43 @@ export async function getStreamingContent(
       bodyNodes: [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])],
     };
 
-    return ReactDOMServer.renderToReadableStream(
+    const isStatic = options?.output === 'static';
+    const renderErrors: unknown[] = [];
+    const stream = await ReactDOMServer.renderToReadableStream(
       <ServerDocument data={serverDocumentData}>
-        {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
         <Head.Provider context={headContext}>
           <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
         </Head.Provider>
       </ServerDocument>,
       {
         progressiveChunkSize: Number.MAX_SAFE_INTEGER,
-        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
+        bootstrapScriptContent:
+          getBootstrapContents({
+            hydrate: options?.hydrate ?? true,
+            loadedData,
+          }) || undefined,
         signal: options?.request?.signal,
         onError(error) {
           if (options?.request?.signal.aborted) {
             return;
           }
 
-          console.error('SSR streaming render error:', error);
+          if (isStatic) {
+            renderErrors.push(error);
+          } else {
+            console.error('SSR streaming render error:', error);
+          }
         },
       }
     );
+    if (isStatic) {
+      await stream.allReady;
+      if (renderErrors.length > 0) {
+        throw renderErrors[0];
+      }
+      return new Response(stream).text();
+    }
+    return stream;
   });
 }
 

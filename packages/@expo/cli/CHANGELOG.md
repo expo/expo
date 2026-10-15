@@ -1,5 +1,67 @@
 # Changelog
 
+## 58.1.8
+
+### Patch Changes
+
+- Update minimum required Expo Atlas version to `0.5.0` ([#51546](https://github.com/expo/expo/pull/51546) by [@byCedric](https://github.com/byCedric))
+- Notify about changes to `metro.config.{cjs,mjs,ts,cts,mts}` and `.config/metro.*`, not just `metro.config.js` and `metro.config.json`. ([#50406](https://github.com/expo/expo/pull/50406) by [@AlexErrant](https://github.com/AlexErrant))
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- [iOS] Added a preview `experiments.swiftPackageManager` app config setting; when enabled, `expo prebuild` sets up iOS with Swift Package Manager instead of CocoaPods, and `expo run:ios` no longer runs `pod install`. ([#51023](https://github.com/expo/expo/pull/51023) by [@chrfalch](https://github.com/chrfalch))
+- Improve error and log coverage in event logs and fix bundle progress, completion, and server lifecycle reporting. ([#51347](https://github.com/expo/expo/pull/51347) by [@kitten](https://github.com/kitten))
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+- Add `expo command:events` and `expo command:ps` sub-commands and updated related help texts to reference these commands. ([#51344](https://github.com/expo/expo/pull/51344) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51526](https://github.com/expo/expo/pull/51526), [#51338](https://github.com/expo/expo/pull/51338), [#51517](https://github.com/expo/expo/pull/51517), [#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/metro-config@58.0.13
+  - @expo/metro-file-map@58.0.5
+  - @expo/require-utils@58.0.4
+  - @expo/prebuild-config@58.0.13
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - @expo/image-utils@0.12.5
+  - @expo/inline-modules@0.2.6
+  - @expo/router-server@58.0.13
+
+## 58.1.7
+
+### Patch Changes
+
+- Load externalized modules from the project root during development for static/server rendering. ([#51417](https://github.com/expo/expo/pull/51417) by [@hassankhan](https://github.com/hassankhan))
+- Allow interfaces extending `UnknownOutputParams` to declare optional params, so an omitted query parameter can be typed as optional, e.g. `interface MyParams extends UnknownOutputParams { id?: string }`. ([#51219](https://github.com/expo/expo/pull/51219) by [@Ubax](https://github.com/Ubax))
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321), [#50536](https://github.com/expo/expo/pull/50536), [#51255](https://github.com/expo/expo/pull/51255), [#46526](https://github.com/expo/expo/pull/46526))
+  - @expo/env@2.5.2
+  - @expo/metro-config@58.0.12
+  - @expo/router-server@58.0.12
+  - expo-server@58.0.5
+  - @expo/prebuild-config@58.0.12
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+  - @expo/inline-modules@0.2.5
+
+## 58.1.6
+
+### Patch Changes
+
+- `expo serve` now refuses to start on development exports that include server code. ([#50522](https://github.com/expo/expo/pull/50522) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Load `.env` files in the bundle's mode in `expo export:embed` instead of keeping values loaded by a parent Expo process. ([#51227](https://github.com/expo/expo/pull/51227) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fixed tsconfig path normalization, including absolute targets and `${configDir}` expansion in extended configs. ([#51027](https://github.com/expo/expo/pull/51027) by [@911RS](https://github.com/911RS))
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Remove legacy `AssetRegistry` virtual module in favor of public `AssetRegistry` API from React Native 0.87+. ([#51247](https://github.com/expo/expo/pull/51247) by [@byCedric](https://github.com/byCedric))
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522), [#49418](https://github.com/expo/expo/pull/49418), [#51185](https://github.com/expo/expo/pull/51185))
+  - @expo/config-plugins@58.0.7
+  - @expo/log-box@58.0.12
+  - expo-server@58.0.4
+  - @expo/platforms@58.0.1
+  - @expo/config@58.0.4
+  - @expo/metro-config@58.0.11
+  - @expo/prebuild-config@58.0.11
+  - @expo/log-box-utils@58.0.2
+  - @expo/inline-modules@0.2.4
+  - @expo/router-server@58.0.11
+
 ## 58.1.5
 
 ### Patch Changes

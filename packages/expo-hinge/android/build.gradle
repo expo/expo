@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '58.0.1'
+
+android {
+  namespace 'expo.modules.hinge'
+  defaultConfig {
+    versionCode 1
+    versionName '58.0.1'
+  }
+}
+
+dependencies {
+  implementation 'androidx.window:window:1.5.1'
+
+  testImplementation 'junit:junit:4.13.2'
+}

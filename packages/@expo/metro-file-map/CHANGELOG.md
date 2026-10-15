@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+
 ## 58.0.4
 
 ### Patch Changes

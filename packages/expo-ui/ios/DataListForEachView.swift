@@ -48,6 +48,7 @@ struct DataListForEachItemView: ExpoSwiftUI.View {
 
   var body: some View {
     Children()
+      .publishZeroContentOrigin(props.shadowNodeProxy)
   }
 }
 

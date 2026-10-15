@@ -1,5 +1,29 @@
 # Changelog
 
+## 58.1.4
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/image-utils@0.12.5
+  - expo-constants@58.0.12
+
+## 58.1.3
+
+### Patch Changes
+
+- [iOS] Fix a crash (`EXC_BAD_ACCESS` in `__RawDictionaryStorage.find`) when the JS notification handler responds while the same foreground notification times out or another one arrives, by handling `handleNotificationAsync` on the main queue. ([#51370](https://github.com/expo/expo/pull/51370) by [@GersonRocha9](https://github.com/GersonRocha9))
+- Updated dependencies. ([#51368](https://github.com/expo/expo/pull/51368), [#49784](https://github.com/expo/expo/pull/49784))
+  - expo-application@58.1.1
+  - expo-constants@58.0.11
+
+## 58.1.2
+
+### Patch Changes
+
+- Updated dependencies. ([#51209](https://github.com/expo/expo/pull/51209))
+  - expo-application@58.1.0
+
 ## 58.1.1
 
 ### Patch Changes

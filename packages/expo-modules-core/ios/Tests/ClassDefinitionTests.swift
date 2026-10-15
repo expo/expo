@@ -354,8 +354,9 @@ struct ClassDefinitionTests {
         guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
+        // The JS message is the exception's description: the cause chain without type names.
         return evalError.message.contains("Calling the 'constructor' function has failed") &&
-               evalError.message.contains("→ Caused by: TestException:")
+               evalError.message.contains("→ Caused by: This is a test Exception with a code")
       }
     }
 

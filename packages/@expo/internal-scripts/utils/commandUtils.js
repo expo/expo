@@ -57,24 +57,6 @@ export async function packageManagerRunAsync(params, { cwd } = {}) {
   return commandRunner(command, args, { cwd });
 }
 
-export function getArgs({ maybeAddWatchFlag = false } = {}) {
-  let args = process.argv.slice(2);
-  if (maybeAddWatchFlag) {
-    args = addWatchFlagIfNeeded(args);
-  }
-  return args;
-}
-
-function shouldAddWatchFlag() {
-  if (process.env.TURBO_HASH && process.env.TURBO_IS_TUI !== 'true') {
-    return false;
-  }
-  return process.stdout.isTTY && !process.env.CI && !process.env.EXPO_NONINTERACTIVE;
-}
-
-export function addWatchFlagIfNeeded(args) {
-  if (shouldAddWatchFlag() && !args.includes('--watch')) {
-    args.push('--watch');
-  }
-  return args;
+export function getArgs() {
+  return process.argv.slice(2);
 }

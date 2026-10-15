@@ -46,13 +46,13 @@ Android では、開発ビルドは **.apk** である必要があります。An
 
 <ContentSpotlight
   alt="Android development build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/android-build-details.png"
+  src="/static/images/tutorial/eas/android-development-build-details.webp"
   className="max-w-[800px]"
 />
 
 <Collapsible summary="ビルド詳細ページにはどんな情報が載っている？">
 
-ビルド詳細ページには、ビルドの種類、プロファイル、Expo SDK バージョン、アプリバージョン、バージョンコード、最後のコミットハッシュ、そしてビルドを開始した開発者またはアカウント所有者が表示されます。
+ビルド詳細ページには、ビルドの種類、プロファイル、環境、Expo SDK バージョン、アプリバージョン、バージョンコードが表示されます。さらに、フィンガープリント、最後のコミットハッシュ、そしてビルドを開始した開発者またはアカウント所有者も表示されます。
 
 上の画像では、**Build artifact** の現在のステータスがビルド進行中であることを示しています。完了すると、このセクションからビルドをダウンロードできるようになります。**Logs** には、EAS Build 上での Android ビルドプロセスの各ステップが並びます。ここでは簡潔にするため、各ステップの詳細には触れません。詳しくは [Android のビルドプロセス](/build-reference/android-builds/) を参照してください。
 
@@ -76,7 +76,7 @@ Android アプリのパッケージ名とも呼ばれ、DNS の逆順表記 (`co
 
 <ContentSpotlight
   alt="Build artifact gives the option to download development build for Android devices and emulators"
-  src="/static/images/tutorial/eas/android-build-artifact.png"
+  src="/static/images/tutorial/eas/android-development-build-artifact.webp"
 />
 
 このセクションには、Android の実機で開発ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
@@ -105,7 +105,7 @@ Android アプリのパッケージ名とも呼ばれ、DNS の逆順表記 (`co
 
 <ContentSpotlight
   alt="Install button generates a QR code for easy installation on Android devices and emulators"
-  src="/static/images/tutorial/eas/android-qr-code.png"
+  src="/static/images/tutorial/eas/android-development-build-qr-code.webp"
   className="max-w-[480px]"
 />
 
@@ -151,13 +151,13 @@ Android アプリのパッケージ名とも呼ばれ、DNS の逆順表記 (`co
 
 <ContentSpotlight
   alt="EAS CLI automatically gives to run build on Android Emulator"
-  src="/static/images/tutorial/eas/android-emulator-cli.png"
+  src="/static/images/tutorial/eas/android-development-build-emulator-cli.webp"
   className="max-w-[600px]"
 />
 
 <Collapsible summary="別の方法：Expo Orbit を使う">
 
-[Expo Orbit](/build/orbit/) を使ってインストールすることもできます。EAS ダッシュボードの **Build artifact** から **Open with Expo Orbit** をクリックすると、Android Emulator に開発ビルドがインストールされます。
+[Expo Orbit](/build/orbit/) を使ってインストールすることもできます。EAS ダッシュボードの **Build artifact** から **Open with Orbit** をクリックすると、Android Emulator に開発ビルドがインストールされます。
 
 </Collapsible>
 

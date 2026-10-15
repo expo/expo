@@ -159,6 +159,51 @@ struct PositionRequesterTests {
   }
 
   @Test
+  func `an infinite timeout waits for a location`() async throws {
+    let requester = PositionRequester()
+    requester.cachedLocation = { nil }
+    requester.liveUpdates = { _ in
+      AsyncThrowingStream { continuation in
+        let producer = Task {
+          try await Task.sleep(for: .milliseconds(10))
+          continuation.yield(CLLocation(latitude: 1, longitude: 2))
+          continuation.finish()
+        }
+        continuation.onTermination = { _ in
+          producer.cancel()
+        }
+      }
+    }
+    let options = GetPositionOptions()
+    options.timeout = .infinity
+
+    let location = try await requester.get(options: options)
+
+    #expect(location?.coordinate.latitude == 1)
+    #expect(location?.coordinate.longitude == 2)
+  }
+
+  @Test(arguments: [-1.0, -Double.infinity, Double.nan])
+  func `rejects invalid timeouts before accessing the cache or starting updates`(timeout: Double) async {
+    let requester = PositionRequester()
+    requester.cachedLocation = {
+      Issue.record("the cache must not be accessed when the timeout is invalid")
+      return CLLocation(latitude: 3, longitude: 4)
+    }
+    requester.liveUpdates = { _ in
+      Issue.record("live updates must not start when the timeout is invalid")
+      return AsyncThrowingStream { $0.finish() }
+    }
+    let options = GetPositionOptions()
+    options.timeout = timeout
+    options.maxCachedAge = 60
+
+    await #expect(throws: InvalidLocationTimeoutException.self) {
+      try await requester.get(options: options)
+    }
+  }
+
+  @Test
   func `a zero timeout returns the stored position without starting live updates`() async throws {
     let requester = PositionRequester()
     let cached = CLLocation(
@@ -256,11 +301,15 @@ struct PositionRequesterTests {
     #expect(position.horizontalAccuracy == 12.5)
   }
 
-  private static let unmeasuredLocation = CLLocation(
-    coordinate: CLLocationCoordinate2D(latitude: 9, longitude: 9),
-    altitude: 0,
-    horizontalAccuracy: -1,
-    verticalAccuracy: -1,
-    timestamp: Date()
-  )
+  // Computed so that every access gets a fresh timestamp. A stored `static let` would keep the
+  // timestamp of whichever test touched it first, making the location stale for the others.
+  private static var unmeasuredLocation: CLLocation {
+    CLLocation(
+      coordinate: CLLocationCoordinate2D(latitude: 9, longitude: 9),
+      altitude: 0,
+      horizontalAccuracy: -1,
+      verticalAccuracy: -1,
+      timestamp: Date()
+    )
+  }
 }

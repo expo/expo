@@ -7,5 +7,5 @@ declare class ExpoHingeModule extends NativeModule<ExpoHingeModuleEvents> {
   getHinge(): Hinge | null;
 }
 
-// `null` on Android and web, where the package has no native module yet.
+// `null` on web, where the package has no native module.
 export default requireOptionalNativeModule<ExpoHingeModule>('ExpoHinge');

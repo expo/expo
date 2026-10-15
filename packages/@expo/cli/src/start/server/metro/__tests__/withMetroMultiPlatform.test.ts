@@ -132,7 +132,7 @@ describe(withExtendedResolver, () => {
   function mockMinFs() {
     vol.fromJSON(
       {
-        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/react-native/asset-registry.js': '',
       },
       '/root/'
     );
@@ -728,65 +728,77 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it('aliases assets registry to virtual shim on all platforms', async () => {
+  // TODO(@bycedric): drop in Expo SDK 59
+  it('aliases legacy assets registry to public asset registry API on native platforms', async () => {
     vol.fromJSON({ mock: '' }, '/');
 
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      getMetroBundler: getMetroBundlerGetter(),
-    });
-
-    for (const platform of ['ios', 'web']) {
-      for (const moduleName of [
-        'react-native/asset-registry',
-        '@react-native/assets-registry/registry',
-        'react-native/Libraries/Image/AssetRegistry',
-      ]) {
-        const result = modified.resolver.resolveRequest!(
-          getDefaultRequestContext(),
-          moduleName,
-          platform
-        );
-
-        expect(result).toEqual({
-          filePath: '\0polyfill:assets-registry',
+    function mockResolver(_context: any, moduleName: string, platform: string | null): Resolution {
+      if (platform === 'ios' && moduleName === 'react-native/asset-registry') {
+        return {
           type: 'sourceFile',
-        });
+          filePath: '/root/node_modules/react-native/asset-registry.js',
+        };
       }
+      if (platform === 'web' && moduleName === 'react-native-web/asset-registry') {
+        return {
+          type: 'sourceFile',
+          filePath: '/root/node_modules/react-native-web/asset-registry.js',
+        };
+      }
+      throw new FailedToResolveNameError();
     }
-  });
-
-  it("aliases react-native's internal asset registry imports to the virtual shim", async () => {
-    vol.fromJSON({ mock: '' }, '/');
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       getMetroBundler: getMetroBundlerGetter(),
     });
 
-    const result = modified.resolver.resolveRequest!(
-      getResolverContext({
-        originModulePath: '/root/node_modules/react-native/Libraries/Image/resolveAssetSource.js',
-      }),
-      '../../src/private/assets/AssetRegistry',
-      'ios'
-    );
+    const assetRegistryPaths = [
+      'react-native/asset-registry',
+      // legacy
+      '@react-native/assets-registry/registry',
+      '@react-native/assets-registry/registry.js',
+      'react-native/Libraries/Image/AssetRegistry',
+      'react-native/Libraries/Image/AssetRegistry.js',
+    ];
 
-    expect(result).toEqual({
-      filePath: '\0polyfill:assets-registry',
-      type: 'sourceFile',
-    });
+    // Resolves ios to React Native
+    for (const moduleName of assetRegistryPaths) {
+      jest.mocked(getResolveFunc()).mockImplementationOnce(mockResolver);
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        moduleName,
+        'ios'
+      );
+
+      expect(result).toEqual({
+        filePath: '/root/node_modules/react-native/asset-registry.js',
+        type: 'sourceFile',
+      });
+    }
+
+    // Resolves web to React Native Web
+    for (const moduleName of assetRegistryPaths) {
+      jest.mocked(getResolveFunc()).mockImplementationOnce(mockResolver);
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        moduleName,
+        'web'
+      );
+
+      expect(result).toEqual({
+        filePath: '/root/node_modules/react-native-web/asset-registry.js',
+        type: 'sourceFile',
+      });
+    }
   });
 
   it('aliases async require module to resolved path', async () => {
     // Mock path we're expecting `asyncRequireModulePath` requests to have been replaced with
     const expectedPath = 'node_modules/expo/internal/async-require-module.js';
 
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        mock: '',
-      },
-      '/'
-    );
+    vol.fromJSON({ mock: '' }, '/');
 
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : null;

@@ -94,7 +94,7 @@ open class SharedObject: AnySharedObject {
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
   @JavaScriptActor
-  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+  open class func _constructSharedObject(this: borrowing JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
     return nil
   }
 }

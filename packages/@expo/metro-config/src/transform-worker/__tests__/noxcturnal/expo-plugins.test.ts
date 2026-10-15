@@ -213,6 +213,8 @@ function transformWithBabelPreset(
       isServer: server,
       supportsStaticESM: true,
       babelRuntimeVersion: '7.29.2',
+      // Match the `projectRoot` the Noxcturnal half of these parity tests receives.
+      projectRoot: '/app',
     } as babel.TransformCaller,
   });
   if (!result?.code || !result.map) throw new Error('Babel preset produced no output');

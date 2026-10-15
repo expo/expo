@@ -16,12 +16,13 @@ extension Data: JavaScriptCodable {
 
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Data
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Data
   {
     guard value.isTypedArray() else {
       throw DataNotUint8ArrayException()
     }
-    let typedArray = value.getTypedArray()
+    let typedArray = value.getTypedArray(in: runtime)
     guard typedArray.kind == .Uint8Array else {
       throw DataNotUint8ArrayException()
     }
@@ -43,7 +44,7 @@ extension Data: JavaScriptCodable {
       }
     }
     let uint8ArrayConstructor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayConstructor.callAsConstructor(arrayBuffer.asValue())
+    return try uint8ArrayConstructor.callAsConstructor(argument: arrayBuffer.asValue())
   }
 }
 

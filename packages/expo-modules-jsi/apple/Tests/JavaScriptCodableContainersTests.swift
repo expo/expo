@@ -100,7 +100,12 @@ struct JavaScriptCodableContainersTests {
 
   @Test
   func `decodes an optional from a borrowed value, present and absent`() throws {
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: 7, JavaScriptValue.null, JavaScriptValue.undefined)
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: 7,
+      JavaScriptValue.null().ref(),
+      JavaScriptValue.undefined().ref()
+    )
     #expect(try Int?.decode(buffer.unownedValue(at: 0), in: runtime) == 7)
     #expect(try Int?.decode(buffer.unownedValue(at: 1), in: runtime) == nil)
     #expect(try Int?.decode(buffer.unownedValue(at: 2), in: runtime) == nil)

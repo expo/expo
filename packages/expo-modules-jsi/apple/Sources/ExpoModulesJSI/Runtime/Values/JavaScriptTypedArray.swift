@@ -8,7 +8,8 @@ internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 public struct JavaScriptTypedArray: ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  /// Handle to the runtime the typed array belongs to.
+  internal let runtimeHandle: JavaScriptRuntimeHandle
   internal let pointee: facebook.jsi.Object
 
   /// The underlying `ArrayBuffer` backing this typed array. Stored alongside `pointee`
@@ -18,14 +19,53 @@ public struct JavaScriptTypedArray: ~Copyable {
 
   public let kind: Kind
 
-  init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
-    self.runtime = runtime
-    self.kind = Kind(rawValue: Int(expo.getTypedArrayKind(runtime.pointee, object).rawValue))!
-    self.byteLength = Int(object.getProperty(runtime.pointee, "byteLength").getNumber())
-    self.byteOffset = Int(object.getProperty(runtime.pointee, "byteOffset").getNumber())
-    self.length = Int(object.getProperty(runtime.pointee, "length").getNumber())
-    self.arrayBuffer = expo.getTypedArrayBuffer(runtime.pointee, object)
+  /// The runtime the typed array belongs to, or `nil` if it has been deallocated. Prefer
+  /// ``jsiRuntime`` on hot paths: it costs no reference counting.
+  internal var runtime: JavaScriptRuntime? {
+    return runtimeHandle.runtime
+  }
+
+  /// The engine runtime the typed array belongs to, or `nil` if the runtime has been deallocated.
+  internal var jsiRuntime: facebook.jsi.IRuntime? {
+    return runtimeHandle.pointee
+  }
+
+  /// Creates a typed array from an existing JSI object, which belongs to `runtime`.
+  @JavaScriptActor
+  init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
+    let jsiRuntime = runtime.pointee
+    let propNames = runtime.cached(PropNames.key) { PropNames(jsiRuntime) }
+    self.runtimeHandle = runtime.handle
+    self.kind = Kind(
+      rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
+    )!
+    self.byteLength = Int(object.getProperty(jsiRuntime, propNames.byteLength).getNumber())
+    self.byteOffset = Int(object.getProperty(jsiRuntime, propNames.byteOffset).getNumber())
+    self.length = Int(object.getProperty(jsiRuntime, propNames.length).getNumber())
+    self.arrayBuffer = expo.getTypedArrayBuffer(jsiRuntime, object, propNames.buffer)
     self.pointee = object
+  }
+
+  /// The property names the initializer reads. Creating a property name costs about as much as
+  /// reading the property, so they are created once per runtime and kept in its cache.
+  internal final class PropNames {
+    static let key = JavaScriptRuntime.Cache.Key<PropNames>()
+
+    let constructor: facebook.jsi.PropNameID
+    let name: facebook.jsi.PropNameID
+    let byteLength: facebook.jsi.PropNameID
+    let byteOffset: facebook.jsi.PropNameID
+    let length: facebook.jsi.PropNameID
+    let buffer: facebook.jsi.PropNameID
+
+    init(_ jsiRuntime: facebook.jsi.IRuntime) {
+      constructor = "constructor".toJSIPropNameID(in: jsiRuntime)
+      name = "name".toJSIPropNameID(in: jsiRuntime)
+      byteLength = "byteLength".toJSIPropNameID(in: jsiRuntime)
+      byteOffset = "byteOffset".toJSIPropNameID(in: jsiRuntime)
+      length = "length".toJSIPropNameID(in: jsiRuntime)
+      buffer = "buffer".toJSIPropNameID(in: jsiRuntime)
+    }
   }
 
   /// Invokes the closure with a raw buffer pointer covering the typed array's bytes.
@@ -64,10 +104,10 @@ public struct JavaScriptTypedArray: ~Copyable {
   /// ArrayBuffer, advanced by `byteOffset`. The pointer is tied to the ArrayBuffer retained by this
   /// value; it is only valid while this `JavaScriptTypedArray` is alive.
   private func startPointer() -> UnsafeMutablePointer<UInt8> {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.arrayBufferData(runtime.pointee, arrayBuffer).advanced(by: byteOffset)
+    return expo.arrayBufferData(jsiRuntime, arrayBuffer).advanced(by: byteOffset)
   }
 
   // We need to redefine the C++ enum (see TypedArray.h) to expose it to Swift
@@ -105,27 +145,27 @@ public struct JavaScriptTypedArray: ~Copyable {
   /// Returns the underlying `ArrayBuffer` that this typed array is a view of.
   /// Equivalent to the JavaScript `.buffer` property.
   public func getArrayBuffer() -> JavaScriptArrayBuffer {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    let buffer = pointee.getPropertyAsObject(runtime.pointee, "buffer").getArrayBuffer(runtime.pointee)
-    return JavaScriptArrayBuffer(runtime, buffer)
+    let buffer = pointee.getPropertyAsObject(jsiRuntime, "buffer").getArrayBuffer(jsiRuntime)
+    return JavaScriptArrayBuffer(runtimeHandle, buffer)
   }
 
   /// Returns the typed array as a `JavaScriptValue`.
   public func asValue() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
+    return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name))
+    return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name))
   }
 }

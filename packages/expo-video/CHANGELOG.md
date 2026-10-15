@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Don't change the audio session category if compatible with the current intention - for example changing from `playAndRecord` to `playback`. Improves inter-package compatibility. ([#51408](https://github.com/expo/expo/pull/51408) by [@behenate](https://github.com/behenate))
+
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Fix native controls never appearing on iOS 27 when a `VideoView` enters the window during a screen transition. ([#50486](https://github.com/expo/expo/pull/50486) by [@wwisheess](https://github.com/wwisheess))
+- [Android] Fall back to another HLS rendition when a request can't reach the network while `useCaching` is enabled, so cached videos play offline. ([#50480](https://github.com/expo/expo/pull/50480) by [@Glenn444](https://github.com/Glenn444))
+
 ## 58.0.8
 
 ### Patch Changes

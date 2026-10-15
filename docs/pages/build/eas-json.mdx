@@ -143,7 +143,7 @@ Versions for the most common build tools can be set on build profiles with field
 {
   "build": {
     "production": {
-      "node": "18.18.0"
+      "node": "22.23.3"
     }
     /* @hide ... */ /* @end */
   }
@@ -157,7 +157,7 @@ It's common to share build tool configurations between profiles. Use `extends` f
 {
   "build": {
     "production": {
-      "node": "18.18.0"
+      "node": "22.23.3"
     },
     "preview": {
       "extends": "production",
@@ -245,7 +245,7 @@ If you are building an app with Expo, EAS Build will pick the appropriate image 
 {
   "build": {
     "base": {
-      "node": "12.13.0",
+      "node": "22.23.3",
       "yarn": "1.22.5",
       "env": {
         "EXAMPLE_ENV": "example value"
@@ -314,7 +314,7 @@ If you are building an app with Expo, EAS Build will pick the appropriate image 
       },
       "ios": {
         "image": "latest",
-        "node": "12.13.0",
+        "node": "22.23.3",
         "yarn": "1.22.5"
       }
     },
@@ -363,7 +363,7 @@ You can configure environment variables on your build profiles using the `"env"`
 {
   "build": {
     "production": {
-      "node": "16.13.0",
+      "node": "22.23.3",
       "env": {
         "API_URL": "https://company.com/api"
       }

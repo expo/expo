@@ -1,5 +1,36 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Fix edge-cases in root dependency resolution for `expo-router`, `react-native/setup-env`, and `expo/build/winter` runtime resolution. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Refactor package version cache key resolution and resolve `react-native-worklets` version optionally through `react-native-reanimated`. ([#51526](https://github.com/expo/expo/pull/51526) by [@kitten](https://github.com/kitten))
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+  - @expo/config@58.0.6
+
+## 58.0.12
+
+### Patch Changes
+
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+  - @expo/config@58.0.5
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+  - @expo/config@58.0.4
+
 ## 58.0.10
 
 ### Patch Changes

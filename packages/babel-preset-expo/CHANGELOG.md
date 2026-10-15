@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+No changes in this release.
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
 ## 58.0.11
 
 ### Patch Changes

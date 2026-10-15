@@ -54,6 +54,10 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 
+### 🎉 New features
+
+- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
+
 ### 🐛 Bug fixes
 
 - [Android] Make `buildReactNativeFromSource` idempotent so repeated prebuilds no longer append a duplicate `includeBuild(expoAutolinking.reactNative)` block to `settings.gradle` (and toggling it off removes the block). ([#46713](https://github.com/expo/expo/pull/46713) by [@ahmdshrif](https://github.com/ahmdshrif))
@@ -191,7 +195,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 💡 Others
 

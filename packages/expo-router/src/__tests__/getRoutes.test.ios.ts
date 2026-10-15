@@ -1,5 +1,6 @@
 import { getRoutes } from '../getRoutes';
 import type { RedirectConfig } from '../getRoutesCore';
+import { getValidInitialRouteName } from '../routeNode';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 const originalEnv = process.env.NODE_ENV;
@@ -217,6 +218,7 @@ describe('getRoutes', () => {
           contextKey: './(b)/_layout.js',
           type: 'layout',
           dynamic: null,
+          groupName: 'b',
           route: '(b)',
           children: [
             {
@@ -534,6 +536,7 @@ describe('entry points', () => {
                   contextKey: './a/b/(c,d)/_layout.js',
                   type: 'layout',
                   dynamic: null,
+                  groupName: 'c',
                   route: '(c)',
                   children: [
                     {
@@ -556,6 +559,7 @@ describe('entry points', () => {
                   contextKey: './a/b/(c,d)/_layout.js',
                   type: 'layout',
                   dynamic: null,
+                  groupName: 'd',
                   route: '(d)',
                   children: [
                     {
@@ -599,7 +603,7 @@ describe('anchor', () => {
       { skipGenerated: true }
     );
 
-    expect(routes?.initialRouteName).toBe('a');
+    expect(getValidInitialRouteName(routes!)).toBe('a');
     expect(warn).toHaveBeenCalledWith(
       '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
     );
@@ -646,7 +650,6 @@ describe('anchor', () => {
       loadRoute: expect.any(Function),
       contextKey: './_layout.js',
       dynamic: null,
-      initialRouteName: 'a',
       route: '',
       type: 'layout',
     });
@@ -724,8 +727,33 @@ describe('anchor', () => {
       { skipGenerated: true }
     );
 
-    expect(routes?.initialRouteName).toBe('a/index');
+    expect(getValidInitialRouteName(routes!)).toBe('a/index');
     expect(routes?.children[0]?.entryPoints).toContain('./a/index.js');
+  });
+
+  it(`appends entry points for an anchor that is a layout with its own anchor`, () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        _layout: {
+          unstable_settings: { anchor: 'a' },
+          default: () => null,
+        },
+        'a/_layout': {
+          unstable_settings: { anchor: 'b' },
+          default: () => null,
+        },
+        'a/b': () => null,
+        c: () => null,
+      }),
+      { skipGenerated: true }
+    );
+
+    expect(routes?.children.find(({ route }) => route === 'c')?.entryPoints).toEqual([
+      './_layout.js',
+      './a/_layout.js',
+      './a/b.js',
+      './c.js',
+    ]);
   });
 });
 
