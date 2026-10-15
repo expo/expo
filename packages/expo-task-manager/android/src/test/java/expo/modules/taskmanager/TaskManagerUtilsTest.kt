@@ -1,4 +1,4 @@
-package expo.modules.taskManager
+package expo.modules.taskmanager
 
 import android.app.job.JobScheduler
 import android.content.Context

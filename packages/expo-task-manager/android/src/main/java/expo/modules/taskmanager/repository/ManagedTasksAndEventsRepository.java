@@ -1,4 +1,4 @@
-package expo.modules.taskManager.repository;
+package expo.modules.taskmanager.repository;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

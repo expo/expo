@@ -1,4 +1,4 @@
-package expo.modules.taskManager;
+package expo.modules.taskmanager;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;

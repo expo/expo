@@ -1,4 +1,4 @@
-package expo.modules.taskManager;
+package expo.modules.taskmanager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

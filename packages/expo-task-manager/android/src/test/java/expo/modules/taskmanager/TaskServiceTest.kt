@@ -1,4 +1,4 @@
-package expo.modules.taskManager
+package expo.modules.taskmanager
 
 import android.os.Bundle
 import expo.modules.interfaces.taskManager.TaskConsumerInterface

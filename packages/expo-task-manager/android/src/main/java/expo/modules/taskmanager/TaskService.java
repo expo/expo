@@ -1,4 +1,4 @@
-package expo.modules.taskManager;
+package expo.modules.taskmanager;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
@@ -40,14 +40,14 @@ import expo.modules.interfaces.taskManager.TaskInterface;
 import expo.modules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 import expo.modules.interfaces.taskManager.TaskServiceInterface;
-import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
-import expo.modules.taskManager.exceptions.TaskNotFoundException;
-import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
-import expo.modules.taskManager.repository.TasksAndEventsRepository;
+import expo.modules.taskmanager.exceptions.InvalidConsumerClassException;
+import expo.modules.taskmanager.exceptions.TaskNotFoundException;
+import expo.modules.taskmanager.exceptions.TaskRegisteringFailedException;
+import expo.modules.taskmanager.repository.TasksAndEventsRepository;
 
-import static expo.modules.taskManager.Utils.getConsumerVersion;
-import static expo.modules.taskManager.Utils.jsonToMap;
-import static expo.modules.taskManager.Utils.unversionedClassForClass;
+import static expo.modules.taskmanager.Utils.getConsumerVersion;
+import static expo.modules.taskmanager.Utils.jsonToMap;
+import static expo.modules.taskmanager.Utils.unversionedClassForClass;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
