@@ -287,6 +287,21 @@ class MediaController {
     return CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
   }
 
+  /**
+   Resolves a lock screen skip interval to a usable number of seconds. Missing or non-finite values
+   fall back to the default, and values below the minimum are clamped up so the skip buttons always
+   move playback.
+   */
+  static func normalizedSkipInterval(_ seconds: Double?) -> Double {
+    guard let seconds, seconds.isFinite else {
+      return defaultSkipIntervalSeconds
+    }
+    return max(seconds, minSkipIntervalSeconds)
+  }
+
+  private static let defaultSkipIntervalSeconds = 10.0
+  private static let minSkipIntervalSeconds = 0.1
+
   private func enableRemoteCommands(options: LockScreenOptions?) {
     removeRemoteCommandTargets()
 
@@ -337,8 +352,8 @@ class MediaController {
     }
     remoteCommandTargets.append((remoteCommandCenter.changePlaybackPositionCommand, changePlaybackPositionTarget))
 
-    let forwardInterval = options?.seekForwardIntervalSeconds ?? 10.0
-    remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: max(forwardInterval, 0.1))]
+    let forwardInterval = MediaController.normalizedSkipInterval(options?.seekForwardIntervalSeconds)
+    remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: forwardInterval)]
     let skipForwardTarget = remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
@@ -353,8 +368,8 @@ class MediaController {
     }
     remoteCommandTargets.append((remoteCommandCenter.skipForwardCommand, skipForwardTarget))
 
-    let backwardInterval = options?.seekBackwardIntervalSeconds ?? 10.0
-    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: max(backwardInterval, 0.1))]
+    let backwardInterval = MediaController.normalizedSkipInterval(options?.seekBackwardIntervalSeconds)
+    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: backwardInterval)]
     let skipBackwardTarget = remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
       guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {

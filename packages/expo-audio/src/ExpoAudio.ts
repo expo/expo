@@ -3,7 +3,6 @@ import { useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import type {
-  AudioMetadata,
   AudioMode,
   AudioPlayerOptions,
   AudioPlaylistOptions,
@@ -15,7 +14,6 @@ import type {
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
-import type { AudioLockScreenOptions } from './AudioConstants';
 import {
   AUDIO_SAMPLE_UPDATE,
   PLAYBACK_STATUS_UPDATE,
@@ -24,7 +22,6 @@ import {
 } from './AudioEventKeys';
 import AudioModule from './AudioModule';
 import type { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
-import { normalizeLockScreenOptions } from './utils/lockScreenOptions';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSources, resolveSourceWithDownload } from './utils/resolveSource';
 
@@ -44,36 +41,6 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
   } else {
     return setPlaybackRate.call(this, rate, pitchCorrectionQuality);
   }
-};
-
-// Validate the lock screen skip intervals once in JS so that iOS, Android, and web all receive the
-// same already-normalized values.
-const setPlayerActiveForLockScreen = AudioModule.AudioPlayer.prototype.setActiveForLockScreen;
-AudioModule.AudioPlayer.prototype.setActiveForLockScreen = function (
-  active: boolean,
-  metadata?: AudioMetadata,
-  options?: AudioLockScreenOptions
-) {
-  return setPlayerActiveForLockScreen.call(
-    this,
-    active,
-    metadata,
-    options ? normalizeLockScreenOptions(options) : undefined
-  );
-};
-
-const setPlaylistActiveForLockScreen = AudioModule.AudioPlaylist.prototype.setActiveForLockScreen;
-AudioModule.AudioPlaylist.prototype.setActiveForLockScreen = function (
-  active: boolean,
-  metadata?: AudioMetadata,
-  options?: AudioLockScreenOptions
-) {
-  return setPlaylistActiveForLockScreen.call(
-    this,
-    active,
-    metadata,
-    options ? normalizeLockScreenOptions(options) : undefined
-  );
 };
 
 // Audio recording prototypes should not be shimmed on tvOS, where they do not exist

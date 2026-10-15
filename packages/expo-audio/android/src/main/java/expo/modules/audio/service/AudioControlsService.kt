@@ -697,11 +697,5 @@ class AudioControlsService : MediaSessionService() {
     const val ACTION_SEEK_BACKWARD = "expo.modules.audio.action.SEEK_BACKWARD"
     const val ACTION_NEXT_TRACK = "expo.modules.audio.action.NEXT_TRACK"
     const val ACTION_PREVIOUS_TRACK = "expo.modules.audio.action.PREVIOUS_TRACK"
-
-    private const val DEFAULT_SEEK_INTERVAL_SECONDS = 10.0
-    private const val MIN_SEEK_INTERVAL_MS = 100L
-
-    fun seekIntervalMs(seconds: Double?): Long =
-      ((seconds ?: DEFAULT_SEEK_INTERVAL_SECONDS) * 1000).toLong().coerceAtLeast(MIN_SEEK_INTERVAL_MS)
   }
 }

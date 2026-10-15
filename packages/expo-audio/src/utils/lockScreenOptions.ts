@@ -20,7 +20,8 @@ function normalizeInterval(seconds: number | undefined): number {
 
 /**
  * Returns a copy of the lock screen options with both skip intervals resolved to a usable number
- * of seconds, so that every platform receives the same already-validated values.
+ * of seconds. Mirrors the native normalization in `MediaController.normalizedSkipInterval` (iOS)
+ * and `seekIntervalMs` (Android).
  */
 export function normalizeLockScreenOptions(
   options: AudioLockScreenOptions | undefined
