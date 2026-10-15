@@ -175,7 +175,7 @@ In **src/safe-area.css**, define the spacing for the `safe-area-content` class:
 }
 ```
 
-The browser provides the `safe-area-inset-top`, `safe-area-inset-right`, `safe-area-inset-bottom`, and `safe-area-inset-left` environment variables. Each value specifies the distance from that edge of the viewport to the safe area, keeping content clear of notches and rounded corners. The `env()` function reads these values. Its second argument, `0px`, is the fallback when the variable is unavailable. See the [CSS `env()` reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env) for details.
+The browser provides the `safe-area-inset-*` environment variables. These values specify the distance from their respective edge of the viewport to the safe area, keeping content clear of notches and rounded corners. The `env()` function is used to read these values. See the [CSS `env()` reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env) for details.
 
 The browser updates this spacing without a React state update. Keep a corresponding **src/app/index.tsx** route using `react-native-safe-area-context` for Android and iOS.
 

@@ -178,7 +178,7 @@ function Component() {
 
 If you can, use `SafeAreaView`. It's implemented natively so when rotating the device, there is no delay from the asynchronous bridge.
 
-To speed up the initial render, import `initialWindowMetrics` and pass it to the provider's `initialMetrics` prop. You cannot use this optimization if your provider remounts or you use `react-native-navigation`.
+To speed up the initial render, you can import `initialWindowMetrics` from this package and set it as the `initialMetrics` prop on the provider as shown below. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
 
 ```jsx
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
