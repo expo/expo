@@ -103,6 +103,15 @@ describe('emitDirectPackage', () => {
     expect(fs.realpathSync(generated)).toBe(fs.realpathSync(coreHeadersXCFramework));
   });
 
+  it('moves the xcframework link when the ExpoModulesCore headers come from another path', () => {
+    emit();
+    coreHeadersXCFramework = path.join(root, 'other', 'ExpoModulesCoreHeaders.xcframework');
+    fs.mkdirSync(coreHeadersXCFramework, { recursive: true });
+    emit();
+    const link = path.join(pkgDir, 'ExpoModulesCoreHeaders.xcframework');
+    expect(fs.realpathSync(link)).toBe(fs.realpathSync(coreHeadersXCFramework));
+  });
+
   it('changes no file in the package when emitted again with the same inputs', () => {
     emit();
     const snapshot = () =>
