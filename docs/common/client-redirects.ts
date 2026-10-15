@@ -156,6 +156,7 @@ const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
   { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
   { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
   { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
+  { pattern: /^\/preview\/eas-simulator\/(.*)$/, replacement: '/preview/simulators/$1' },
 ];
 
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
