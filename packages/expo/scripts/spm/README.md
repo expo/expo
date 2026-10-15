@@ -36,7 +36,8 @@ returns, so `spm add` and `spm update` always receive both real paths. Expo's
 prebuild command builds Debug and Release by default; do not use a single-flavor
 prebuild for an app that consumes the SwiftPM plugin.
 
-Lookup runs for **every** resolved pod, not just the core frameworks. Any module
+Lookup runs for **every** resolved pod except ExpoModulesJSI (see below), not
+just the core frameworks. Any module
 with a `spm.config.json` product is consumed as a precompiled framework the
 moment its artifact exists — no `Package.swift` is generated for it, and none is
 needed. Path 3 is the published-package case: a module shipping
@@ -63,6 +64,18 @@ Every Expo source target uses exactly the products supplied in
 ExpoModulesCore module map itself declares `use React`, so these invariant
 carriers are needed even when a module does not import React directly. The
 plugin does not infer runtime React or Hermes products.
+
+## ExpoModulesJSI
+
+ExpoModulesJSI is never linked as a precompiled framework, even when a Debug and
+Release pair exists, because it must be compiled against the app's React Native.
+npm ships only its headers, `ExpoModulesJSIHeaders`, found with the lookup above
+in `headers/xcframeworks`. The plugin wraps them in a generated
+`ExpoModulesJSIHeaders` package that every Expo source package depends on, and
+adds the app target build phase "Build ExpoModulesJSI"
+(`build-expo-modules-jsi.sh`). Before the app's sources compile, the phase builds
+the framework from the installed `expo-modules-jsi` into the build folder, then
+copies it to where the app links and embeds it.
 
 ## Unsupported modules
 

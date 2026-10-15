@@ -255,6 +255,28 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
 }
 
 /**
+ * The interface-only `<Product>Headers` XCFramework a product publishes in place of its
+ * binaries, from the same bases as its flavored frameworks. Null when no base has one.
+ */
+function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir }) {
+  const frameworkName = `${productName}Headers`;
+  for (const baseDir of artifactBaseDirs(packageName, moduleRoot)) {
+    const source = existingArtifactSource(baseDir, 'headers', frameworkName);
+    if (source == null) continue;
+    const xcframework = prepareArtifactSource(source, frameworkName, cacheDir, 'headers');
+    if (!fs.existsSync(path.join(xcframework, 'Info.plist'))) {
+      throw pluginError({
+        what: `${xcframework} has no Info.plist.`,
+        why: 'The XCFramework is incomplete, so Swift packages cannot compile against it.',
+        how: `Reinstall ${packageName}, or delete it and run the Expo prebuild pipeline for ${packageName} again.`,
+      });
+    }
+    return xcframework;
+  }
+  return null;
+}
+
+/**
  * Candidate parents (each holding `<flavor>/<Dep>.xcframework`) for a SwiftPM
  * package a precompiled module links. The bundled copy lives in the npm package
  * of the module that links it.
@@ -477,6 +499,7 @@ module.exports = {
   byteOrder,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
   stableFrameworkId,
   validateFlavoredFramework,
