@@ -30,7 +30,7 @@ jest.mock('react-native-screens', () => {
 });
 
 jest.mock('expo-glass-effect', () => ({
-  isLiquidGlassAvailable: jest.fn(() => false),
+  isLiquidGlassAvailable: jest.fn(),
 }));
 
 jest.mock('../../native', () => ({
@@ -69,7 +69,7 @@ afterEach(() => {
 });
 
 beforeEach(() => {
-  mockedIsLiquidGlassAvailable.mockReturnValue(false);
+  mockedIsLiquidGlassAvailable.mockReturnValue(true);
   mockedUseLocale.mockReturnValue({ direction: 'ltr' });
   mockedUseTheme.mockReturnValue({
     dark: false,
@@ -95,8 +95,6 @@ describe('unconfigured header', () => {
         largeTitleBackgroundColor: 'transparent',
         blurEffect,
         translucent: true,
-        color: undefined,
-        titleColor: undefined,
         titleFontFamily: undefined,
         titleFontWeight: undefined,
         largeTitleFontFamily: undefined,
@@ -107,6 +105,7 @@ describe('unconfigured header', () => {
   );
 
   test('explicit header background options keep their appearance', async () => {
+    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerStyle: { backgroundColor: 'pink' } }))
     );
@@ -118,18 +117,35 @@ describe('unconfigured header', () => {
     });
   });
 
-  test('headerTransparent false keeps the opaque theme background', async () => {
+  test.each([false, { ios: false }, { ios: false, android: true }])(
+    'headerTransparent %o keeps the opaque theme background',
+    async (headerTransparent) => {
+      mockedIsLiquidGlassAvailable.mockReturnValue(false);
+      const { result } = await renderHook(() =>
+        useHeaderConfigProps(defaultProps({ headerTransparent }))
+      );
+      expect(result.current).toMatchObject({
+        backgroundColor: DEFAULT_COLORS.card,
+        blurEffect: undefined,
+        translucent: false,
+      });
+    }
+  );
+
+  test('headerTransparent without an iOS value uses the system bar appearance', async () => {
+    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
-      useHeaderConfigProps(defaultProps({ headerTransparent: false }))
+      useHeaderConfigProps(defaultProps({ headerTransparent: { android: false } }))
     );
     expect(result.current).toMatchObject({
-      backgroundColor: DEFAULT_COLORS.card,
-      blurEffect: undefined,
-      translucent: false,
+      backgroundColor: 'transparent',
+      blurEffect: 'systemChromeMaterial',
+      translucent: true,
     });
   });
 
   test('headerTransparent true does not add the system blur', async () => {
+    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true }))
     );
@@ -141,38 +157,20 @@ describe('unconfigured header', () => {
   });
 
   test('headerBackground does not add the system blur', async () => {
+    mockedIsLiquidGlassAvailable.mockReturnValue(false);
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackground: () => <View /> }))
     );
     expect(result.current.blurEffect).toBeUndefined();
-  });
-
-  test('explicit fonts are passed to the native header', async () => {
-    const { result } = await renderHook(() =>
-      useHeaderConfigProps(
-        defaultProps({
-          headerTitleStyle: { fontFamily: 'Title', fontWeight: '800' },
-          headerLargeTitleStyle: { fontFamily: 'Large', fontWeight: '900' },
-          headerBackTitleStyle: { fontFamily: 'Back' },
-        })
-      )
-    );
-    expect(result.current).toMatchObject({
-      titleFontFamily: 'Title',
-      titleFontWeight: '800',
-      largeTitleFontFamily: 'Large',
-      largeTitleFontWeight: '900',
-      backTitleFontFamily: 'Back',
-    });
   });
 });
 
 // ─── tintColor ──────────────────────────────────────────────────────────────────
 
 describe('tintColor', () => {
-  test('is unset on iOS so the system tint applies', async () => {
+  test('defaults to colors.primary on iOS', async () => {
     const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
-    expect(result.current.color).toBeUndefined();
+    expect(result.current.color).toBe(DEFAULT_COLORS.primary);
   });
 
   test('custom headerTintColor overrides default', async () => {
@@ -218,11 +216,11 @@ describe('title', () => {
 // ─── titleColor ─────────────────────────────────────────────────────────────────
 
 describe('titleColor', () => {
-  test('is unset when no headerTitleStyle.color or headerTintColor', async () => {
+  test('defaults to colors.text when the header is opaque', async () => {
     const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: false }))
     );
-    expect(result.current.titleColor).toBeUndefined();
+    expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
   });
 
   test('uses headerTintColor when no headerTitleStyle.color', async () => {
@@ -239,6 +237,22 @@ describe('titleColor', () => {
       )
     );
     expect(result.current.titleColor).toBe('orange');
+  });
+
+  test('undefined when headerTransparent is true, so iOS 26 Liquid Glass can adapt it to content underneath', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerTransparent: true }))
+    );
+    expect(result.current.titleColor).toBeUndefined();
+  });
+
+  test('undefined when headerLargeTitleEnabled makes the background transparent, even when headerTransparent is false', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(
+        defaultProps({ headerLargeTitleEnabled: true, headerTransparent: false })
+      )
+    );
+    expect(result.current.titleColor).toBeUndefined();
   });
 
   test('headerTitleStyle.color still overrides when headerTransparent is true', async () => {

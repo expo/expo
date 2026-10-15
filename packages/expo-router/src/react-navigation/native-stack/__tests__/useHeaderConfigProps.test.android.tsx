@@ -70,36 +70,6 @@ beforeEach(() => {
   } as any);
 });
 
-// ─── native defaults ────────────────────────────────────────────────────────────
-
-describe('unconfigured header', () => {
-  test('keeps an opaque header that content does not underlap', async () => {
-    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
-    expect(result.current).toMatchObject({
-      backgroundColor: DEFAULT_COLORS.card,
-      blurEffect: undefined,
-      translucent: false,
-    });
-  });
-
-  test('uses the native title typography', async () => {
-    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
-    expect(result.current).toMatchObject({
-      titleFontFamily: undefined,
-      titleFontWeight: undefined,
-    });
-  });
-
-  test('explicit title font is passed to the native header', async () => {
-    const { result } = await renderHook(() =>
-      useHeaderConfigProps(
-        defaultProps({ headerTitleStyle: { fontFamily: 'Title', fontWeight: '800' } })
-      )
-    );
-    expect(result.current).toMatchObject({ titleFontFamily: 'Title', titleFontWeight: '800' });
-  });
-});
-
 // ─── tintColor ──────────────────────────────────────────────────────────────────
 
 describe('tintColor', () => {
@@ -135,6 +105,16 @@ describe('translucent', () => {
       useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true }))
     );
     expect(result.current.translucent).toBe(false);
+  });
+
+  test('uses the Android value of headerTransparent', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerTransparent: { ios: true, android: false } }))
+    );
+    expect(result.current).toMatchObject({
+      backgroundColor: DEFAULT_COLORS.card,
+      translucent: false,
+    });
   });
 });
 

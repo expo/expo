@@ -31,7 +31,8 @@ export interface StackHeaderProps {
    * - `style.backgroundColor` is 'transparent'
    * - `blurEffect` is set (required for blur to work)
    *
-   * @default false
+   * Defaults to `true` on iOS when no header background is set, and `false` on Android.
+   * Call `enableLegacyHeaderAppearance()` to make it `false` on iOS.
    */
   transparent?: boolean;
   /**

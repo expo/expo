@@ -107,6 +107,7 @@ export {
   TabRouter,
 } from './react-navigation/routers';
 export { NativeStackView } from './react-navigation/native-stack';
+export { enableLegacyHeaderAppearance } from './react-navigation/native-stack/views/headerAppearance';
 export type {
   NativeStackDescriptorMap,
   NativeStackViewState,
