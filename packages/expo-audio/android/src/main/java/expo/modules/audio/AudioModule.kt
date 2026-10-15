@@ -671,6 +671,12 @@ class AudioModule : Module() {
         ref.setVolume(volume)
       }
 
+      Property("isActiveForLockScreen") { player ->
+        runOnMain {
+          player.isActiveForLockScreen
+        }
+      }
+
       Function("play") { player: AudioPlayer ->
         runOnMain {
           playWithAudioFocus(player)
@@ -1024,6 +1030,12 @@ class AudioModule : Module() {
       Property("currentStatus") { playlist ->
         runOnMain {
           playlist.currentStatus()
+        }
+      }
+
+      Property("isActiveForLockScreen") { playlist ->
+        runOnMain {
+          playlist.isActiveForLockScreen
         }
       }
 
