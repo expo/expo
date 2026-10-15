@@ -17,11 +17,12 @@ export interface HostProps extends CommonViewModifierProps {
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
 
   /**
-   * Where the SwiftUI content sits inside the host when the two sizes differ: when the host is
-   * larger than its content, and while the content of a `matchContents` host animates to a new size.
-   * Set it to the edge that the host is anchored to in its React Native layout, for example
-   * `'trailing'` for a host at the end of a row, so that edge stays still. It also aligns the host's
-   * children with each other. Leading and trailing follow `layoutDirection`.
+   * The position of the SwiftUI content inside the host when their sizes differ. The sizes differ
+   * when the host is larger than its content, and while the content of a `matchContents` host
+   * animates to a new size. Setting it to the edge that the host is anchored to in its React
+   * Native layout keeps that edge still. For example, a host at the end of a row uses `'trailing'`.
+   * It also aligns the host's children with each other. Leading and trailing follow
+   * `layoutDirection`.
    * @default 'topLeading'
    */
   alignment?: Alignment;
