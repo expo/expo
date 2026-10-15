@@ -28,10 +28,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   /// `UIApplication.applicationState` can't be used here, because apps using the scene-based life cycle report
   /// `.background` in `didFinishLaunching` even when the user launches them from the home screen.
   /// In the foreground there is no limit on the background execution time, so `backgroundTimeRemaining` is very large.
-  var isRunningInBackground: () -> Bool = {
-    return MainActor.runSynchronously {
-      return UIApplication.shared.backgroundTimeRemaining < AppStartupMonitoring.backgroundTimeRemainingThreshold
-    }
+  var isRunningInBackground: @MainActor () -> Bool = {
+    return UIApplication.shared.backgroundTimeRemaining < AppStartupMonitoring.backgroundTimeRemainingThreshold
   }
 
   /// Background launches got about 30 seconds in our tests. Apple only documents the foreground value as
@@ -49,7 +47,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  nonisolated func markDidFinishLaunching() {
+  @MainActor
+  func markDidFinishLaunching() {
     // App has finished loading – save the current app launch state
     AppMetricsUserDefaults.lastAppLaunchState = appLaunchState
 
