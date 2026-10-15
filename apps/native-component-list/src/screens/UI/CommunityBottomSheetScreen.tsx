@@ -105,6 +105,7 @@ export default function CommunityBottomSheetScreen() {
                 </Text>
               )}
               <SheetControls snapCount={3} />
+              <Button title="Open Modal over sheet" onPress={() => setIsModalVisible(true)} />
             </BottomSheetView>
           </BottomSheet>
 
@@ -158,7 +159,7 @@ export default function CommunityBottomSheetScreen() {
             <View style={styles.modalBackdrop}>
               <View style={styles.modalCard}>
                 <Text style={styles.sheetTitle}>Modal presented</Text>
-                <Button title="Close" onPress={() => setIsModalVisible(false)} />
+                <Button title="Close Modal" onPress={() => setIsModalVisible(false)} />
               </View>
             </View>
           </Modal>
