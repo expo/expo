@@ -12,6 +12,8 @@ enum MediaSubtypeNext: String, Enumerable {
   case timelapse
   case spatialMedia
   case videoCinematic
+  case animation
+  case screenRecording
 
   static func from(_ mediaSubtypes: PHAssetMediaSubtype) -> [MediaSubtypeNext] {
     return allCases.filter { mediaSubtypes.contains($0.toPHAssetMediaSubtype()) }
@@ -29,6 +31,9 @@ enum MediaSubtypeNext: String, Enumerable {
     case .timelapse: .videoTimelapse
     case .spatialMedia: .spatialMedia
     case .videoCinematic: .videoCinematic
+    // The photoAnimation name requires the Xcode 27 SDK; its iOS 11+ flag is 1 << 6.
+    case .animation: PHAssetMediaSubtype(rawValue: 1 << 6)
+    case .screenRecording: .videoScreenRecording
     }
   }
 }
