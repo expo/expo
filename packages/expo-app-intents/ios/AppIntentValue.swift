@@ -3,6 +3,19 @@ import Foundation
 
 public typealias AppIntentParams = [String: AppIntentValue]
 
+/// Thrown when a value from JavaScript has a type that `AppIntentValue` cannot hold.
+internal final class AppIntentUnsupportedValueException: GenericException<String>, LocalizedError, @unchecked Sendable {
+  override var reason: String {
+    "expo-app-intents could not read a value of type '\(param)' that came from JavaScript, because App Intent "
+      + "values must be JSON: a string, number, boolean, null, array, or plain object. Convert the value to one "
+      + "of these types before you pass it on."
+  }
+
+  var errorDescription: String? {
+    reason
+  }
+}
+
 // swift-format moves the brace to a new line for wrapped declarations.
 // swiftlint:disable opening_brace
 /// A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
@@ -33,6 +46,52 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
 
   public init(_ value: Bool) {
     self = .bool(value)
+  }
+
+  /// Converts a value that came from JavaScript through Foundation, such as the value a background
+  /// task resolved with, by encoding it as JSON and decoding it like persisted params. So booleans stay
+  /// booleans and integral numbers become `.int`. JSON cannot hold NaN or infinity, so NaN becomes `.null`
+  /// and infinity the largest finite double of the same sign. Throws for a Foundation type that JSON
+  /// cannot represent.
+  init(foundationValue value: Any?) throws {
+    // Wrapped in an array, because JSONSerialization only accepts an array or a dictionary at the top.
+    var wrapped: [Any] = [value ?? NSNull()]
+    // Checked rather than caught: JSONSerialization raises an Objective-C exception for an invalid
+    // object, which Swift cannot catch.
+    if !JSONSerialization.isValidJSONObject(wrapped) {
+      wrapped = [Self.replacingNonFiniteNumbers(in: value ?? NSNull())]
+      guard JSONSerialization.isValidJSONObject(wrapped) else {
+        throw AppIntentUnsupportedValueException(String(describing: type(of: value ?? NSNull())))
+      }
+    }
+    let data = try JSONSerialization.data(withJSONObject: wrapped)
+    guard case .array(let values) = try JSONDecoder().decode(AppIntentValue.self, from: data),
+      let decoded = values.first
+    else {
+      throw AppIntentUnsupportedValueException(String(describing: type(of: value ?? NSNull())))
+    }
+    self = decoded
+  }
+
+  private static func replacingNonFiniteNumbers(in value: Any) -> Any {
+    switch value {
+    case let number as NSNumber where CFGetTypeID(number) != CFBooleanGetTypeID() && !number.doubleValue.isFinite:
+      let double = number.doubleValue
+      log.warn(
+        "expo-app-intents replaced a non-finite number (\(double)) that came from JavaScript, because JSON cannot "
+          + "represent NaN or infinity. Return a finite number, or a string if the exact value matters."
+      )
+      if double.isNaN {
+        return NSNull()
+      }
+      return double > 0 ? Double.greatestFiniteMagnitude : -Double.greatestFiniteMagnitude
+    case let array as [Any]:
+      return array.map(replacingNonFiniteNumbers(in:))
+    case let object as [String: Any]:
+      return object.mapValues(replacingNonFiniteNumbers(in:))
+    default:
+      return value
+    }
   }
 
   /// Returns an equivalent value that JSON can represent.
