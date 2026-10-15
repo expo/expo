@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Publish a headers XCFramework for `ExpoModulesJSI` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesJSIHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Make `JavaScriptValue.getBigInt()` about 7× faster by reading the runtime through its handle, and make the `JavaScriptBigInt` initializers take the runtime as `borrowing`, so callers no longer retain it: `init(_:fromInt64:)` and `init(_:fromUint64:)` are about 3× faster. `init(_:string:)` caches the global `BigInt` function and passes the string without an arguments buffer, which makes it up to 2.3× faster; it is now isolated to `JavaScriptActor`. ([#51562](https://github.com/expo/expo/pull/51562) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make calling a `JavaScriptCallback` with arguments faster. The arguments are encoded straight into the arguments buffer without a reference and a copy each, and the function is no longer copied on every call. ([#51565](https://github.com/expo/expo/pull/51565) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make creating and resolving a `JavaScriptPromise` faster. Resolving no longer allocates an arguments buffer, the initializers borrow the runtime instead of retaining it, and the promise keeps its values without an extra allocation each. ([#51564](https://github.com/expo/expo/pull/51564) by [@tsapeta](https://github.com/tsapeta))
+- Added `JavaScriptUndefined`, the native counterpart of JavaScript's `undefined` for `JavaScriptCodable` APIs. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.13
 
 ### Patch Changes

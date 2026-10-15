@@ -1,5 +1,89 @@
 # native-component-list
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51442](https://github.com/expo/expo/pull/51442), [#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51514](https://github.com/expo/expo/pull/51514), [#51513](https://github.com/expo/expo/pull/51513), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51570](https://github.com/expo/expo/pull/51570), [#51540](https://github.com/expo/expo/pull/51540), [#51606](https://github.com/expo/expo/pull/51606))
+  - expo-background-task@58.0.11
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-system-ui@58.0.6
+  - expo-updates@58.0.17
+  - expo-asset@58.0.16
+  - expo-image@58.0.15
+  - expo-video@58.0.11
+  - @expo/ui@58.0.18
+  - expo-media-library@58.0.9
+  - expo-task-manager@58.0.12
+  - test-suite@1.0.5
+  - expo-constants@58.0.12
+  - expo-file-system@58.0.9
+  - expo-app-intents@0.5.7
+  - expo-age-range@58.0.2
+  - expo-ai@0.1.1
+  - @expo/app-integrity@58.0.2
+  - expo-app-metrics@58.0.12
+  - expo-apple-authentication@58.0.2
+  - expo-application@58.1.1
+  - expo-audio@58.0.9
+  - expo-auth-session@58.0.12
+  - expo-background-fetch@58.0.11
+  - expo-battery@58.0.3
+  - expo-blob@58.0.3
+  - expo-blur@58.0.3
+  - expo-brightness@58.0.2
+  - expo-calendar@58.0.6
+  - expo-camera@58.0.10
+  - expo-cellular@58.0.3
+  - expo-checkbox@58.0.2
+  - expo-clipboard@58.0.3
+  - expo-contacts@58.0.7
+  - expo-crypto@58.0.6
+  - expo-device@58.0.5
+  - expo-document-picker@58.0.4
+  - expo-font@58.0.8
+  - expo-gl@58.0.3
+  - expo-glass-effect@58.0.3
+  - expo-haptics@58.0.6
+  - expo-hinge@58.0.1
+  - expo-image-manipulator@58.0.14
+  - expo-image-picker@58.0.10
+  - expo-intent-launcher@58.0.3
+  - expo-keep-awake@58.0.3
+  - expo-linear-gradient@58.0.3
+  - expo-linking@58.0.13
+  - expo-live-photo@58.0.5
+  - expo-local-authentication@58.0.2
+  - expo-localization@58.0.4
+  - expo-location@58.0.16
+  - expo-mail-composer@58.0.3
+  - expo-maps@58.0.9
+  - expo-mesh-gradient@58.0.3
+  - expo-modules-test-core@58.0.4
+  - expo-navigation-bar@58.0.4
+  - expo-network@58.0.3
+  - expo-notifications@58.1.4
+  - expo-observe@58.0.14
+  - expo-print@58.0.6
+  - expo-screen-capture@58.0.5
+  - expo-screen-orientation@58.0.3
+  - expo-secure-store@58.0.2
+  - expo-sensors@58.0.4
+  - expo-sharing@58.0.18
+  - expo-sms@58.0.2
+  - expo-speech@58.0.3
+  - expo-splash-screen@58.0.9
+  - expo-sqlite@58.0.13
+  - expo-standard-web-crypto@58.0.4
+  - expo-status-bar@58.0.3
+  - expo-store-review@58.0.2
+  - expo-symbols@58.0.4
+  - expo-tracking-transparency@58.0.2
+  - expo-video-thumbnails@58.0.2
+  - expo-web-browser@58.0.6
+  - @expo/html-elements@58.0.3
+
 ## 0.0.4
 
 ### Patch Changes

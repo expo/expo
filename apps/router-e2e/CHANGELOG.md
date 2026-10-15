@@ -1,5 +1,21 @@
 # @expo/router-e2e
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-image@58.0.15
+  - @expo/dom-webview@58.0.2
+  - expo-build-properties@58.0.10
+  - expo-haptics@58.0.6
+  - expo-linking@58.0.13
+  - expo-speech@58.0.3
+  - expo-splash-screen@58.0.9
+  - expo-sqlite@58.0.13
+
 ## 0.0.4
 
 ### Patch Changes

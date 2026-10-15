@@ -1,5 +1,44 @@
 # bare-expo
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51514](https://github.com/expo/expo/pull/51514), [#51513](https://github.com/expo/expo/pull/51513), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540), [#51606](https://github.com/expo/expo/pull/51606))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-updates@58.0.17
+  - expo-image@58.0.15
+  - expo-video@58.0.11
+  - @expo/ui@58.0.18
+  - expo-media-library@58.0.9
+  - native-component-list@0.0.5
+  - test-suite@1.0.5
+  - expo-dev-menu@58.0.11
+  - expo-app-intents@0.5.7
+  - @expo/dom-webview@58.0.2
+  - expo-ai@0.1.1
+  - expo-app-metrics@58.0.12
+  - expo-audio@58.0.9
+  - expo-background-fetch@58.0.11
+  - expo-brownfield@58.0.13
+  - expo-build-properties@58.0.10
+  - expo-camera@58.0.10
+  - expo-dev-client@58.0.13
+  - expo-font@58.0.8
+  - expo-insights@58.0.11
+  - expo-linking@58.0.13
+  - expo-location@58.0.16
+  - expo-navigation-bar@58.0.4
+  - expo-network-addons@58.0.2
+  - expo-notifications@58.1.4
+  - expo-observe@58.0.14
+  - expo-secure-store@58.0.2
+  - expo-splash-screen@58.0.9
+  - expo-status-bar@58.0.3
+  - expo-tracking-transparency@58.0.2
+  - expo-web-browser@58.0.6
+
 ## 0.0.5
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.1.9
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed `npx expo run:ios` and `npx expo run:android` crashing with `ERR_IMPORT_ATTRIBUTE_MISSING` when `buildCacheProvider` is set to `eas`. ([#51601](https://github.com/expo/expo/pull/51601) by [@konrad-armatys](https://github.com/konrad-armatys))
+- Drop legacy Node `url` usage in favor of `URL` ([#51602](https://github.com/expo/expo/pull/51602) by [@byCedric](https://github.com/byCedric))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51598](https://github.com/expo/expo/pull/51598), [#51602](https://github.com/expo/expo/pull/51602), [#51540](https://github.com/expo/expo/pull/51540))
+  - @expo/metro-config@58.0.14
+  - @expo/prebuild-config@58.0.14
+  - @expo/router-server@58.0.14
+  - @expo/package-manager@1.14.2
+
 ## 58.1.8
 
 ### Patch Changes
