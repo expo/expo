@@ -331,10 +331,23 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       throw InvalidIdentifierError(identifier: name)
     }
 
-    let klassValue = try eval(
-      label: "\(name).\(nativeConstructorKey)",
-      "(function \(name)(...args) { return this.\(nativeConstructorKey)(...args); })"
-    )
+    // Hermes keeps memory for every evaluated source until the runtime is destroyed, so the
+    // constructor source is evaluated once per runtime and the factory is called for each class.
+    let makeFactory = {
+      return try self.eval(
+        label: "expo-modules-jsi/class-factory.js",
+        """
+        (function (name) {
+          const klass = function (...args) { return this.\(nativeConstructorKey)(...args); };
+          Object.defineProperty(klass, 'name', { value: name });
+          return klass;
+        })
+        """
+      ).getFunction()
+    }
+    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+      return try factory.call(arguments: name)
+    }
     let klassObject = klassValue.getObject()
 
     // Create a host function that is called by the constructor
@@ -1006,6 +1019,9 @@ private func createFunctionClosure(
 
   return expo.HostFunctionClosure(context, call, deallocate)
 }
+
+/// Key of the class factory in each runtime's cache.
+private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
 
 // MARK: - Errors
 
