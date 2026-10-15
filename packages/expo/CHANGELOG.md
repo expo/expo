@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `react-native-svg` to 15.16.0. ([#51615](https://github.com/expo/expo/pull/51615) by [@jakex7](https://github.com/jakex7))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51601](https://github.com/expo/expo/pull/51601), [#51456](https://github.com/expo/expo/pull/51456), [#51560](https://github.com/expo/expo/pull/51560), [#51455](https://github.com/expo/expo/pull/51455), [#51302](https://github.com/expo/expo/pull/51302), [#51243](https://github.com/expo/expo/pull/51243), [#51558](https://github.com/expo/expo/pull/51558), [#51602](https://github.com/expo/expo/pull/51602), [#51540](https://github.com/expo/expo/pull/51540))
+  - @expo/cli@58.1.9
+  - @expo/metro-config@58.0.14
+  - babel-preset-expo@58.0.15
+  - expo-modules-core@58.0.19
+  - expo-asset@58.0.16
+
 ## 58.0.10
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # observe-tester
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540), [#51606](https://github.com/expo/expo/pull/51606))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-system-ui@58.0.6
+  - expo-updates@58.0.17
+  - expo-image@58.0.15
+  - @expo/ui@58.0.18
+  - expo-constants@58.0.12
+  - expo-app-metrics@58.0.12
+  - expo-build-properties@58.0.10
+  - expo-clipboard@58.0.3
+  - expo-dev-client@58.0.13
+  - expo-eas-client@58.0.2
+  - expo-font@58.0.8
+  - expo-haptics@58.0.6
+  - expo-linking@58.0.13
+  - expo-observe@58.0.14
+  - expo-splash-screen@58.0.9
+  - expo-status-bar@58.0.3
+  - expo-symbols@58.0.4
+  - expo-web-browser@58.0.6
+  - @expo/html-elements@58.0.3
+
 ## 1.0.4
 
 ### Patch Changes

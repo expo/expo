@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Disable automatic safe-area measurements on web to preserve streamed content during hydration. ([#51542](https://github.com/expo/expo/pull/51542) by [@hassankhan](https://github.com/hassankhan))
+- Replace ambiguous `null` and `undefined` return values with `RouterActionHandling` enum. ([#51448](https://github.com/expo/expo/pull/51448) by [@Ubax](https://github.com/Ubax))
+- Fix a crash when swiping the drawer on React Native 0.88. ([#51590](https://github.com/expo/expo/pull/51590) by [@Ubax](https://github.com/Ubax))
+- [iOS] Use native header appearance on iOS 26+ by default. Call `enableLegacyHeaderAppearance()` to restore the previous appearance. ([#51450](https://github.com/expo/expo/pull/51450) by [@Ubax](https://github.com/Ubax))
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.19
 
 ### Patch Changes

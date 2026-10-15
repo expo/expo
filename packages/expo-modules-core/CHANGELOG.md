@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Speed up module registration at app launch by classifying definition elements without protocol conformance lookups. ([#51456](https://github.com/expo/expo/pull/51456) by [@Kudo](https://github.com/Kudo))
+- [iOS] Reduced the overhead of emitting events without a payload. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Speed up app launch by computing default module, class and view names without protocol conformance lookups. ([#51455](https://github.com/expo/expo/pull/51455) by [@Kudo](https://github.com/Kudo))
+- [iOS] Publish a headers XCFramework for `ExpoModulesCore` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesCoreHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51243](https://github.com/expo/expo/pull/51243), [#51562](https://github.com/expo/expo/pull/51562), [#51565](https://github.com/expo/expo/pull/51565), [#51564](https://github.com/expo/expo/pull/51564), [#51560](https://github.com/expo/expo/pull/51560), [#51558](https://github.com/expo/expo/pull/51558))
+  - expo-modules-jsi@58.0.14
+
 ## 58.0.18
 
 ### Patch Changes

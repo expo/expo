@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Speed up app launch by naming the SwiftUI views without protocol conformance lookups. ([#51459](https://github.com/expo/expo/pull/51459) by [@Kudo](https://github.com/Kudo))
+- Fix Android universal TextInput placeholders ignoring textStyle. ([#51563](https://github.com/expo/expo/pull/51563) by [@sync](https://github.com/sync))
+- [iOS] Fix `Form` and `List` sections in a `Host` starting 20pt inside the large title beside the iPhone Duo's rail, where iOS drops its content margin. This works around a SwiftUI bug and applies only on an edge where the inset comes from a bar beside the content. ([#51606](https://github.com/expo/expo/pull/51606) by [@huntie](https://github.com/huntie))
+
 ## 58.0.17
 
 ### Patch Changes

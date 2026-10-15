@@ -1,5 +1,13 @@
 # expo-template-bare-minimum
 
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo@58.0.11
+
 ## 58.0.19
 
 ### Patch Changes

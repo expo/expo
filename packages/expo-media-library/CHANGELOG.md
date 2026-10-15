@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Add `mediaSubtypes` to `AssetInfo` and `AssetMetadata`, so `Asset.getInfo()` and `Query.exeForMetadata()` return an asset's subtypes. ([#51514](https://github.com/expo/expo/pull/51514) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add the `animation` and `screenRecording` media subtypes. ([#51513](https://github.com/expo/expo/pull/51513) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.8
 
 ### Patch Changes
