@@ -406,24 +406,25 @@ const SOURCE_LOOKUP_ORDER = ['env', 'monorepo', 'bundled'];
 
 /**
  * Compares the kind of place, not the directory: every package has its own directory in
- * each of them.
+ * each of them. Returns the `pluginError` parts describing the mix, or null when there is
+ * none.
  *
  * @param subjects `{ label, packageName, source }` for each precompiled artifact to check.
  */
-function assertSameSourceAsCore(coreSource, subjects) {
+function mixedSourcesReport(coreSource, subjects) {
   const mixed = subjects.filter((subject) => subject.source?.kind !== coreSource?.kind);
-  if (mixed.length === 0) return;
+  if (mixed.length === 0) return null;
   const packages = [...new Set(mixed.map((subject) => subject.packageName))].join(' ');
-  throw pluginError({
+  return {
     what: `${mixed
       .map(
         (subject) =>
           `${subject.label} (${subject.packageName}) comes from ${describeSource(subject.source)}`
       )
       .join('; ')}, but ExpoModulesCore comes from ${describeSource(coreSource)}.`,
-    why: 'Precompiled Expo modules, and the headers Expo modules compile against, are bound to the exact ExpoModulesCore build they were made with, so mixing builds from different places crashes the app at launch on a missing symbol.',
+    why: 'Precompiled Expo modules, and the headers Expo modules compile against, are bound to the exact ExpoModulesCore build they were made with, so mixing builds from different places can crash the app at launch on a missing symbol.',
     how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; in the Expo monorepo, build the packages into the same place as ExpoModulesCore with \`node tools/bin/expotools.js prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. Then run \`npx react-native spm update\` again.`,
-  });
+  };
 }
 
 /**
@@ -456,9 +457,10 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
       how: `In the Expo monorepo, run \`node tools/bin/expotools.js prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. Then run \`npx react-native spm update\` again.`,
     });
   }
-  assertSameSourceAsCore(coreSource, [
+  const mixed = mixedSourcesReport(coreSource, [
     { label: `${productName}Headers.xcframework`, packageName, source: headers.source },
   ]);
+  if (mixed != null) throw pluginError(mixed);
   return headers.xcframework;
 }
 
@@ -837,8 +839,9 @@ module.exports = function expoSpmPlugin(context) {
   assertDistinctFlavoredFrameworks(flavoredFrameworks);
   const coreRecord = precompiled.find((r) => r.identity.podName === CORE_POD) ?? null;
   const coreSource = coreRecord && frameworkSource(coreRecord.framework);
-  if (coreRecord != null) {
-    assertSameSourceAsCore(
+  const mixedModules =
+    coreRecord &&
+    mixedSourcesReport(
       coreSource,
       precompiled
         .filter((r) => r !== coreRecord)
@@ -848,6 +851,9 @@ module.exports = function expoSpmPlugin(context) {
           source: frameworkSource(framework),
         }))
     );
+  if (mixedModules != null) {
+    const { what, why, how } = mixedModules;
+    console.warn(`[expo-spm-plugin] WARNING: ${what} ${why} ${how}`);
   }
   const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
   const frameworkSearchPath =
