@@ -101,6 +101,8 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
+  isActionHandled,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from './react-navigation/routers';

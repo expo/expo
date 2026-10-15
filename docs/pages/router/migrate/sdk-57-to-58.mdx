@@ -534,7 +534,23 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 +};`}
 />
 
-Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `null` when the router cannot handle an action.
+Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Unhandled` when the router cannot handle an action. Returning `null` is deprecated.
+
+#### Check handled actions with `isActionHandled`
+
+Built-in routers and routers created with `extendRouter` or `extendRouterActions` now return `RouterActionHandling.Unhandled` instead of `null` when they do not handle an action. Replace `null` checks on a `getStateForAction` result with `isActionHandled`:
+
+<DiffBlock
+  raw={`diff --git a/custom-router.ts b/custom-router.ts
+--- a/custom-router.ts
++++ b/custom-router.ts
+@@ -1,4 +1,4 @@
+ const result = baseRouter.getStateForAction(state, action);
+-if (result === null) {
++if (!isActionHandled(result)) {
+   return result;
+ }`}
+/>
 
 #### Extend a built-in router
 
@@ -544,6 +560,7 @@ Set `affectedRouteKey` to the route selected or changed by that specific action,
 import {
   attachRouteState,
   extendRouter,
+  RouterActionHandling,
   StackRouter,
   type CommonNavigationAction,
   type StackActionType,
@@ -554,15 +571,11 @@ type CustomAction = {
   payload: { name: string; params?: object };
 };
 
-const CustomStackRouter = extendRouter(StackRouter, ({ baseRouter, nextKey }) => ({
-  getStateForAction(
-    state,
-    action: CommonNavigationAction | StackActionType | CustomAction,
-    config
-  ) {
+const CustomStackRouter = extendRouter(StackRouter, ({ nextKey }) => ({
+  getStateForAction(state, action: CommonNavigationAction | StackActionType | CustomAction) {
     if (action.type === 'CUSTOM-ACTION') {
       if (!state.routeNames.includes(action.payload.name)) {
-        return null;
+        return RouterActionHandling.Unhandled;
       }
 
       const route = attachRouteState(
@@ -586,12 +599,12 @@ const CustomStackRouter = extendRouter(StackRouter, ({ baseRouter, nextKey }) =>
       };
     }
 
-    return baseRouter.getStateForAction(state, action, config);
+    return RouterActionHandling.Delegate;
   },
 }));
 ```
 
-Use `extendRouterActions` when only `getStateForAction` needs customization. Return `undefined` from its reducer to delegate an action. When overriding `getStateForAction` with `extendRouter`, delegate unhandled actions to `baseRouter` as shown above.
+Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated and logs a warning in development.
 
 #### Make the router type optional when appropriate
 
