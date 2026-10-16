@@ -6,7 +6,7 @@ import { downloadAndExtractExampleAsync } from '../Examples';
 import { extractAndPrepareTemplateAppAsync, installPodsAsync } from '../Template';
 import { createAsync, logNodeInstallWarning, setupDependenciesAsync } from '../createAsync';
 import { SwiftPMUnsupportedError } from '../error';
-import { installDependenciesAsync } from '../resolvePackageManager';
+import { formatSelfCommand, installDependenciesAsync } from '../resolvePackageManager';
 
 jest.mock('fs');
 jest.mock('ora');
@@ -16,9 +16,6 @@ jest.mock('../Examples', () => ({
   ensureExampleExists: jest.fn(),
   fetchMetadataAsync: jest.fn(async () => ({ aliases: {}, deprecated: {} })),
   promptExamplesAsync: jest.fn(),
-}));
-jest.mock('../promptSdkVersion', () => ({
-  applySdkVersionToTemplateAsync: jest.fn(async (template: string) => template),
 }));
 jest.mock('../resolveProjectRoot', () => ({
   assertFolderEmpty: jest.fn(),
@@ -39,6 +36,7 @@ jest.mock('../resolvePackageManager', () => ({
   resolvePackageManager: jest.fn(() => 'npm'),
   configurePackageManager: jest.fn(),
   installDependenciesAsync: jest.fn(),
+  formatSelfCommand: jest.fn(() => 'npx create-expo'),
 }));
 jest.mock('../Template', () => ({
   extractAndPrepareTemplateAppAsync: jest.fn(),

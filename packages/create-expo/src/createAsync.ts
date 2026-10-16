@@ -21,11 +21,11 @@ import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
-  formatSelfCommand,
   installDependenciesAsync,
   resolvePackageManager,
 } from './resolvePackageManager';
 import { assertFolderEmpty, assertValidName, resolveProjectRootAsync } from './resolveProjectRoot';
+import { resolveTemplate } from './resolveTemplate';
 import {
   AnalyticsEventPhases,
   AnalyticsEventTypes,
@@ -157,20 +157,10 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
 
-  console.log(
-    chalk`Creating {cyan ${path.basename(projectRoot)}} using the {cyan ${resolvedTemplate ?? 'default'}} example.\n`
-  );
-  if (!resolvedTemplate) {
-    const cmd = formatSelfCommand();
-    console.log(
-      [
-        chalk.dim('Tip:'),
-        chalk`  {dim $ ${cmd} {cyan --template} to use different templates}`,
-        chalk`  {dim $ ${cmd} {cyan --example} to explore {underline https://github.com/expo/examples}}`,
-        '',
-      ].join('\n')
-    );
-  }
+  resolvedTemplate = await resolveTemplate({
+    template: resolvedTemplate ?? 'default',
+    projectName: path.basename(projectRoot),
+  });
 
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
