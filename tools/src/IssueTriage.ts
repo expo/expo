@@ -284,6 +284,16 @@ export function isAlreadyTriaged(state: string, labels: string[]): boolean {
   return state !== 'open' || labels.some((label) => TRIAGED_LABELS.includes(label));
 }
 
+const TEAM_ASSOCIATIONS = ['OWNER', 'MEMBER', 'COLLABORATOR'];
+
+/**
+ * Whether an Expo member or collaborator opened the issue. They file tracking issues with the bug
+ * template, so `--close-invalid` must not close their issues.
+ */
+export function isTeamAuthor(authorAssociation: string): boolean {
+  return TEAM_ASSOCIATIONS.includes(authorAssociation);
+}
+
 const BOT_ACTORS = ['expo-bot', 'github-actions[bot]'];
 /**
  * Labels from `.github/ISSUE_TEMPLATE/*.yml` that are also truth labels. GitHub records the issue

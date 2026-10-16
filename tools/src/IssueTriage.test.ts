@@ -7,6 +7,7 @@ import {
   humanAppliedLabels,
   IssueClassification,
   isAlreadyTriaged,
+  isTeamAuthor,
   MISSING_REPRO_LABEL,
   packageOptionsFromLabels,
   planLabels,
@@ -132,6 +133,16 @@ describe('isAlreadyTriaged', () => {
     assert.equal(isAlreadyTriaged('open', ['Issue accepted']), true);
     assert.equal(isAlreadyTriaged('open', [MISSING_REPRO_LABEL]), true);
     assert.equal(isAlreadyTriaged('open', ['!']), true);
+  });
+});
+
+describe('isTeamAuthor', () => {
+  it('is true for Expo members and collaborators only', () => {
+    assert.equal(isTeamAuthor('MEMBER'), true);
+    assert.equal(isTeamAuthor('OWNER'), true);
+    assert.equal(isTeamAuthor('COLLABORATOR'), true);
+    assert.equal(isTeamAuthor('CONTRIBUTOR'), false);
+    assert.equal(isTeamAuthor('NONE'), false);
   });
 });
 

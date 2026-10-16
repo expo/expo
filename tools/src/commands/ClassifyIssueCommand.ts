@@ -16,6 +16,7 @@ import {
   formatReport,
   humanAppliedLabels,
   isAlreadyTriaged,
+  isTeamAuthor,
   packageOptionsFromLabels,
   planLabels,
   QUESTION_IDS,
@@ -99,6 +100,10 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closing: bo
   }
   if (apply && closing && isAlreadyTriaged(issue.state, labelNames(issue.labels))) {
     logger.warn(`Issue #${issueNumber} is already triaged, holding back closing labels.`);
+    closing = false;
+  }
+  if (apply && closing && isTeamAuthor(issue.author_association)) {
+    logger.warn(`Issue #${issueNumber} is from an Expo member, holding back closing labels.`);
     closing = false;
   }
   const plan = planLabels(result.classification, { closing: !apply || closing });
