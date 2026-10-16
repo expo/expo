@@ -17,30 +17,32 @@ internal class SimpleShareIntentDataParser {
     }
 
     private fun handleSendAction(context: Context, intent: Intent, type: String): List<SharePayload> {
-      return if (type == "text/plain") {
-        val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return emptyList()
-        val isUrl = android.util.Patterns.WEB_URL.matcher(text).matches()
+      val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }
+      val uri = intent.getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
 
-        listOf(
-          SharePayload().apply {
-            value = text
-            shareType = if (isUrl) {
-              ShareType.Url
-            } else {
-              ShareType.Text
-            }
-            mimeType = "text/plain"
-          }
-        )
-      } else {
-        val uri = intent.getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
-        listOfNotNull(uri?.let { createUriPayload(context, it, type) })
-      }
+      return listOfNotNull(
+        text?.let { createTextPayload(it) },
+        uri?.let { createUriPayload(context, it, type) }
+      )
     }
 
     private fun handleSendMultipleAction(context: Context, intent: Intent, type: String): List<SharePayload> {
       val uris = intent.getParcelableArrayListExtraCompat<Uri>(Intent.EXTRA_STREAM)
       return uris?.map { createUriPayload(context, it, type) } ?: emptyList()
+    }
+
+    private fun createTextPayload(text: String): SharePayload {
+      val isUrl = android.util.Patterns.WEB_URL.matcher(text).matches()
+
+      return SharePayload().apply {
+        value = text
+        shareType = if (isUrl) {
+          ShareType.Url
+        } else {
+          ShareType.Text
+        }
+        mimeType = "text/plain"
+      }
     }
 
     private fun createUriPayload(context: Context, uri: Uri, defaultType: String): SharePayload {
