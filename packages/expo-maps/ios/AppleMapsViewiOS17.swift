@@ -9,7 +9,12 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition = config.map {
+        convertToMapCamera(
+          position: $0, size: state.mapSize, fitter: state.cameraFitter,
+          currentCamera: state.mapCameraPosition.camera ?? state.lastKnownCamera
+        )
+      } ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -126,7 +131,14 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         }
       }
       .onChange(of: props.cameraPosition) { _, newValue in
-        state.mapCameraPosition = convertToMapCamera(position: newValue)
+        if state.hasInitializedCamera {
+          state.mapCameraPosition = convertToMapCamera(
+            position: newValue, size: state.mapSize, fitter: state.cameraFitter
+          )
+        }
+      }
+      .onMapCameraChange(frequency: .continuous) { context in
+        state.lastKnownCamera = context.camera
       }
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
@@ -158,9 +170,15 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           state.lookAroundPresented = false
         }
       )
-      .onAppear {
+      .onGeometryChange(for: CGSize.self) { proxy in
+        proxy.size
+      } action: { size in
+        guard size.width > 0, size.height > 0 else { return }
+        state.mapSize = size
         if !state.hasInitializedCamera {
-          state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+          state.mapCameraPosition = convertToMapCamera(
+            position: props.cameraPosition, size: size, fitter: state.cameraFitter
+          )
           state.hasInitializedCamera = true
         }
       }

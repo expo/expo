@@ -17,6 +17,8 @@ export default function MapsCameraPositionScreen() {
               longitude: -122.4324,
             },
             zoom: 15,
+            tilt: 45,
+            bearing: 30,
           }}
         />
       </View>
@@ -24,9 +26,33 @@ export default function MapsCameraPositionScreen() {
       <View style={styles.configurator}>
         <Button title="Set empty" onPress={() => ref.current?.setCameraPosition()} />
         <Button
+          title="Set 3D"
+          onPress={() =>
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 37.78825, longitude: -122.4324 },
+              zoom: 15,
+              tilt: 45,
+              bearing: 30,
+            })
+          }
+        />
+        <Button
+          title="Set 2D"
+          onPress={() =>
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 37.78825, longitude: -122.4324 },
+              zoom: 15,
+              tilt: 0,
+              bearing: 0,
+            })
+          }
+        />
+        <Button
           title="Set 0, 0"
           onPress={() =>
-            ref.current?.setCameraPosition({ coordinates: { latitude: 0, longitude: 0 } })
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 0, longitude: 0 },
+            })
           }
         />
         <Button
