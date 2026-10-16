@@ -5,6 +5,8 @@ import type { ExpoModifier } from '../../types';
 import type { PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+export type { PaddingValuesRecord };
+
 /**
  * Colors for the top app bar.
  */
@@ -33,8 +35,8 @@ export interface TopAppBarProps {
    */
   colors?: TopAppBarColors;
   /**
-   * Insets in dp that the app bar adds around its content. Sides you omit are `0`.
-   * Pass `{}` when a parent view already handles the status bar.
+   * Insets in dp that the app bar adds around its content. Missing sides are `0`.
+   * An app that already handles the status bar in a parent view can pass `{}`.
    * When omitted, the app bar uses `TopAppBarDefaults.windowInsets`.
    */
   windowInsets?: PaddingValuesRecord;
@@ -75,14 +77,14 @@ function TopAppBarTitle(props: SlotProps) {
 }
 
 /**
- * Navigation icon slot for `TopAppBar`. It is shown at the start of the app bar.
+ * Navigation icon slot for `TopAppBar`. It appears at the start of the app bar.
  */
 function TopAppBarNavigationIcon(props: SlotProps) {
   return <SlotNativeView slotName="navigationIcon">{props.children}</SlotNativeView>;
 }
 
 /**
- * Actions slot for `TopAppBar`. Its children are shown in a row at the end of the app bar.
+ * Actions slot for `TopAppBar`. Its children appear in a row at the end of the app bar.
  */
 function TopAppBarActions(props: SlotProps) {
   return <SlotNativeView slotName="actions">{props.children}</SlotNativeView>;

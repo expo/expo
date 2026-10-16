@@ -61,7 +61,7 @@ export default function BasicTopAppBar() {
 
 ### Window insets
 
-By default, the app bar adds the status bar height above its content. If a parent view already adds that space, pass `windowInsets={{}}` to remove it.
+By default, the app bar adds the status bar height above its content. It also adds any system bar or display cutout inset at its sides. If a parent view already adds that space, pass `windowInsets={{}}` to remove it.
 
 ```tsx TopAppBarWithoutInsets.tsx
 import { Host, Text, TopAppBar } from '@expo/ui/jetpack-compose';
