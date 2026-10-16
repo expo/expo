@@ -1,8 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import prompts from 'prompts';
 
-import { env } from './env';
 import { PACKAGE_NAME } from './update-check';
 
 const debug = require('debug')('expo:init:git') as typeof console.log;
@@ -44,28 +42,8 @@ export async function initGitRepoAsync(root: string) {
 
   // Check if already inside a git repository
   if (await isInsideGitRepoAsync(root)) {
-    // In headless/CI mode, skip by default
-    if (env.CI) {
-      debug('New project is already inside of a Git repo, skipping git init (CI mode).');
-      return false;
-    }
-
-    // In interactive mode, prompt the user
-    const { answer } = await prompts({
-      type: 'confirm',
-      name: 'answer',
-      message:
-        'You are creating a project inside of an existing Git repository. Skip initializing a new git repository?',
-      initial: true,
-    });
-
-    // If user confirms skip (or cancels/ctrl+c which returns undefined), skip git init
-    if (answer !== false) {
-      debug('User chose to skip git init inside existing repo.');
-      return false;
-    }
-    // User explicitly chose not to skip, proceed with git init (creates nested repo)
-    debug('User chose to initialize git inside existing repo.');
+    console.log(chalk.dim('Skipped initializing Git repository, already inside one.'));
+    return false;
   }
 
   const packageJSON = getPackageJson();
