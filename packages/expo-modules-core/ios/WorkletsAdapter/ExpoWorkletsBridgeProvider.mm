@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 #include <worklets/Compat/StableApi.h>
-#include <worklets/SharedItems/Serializable.h>
+#include <worklets/SharedItems/Serializable/Serializable.h>
+#include <worklets/SharedItems/Serializable/SerializableWorklet.h>
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
 
 namespace jsi = facebook::jsi;
