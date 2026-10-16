@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a crash when a dynamic route param named `state` is passed to a nested navigator.
+
 ### 💡 Others
 
 ## 57.0.28 — 2026-10-15
