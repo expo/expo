@@ -31,6 +31,10 @@ const MAX_MESSAGE_LENGTH = 500;
 const reportedErrors = new Map<string, number>();
 const reportedWarnings = new Map<string, number>();
 
+// The callback stays registered in Reanimated after the integration is turned off, because
+// configuring the logger again would reset the app's `level` and `strict`. It checks this flag.
+let isEnabled = false;
+
 /**
  * A Reanimated error reported to Observe. The stack is set explicitly so it points at the
  * callback's caller rather than at this constructor.
@@ -77,6 +81,9 @@ function shouldReport(reported: Map<string, number>, cappedMessage: string): boo
 // Reanimated already prints every log to the console, so this only reports to Observe. The name
 // is specific to Observe, so `removeFirstFrame` cannot remove a frame of an app function.
 function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogData): void {
+  if (!isEnabled) {
+    return;
+  }
   const isError = level === LOG_LEVEL_ERROR;
   const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
   if (!shouldReport(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
@@ -131,4 +138,13 @@ export function initReanimatedIntegration(
 
   const loggerConfig = typeof config === 'object' ? config : {};
   reanimated.configureReanimatedLogger(loggerConfig, __expo_observe_reportReanimatedLog);
+  isEnabled = true;
+}
+
+/**
+ * Stops reporting Reanimated errors and warnings to Observe. Reanimated's logger keeps its
+ * configuration.
+ */
+export function disableReanimatedIntegration(): void {
+  isEnabled = false;
 }

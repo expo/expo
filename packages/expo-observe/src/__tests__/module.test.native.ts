@@ -60,6 +60,7 @@ jest.mock('../integrations/react-navigation/init', () => ({
 
 jest.mock('../integrations/react-native-reanimated/init', () => ({
   initReanimatedIntegration: jest.fn(),
+  disableReanimatedIntegration: jest.fn(),
 }));
 
 let warnSpy: jest.SpyInstance;
@@ -95,6 +96,7 @@ beforeEach(() => {
   }));
   jest.doMock('../integrations/react-native-reanimated/init', () => ({
     initReanimatedIntegration: jest.fn(),
+    disableReanimatedIntegration: jest.fn(),
   }));
 });
 
@@ -195,17 +197,25 @@ describe('module Proxy', () => {
   });
 
   it.each([false, undefined])(
-    "skips initReanimatedIntegration when integrations['react-native-reanimated'] is %s",
+    "disables the Reanimated integration when integrations['react-native-reanimated'] is %s",
     (value) => {
       const Observe = loadModule();
-      const { initReanimatedIntegration } = loadReanimatedInit();
+      const { initReanimatedIntegration, disableReanimatedIntegration } = loadReanimatedInit();
       Observe.configure({
         environment: 'test',
         integrations: { 'react-native-reanimated': value },
       });
       expect(initReanimatedIntegration).not.toHaveBeenCalled();
+      expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
     }
   );
+
+  it('disables the Reanimated integration when configure has no integrations', () => {
+    const Observe = loadModule();
+    const { disableReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({ environment: 'test' });
+    expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+  });
 
   it('records no network traces when configure omits networkTraces', () => {
     // Opt-in: recording is off unless asked for, so upgrading can't silently add to an app's
