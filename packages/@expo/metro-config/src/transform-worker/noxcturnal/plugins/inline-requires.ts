@@ -20,6 +20,7 @@ export function createInlineRequiresPlugin(
   return nox.defineNativePlugin<InlineRequiresState>({
     name: 'metro-inline-requires',
     editEffect: 'bindings',
+    contract: { syntax: { anyOf: ['VariableDeclaration'] } },
     createState(context) {
       const { input } = expoPluginData(context);
       return {
