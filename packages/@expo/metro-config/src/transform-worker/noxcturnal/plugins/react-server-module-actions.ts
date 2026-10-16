@@ -34,6 +34,7 @@ export function createReactServerModuleActionsPlugin(
     name: 'expo-react-server-module-actions',
     editEffect: 'bindings',
     contract: {
+      queries: [{ captures: [{ functionId: 0 }] }],
       metadata: { writes: ['reactServerActions', 'reactServerReference'] },
     },
     createState: (context) => {
