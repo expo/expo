@@ -12,7 +12,7 @@ import {
 import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
-import { getMaterialColors, HostPaletteContext } from '../colors';
+import { getMaterialColors, HostPaletteContext, type MaterialColors } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
 export interface HostProps extends PrimitiveBaseProps {
@@ -51,6 +51,13 @@ export interface HostProps extends PrimitiveBaseProps {
    * available to descendants via `useMaterialColors()`.
    */
   seedColor?: ColorValue;
+
+  /**
+   * Material 3 color roles that replace the matching roles of the palette from
+   * `colorScheme` and `seedColor`. Roles you omit keep their palette value.
+   * The overrides theme Compose children and are returned by `useMaterialColors()`.
+   */
+  colorOverrides?: Partial<MaterialColors>;
 
   /**
    * The layout direction for the content.
@@ -93,6 +100,7 @@ export function Host(props: HostProps) {
     layoutDirection,
     colorScheme,
     seedColor,
+    colorOverrides,
     ref,
     children,
     ...restProps
@@ -102,8 +110,8 @@ export function Host(props: HostProps) {
   const systemScheme = useRNColorScheme();
   const resolvedScheme = schemeString ?? (systemScheme === 'dark' ? 'dark' : 'light');
   const palette = useMemo(
-    () => getMaterialColors({ scheme: resolvedScheme, seedColor }),
-    [resolvedScheme, seedColor]
+    () => ({ ...getMaterialColors({ scheme: resolvedScheme, seedColor }), ...colorOverrides }),
+    [resolvedScheme, seedColor, colorOverrides]
   );
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
@@ -123,6 +131,7 @@ export function Host(props: HostProps) {
           }
           colorScheme={schemeString}
           seedColor={seedColor}
+          colorOverrides={colorOverrides}
           onLayoutContent={onLayoutContent}
           layoutDirection={
             layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
