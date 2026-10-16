@@ -10,7 +10,8 @@ internal import jsi
 public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   private typealias PromiseContinuation = CheckedContinuation<JavaScriptValue.Ref, any Error>
 
-  private weak let runtime: JavaScriptRuntime?
+  /// Held instead of the runtime, because the promise is settled and released from any thread.
+  private let scheduler: JavaScriptRuntime.Scheduler
 
   /// Owns the promise's JSI values (the object and, for a deferred promise, its resolve/reject
   /// functions). Registered with the runtime's ``LongLivedObjectCollection`` so they're released on
@@ -62,14 +63,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// alive, so schedule the work there; if the runtime is already gone, the teardown sweep has
   /// released everything and there is nothing to do (this is the `#47454` off-thread-drop case).
   deinit {
-    guard let runtime else {
+    guard scheduler.mayBeAlive else {
       return
     }
-    // Capture the collection, not the runtime, so a wrapper's deinit can't prolong the runtime's
-    // lifetime by keeping it alive until the scheduled job drains.
-    let longLivedObjects = runtime.longLivedObjects
-    runtime.schedule { [longLivedState] in
-      longLivedObjects.remove(longLivedState)
+    scheduler.schedule { [longLivedState] runtime in
+      runtime.longLivedObjects.remove(longLivedState)
       longLivedState.allowRelease()
     }
   }
@@ -78,7 +76,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// It cannot be resolved/rejected from the outside, i.e. `resolve` and `reject` functions are no-op.
   @JavaScriptActor
   public init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming JavaScriptObject) throws {
-    self.runtime = copy runtime
+    self.scheduler = runtime.scheduler
     // Reject a non-thenable here rather than at the first `await()`, which is where the `then`
     // callbacks are actually installed (see `deferredPromiseForAwait()`).
     _ = try object.getPropertyAsFunction(.cached(runtime, "then"))
@@ -92,7 +90,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
   @JavaScriptActor
   public init(_ runtime: borrowing JavaScriptRuntime) throws {
-    self.runtime = copy runtime
+    self.scheduler = runtime.scheduler
 
     // The promise and its two settle functions come from a JavaScript closure that returns all three
     // at once, rather than from `new Promise(executor)` with a host function as the executor. The
@@ -116,6 +114,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     return longLivedState.resolveFunction != nil && longLivedState.rejectFunction != nil
   }
 
+  /// Waits for the promise to settle. Throws ``JavaScriptCallback/RuntimeLostError`` when the runtime
+  /// is gone before it subscribes to the promise.
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
     let deferredPromise = try await deferredPromiseForAwait()
@@ -124,17 +124,14 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // The first read takes the value itself: a move, which doesn't touch the runtime.
       return try ref.take()
     }
-    guard let runtime else {
-      throw JavaScriptCallback.RuntimeLostError()
-    }
     // A later read clones the kept copy. Cloning touches the runtime, so it happens on the JavaScript
     // thread and the clone is moved back.
-    return try await runtime.execute {
+    return try await scheduler.execute { _ in
       guard let value = ref.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.copy() }) else {
         preconditionFailure("The settled promise value was released before it was read")
       }
-      return value
-    }
+      return value.ref()
+    }.take()
   }
 
   public func asValue() -> JavaScriptValue {
@@ -162,12 +159,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// than encoding to a `bigint` or rejecting for exceeding the safe-integer range.
   /// If the resolver call throws, the promise is rejected instead.
   public func resolve<V: JavaScriptRepresentable>(_ value: V) {
-    guard let runtime else {
+    guard scheduler.mayBeAlive else {
       return
     }
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [longLivedState] in
+    scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
       // If the promise is already settled, do nothing.
       guard let resolver = longLivedState.resolveFunction.take() else {
         return
@@ -201,11 +198,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// resolving through the representable overload above; this serves the encodable-only types.
   @_disfavoredOverload
   public func resolve<V: JavaScriptEncodable>(_ value: sending V) {
-    guard let runtime else {
+    guard scheduler.mayBeAlive else {
       return
     }
     // `resolve` is not isolated, so make sure to jump to JS thread; the encode happens there too.
-    runtime.schedule(priority: .immediate) { [longLivedState] in
+    scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
       // If the promise is already settled, do nothing.
       guard let resolver = longLivedState.resolveFunction.take() else {
         return
@@ -229,12 +226,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   public func reject(_ error: any Error) {
-    guard let runtime else {
+    guard scheduler.mayBeAlive else {
       return
     }
 
     // `reject` is not isolated, so make sure to jump to JS thread.
-    runtime.schedule(priority: .immediate) { [longLivedState] in
+    scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
       // If the promise is already settled, do nothing.
       guard let rejecter = longLivedState.rejectFunction.take() else {
         return
@@ -265,17 +262,17 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     if let deferredPromise = longLivedState.deferredPromise {
       return deferredPromise
     }
-    let deferredPromise = DeferredPromise()
-    guard let runtime else {
-      // Without a runtime nothing can settle the promise; keep `await()` suspending as it always did.
-      longLivedState.deferredPromise = deferredPromise
-      return deferredPromise
+    // Without a runtime nothing can settle the promise, so throw instead of suspending for good. The
+    // install below throws the same way when the runtime goes away before it runs.
+    guard scheduler.mayBeAlive else {
+      throw JavaScriptCallback.RuntimeLostError()
     }
+    let deferredPromise = DeferredPromise()
     // Installing calls `then`, which is JavaScript, so it has to run on the runtime's JavaScript
     // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` does not get there on
     // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
     // inline when the caller is already on the JavaScript thread.
-    try await runtime.execute { [longLivedState, deferredPromise] in
+    try await scheduler.execute { [longLivedState, deferredPromise] runtime in
       let onFulfilled = runtime.createFunction { [weak longLivedState, weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined() }
         // Both refs are made here, on the JavaScript thread: the copy for later `await()` calls clones

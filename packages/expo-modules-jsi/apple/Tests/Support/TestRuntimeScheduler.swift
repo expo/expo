@@ -40,6 +40,11 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     state.schedule(operation)
   }
 
+  /// Blocks the calling thread until at least `count` operations wait in the queue.
+  func waitUntilQueued(_ count: Int) {
+    state.waitUntilQueued(count)
+  }
+
   func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
     return await withCheckedContinuation { continuation in
       schedule {
@@ -90,7 +95,15 @@ final class TestRuntimeScheduler: @unchecked Sendable {
         return
       }
       operations.append(operation)
-      condition.signal()
+      condition.broadcast()
+      condition.unlock()
+    }
+
+    func waitUntilQueued(_ count: Int) {
+      condition.lock()
+      while operations.count < count && !isStopped {
+        condition.wait()
+      }
       condition.unlock()
     }
 
@@ -156,3 +169,61 @@ let scheduleOnTestRuntime:
     let state = Unmanaged<TestRuntimeScheduler.State>.fromOpaque(schedulerPointer).takeUnretainedValue()
     state.schedule(callback)
   }
+
+/// A runtime on a ``TestRuntimeScheduler``'s thread that a test releases at a chosen point, to check
+/// what happens to work that was queued while the runtime was alive and runs after it is gone.
+final class ReleasableTestRuntime: @unchecked Sendable {
+  let scheduler = TestRuntimeScheduler()
+  private var owningRuntime: JavaScriptRuntime?
+  private(set) var runtime: JavaScriptRuntime?
+
+  init() async {
+    let runtimes = await scheduler.run { [scheduler] in
+      let owningRuntime = JavaScriptRuntime()
+      let runtime = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      return UncheckedSendable(value: (owningRuntime, runtime))
+    }
+    self.owningRuntime = runtimes.value.0
+    self.runtime = runtimes.value.1
+  }
+
+  /// Holds the JavaScript thread, calls `enqueue` on another thread and waits until it queued its work,
+  /// then releases the runtime on the JavaScript thread, so the queued work runs after the runtime is
+  /// gone. Returns once that work ran.
+  func releaseRuntime(afterQueueing enqueue: @escaping @Sendable () -> Void) async {
+    let isHolding = DispatchSemaphore(value: 0)
+    let release = DispatchSemaphore(value: 0)
+    scheduler.schedule {
+      isHolding.signal()
+      release.wait()
+      self.runtime = nil
+    }
+    // The waits block, so they run on a thread of their own rather than in this async context.
+    await withCheckedContinuation { (finished: CheckedContinuation<Void, Never>) in
+      Thread.detachNewThread { [scheduler] in
+        isHolding.wait()
+        Thread.detachNewThread(enqueue)
+        scheduler.waitUntilQueued(1)
+        release.signal()
+        // Queued behind the work that `enqueue` queued, so it resumes the test after that work ran.
+        scheduler.schedule {
+          finished.resume()
+        }
+      }
+    }
+  }
+
+  /// Releases the owning runtime on the JavaScript thread. Call at the end of the test.
+  func tearDown() async {
+    await scheduler.run {
+      self.runtime = nil
+      self.owningRuntime = nil
+    }
+  }
+}

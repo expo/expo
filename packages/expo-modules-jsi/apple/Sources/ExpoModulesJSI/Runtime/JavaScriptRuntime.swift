@@ -59,7 +59,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -72,7 +72,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = true
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -86,7 +86,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -103,6 +103,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///   `react::RuntimeScheduler` weakly (see `EXReactSchedulerDispatch.h` in
   ///   `ExpoModulesCore`), so dispatching after the React instance tore the
   ///   scheduler down safely drops the task.
+  ///
+  ///   `dispatch` can be called with this handle after the runtime is deallocated: promises and
+  ///   callbacks that outlive the runtime still schedule their release through it. So the handle must
+  ///   stay valid for as long as the process runs, and the host must drop tasks it can no longer run,
+  ///   as the React Native factory's handle does.
   /// - `dispatch`: raw pointer to a C function with signature
   ///   `void (*)(void *scheduler, int priority, void (^callback)())`.
   public init(
@@ -115,13 +120,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn))
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
+    scheduler.markRuntimeGone()
     handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
@@ -495,7 +501,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Runtime execution
 
-  // These forward to ``Scheduler``.
+  // These forward to ``Scheduler``. When the runtime is gone by the time the work runs, `schedule` and
+  // `runOrSchedule` drop it and `execute` throws ``JavaScriptCallback/RuntimeLostError``.
 
   /// Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
   /// Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
@@ -779,7 +786,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
-      nativeState.setDeallocator { [weak self] nativeState in
+      nativeState.setDeallocator { [handle] nativeState in
         // Fires as the teardown object is released on the JavaScript thread with the runtime still
         // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
         // a future cross-runtime path that could drop this state from another thread would have to
@@ -788,10 +795,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
           longLivedObjects.clear()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
           // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
-          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't retain the
-          // wrapper; the owning wrapper clears both in `deinit`.
-          self?.propNameIdsRegistry.removeAll()
-          self?.cache.clear()
+          // the freed runtime when it deallocates. Reached through the handle so the teardown object doesn't
+          // retain the wrapper; the owning wrapper clears both in `deinit`.
+          handle.runtime?.propNameIdsRegistry.removeAll()
+          handle.runtime?.cache.clear()
         }
       }
       let object = createObject()

@@ -15,6 +15,41 @@ private struct NativeError: Error, CustomStringConvertible {
   }
 }
 
+/// Records whether `FlaggingEncodable` was encoded. Written on the JavaScript thread and read after the
+/// test drained it.
+private final class EncodeFlag: @unchecked Sendable {
+  var isEncoded = false
+}
+
+/// A `JavaScriptEncodable` that records when it's encoded, which happens only when the call runs.
+private struct FlaggingEncodable: JavaScriptEncodable {
+  let flag: EncodeFlag
+
+  static func encode(_ value: FlaggingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    value.flag.isEncoded = true
+    return .undefined()
+  }
+}
+
+/// The result of a blocking call made on another thread, which sets it once the call returns.
+private final class BlockingOutcome: @unchecked Sendable {
+  private let lock = NSLock()
+  private var result: Result<Int, any Error>?
+
+  func set(_ result: Result<Int, any Error>) {
+    lock.withLock { self.result = result }
+  }
+
+  func value() async -> Result<Int, any Error> {
+    while true {
+      if let result = lock.withLock({ self.result }) {
+        return result
+      }
+      try? await Task.sleep(for: .milliseconds(10))
+    }
+  }
+}
+
 @Suite
 @JavaScriptActor
 struct JavaScriptCallbackTests {
@@ -267,6 +302,47 @@ struct JavaScriptCallbackThreadingTests {
       #expect(ThreadRecordingInt.decodedOnJavaScriptThread == true)
     }
     await drain(testRuntime)
+  }
+
+  /// Decodes a callback for the function in `source` on the runtime's JavaScript thread.
+  private func makeCallback(_ testRuntime: ReleasableTestRuntime, _ source: String) async throws -> JavaScriptCallback {
+    return try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime!
+      return try runtime.eval(source).withUnownedValue(in: runtime) { unownedValue in
+        try JavaScriptCallback.decode(unownedValue, in: runtime)
+      }
+    }
+  }
+
+  @Test
+  func `invokeDetached queued before the runtime goes away is dropped`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let callback = try await makeCallback(testRuntime, "(value) => {}")
+    let flag = EncodeFlag()
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      callback.invokeDetached(FlaggingEncodable(flag: flag))
+    })
+
+    #expect(flag.isEncoded == false)
+    await testRuntime.tearDown()
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `invokeBlocking queued before the runtime goes away throws RuntimeLostError`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let callback = try await makeCallback(testRuntime, "() => 42")
+    let outcome = BlockingOutcome()
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      outcome.set(Result { try callback.invokeBlocking(returning: Int.self) })
+    })
+
+    let result = await outcome.value()
+    #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try result.get()
+    }
+    await testRuntime.tearDown()
   }
 
   @Test(.timeLimit(.minutes(1)))

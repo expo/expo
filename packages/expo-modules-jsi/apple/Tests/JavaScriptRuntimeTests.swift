@@ -216,6 +216,35 @@ struct JavaScriptRuntimeTests {
     withExtendedLifetime(scheduler) {}
   }
 
+  @Test
+  func `schedule drops the work when the runtime is gone by the time it runs`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let didRun = InlineRunFlag()
+
+    await scheduler.run {
+      var runtime: JavaScriptRuntime? = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      // Queued behind this block, so it runs after the runtime below is gone.
+      runtime?.schedule {
+        didRun.value = true
+      }
+      runtime = nil
+    }
+    await scheduler.run {}
+
+    #expect(didRun.value == false)
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
