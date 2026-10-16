@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix LocationTaskConsumer.didReceiveBroadcast crashing when the user revoked permissions and the task consumer tried getting the lastLocation. ([#51689](https://github.com/expo/expo/pull/51689) by [@HubertBer](https://github.com/HubertBer))
+
 ## 58.0.16
 
 ### Patch Changes

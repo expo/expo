@@ -1,5 +1,26 @@
 # test-suite
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51609](https://github.com/expo/expo/pull/51609), [#51693](https://github.com/expo/expo/pull/51693), [#51624](https://github.com/expo/expo/pull/51624), [#51689](https://github.com/expo/expo/pull/51689), [#51640](https://github.com/expo/expo/pull/51640), [#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51515](https://github.com/expo/expo/pull/51515))
+  - expo-app-metrics@58.0.13
+  - expo-application@58.1.2
+  - expo-modules-core@58.0.21
+  - expo-crypto@58.0.7
+  - expo-location@58.0.17
+  - expo-blur@58.0.4
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-haptics@58.0.7
+  - expo-media-library@58.0.10
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo-auth-session@58.0.13
+  - expo-notifications@58.1.5
+  - expo@58.0.13
+
 ## 1.0.6
 
 ### Patch Changes

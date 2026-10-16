@@ -1,5 +1,30 @@
 # native-component-list
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51609](https://github.com/expo/expo/pull/51609), [#51693](https://github.com/expo/expo/pull/51693), [#51689](https://github.com/expo/expo/pull/51689), [#51640](https://github.com/expo/expo/pull/51640), [#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51515](https://github.com/expo/expo/pull/51515), [#51648](https://github.com/expo/expo/pull/51648), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-app-metrics@58.0.13
+  - expo-application@58.1.2
+  - expo-crypto@58.0.7
+  - expo-location@58.0.17
+  - expo-blur@58.0.4
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-haptics@58.0.7
+  - expo-media-library@58.0.10
+  - expo-sharing@58.0.19
+  - expo-splash-screen@58.0.10
+  - test-suite@1.0.7
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo-auth-session@58.0.13
+  - expo-notifications@58.1.5
+  - expo@58.0.13
+  - expo-standard-web-crypto@58.0.5
+  - expo-app-intents@0.5.9
+
 ## 0.0.6
 
 ### Patch Changes

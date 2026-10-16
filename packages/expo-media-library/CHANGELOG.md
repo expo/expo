@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Add `Query.contains()` and `AssetField.MEDIA_SUBTYPES` to filter assets by `MediaSubtype`, for example screenshots or Live Photos. ([#51515](https://github.com/expo/expo/pull/51515) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.9
 
 ### Patch Changes

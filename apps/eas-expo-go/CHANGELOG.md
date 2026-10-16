@@ -1,5 +1,12 @@
 # eas-expo-go
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.13
+
 ## 1.0.6
 
 ### Patch Changes

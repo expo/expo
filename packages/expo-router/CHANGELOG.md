@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [iOS] Fix the zoom transition when a screen opened with `Link.AppleZoom` is closed with `router.back()`. ([#51676](https://github.com/expo/expo/pull/51676) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.21
 
 ### Patch Changes

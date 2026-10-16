@@ -1,5 +1,15 @@
 # minimal-tester
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51640](https://github.com/expo/expo/pull/51640), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-blur@58.0.4
+  - expo-splash-screen@58.0.10
+  - expo-image@58.0.15
+  - expo@58.0.13
+
 ## 1.0.6
 
 ### Patch Changes

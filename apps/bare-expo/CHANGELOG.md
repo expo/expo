@@ -1,5 +1,25 @@
 # bare-expo
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51609](https://github.com/expo/expo/pull/51609), [#51689](https://github.com/expo/expo/pull/51689), [#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51515](https://github.com/expo/expo/pull/51515), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-app-metrics@58.0.13
+  - expo-location@58.0.17
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-media-library@58.0.10
+  - expo-splash-screen@58.0.10
+  - native-component-list@0.0.7
+  - test-suite@1.0.7
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo-notifications@58.1.5
+  - expo@58.0.13
+  - expo-app-intents@0.5.9
+  - expo-dev-menu@58.0.11
+
 ## 0.0.7
 
 ### Patch Changes
