@@ -307,10 +307,24 @@ function headersXCFrameworkSearchPaths({ packageName, moduleRoot, productName })
  * The interface-only `<Product>Headers` XCFramework a product publishes in place of its
  * binaries, from the first of its flavored frameworks' bases that has one, as
  * `{ xcframework, source }`. Null when no base has one.
+ *
+ * @param lastKind when set, the lookup ends after the base of this kind, so a base past it
+ *   is neither returned nor validated.
  */
-function resolveHeadersXCFrameworkWithSource({ packageName, moduleRoot, productName, cacheDir }) {
+function resolveHeadersXCFrameworkWithSource({
+  packageName,
+  moduleRoot,
+  productName,
+  cacheDir,
+  lastKind,
+}) {
   const frameworkName = `${productName}Headers`;
-  for (const base of artifactBases(packageName, moduleRoot)) {
+  const lastRank =
+    lastKind != null ? PRECOMPILED_SOURCE_KINDS.indexOf(lastKind) : PRECOMPILED_SOURCE_KINDS.length;
+  const bases = artifactBases(packageName, moduleRoot).filter(
+    (base) => PRECOMPILED_SOURCE_KINDS.indexOf(base.kind) <= lastRank
+  );
+  for (const base of bases) {
     const artifact = existingArtifactSource(base.dir, HEADERS_FLAVOR, frameworkName);
     if (artifact == null) continue;
     const xcframework = prepareArtifactSource(
