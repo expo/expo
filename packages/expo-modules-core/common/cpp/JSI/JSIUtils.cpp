@@ -1,21 +1,39 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#include <sstream>
 #include <utility>
 #include "JSIUtils.h"
 
 namespace expo::common {
 
+static constexpr jsi::UUID classFactoryUUID{0xa1f49c57, 0x6f0a, 0x4775, 0x9f44, 0xcb0673675b4c};
+
+// Hermes keeps memory for every evaluated source until the runtime is destroyed, so the
+// constructor source is evaluated once per runtime and the factory is called for each class.
+// The runtime data releases the factory when the runtime is destroyed, and JS code can't reach it.
+static std::shared_ptr<jsi::Function> getClassFactory(jsi::Runtime &runtime) {
+  if (std::shared_ptr<void> cached = runtime.getRuntimeData(classFactoryUUID)) {
+    return std::static_pointer_cast<jsi::Function>(cached);
+  }
+  std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(
+    "(function (name) {"
+    "  const klass = function (...args) { return this.__native_constructor__(...args); };"
+    "  Object.defineProperty(klass, 'name', { value: name });"
+    "  return klass;"
+    "})"
+  );
+  auto factory = std::make_shared<jsi::Function>(
+    runtime.evaluateJavaScript(sourceBuffer, "expo-modules-core/class-factory.js").asObject(runtime).asFunction(runtime)
+  );
+  runtime.setRuntimeData(classFactoryUUID, factory);
+  return factory;
+}
+
 jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor) {
   std::string nativeConstructorKey("__native_constructor__");
 
-  // Create a string buffer of the source code to evaluate.
-  std::stringstream source;
-  source << "(function " << name << "(...args) { return this." << nativeConstructorKey << "(...args); })";
-  std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
-
-  // Evaluate the code and obtain the returned value (the constructor function).
-  jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
+  jsi::Object klass = getClassFactory(runtime)
+    ->call(runtime, jsi::String::createFromUtf8(runtime, name))
+    .asObject(runtime);
 
   // Set the native constructor in the prototype.
   jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
