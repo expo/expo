@@ -6,6 +6,7 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.widgets.notifications.CustomNotification
+import expo.modules.widgets.notifications.CustomNotificationCreationException
 import expo.modules.widgets.notifications.CustomNotificationFactory
 import expo.modules.widgets.notifications.CustomNotificationOptions
 import expo.modules.widgets.notifications.CustomNotificationUpdateOptions
@@ -84,6 +85,10 @@ class WidgetsModule : Module() {
     }
 
     Class("CustomNotification", CustomNotification::class) {
+      Constructor { ->
+        throw CustomNotificationCreationException()
+      }
+
       Function("getId") { notification: CustomNotification ->
         notification.id
       }
