@@ -54,6 +54,7 @@ const {
   moduleNeedsReact,
   scanAppleSources,
 } = require('./classify');
+const { SPM_UPDATE_COMMAND } = require('./commands');
 const {
   classifyUnsupported,
   collectDuplicatePods,
@@ -811,7 +812,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `Generating ExpoModulesProvider.swift for ${appRoot} failed: ${error.message}`,
         '  That file is the registry every Expo native module is looked up through, so without it the app builds and then fails at launch with "Cannot find native module".',
-        '  The message above comes from `expo-modules-autolinking generate-modules-provider`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run `npx react-native spm update`.',
+        `  The message above comes from \`expo-modules-autolinking generate-modules-provider\`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run \`${SPM_UPDATE_COMMAND}\`.`,
       ].join('\n'),
       { cause: error }
     );
@@ -821,7 +822,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `The Expo module registry generator wrote no ExpoModulesProvider.swift to ${outDir}, although ${modules.length} Expo ${modules.length === 1 ? 'module' : 'modules'} resolved.`,
         '  Without that file no Expo native module is registered, and the app fails at launch with "Cannot find native module".',
-        '  Re-run `npx react-native spm update`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of `npx expo-modules-autolinking resolve --platform apple --json` run in your app.',
+        `  Re-run \`${SPM_UPDATE_COMMAND}\`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of \`npx expo-modules-autolinking resolve --platform apple --json\` run in your app.`,
       ].join('\n')
     );
   }

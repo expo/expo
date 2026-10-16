@@ -51,6 +51,7 @@ const {
 } = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
+const { SPM_UPDATE_COMMAND } = require('../commands');
 const { UnsupportedModulesError } = require('../diagnostics');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
@@ -323,7 +324,7 @@ describe('the module registry', () => {
 
     expect(run).toThrow(/ExpoModulesProvider\.swift/);
     expect(run).toThrow(/expo-modules-autolinking exited with code 1/);
-    expect(run).toThrow(/react-native spm/);
+    expect(run).toThrow(SPM_UPDATE_COMMAND);
     expect(printed(logs.warn)).not.toContain('ExpoModulesProvider');
   });
 

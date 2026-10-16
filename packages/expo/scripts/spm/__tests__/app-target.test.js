@@ -5,6 +5,7 @@ const os = require('os');
 const path = require('path');
 
 const { readPodfileProperties, resolveAppTarget } = require('../app-target');
+const { SPM_UPDATE_COMMAND } = require('../commands');
 
 // The real project of apps/minimal-swiftpm: the entitlements derivation reads an
 // Xcode project, so mocking one out would only assert our own fixture back.
@@ -207,7 +208,7 @@ describe('the entitlements file', () => {
     const appRoot = makeApp({ marker: { target: 'renamed' } });
     expect(resolveAppTarget(appRoot).entitlementPath).toBeNull();
     expect(warnings()).toContain('"renamed"');
-    expect(warnings()).toContain('react-native spm update');
+    expect(warnings()).toContain(SPM_UPDATE_COMMAND);
     // The project parsed fine; only the target was missing.
     expect(warnings()).not.toContain('could not be read');
   });
@@ -423,7 +424,7 @@ describe('the Podfile properties', () => {
     expect(message.startsWith('[expo-spm-plugin] ')).toBe(true);
     expect(message).not.toContain('WARNING');
     expect(message).toContain('leave each gated product to its own default');
-    expect(message).toContain('npx react-native spm update');
+    expect(message).toContain(SPM_UPDATE_COMMAND);
   });
 
   // An unset property leaves its gate at that gate's own default, so no fallback is
