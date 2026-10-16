@@ -1,7 +1,7 @@
 /**
- * SPIKE — consume a module's checked-in Package.swift DIRECTLY, with no generated
- * wrapper manifest. The module's own manifest names its Expo dependencies by paths
- * relative to `<outDir>/direct/<package>`, so this writes those neighbours:
+ * Links a module that opts in with `"directManifest": true` through its own checked-in
+ * Package.swift instead of a generated one. That manifest names its Expo dependencies by
+ * paths relative to `<outDir>/direct/<package>`, so this writes those neighbours:
  *
  *   direct/<package>                 → relative symlink to the module root
  *   direct/ExpoModulesCoreHeaders    → compile-only ExpoModulesCore: a relative symlink to its
