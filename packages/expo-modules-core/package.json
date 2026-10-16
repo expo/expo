@@ -24,7 +24,9 @@
     "*.fx.ts",
     "*.fx.js",
     "./src/polyfill/*.ts",
-    "./build/polyfill/*.js"
+    "./build/polyfill/*.js",
+    "./src/ensureNativeModulesAreInstalled.ts",
+    "./build/ensureNativeModulesAreInstalled.js"
   ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
