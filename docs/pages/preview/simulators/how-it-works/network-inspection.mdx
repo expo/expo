@@ -123,11 +123,13 @@ The recording exists only while capture is on. EAS does not save it as a session
 
 To download it in the browser, open the **Tools** panel in the browser preview. Under **Network requests**, select the download icon, whose tooltip reads **Download session as HAR**.
 
-To download it from the command line, get the session's preview API URL:
+To download it from the command line, you need the preview API URL and the preview token. If you started the session with `--public-link`, get them from EAS CLI:
 
 <Terminal cmd={['$ eas simulator:get --json']} />
 
-Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
+Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. For a session with private links, EAS CLI sets `previewApiUrl` to `null`. Get `previewApiUrl` and `webPreviewToken` from the [REST API](/preview/simulators/reference/rest-api/#get-a-session) instead. See [Browser preview links](/preview/simulators/reference/cli/#browser-preview-links).
+
+Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
 
 <Terminal
   cmd={[
