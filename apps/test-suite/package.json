@@ -1,6 +1,6 @@
 {
   "name": "test-suite",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "description": "Test suite for the Expo SDK",
   "license": "MIT",

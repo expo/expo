@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51639](https://github.com/expo/expo/pull/51639))
+  - expo-glass-effect@58.0.4
+
 ## 58.0.20
 
 ### Patch Changes

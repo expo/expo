@@ -1,5 +1,15 @@
 # expo-template-default
 
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51632](https://github.com/expo/expo/pull/51632), [#51636](https://github.com/expo/expo/pull/51636), [#51639](https://github.com/expo/expo/pull/51639))
+  - @expo/ui@58.0.19
+  - expo-glass-effect@58.0.4
+  - expo@58.0.12
+  - expo-router@58.0.21
+
 ## 58.0.20
 
 ### Patch Changes

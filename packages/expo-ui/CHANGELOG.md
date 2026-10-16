@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Add `accessibilityLabel`, `accessibilityHint` (iOS) and `testID` to the community `Slider`. The drop-in dropped them, so VoiceOver and TalkBack announced a slider by its value alone and end-to-end tools could not find it. iOS applies them as SwiftUI accessibility modifiers, Android as the `semantics` and `testID` modifiers, and web as `aria-label` and `data-testid`. ([#51632](https://github.com/expo/expo/pull/51632) by [@brentvatne](https://github.com/brentvatne))
+- [iOS] Stop shipping a precompiled iOS framework. `ArrangementView` and `onHingeChange` now work on iOS 27.1 without `buildFromSource` when the app is built with Xcode 27.1 or later. ([#51636](https://github.com/expo/expo/pull/51636) by [@brentvatne](https://github.com/brentvatne))
+
 ## 58.0.18
 
 ### Patch Changes

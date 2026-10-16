@@ -1,5 +1,12 @@
 # expo-apps-common
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-router@58.0.21
+
 ## 0.0.5
 
 ### Patch Changes

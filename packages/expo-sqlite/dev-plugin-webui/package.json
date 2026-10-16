@@ -1,6 +1,6 @@
 {
   "name": "sqlite-inspector-webui",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
