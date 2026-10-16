@@ -39,6 +39,16 @@ class ExpoLogBoxWebViewWrapper(
         fun postMessage(rawMessage: String) {
           processMessageFromWebView(rawMessage)
         }
+
+        @JavascriptInterface
+        fun injectedObjectJson(): String {
+          return Gson().toJson(
+            mapOf(
+              "EXPO_DOM_HOST_OS" to "android",
+              "initialProps" to mapOf("names" to actions.getNames(), "props" to props)
+            )
+          )
+        }
       },
       "ReactNativeWebView"
     )
