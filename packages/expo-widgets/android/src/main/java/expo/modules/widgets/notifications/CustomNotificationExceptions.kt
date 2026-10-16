@@ -41,7 +41,7 @@ internal class CustomNotificationCancelledException :
 internal class CustomNotificationCreationException :
   CodedException(
     "A custom notification can't be created directly. " +
-      "Get one from post(), get() or getActive() on a CustomNotificationFactory."
+      "Use CustomNotificationFactory post(), get() or getActive() instead."
   )
 
 internal class SmallIconNotFoundException(name: String) :
