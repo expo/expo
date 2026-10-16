@@ -354,6 +354,9 @@ describe('renderUnsupportedReport', () => {
     expect(text).toContain(
       'node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi'
     );
+    expect(text).toContain(
+      'node tools/bin/expotools.js prebuild -f Release expo-modules-core expo-modules-jsi'
+    );
     expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('patch-package');
   });

@@ -133,7 +133,7 @@ function incompleteXCFrameworkError(what, packageName) {
   return pluginError({
     what,
     why: 'The XCFramework is incomplete because its build or its extraction did not finish, or the file is damaged.',
-    how: `Reinstall ${packageName}, or in the Expo repository run \`node tools/bin/expotools.js prebuild ${packageName}\`. Then run \`npx react-native spm update\` again.`,
+    how: `Reinstall ${packageName}, or from the Expo repository root run \`node tools/bin/expotools.js prebuild ${packageName}\`. Then run \`npx react-native spm update\` again.`,
   });
 }
 
