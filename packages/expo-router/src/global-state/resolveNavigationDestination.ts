@@ -18,6 +18,7 @@ import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/
 import { isActionHandled } from '../react-navigation/routers/utils';
 import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
+import { getSingularId } from '../utils/getSingularId';
 import type { RouterRegistry, RouterRegistryEntry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
@@ -120,6 +121,7 @@ export function resolveNavigationDestination({
     targetState: target,
     navigationState: current,
     routeNode: node,
+    rootRouteNode: routeNode,
     registry,
     action: resolvedAction,
     withAnchor,
@@ -131,19 +133,30 @@ function createResolvedAction({
   targetState,
   navigationState,
   routeNode,
+  rootRouteNode,
   registry,
   action,
   withAnchor = false,
   internalParams = {},
-}: Omit<Options, 'action'> & { action: DestinationAction }): DestinationAction {
+}: Omit<Options, 'action'> & {
+  action: DestinationAction;
+  rootRouteNode: RouteNode;
+}): DestinationAction {
   const targetRoute = getFocusedRoute(targetState);
   if (!targetRoute) {
     return action;
   }
 
   const params = appendInternalExpoRouterParams(targetRoute.params, internalParams) ?? {};
+  const childTarget = targetRoute.state;
+  const childNode = findDestinationNode(routeNode, targetRoute.name);
+  const { pop, ...actionPayload } = action.payload;
+  const shouldPop =
+    pop === true &&
+    shouldPopTo({ targetRoute, navigationState, routeNode, rootRouteNode, childNode });
   const payload = {
-    ...action.payload,
+    ...actionPayload,
+    ...(shouldPop ? { pop } : undefined),
     name: targetRoute.name,
     params,
     ...(targetRoute.path !== undefined ? { path: targetRoute.path } : undefined),
@@ -151,8 +164,6 @@ function createResolvedAction({
   const baseAction = { ...action, payload };
   const result = registry.get(navigationState.key)?.reduce(navigationState, baseAction);
   const selectedRoute = getSelection(result)?.route;
-  const childTarget = targetRoute.state;
-  const childNode = findDestinationNode(routeNode, targetRoute.name);
 
   if (!childTarget || !childNode) {
     return baseAction;
@@ -166,11 +177,13 @@ function createResolvedAction({
     targetState: childTarget,
     navigationState: selectedRoute?.state,
     routeNode: childNode,
+    rootRouteNode,
     registry,
     withAnchor,
     internalParams,
     parentChain,
     previewKey: action.payload.__internal__PreviewKey,
+    pop: pop === true,
   });
 
   return {
@@ -186,20 +199,25 @@ function resolveState({
   targetState,
   navigationState,
   routeNode,
+  rootRouteNode,
   registry,
   withAnchor,
   internalParams,
   parentChain,
   previewKey,
+  pop,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
   routeNode: RouteNode;
+  rootRouteNode: RouteNode;
   registry: RouterRegistry;
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
   parentChain: string;
   previewKey?: string;
+  /** Requested for every level; createResolvedAction decides per level (see shouldPopTo). */
+  pop?: boolean;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
@@ -214,10 +232,11 @@ function resolveState({
     targetState: targetState as ResultState,
     navigationState,
     routeNode,
+    rootRouteNode,
     registry,
     action: {
       type: 'NAVIGATE',
-      payload: { __internal__PreviewKey: previewKey },
+      payload: { __internal__PreviewKey: previewKey, ...(pop ? { pop } : undefined) },
     },
     withAnchor,
     internalParams,
@@ -329,6 +348,41 @@ function routesMatch(
     !dynamic ||
     (targetRoute.params as Record<string, unknown> | undefined)?.[dynamic.name] ===
       (currentRoute.params as Record<string, unknown> | undefined)?.[dynamic.name]
+  );
+}
+
+/**
+ * Whether a `pop` request should apply to the target in this navigator. This follows React
+ * Navigation's `getActionFromState`, which incoming links used before: the root layout's navigator
+ * pops only to a route that holds a navigator, and every navigator below it pops to the target
+ * screen too. Stacks pop to the last route with the target's name, so for a dynamic route that
+ * route must also have the target's params; otherwise the link pushes a new instance instead of
+ * taking over another one.
+ */
+function shouldPopTo({
+  targetRoute,
+  navigationState,
+  routeNode,
+  rootRouteNode,
+  childNode,
+}: {
+  targetRoute: PartialRoute<Route<string>>;
+  navigationState: NavigationState;
+  routeNode: RouteNode;
+  rootRouteNode: RouteNode;
+  childNode: RouteNode | null | undefined;
+}) {
+  const isRootLayoutNavigator =
+    routeNode === rootRouteNode && targetRoute.name !== INTERNAL_SLOT_NAME;
+  const holdsNavigator = targetRoute.state !== undefined || (childNode?.children.length ?? 0) > 0;
+  if (isRootLayoutNavigator && !holdsNavigator) {
+    return false;
+  }
+  const popTarget = navigationState.routes.findLast((route) => route.name === targetRoute.name);
+  return (
+    !popTarget ||
+    getSingularId(targetRoute.name, { params: targetRoute.params }) ===
+      getSingularId(popTarget.name, { params: popTarget.params })
   );
 }
 
