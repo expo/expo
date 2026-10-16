@@ -2,4 +2,4 @@
 'expo-sharing': patch
 ---
 
-[Android] A shared `text/*` file, for example a `.txt` or `.csv` file, now has the `file` share type instead of `text`. Its `value` is a content URI, not the text. This matches iOS.
+[Android] Classify `text/*` attachments that reach the URI parser as `file` instead of `text`, since their value is a content URI. This covers multi-file shares and single-file shares whose intent MIME type is not `text/plain`. Resolved `contentType` is unchanged.
