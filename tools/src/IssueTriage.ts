@@ -199,26 +199,35 @@ type LabelCandidate = {
   confidence: number;
 };
 
+/**
+ * The confidence that `planLabels` compares with the threshold for each question.
+ */
+export function gateConfidences(classification: IssueClassification): Record<QuestionId, number> {
+  const { triage, package: pkg, platform } = classification;
+  return {
+    triage: NOT_ACTIONABLE_KINDS.includes(triage.choice)
+      ? triage.probabilities.question + triage.probabilities.missing_info
+      : triage.confidence,
+    package: pkg.confidence,
+    platform: platform.confidence,
+  };
+}
+
 function labelCandidates(classification: IssueClassification): LabelCandidate[] {
   const { triage, package: pkg, platform } = classification;
+  const confidences = gateConfidences(classification);
   const candidates: LabelCandidate[] = [];
 
   const triageLabel = TRIAGE_LABELS[triage.choice];
   if (triageLabel) {
-    candidates.push({
-      question: 'triage',
-      label: triageLabel,
-      confidence: NOT_ACTIONABLE_KINDS.includes(triage.choice)
-        ? triage.probabilities.question + triage.probabilities.missing_info
-        : triage.confidence,
-    });
+    candidates.push({ question: 'triage', label: triageLabel, confidence: confidences.triage });
   }
 
   if (pkg.choice !== NO_PACKAGE) {
     candidates.push({
       question: 'package',
       label: PACKAGE_LABEL_PREFIX + pkg.choice,
-      confidence: pkg.confidence,
+      confidence: confidences.package,
     });
   }
 
@@ -227,7 +236,7 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
     candidates.push({
       question: 'platform',
       label: platformLabel,
-      confidence: platform.confidence,
+      confidence: confidences.platform,
     });
   }
 

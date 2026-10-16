@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import {
   agreements,
   buildQuestions,
+  gateConfidences,
   humanAppliedLabels,
   IssueClassification,
   isAlreadyTriaged,
@@ -123,6 +124,15 @@ describe('agreements', () => {
     });
     assert.equal(agreements(['invalid issue: question'], jev).triage?.agrees, true);
     assert.equal(agreements(['incomplete issue: missing info'], jev).triage?.agrees, true);
+  });
+});
+
+describe('gateConfidences', () => {
+  it('sums question and missing_info for triage', () => {
+    const confidences = gateConfidences(
+      classification({ triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }] })
+    );
+    assert.ok(Math.abs(confidences.triage - 0.95) < 1e-9);
   });
 });
 

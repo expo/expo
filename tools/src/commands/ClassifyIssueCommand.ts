@@ -14,6 +14,7 @@ import {
   agreements,
   classifyIssueAsync,
   formatReport,
+  gateConfidences,
   humanAppliedLabels,
   isAlreadyTriaged,
   isTeamAuthor,
@@ -156,8 +157,9 @@ async function evaluateAsync(limit: number) {
         issue.user?.login ?? ''
       );
       const agreement = agreements(truthLabels, result.classification);
+      const confidences = gateConfidences(result.classification);
       for (const id of QUESTION_IDS) {
-        tally(tallies[id], result.classification[id].confidence, agreement[id]);
+        tally(tallies[id], confidences[id], agreement[id]);
       }
 
       logger.log(
