@@ -2,4 +2,4 @@
 'expo-sharing': minor
 ---
 
-[Android] Add `originalName` to the payloads that `getSharedPayloads` returns. It contains the display name of a shared file, so you can show the file name without resolving the payload.
+[Android] Add `getSharedPayloadsAsync` to read raw share payloads with file display names without copying attachments. Metadata is read off the JavaScript thread; the synchronous `getSharedPayloads` method is unchanged.

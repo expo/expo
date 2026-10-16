@@ -111,7 +111,9 @@ export type SharePayload = {
 
   /**
    * The display name of a shared file, as reported by the app that shared it.
-   * It is `null` for text and URL payloads, and when the app does not provide a name.
+   * Returned by `getSharedPayloadsAsync` on Android for file URI payloads, including text files.
+   * It is `null` for inline text and URL payloads, and when the app does not provide a name.
+   * It is not populated by the synchronous `getSharedPayloads` method.
    * @platform android
    */
   originalName?: string | null;

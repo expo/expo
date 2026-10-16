@@ -7,17 +7,17 @@ import android.provider.OpenableColumns
 
 internal class SimpleShareIntentDataParser {
   companion object {
-    fun parse(context: Context, intent: Intent): List<SharePayload> {
+    fun parse(context: Context, intent: Intent, includeOriginalNames: Boolean = false): List<SharePayload> {
       val type = intent.type ?: return emptyList()
 
       return when (intent.action) {
-        Intent.ACTION_SEND -> handleSendAction(context, intent, type)
-        Intent.ACTION_SEND_MULTIPLE -> handleSendMultipleAction(context, intent, type)
+        Intent.ACTION_SEND -> handleSendAction(context, intent, type, includeOriginalNames)
+        Intent.ACTION_SEND_MULTIPLE -> handleSendMultipleAction(context, intent, type, includeOriginalNames)
         else -> emptyList()
       }
     }
 
-    private fun handleSendAction(context: Context, intent: Intent, type: String): List<SharePayload> {
+    private fun handleSendAction(context: Context, intent: Intent, type: String, includeOriginalNames: Boolean): List<SharePayload> {
       return if (type == "text/plain") {
         val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return emptyList()
         val isUrl = android.util.Patterns.WEB_URL.matcher(text).matches()
@@ -35,22 +35,24 @@ internal class SimpleShareIntentDataParser {
         )
       } else {
         val uri = intent.getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
-        listOfNotNull(uri?.let { createUriPayload(context, it, type) })
+        listOfNotNull(uri?.let { createUriPayload(context, it, type, includeOriginalNames) })
       }
     }
 
-    private fun handleSendMultipleAction(context: Context, intent: Intent, type: String): List<SharePayload> {
+    private fun handleSendMultipleAction(context: Context, intent: Intent, type: String, includeOriginalNames: Boolean): List<SharePayload> {
       val uris = intent.getParcelableArrayListExtraCompat<Uri>(Intent.EXTRA_STREAM)
-      return uris?.map { createUriPayload(context, it, type) } ?: emptyList()
+      return uris?.map { createUriPayload(context, it, type, includeOriginalNames) } ?: emptyList()
     }
 
-    private fun createUriPayload(context: Context, uri: Uri, defaultType: String): SharePayload {
+    private fun createUriPayload(context: Context, uri: Uri, defaultType: String, includeOriginalNames: Boolean): SharePayload {
       val specificType = context.contentResolver.getType(uri) ?: defaultType
       return SharePayload().apply {
         value = uri.toString()
         shareType = ShareType.fromMimeType(specificType)
         mimeType = specificType
-        originalName = getDisplayName(context, uri)
+        if (includeOriginalNames) {
+          originalName = getDisplayName(context, uri)
+        }
       }
     }
 
