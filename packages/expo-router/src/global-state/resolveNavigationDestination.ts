@@ -174,6 +174,7 @@ function createResolvedAction({
     internalParams,
     parentChain,
     previewKey: action.payload.__internal__PreviewKey,
+    pop: pop === true,
   });
 
   return {
@@ -194,6 +195,7 @@ function resolveState({
   internalParams,
   parentChain,
   previewKey,
+  pop,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
@@ -203,6 +205,8 @@ function resolveState({
   internalParams: InternalExpoRouterParams;
   parentChain: string;
   previewKey?: string;
+  /** Applied at every level; createResolvedAction keeps it only for routes that hold a navigator. */
+  pop?: boolean;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
@@ -220,7 +224,7 @@ function resolveState({
     registry,
     action: {
       type: 'NAVIGATE',
-      payload: { __internal__PreviewKey: previewKey },
+      payload: { __internal__PreviewKey: previewKey, ...(pop ? { pop } : undefined) },
     },
     withAnchor,
     internalParams,
