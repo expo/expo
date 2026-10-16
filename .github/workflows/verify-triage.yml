@@ -29,9 +29,10 @@ jobs:
     concurrency:
       group: verify-triage-${{ github.event.issue.number || github.event.pull_request.number }}
       cancel-in-progress: false
-    if: >-
-      github.repository == 'expo/expo' &&
-      (github.event.issue.user.type || github.event.pull_request.user.type) != 'Bot'
+    # Bot authors (Dependabot, expo-bot's own fix PRs) are triaged too.
+    # Dependabot's no-secrets rule covers pull_request, not
+    # pull_request_target.
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Triage is advisory: a failure must never fail the repo's checks.
@@ -46,7 +47,7 @@ jobs:
         id: limit
         env:
           GH_TOKEN: ${{ github.token }}
-          LIMIT: ${{ vars.VERIFY_TRIAGE_DAILY_LIMIT || '150' }}
+          LIMIT: ${{ vars.VERIFY_TRIAGE_DAILY_LIMIT || '300' }}
         run: |
           count=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/verify-triage.yml/runs?created=>=$(date -u +%F)&per_page=1" --jq .total_count)
           if [ "$count" -gt "$LIMIT" ]; then
