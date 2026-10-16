@@ -1,8 +1,23 @@
 package expo.modules.securestore
 
+import expo.modules.kotlin.types.ConvertedValue
+import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.IncompatibleValue
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+
+/**
+ * Builds the `Either` that the argument converter would produce for a `requireAuthentication` value.
+ */
+private fun requireAuthenticationOf(value: Any): Either<Boolean, String> = Either(
+  value,
+  mutableListOf(
+    if (value is Boolean) ConvertedValue(value) else IncompatibleValue,
+    if (value is String) ConvertedValue(value) else IncompatibleValue
+  ),
+  emptyList()
+)
 
 class SecureStoreOptionsTest {
   @Test
@@ -13,7 +28,7 @@ class SecureStoreOptionsTest {
   @Test
   fun `write prompt uses the current authentication options`() {
     val options = SecureStoreOptions(
-      requireAuthentication = AUTHENTICATION_METHOD_BIOMETRY,
+      requireAuthentication = requireAuthenticationOf(true),
       requireConfirmation = false
     )
 
@@ -38,7 +53,7 @@ class SecureStoreOptionsTest {
   @Test
   fun `stored unauthenticated reads remain prompt-free`() {
     val options = SecureStoreOptions(
-      requireAuthentication = AUTHENTICATION_METHOD_BIOMETRY,
+      requireAuthentication = requireAuthenticationOf(true),
       requireConfirmation = false
     )
 

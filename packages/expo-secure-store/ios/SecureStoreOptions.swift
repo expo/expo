@@ -3,16 +3,25 @@ import ExpoModulesCore
 private let authenticationMethodBiometry = "biometry"
 private let authenticationMethodDeviceCredentials = "deviceCredentials"
 
-private func normalizeAuthenticationRequirement(_ value: String?) throws -> String? {
+private func normalizeAuthenticationRequirement(_ value: Either<Bool, String>?) throws -> String? {
   guard let value else {
     return nil
   }
-  switch value {
-  case authenticationMethodBiometry, authenticationMethodDeviceCredentials:
-    return value
-  default:
-    throw InvalidAuthenticationOptionException(value)
+
+  if let boolValue = value.get() as Bool? {
+    return boolValue ? authenticationMethodBiometry : nil
   }
+
+  if let stringValue = value.get() as String? {
+    switch stringValue {
+    case authenticationMethodBiometry, authenticationMethodDeviceCredentials:
+      return stringValue
+    default:
+      throw InvalidAuthenticationOptionException(stringValue)
+    }
+  }
+
+  throw InvalidAuthenticationOptionException(nil)
 }
 
 internal struct SecureStoreOptions: Record {
@@ -26,7 +35,7 @@ internal struct SecureStoreOptions: Record {
   var keychainService: String?
 
   @Field
-  var requireAuthentication: String?
+  var requireAuthentication: Either<Bool, String>? = nil
 
   @Field
   var accessGroup: String?
