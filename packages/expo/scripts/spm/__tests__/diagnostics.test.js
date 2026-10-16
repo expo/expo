@@ -306,7 +306,7 @@ describe('renderUnsupportedReport', () => {
     expect(text.split('\n').filter((l) => l.startsWith('error: '))).toHaveLength(2);
   });
 
-  it('tells a prebuildable module to run et prebuild, not to write a manifest', () => {
+  it('tells a prebuildable module to run the prebuild command, not to write a manifest', () => {
     const text = renderUnsupportedReport([
       {
         reason: 'prebuild-available',
@@ -317,14 +317,15 @@ describe('renderUnsupportedReport', () => {
       },
     ]);
     expect(text).toContain('error: ');
-    // `et prebuild` builds both flavors when --flavor is omitted, and the plugin
+    // The prebuild command builds both flavors when --flavor is omitted, and the plugin
     // requires a complete pair — so the message must not suggest a single flavor.
-    expect(text).toContain('et prebuild expo-audio');
+    expect(text).toContain('node tools/bin/expotools.js prebuild expo-audio');
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('-f Debug');
     expect(text).not.toContain('patch-package');
   });
 
-  it('names the scoped package verbatim, which et prebuild accepts', () => {
+  it('names the scoped package verbatim, which the prebuild command accepts', () => {
     const text = renderUnsupportedReport([
       {
         reason: 'prebuild-available',
@@ -334,7 +335,7 @@ describe('renderUnsupportedReport', () => {
         productName: 'ExpoUI',
       },
     ]);
-    expect(text).toContain('et prebuild @expo/ui');
+    expect(text).toContain('node tools/bin/expotools.js prebuild @expo/ui');
   });
 
   it('offers spm.config.json as a route for a module that has none', () => {
@@ -350,7 +351,13 @@ describe('renderUnsupportedReport', () => {
     ]);
     expect(text).toContain('error: ');
     expect(text).toContain('ExpoModulesCore');
-    expect(text).toContain('et prebuild');
+    expect(text).toContain(
+      'node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi'
+    );
+    expect(text).toContain(
+      'node tools/bin/expotools.js prebuild -f Release expo-modules-core expo-modules-jsi'
+    );
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('patch-package');
   });
 
@@ -1211,7 +1218,8 @@ describe('a module with only some pods precompiled', () => {
     expect(report).toMatch(/^error: Expo module "expo-dual" \(pod ExpoDualExtras\)/);
     expect(report).toContain('ExpoDual ');
     expect(report).toContain('twice');
-    expect(report).toContain('et prebuild expo-dual');
+    expect(report).toContain('node tools/bin/expotools.js prebuild expo-dual');
+    expect(report).toMatch(/in the Expo repository, from its root/i);
     expect(report).toContain('spm.config.json');
     expect(report).toContain('"exclude": ["expo-dual"]');
     expect(report).toContain('Module path: /node_modules/expo-dual');
@@ -1250,7 +1258,7 @@ describe('a module with only some pods precompiled', () => {
       entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: false } })
     );
     expect(report).toContain('already declares "ExpoDualExtras"');
-    expect(report).toContain('et prebuild expo-dual');
+    expect(report).toContain('node tools/bin/expotools.js prebuild expo-dual');
   });
 
   it('does not promise an XCFramework for a source-only product', () => {
@@ -1258,7 +1266,7 @@ describe('a module with only some pods precompiled', () => {
       entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: true } })
     );
     expect(report).toContain('sourceOnly');
-    expect(report).not.toContain('et prebuild');
+    expect(report).not.toContain('expotools.js prebuild');
     expect(report).toMatch(/^ {2}1\. To build it from source instead/m);
   });
 });

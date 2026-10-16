@@ -29,6 +29,11 @@ jest.mock('../flavored-frameworks', () => ({
   resolveSpmDependencyFrameworks: jest.fn(() => []),
   resolveHeadersXCFramework: jest.fn(() => null),
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
+  frameworkSource: jest.fn(() => null),
+  resolveHeadersXCFrameworkWithSource: jest.fn(({ productName }) => ({
+    xcframework: `/abs/${productName}Headers.xcframework`,
+    source: null,
+  })),
 }));
 // The module-root walk stays real; it is spied on so a test can assert that a
 // root React Native already resolved made the walk unnecessary.
@@ -42,6 +47,11 @@ jest.mock('../manifests', () => {
   const actual = jest.requireActual('../manifests');
   return { ...actual, emitPureSwiftSourcePackage: jest.fn(actual.emitPureSwiftSourcePackage) };
 });
+// The real direct emitter builds a compile-only xcframework with xcrun.
+jest.mock('../direct', () => ({
+  ...jest.requireActual('../direct'),
+  emitDirectPackage: jest.fn(),
+}));
 
 const {
   resolveExpoModules,
@@ -53,12 +63,15 @@ const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
 const { SPM_UPDATE_COMMAND } = require('../commands');
 const { UnsupportedModulesError } = require('../diagnostics');
+const { emitDirectPackage } = require('../direct');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
   artifactBaseDirs,
+  frameworkSource,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('../flavored-frameworks');
 const {
@@ -67,6 +80,7 @@ const {
   metadataEntry,
   printed,
   removeTempDirs,
+  rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,
@@ -94,6 +108,14 @@ function pureSwiftModule(root, podName, podspec) {
   fs.writeFileSync(path.join(podspecDir, 'A.swift'), '// swift\n');
   fs.writeFileSync(path.join(podspecDir, `${podName}.podspec`), podspec);
   return podspecDir;
+}
+
+/** Writes `spm.config.json` at a module root: an object as JSON, or raw text. */
+function writeSpmConfig(root, config) {
+  fs.writeFileSync(
+    path.join(root, 'spm.config.json'),
+    typeof config === 'string' ? config : JSON.stringify(config)
+  );
 }
 
 /** A module SwiftPM cannot build from source: ObjC++ sources and no manifest. */
@@ -138,6 +160,11 @@ function restoreModuleMocks() {
   resolveHeadersXCFramework.mockReset();
   resolveHeadersXCFramework.mockReturnValue(null);
   prepareCompileInterfaces.mockImplementation(() => '/abs/interfaces');
+  frameworkSource.mockImplementation(() => null);
+  resolveHeadersXCFrameworkWithSource.mockImplementation(({ productName }) => ({
+    xcframework: `/abs/${productName}Headers.xcframework`,
+    source: null,
+  }));
 }
 
 const barcodeGate = {
@@ -495,6 +522,7 @@ describe('the watched module roots', () => {
     fs.mkdirSync(packageRoot, { recursive: true });
     fs.writeFileSync(path.join(packageRoot, 'package.json'), '{"name":"expo-modules-core"}');
     fs.writeFileSync(path.join(packageRoot, 'expo-module.config.json'), '{}');
+    writeSpmConfig(packageRoot, {});
     resolveExpoModules.mockReturnValue(modulesOf([coreAt(podspecDir)]));
     prebuiltMetadata.mockReturnValue({
       ExpoModulesCore: metadataEntry(packageRoot, 'ExpoModulesCore'),
@@ -507,6 +535,11 @@ describe('the watched module roots', () => {
 
   it('watches the staleness inputs under the documented package root', () => {
     expect(watchPaths).toContain(path.join(packageRoot, 'expo-module.config.json'));
+  });
+
+  // Its "directManifest" flag switches the module between its own and a generated manifest.
+  it('watches spm.config.json', () => {
+    expect(watchPaths).toContain(path.join(packageRoot, 'spm.config.json'));
   });
 });
 
@@ -946,6 +979,507 @@ describe('the checked-in manifest branch', () => {
     expect(
       fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoVendored', 'Package.swift'))
     ).toBe(false);
+  });
+});
+
+describe.each([
+  ['a checked-in manifest', true],
+  ['no checked-in manifest', false],
+])('a direct module with a precompiled artifact and %s', (_, hasManifest) => {
+  captureConsole();
+  let result;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-direct-precompiled-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const haptics = path.join(tmp, 'expo-haptics');
+    const hapticsPodspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+    writeSpmConfig(haptics, { directManifest: true });
+    if (hasManifest) {
+      fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    }
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-haptics', [['ExpoHaptics', hapticsPodspecDir]]]])
+    );
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'ExpoHaptics'].includes(frameworkName)
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    emitDirectPackage.mockReturnValue({
+      ok: {
+        packageDep: { name: 'ExpoHaptics', path: haptics },
+        productDeps: [{ name: 'ExpoHaptics', package: 'ExpoHaptics' }],
+        spmProductNames: [],
+        partlyProvidedPackages: [],
+      },
+    });
+    providerWrittenTo(path.join(tmp, 'out'));
+    result = runPlugin(tmp);
+  });
+
+  afterAll(() => {
+    emitDirectPackage.mockReset();
+    restoreModuleMocks();
+  });
+
+  it(`is ${hasManifest ? 'emitted from its manifest' : 'linked precompiled'}`, () => {
+    expect(emitDirectPackage).toHaveBeenCalledTimes(hasManifest ? 1 : 0);
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual(
+      hasManifest ? ['ExpoModulesCore'] : ['ExpoHaptics', 'ExpoModulesCore']
+    );
+  });
+});
+
+// Only spm.config.json opts a module in; the package name decides nothing.
+describe.each([
+  ['"directManifest": true', 'expo-widgets', { directManifest: true }, true],
+  ['no spm.config.json', 'expo-haptics', null, false],
+  ['no directManifest flag', 'expo-sensors', { publishPrebuilds: true }, false],
+  ['"directManifest": false', 'expo-haptics', { directManifest: false }, false],
+])(
+  'a module with a checked-in manifest, a precompiled artifact and %s',
+  (_, packageName, spmConfig, direct) => {
+    const logs = captureConsole();
+    let result;
+
+    beforeAll(() => {
+      const tmp = makeTempDir('expo-spm-direct-opt-in-');
+      const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+      const moduleRoot = path.join(tmp, packageName);
+      const podspecDir = pureSwiftModule(moduleRoot, 'ExpoOptIn', spec());
+      fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      if (spmConfig != null) writeSpmConfig(moduleRoot, spmConfig);
+      resolveExpoModules.mockReturnValue(
+        modulesOf([coreAt(core), [packageName, [['ExpoOptIn', podspecDir]]]])
+      );
+      resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+        ['ExpoModulesCore', 'ExpoOptIn'].includes(frameworkName)
+          ? { id: frameworkName.toLowerCase(), frameworkName }
+          : null
+      );
+      emitDirectPackage.mockReturnValue({
+        ok: {
+          packageDep: { name: 'ExpoOptIn', path: moduleRoot },
+          productDeps: [{ name: 'ExpoOptIn', package: 'ExpoOptIn' }],
+          spmProductNames: [],
+          partlyProvidedPackages: [],
+        },
+      });
+      providerWrittenTo(path.join(tmp, 'out'));
+      result = runPlugin(tmp);
+    });
+
+    afterAll(() => {
+      emitDirectPackage.mockReset();
+      restoreModuleMocks();
+    });
+
+    it(`is ${direct ? 'built from its checked-in manifest' : 'linked precompiled'}`, () => {
+      expect(emitDirectPackage).toHaveBeenCalledTimes(direct ? 1 : 0);
+      expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual(
+        direct ? ['ExpoModulesCore'] : ['ExpoModulesCore', 'ExpoOptIn']
+      );
+    });
+
+    it(`is ${direct ? '' : 'not '}listed as a direct module`, () => {
+      expect(printed(logs.log)).toContain(
+        `source via direct checked-in manifest (${direct ? `1): ${packageName}` : '0): —'}`
+      );
+    });
+  }
+);
+
+describe('a module with no checked-in manifest whose spm.config.json is not valid JSON', () => {
+  captureConsole();
+  let result;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-bad-config-no-manifest-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-widgets');
+    const podspecDir = pureSwiftModule(moduleRoot, 'ExpoWidgets', spec());
+    writeSpmConfig(moduleRoot, '{ "directManifest": true,');
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-widgets', [['ExpoWidgets', podspecDir]]]])
+    );
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'ExpoWidgets'].includes(frameworkName)
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    thrown = thrownBy(() => {
+      result = runPlugin(tmp);
+    });
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('syncs, linking the module precompiled', () => {
+    expect(thrown).toBeNull();
+    expect(emitDirectPackage).not.toHaveBeenCalled();
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual([
+      'ExpoModulesCore',
+      'ExpoWidgets',
+    ]);
+  });
+});
+
+describe('a module whose spm.config.json is not valid JSON', () => {
+  captureConsole();
+  let configPath;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-direct-bad-config-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-widgets');
+    const podspecDir = pureSwiftModule(moduleRoot, 'ExpoWidgets', spec());
+    fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    writeSpmConfig(moduleRoot, '{ "directManifest": true,');
+    configPath = path.join(moduleRoot, 'spm.config.json');
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-widgets', [['ExpoWidgets', podspecDir]]]])
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    thrown = thrownBy(() => runPlugin(tmp));
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('fails the sync naming the file, why it is read, and how to fix it', () => {
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown.message).toContain(`${configPath} is not valid JSON`);
+    expect(thrown.message).toContain('"directManifest"');
+    expect(thrown.message).toMatch(/fix the JSON in/i);
+    expect(thrown.message).toContain(rerunSpmUpdate);
+    expect(emitDirectPackage).not.toHaveBeenCalled();
+  });
+});
+
+describe('where precompiled modules and headers come from', () => {
+  const logs = captureConsole({ each: true });
+  const packageOf = {
+    ExpoModulesCore: 'expo-modules-core',
+    ExpoModulesJSI: 'expo-modules-jsi',
+    ExpoFont: 'expo-font',
+  };
+  const sourceAt = (kind, frameworkName) => ({
+    kind,
+    dir: path.join('/', kind, packageOf[frameworkName], 'output'),
+  });
+  const jsiHeadersXCFramework = '/abs/ExpoModulesJSIHeaders.xcframework';
+
+  afterEach(() => {
+    emitDirectPackage.mockReset();
+    restoreModuleMocks();
+  });
+
+  /**
+   * Syncs an app with expo-modules-jsi autolinked, the `frameworks` precompiled from the
+   * given kinds of place, and a direct module when `headers` says where the
+   * ExpoModulesCore headers come from (null for headers that are not found).
+   */
+  function sync({ frameworks, headers }) {
+    const tmp = makeTempDir('expo-spm-plugin-sources-');
+    const listed = Object.keys({ ...frameworks, ExpoModulesJSI: null }).map((frameworkName) => [
+      packageOf[frameworkName],
+      [
+        [
+          frameworkName,
+          pureSwiftModule(path.join(tmp, packageOf[frameworkName]), frameworkName, spec()),
+        ],
+      ],
+    ]);
+    if (headers != null) {
+      const haptics = path.join(tmp, 'expo-haptics');
+      const podspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+      fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      writeSpmConfig(haptics, { directManifest: true });
+      listed.push(['expo-haptics', [['ExpoHaptics', podspecDir]]]);
+      resolveHeadersXCFrameworkWithSource.mockImplementation(({ productName }) =>
+        headers[productName] == null
+          ? null
+          : {
+              xcframework: `/abs/${productName}Headers.xcframework`,
+              source: sourceAt(headers[productName], productName),
+            }
+      );
+      emitDirectPackage.mockReturnValue({
+        ok: {
+          packageDep: { name: 'ExpoHaptics', path: haptics },
+          productDeps: [{ name: 'ExpoHaptics', package: 'ExpoHaptics' }],
+          spmProductNames: [],
+          partlyProvidedPackages: [],
+        },
+      });
+    }
+    resolveExpoModules.mockReturnValue(modulesOf(listed));
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName in frameworks ? { id: frameworkName, frameworkName } : null
+    );
+    frameworkSource.mockImplementation(({ frameworkName }) =>
+      sourceAt(frameworks[frameworkName], frameworkName)
+    );
+    resolveHeadersXCFramework.mockReturnValue(jsiHeadersXCFramework);
+    const outDir = path.join(tmp, 'out');
+    providerWrittenTo(outDir);
+    let result = null;
+    const thrown = thrownBy(() => {
+      result = runPlugin(tmp);
+    });
+    return {
+      thrown,
+      result,
+      jsiHeadersPkgPath: path.join(outDir, 'expo', 'ExpoModulesJSIHeaders'),
+    };
+  }
+
+  it('warns, and syncs, when a precompiled module comes from a different place than ExpoModulesCore', () => {
+    const { thrown, result } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'bundled' },
+    });
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks).toHaveLength(2);
+    const warning = printed(logs.warn);
+    expect(warning).toContain('[expo-spm-plugin] WARNING: ExpoFont (expo-font)');
+    expect(warning).toContain(sourceAt('bundled', 'ExpoFont').dir);
+    expect(warning).toContain(sourceAt('env', 'ExpoModulesCore').dir);
+    expect(warning).toContain('EXPO_PRECOMPILED_MODULES_PATH');
+    expect(warning).toContain('can crash the app');
+    expect(warning).toContain(rerunSpmUpdate);
+    expect(warning).toContain(
+      'from the Expo repository root, build the packages into the same place as ExpoModulesCore with `node tools/bin/expotools.js prebuild expo-font`'
+    );
+  });
+
+  it('warns, and emits the direct module, when another precompiled module comes from a different place', () => {
+    const { thrown } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'bundled' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(printed(logs.warn)).toContain('[expo-spm-plugin] WARNING: ExpoFont (expo-font)');
+    expect(emitDirectPackage).toHaveBeenCalled();
+  });
+
+  it('does not warn when every precompiled module comes from the place ExpoModulesCore comes from', () => {
+    const { thrown } = sync({
+      frameworks: { ExpoModulesCore: 'env', ExpoFont: 'env' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(printed(logs.warn)).not.toContain('comes from');
+  });
+
+  it('never requires an ExpoModulesJSI binary from the place ExpoModulesCore comes from', () => {
+    const { thrown, result } = sync({
+      frameworks: { ExpoModulesCore: 'monorepo', ExpoModulesJSI: 'env', ExpoFont: 'monorepo' },
+    });
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName)).toEqual([
+      'ExpoFont',
+      'ExpoModulesCore',
+    ]);
+  });
+
+  it('accepts modules from different directories of the same kind of place', () => {
+    const { thrown, result } = sync({
+      frameworks: { ExpoModulesCore: 'bundled', ExpoFont: 'bundled' },
+    });
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks).toHaveLength(2);
+  });
+
+  it.each([
+    ['bundled', 'env'],
+    ['bundled', 'monorepo'],
+    ['monorepo', 'env'],
+  ])(
+    'fails when ExpoModulesCore comes from %s and its headers from %s, a place tried before it',
+    (coreKind, headersKind) => {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: coreKind },
+        headers: { ExpoModulesCore: headersKind },
+      });
+      expect(thrown?.message).toContain('ExpoModulesCoreHeaders.xcframework (expo-modules-core)');
+      expect(thrown.message).toContain(sourceAt(headersKind, 'ExpoModulesCore').dir);
+      expect(thrown.message).toContain(sourceAt(coreKind, 'ExpoModulesCore').dir);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    }
+  );
+
+  const prebuildCoreHint =
+    'From the Expo repository root, run `node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
+
+  // The lookup tries EXPO_PRECOMPILED_MODULES_PATH, then the monorepo, then npm, so headers
+  // found past the place ExpoModulesCore comes from mean that place has none.
+  it.each([
+    ['env', 'monorepo'],
+    ['env', 'bundled'],
+    ['env', null],
+    ['monorepo', 'bundled'],
+    ['monorepo', null],
+  ])(
+    'fails naming the missing headers when ExpoModulesCore comes from %s and its headers from %s',
+    (coreKind, headersKind) => {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: coreKind },
+        headers: { ExpoModulesCore: headersKind },
+      });
+      const coreDir = sourceAt(coreKind, 'ExpoModulesCore').dir;
+      expect(thrown?.message).toContain(
+        `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
+      );
+      expect(thrown.message).not.toContain('but ExpoModulesCore comes from');
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      // The prebuild writes to the monorepo output, never to EXPO_PRECOMPILED_MODULES_PATH.
+      if (coreKind === 'env') {
+        expect(thrown.message).toContain('Unset EXPO_PRECOMPILED_MODULES_PATH');
+        expect(thrown.message).not.toContain(prebuildCoreHint);
+      } else {
+        expect(thrown.message).toContain(prebuildCoreHint);
+        expect(thrown.message).not.toContain('EXPO_PRECOMPILED_MODULES_PATH');
+      }
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    }
+  );
+
+  it('hands a direct module the ExpoModulesCore headers and the ExpoModulesJSI headers package', () => {
+    const { thrown, jsiHeadersPkgPath } = sync({
+      frameworks: { ExpoModulesCore: 'env' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(emitDirectPackage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        coreHeadersXCFramework: '/abs/ExpoModulesCoreHeaders.xcframework',
+        jsiHeadersPkgPath,
+      })
+    );
+    expect(resolveHeadersXCFrameworkWithSource).not.toHaveBeenCalledWith(
+      expect.objectContaining({ productName: 'ExpoModulesJSI' })
+    );
+  });
+
+  it('emits the ExpoModulesJSI headers package when the only source package is a direct one', () => {
+    emitPureSwiftSourcePackage.mockClear();
+    const { thrown, jsiHeadersPkgPath } = sync({
+      frameworks: { ExpoModulesCore: 'env' },
+      headers: { ExpoModulesCore: 'env' },
+    });
+    expect(thrown).toBeNull();
+    expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
+    expect(fs.readlinkSync(path.join(jsiHeadersPkgPath, 'ExpoModulesJSIHeaders.xcframework'))).toBe(
+      jsiHeadersXCFramework
+    );
+    expect(fs.existsSync(path.join(jsiHeadersPkgPath, 'Package.swift'))).toBe(true);
+  });
+
+  // A broken copy further down the lookup is not what the user has to fix: reinstalling or
+  // rebuilding it cannot repair an EXPO_PRECOMPILED_MODULES_PATH build without headers.
+  it('names the missing headers, not an incomplete npm copy, when ExpoModulesCore comes from EXPO_PRECOMPILED_MODULES_PATH', () => {
+    const tmp = makeTempDir('expo-spm-plugin-env-headers-');
+    const envDir = path.join(tmp, 'precompiled');
+    fs.mkdirSync(envDir);
+    const coreRoot = path.join(tmp, 'expo-modules-core');
+    const corePodspecDir = pureSwiftModule(coreRoot, 'ExpoModulesCore', spec());
+    fs.mkdirSync(
+      path.join(
+        coreRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoModulesCoreHeaders.xcframework'
+      ),
+      { recursive: true }
+    );
+    const jsiPodspecDir = pureSwiftModule(
+      path.join(tmp, 'expo-modules-jsi'),
+      'ExpoModulesJSI',
+      spec()
+    );
+    const haptics = path.join(tmp, 'expo-haptics');
+    const hapticsPodspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+    fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    writeSpmConfig(haptics, { directManifest: true });
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(corePodspecDir),
+        ['expo-modules-jsi', [['ExpoModulesJSI', jsiPodspecDir]]],
+        ['expo-haptics', [['ExpoHaptics', hapticsPodspecDir]]],
+      ])
+    );
+    const coreDir = path.join(envDir, 'expo-modules-core', 'output');
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' ? { id: frameworkName, frameworkName } : null
+    );
+    frameworkSource.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' ? { kind: 'env', dir: coreDir } : null
+    );
+    resolveHeadersXCFramework.mockReturnValue(jsiHeadersXCFramework);
+    resolveHeadersXCFrameworkWithSource.mockImplementation(
+      jest.requireActual('../flavored-frameworks').resolveHeadersXCFrameworkWithSource
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = envDir;
+    try {
+      const thrown = thrownBy(() => runPlugin(tmp));
+      expect(thrown?.message).toContain(
+        `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
+      );
+      expect(thrown.message).toContain('Unset EXPO_PRECOMPILED_MODULES_PATH');
+      expect(thrown.message).not.toContain('Info.plist');
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    } finally {
+      if (previous === undefined) {
+        delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+      } else {
+        process.env.EXPO_PRECOMPILED_MODULES_PATH = previous;
+      }
+    }
+  });
+
+  it('fails when a direct module exists and the ExpoModulesCore headers are missing', () => {
+    const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = '/precompiled';
+    try {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: 'bundled' },
+        headers: { ExpoModulesCore: null },
+      });
+      expect(thrown?.message).toContain('ExpoModulesCoreHeaders.xcframework');
+      const { headersXCFrameworkSearchPaths } = jest.requireActual('../flavored-frameworks');
+      const searched = headersXCFrameworkSearchPaths({
+        packageName: 'expo-modules-core',
+        moduleRoot: null,
+        productName: 'ExpoModulesCore',
+      });
+      expect(searched.length).toBeGreaterThan(0);
+      for (const candidate of searched) expect(thrown.message).toContain(candidate);
+      expect(thrown.message).toContain(
+        'From the Expo repository root, run `node tools/bin/expotools.js prebuild expo-modules-core`'
+      );
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    } finally {
+      if (previous === undefined) {
+        delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+      } else {
+        process.env.EXPO_PRECOMPILED_MODULES_PATH = previous;
+      }
+    }
+  });
+
+  it('looks for no headers when no direct module is emitted', () => {
+    resolveHeadersXCFrameworkWithSource.mockClear();
+    const { thrown } = sync({ frameworks: { ExpoModulesCore: 'env', ExpoFont: 'env' } });
+    expect(thrown).toBeNull();
+    expect(resolveHeadersXCFrameworkWithSource).not.toHaveBeenCalled();
   });
 });
 
@@ -3677,7 +4211,9 @@ describe('ExpoModulesJSI', () => {
       expect(thrown.message).toContain('ExpoModulesJSIHeaders');
       expect(thrown.message).toMatch(/only the headers/);
       expect(thrown.message).toMatch(/reinstall/i);
-      expect(thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+      expect(thrown.message).toContain(
+        'From the Expo repository root, build the headers with `node tools/bin/expotools.js prebuild expo-modules-jsi`'
+      );
     });
   });
 

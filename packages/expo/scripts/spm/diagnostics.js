@@ -51,6 +51,10 @@ const COVERED_POD_PREFIXES = [
  */
 const UNMAPPED_POD_ALLOWLIST = new Set(['sqlite3']);
 
+// Expo apps do not depend on @react-native-community/cli, which provides the
+// `react-native spm` command; React Native's own script is always installed.
+const RERUN_SPM_UPDATE = `Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`;
+
 /**
  * An error the plugin fails the sync with, namespaced so the failure is
  * attributable to it: what failed, then why and what to do next when known.
@@ -239,8 +243,8 @@ function renderPrebuildAvailable({ podName, packageName, moduleRoot, productName
     `error: Expo module "${packageName}" (pod ${podName}) has no prebuilt XCFramework, so it is not in the Swift Package Manager graph.`,
     [
       `It declares "${productName}" in its spm.config.json, so it does not need a Package.swift — the Expo prebuild pipeline builds it. The artifact is just missing.`,
-      `Build it — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
-      `    et prebuild ${packageName}`,
+      `In the Expo repository, from its root, build it — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
+      `    node tools/bin/expotools.js prebuild ${packageName}`,
       `Then re-run \`${SPM_UPDATE_COMMAND}\`. A published ${packageName} that ships prebuilds/output/<flavor>/xcframeworks is picked up with no local build.`,
     ],
     moduleRoot
@@ -510,8 +514,8 @@ function renderPartiallyPrecompiled({
       ? `add a product for ${podName} to ${packageName}'s spm.config.json, then build it`
       : `build ${podName} too — ${packageName}'s spm.config.json already declares "${prebuildProduct.name}"`;
   const precompile = [
-    `To precompile all of them, ${productStep}. Omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
-    `    et prebuild ${packageName}`,
+    `To precompile all of them, ${productStep}. In the Expo repository, from its root, run this — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
+    `    node tools/bin/expotools.js prebuild ${packageName}`,
     `   Then re-run \`${SPM_UPDATE_COMMAND}\`.`,
   ];
   const remedies = [
@@ -601,9 +605,9 @@ function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
     `  Every Expo source module compiles against the ExpoModulesCore framework interface tree; without both flavors the plugin cannot emit any of them.`,
-    `  Build the precompiled core, once per flavor (the flavor name is case-sensitive):`,
-    `      et prebuild -f Debug expo-modules-core expo-modules-jsi`,
-    `      et prebuild -f Release expo-modules-core expo-modules-jsi`,
+    `  In the Expo repository, from its root, build the precompiled core once per flavor (the flavor name is case-sensitive):`,
+    `      node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi`,
+    `      node tools/bin/expotools.js prebuild -f Release expo-modules-core expo-modules-jsi`,
     `  Skipped: ${pods.join(', ')}`,
   ].join('\n');
 }
@@ -804,6 +808,7 @@ function reportUnsupported(entries) {
 
 module.exports = {
   pluginError,
+  RERUN_SPM_UPDATE,
   UnsupportedModulesError,
   COVERED_POD_PREFIXES,
   UNMAPPED_POD_ALLOWLIST,
