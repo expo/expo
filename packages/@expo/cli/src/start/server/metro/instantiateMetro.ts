@@ -80,6 +80,8 @@ interface MetroServerWithModuleIdMod extends MetroServer {
 interface MetroHmrServerWithModuleIdMod extends MetroHmrServer<MetroHmrClient> {
   _createModuleId: ReturnType<typeof createStableModuleIdFactory> & ((path: string) => number);
 }
+type MetroHmrClientGroups = MetroHmrServer<MetroHmrClient>['_clientGroups'];
+type MetroHmrClientGroup = Parameters<MetroHmrServer<MetroHmrClient>['_prepareMessage']>[0];
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -609,15 +611,7 @@ export async function instantiateMetroAsync(
         logger?.point('updateGraph_start');
         const { revision, delta } = await this._bundler.updateGraph(await revPromise, false);
         logger?.point('updateGraph_end');
-        this._clientGroups.delete(group.revisionId);
-        group.revisionId = revision.id;
-        for (const client of group.clients) {
-          client.revisionIds = client.revisionIds.filter(
-            (revisionId) => revisionId !== group.revisionId
-          );
-          client.revisionIds.push(revision.id);
-        }
-        this._clientGroups.set(group.revisionId, group);
+        moveHmrClientGroupToRevision(this._clientGroups, group, revision.id);
         logger?.point('serialize_start');
         // NOTE(EvanBacon): This is the patch
         const moduleIdContext = {
@@ -668,6 +662,29 @@ export async function instantiateMetroAsync(
     messageSocket: messagesSocket,
     address,
   };
+}
+
+/**
+ * Moves an HMR client group to the revision its update produced. A group whose last client
+ * disconnected during the update has already been removed and stopped listening, so it isn't added back.
+ */
+export function moveHmrClientGroupToRevision(
+  clientGroups: MetroHmrClientGroups,
+  group: MetroHmrClientGroup,
+  revisionId: MetroHmrClientGroup['revisionId']
+): void {
+  const previousRevisionId = group.revisionId;
+  group.revisionId = revisionId;
+  for (const client of group.clients) {
+    client.revisionIds = client.revisionIds.filter(
+      (clientRevisionId) => clientRevisionId !== previousRevisionId
+    );
+    client.revisionIds.push(revisionId);
+  }
+  if (clientGroups.get(previousRevisionId) === group) {
+    clientGroups.delete(previousRevisionId);
+    clientGroups.set(revisionId, group);
+  }
 }
 
 export async function prewarmTransformPool(
