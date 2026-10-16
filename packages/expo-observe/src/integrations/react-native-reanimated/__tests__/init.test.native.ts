@@ -134,6 +134,30 @@ describe('initReanimatedIntegration', () => {
     expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
   });
 
+  describe('disableReanimatedIntegration', () => {
+    it('stops reporting without configuring the logger again', () => {
+      const onLog = initAndGetOnLog();
+
+      loadInit().disableReanimatedIntegration();
+      onLog({ level: WARN, message: 'after disable' });
+      onLog({ level: ERROR, message: 'after disable' });
+
+      expect(mockAppMetrics.logEvent).not.toHaveBeenCalled();
+      expect(mockAppMetrics.reportError).not.toHaveBeenCalled();
+      expect(mockConfigureReanimatedLogger).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports again after the integration is enabled again', () => {
+      const onLog = initAndGetOnLog();
+      loadInit().disableReanimatedIntegration();
+
+      initAndGetOnLog();
+      onLog({ level: WARN, message: 'after enable' });
+
+      expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('keeps reported messages across repeat configure calls', () => {
     initAndGetOnLog()({ level: WARN, message: 'repeated' });
     initAndGetOnLog()({ level: WARN, message: 'repeated' });
