@@ -51,16 +51,8 @@ type DimensionAxis = 'width' | 'height';
 const PERCENTAGE_PATTERN = /^(?:\d+(?:\.\d+)?|\.\d+)%$/;
 const warnedInvalidDimensions = new Set<string>();
 
-function isDevelopment(): boolean {
-  const globals = globalThis as typeof globalThis & {
-    __DEV__?: boolean;
-    process?: { env?: { NODE_ENV?: string } };
-  };
-  return globals.__DEV__ ?? globals.process?.env?.NODE_ENV !== 'production';
-}
-
 function warnInvalidDimension(componentName: string, axis: DimensionAxis, value: unknown): void {
-  if (!isDevelopment()) return;
+  if (!__DEV__) return;
 
   const warningKey = `${componentName}:${axis}`;
   if (warnedInvalidDimensions.has(warningKey)) return;
