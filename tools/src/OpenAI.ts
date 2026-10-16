@@ -1,17 +1,20 @@
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
-  organization: process.env.OPENAI_API_ORG,
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let client: OpenAI | null = null;
 
-const openai = new OpenAIApi(configuration);
+export function getOpenAIClient(): OpenAI {
+  client ??= new OpenAI({
+    organization: process.env.OPENAI_API_ORG,
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  return client;
+}
 
 export async function askChatGPTAsync(question: string): Promise<string | undefined> {
-  const response = await openai.createChatCompletion({
+  const response = await getOpenAIClient().chat.completions.create({
     model: 'gpt-4-1106-preview',
     messages: [{ role: 'user', content: question }],
   });
 
-  return response.data.choices[0]?.message?.content;
+  return response.choices[0]?.message?.content ?? undefined;
 }
