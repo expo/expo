@@ -774,6 +774,7 @@ const preview = [
             makePage('preview/simulators/how-to/review-a-pull-request.mdx'),
             makePage('preview/simulators/how-to/run-in-ci.mdx'),
             makePage('preview/simulators/how-to/hand-off-a-session.mdx'),
+            makePage('preview/simulators/how-to/embed-a-session.mdx'),
           ],
           { expanded: false }
         ),

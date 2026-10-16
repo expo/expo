@@ -160,7 +160,7 @@ When `--platform` is omitted in an interactive terminal, EAS CLI asks which plat
 The start command waits for the session to become ready, then writes **.env.eas-simulator**. It also prints:
 
 - A direct simulator session page on expo.dev
-- A temporary browser preview URL
+- A browser preview link that requires an Expo login with access to the project. With `--public-link`, EAS CLI prints a public link instead. See [Browser preview links](/preview/simulators/reference/cli/#browser-preview-links).
 - The command pattern for controlling the device
 
 To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/) for complete examples.
@@ -197,7 +197,13 @@ The project-level session list is:
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
 ```
 
-Open the browser preview URL in a desktop browser to view the live device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. The preview URL is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
+Open the browser preview link in a desktop browser to view the live device. On iOS, you can also interact with it. By default, the link has this shape, and it requires an Expo login with access to the project:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
+```
+
+In `--json` output, the link is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. The preview link is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
 
 </Step>
 
