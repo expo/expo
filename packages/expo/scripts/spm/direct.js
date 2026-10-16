@@ -5,7 +5,8 @@
  *
  *   direct/<package>                 → relative symlink to the module root
  *   direct/ExpoModulesCoreHeaders    → compile-only ExpoModulesCore + ExpoModulesJSI
- *   direct/ExpoModulesMacros         → relative symlink to the prebuilt macro plugin
+ *   $BUILD_DIR/ExpoModulesMacros     → relative symlink to the prebuilt macro plugin; the
+ *                                      manifest names it as `${BUILD_DIR}/ExpoModulesMacros`
  */
 
 'use strict';
@@ -183,7 +184,11 @@ function emitDirectPackage({ moduleRoot, packageName, outDir, compileInterfacesD
   const directDir = path.join(outDir, 'direct');
   fs.mkdirSync(directDir, { recursive: true });
   emitCoreHeadersPackage(directDir, compileInterfacesDir);
-  relativeSymlink(macroTool, path.join(directDir, 'ExpoModulesMacros'));
+  // BUILD_DIR is set only when sync runs as the scheme pre-action, which precedes every build.
+  if (process.env.BUILD_DIR) {
+    fs.mkdirSync(process.env.BUILD_DIR, { recursive: true });
+    relativeSymlink(macroTool, path.join(process.env.BUILD_DIR, 'ExpoModulesMacros'));
+  }
   const link = path.join(directDir, packageName);
   relativeSymlink(moduleRoot, link);
   fs.rmSync(path.join(outDir, 'expo-source', packageName), { recursive: true, force: true });
