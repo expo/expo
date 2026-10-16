@@ -57,11 +57,13 @@ Use the `colorOverrides` prop on [`Host`](./host) to set specific Material 3 rol
 ```tsx
 import { Button, Host, Text } from '@expo/ui/jetpack-compose';
 
+const colorOverrides = { primary: '#1E88E5FF' } as const;
+
 export default function ColorOverridesExample() {
   return (
     <Host
       seedColor="#8E24AA"
-      colorOverrides={{ primary: '#1E88E5' }}
+      colorOverrides={colorOverrides}
       matchContents>
       <Button onClick={() => {}}>
         <Text>Blue primary, purple palette</Text>
