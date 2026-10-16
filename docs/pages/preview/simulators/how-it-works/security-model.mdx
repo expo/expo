@@ -54,7 +54,7 @@ A browser preview link can be private or public:
 
 New sessions use private links by default. EAS CLI prints the private link, and the **Share** button in the preview copies it. To use public links, pass `--public-link` to `eas simulator:start`, or set `publicPreview` to `true` when you create a session with the REST API. EAS saves this setting with the session. EAS CLI 25.0.0 and later uses private links by default. Earlier versions print public links.
 
-The setting does not remove the preview token. The REST API still returns the token, and a person who can read the session can make a public link from it. Treat the preview token as a password, also in a session with private links.
+A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
 When a public link opens, the page moves the token out of the address bar. Share a public link only with people who should control the device.
 

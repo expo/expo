@@ -60,7 +60,7 @@ https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<sessi
 
 A public link contains the preview token. Treat a public link as a secret. Anyone with the link can see and use the simulator while the session runs. Share it only with the people who need it, and set a maximum duration on the session.
 
-The preview token exists in sessions with private links too. The REST API returns it as `webPreviewToken`, so a member who can read the session can make a public link. Protect the token as you protect controller tokens.
+A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
 ## Network access
 
