@@ -250,7 +250,13 @@ open class SecureStoreModule : Module() {
     // In order to be able to have the same keys under different keychains
     // we need a way to recognize what is the keychain of the item when we read it
     encryptedItem.put(KEYSTORE_ALIAS_PROPERTY, keychainService)
-    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
+    // Keep the boolean format for the modes that older versions know, so they can still read these entries.
+    val storedRequirement: Any = when (requireAuthentication) {
+      null -> false
+      AUTHENTICATION_METHOD_BIOMETRY -> true
+      else -> requireAuthentication
+    }
+    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, storedRequirement)
 
     val encryptedItemString = encryptedItem.toString()
     if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
@@ -359,9 +365,6 @@ open class SecureStoreModule : Module() {
       // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
       if (requireAuthentication) {
         if (isDeviceCredentialsRequired) {
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            throw UnsupportedDeviceCredentialsException()
-          }
           authenticationHelper.assertDeviceSecurity()
         } else {
           authenticationHelper.assertBiometricsSupport()

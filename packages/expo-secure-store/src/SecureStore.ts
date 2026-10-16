@@ -304,19 +304,16 @@ function normalizeAuthenticationRequirement(
     case undefined:
     case null:
     case false:
-    case '':
-    case 'false':
     case 'none':
       return undefined;
     case true:
-    case 'true':
     case 'biometry':
       return 'biometry';
     case 'deviceCredentials':
       return 'deviceCredentials';
     default:
       throw new Error(
-        `Invalid value for requireAuthentication: ${JSON.stringify(value)}. Expected "none", "biometry", "deviceCredentials", true, false, undefined, or null.`
+        `Invalid value for requireAuthentication: ${JSON.stringify(value)}. Expected "none", "biometry", or "deviceCredentials".`
       );
   }
 }

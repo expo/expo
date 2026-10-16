@@ -8,7 +8,6 @@ import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
-import expo.modules.securestore.UnsupportedDeviceCredentialsException
 import expo.modules.securestore.normalizeAuthenticationRequirement
 import expo.modules.securestore.toAuthenticationPromptOptions
 import org.json.JSONException
@@ -64,21 +63,14 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
       .setUserAuthenticationRequired(options.isAuthenticationRequired)
 
-    if (options.isAuthenticationRequired) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val authType =
-          if (options.isDeviceCredentialsRequired) {
-            KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
-          } else {
-            KeyProperties.AUTH_BIOMETRIC_STRONG
-          }
-        builder.setUserAuthenticationParameters(0, authType)
-      } else {
+    if (options.isAuthenticationRequired && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      val authType =
         if (options.isDeviceCredentialsRequired) {
-          throw UnsupportedDeviceCredentialsException()
+          KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+        } else {
+          KeyProperties.AUTH_BIOMETRIC_STRONG
         }
-        builder.setUserAuthenticationValidityDurationSeconds(-1)
-      }
+      builder.setUserAuthenticationParameters(0, authType)
     }
 
     val algorithmSpec: AlgorithmParameterSpec = builder.build()
