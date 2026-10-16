@@ -142,7 +142,15 @@ export function createReactServerModuleActionsPlugin(
         {
           fields: ['async', 'generator', 'name', 'bodyEnd'],
           scope: true,
-          ancestry: { mode: 'programParent' },
+          ancestry: {
+            mode: 'parent',
+            routes: {
+              ObjectProperty: {
+                fields: ['computed', 'method'],
+                children: { key: { route: 'Expression' } },
+              },
+            },
+          },
           children: {
             body: {
               route: 'FunctionBody',
@@ -190,11 +198,20 @@ export function createReactServerModuleActionsPlugin(
             state,
             `export var ${actionId} = ${state.registerBinding}(async function${name}(${extractedParameters}) {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
           );
-          fn.replaceWith(
-            closureParameter
-              ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
-              : actionId
-          );
+          const replacement = closureParameter
+            ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
+            : actionId;
+          const property = fn.parentPath;
+          if (property?.node.type === 'ObjectProperty' && property.node.method === true) {
+            const key = property.getChild('key')!;
+            property.replaceWith(
+              property.node.computed
+                ? property.context.code.template`[${key.getSource()}]: ${replacement}`
+                : property.context.code.template`${key.getSource()}: ${replacement}`
+            );
+          } else {
+            fn.replaceWith(replacement);
+          }
           if (closureParameter) state.usesCapturedArgs = true;
           state.boundary.handledDirectives.add(directive.id);
           state.actions.push({ exportedName: actionId });

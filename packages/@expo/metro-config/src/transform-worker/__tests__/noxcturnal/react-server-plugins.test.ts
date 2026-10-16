@@ -818,3 +818,32 @@ it.each([
     expect(result.reason).toContain('dom-component-');
   }
 );
+
+it.each(['one', '"one"', '["one"]'])(
+  'extracts an inline server action from an object method with key %s',
+  async (key) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/actions.ts',
+      projectRoot: '/app',
+      source: `export function createActions(value) {
+        return { async ${key}() { "use server"; return value; } };
+      }`,
+      options: options({
+        platform: 'web',
+        customTransformOptions: { environment: 'react-server' },
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(() => babel.parseSync(result.result.code, { sourceType: 'script' })).not.toThrow();
+    expect(result.result.code).toContain('registerServerReference');
+    expect(result.result.code).toContain('.bind(null,');
+    expect(result.result.metadata.reactServerActions).toEqual({
+      id: './actions.ts',
+      names: [expect.stringContaining('$$INLINE_ACTION')],
+    });
+  }
+);
