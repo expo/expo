@@ -7,6 +7,7 @@ import resolveFrom from 'resolve-from';
 
 import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
+import { isProjectLocalPath } from './utils/Path';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
 const FINGERPRINT_ENV_MODE = 'development';
@@ -37,14 +38,18 @@ export async function getExpoConfigAsync(
   const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
   try {
     const [
-      { config, loadedModules: modulesWithPlugins },
+      { config, loadedModules: modulesWithPlugins, projectModules },
       { loadedModules: modulesWithoutPlugins },
     ] = await Promise.all([
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ false),
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ true),
     ]);
     result.config = config;
-    result.loadedModules = diffLoadedModules(modulesWithPlugins ?? [], modulesWithoutPlugins ?? []);
+    result.loadedModules = diffLoadedModules(
+      modulesWithPlugins ?? [],
+      modulesWithoutPlugins ?? [],
+      projectModules ?? []
+    );
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
@@ -62,7 +67,11 @@ async function spawnConfigLoaderAsync(
   projectRoot: string,
   ignoredFile: string,
   skipPlugins: boolean
-): Promise<{ config: ProjectConfig | null; loadedModules: LoadedModuleSource[] | null }> {
+): Promise<{
+  config: ProjectConfig | null;
+  loadedModules: LoadedModuleSource[] | null;
+  projectModules: string[] | null;
+}> {
   const args = [
     getExpoConfigLoaderPath(),
     path.resolve(projectRoot),
@@ -83,29 +92,26 @@ async function spawnConfigLoaderAsync(
  * Keep only the config-plugin modules attributable to applying plugins.
  *
  * Anything that also loads when plugins are skipped is the config-loading framework and is dropped.
- * In-repo files are always kept regardless of the diff, so a local plugin imported at the top of
- * `app.config` (which loads during config evaluation, not plugin application) is never lost.
+ * In-repo files and the modules the project's own code imports (`projectModules`) are always kept
+ * regardless of the diff, so a plugin imported at the top of `app.config` (which loads during config
+ * evaluation, not plugin application) is never lost, even from a monorepo workspace package.
  */
 export function diffLoadedModules(
   withPlugins: LoadedModuleSource[],
-  withoutPlugins: LoadedModuleSource[]
+  withoutPlugins: LoadedModuleSource[],
+  projectModules: string[] = []
 ): LoadedModuleSource[] {
   const skippedKeys = new Set(withoutPlugins.map(getLoadedModuleKey));
-  return withPlugins.filter(
-    (source) => isInRepoLoadedModule(source) || !skippedKeys.has(getLoadedModuleKey(source))
-  );
+  const projectKeys = new Set(projectModules);
+  return withPlugins.filter((source) => {
+    const key = getLoadedModuleKey(source);
+    return isProjectLocalPath(key) || projectKeys.has(key) || !skippedKeys.has(key);
+  });
 }
 
 /** Stable identity of a loaded module: its file path, or its id for a virtual module. */
 function getLoadedModuleKey(source: LoadedModuleSource): string {
   return source.type === 'file' ? source.path : source.id;
-}
-
-/** Whether a loaded module is a project-local file (e.g. a local config plugin) rather than a dependency. */
-function isInRepoLoadedModule(source: LoadedModuleSource): boolean {
-  const key = getLoadedModuleKey(source);
-  // `..` means the path escaped the project root (e.g. a hoisted or linked dependency).
-  return !key.startsWith('..') && !key.includes('node_modules');
 }
 
 /**

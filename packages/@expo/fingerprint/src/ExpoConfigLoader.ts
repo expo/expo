@@ -8,9 +8,15 @@ import module from 'module';
 import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { fileURLToPath } from 'url';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
+import {
+  buildPathMatchObjects,
+  isIgnoredPathWithMatchObjects,
+  isProjectLocalPath,
+  toPosixPath,
+} from './utils/Path';
 
 declare namespace globalThis {
   let __DEV__: boolean | undefined;
@@ -39,6 +45,7 @@ async function runAsync(programName: string, args: string[] = []) {
   loadProjectEnv(projectRoot, { mode });
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
+  const importGraph = installImportGraphHook();
   let config;
   try {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
@@ -48,14 +55,16 @@ async function runAsync(programName: string, args: string[] = []) {
     });
   } finally {
     uninstall();
+    importGraph.uninstall();
   }
 
   const ignoredPaths = [
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
     ...(await loadIgnoredPathsAsync(ignoredFile)),
   ];
+  const capturedModules = getCapturedModules();
   const loadedModules = await resolveLoadedModuleSourcesAsync(
-    getCapturedModules(),
+    capturedModules,
     projectRoot,
     ignoredPaths
   );
@@ -64,6 +73,9 @@ async function runAsync(programName: string, args: string[] = []) {
     // The plugins-skipped pass only contributes its module list to the diff; its config is unused.
     config: skipPlugins ? null : config,
     loadedModules,
+    projectModules: skipPlugins
+      ? null
+      : collectProjectModulePaths(capturedModules, importGraph.getImports(), projectRoot),
   });
 
   if (process.send) {
@@ -218,6 +230,97 @@ export async function resolveLoadedModuleSourcesAsync(
   );
 
   return sources.filter((source): source is LoadedModuleSource => source !== null);
+}
+
+/**
+ * The import that first resolved a file while `installImportGraphHook()` was active.
+ */
+export interface ResolvedImport {
+  /** The filename of the module that imported. */
+  parent: string;
+  /** The filename the import resolved to. */
+  child: string;
+}
+
+/**
+ * Record which file loads which while the config is evaluated, through a `module.registerHooks`
+ * resolve hook (Node 22.15+) that runs for `require`, `import` and `require(esm)` alike.
+ * Without `module.registerHooks` no import is recorded.
+ */
+export function installImportGraphHook(): {
+  getImports: () => ResolvedImport[];
+  uninstall: () => void;
+} {
+  const imports: ResolvedImport[] = [];
+  const resolveHooks =
+    typeof module.registerHooks === 'function'
+      ? module.registerHooks({ resolve: createImportGraphResolveHook(imports) })
+      : null;
+  return {
+    getImports: () => imports,
+    uninstall: () => {
+      resolveHooks?.deregister();
+    },
+  };
+}
+
+/**
+ * A `module.registerHooks` resolve hook that records, for each file, the import that first resolves
+ * it. That import is the one that loads the file, so a module the config-loading framework loads
+ * before the project's own code runs stays the framework's when project code imports it later.
+ */
+export function createImportGraphResolveHook(imports: ResolvedImport[]): module.ResolveHookSync {
+  const resolvedUrls = new Set<string>();
+  return (specifier, context, nextResolve) => {
+    const result = nextResolve(specifier, context);
+    if (result.url.startsWith('file:') && !resolvedUrls.has(result.url)) {
+      resolvedUrls.add(result.url);
+      if (context.parentURL?.startsWith('file:')) {
+        imports.push({
+          parent: fileURLToPath(context.parentURL),
+          child: fileURLToPath(result.url),
+        });
+      }
+    }
+    return result;
+  };
+}
+
+/**
+ * The project-relative paths of the captured modules that the project's own code loads.
+ * A module inside the project root belongs to the project, and so does every module it loads,
+ * directly or through another such module, unless the module is in `node_modules`.
+ * A config plugin a monorepo workspace package exports sits outside the project root and is
+ * reached this way. The modules the config-loading framework loads are not, even when the
+ * framework is itself a linked workspace package.
+ */
+export function collectProjectModulePaths(
+  capturedModules: CapturedModule[],
+  imports: ResolvedImport[],
+  projectRoot: string
+): string[] {
+  const toRelativePath = (filename: string) => toPosixPath(path.relative(projectRoot, filename));
+  const importsByParent = new Map<string, string[]>();
+  for (const { parent, child } of imports) {
+    importsByParent.set(parent, [...(importsByParent.get(parent) ?? []), child]);
+  }
+  const capturedFilenames = new Set(capturedModules.map(({ filename }) => filename));
+  const pending = [...capturedFilenames].filter((filename) =>
+    isProjectLocalPath(toRelativePath(filename))
+  );
+  const reached = new Set(pending);
+  for (let parent = pending.pop(); parent !== undefined; parent = pending.pop()) {
+    for (const child of importsByParent.get(parent) ?? []) {
+      if (!reached.has(child) && !toRelativePath(child).includes('node_modules')) {
+        reached.add(child);
+        pending.push(child);
+      }
+    }
+  }
+  return [...reached]
+    .filter((filename) => capturedFilenames.has(filename))
+    .map(toRelativePath)
+    .sort();
 }
 
 /**

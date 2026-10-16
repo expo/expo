@@ -136,6 +136,14 @@ export function toPosixPath(filePath: string): string {
 }
 
 /**
+ * Whether a project-relative POSIX path names a file inside the project root and outside
+ * `node_modules`. `..` means the path escaped the project root (e.g. a hoisted or linked dependency).
+ */
+export function isProjectLocalPath(relativePosixPath: string): boolean {
+  return !relativePosixPath.startsWith('..') && !relativePosixPath.includes('node_modules');
+}
+
+/**
  * Check if the given `filePath` exists.
  */
 export async function pathExistsAsync(filePath: string): Promise<boolean> {
