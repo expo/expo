@@ -1022,6 +1022,7 @@ it.each([
             optimize: {
               constantFolding: true,
               deadCodeElimination: true,
+              moduleContext: true,
             },
           },
         },
