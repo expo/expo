@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Fix native memory that grew with each module class under Hermes V1, by about 0.57 MiB per class on React Native 0.86 and 0.87 and about 93 KiB on 0.88. `createClass` evaluated a new JavaScript source for each class, and Hermes keeps memory for every evaluated source until the runtime is destroyed. It now evaluates one class factory for each runtime and calls it for each class. On iOS, this code creates only the four base classes (`SharedObject`, `SharedRef`, `EventEmitter` and `NativeModule`). ([#51582](https://github.com/expo/expo/pull/51582) by [@amillez](https://github.com/amillez))
+- Fix an `-Wunused-result` warning in `Worklet.cpp` on Android when building with `react-native-worklets@0.13`. Running a worklet synchronously now discards its return value while the worklet runtime lock is still held, on Android and iOS. ([#51656](https://github.com/expo/expo/pull/51656) by [@tomekzaw](https://github.com/tomekzaw))
+- Fix the `Do not include this file directly` warnings from `react-native-worklets@0.13` on Android and iOS. The worklets integration now includes the specific `Serializable` headers instead of the deprecated `worklets/SharedItems/Serializable.h`. ([#51664](https://github.com/expo/expo/pull/51664) by [@tomekzaw](https://github.com/tomekzaw))
+- Updated dependencies. ([#51583](https://github.com/expo/expo/pull/51583))
+  - expo-modules-jsi@58.0.15
+
 ## 58.0.21
 
 ### Patch Changes

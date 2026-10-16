@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Fix a deep link to a screen inside an existing navigator, such as a tab, stacking a second copy of that navigator on top of a presented modal or sheet instead of returning to it. Inside nested stacks a deep link again returns to a screen that is already there, as it did before SDK 58. ([#51649](https://github.com/expo/expo/pull/51649) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
+
 ## 58.0.22
 
 ### Patch Changes

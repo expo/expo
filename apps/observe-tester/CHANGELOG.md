@@ -1,5 +1,15 @@
 # observe-tester
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+  - expo@58.0.14
+  - expo-build-properties@58.0.11
+  - expo-dev-client@58.0.14
+
 ## 1.0.7
 
 ### Patch Changes
