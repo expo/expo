@@ -413,11 +413,16 @@ function mixedSourcesReport(coreSource, subjects) {
 function resolveCoreHeaders(core, coreSource, cacheDir) {
   const { packageName, moduleRoot, productName } = core;
   const lookup = { packageName, moduleRoot, productName };
-  const headers = resolveHeadersXCFrameworkWithSource({ ...lookup, cacheDir });
   const lookupRank = (source) => PRECOMPILED_SOURCE_KINDS.indexOf(source.kind);
   const builtLocally = coreSource?.kind === 'env' || coreSource?.kind === 'monorepo';
-  // The lookup stops at the first place that has headers, so headers found past the place
-  // ExpoModulesCore comes from, or nowhere, mean that place has none.
+  // Headers past the place a local ExpoModulesCore build comes from cannot match it, so the
+  // lookup ends there: a broken copy further on would fail first, with advice that cannot
+  // fix the missing headers. No headers up to that place mean the build produced none.
+  const headers = resolveHeadersXCFrameworkWithSource({
+    ...lookup,
+    cacheDir,
+    lastKind: builtLocally ? coreSource.kind : undefined,
+  });
   if (builtLocally && (headers == null || lookupRank(headers.source) > lookupRank(coreSource))) {
     const prebuild = '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
     throw pluginError({

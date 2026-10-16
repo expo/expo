@@ -1376,6 +1376,72 @@ describe('where precompiled modules and headers come from', () => {
     expect(fs.existsSync(path.join(jsiHeadersPkgPath, 'Package.swift'))).toBe(true);
   });
 
+  // A broken copy further down the lookup is not what the user has to fix: reinstalling or
+  // rebuilding it cannot repair an EXPO_PRECOMPILED_MODULES_PATH build without headers.
+  it('names the missing headers, not an incomplete npm copy, when ExpoModulesCore comes from EXPO_PRECOMPILED_MODULES_PATH', () => {
+    const tmp = makeTempDir('expo-spm-plugin-env-headers-');
+    const envDir = path.join(tmp, 'precompiled');
+    fs.mkdirSync(envDir);
+    const coreRoot = path.join(tmp, 'expo-modules-core');
+    const corePodspecDir = pureSwiftModule(coreRoot, 'ExpoModulesCore', spec());
+    fs.mkdirSync(
+      path.join(
+        coreRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoModulesCoreHeaders.xcframework'
+      ),
+      { recursive: true }
+    );
+    const jsiPodspecDir = pureSwiftModule(
+      path.join(tmp, 'expo-modules-jsi'),
+      'ExpoModulesJSI',
+      spec()
+    );
+    const haptics = path.join(tmp, 'expo-haptics');
+    const hapticsPodspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+    fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    writeSpmConfig(haptics, { directManifest: true });
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(corePodspecDir),
+        ['expo-modules-jsi', [['ExpoModulesJSI', jsiPodspecDir]]],
+        ['expo-haptics', [['ExpoHaptics', hapticsPodspecDir]]],
+      ])
+    );
+    const coreDir = path.join(envDir, 'expo-modules-core', 'output');
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' ? { id: frameworkName, frameworkName } : null
+    );
+    frameworkSource.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' ? { kind: 'env', dir: coreDir } : null
+    );
+    resolveHeadersXCFramework.mockReturnValue(jsiHeadersXCFramework);
+    resolveHeadersXCFrameworkWithSource.mockImplementation(
+      jest.requireActual('../flavored-frameworks').resolveHeadersXCFrameworkWithSource
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = envDir;
+    try {
+      const thrown = thrownBy(() => runPlugin(tmp));
+      expect(thrown?.message).toContain(
+        `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
+      );
+      expect(thrown.message).toContain('Unset EXPO_PRECOMPILED_MODULES_PATH');
+      expect(thrown.message).not.toContain('Info.plist');
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    } finally {
+      if (previous === undefined) {
+        delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+      } else {
+        process.env.EXPO_PRECOMPILED_MODULES_PATH = previous;
+      }
+    }
+  });
+
   it('fails when a direct module exists and the ExpoModulesCore headers are missing', () => {
     const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
     process.env.EXPO_PRECOMPILED_MODULES_PATH = '/precompiled';
