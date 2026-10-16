@@ -1,5 +1,12 @@
 # expo-template-blank-typescript
 
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.12
+
 ## 58.0.20
 
 ### Patch Changes
