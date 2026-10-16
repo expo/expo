@@ -38,7 +38,17 @@ class ResolvingShareIntentDataParser {
       val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeUnless { hasStream && it.isBlank() } ?: return emptyList()
 
       if (android.util.Patterns.WEB_URL.matcher(text).matches()) {
-        return listOf(resolveUrlContext(text))
+        return listOf(
+          if (hasStream) {
+            ResolvedSharePayload().apply {
+              value = text
+              shareType = ShareType.Url
+              mimeType = "text/plain"
+            }
+          } else {
+            resolveUrlContext(text)
+          }
+        )
       }
 
       return listOf(
