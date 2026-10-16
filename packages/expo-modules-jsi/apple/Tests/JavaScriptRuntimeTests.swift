@@ -1090,6 +1090,30 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `classes from the shared factory are independent`() throws {
+    let first = try runtime.createClass(name: "First") { this, _ in
+      this.getObject().setProperty("kind", value: "first")
+      return this
+    }
+    let second = try runtime.createClass(name: "Second") { this, _ in
+      this.getObject().setProperty("kind", value: "second")
+      return this
+    }
+    runtime.global().setProperty("First", value: first.asValue())
+    runtime.global().setProperty("Second", value: second.asValue())
+
+    let result = try runtime.eval(
+      """
+      First !== Second && First.prototype !== Second.prototype
+        && First.name === 'First' && Second.name === 'Second'
+        && new First().kind === 'first' && new Second().kind === 'second'
+        && !(new First() instanceof Second)
+      """
+    )
+    #expect(result.getBool() == true)
+  }
+
+  @Test
   func `create class throws on invalid name with special characters`() {
     #expect(throws: JavaScriptRuntime.InvalidIdentifierError.self) {
       _ = try runtime.createClass(name: "bad); evil(") { this, _ in this }

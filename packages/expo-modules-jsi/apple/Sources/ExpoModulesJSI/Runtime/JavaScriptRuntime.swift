@@ -326,15 +326,29 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // We're creating one by evaluating a script that calls a "native constructor" that is a host function.
     let nativeConstructorKey = "__native_constructor__"
 
-    // Validate that the name is a valid JS identifier to prevent code injection via eval.
+    // The factory gets the name as data, never as source. This check keeps the contract that a name
+    // which is not a valid JS identifier throws `InvalidIdentifierError`.
     if name.wholeMatch(of: /^[a-zA-Z_$][a-zA-Z0-9_$]*$/) == nil {
       throw InvalidIdentifierError(identifier: name)
     }
 
-    let klassValue = try eval(
-      label: "\(name).\(nativeConstructorKey)",
-      "(function \(name)(...args) { return this.\(nativeConstructorKey)(...args); })"
-    )
+    // Hermes keeps memory for every evaluated source until the runtime is destroyed, so the
+    // constructor source is evaluated once per runtime and the factory is called for each class.
+    let makeFactory = {
+      return try self.eval(
+        label: "expo-modules-jsi/class-factory.js",
+        """
+        (function (name) {
+          const klass = function (...args) { return this.\(nativeConstructorKey)(...args); };
+          Object.defineProperty(klass, 'name', { value: name });
+          return klass;
+        })
+        """
+      ).getFunction()
+    }
+    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+      return try factory.call(arguments: name)
+    }
     let klassObject = klassValue.getObject()
 
     // Create a host function that is called by the constructor
@@ -1007,11 +1021,14 @@ private func createFunctionClosure(
   return expo.HostFunctionClosure(context, call, deallocate)
 }
 
+/// Key of the class factory in each runtime's cache.
+private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
+
 // MARK: - Errors
 
 extension JavaScriptRuntime {
-  /// Thrown when an invalid JavaScript identifier is passed to APIs that interpolate
-  /// the name into evaluated JavaScript source, such as ``createClass(name:inheriting:_:)``.
+  /// Thrown when an API that requires a valid JavaScript identifier gets a name that is not one,
+  /// such as the class name passed to ``createClass(name:inheriting:_:)``.
   public struct InvalidIdentifierError: Error, CustomStringConvertible {
     /// The identifier string that failed validation.
     public let identifier: String
