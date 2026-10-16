@@ -19,14 +19,33 @@ const path = require('path');
 const { runDumpPackage } = require('./cli');
 const { pluginError } = require('./diagnostics');
 
-const DIRECT_MODULES = new Set(['expo-haptics', 'expo-sensors']);
-
 const CORE_HEADERS = 'ExpoModulesCoreHeaders';
 const JSI_HEADERS = 'ExpoModulesJSIHeaders';
 // A binary target cannot have dependencies, so this source target carries the JSI one.
 const CORE_HEADERS_DEPENDENCIES = 'ExpoModulesCoreHeadersDependencies';
 // Written into the package by an earlier generator; nothing reads it now.
 const LEGACY_STUBS_DIR = '.stubs';
+
+/**
+ * Whether the module at `moduleRoot` opts in to being built from its checked-in
+ * Package.swift, with `"directManifest": true` in its spm.config.json.
+ */
+function readDirectManifestFlag(moduleRoot) {
+  const configPath = path.join(moduleRoot, 'spm.config.json');
+  if (!fs.existsSync(configPath)) return false;
+  try {
+    return JSON.parse(fs.readFileSync(configPath, 'utf8'))?.directManifest === true;
+  } catch (error) {
+    throw pluginError(
+      {
+        what: `${configPath} is not valid JSON: ${error.message}.`,
+        why: 'The plugin reads its "directManifest" flag to decide whether to build the module from its checked-in Package.swift.',
+        how: `Fix the JSON in ${configPath}, or reinstall the package if it came from npm. Then run \`npx react-native spm update\` again.`,
+      },
+      { cause: error }
+    );
+  }
+}
 
 /**
  * Module manifests depend on the product, so it keeps the package's name. ExpoModulesCore's
@@ -151,10 +170,10 @@ const PENDING_MARKER_MTIME = new Date('2100-01-01T00:00:00Z');
  * - Outside a build: the link cannot be made, yet the stamp is fresh. Watch a marker
  *   dated in the future, so the next build always re-syncs; that sync removes it.
  */
-function prepareDirectWatchPaths(emittedPackages, outDir) {
+function prepareDirectWatchPaths(directPackages, outDir) {
   const marker = path.join(outDir, 'direct', '.macro-plugin-link-pending');
   const macroLink = macroPluginLink();
-  const hasDirect = emittedPackages.some((name) => DIRECT_MODULES.has(name));
+  const hasDirect = directPackages.length > 0;
   if (!hasDirect || macroLink) {
     fs.rmSync(marker, { force: true });
     return hasDirect ? [macroLink] : [];
@@ -165,4 +184,4 @@ function prepareDirectWatchPaths(emittedPackages, outDir) {
   return [marker];
 }
 
-module.exports = { DIRECT_MODULES, emitDirectPackage, prepareDirectWatchPaths };
+module.exports = { emitDirectPackage, prepareDirectWatchPaths, readDirectManifestFlag };

@@ -109,6 +109,14 @@ function pureSwiftModule(root, podName, podspec) {
   return podspecDir;
 }
 
+/** Writes `spm.config.json` at a module root: an object as JSON, or raw text. */
+function writeSpmConfig(root, config) {
+  fs.writeFileSync(
+    path.join(root, 'spm.config.json'),
+    typeof config === 'string' ? config : JSON.stringify(config)
+  );
+}
+
 /** A module SwiftPM cannot build from source: ObjC++ sources and no manifest. */
 function mixedModule(root, podName) {
   const podspecDir = path.join(root, 'ios');
@@ -513,6 +521,7 @@ describe('the watched module roots', () => {
     fs.mkdirSync(packageRoot, { recursive: true });
     fs.writeFileSync(path.join(packageRoot, 'package.json'), '{"name":"expo-modules-core"}');
     fs.writeFileSync(path.join(packageRoot, 'expo-module.config.json'), '{}');
+    writeSpmConfig(packageRoot, {});
     resolveExpoModules.mockReturnValue(modulesOf([coreAt(podspecDir)]));
     prebuiltMetadata.mockReturnValue({
       ExpoModulesCore: metadataEntry(packageRoot, 'ExpoModulesCore'),
@@ -525,6 +534,11 @@ describe('the watched module roots', () => {
 
   it('watches the staleness inputs under the documented package root', () => {
     expect(watchPaths).toContain(path.join(packageRoot, 'expo-module.config.json'));
+  });
+
+  // Its "directManifest" flag switches the module between its own and a generated manifest.
+  it('watches spm.config.json', () => {
+    expect(watchPaths).toContain(path.join(packageRoot, 'spm.config.json'));
   });
 });
 
@@ -979,6 +993,7 @@ describe.each([
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const haptics = path.join(tmp, 'expo-haptics');
     const hapticsPodspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+    writeSpmConfig(haptics, { directManifest: true });
     if (hasManifest) {
       fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
     }
@@ -1012,6 +1027,97 @@ describe.each([
     expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual(
       hasManifest ? ['ExpoModulesCore'] : ['ExpoHaptics', 'ExpoModulesCore']
     );
+  });
+});
+
+// Only spm.config.json opts a module in; the package name decides nothing.
+describe.each([
+  ['"directManifest": true', 'expo-widgets', { directManifest: true }, true],
+  ['no spm.config.json', 'expo-haptics', null, false],
+  ['no directManifest flag', 'expo-sensors', { publishPrebuilds: true }, false],
+  ['"directManifest": false', 'expo-haptics', { directManifest: false }, false],
+])(
+  'a module with a checked-in manifest, a precompiled artifact and %s',
+  (_, packageName, spmConfig, direct) => {
+    const logs = captureConsole();
+    let result;
+
+    beforeAll(() => {
+      const tmp = makeTempDir('expo-spm-direct-opt-in-');
+      const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+      const moduleRoot = path.join(tmp, packageName);
+      const podspecDir = pureSwiftModule(moduleRoot, 'ExpoOptIn', spec());
+      fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      if (spmConfig != null) writeSpmConfig(moduleRoot, spmConfig);
+      resolveExpoModules.mockReturnValue(
+        modulesOf([coreAt(core), [packageName, [['ExpoOptIn', podspecDir]]]])
+      );
+      resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+        ['ExpoModulesCore', 'ExpoOptIn'].includes(frameworkName)
+          ? { id: frameworkName.toLowerCase(), frameworkName }
+          : null
+      );
+      emitDirectPackage.mockReturnValue({
+        ok: {
+          packageDep: { name: 'ExpoOptIn', path: moduleRoot },
+          productDeps: [{ name: 'ExpoOptIn', package: 'ExpoOptIn' }],
+          spmProductNames: [],
+          partlyProvidedPackages: [],
+        },
+      });
+      providerWrittenTo(path.join(tmp, 'out'));
+      result = runPlugin(tmp);
+    });
+
+    afterAll(() => {
+      emitDirectPackage.mockReset();
+      restoreModuleMocks();
+    });
+
+    it(`is ${direct ? 'built from its checked-in manifest' : 'linked precompiled'}`, () => {
+      expect(emitDirectPackage).toHaveBeenCalledTimes(direct ? 1 : 0);
+      expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual(
+        direct ? ['ExpoModulesCore'] : ['ExpoModulesCore', 'ExpoOptIn']
+      );
+    });
+
+    it(`is ${direct ? '' : 'not '}listed as a direct module`, () => {
+      expect(printed(logs.log)).toContain(
+        `source via direct checked-in manifest (${direct ? `1): ${packageName}` : '0): —'}`
+      );
+    });
+  }
+);
+
+describe('a module whose spm.config.json is not valid JSON', () => {
+  captureConsole();
+  let configPath;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-direct-bad-config-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-widgets');
+    const podspecDir = pureSwiftModule(moduleRoot, 'ExpoWidgets', spec());
+    fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    writeSpmConfig(moduleRoot, '{ "directManifest": true,');
+    configPath = path.join(moduleRoot, 'spm.config.json');
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-widgets', [['ExpoWidgets', podspecDir]]]])
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    thrown = thrownBy(() => runPlugin(tmp));
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('fails the sync naming the file, why it is read, and how to fix it', () => {
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown.message).toContain(`${configPath} is not valid JSON`);
+    expect(thrown.message).toContain('"directManifest"');
+    expect(thrown.message).toMatch(/fix the JSON in/i);
+    expect(thrown.message).toContain('`npx react-native spm update`');
+    expect(emitDirectPackage).not.toHaveBeenCalled();
   });
 });
 
@@ -1053,6 +1159,7 @@ describe('where precompiled modules and headers come from', () => {
       const haptics = path.join(tmp, 'expo-haptics');
       const podspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
       fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      writeSpmConfig(haptics, { directManifest: true });
       listed.push(['expo-haptics', [['ExpoHaptics', podspecDir]]]);
       resolveHeadersXCFrameworkWithSource.mockImplementation(({ productName }) =>
         headers[productName] == null

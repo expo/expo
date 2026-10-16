@@ -159,16 +159,16 @@ describe('prepareDirectWatchPaths', () => {
   // A watched path that has vanished makes RN re-sync then.
   it('watches the macro plugin link when a direct module is emitted', () => {
     process.env.BUILD_DIR = '/tmp/Build/Products';
-    expect(prepareDirectWatchPaths(['expo-haptics', 'expo-font'], outDir)).toEqual([
+    expect(prepareDirectWatchPaths(['expo-haptics'], outDir)).toEqual([
       path.join('/tmp/Build/Products', 'ExpoModulesMacros'),
     ]);
   });
 
   it('watches nothing when no direct module is emitted', () => {
     process.env.BUILD_DIR = '/tmp/Build/Products';
-    expect(prepareDirectWatchPaths(['expo-font'], outDir)).toEqual([]);
+    expect(prepareDirectWatchPaths([], outDir)).toEqual([]);
     delete process.env.BUILD_DIR;
-    expect(prepareDirectWatchPaths(['expo-font'], outDir)).toEqual([]);
+    expect(prepareDirectWatchPaths([], outDir)).toEqual([]);
   });
 
   // A command-line sync has no BUILD_DIR, so it cannot create the link, yet it writes a
@@ -185,7 +185,7 @@ describe('prepareDirectWatchPaths', () => {
   it('removes the marker once no direct module is emitted', () => {
     delete process.env.BUILD_DIR;
     const [marker] = prepareDirectWatchPaths(['expo-haptics'], outDir);
-    prepareDirectWatchPaths(['expo-font'], outDir);
+    prepareDirectWatchPaths([], outDir);
     expect(fs.existsSync(marker)).toBe(false);
   });
 
