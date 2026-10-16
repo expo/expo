@@ -48,7 +48,8 @@ export type PlaceholderDescriptorMap<NavigatorOptions extends object = object> =
 >;
 
 export type DescribePlaceholderRoute<NavigatorOptions extends object = object> = (
-  route: DescriptorRouteProp<ParamListBase, string>
+  route: DescriptorRouteProp<ParamListBase, string>,
+  options?: { create?: boolean }
 ) => NonNullable<PlaceholderDescriptorMap<NavigatorOptions>[string]>;
 
 export type StandardNavigator<

@@ -36,6 +36,10 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
+import {
+  processRequiredScreensDescriptors,
+  processRequiredScreensState,
+} from './stack-utils/requiredScreensBelow';
 
 const RNStack = integrateWithRouter<
   NativeStackNavigationOptions,
@@ -47,6 +51,8 @@ const RNStack = integrateWithRouter<
 >(createStandardNativeStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
   createProps: createNativeStackProps,
+  processDescriptors: processRequiredScreensDescriptors,
+  processState: processRequiredScreensState,
 });
 
 /**

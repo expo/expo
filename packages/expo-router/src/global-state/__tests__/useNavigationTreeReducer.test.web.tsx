@@ -1,6 +1,7 @@
 import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { StackRouter as ExpoStackRouter } from '../../layouts/stack-router';
 import {
   type NavigationState,
   type StackNavigationState,
@@ -412,4 +413,46 @@ test('reports the browser change actionId on the restored action', async () => {
     type: 'action-dispatched',
     actionId: 7,
   });
+});
+
+test('replaces the current entry when required screens are synced below the focused route', async () => {
+  const stackRegistry: RouterRegistry = new Map([
+    ['root', entry(ExpoStackRouter({}), initialState.routeNames)],
+  ]);
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({ initialState, registry: stackRegistry })
+  );
+
+  await act(() =>
+    result.result.current.handleAction({
+      type: 'SYNC_REQUIRED_SCREENS',
+      payload: { routeKey: 'first', screens: ['second'] },
+    })
+  );
+
+  expect(result.result.current.state.routes.map((route) => route.name)).toEqual([
+    'second',
+    'first',
+  ]);
+  expect(browserEvents(result)?.map((event) => event.op)).toEqual(['replace', 'replace']);
+});
+
+test('ignores a required screens sync for a route that is no longer focused', async () => {
+  const stackRegistry: RouterRegistry = new Map([
+    ['root', entry(ExpoStackRouter({}), initialState.routeNames)],
+  ]);
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({ initialState, registry: stackRegistry })
+  );
+  await act(() => result.result.current.handleAction({ type: 'PUSH', payload: { name: 'third' } }));
+  const state = result.result.current.state;
+
+  await act(() =>
+    result.result.current.handleAction({
+      type: 'SYNC_REQUIRED_SCREENS',
+      payload: { routeKey: 'first', screens: ['second'] },
+    })
+  );
+
+  expect(result.result.current.state).toBe(state);
 });
