@@ -61,8 +61,9 @@ function documentedPackageRoot(entry) {
  * and spm.config.json. Editing any of them must trip the in-build re-sync —
  * the manifest drives the generated wrapper packages, expo-module.config.json drives
  * module resolution, and spm.config.json's "directManifest" flag decides whether the
- * module is built from its own manifest. Only existing paths are returned (RN warn-and-drops the rest,
- * but a vanished path is its own staleness signal handled RN-side).
+ * module is built from its own manifest. Only existing paths are returned (RN
+ * warn-and-drops the rest, but a vanished path is its own staleness signal handled
+ * RN-side).
  */
 function collectWatchPaths(moduleRoots) {
   const watchPaths = [];
