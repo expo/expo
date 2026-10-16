@@ -110,7 +110,8 @@ export type SharePayload = {
   mimeType?: string;
 
   /**
-   * The display name of a shared file, if the app that shared it provides one.
+   * The display name of a shared file, as reported by the app that shared it.
+   * It is `null` for text and URL payloads, and when the app does not provide a name.
    * @platform android
    */
   originalName?: string | null;
