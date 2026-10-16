@@ -17,6 +17,10 @@ export const INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME = '__internal_expo_route
  */
 export const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 
+// Carries the `unstable_requiredScreensBelow` prop of a layout `Stack.Screen` to the stack.
+export const INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME =
+  'internal_requiredScreensBelow';
+
 /**
  * Internal navigation options that Expo Router uses to control React Navigation behavior,
  * which are not available to developers directly and do not change user-defined options.
