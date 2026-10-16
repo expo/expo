@@ -80,6 +80,7 @@ const {
   resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
+const { DIRECT_MODULES, emitDirectPackage } = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -366,7 +367,17 @@ function linkPrecompiledPods(identities, records, cacheDir) {
  * with no sources: the pod's own `no-apple-sources` report covers it.
  */
 function emitSourceModule(identity, hasManifest, emitContext) {
-  const { moduleRoot, podName, iosDeploymentTarget, spmPackages, sources, podspec } = identity;
+  const { moduleRoot, packageName, podName, iosDeploymentTarget, spmPackages, sources, podspec } =
+    identity;
+  if (hasManifest && DIRECT_MODULES.has(packageName)) {
+    return emitDirectPackage({
+      moduleRoot,
+      packageName,
+      outDir: emitContext.outDir,
+      compileInterfacesDir: emitContext.frameworkSearchPath,
+      macroTool: emitContext.macroTool,
+    });
+  }
   if (hasManifest) return emitSourceManifestPackage(moduleRoot, emitContext);
   if (podspec.linkage != null) {
     return { refusal: { reason: 'needs-manifest-for-linkage', ...podspec.linkage } };
@@ -607,7 +618,7 @@ function watchPaths(identities, { entitlementPath, podfilePropertiesPath }) {
 // Swift macros need the prebuilt plugin executable; mirrors
 // project_integrator.rb#resolve_macros_plugin_dir.
 // It declares no SwiftPM products, so it travels as a compiler flag, not a dependency.
-function macroPluginFlags(coreModuleRoot) {
+function macroPluginTool(coreModuleRoot) {
   const macroPluginFault = (
     what,
     missing,
@@ -638,6 +649,11 @@ function macroPluginFlags(coreModuleRoot) {
       macroPluginFault(`The Expo Swift macro plugin is missing its executable at ${tool}.`, 'it')
     );
   }
+  return tool;
+}
+
+function macroPluginFlags(coreModuleRoot) {
+  const tool = macroPluginTool(coreModuleRoot);
   return ['-Xfrontend', '-load-plugin-executable', '-Xfrontend', `${tool}#ExpoModulesMacros`];
 }
 
@@ -728,6 +744,9 @@ module.exports = function expoSpmPlugin(context) {
       get macroFlags() {
         return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
       },
+      get macroTool() {
+        return macroPluginTool(core.moduleRoot);
+      },
     });
   }
 
@@ -748,6 +767,10 @@ module.exports = function expoSpmPlugin(context) {
   logListed('built by an app build phase', jsiHeadersPkgPath != null ? [JSI_POD] : []);
   logListed('paired runtime frameworks', summary.precompiledPods);
   logListed('source via checked-in manifest', summary.manifestPackages);
+  logListed(
+    'source via direct checked-in manifest',
+    summary.manifestPackages.filter((name) => DIRECT_MODULES.has(name))
+  );
   logListed('source pure-Swift', summary.pureSwiftPods);
   logListed('React wired into', summary.reactWiredPods);
   logListed('gated off', summary.gatedOffProducts);
