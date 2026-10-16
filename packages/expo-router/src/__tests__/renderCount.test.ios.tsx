@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { useEffect, type ComponentType, type ReactNode } from 'react';
 import { Text } from 'react-native';
 
-import { router, useNavigation, usePathname, useRouter } from '../exports';
+import { router, useFocusEffect, useNavigation, usePathname, useRouter } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -205,6 +205,27 @@ describe('Stack render counts', () => {
       expectNoRerenders();
     }
   );
+
+  it('pushed screen using useFocusEffect renders once', async () => {
+    const twoRender = jest.fn();
+    const focusEffect = jest.fn();
+
+    await renderRouter({
+      _layout: () => <TestStack />,
+      index: () => <Text testID="index">Index</Text>,
+      two: function Two() {
+        twoRender();
+        useFocusEffect(focusEffect);
+        return <Text testID="two">Two</Text>;
+      },
+    });
+
+    await act(() => router.push('/two'));
+
+    expect(screen.getByTestId('two')).toBeVisible();
+    expect(twoRender).toHaveBeenCalledTimes(1);
+    expect(focusEffect).toHaveBeenCalledTimes(1);
+  });
 
   it('screens are always rerendered when pathname changes', async () => {
     const layoutRender = jest.fn();
