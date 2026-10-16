@@ -24,6 +24,15 @@ export async function getAuthenticatedUserAsync() {
 }
 
 /**
+ * Returns public user data by the given username.
+ * @param username - The username of the user to retrieve.
+ */
+export async function getUserAsync(username: string) {
+  const { data } = await octokit.users.getByUsername({ username });
+  return data;
+}
+
+/**
  * Requests for the pull request object.
  */
 export async function getPullRequestAsync(
