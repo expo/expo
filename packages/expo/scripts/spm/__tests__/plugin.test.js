@@ -1121,7 +1121,9 @@ describe('where precompiled modules and headers come from', () => {
     expect(warning).toContain(sourceAt('env', 'ExpoModulesCore').dir);
     expect(warning).toContain('EXPO_PRECOMPILED_MODULES_PATH');
     expect(warning).toContain('can crash the app');
-    expect(warning).toContain('`node tools/bin/expotools.js prebuild expo-font`');
+    expect(warning).toContain(
+      'from the Expo repository root, build the packages into the same place as ExpoModulesCore with `node tools/bin/expotools.js prebuild expo-font`'
+    );
   });
 
   it('warns, and emits the direct module, when another precompiled module comes from a different place', () => {
@@ -1181,7 +1183,7 @@ describe('where precompiled modules and headers come from', () => {
   );
 
   const prebuildCoreHint =
-    '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
+    'From the Expo repository root, run `node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
 
   // The lookup tries EXPO_PRECOMPILED_MODULES_PATH, then the monorepo, then npm, so headers
   // found past the place ExpoModulesCore comes from mean that place has none.
@@ -1264,7 +1266,9 @@ describe('where precompiled modules and headers come from', () => {
       });
       expect(searched.length).toBeGreaterThan(0);
       for (const candidate of searched) expect(thrown.message).toContain(candidate);
-      expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-modules-core`');
+      expect(thrown.message).toContain(
+        'From the Expo repository root, run `node tools/bin/expotools.js prebuild expo-modules-core`'
+      );
       expect(emitDirectPackage).not.toHaveBeenCalled();
     } finally {
       if (previous === undefined) {
@@ -4045,7 +4049,9 @@ describe('ExpoModulesJSI', () => {
       expect(thrown.message).toContain('ExpoModulesJSIHeaders');
       expect(thrown.message).toMatch(/only the headers/);
       expect(thrown.message).toMatch(/reinstall/i);
-      expect(thrown.message).toContain('`node tools/bin/expotools.js prebuild expo-modules-jsi`');
+      expect(thrown.message).toContain(
+        'From the Expo repository root, build the headers with `node tools/bin/expotools.js prebuild expo-modules-jsi`'
+      );
     });
   });
 
