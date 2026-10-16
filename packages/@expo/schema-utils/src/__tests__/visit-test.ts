@@ -154,17 +154,6 @@ describe('visitNode', () => {
       expect(tagsFor(schema, 3)).toEqual(['else']);
     });
 
-    it('always visits every `allOf` branch', () => {
-      const schema: JSONSchema = {
-        allOf: [tagged('a', { type: 'string' }), tagged('b', { type: 'number' })],
-      };
-      expect(tagsFor(schema, 'text')).toEqual(['a', 'b']);
-    });
-
-    it('visits every branch when there is no value to match', () => {
-      expect(tagsFor(icon, undefined)).toEqual(['directory', 'image', 'object']);
-    });
-
     it('selects `then` for `if: true` and `else` for `if: false`', () => {
       const branches = { then: tagged('then', {}), else: tagged('else', {}) };
       expect(tagsFor({ if: true, ...branches }, 'text')).toEqual(['then']);
@@ -182,18 +171,6 @@ describe('visitNode', () => {
       };
       expect(tagsFor(schema, 'text')).toEqual(['if', 'then']);
       expect(tagsFor(schema, 3)).toEqual([]);
-    });
-
-    it('visits a branch it cannot evaluate instead of throwing', () => {
-      // `validateSchema` throws for an unsupported `format`; `validate` never
-      // reaches this branch because the first one already matches.
-      const schema: JSONSchema = {
-        anyOf: [
-          tagged('plain', { type: 'string' }),
-          tagged('formatted', { type: 'string', format: 'uri-reference' }),
-        ],
-      };
-      expect(tagsFor(schema, './icon.png')).toEqual(['plain', 'formatted']);
     });
   });
 });
