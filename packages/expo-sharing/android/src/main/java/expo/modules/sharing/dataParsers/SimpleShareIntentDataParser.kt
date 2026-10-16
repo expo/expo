@@ -17,8 +17,8 @@ internal class SimpleShareIntentDataParser {
     }
 
     private fun handleSendAction(context: Context, intent: Intent, type: String): List<SharePayload> {
-      val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }
       val uri = intent.getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
+      val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeUnless { uri != null && it.isBlank() }
 
       return listOfNotNull(
         text?.let { createTextPayload(it) },

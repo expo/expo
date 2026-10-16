@@ -26,7 +26,7 @@ class ResolvingShareIntentDataParser {
 
     private fun handleSendAction(context: Context, intent: Intent, type: String): List<ResolvedSharePayload> {
       val uri = intent.getParcelableExtraCompat<Uri>(Intent.EXTRA_STREAM)
-      return extractTextPayload(intent) + listOfNotNull(uri?.let { resolveUri(context, it, type) })
+      return extractTextPayload(intent, hasStream = uri != null) + listOfNotNull(uri?.let { resolveUri(context, it, type) })
     }
 
     private fun handleSendMultipleAction(context: Context, intent: Intent, type: String): List<ResolvedSharePayload> {
@@ -34,8 +34,8 @@ class ResolvingShareIntentDataParser {
       return uris?.map { resolveUri(context, it, type) } ?: emptyList()
     }
 
-    private fun extractTextPayload(intent: Intent): List<ResolvedSharePayload> {
-      val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() } ?: return emptyList()
+    private fun extractTextPayload(intent: Intent, hasStream: Boolean): List<ResolvedSharePayload> {
+      val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.takeUnless { hasStream && it.isBlank() } ?: return emptyList()
 
       if (android.util.Patterns.WEB_URL.matcher(text).matches()) {
         return listOf(resolveUrlContext(text))
