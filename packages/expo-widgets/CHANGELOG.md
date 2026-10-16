@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Fix Android apps crashing at launch with `constructor cannot be null` when they use expo-widgets. The `CustomNotification` class now has a constructor that throws, because instances only come from `CustomNotificationFactory`. ([#51655](https://github.com/expo/expo/pull/51655) by [@voida6](https://github.com/voida6))
+- Fix the Android build failing with `Unresolved reference 'jakex7'`. Custom notifications now import the `io.github.expo.peek` packages that the `peek-emittables` dependency provides. ([#51654](https://github.com/expo/expo/pull/51654) by [@voida6](https://github.com/voida6))
+- [Android] Fix the layout registry script exiting without output when the package path contains a symlink, for example in a pnpm install. ([#51641](https://github.com/expo/expo/pull/51641) by [@juliusmarminge](https://github.com/juliusmarminge))
+- Updated dependencies. ([#51617](https://github.com/expo/expo/pull/51617))
+  - @expo/ui@58.0.20
+
 ## 58.0.19
 
 ### Patch Changes

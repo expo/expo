@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- [Web] Fix `globalThis.expo` missing on web when Rolldown or `vite build` on Vite 8 drops `ensureNativeModulesAreInstalled` and the polyfill it imports. The module is now listed in `sideEffects`. ([#51624](https://github.com/expo/expo/pull/51624) by [@Kudo](https://github.com/Kudo))
+
 ## 58.0.20
 
 ### Patch Changes

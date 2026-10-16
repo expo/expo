@@ -3996,7 +3996,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.19
+        specifier: workspace:^58.0.20
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0

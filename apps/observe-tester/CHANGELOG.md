@@ -1,5 +1,19 @@
 # observe-tester
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51609](https://github.com/expo/expo/pull/51609), [#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51693](https://github.com/expo/expo/pull/51693), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-app-metrics@58.0.13
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-haptics@58.0.7
+  - expo-splash-screen@58.0.10
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo@58.0.13
+
 ## 1.0.6
 
 ### Patch Changes
