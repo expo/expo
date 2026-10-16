@@ -86,7 +86,7 @@ const {
   resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const { DIRECT_MODULES, emitDirectPackage, prepareDirectWatchPaths } = require('./direct');
+const { emitDirectPackage, prepareDirectWatchPaths, readDirectManifestFlag } = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -119,7 +119,7 @@ function collectAutolinkedRoots(autolinking) {
  * podspec dir that is gone is its own declaring root, or two missing packages would
  * walk up to one ancestor and pass for one.
  */
-function podIdentity(record, pod, packageName, autolinkedRoot, scanSources) {
+function podIdentity(record, pod, packageName, autolinkedRoot, readModuleRoot) {
   const documentedRoot = documentedPackageRoot(record);
   const walkedRoot = autolinkedRoot ?? findModuleRoot(pod.podspecDir);
   const declaringRoot =
@@ -138,8 +138,18 @@ function podIdentity(record, pod, packageName, autolinkedRoot, scanSources) {
     iosDeploymentTarget: record?.iosDeploymentTarget ?? null,
     spmPackages: record?.spmPackages ?? [],
     autolinkWhen: record?.autolinkWhen ?? null,
-    sources: scanSources(moduleRoot),
+    sources: readModuleRoot.sources(moduleRoot),
+    directManifest: readModuleRoot.directManifest(moduleRoot),
     podspec: readPodspecFacts({ podName: pod.podName, podspecDir: pod.podspecDir, moduleRoot }),
+  };
+}
+
+/** `read`, run at most once per module root: several pods can share one. */
+function oncePerModuleRoot(read) {
+  const results = new Map();
+  return (moduleRoot) => {
+    if (!results.has(moduleRoot)) results.set(moduleRoot, read(moduleRoot));
+    return results.get(moduleRoot);
   };
 }
 
@@ -149,10 +159,10 @@ function podIdentity(record, pod, packageName, autolinkedRoot, scanSources) {
  * @param metadata `readPrebuiltMetadata()`: records by pod name.
  */
 function resolvePodIdentities(modules, metadata, autolinkedRoots) {
-  const sourceScans = new Map();
-  const scanSources = (moduleRoot) =>
-    sourceScans.get(moduleRoot) ??
-    sourceScans.set(moduleRoot, scanAppleSources(moduleRoot)).get(moduleRoot);
+  const readModuleRoot = {
+    sources: oncePerModuleRoot(scanAppleSources),
+    directManifest: oncePerModuleRoot(readDirectManifestFlag),
+  };
   const identities = new Map();
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
@@ -163,7 +173,7 @@ function resolvePodIdentities(modules, metadata, autolinkedRoots) {
           pod,
           mod.packageName,
           autolinkedRoots.get(mod.packageName),
-          scanSources
+          readModuleRoot
         )
       );
     }
@@ -375,10 +385,7 @@ function linkPrecompiledPods(identities, records, cacheDir) {
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
     if (record.linkedAs != null) continue;
-    if (
-      DIRECT_MODULES.has(identity.packageName) &&
-      fs.existsSync(path.join(identity.moduleRoot, 'Package.swift'))
-    ) {
+    if (identity.directManifest && fs.existsSync(path.join(identity.moduleRoot, 'Package.swift'))) {
       continue;
     }
     const framework = resolveFlavoredFramework({
@@ -470,9 +477,17 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
  * with no sources: the pod's own `no-apple-sources` report covers it.
  */
 function emitSourceModule(identity, hasManifest, emitContext) {
-  const { moduleRoot, packageName, podName, iosDeploymentTarget, spmPackages, sources, podspec } =
-    identity;
-  if (hasManifest && DIRECT_MODULES.has(packageName)) {
+  const {
+    moduleRoot,
+    packageName,
+    podName,
+    iosDeploymentTarget,
+    spmPackages,
+    sources,
+    podspec,
+    directManifest,
+  } = identity;
+  if (hasManifest && directManifest) {
     return emitDirectPackage({
       moduleRoot,
       packageName,
@@ -679,6 +694,8 @@ function summarizeRecords(
     ...(react != null ? emitted : []),
   ];
   const podNames = (list) => list.map((r) => r.identity.podName);
+  const packageNames = (list) => list.map((r) => r.identity.packageName);
+  const fromManifests = emitted.filter((r) => r.linkedAs === 'manifest');
 
   return {
     packageDependencies: emitted.map((r) => r.emission.packageDep),
@@ -693,9 +710,8 @@ function summarizeRecords(
     ),
     xcconfigLinkage,
     precompiledPods: podNames(precompiled),
-    manifestPackages: emitted
-      .filter((r) => r.linkedAs === 'manifest')
-      .map((r) => r.identity.packageName),
+    manifestPackages: packageNames(fromManifests),
+    directManifestPackages: packageNames(fromManifests.filter((r) => r.identity.directManifest)),
     pureSwiftPods: podNames(pureSwift),
     reactWiredPods: podNames(reactWired),
   };
@@ -909,10 +925,7 @@ module.exports = function expoSpmPlugin(context) {
   logListed('built by an app build phase', jsiHeadersPkgPath != null ? [JSI_POD] : []);
   logListed('paired runtime frameworks', summary.precompiledPods);
   logListed('source via checked-in manifest', summary.manifestPackages);
-  logListed(
-    'source via direct checked-in manifest',
-    summary.manifestPackages.filter((name) => DIRECT_MODULES.has(name))
-  );
+  logListed('source via direct checked-in manifest', summary.directManifestPackages);
   logListed('source pure-Swift', summary.pureSwiftPods);
   logListed('React wired into', summary.reactWiredPods);
   logListed('gated off', summary.gatedOffProducts);
@@ -1012,7 +1025,7 @@ module.exports = function expoSpmPlugin(context) {
     );
   }
 
-  const directWatchPaths = prepareDirectWatchPaths(summary.manifestPackages, outDir);
+  const directWatchPaths = prepareDirectWatchPaths(summary.directManifestPackages, outDir);
   return {
     packageDependencies: summary.packageDependencies,
     productDependencies: summary.productDependencies,

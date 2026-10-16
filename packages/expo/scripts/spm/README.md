@@ -39,7 +39,8 @@ prebuild for an app that consumes the SwiftPM plugin.
 Lookup runs for **every** resolved pod except ExpoModulesJSI (see below), not
 just the core frameworks. Any module with a `spm.config.json` product is
 consumed as a precompiled framework the moment its artifact exists — no
-`Package.swift` is generated for it, and none is needed. Path 3 is the
+`Package.swift` is generated for it, and none is needed. The exception is a
+module built from its checked-in `Package.swift` (see below). Path 3 is the
 published-package case: a module shipping
 `prebuilds/output/<flavor>/xcframeworks` is picked up with no local build.
 
@@ -80,6 +81,15 @@ compile, the phase finds the installed `expo-modules-jsi` and runs its
 build folder, then copies it to where the app links and embeds it. When the
 headers carry an `expo-package.json` version stamp, sync fails if that version differs
 from the installed `expo-modules-jsi` or from the copy the phase builds.
+
+## Modules built from their checked-in Package.swift
+
+A module opts in with `"directManifest": true` at the top level of its
+`spm.config.json`. When it also ships a `Package.swift`, the plugin builds it
+from that manifest, even when a precompiled artifact exists. The manifest
+compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
+xcframeworks. Without the flag, a checked-in `Package.swift` is mirrored into a
+generated package, as for every other module.
 
 ## Unsupported modules
 
