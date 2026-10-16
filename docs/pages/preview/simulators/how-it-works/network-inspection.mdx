@@ -22,7 +22,7 @@ To reach Metro on your computer without local egress, start Metro with a public 
 
 ## How local egress works
 
-Local egress is an experimental feature for Android and iOS sessions. On Android, it requires EAS CLI 24.9.0 or later. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
+Local egress is an experimental feature for Android and iOS sessions. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
 
 When you start a session with `--egress local`, these steps occur:
 
@@ -149,7 +149,7 @@ Capture sends the app's traffic through a proxy on the session's machine and dec
 
 <Collapsible summary="Does local egress work on Android?">
 
-Yes, with EAS CLI 24.9.0 or later. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. Earlier EAS CLI versions fail with `--egress local is only supported with --platform ios`.
+Yes. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. If EAS CLI fails with `--egress local is only supported with --platform ios`, update EAS CLI.
 
 </Collapsible>
 

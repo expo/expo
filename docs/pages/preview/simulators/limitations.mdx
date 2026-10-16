@@ -14,7 +14,6 @@ Expo Simulators is an experimental preview. Its commands, flags, and behavior ca
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Only accounts in the limited-access preview can start sessions. | Check access with `eas simulator:availability`. [Join the waitlist](https://expo.dev/services/simulators). |
 | The `simulator:*` commands and flags change often.              | Use the latest EAS CLI, and read `eas simulator:start --help`.                                             |
-| EAS CLI versions before 21.4.0 do not have the `--name` flag.   | Run `npx --yes eas-cli@latest`.                                                                            |
 
 ## Platforms and devices
 
@@ -25,7 +24,7 @@ Expo Simulators is an experimental preview. Its commands, flags, and behavior ca
 | Expo Simulators does not provide physical devices.                                                                                                                   | Use a physical device with local tools or a device cloud.                                                                                                  |
 | A session can run only an APK on Android and a simulator build on iOS. An iOS application archive must be a **.tar.gz** or **.tgz** file that contains the **.app**. | Create an APK or an iOS Simulator build. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/). |
 | Create session links for Android are still in development, and Android links need an **.apk** archive.                                                               | Use EAS CLI or the REST API if an Android link does not work.                                                                                              |
-| Local egress is an experimental feature that must be enabled for your account. On Android, it requires EAS CLI 24.9.0 or later.                                      | Contact Expo to enable it. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/).                |
+| Local egress is an experimental feature that must be enabled for your account.                                                                                       | Contact Expo to enable it. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/).                |
 
 ## Session lifetime
 

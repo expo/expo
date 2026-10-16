@@ -9,7 +9,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-The `simulator:*` commands are experimental. They appear in `eas --help` from EAS CLI 24.8.0. Install or update [EAS CLI](/eas/cli/) before running them:
+The `simulator:*` commands are experimental. Install or update [EAS CLI](/eas/cli/) before running them:
 
 <Terminal cmd={['$ eas simulator:start --help']} />
 
@@ -146,7 +146,7 @@ Treat `remoteConfig` as secret because it includes controller credentials. The b
 
 ### Browser preview links
 
-EAS CLI 25.0.0 and later prints private browser preview links by default. A private link opens only for a person who signs in to an Expo account that can view the project:
+EAS CLI prints private browser preview links by default. A private link opens only for a person who signs in to an Expo account that can view the project:
 
 ```text
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
@@ -159,7 +159,7 @@ With `--public-link`, EAS CLI prints a public link that contains the preview tok
 | `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
 | `remoteConfig.previewApiUrl`                              | Not included            | The preview API URL, with the preview token |
 
-EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. EAS CLI versions before 25.0.0 do not send the setting, so EAS saves their sessions with private links. These versions still print a public link, and their `simulator:get` prints a public link for every session. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
+EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
 ### Interactive and non-interactive behavior
 
