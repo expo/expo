@@ -366,6 +366,10 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
       }
       if (module.plugins) {
         for (const plugin of module.plugins) {
+          // Plugins resolved from a Maven repository by `id` and `version` have no local source.
+          if (!plugin.sourceDir) {
+            continue;
+          }
           const filePath = toPosixPath(path.relative(realProjectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);

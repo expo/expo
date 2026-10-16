@@ -259,6 +259,47 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     expect(iosConfig.contents).toContain('expo-modules-core');
     expect(iosConfig.contents).not.toContain('node_modules');
   });
+
+  it('should keep android module sources when a gradle plugin has no sourceDir', async () => {
+    const fixture = JSON.parse(
+      realFs.readFileSync(path.join(__dirname, 'fixtures', 'ExpoAutolinkingAndroid.json'), 'utf8')
+    );
+    fixture.modules.push({
+      packageName: 'expo-widgets',
+      packageVersion: '1.0.0',
+      projects: [{ name: 'expo-widgets', sourceDir: '/app/node_modules/expo-widgets/android' }],
+      plugins: [{ id: 'com.example.gradle-plugin', group: 'com.example', version: '1.0.0' }],
+      modules: [],
+    });
+    const stdout = JSON.stringify(fixture);
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    mockSpawnAsync.mockReset();
+    mockSpawnAsync.mockResolvedValueOnce({
+      stdout,
+      stderr: '',
+      status: 0,
+      signal: null,
+      output: [stdout, ''],
+    });
+
+    const sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
+      expoAutolinkingVersion
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: 'node_modules/expo-modules-core/android',
+      })
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: 'node_modules/expo-widgets/android',
+      })
+    );
+  });
 });
 
 describe(getExpoConfigSourcesAsync, () => {
