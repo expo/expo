@@ -33,12 +33,10 @@ Delete this file before the pull request leaves draft.
 
 ## Still to do
 
-- **iOS runtime check (not run).** Run `apps/router-tester` on an EAS iOS simulator, as described in `apps/router-tester/AGENTS.md`:
-  - Deep link to a screen that uses the prop. The back button must show on the first paint. Back must go through the inserted screens.
-  - Push to that screen from outside the stack. The push animation must be a single normal push, with no flicker.
-  - Take before and after screenshots for the pull request.
-  - An iOS simulator development build from base `9ccb2ecc266` exists: `c39d06fa-e8be-4125-850b-1e60584f60d6`.
-- **Android and web runtime checks.** Not run. Name them in the Test Plan, or run them.
+- **Demo screens (not committed).** The runtime checks used a local `apps/router-tester/app/required-below/` group: `index`, `[id]`, and `[id]/comments` with the docs example prop. A home link points to `/required-below/42/comments`. Decide if the pull request keeps them.
+- **Cold-start deep link on native (not run).** The development client does not accept an initial path. Unit tests cover the initial state.
+- **Pull request:** open it as a draft. Add the screenshots and the runtime results below to the Test Plan.
+
 - **Open risks**, accepted in the plan:
   - Until the sync, an inserted screen gets a new navigation object on each render.
   - An action that an inserted screen sends before the sync, for example `setParams` in a mount effect, can be lost.
@@ -48,4 +46,20 @@ Delete this file before the pull request leaves draft.
   - A dev warning when the prop is used on a `Stack.Screen` inside a page.
   - Moving the internal option type into `InternalNavigationOptions`. That move brings back an import cycle.
   - A test that writes a module variable during render.
-- **Pull request:** open it as a draft until the runtime check is done.
+
+## Runtime checks (2026-10-16)
+
+The before run used the same demo without the prop.
+
+- **iOS**, EAS simulator, dev build `c39d06fa`:
+  - Push from the root home: one normal push. The `[id]` back button shows from the first frame. Back goes to `[id]` (42), then to `index` (`tab: all`).
+  - Deep link `router-tester://required-below/7/comments` while the app runs: the same result.
+  - Before: no back button on `[id]/comments`.
+- **Android**, EAS emulator, dev build `ffc3f1b3`:
+  - Push and deep link: back goes to `[id]`, then to `index`.
+  - Before and after look the same: the header shows "Navigate up" because the root stack can go back. Only the back target changes.
+- **Web**, local Metro and Chrome:
+  - Deep link: the header back button shows. Header back goes to `/required-below/42`, then to `/required-below?tab=all`. The sync adds no history entry.
+  - Push from home, then browser back: goes to `/`. This matches the documented web limit.
+  - Before: no header back button after the deep link.
+  - No console errors.
