@@ -35,6 +35,39 @@ For more information about using stack navigator, read the stack layout guide:
   description="Learn how to use the Stack layout in Expo Router."
 />
 
+### Required screens below a screen
+
+> **warning** This API is unstable and can change in a minor release.
+
+A deep link or a push from another screen can open a screen with nothing below it in the stack. Then the back action leaves the stack. Use the `unstable_requiredScreensBelow` prop of `Stack.Screen` in a layout to list the screens that must be below that screen.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="[id]/comments"
+        unstable_requiredScreensBelow={[{ name: 'index', params: { tab: 'all' } }, '[id]']}
+      />
+    </Stack>
+  );
+}
+```
+
+When the user opens **/42/comments**, the stack contains `index`, `[id]` with `id` set to `42`, and `[id]/comments`.
+
+- The stack adds a listed screen only when no lower route has the same name and the same path params.
+- The stack adds the screens directly below the focused screen, in the listed order.
+- A screen listed by name gets the matching path params of the focused screen. A screen listed as an object uses its own `params`.
+- The stack skips names that are not routes of the stack.
+- Screens that the stack already added stay when the prop changes or is removed.
+- Until the stack updates its state, `router.canGoBack()` returns the previous result.
+- On web, the added screens do not get browser history entries, so browser back from the focused screen skips them.
+
+The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.
+
 ## API
 
 ```js
