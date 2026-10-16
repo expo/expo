@@ -496,7 +496,7 @@ describe('resolveHeadersXCFramework', () => {
   });
 
   const rebuildHint =
-    'Reinstall test-package, or from the Expo repository root run `node tools/bin/expotools.js prebuild test-package`. Then run `npx react-native spm update` again.';
+    'Reinstall test-package, or from the Expo repository root run `node tools/bin/expotools.js prebuild test-package`. Then run `node node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.';
 
   it('rejects an expanded XCFramework with no Info.plist', () => {
     const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));

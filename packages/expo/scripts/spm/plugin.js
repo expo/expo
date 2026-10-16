@@ -68,6 +68,7 @@ const {
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
   reportUnsupported,
+  RERUN_SPM_UPDATE,
   unmappedPodDependencies,
 } = require('./diagnostics');
 const {
@@ -402,7 +403,7 @@ function mixedSourcesReport(coreSource, subjects) {
       )
       .join('; ')}, but ExpoModulesCore comes from ${describeSource(coreSource)}.`,
     why: 'Precompiled Expo modules, and the headers Expo modules compile against, are bound to the exact ExpoModulesCore build they were made with, so mixing builds from different places can crash the app at launch on a missing symbol.',
-    how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; from the Expo repository root, build the packages into the same place as ExpoModulesCore with \`node tools/bin/expotools.js prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. Then run \`npx react-native spm update\` again.`,
+    how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; from the Expo repository root, build the packages into the same place as ExpoModulesCore with \`node tools/bin/expotools.js prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. ${RERUN_SPM_UPDATE}`,
   };
 }
 
@@ -430,15 +431,15 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
       why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
       how:
         coreSource.kind === 'env'
-          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. Then run \`npx react-native spm update\` again.`
-          : `From the Expo repository root, run ${prebuild}. Then run \`npx react-native spm update\` again.`,
+          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${RERUN_SPM_UPDATE}`
+          : `From the Expo repository root, run ${prebuild}. ${RERUN_SPM_UPDATE}`,
     });
   }
   if (headers == null) {
     throw pluginError({
       what: `Expo modules built from their own Package.swift compile against ${productName}Headers.xcframework, which was not found (searched ${headersXCFrameworkSearchPaths(lookup).join(', ')}).`,
       why: `The installed ${packageName} was published without a headers xcframework, or the local prebuild has not produced it yet.`,
-      how: `From the Expo repository root, run \`node tools/bin/expotools.js prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. Then run \`npx react-native spm update\` again.`,
+      how: `From the Expo repository root, run \`node tools/bin/expotools.js prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. ${RERUN_SPM_UPDATE}`,
     });
   }
   const mixed = mixedSourcesReport(coreSource, [

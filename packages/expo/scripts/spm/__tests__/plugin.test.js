@@ -80,6 +80,7 @@ const {
   metadataEntry,
   printed,
   removeTempDirs,
+  rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,
@@ -1153,7 +1154,7 @@ describe('a module whose spm.config.json is not valid JSON', () => {
     expect(thrown.message).toContain(`${configPath} is not valid JSON`);
     expect(thrown.message).toContain('"directManifest"');
     expect(thrown.message).toMatch(/fix the JSON in/i);
-    expect(thrown.message).toContain('`npx react-native spm update`');
+    expect(thrown.message).toContain(rerunSpmUpdate);
     expect(emitDirectPackage).not.toHaveBeenCalled();
   });
 });
@@ -1248,6 +1249,7 @@ describe('where precompiled modules and headers come from', () => {
     expect(warning).toContain(sourceAt('env', 'ExpoModulesCore').dir);
     expect(warning).toContain('EXPO_PRECOMPILED_MODULES_PATH');
     expect(warning).toContain('can crash the app');
+    expect(warning).toContain(rerunSpmUpdate);
     expect(warning).toContain(
       'from the Expo repository root, build the packages into the same place as ExpoModulesCore with `node tools/bin/expotools.js prebuild expo-font`'
     );
@@ -1332,7 +1334,7 @@ describe('where precompiled modules and headers come from', () => {
         `ExpoModulesCoreHeaders.xcframework is missing under ${coreDir}`
       );
       expect(thrown.message).not.toContain('but ExpoModulesCore comes from');
-      expect(thrown.message).toContain('`npx react-native spm update`');
+      expect(thrown.message).toContain(rerunSpmUpdate);
       // The prebuild writes to the monorepo output, never to EXPO_PRECOMPILED_MODULES_PATH.
       if (coreKind === 'env') {
         expect(thrown.message).toContain('Unset EXPO_PRECOMPILED_MODULES_PATH');
@@ -1462,6 +1464,7 @@ describe('where precompiled modules and headers come from', () => {
       expect(thrown.message).toContain(
         'From the Expo repository root, run `node tools/bin/expotools.js prebuild expo-modules-core`'
       );
+      expect(thrown.message).toContain(rerunSpmUpdate);
       expect(emitDirectPackage).not.toHaveBeenCalled();
     } finally {
       if (previous === undefined) {

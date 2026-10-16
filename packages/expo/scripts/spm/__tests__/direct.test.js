@@ -12,7 +12,7 @@ jest.mock('../cli', () => ({
 
 const { runDumpPackage } = require('../cli');
 const { emitDirectPackage, prepareDirectWatchPaths } = require('../direct');
-const { thrownBy } = require('./helpers');
+const { rerunSpmUpdate, thrownBy } = require('./helpers');
 
 describe('emitDirectPackage', () => {
   const savedBuildDir = process.env.BUILD_DIR;
@@ -91,7 +91,7 @@ describe('emitDirectPackage', () => {
     );
     expect(emit).toThrow('re-export ExpoModulesJSI');
     expect(emit).toThrow('"expo": { "autolinking": { "exclude": [...] } }');
-    expect(emit).toThrow('`npx react-native spm update`');
+    expect(emit).toThrow(rerunSpmUpdate);
     expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
   });
 
@@ -161,7 +161,7 @@ describe('emitDirectPackage', () => {
       expect(thrown.message).toContain('`swift package dump-package`');
       expect(thrown.message).toContain(path.join(root, 'expo-haptics'));
       expect(thrown.message).toContain('xcode-select');
-      expect(thrown.message).toContain('`npx react-native spm update`');
+      expect(thrown.message).toContain(rerunSpmUpdate);
       expect(thrown.cause).toBe(error);
     });
 

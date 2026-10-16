@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { SPM_UPDATE_COMMAND } = require('./commands');
-const { pluginError } = require('./diagnostics');
+const { pluginError, RERUN_SPM_UPDATE } = require('./diagnostics');
 
 const FLAVORS = ['debug', 'release'];
 
@@ -133,7 +133,7 @@ function incompleteXCFrameworkError(what, packageName) {
   return pluginError({
     what,
     why: 'The XCFramework is incomplete because its build or its extraction did not finish, or the file is damaged.',
-    how: `Reinstall ${packageName}, or from the Expo repository root run \`node tools/bin/expotools.js prebuild ${packageName}\`. Then run \`npx react-native spm update\` again.`,
+    how: `Reinstall ${packageName}, or from the Expo repository root run \`node tools/bin/expotools.js prebuild ${packageName}\`. ${RERUN_SPM_UPDATE}`,
   });
 }
 
