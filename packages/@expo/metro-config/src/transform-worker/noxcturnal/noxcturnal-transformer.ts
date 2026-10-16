@@ -526,7 +526,10 @@ function getEarlyFallbackReason(
       !(
         directive === 'dom' ||
         directive === 'server' ||
-        (directive === 'client' && options.customTransformOptions?.environment === 'react-server')
+        (directive === 'client' &&
+          (options.customTransformOptions?.environment === 'react-server' ||
+            (options.customTransformOptions?.environment == null &&
+              !sourceFacts.hasActionableClientDirective)))
       )
     ) {
       return 'expo-directive';

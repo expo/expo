@@ -452,13 +452,43 @@ it.each([
   expect(result.result.code).not.toContain('react/compiler-runtime');
 });
 
-it('keeps compiled Expo workspace client directives on the Babel path', async () => {
-  const result = await transformNodeModuleWithNoxcturnal({
+it.each([true, false])(
+  'transforms workspace client directives natively in client builds (dev: %s)',
+  async (dev) => {
+    const source = `"use client"; module.exports = 1;`;
+    const input = {
+      filename: '/repo/packages/expo-router/build/value.js',
+      projectRoot: '/repo/apps/example',
+      source,
+      options: options({ dev }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    };
+    const result = await transformNodeModuleWithNoxcturnal(input);
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
+
+    const metroResult = await transformFileFullyWithNoxcturnal(input);
+    expect(metroResult.status).toBe('complete');
+    if (metroResult.status !== 'complete') return;
+    expect(canonicalModuleBody(metroResult.result.code, true)).toBe(canonicalModuleBody(source));
+    expect(metroResult.dependencies).toEqual([]);
+    expect(metroResult.result.metadata.reactClientReference).toBeUndefined();
+  }
+);
+
+it.each([
+  `"use client"; "use server"; export async function save() { return 1; }`,
+  `"use client"; "use dom"; export default function Component() { return null; }`,
+])('keeps actionable workspace client directives on Babel: %s', async (source) => {
+  const result = await transformFileFullyWithNoxcturnal({
     filename: '/repo/packages/expo-router/build/value.js',
     projectRoot: '/repo/apps/example',
-    source: `'use client'; module.exports = 1;`,
+    source,
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
+    config: fullConfig(),
   });
   expect(result).toEqual({ status: 'fallback', reason: 'expo-directive' });
 });
