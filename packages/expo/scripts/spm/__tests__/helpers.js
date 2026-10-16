@@ -4,6 +4,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+const { SPM_UPDATE_COMMAND } = require('../commands');
+
 /** A podspec with the given body lines. */
 const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
 
@@ -15,8 +17,7 @@ const metadataEntry = (packageRoot, productName, fields = {}) => ({
 });
 
 /** How an error asks the user to update the app's packages; Expo apps have no `react-native` CLI. */
-const rerunSpmUpdate =
-  'Then run `node node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.';
+const rerunSpmUpdate = `Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`;
 
 const tempDirs = [];
 
