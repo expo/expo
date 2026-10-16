@@ -108,8 +108,17 @@ const visitItems = (
   }
 };
 
-const matches = (schema: JSONSchema, value: unknown, path: string): boolean =>
-  validateSchema(schema, value, path) === null;
+// `validateSchema` throws for what it cannot evaluate, such as an unsupported
+// `format`. It checks a branch's other string keywords first, so a throw means
+// the branch passed everything it could check: treat it as applying, as the
+// walk did before it matched values, rather than abort the whole walk.
+const matches = (schema: JSONSchema | boolean, value: unknown, path: string): boolean => {
+  try {
+    return validateSchema(schema as JSONSchema, value, path) === null;
+  } catch {
+    return true;
+  }
+};
 
 const visitEach = (
   schemas: unknown,
@@ -131,8 +140,10 @@ const visitEach = (
 // Only the subschemas that apply to `value` are visited. A `oneOf`/`anyOf`
 // branch the value does not match, or the `then`/`else` its `if` did not
 // select, describes some other value: visiting it reported, for example, the
-// image branch of `ios.icon` for a `.icon` directory. Without a value there is
-// nothing to match against, so every subschema is visited.
+// image branch of `ios.icon` for a `.icon` directory. A matching `if` is
+// visited too, since its annotations apply (draft-07). A path declared in both
+// `if` and `then` is therefore visited twice, as before. Without a value there
+// is nothing to match against, so every subschema is visited.
 const visitCombinators = (
   schema: JSONSchema,
   value: unknown,
@@ -146,21 +157,24 @@ const visitCombinators = (
   visitEach(schema.anyOf, value, visitor, path, applies);
   visitEach(schema.oneOf, value, visitor, path, applies);
 
+  // `then` and `else` mean nothing without an `if`. A boolean `if` is a valid
+  // schema: `true` selects `then`, `false` selects `else`.
   const { if: condition, then: consequent, else: alternative } = schema;
-  if (!isSchemaNode(condition)) {
+  if (condition === undefined) {
     return;
   }
+  let selected: unknown[];
   if (!hasValue) {
-    for (const branch of [condition, consequent, alternative]) {
-      if (isSchemaNode(branch)) {
-        visitNode(branch, value, visitor, path);
-      }
-    }
-    return;
+    selected = [condition, consequent, alternative];
+  } else if (matches(condition as JSONSchema | boolean, value, path)) {
+    selected = [condition, consequent];
+  } else {
+    selected = [alternative];
   }
-  const branch = matches(condition, value, path) ? consequent : alternative;
-  if (isSchemaNode(branch)) {
-    visitNode(branch, value, visitor, path);
+  for (const branch of selected) {
+    if (isSchemaNode(branch)) {
+      visitNode(branch, value, visitor, path);
+    }
   }
 };
 

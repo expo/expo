@@ -164,10 +164,56 @@ describe('visitNode', () => {
     it('visits every branch when there is no value to match', () => {
       expect(tagsFor(icon, undefined)).toEqual(['directory', 'image', 'object']);
     });
+
+    it('selects `then` for `if: true` and `else` for `if: false`', () => {
+      const branches = { then: tagged('then', {}), else: tagged('else', {}) };
+      expect(tagsFor({ if: true, ...branches }, 'text')).toEqual(['then']);
+      expect(tagsFor({ if: false, ...branches }, 'text')).toEqual(['else']);
+    });
+
+    it('ignores `then` and `else` without an `if`', () => {
+      expect(tagsFor({ then: tagged('then', {}), else: tagged('else', {}) }, 'text')).toEqual([]);
+    });
+
+    it('visits a matching `if` itself, for its annotations', () => {
+      const schema: JSONSchema = {
+        if: tagged('if', { type: 'string' }),
+        then: tagged('then', {}),
+      };
+      expect(tagsFor(schema, 'text')).toEqual(['if', 'then']);
+      expect(tagsFor(schema, 3)).toEqual([]);
+    });
+
+    it('visits a branch it cannot evaluate instead of throwing', () => {
+      // `validateSchema` throws for an unsupported `format`; `validate` never
+      // reaches this branch because the first one already matches.
+      const schema: JSONSchema = {
+        anyOf: [
+          tagged('plain', { type: 'string' }),
+          tagged('formatted', { type: 'string', format: 'uri-reference' }),
+        ],
+      };
+      expect(tagsFor(schema, './icon.png')).toEqual(['plain', 'formatted']);
+    });
   });
 });
 
 describe('visit', () => {
+  it('matches `oneOf` branches after resolving `$ref`s', () => {
+    const schema = {
+      properties: {
+        icon: { oneOf: [{ $ref: '#/definitions/Directory' }, { $ref: '#/definitions/Image' }] },
+      },
+      definitions: {
+        Directory: { type: 'string', pattern: '\\.icon$', tag: 'directory' },
+        Image: { type: 'string', not: { pattern: '\\.icon$' }, tag: 'image' },
+      },
+    } as unknown as JSONSchema;
+    const tags: unknown[] = [];
+    visit(schema, { icon: './app.icon' }, (visited) => visited.tag && tags.push(visited.tag));
+    expect(tags).toEqual(['directory']);
+  });
+
   it('dereferences `$ref`s and visits the referenced path once', () => {
     const schema = {
       properties: { android: { $ref: '#/definitions/Android' } },
