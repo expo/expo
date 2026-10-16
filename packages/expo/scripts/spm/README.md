@@ -84,8 +84,9 @@ A module opts in with `"directManifest": true` at the top level of its
 `spm.config.json`. When it also ships a `Package.swift`, the plugin builds it
 from that manifest, even when a precompiled artifact exists. The manifest
 compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
-xcframeworks. Without the flag, a checked-in `Package.swift` is mirrored into a
-generated package, as for every other module.
+xcframeworks. Without the flag, the module is linked precompiled when an
+artifact exists; otherwise its `Package.swift` is mirrored into a generated
+package, as for every other module.
 
 ## Unsupported modules
 
