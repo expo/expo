@@ -1,5 +1,6 @@
 package expo.modules.taskManager;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
@@ -7,6 +8,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import expo.modules.interfaces.taskManager.TaskExecutionCallback;
 import expo.modules.interfaces.taskManager.TaskInterface;
@@ -107,6 +110,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   private void updateOrScheduleJob(Context context, TaskInterface task, List<PersistableBundle> data) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    boolean canPersistJobs = ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_BOOT_COMPLETED) == PackageManager.PERMISSION_GRANTED;
 
     if (jobScheduler == null) {
       Log.e(this.getClass().getName(), "Job scheduler not found!");
@@ -140,10 +144,10 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     if (pendingJobs.size() >= getJobLimit() - JOB_LIMIT_BUFFER && newestJob != null) {
       Log.i(TAG, "Approaching job limit (" + pendingJobs.size() + "). Merging data for task '" + task.getName() + "'.");
       try {
-        JobInfo mergedJobInfo = createJobInfoByAddingData(newestJob, data);
+        JobInfo mergedJobInfo = createJobInfoByAddingData(newestJob, data, canPersistJobs);
         jobScheduler.cancel(newestJob.getId());
         jobScheduler.schedule(mergedJobInfo);
-      } catch (IllegalStateException e) {
+      } catch (IllegalArgumentException | IllegalStateException e) {
         Log.e(this.getClass().getName(), "Unable to merge job: " + e.getMessage());
       }
       return;
@@ -151,14 +155,14 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     // Under limit: schedule as new job. Don't touch existing jobs.
     try {
-      JobInfo jobInfo = createJobInfo(context, task, newJobId, data);
+      JobInfo jobInfo = createJobInfo(context, task, newJobId, data, canPersistJobs);
       jobScheduler.schedule(jobInfo);
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       Log.e(this.getClass().getName(), "Unable to schedule job: " + e.getMessage());
     }
   }
 
-  private JobInfo createJobInfoByAddingData(JobInfo jobInfo, List<PersistableBundle> data) {
+  private JobInfo createJobInfoByAddingData(JobInfo jobInfo, List<PersistableBundle> data, boolean persisted) {
     PersistableBundle mergedExtras = jobInfo.getExtras();
     int dataSize = mergedExtras.getInt("dataSize", 0);
 
@@ -169,7 +173,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         mergedExtras.putPersistableBundle(String.valueOf(dataSize + i), data.get(i));
       }
     }
-    return createJobInfo(jobInfo.getId(), jobInfo.getService(), mergedExtras);
+    return createJobInfo(jobInfo.getId(), jobInfo.getService(), mergedExtras, persisted);
   }
 
   private PendingIntent createTaskIntent(Context context, String appScopeKey, String taskName, int flags) {
@@ -199,10 +203,10 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return createTaskIntent(context, appScopeKey, taskName, flags);
   }
 
-  private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras) {
+  private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras, boolean persisted) {
     JobInfo.Builder jobBuilder = new JobInfo.Builder(jobId, jobService)
         .setExtras(extras)
-        .setPersisted(true)
+        .setPersisted(persisted)
         .setRequiresDeviceIdle(false);
 
     if (Build.VERSION.SDK_INT < 28) {
@@ -221,8 +225,8 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return jobBuilder.build();
   }
 
-  private JobInfo createJobInfo(Context context, TaskInterface task, int jobId, List<PersistableBundle> data) {
-    return createJobInfo(jobId, new ComponentName(context, TaskJobService.class), createExtrasForTask(task, data));
+  private JobInfo createJobInfo(Context context, TaskInterface task, int jobId, List<PersistableBundle> data, boolean persisted) {
+    return createJobInfo(jobId, new ComponentName(context, TaskJobService.class), createExtrasForTask(task, data), persisted);
   }
 
   private PersistableBundle createExtrasForTask(TaskInterface task, List<PersistableBundle> data) {
