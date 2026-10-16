@@ -8,6 +8,7 @@ import module from 'module';
 import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { fileURLToPath } from 'url';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
 import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
@@ -111,7 +112,7 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
 }
 
 /**
- * A CommonJS module observed while `installModuleCaptureHook()` was active.
+ * A module observed while `installModuleCaptureHook()` was active.
  */
 export interface CapturedModule {
   /** The module id (cache key). May diverge from `filename` for virtual modules. */
@@ -133,17 +134,23 @@ export type LoadedModuleSource =
   | { type: 'contents'; id: string; contents: string };
 
 /**
- * Observe every CommonJS module compiled while the hook is installed.
- * We hook `Module.prototype._compile` to keep each module's authoritative filename and source
- * content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it to
- * strip types from a `.ts` file.
+ * Observe every module evaluated while the hook is installed.
+ * We hook `Module.prototype._compile` to keep each CommonJS module's authoritative filename and
+ * source content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it
+ * to strip types from a `.ts` file.
+ * The modules an ES module imports never reach `_compile`, so a `module.registerHooks` load hook
+ * (Node 22.15+) records each ES module Node's loader evaluates.
  */
 export function installModuleCaptureHook(): {
   getCapturedModules: () => CapturedModule[];
   uninstall: () => void;
 } {
-  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const capturedModules: CapturedModule[] = [];
+  const loadHooks =
+    typeof module.registerHooks === 'function'
+      ? module.registerHooks({ load: createESModuleLoadHook(capturedModules) })
+      : null;
+  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const originalCompile = moduleProto._compile;
   moduleProto._compile = function (
     this: { id?: string },
@@ -158,7 +165,26 @@ export function installModuleCaptureHook(): {
     getCapturedModules: () => capturedModules,
     uninstall: () => {
       moduleProto._compile = originalCompile;
+      loadHooks?.deregister();
     },
+  };
+}
+
+/**
+ * A `module.registerHooks` load hook that records each ES module loaded from a file.
+ * CommonJS is left to the `_compile` hook, which sees the source Node runs after any transform.
+ */
+export function createESModuleLoadHook(capturedModules: CapturedModule[]): module.LoadHookSync {
+  return (url, context, nextLoad) => {
+    const result = nextLoad(url, context);
+    const isESModule = result.format === 'module' || result.format === 'module-typescript';
+    if (isESModule && url.startsWith('file:') && result.source != null) {
+      const filename = fileURLToPath(url);
+      const content =
+        typeof result.source === 'string' ? result.source : new TextDecoder().decode(result.source);
+      capturedModules.push({ id: filename, filename, content });
+    }
+    return result;
   };
 }
 
