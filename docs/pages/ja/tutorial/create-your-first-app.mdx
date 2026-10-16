@@ -59,8 +59,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ npx create-expo-app@latest StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -69,8 +69,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ yarn create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -79,8 +79,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ pnpm create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -89,8 +89,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ bun create expo StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -98,7 +98,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-このコマンドは [デフォルト](/more/create-expo/#--template) テンプレートを使用して、StickerSmash という名前の新しいプロジェクトディレクトリを作成します。このテンプレートには、Expo Router を含む、アプリ構築に必要な基本的なボイラープレートコードとライブラリが含まれています。チュートリアルの中で必要に応じてライブラリを追加していきます。
+このコマンドは [デフォルト](/more/create-expo/#--template) テンプレートを使用して、StickerSmash という名前の新しいプロジェクトディレクトリを作成します。このテンプレートには、Expo Router と Expo UI を含む、アプリ構築に必要な基本的なボイラープレートコードとライブラリが含まれています。チュートリアルの中で必要に応じてライブラリを追加していきます。
 
 <Collapsible summary="デフォルトテンプレートを使用するメリット">
 
@@ -149,11 +149,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-上記のコマンドを実行すると、**src/app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。以前のファイルは **src** ディレクトリ (**components**、**constants**、**hooks** を含む) から、スクリプトによって **example** ディレクトリに移動されます。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
+スクリプトは、既存のファイルを削除する代わりに **example** ディレクトリに移動するかどうかを尋ねます。<kbd>Enter</kbd> を押して移動します。
+
+スクリプトが完了すると、**src/app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。スクリプトは、**src** ディレクトリにあった以前のファイル (**components**、**constants**、**hooks** を含む) と **scripts** ディレクトリを **example** ディレクトリに移動します。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
 
 <Collapsible summary={<><CODE>reset-project</CODE> スクリプトは何をしますか？</>}>
 
-`reset-project` スクリプトは、プロジェクト内の **src/app** ディレクトリ構造をリセットし、プロジェクトの **src** ディレクトリにあった以前のボイラープレートファイルを、**example** という別のサブディレクトリに移動します。これはメインアプリの構造の一部ではないため、削除して構いません。
+`reset-project` スクリプトは、プロジェクト内の **src/app** ディレクトリ構造をリセットします。プロジェクトの **src** と **scripts** ディレクトリにあった以前のボイラープレートファイルを、**example** という別のサブディレクトリに移動します。**example** はメインアプリの構造の一部ではないため、削除して構いません。スクリプトファイルも **example** に移動するため、`reset-project` をもう一度実行しても動作しません。
 
 </Collapsible>
 
@@ -177,7 +179,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 上記のコマンドを実行すると:
 
 1. 開発サーバーが起動し、ターミナルウィンドウ内に QR コードが表示されます。
-2. その QR コードをスキャンしてデバイスでアプリを開きます。Android では Expo Go > **Scan QR code** オプションを使い、iOS ではデフォルトのカメラアプリを使います。
+2. その QR コードをスキャンしてデバイスでアプリを開きます。Android では Expo Go > **Scan QR** オプションを使い、iOS ではデフォルトのカメラアプリを使います。
 3. web アプリを実行するには、ターミナルで <kbd>W</kbd> を押します。デフォルトの web ブラウザで web アプリが開きます。
 
 > **info** iOS の実機では、Expo CLI と Expo Go の両方が同じ Expo アカウントでサインインしている場合にのみ、Expo Go はプロジェクトを開きます。コンピュータで `npx expo login` を実行し、同じアカウントで Expo Go にサインインしてください。エラーが解決しない場合は、[Expo Go のサインインが必要](/troubleshooting/expo-go-sign-in-required/)を参照してください。
@@ -186,7 +188,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <ContentSpotlight
   alt="すべてのプラットフォームで動作するアプリ"
-  src="/static/images/tutorial/01-app-running-on-all-platforms.webp"
+  src="/static/images/tutorial/create-your-first-app-reset.webp"
   className="max-w-[720px]"
 />
 
@@ -200,25 +202,24 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 {/* vale on */}
 
-**src/app/index.tsx** ファイルは、アプリの画面に表示されるテキストを定義します。これはアプリのエントリーポイントであり、開発サーバーが起動したときに実行されます。背景とテキストを表示するために、React Native の `<View>` や `<Text>` などのコアコンポーネントを使用します。
+**src/app/index.tsx** ファイルは、アプリの画面に表示されるテキストを定義します。これはアプリが最初に表示する画面です。背景とテキストを表示するために、React Native の `<View>` や `<Text>` などのコアコンポーネントを使用します。
 
 これらのコンポーネントに適用されるスタイルは、web で使われる CSS ではなく JavaScript オブジェクトを使います。ただし、これまでに web で CSS を使ったことがあれば、見覚えのあるプロパティが多いはずです。ほとんどの React Native コンポーネントは、JavaScript オブジェクトを値として受け取る `style` プロパティを受け付けます。詳細については [Styling in React Native](https://reactnative.dev/docs/style) を参照してください。
 
 **src/app/index.tsx** 画面を変更しましょう。
 
-1. `react-native` から `StyleSheet` をインポートし、カスタムスタイルを定義する `styles` オブジェクトを作成します。
-2. `<View>` に `styles.container.backgroundColor` プロパティを追加し、値を `#25292e` にします。これにより背景色が変わります。
-3. `<Text>` のデフォルト値を「Home screen」に置き換えます。
-4. `<Text>` に `styles.text.color` プロパティを追加し、テキストの色を変えるために値を `#fff` (白) にします。
+1. `styles.container` に `backgroundColor` プロパティを追加し、値を `#25292e` にします。これにより背景色が変わります。
+2. `<Text>` のデフォルト値を「Home screen」に置き換えます。
+3. `color` プロパティを `#fff` (白) にした `styles.text` オブジェクトを追加します。テキストの色を変えるために、それを `<Text>` の `style` プロパティに渡します。
 
 {/* prettier-ignore */}
 ```tsx src/app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo スタイルを定義するため `StyleSheet` をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo 以前は "Edit src/app/index.tsx to edit this screen" と表示されていましたが、現在は "Home screen" と表示されます。 */
+      /* @tutinfo `styles.text` を適用します。"Edit src/app/index.tsx to edit this screen." を "Home screen" に置き換えます。 */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
@@ -228,15 +229,17 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    /* @tutinfo `backgroundColor` プロパティに `'#25292e'` の値を設定します。*/
+    /* @tutinfo `'#25292e'` の値で `backgroundColor` プロパティを追加します。 */
     backgroundColor: '#25292e',
     /* @end */
     alignItems: 'center',
     justifyContent: 'center',
   },
+  /* @tutinfo `color` プロパティを `'#fff'` にした `text` スタイルを追加します。 */
   text: {
     color: '#fff',
   },
+  /* @end */
 });
 ```
 
@@ -246,13 +249,13 @@ const styles = StyleSheet.create({
 
 <ContentSpotlight
   alt="テキストと背景色が更新されたアプリ"
-  src="/static/images/tutorial/02-index-screen-changes.webp"
+  src="/static/images/tutorial/create-your-first-app-home-screen.webp"
   className="max-w-[720px]"
 />
 
-<Collapsible summary="青い歯車アイコンとは何ですか？">
+<Collapsible summary="歯車アイコンとは何ですか？">
 
-青い歯車アイコンは、Android と iOS プラットフォームの **Tools button** です。これは [開発者メニュー](/debugging/tools/#developer-menu) を開くフローティングショートカットで、アプリのリロードや Fast Refresh の切り替えなどのデバッグ機能を利用できます。開発中にのみ表示され、本番ビルドには含まれません。
+歯車アイコンは、Android と iOS プラットフォームの **Tools button** です。これは [開発者メニュー](/debugging/tools/#developer-menu) を開くフローティングショートカットで、アプリのリロードや Fast Refresh の切り替えなどのデバッグ機能を利用できます。開発中にのみ表示され、本番ビルドには含まれません。
 
 このチュートリアルの以降のスクリーンショットでは、このアイコンを非表示にします。非表示にするには:
 
