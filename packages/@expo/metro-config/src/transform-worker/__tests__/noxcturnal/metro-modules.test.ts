@@ -2467,26 +2467,60 @@ it('preserves constructor semantics for a member of a default import', async () 
   expect(result.result.code).toContain(`new Animated.default.Value(1)`);
 });
 
-it("loads Babel runtime helpers through Metro's default-import ABI", async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived();`,
-    options: options({
-      dev: true,
-      experimentalImportSupport: true,
-      unstable_transformProfile: 'default',
-    }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
-  });
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
-  expect(result.result.code).toMatch(
-    /construct: _\$\$_IMPORT_DEFAULT\(_dependencyMap\[\d+\], "@babel\/runtime\/helpers\/construct"\)/
-  );
-});
+it.each(['CommonJS', 'ES module'])(
+  'loads %s Babel runtime helpers through Metro',
+  async (format) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived('value');`,
+      options: options({
+        dev: true,
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'default',
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
+    const construct = requireFromMetroConfig('@babel/runtime/helpers/construct');
+    class Base {
+      constructor(readonly value: string) {}
+    }
+    const load = (name: string) => {
+      if (name === './Base') return Base;
+      if (name === '@babel/runtime/helpers/construct') {
+        return format === 'ES module' ? { __esModule: true, default: construct } : construct;
+      }
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    expect(factory).toBeDefined();
+    const module = { exports: {} };
+    factory!(
+      globalThis,
+      load,
+      (name: string) => {
+        const value = load(name);
+        return value.__esModule ? value.default : value;
+      },
+      () => {
+        throw new Error('Unexpected namespace import');
+      },
+      module,
+      module.exports,
+      result.dependencies.map(({ name }) => name)
+    );
+    expect(module.exports).toBeInstanceOf(Base);
+    expect(module.exports).toMatchObject({ value: 'value' });
+    expect(module.exports.constructor.name).toBe('Derived');
+  }
+);
 
 it('lowers named, namespace, and export-all re-exports with live getters', async () => {
   const result = await transformFileFullyWithNoxcturnal({
