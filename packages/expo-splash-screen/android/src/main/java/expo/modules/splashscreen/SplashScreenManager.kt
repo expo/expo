@@ -1,7 +1,9 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
+import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnPreDrawListener
 import android.view.animation.AccelerateInterpolator
@@ -14,7 +16,7 @@ import com.facebook.react.bridge.ReactMarkerConstants
 object SplashScreenManager {
   private var keepSplashScreenOnScreen = true
   var preventAutoHideCalled: Boolean = false
-  private lateinit var splashScreen: SplashScreen
+  private var splashScreen: SplashScreen? = null
 
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
     if (name == ReactMarkerConstants.CONTENT_APPEARED) {
@@ -25,11 +27,7 @@ object SplashScreenManager {
   }
 
   private fun configureSplashScreen(options: SplashScreenOptions = SplashScreenOptions()) {
-    // If loaded in a headless JS context we might not have initialized the splash screen
-    // lateinit variable, so let's check to be nice citizens
-    if (!::splashScreen.isInitialized) {
-      return
-    }
+    val splashScreen = splashScreen ?: return
 
     val duration = options.duration
 
@@ -52,7 +50,8 @@ object SplashScreenManager {
   }
 
   fun registerOnActivity(mainActivity: Activity) {
-    splashScreen = mainActivity.installSplashScreen()
+    val activitySplashScreen = mainActivity.installSplashScreen()
+    splashScreen = activitySplashScreen
     ReactMarker.addListener(contentAppearedListener)
 
     // Using `splashScreen.setKeepOnScreenCondition()` does not work on apis below 33
@@ -70,6 +69,28 @@ object SplashScreenManager {
     })
 
     configureSplashScreen()
+
+    val application = mainActivity.application
+    application.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+      override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+      override fun onActivityStarted(activity: Activity) {}
+      override fun onActivityResumed(activity: Activity) {}
+      override fun onActivityPaused(activity: Activity) {}
+      override fun onActivityStopped(activity: Activity) {}
+      override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+      override fun onActivityDestroyed(activity: Activity) {
+        if (activity !== mainActivity) {
+          return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          activity.splashScreen.clearOnExitAnimationListener()
+        }
+        if (splashScreen === activitySplashScreen) {
+          splashScreen = null
+        }
+        application.unregisterActivityLifecycleCallbacks(this)
+      }
+    })
   }
 
   fun hide() {
