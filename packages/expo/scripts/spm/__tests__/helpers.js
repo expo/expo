@@ -14,6 +14,10 @@ const metadataEntry = (packageRoot, productName, fields = {}) => ({
   ...fields,
 });
 
+/** How an error asks the user to update the app's packages; Expo apps have no `react-native` CLI. */
+const rerunSpmUpdate =
+  'Then run `node node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.';
+
 const tempDirs = [];
 
 /** A new directory under the OS temp dir, removed by `removeTempDirs`. */
@@ -82,6 +86,7 @@ module.exports = {
   metadataEntry,
   printed,
   removeTempDirs,
+  rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,

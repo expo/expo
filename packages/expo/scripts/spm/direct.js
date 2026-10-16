@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { runDumpPackage } = require('./cli');
-const { pluginError } = require('./diagnostics');
+const { pluginError, RERUN_SPM_UPDATE } = require('./diagnostics');
 
 const CORE_HEADERS = 'ExpoModulesCoreHeaders';
 const JSI_HEADERS = 'ExpoModulesJSIHeaders';
@@ -43,7 +43,7 @@ function readDirectManifestFlag(moduleRoot) {
       {
         what: `${configPath} is not valid JSON: ${error.message}.`,
         why: 'The plugin reads its "directManifest" flag to decide whether to build the module from its checked-in Package.swift.',
-        how: `Fix the JSON in ${configPath}, or reinstall the package if it came from npm. Then run \`npx react-native spm update\` again.`,
+        how: `Fix the JSON in ${configPath}, or reinstall the package if it came from npm. ${RERUN_SPM_UPDATE}`,
       },
       { cause: error }
     );
@@ -132,7 +132,7 @@ function emitDirectPackage({
     throw pluginError({
       what: `${packageName} is built from its own Package.swift and needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.`,
       why: 'The ExpoModulesCore headers it compiles against re-export ExpoModulesJSI.',
-      how: 'expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from `"expo": { "autolinking": { "exclude": [...] } }` in your package.json if it is listed there. Then run `npx react-native spm update` again.',
+      how: `expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from \`"expo": { "autolinking": { "exclude": [...] } }\` in your package.json if it is listed there. ${RERUN_SPM_UPDATE}`,
     });
   }
   const directDir = path.join(outDir, 'direct');
@@ -167,7 +167,7 @@ function dumpManifest(link, { moduleRoot, packageName }) {
       {
         what: `${packageName}'s Package.swift could not be evaluated: ${dumpFailureDetail(error)}.`,
         why: `${packageName} is built from its own Package.swift, so the plugin reads the manifest with \`swift package dump-package\` to find its products.`,
-        how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. Then run \`npx react-native spm update\` again.`,
+        how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. ${RERUN_SPM_UPDATE}`,
       },
       { cause: error }
     );
