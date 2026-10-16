@@ -2,6 +2,9 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import type { RouteNode } from '../../Route';
+import { createSeededNavigationState } from '../../global-state/createSeededNavigationState';
+import { findRouteNodeByName } from '../../routeNode';
 import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
   NavigationAction,
@@ -10,6 +13,7 @@ import type {
   PartialState,
   Router,
 } from '../routers';
+import { getChainFromRouteKey } from '../routers/stateKeys';
 import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
@@ -75,6 +79,7 @@ type Options<
   addListener: AddListener;
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMapCore<State>>;
+  routeNode: RouteNode | null;
 };
 
 /**
@@ -104,6 +109,7 @@ export function useDescriptors<
   addListener,
   router,
   emitter,
+  routeNode,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
@@ -260,6 +266,23 @@ export function useDescriptors<
     >
   >;
 
+  const createDescriptor = (
+    route: RouteProp<ParamListBase, string>,
+    navigation: ReturnType<typeof getNavigation>,
+    routeState: NavigationState | PartialState<NavigationState> | undefined
+  ): DescriptorMap[string] => {
+    const customOptions = getOptions(route, navigation, options[route.key] ?? {});
+    const element = render(route, navigation, customOptions, routeState);
+    return {
+      route,
+      // @ts-expect-error: it's missing action helpers, fix later
+      navigation,
+      render: () => element,
+      options: customOptions,
+      routeSource: screens[route.name]?.props.routeSource,
+    };
+  };
+
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
     const navigation = getNavigation(route, route.isPreloaded === true);
 
@@ -275,30 +298,36 @@ export function useDescriptors<
       return acc;
     }
 
-    const customOptions = getOptions(route, navigation, options[route.key]!);
-    const element = render(route, navigation, customOptions, routes[i]!.state);
-
-    acc[route.key] = {
-      route,
-      // @ts-expect-error: it's missing action helpers, fix later
-      navigation,
-      render() {
-        return element;
-      },
-      options: customOptions as ScreenOptions,
-      routeSource: screens[route.name]?.props.routeSource,
-    };
+    acc[route.key] = createDescriptor(route, navigation, routes[i]!.state);
 
     return acc;
   }, {});
+
+  const createMissingDescriptor = (route: RouteProp<ParamListBase, string>) => {
+    // Seed a nested navigator the same way the global state does when the route is added.
+    const childNode = findRouteNodeByName(routeNode, route.name);
+    const routeState = childNode?.children.length
+      ? createSeededNavigationState(undefined, childNode, getChainFromRouteKey(route.key))
+      : undefined;
+    return createDescriptor(route, getNavigation(route, false), routeState);
+  };
 
   // Placeholder descriptors need a cast because `useNavigationCache` adds action helpers at
   // runtime, but its return type omits them.
   // TODO: Fix the `useNavigationCache` return type and remove these casts.
   // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
-  const describe = (route: DescriptorRouteProp<ParamListBase, string>) => {
+  // With `create`, a keyed route that is not in the state yet gets the descriptor it will have
+  // once the route is added.
+  const describe = (
+    route: DescriptorRouteProp<ParamListBase, string>,
+    { create = false }: { create?: boolean } = {}
+  ) => {
     if (route.key !== undefined) {
-      const descriptor = descriptors[route.key];
+      const descriptor =
+        descriptors[route.key] ??
+        (create && screens[route.name]
+          ? createMissingDescriptor({ ...route, key: route.key })
+          : undefined);
       if (!descriptor) {
         throw new Error(`Couldn't find a route with the key ${route.key}.`);
       }

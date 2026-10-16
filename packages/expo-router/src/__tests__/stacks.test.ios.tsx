@@ -1,5 +1,6 @@
 import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
+import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import { navigationRef } from '../global-state/navigationRef';
@@ -7,6 +8,7 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import type { StackScreenProps } from '../layouts/stack-utils';
+import { useNavigationState, useRoute } from '../react-navigation/core';
 import { renderRouter, testRouter } from '../testing-library';
 import type { ScreenProps } from '../useScreens';
 import { expectCompleteStateToMatch } from './assertCompleteState';
@@ -1085,5 +1087,158 @@ describe('Screen options with /index suffix normalization', () => {
           { initialUrl: '/otp/signin' }
         )
     ).rejects.toThrow('Screen names must be unique');
+  });
+});
+
+describe('unstable_requiredScreensBelow', () => {
+  function getStackRoutes() {
+    return navigationRef.getRootState().routes[0]!.state!.routes;
+  }
+
+  it('renders required screens before the sync and keeps their keys after it', async () => {
+    const mounts: { key: string; stackRouteCount: number }[] = [];
+    function Index() {
+      const { key } = useRoute();
+      const stackRouteCount = useNavigationState((state) => state.routes.length);
+      useEffect(() => {
+        mounts.push({ key, stackRouteCount });
+      }, [key]);
+      return null;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: Index,
+        details: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
+    // The screen mounted while the global state had only `details`.
+    expect(mounts).toEqual([{ key: getStackRoutes()[0]!.key, stackRouteCount: 1 }]);
+    expect(router.canGoBack()).toBe(true);
+  });
+
+  it('adds missing required screens on push and skips screens already below', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['index', 'list']} />
+          </Stack>
+        ),
+        index: () => null,
+        list: () => null,
+        details: () => null,
+      },
+      { initialUrl: '/' }
+    );
+
+    await act(() => router.push('/details'));
+
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'list', 'details']);
+  });
+
+  it('copies path params for a name and uses the params of an object', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen
+              name="[id]/comments"
+              unstable_requiredScreensBelow={[{ name: 'index', params: { tab: 'all' } }, '[id]']}
+            />
+          </Stack>
+        ),
+        index: () => null,
+        '[id]': () => null,
+        '[id]/comments': () => null,
+      },
+      { initialUrl: '/42/comments' }
+    );
+
+    expect(getStackRoutes().map(({ name, params }) => ({ name, params }))).toEqual([
+      { name: 'index', params: { tab: 'all' } },
+      { name: '[id]', params: { id: '42' } },
+      { name: '[id]/comments', params: { id: '42' } },
+    ]);
+  });
+
+  it('adds required screens when the prop changes and keeps them when it is removed', async () => {
+    let setRequired: (screens: string[] | undefined) => void = () => {};
+    function Layout() {
+      const [required, setState] = useState<string[] | undefined>();
+      setRequired = setState;
+      return (
+        <Stack>
+          <Stack.Screen name="details" unstable_requiredScreensBelow={required} />
+        </Stack>
+      );
+    }
+
+    await renderRouter(
+      { _layout: Layout, index: () => null, details: () => null },
+      { initialUrl: '/details' }
+    );
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['details']);
+
+    await act(() => setRequired(['index']));
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
+
+    await act(() => setRequired(undefined));
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
+  });
+
+  it('mounts a required screen that contains a nested stack once', async () => {
+    const mounts: string[] = [];
+    function NestedIndex() {
+      const { key } = useRoute();
+      useEffect(() => {
+        mounts.push(key);
+      }, [key]);
+      return null;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['nested']} />
+          </Stack>
+        ),
+        'nested/_layout': () => <Stack />,
+        'nested/index': NestedIndex,
+        details: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+
+    const [nested] = getStackRoutes();
+    expect(nested!.name).toBe('nested');
+    expect(mounts).toEqual([nested!.state!.routes[0]!.key]);
+  });
+
+  it('does not loop when two screens require each other', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="a" unstable_requiredScreensBelow={['b']} />
+            <Stack.Screen name="b" unstable_requiredScreensBelow={['a']} />
+          </Stack>
+        ),
+        a: () => null,
+        b: () => null,
+      },
+      { initialUrl: '/a' }
+    );
+
+    expect(getStackRoutes().map((route) => route.name)).toEqual(['b', 'a']);
   });
 });
