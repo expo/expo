@@ -285,19 +285,35 @@ export function isAlreadyTriaged(state: string, labels: string[]): boolean {
 }
 
 const BOT_ACTORS = ['expo-bot', 'github-actions[bot]'];
+/**
+ * Labels from `.github/ISSUE_TEMPLATE/*.yml` that are also truth labels. GitHub records the issue
+ * author as the actor when a template applies them, so they show the author's template pick and
+ * not a maintainer's decision. Update the list when a template's `labels` change.
+ */
+const TEMPLATE_LABELS: string[] = [
+  TRIAGE_LABELS.question,
+  TRIAGE_LABELS.feature_request,
+  TRIAGE_LABELS.documentation,
+];
 /** The one-off backfill of 2026-09-22 ran under a personal token, so its labels look human. */
 const BACKFILL_WINDOW = { from: '2026-09-22T20:20:00Z', to: '2026-09-22T20:45:00Z' };
 
 /**
  * The labels currently on the issue that a person applied. Labels from the bot account and
- * from the Jev backfill are Jev's own output and must not count as truth.
+ * from the Jev backfill are Jev's own output and must not count as truth. Template labels
+ * applied as the author are not truth either.
  */
-export function humanAppliedLabels(currentLabels: string[], events: LabelEvent[]): string[] {
+export function humanAppliedLabels(
+  currentLabels: string[],
+  events: LabelEvent[],
+  author: string
+): string[] {
   const human = new Set(
     events
       .filter(
         (event) =>
           !BOT_ACTORS.includes(event.actor) &&
+          !(event.actor === author && TEMPLATE_LABELS.includes(event.label)) &&
           (event.createdAt < BACKFILL_WINDOW.from || event.createdAt > BACKFILL_WINDOW.to)
       )
       .map((event) => event.label)

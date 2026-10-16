@@ -145,7 +145,11 @@ async function evaluateAsync(limit: number) {
       model = result.model;
       inputTokens += result.usage.input_tokens;
 
-      const truthLabels = humanAppliedLabels(labelNames(issue.labels), events);
+      const truthLabels = humanAppliedLabels(
+        labelNames(issue.labels),
+        events,
+        issue.user?.login ?? ''
+      );
       const agreement = agreements(truthLabels, result.classification);
       for (const id of QUESTION_IDS) {
         tally(tallies[id], result.classification[id].confidence, agreement[id]);
@@ -182,7 +186,10 @@ async function listClosedIssuesAsync(limit: number): Promise<TriageIssueWithNumb
   return issues;
 }
 
-type TriageIssueWithNumber = TriageIssue & { number: number };
+type TriageIssueWithNumber = TriageIssue & {
+  number: number;
+  user: { login: string } | null;
+};
 
 const BUCKETS = ['>=0.9', '0.7-0.9', '<0.7'] as const;
 type Bucket = (typeof BUCKETS)[number];

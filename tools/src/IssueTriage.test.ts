@@ -146,8 +146,25 @@ describe('humanAppliedLabels', () => {
         { actor: 'vonovak', label: 'iOS', createdAt: '2026-09-22T20:28:03Z' },
         { actor: 'vonovak', label: 'Android', createdAt: '2026-09-23T09:00:00Z' },
         { actor: 'someone', label: 'removed later', createdAt: '2026-09-23T09:00:00Z' },
-      ]
+      ],
+      'reporter'
     );
     assert.deepEqual(labels, ['Issue accepted', 'Android']);
+  });
+
+  it('drops labels the issue template applied as the author', () => {
+    const labels = humanAppliedLabels(
+      ['invalid issue: feature request', 'iOS'],
+      [
+        {
+          actor: 'reporter',
+          label: 'invalid issue: feature request',
+          createdAt: '2026-09-23T09:00:01Z',
+        },
+        { actor: 'reporter', label: 'iOS', createdAt: '2026-09-23T09:00:01Z' },
+      ],
+      'reporter'
+    );
+    assert.deepEqual(labels, ['iOS']);
   });
 });
