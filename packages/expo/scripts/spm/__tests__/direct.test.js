@@ -10,7 +10,9 @@ jest.mock('../cli', () => ({
   ),
 }));
 
+const { runDumpPackage } = require('../cli');
 const { emitDirectPackage, prepareDirectWatchPaths } = require('../direct');
+const { thrownBy } = require('./helpers');
 
 describe('emitDirectPackage', () => {
   const savedBuildDir = process.env.BUILD_DIR;
@@ -138,6 +140,44 @@ describe('emitDirectPackage', () => {
     const link = path.join(outDir, 'direct', '@acme', 'widgets');
     expect(ok.packageDep.path).toBe(link);
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
+  });
+
+  describe('when its Package.swift cannot be evaluated', () => {
+    const failWith = (error) =>
+      runDumpPackage.mockImplementationOnce(() => {
+        throw error;
+      });
+
+    it('names the package, the first line the tool printed, and how to fix it', () => {
+      const error = Object.assign(new Error('Command failed: swift package dump-package'), {
+        status: 1,
+        stderr: '\nerror: Invalid manifest\nPackage.swift:3:1: error: expected expression\n',
+      });
+      failWith(error);
+      const thrown = thrownBy(emit);
+      expect(thrown.message).toContain(
+        "expo-haptics's Package.swift could not be evaluated: error: Invalid manifest."
+      );
+      expect(thrown.message).toContain('`swift package dump-package`');
+      expect(thrown.message).toContain(path.join(root, 'expo-haptics'));
+      expect(thrown.message).toContain('xcode-select');
+      expect(thrown.message).toContain('`npx react-native spm update`');
+      expect(thrown.cause).toBe(error);
+    });
+
+    it('says the swift command was not found when it is missing', () => {
+      failWith(Object.assign(new Error('spawnSync swift ENOENT'), { code: 'ENOENT' }));
+      expect(thrownBy(emit).message).toContain(
+        "expo-haptics's Package.swift could not be evaluated: the swift command was not found."
+      );
+    });
+
+    it('says what the tool printed is not a manifest', () => {
+      runDumpPackage.mockReturnValueOnce('warning: not JSON');
+      const thrown = thrownBy(emit);
+      expect(thrown.message).toContain("expo-haptics's Package.swift could not be evaluated:");
+      expect(thrown.cause).toBeInstanceOf(SyntaxError);
+    });
   });
 
   it('changes no file in the package when emitted again with the same inputs', () => {

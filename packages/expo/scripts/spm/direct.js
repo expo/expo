@@ -148,7 +148,7 @@ function emitDirectPackage({
   relativeSymlink(moduleRoot, link);
   fs.rmSync(path.join(outDir, 'expo-source', packageName), { recursive: true, force: true });
 
-  const manifest = JSON.parse(runDumpPackage(link));
+  const manifest = dumpManifest(link, { moduleRoot, packageName });
   return {
     ok: {
       packageDep: { name: manifest.name, path: link },
@@ -157,6 +157,28 @@ function emitDirectPackage({
       partlyProvidedPackages: [],
     },
   };
+}
+
+function dumpManifest(link, { moduleRoot, packageName }) {
+  try {
+    return JSON.parse(runDumpPackage(link));
+  } catch (error) {
+    throw pluginError(
+      {
+        what: `${packageName}'s Package.swift could not be evaluated: ${dumpFailureDetail(error)}.`,
+        why: `${packageName} is built from its own Package.swift, so the plugin reads the manifest with \`swift package dump-package\` to find its products.`,
+        how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. Then run \`npx react-native spm update\` again.`,
+      },
+      { cause: error }
+    );
+  }
+}
+
+function dumpFailureDetail(error) {
+  if (error.code === 'ENOENT') return 'the swift command was not found';
+  const output =
+    typeof error.stderr === 'string' && error.stderr.trim() ? error.stderr : error.message;
+  return output.trim().split('\n')[0];
 }
 
 function macroPluginLink() {
