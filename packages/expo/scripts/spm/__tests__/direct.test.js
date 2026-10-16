@@ -124,6 +124,22 @@ describe('emitDirectPackage', () => {
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(coreHeadersXCFramework));
   });
 
+  it('links a scoped package under its scope directory', () => {
+    const moduleRoot = path.join(root, 'node_modules', '@acme', 'widgets');
+    fs.mkdirSync(moduleRoot, { recursive: true });
+    const { ok } = emitDirectPackage({
+      moduleRoot,
+      packageName: '@acme/widgets',
+      outDir,
+      coreHeadersXCFramework,
+      jsiHeadersPkgPath,
+      macroTool: path.join(root, 'ExpoModulesMacros'),
+    });
+    const link = path.join(outDir, 'direct', '@acme', 'widgets');
+    expect(ok.packageDep.path).toBe(link);
+    expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
+  });
+
   it('changes no file in the package when emitted again with the same inputs', () => {
     emit();
     const snapshot = () =>

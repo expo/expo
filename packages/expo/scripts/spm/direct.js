@@ -144,6 +144,7 @@ function emitDirectPackage({
     relativeSymlink(macroTool, macroLink);
   }
   const link = path.join(directDir, packageName);
+  fs.mkdirSync(path.dirname(link), { recursive: true });
   relativeSymlink(moduleRoot, link);
   fs.rmSync(path.join(outDir, 'expo-source', packageName), { recursive: true, force: true });
 
