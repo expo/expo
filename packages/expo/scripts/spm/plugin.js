@@ -361,9 +361,7 @@ function linkPrecompiledPods(identities, records, cacheDir) {
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
     if (record.linkedAs != null) continue;
-    if (identity.directManifest && fs.existsSync(path.join(identity.moduleRoot, 'Package.swift'))) {
-      continue;
-    }
+    if (identity.directManifest) continue;
     const framework = resolveFlavoredFramework({
       packageName: identity.packageName,
       moduleRoot: identity.moduleRoot,
