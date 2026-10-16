@@ -238,6 +238,27 @@ describe('prepareDirectWatchPaths', () => {
     expect(fs.statSync(watched[0]).mtimeMs).toBeGreaterThan(Date.now() + 365 * 24 * 3600 * 1000);
   });
 
+  it('leaves the marker untouched when a later sync outside a build finds it in place', () => {
+    delete process.env.BUILD_DIR;
+    prepareDirectWatchPaths(['expo-haptics'], outDir);
+    const writes = [jest.spyOn(fs, 'writeFileSync'), jest.spyOn(fs, 'utimesSync')];
+    try {
+      prepareDirectWatchPaths(['expo-haptics'], outDir);
+      for (const write of writes) expect(write).not.toHaveBeenCalled();
+    } finally {
+      for (const write of writes) write.mockRestore();
+    }
+  });
+
+  it('dates the marker in the future again when its date has changed', () => {
+    delete process.env.BUILD_DIR;
+    const [marker] = prepareDirectWatchPaths(['expo-haptics'], outDir);
+    const now = new Date();
+    fs.utimesSync(marker, now, now);
+    prepareDirectWatchPaths(['expo-haptics'], outDir);
+    expect(fs.statSync(marker).mtimeMs).toBeGreaterThan(Date.now() + 365 * 24 * 3600 * 1000);
+  });
+
   it('removes the marker once no direct module is emitted', () => {
     delete process.env.BUILD_DIR;
     const [marker] = prepareDirectWatchPaths(['expo-haptics'], outDir);

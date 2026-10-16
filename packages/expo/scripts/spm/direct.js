@@ -204,9 +204,11 @@ function prepareDirectWatchPaths(directPackages, outDir) {
     fs.rmSync(marker, { force: true });
     return hasDirect ? [macroLink] : [];
   }
-  fs.mkdirSync(path.dirname(marker), { recursive: true });
-  fs.writeFileSync(marker, '');
-  fs.utimesSync(marker, PENDING_MARKER_MTIME, PENDING_MARKER_MTIME);
+  if (fs.statSync(marker, { throwIfNoEntry: false })?.mtimeMs !== PENDING_MARKER_MTIME.getTime()) {
+    fs.mkdirSync(path.dirname(marker), { recursive: true });
+    fs.writeFileSync(marker, '');
+    fs.utimesSync(marker, PENDING_MARKER_MTIME, PENDING_MARKER_MTIME);
+  }
   return [marker];
 }
 
