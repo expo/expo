@@ -111,7 +111,7 @@ Important flags:
 | `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                                                                                                                                                                                                                                                 |
 | `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                                                                                                                                                                                                                                      |
 | `--type`                    | Session type. Defaults to `agent-device`. Every type includes a browser preview. Use `agent-device`, `appium`, or `argent` to add programmatic control, or `web-preview-only` for the browser preview only                                                                                                                                                    |
-| `--public-link`             | Print a public browser preview link that contains the preview token, and make **Share** in the preview copy it. Anyone with the link can view and control the simulator. Without this flag, preview links require an Expo login with access to the project. See [Browser preview links](#browser-preview-links)                                               |
+| `--public-link`             | Print a public browser preview link that contains the preview token, and make **Share** in the preview copy it. Anyone with the link can view the simulator, and on iOS, control it. Without this flag, preview links require an Expo login with access to the project. See [Browser preview links](#browser-preview-links)                                   |
 | `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                                                                                                                                                                                                          |
 | `--max-duration-minutes`    | Automatic session stop time, up to the plan limit: 40 minutes on the Free plan and 115 minutes on paid plans. Defaults to the plan limit                                                                                                                                                                                                                      |
 | `--egress`                  | `local` routes the device's network traffic through this machine. On Android, all TCP traffic from the emulator. On iOS, HTTP(S) and WebSocket traffic that honors the system proxy or proxy environment variables, such as gRPC and libcurl. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/) |
@@ -152,14 +152,14 @@ EAS CLI 25.0.0 and later prints private browser preview links by default. A priv
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
 ```
 
-With `--public-link`, EAS CLI prints a public link that contains the preview token, with a warning. Anyone who has a public link can view and control the simulator without an Expo login.
+With `--public-link`, EAS CLI prints a public link that contains the preview token, with a warning. Anyone who has a public link can view the simulator without an Expo login, and on iOS, control it.
 
 | `--json` field                                            | Private links (default) | Public links (`--public-link`)              |
 | --------------------------------------------------------- | ----------------------- | ------------------------------------------- |
 | `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
 | `remoteConfig.previewApiUrl`                              | `null`                  | The preview API URL, with the preview token |
 
-EAS saves the setting with the session. `simulator:get` uses the saved setting, so it prints the same kind of link that `simulator:start` printed. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
+EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. EAS CLI versions before 25.0.0 print a public link but save the session with private links, and their `simulator:get` prints a public link for every session. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
 ### Interactive and non-interactive behavior
 

@@ -229,9 +229,9 @@ A session has a private browser preview link. The link opens only for a person w
 
 `<url>` is the `url` field of the session. When `publicPreview` is `false`, **Share** in the browser preview copies this private link.
 
-You can also make a public link that contains the preview token. Anyone who has a public link can view and control the simulator without an Expo login. When `publicPreview` is `true`, **Share** in the browser preview copies the public link. The `publicPreview` setting does not remove the token from the response, so treat `webPreviewToken` as a secret in every session.
+You can also make a public link that contains the preview token. Anyone who has a public link can view the simulator without an Expo login, and on iOS, control it. When `publicPreview` is `true`, **Share** in the browser preview copies the public link. The `publicPreview` setting does not remove the token from the response, so treat `webPreviewToken` as a secret in every session.
 
-When `webPreviewToken` is present, `webPreviewUrl` does not work without the token. To make a public link, add the token to the URL:
+`webPreviewUrl` is the address of the public preview, not the private link. When `webPreviewToken` is present, `webPreviewUrl` does not open without the token. Add the token only when you want a public link:
 
 - When the response includes `previewApiUrl`, `webPreviewUrl` is a page on expo.dev. Add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`.
 - Otherwise, add the token as a `token` query parameter: `<webPreviewUrl>?token=<webPreviewToken>`.

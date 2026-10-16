@@ -47,10 +47,10 @@ The session page on expo.dev masks the token values by default. Anyone who can v
 
 ## Browser preview links
 
-| Link              | Who can open it                                                    | How to get it                                                                     |
-| ----------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| Private (default) | A person who signs in to an Expo account that can view the project | EAS CLI output, **Open preview** on the session page, or **Share** in the preview |
-| Public            | Anyone who has the link, without an Expo login                     | `eas simulator:start --public-link`, or `publicPreview: true` in the REST API     |
+| Link              | Who can open it                                                    | How to get it                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Private (default) | A person who signs in to an Expo account that can view the project | EAS CLI output, **Open preview** on the session page, or **Share** in the preview                                                                            |
+| Public            | Anyone who has the link, without an Expo login                     | EAS CLI output or **Share** in the preview, for a session started with `--public-link` or `publicPreview: true`. Also, from the preview token of any session |
 
 A private link has this format:
 
