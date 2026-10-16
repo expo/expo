@@ -1,5 +1,15 @@
 # minimal-tester
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.14
+  - expo-build-properties@58.0.11
+  - expo-brownfield@58.0.14
+  - expo-dev-client@58.0.14
+
 ## 1.0.7
 
 ### Patch Changes

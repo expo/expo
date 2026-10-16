@@ -1,5 +1,18 @@
 # bare-expo
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+  - test-suite@1.0.8
+  - expo@58.0.14
+  - native-component-list@0.0.8
+  - expo-build-properties@58.0.11
+  - expo-brownfield@58.0.14
+  - expo-dev-client@58.0.14
+
 ## 0.0.8
 
 ### Patch Changes
