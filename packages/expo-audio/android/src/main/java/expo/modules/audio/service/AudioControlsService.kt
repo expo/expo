@@ -269,10 +269,6 @@ class AudioControlsService : MediaSessionService() {
     return builder.build()
   }
 
-  /**
-   * Media3 only ships numbered skip icons for a handful of intervals, so anything else falls back
-   * to the unnumbered icon rather than showing a number that doesn't match the actual skip.
-   */
   private fun skipBackIcon(seconds: Double): Int = when (seconds) {
     5.0 -> CommandButton.ICON_SKIP_BACK_5
     10.0 -> CommandButton.ICON_SKIP_BACK_10

@@ -279,19 +279,10 @@ class MediaController {
     .resume()
   }
 
-  /**
-   Converts seconds to a `CMTime` without losing sub-second precision. A timescale of 1 would
-   truncate fractional skip intervals such as `0.1` or `15.5` down to whole seconds.
-   */
   static func cmTime(seconds: Double) -> CMTime {
     return CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
   }
 
-  /**
-   Resolves a lock screen skip interval to a usable number of seconds. Missing or non-finite values
-   fall back to the default, and values below the minimum are clamped up so the skip buttons always
-   move playback.
-   */
   static func normalizedSkipInterval(_ seconds: Double?) -> Double {
     guard let seconds, seconds.isFinite else {
       return defaultSkipIntervalSeconds
