@@ -157,7 +157,7 @@ With `--public-link`, EAS CLI prints a public link that contains the preview tok
 | `--json` field                                            | Private links (default) | Public links (`--public-link`)              |
 | --------------------------------------------------------- | ----------------------- | ------------------------------------------- |
 | `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
-| `remoteConfig.previewApiUrl`                              | `null`                  | The preview API URL, with the preview token |
+| `remoteConfig.previewApiUrl`                              | Not included            | The preview API URL, with the preview token |
 
 EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. EAS CLI versions before 25.0.0 print a public link but save the session with private links, and their `simulator:get` prints a public link for every session. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
