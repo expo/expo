@@ -49,7 +49,13 @@ class DevLauncherRemoteLogManager(private val httpClient: OkHttpClient, private 
       }
       return serverUrl
         .buildUpon()
-        .scheme(if (serverUrl.scheme == "https") "wss" else "ws")
+        .scheme(
+          if (serverUrl.scheme == "https") {
+            "wss"
+          } else {
+            "ws"
+          }
+        )
         .path("hot")
         .clearQuery()
         .fragment(null)
