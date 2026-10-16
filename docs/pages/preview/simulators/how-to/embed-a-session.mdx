@@ -1,0 +1,144 @@
+---
+title: Show an Expo Simulators session on your own web page
+sidebar_title: Embed a session
+description: Embed the browser preview of an Expo Simulators session in an iframe, or render the device screen in your own React app with @expo/hub-client.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+You can show a running Expo Simulators session on a web page that you own, such as an internal tool, a dashboard, or a product demo. There are two methods:
+
+| Method                                                                              | What your page shows                                 | Flag on `eas simulator:start` |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------- |
+| [Embed the preview in an iframe](#embed-the-preview-in-an-iframe)                   | The complete preview page of the preview host        | `--frame-ancestor <origin>`   |
+| [Render the screen with `@expo/hub-client`](#render-the-screen-with-expohub-client) | Only the device screen, inside your own React layout | `--cors-origin <origin>`      |
+
+By default, only expo.dev can embed the preview or call the preview host's API. Each flag adds the origin of your page to an allow list for one session. The [EAS Simulator embed example](https://github.com/expo/eas-simulator-embed-example) is a small Expo web app that shows both methods. It runs at [simulator-embed-example.expo.app](https://simulator-embed-example.expo.app).
+
+> **warning** Your page needs the preview token of the session. Anyone who can read your page or its network traffic can get the token, and with it, view and control the simulator. Show an embedded session only to people who should control the device, and set a maximum duration on the session.
+
+## Choose the origins
+
+Pass the origin of each page that shows the session. An origin is the scheme, host, and port of a URL, without a path. For example, the origin of `https://tools.example.com/qa/run` is `https://tools.example.com`.
+
+- Use `https`. Plain `http` is accepted only for `localhost`, `127.0.0.1`, and `[::1]`, so you can test with a local development server.
+- To allow all subdomains of a domain, use a wildcard such as `https://*.example.com`. The wildcard needs at least two labels after the star, so `https://*.com` is not accepted.
+- Repeat the flag to allow more origins. Each flag accepts up to 10 origins.
+
+EAS CLI rejects a value that is not an origin before it creates the session. For example, `--frame-ancestor https://tools.example.com/qa` returns an error that shows the correct value, `https://tools.example.com`.
+
+Set the origins when you start the session.
+
+## Get the preview host URL and token
+
+When you pass `--frame-ancestor` or `--cors-origin`, EAS CLI prints the preview host URL with the preview token, even for a session with [private links](/preview/simulators/how-it-works/security-model/#the-browser-preview). In `--json` output, the value is `remoteConfig.previewApiUrl`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --frame-ancestor https://tools.example.com --max-duration-minutes 30 --json',
+  ]}
+/>
+
+The value has this format:
+
+```text
+https://<preview-host>/?token=<preview-token>
+```
+
+`eas simulator:get` does not include this value for a session with private links. Save it from the start command, or get it from the REST API.
+
+With the [REST API](/preview/simulators/reference/rest-api/), set `frameAncestors` or `corsOrigins` in the create request. When the session is `in-progress`, read `previewApiUrl` and `webPreviewToken` from `remoteConfig`.
+
+## Embed the preview in an iframe
+
+Start the session with `--frame-ancestor` set to the origin of your page. Then load the preview host URL, with its `token` query parameter, in an iframe:
+
+```html
+<iframe
+  src="https://<preview-host>/?token=<preview-token>"
+  title="Expo Simulators preview"
+  referrerpolicy="no-referrer"
+  allow="clipboard-read; clipboard-write; fullscreen"
+  style="width: 100%; height: 80vh; border: 0"></iframe>
+```
+
+On the first load, the preview host exchanges the token in the URL for a cookie.
+
+The private preview page on expo.dev cannot be embedded on other sites. Use the preview host URL, not `webPreviewUrl` or the expo.dev link.
+
+## Render the screen with `@expo/hub-client`
+
+[`@expo/hub-client`](https://www.npmjs.com/package/@expo/hub-client) provides React components that stream the device screen to your page and send touch, scroll, and keyboard input back to the device. Use it when you want only the device screen, inside your own layout.
+
+Start the session with `--cors-origin` set to the origin of your page:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --cors-origin https://tools.example.com --max-duration-minutes 30 --json',
+  ]}
+/>
+
+Install the package in your web app:
+
+<Terminal cmd={['$ npm install @expo/hub-client']} />
+
+Give `DeviceClientProvider` the preview host URL without the `token` query parameter, and give it the token separately:
+
+```tsx
+import {
+  DeviceClientProvider,
+  DeviceScreen,
+  displayScreen,
+  useDeviceScreenClient,
+  type DevicePlatform,
+} from '@expo/hub-client';
+
+function Screen() {
+  const client = useDeviceScreenClient();
+  const screen = displayScreen(client.screen);
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: 390,
+        aspectRatio: screen ? `${screen.width} / ${screen.height}` : '9 / 19.5',
+      }}>
+      <DeviceScreen client={client} />
+    </div>
+  );
+}
+
+export function SimulatorScreen({
+  previewHostUrl,
+  token,
+  platform,
+}: {
+  previewHostUrl: string;
+  token: string;
+  platform: DevicePlatform;
+}) {
+  const baseUrl =
+    platform === 'android'
+      ? `${previewHostUrl.replace(/\/+$/, '')}/vendor/serve-emu`
+      : previewHostUrl;
+
+  return (
+    <DeviceClientProvider platform={platform} options={{ baseUrl, token, streamMode: 'webrtc' }}>
+      <Screen />
+    </DeviceClientProvider>
+  );
+}
+```
+
+- `client.status` reports the connection state. A status of `error` usually means that the URL, the token, or the `--cors-origin` value is wrong.
+- `DeviceScreen` sends input to the device only when it has focus. Click the screen to focus it.
+- For an Android session, add `/vendor/serve-emu` to the preview host URL, as in the example above.
+
+`@expo/hub-client` uses DOM elements, so it runs only on the web.
+
+## Use both methods in one session
+
+You can pass `--frame-ancestor` and `--cors-origin` in the same command. Each flag controls a different browser check, so set the flag that matches how your page uses the session. An iframe needs only `--frame-ancestor`. A page that uses `@expo/hub-client` needs only `--cors-origin`.

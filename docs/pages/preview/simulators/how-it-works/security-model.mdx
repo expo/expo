@@ -56,6 +56,8 @@ New sessions use private links by default. EAS CLI prints the private link, and 
 
 A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
+If a session starts with `--frame-ancestor` or `--cors-origin`, or with `frameAncestors` or `corsOrigins` in the REST API, EAS CLI prints the preview host URL with the preview token. Web pages on the allowed origins use the token to show the session. Anyone who can read such a page can get the token and control the device. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
+
 When a public link opens, the page moves the token out of the address bar. Share a public link only with people who should control the device.
 
 ## Artifact download URLs
