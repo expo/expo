@@ -17,7 +17,7 @@ const path = require('path');
 
 const { runDumpPackage } = require('./cli');
 
-const DIRECT_MODULES = new Set(['expo-haptics']);
+const DIRECT_MODULES = new Set(['expo-haptics', 'expo-sensors']);
 const HEADER_MODULES = ['ExpoModulesCore', 'ExpoModulesJSI'];
 const STUB_LIBRARY = 'libExpoModulesCoreHeaders.a';
 
