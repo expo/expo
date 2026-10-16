@@ -383,16 +383,20 @@ it("keeps Babel's .ts JSX rejection instead of widening TypeScript syntax", asyn
   const source = 'module.exports = <View />;';
   expect(() => transformWithBabelPreset(source, typedFilename)).toThrow();
 
-  const native = await transformNodeModuleWithNoxcturnal({
+  const native = transformNodeModuleWithNoxcturnal({
     filename: typedFilename,
     projectRoot: '/app',
     source,
     options: options(),
     isDefaultExpoTransformer: true,
   });
-  expect(native.status).toBe('fallback');
-  if (native.status !== 'fallback') return;
-  expect(native.reason).toContain('parse-error');
+  await expect(native).rejects.toThrow(TransformSyntaxError);
+  await expect(native).rejects.toMatchObject({
+    code: 'TRANSFORM_SYNTAX_ERROR',
+    filename: typedFilename,
+    loc: { line: 1, column: expect.any(Number) },
+    codeFrame: expect.stringContaining(source),
+  });
 });
 
 it('matches Babel preset Expo runtime behavior and source positions for TypeScript', async () => {
