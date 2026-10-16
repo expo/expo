@@ -1106,6 +1106,43 @@ describe.each([
   }
 );
 
+describe('a module with no checked-in manifest whose spm.config.json is not valid JSON', () => {
+  captureConsole();
+  let result;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-bad-config-no-manifest-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-widgets');
+    const podspecDir = pureSwiftModule(moduleRoot, 'ExpoWidgets', spec());
+    writeSpmConfig(moduleRoot, '{ "directManifest": true,');
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-widgets', [['ExpoWidgets', podspecDir]]]])
+    );
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'ExpoWidgets'].includes(frameworkName)
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    thrown = thrownBy(() => {
+      result = runPlugin(tmp);
+    });
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('syncs, linking the module precompiled', () => {
+    expect(thrown).toBeNull();
+    expect(emitDirectPackage).not.toHaveBeenCalled();
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual([
+      'ExpoModulesCore',
+      'ExpoWidgets',
+    ]);
+  });
+});
+
 describe('a module whose spm.config.json is not valid JSON', () => {
   captureConsole();
   let configPath;

@@ -27,12 +27,15 @@ const CORE_HEADERS_DEPENDENCIES = 'ExpoModulesCoreHeadersDependencies';
 const LEGACY_STUBS_DIR = '.stubs';
 
 /**
- * Whether the module at `moduleRoot` opts in to being built from its checked-in
- * Package.swift, with `"directManifest": true` in its spm.config.json.
+ * Whether the module at `moduleRoot` is built from its checked-in Package.swift: it has
+ * one, and its spm.config.json sets `"directManifest": true`. Without a Package.swift the
+ * config is not read, so a malformed one cannot fail a sync it would not affect.
  */
 function readDirectManifestFlag(moduleRoot) {
   const configPath = path.join(moduleRoot, 'spm.config.json');
-  if (!fs.existsSync(configPath)) return false;
+  if (!fs.existsSync(path.join(moduleRoot, 'Package.swift')) || !fs.existsSync(configPath)) {
+    return false;
+  }
   try {
     return JSON.parse(fs.readFileSync(configPath, 'utf8'))?.directManifest === true;
   } catch (error) {
