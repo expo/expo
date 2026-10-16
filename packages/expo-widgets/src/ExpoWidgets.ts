@@ -45,6 +45,9 @@ class LiveActivityStub {
   async getPushToken(): Promise<string | null> {
     return null;
   }
+  getProps(): string | null {
+    return null;
+  }
   addListener(_eventName: string, _listener: (...args: unknown[]) => void): EventSubscription {
     return noopSubscription;
   }

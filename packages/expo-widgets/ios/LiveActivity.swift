@@ -50,6 +50,10 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
+  func getProps() -> String? {
+    return Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })?.content.state.props
+  }
+
   func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>, pushNotificationsEnabled: Bool) {
     guard pushNotificationsEnabled else {
       return

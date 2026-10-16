@@ -165,6 +165,16 @@ export class LiveActivity<T extends object = object> {
   }
 
   /**
+   * Returns the content properties this Live Activity currently shows, including one that a push
+   * notification started or updated, or `null` once it has ended.
+   * @platform ios
+   */
+  getProps(): T | null {
+    const props = this.nativeLiveActivity.getProps();
+    return props == null ? null : (JSON.parse(props) as T);
+  }
+
+  /**
    * Adds a listener for push token update events on this Live Activity instance.
    * The token can be used to send content updates to this specific activity via APNs.
    * @param listener Callback invoked when a new push token is available.

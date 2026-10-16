@@ -115,6 +115,10 @@ public final class WidgetsModule: Module {
       AsyncFunction("getPushToken") { (instance: LiveActivity) in
         try instance.getPushToken()
       }
+
+      Function("getProps") { (instance: LiveActivity) in
+        instance.getProps()
+      }
     }
   }
 
