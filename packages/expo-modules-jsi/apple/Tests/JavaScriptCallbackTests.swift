@@ -346,6 +346,26 @@ struct JavaScriptCallbackThreadingTests {
   }
 
   @Test(.timeLimit(.minutes(1)))
+  func `invokeBlocking and invokeAsync throw RuntimeLostError when the host drops the task`() async throws {
+    let testRuntime = await ReleasableTestRuntime(dispatch: dropOnTestRuntime)
+    let callback = try await makeCallback(testRuntime, "() => 42")
+
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await callback.invokeAsync(returning: Int.self)
+    }
+    // `invokeBlocking` isn't available in async contexts, so it runs on a thread of its own.
+    let outcome = BlockingOutcome()
+    Thread.detachNewThread {
+      outcome.set(Result { try callback.invokeBlocking(returning: Int.self) })
+    }
+    let result = await outcome.value()
+    #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try result.get()
+    }
+    await testRuntime.tearDown()
+  }
+
+  @Test(.timeLimit(.minutes(1)))
   func `invokeAsync doesn't keep the runtime alive while it awaits a promise`() async throws {
     let scheduler = TestRuntimeScheduler()
     let runtimes = RuntimesBox()

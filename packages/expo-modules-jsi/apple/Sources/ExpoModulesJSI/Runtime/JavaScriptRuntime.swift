@@ -502,7 +502,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   // MARK: - Runtime execution
 
   // These forward to ``Scheduler``. When the runtime is gone by the time the work runs, `schedule` and
-  // `runOrSchedule` drop it and `execute` throws ``JavaScriptCallback/RuntimeLostError``.
+  // `runOrSchedule` drop it and `execute` throws ``JavaScriptCallback/RuntimeLostError``. `execute` also
+  // throws it when the host drops the task without running it.
 
   /// Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
   /// Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.

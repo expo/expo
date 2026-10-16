@@ -170,6 +170,13 @@ let scheduleOnTestRuntime:
     state.schedule(callback)
   }
 
+/// A host dispatch function that drops every task without running it, like React Native's host after
+/// the React instance destroyed its scheduler.
+let dropOnTestRuntime:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, _ in }
+
 /// A runtime on a ``TestRuntimeScheduler``'s thread that a test releases at a chosen point, to check
 /// what happens to work that was queued while the runtime was alive and runs after it is gone.
 final class ReleasableTestRuntime: @unchecked Sendable {
@@ -177,14 +184,19 @@ final class ReleasableTestRuntime: @unchecked Sendable {
   private var owningRuntime: JavaScriptRuntime?
   private(set) var runtime: JavaScriptRuntime?
 
-  init() async {
+  /// - `dispatch`: the host dispatch function the runtime gets. Pass ``dropOnTestRuntime`` to check what
+  ///   happens when the host drops tasks.
+  init(
+    dispatch: @convention(c) (UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void) -> Void =
+      scheduleOnTestRuntime
+  ) async {
     let runtimes = await scheduler.run { [scheduler] in
       let owningRuntime = JavaScriptRuntime()
       let runtime = owningRuntime.withUnsafePointee { runtimePointer in
         JavaScriptRuntime(
           unsafePointer: runtimePointer,
           scheduler: scheduler.opaquePointer,
-          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+          dispatch: unsafeBitCast(dispatch, to: UnsafeRawPointer.self)
         )
       }
       return UncheckedSendable(value: (owningRuntime, runtime))
