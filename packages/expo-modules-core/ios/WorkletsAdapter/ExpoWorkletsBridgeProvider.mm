@@ -234,8 +234,8 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
     return;
   }
 
-  workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
-    return callWorklet(rt, worklet, arguments);
+  workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) {
+    callWorklet(rt, worklet, arguments);
   });
 }
 
