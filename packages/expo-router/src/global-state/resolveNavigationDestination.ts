@@ -142,8 +142,11 @@ function createResolvedAction({
   }
 
   const params = appendInternalExpoRouterParams(targetRoute.params, internalParams) ?? {};
+  const { pop, ...actionPayload } = action.payload;
   const payload = {
-    ...action.payload,
+    ...actionPayload,
+    // Like React Navigation's `getActionFromState`, pop only to a route that holds a navigator.
+    ...(pop && targetRoute.state ? { pop } : undefined),
     name: targetRoute.name,
     params,
     ...(targetRoute.path !== undefined ? { path: targetRoute.path } : undefined),
