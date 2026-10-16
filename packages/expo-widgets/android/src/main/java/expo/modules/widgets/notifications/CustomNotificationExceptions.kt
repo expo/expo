@@ -38,6 +38,12 @@ internal class CustomNotificationNotFoundException(name: String, id: String) :
 internal class CustomNotificationCancelledException :
   CodedException("The custom notification operation was cancelled before it could be posted.")
 
+internal class CustomNotificationCreationException :
+  CodedException(
+    "A custom notification can't be created directly. " +
+      "Get one from post(), get() or getActive() on a CustomNotificationFactory."
+  )
+
 internal class SmallIconNotFoundException(name: String) :
   CodedException(
     "The drawable '$name' passed as `smallIcon` was not found in the app's resources. " +
