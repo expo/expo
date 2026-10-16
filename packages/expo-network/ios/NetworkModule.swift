@@ -4,7 +4,7 @@ import Network
 let onNetworkStateChanged = "onNetworkStateChanged"
 
 public final class NetworkModule: Module {
-  private let monitor = NWPathMonitor()
+  private var monitor: NWPathMonitor?
   private let monitorQueue = DispatchQueue.global(qos: .default)
 
   public func definition() -> ModuleDefinition {
@@ -25,15 +25,19 @@ public final class NetworkModule: Module {
     }
 
     OnStopObserving(onNetworkStateChanged) {
-      monitor.cancel()
+      stopNetworkMonitoring()
     }
 
     OnDestroy {
-      monitor.cancel()
+      stopNetworkMonitoring()
     }
   }
 
   private func setupNetworkMonitoring() {
+    // A cancelled `NWPathMonitor` cannot be started again,
+    // so every start creates a new monitor.
+    stopNetworkMonitoring()
+    let monitor = NWPathMonitor()
     monitor.pathUpdateHandler = { [weak self] path in
       guard let self else {
         return
@@ -41,6 +45,12 @@ public final class NetworkModule: Module {
       self.emitNetworkStateChange(path: path)
     }
     monitor.start(queue: monitorQueue)
+    self.monitor = monitor
+  }
+
+  private func stopNetworkMonitoring() {
+    monitor?.cancel()
+    monitor = nil
   }
 
   private func emitNetworkStateChange(path: NWPath) {
