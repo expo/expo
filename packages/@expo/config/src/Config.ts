@@ -8,6 +8,7 @@ import { sync as globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
 import slugify from 'slugify';
+import { isDeepStrictEqual } from 'util';
 
 import type {
   AppJSONConfig,
@@ -356,6 +357,21 @@ export async function modifyConfigAsync(
 }
 
 /**
+ * Append the source items to the target array, then remove duplicate entries, keeping the first
+ * occurrence. Expo config arrays (permissions, asset patterns, intent filters) are sets, so a
+ * modification that repeats existing values, or contains a value twice, doesn't write it twice.
+ */
+function mergeArraysWithoutDuplicates(target: unknown[], source: unknown[]): unknown[] {
+  const result: unknown[] = [];
+  for (const item of [...target, ...source]) {
+    if (!result.some((existing) => isDeepStrictEqual(existing, item))) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+/**
  * Merge the config modifications, using an optional possible top-level `expo` object.
  * Note, changes in the plugins are merged differently to avoid duplicate entries.
  */
@@ -363,9 +379,11 @@ function mergeConfigModifications(
   config: ProjectConfig,
   { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
-  const modifiedExpoConfig: ExpoConfig = !config.rootConfig.expo
-    ? deepMerge(config.rootConfig, modifications)
-    : deepMerge(config.rootConfig.expo, modifications);
+  const modifiedExpoConfig: ExpoConfig = deepMerge(
+    config.rootConfig.expo || config.rootConfig,
+    modifications,
+    { arrayMerge: mergeArraysWithoutDuplicates }
+  );
 
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list
@@ -439,7 +457,11 @@ function isMatchingObject<T extends Record<string, any>>(
       continue;
     }
 
-    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+    if (Array.isArray(expectedValues[key])) {
+      if (!isMatchingArray(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
       if (!isMatchingObject(expectedValues[key], actualValues[key])) {
         return false;
       }
@@ -450,6 +472,23 @@ function isMatchingObject<T extends Record<string, any>>(
     }
   }
   return true;
+}
+
+/**
+ * Arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so an expected array matches
+ * when each of its items is in the actual array, regardless of order or repeated items.
+ */
+function isMatchingArray(expectedItems: unknown[], actualItems: unknown): boolean {
+  if (!Array.isArray(actualItems)) {
+    return false;
+  }
+  return expectedItems.every((expected) =>
+    actualItems.some((actual) =>
+      typeof expected === 'object' && expected !== null
+        ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual)
+        : expected === actual
+    )
+  );
 }
 
 function ensureConfigHasDefaultValues({
