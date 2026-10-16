@@ -108,6 +108,12 @@ export type SharePayload = {
    * @default 'text/plain'
    */
   mimeType?: string;
+
+  /**
+   * The display name of a shared file, if the app that shared it provides one.
+   * @platform android
+   */
+  originalName?: string | null;
 };
 
 export type BaseResolvedSharePayload = SharePayload & {
