@@ -15,6 +15,7 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const { SPM_UPDATE_COMMAND } = require('./commands');
 const { pluginError } = require('./diagnostics');
 
 const FLAVORS = ['debug', 'release'];
@@ -239,7 +240,7 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
       if (sources[flavor] == null) {
         throw pluginError({
           what: `${frameworkName} has an incomplete precompiled pair in ${baseDir}: missing ${flavor}.`,
-          how: 'Run the Expo prebuild pipeline for both Debug and Release before react-native spm update.',
+          how: `Run the Expo prebuild pipeline for both Debug and Release before \`${SPM_UPDATE_COMMAND}\`.`,
         });
       }
     }
@@ -351,7 +352,7 @@ function isDirectory(candidate) {
       {
         what: `${candidate} could not be read: ${error.message}.`,
         why: 'The plugin cannot tell whether a precompiled dependency is there, and it will not silently build an app without one.',
-        how: 'Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+        how: `Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run \`${SPM_UPDATE_COMMAND}\` again.`,
       },
       { cause: error }
     );

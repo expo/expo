@@ -47,8 +47,8 @@ React Native normalizes the declared pairs into immutable app-local Debug and
 Release slots. Xcode then selects, exact-links, embeds, and signs the right slot
 for each configuration. Configurations containing `debug` or `development` use
 Debug; all others use Release. Adding, removing, or changing a flavored Expo
-framework requires `npx react-native spm update`; build-time `spm sync` only
-refreshes invariant source/codegen output.
+framework requires `node node_modules/react-native/scripts/setup-apple-spm.js update`;
+build-time `spm sync` only refreshes invariant source/codegen output.
 
 ## SwiftPM graph
 

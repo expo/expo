@@ -36,7 +36,7 @@ REACT_HEADERS="$XCFRAMEWORKS/ReactNativeHeaders.xcframework/$SLICE/Headers"
 DEPENDENCIES_HEADERS="$XCFRAMEWORKS/ReactNativeDependenciesHeaders.xcframework/$SLICE/Headers"
 for required in "$REACT_HEADERS/hermes/hermes.h" "$DEPENDENCIES_HEADERS/folly"; do
   if [ ! -e "$required" ]; then
-    echo "error: ExpoModulesJSI could not be built because $required is missing. It comes from React Native's Swift Package Manager artifacts, which are not set up for this app. Run \`npx react-native spm update\` in $SRCROOT, then build again." >&2
+    echo "error: ExpoModulesJSI could not be built because $required is missing. It comes from React Native's Swift Package Manager artifacts, which are not set up for this app. Run \`node node_modules/react-native/scripts/setup-apple-spm.js update\` in $SRCROOT, then build again." >&2
     exit 1
   fi
 done
