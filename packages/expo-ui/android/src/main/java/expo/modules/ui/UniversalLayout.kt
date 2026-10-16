@@ -4,10 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
@@ -21,6 +25,8 @@ import androidx.compose.ui.unit.constrainWidth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -145,17 +151,17 @@ internal class UniversalAlignNode(
     )
 }
 
-private fun Float.toSafePixels(density: Float): Int =
-  (this * density).roundToInt().coerceIn(0, Constraints.Infinity)
-
 private fun Float.toSafeFractionPixels(parentSize: Int): Int =
   (this * parentSize).roundToInt().coerceIn(0, Constraints.Infinity)
 
-private fun UniversalLayoutDimensions.resolveWidth(parentWidth: Int?, density: Float): Int? =
-  widthPoints?.toSafePixels(density) ?: parentWidth?.let { widthFraction?.toSafeFractionPixels(it) }
+private fun Float.toSafePixels(density: Float): Int =
+  (this * density).roundToInt().coerceIn(0, Constraints.Infinity)
 
-private fun UniversalLayoutDimensions.resolveHeight(parentHeight: Int?, density: Float): Int? =
-  heightPoints?.toSafePixels(density) ?: parentHeight?.let { heightFraction?.toSafeFractionPixels(it) }
+private fun UniversalLayoutDimensions.resolveWidthFraction(parentWidth: Int?): Int? =
+  parentWidth?.let { widthFraction?.toSafeFractionPixels(it) }
+
+private fun UniversalLayoutDimensions.resolveHeightFraction(parentHeight: Int?): Int? =
+  parentHeight?.let { heightFraction?.toSafeFractionPixels(it) }
 
 /**
  * An explicit size becomes a tight constraint, clamped so `min` never exceeds `max`.
@@ -189,8 +195,9 @@ internal fun MeasureScope.measureUniversalChild(
   parentHeight: Int?
 ): Placeable {
   val dimensions = measurable.parentData.asUniversalLayoutParentData().dimensions
-  val width = dimensions.resolveWidth(parentWidth, density)
-  val height = dimensions.resolveHeight(parentHeight, density)
+  // A host gives its children exact constraints, which would override a `width()` or `height()` modifier.
+  val width = dimensions.widthPoints?.toSafePixels(density) ?: dimensions.resolveWidthFraction(parentWidth)
+  val height = dimensions.heightPoints?.toSafePixels(density) ?: dimensions.resolveHeightFraction(parentHeight)
   if (width == null && height == null) {
     return measurable.measure(constraints)
   }
@@ -229,18 +236,17 @@ internal fun UniversalRow(
   verticalAlignment: Alignment.Vertical,
   content: @Composable () -> Unit
 ) {
+  val measurePolicy = remember(horizontalArrangement, verticalAlignment) {
+    UniversalStackMeasurePolicy(
+      UniversalStackAxis.Horizontal,
+      horizontalArrangement,
+      Arrangement.Top,
+      Alignment.Start,
+      verticalAlignment
+    )
+  }
   CompositionLocalProvider(LocalUniversalStackAxis provides UniversalStackAxis.Horizontal) {
-    Layout(modifier = modifier, content = content) { measurables, constraints ->
-      measureUniversalStack(
-        measurables,
-        constraints,
-        UniversalStackAxis.Horizontal,
-        horizontalArrangement,
-        Arrangement.Top,
-        Alignment.Start,
-        verticalAlignment
-      )
-    }
+    Layout(content = content, modifier = modifier, measurePolicy = measurePolicy)
   }
 }
 
@@ -251,19 +257,149 @@ internal fun UniversalColumn(
   horizontalAlignment: Alignment.Horizontal,
   content: @Composable () -> Unit
 ) {
+  val measurePolicy = remember(verticalArrangement, horizontalAlignment) {
+    UniversalStackMeasurePolicy(
+      UniversalStackAxis.Vertical,
+      Arrangement.Start,
+      verticalArrangement,
+      horizontalAlignment,
+      Alignment.Top
+    )
+  }
   CompositionLocalProvider(LocalUniversalStackAxis provides UniversalStackAxis.Vertical) {
-    Layout(modifier = modifier, content = content) { measurables, constraints ->
-      measureUniversalStack(
-        measurables,
-        constraints,
-        UniversalStackAxis.Vertical,
-        Arrangement.Start,
-        verticalArrangement,
-        horizontalAlignment,
-        Alignment.Top
-      )
+    Layout(content = content, modifier = modifier, measurePolicy = measurePolicy)
+  }
+}
+
+private class UniversalStackMeasurePolicy(
+  private val axis: UniversalStackAxis,
+  private val horizontalArrangement: Arrangement.Horizontal,
+  private val verticalArrangement: Arrangement.Vertical,
+  private val horizontalAlignment: Alignment.Horizontal,
+  private val verticalAlignment: Alignment.Vertical
+) : MeasurePolicy {
+  private val horizontal = axis == UniversalStackAxis.Horizontal
+
+  override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult =
+    measureUniversalStack(
+      measurables,
+      constraints,
+      axis,
+      horizontalArrangement,
+      verticalArrangement,
+      horizontalAlignment,
+      verticalAlignment
+    )
+
+  // The intrinsics follow Compose `Row` and `Column`, which size weighted children by their weight.
+  override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
+    if (horizontal) {
+      intrinsicMainSize(measurables, height, spacingPx()) { minIntrinsicWidth(it) }
+    } else {
+      intrinsicCrossSize(measurables, height, spacingPx(), { minIntrinsicHeight(it) }, { minIntrinsicWidth(it) })
+    }
+
+  override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
+    if (horizontal) {
+      intrinsicMainSize(measurables, height, spacingPx()) { maxIntrinsicWidth(it) }
+    } else {
+      intrinsicCrossSize(measurables, height, spacingPx(), { maxIntrinsicHeight(it) }, { maxIntrinsicWidth(it) })
+    }
+
+  override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
+    if (horizontal) {
+      intrinsicCrossSize(measurables, width, spacingPx(), { minIntrinsicWidth(it) }, { minIntrinsicHeight(it) })
+    } else {
+      intrinsicMainSize(measurables, width, spacingPx()) { minIntrinsicHeight(it) }
+    }
+
+  override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
+    if (horizontal) {
+      intrinsicCrossSize(measurables, width, spacingPx(), { maxIntrinsicWidth(it) }, { maxIntrinsicHeight(it) })
+    } else {
+      intrinsicMainSize(measurables, width, spacingPx()) { maxIntrinsicHeight(it) }
+    }
+
+  private fun Density.spacingPx(): Int =
+    (
+      if (horizontal) {
+        horizontalArrangement.spacing
+      } else {
+        verticalArrangement.spacing
+      }
+      ).roundToPx().coerceAtLeast(0)
+}
+
+private inline fun intrinsicMainSize(
+  children: List<IntrinsicMeasurable>,
+  crossAvailable: Int,
+  spacing: Int,
+  mainSize: IntrinsicMeasurable.(Int) -> Int
+): Int {
+  if (children.isEmpty()) {
+    return 0
+  }
+  var fixedSpace = 0
+  var weightUnitSpace = 0
+  var totalWeight = 0f
+  children.forEach { child ->
+    val weight = child.parentData.asUniversalLayoutParentData().weight
+    val size = child.mainSize(crossAvailable)
+    if (weight > 0f) {
+      totalWeight += weight
+      weightUnitSpace = max(weightUnitSpace, (size / weight).roundToInt())
+    } else {
+      fixedSpace += size
     }
   }
+  return (weightUnitSpace * totalWeight).roundToInt() + fixedSpace + spacing * (children.size - 1)
+}
+
+private inline fun intrinsicCrossSize(
+  children: List<IntrinsicMeasurable>,
+  mainAvailable: Int,
+  spacing: Int,
+  mainSize: IntrinsicMeasurable.(Int) -> Int,
+  crossSize: IntrinsicMeasurable.(Int) -> Int
+): Int {
+  if (children.isEmpty()) {
+    return 0
+  }
+  var fixedSpace = min(spacing * (children.size - 1), mainAvailable)
+  var crossMax = 0
+  var totalWeight = 0f
+  children.forEach { child ->
+    val weight = child.parentData.asUniversalLayoutParentData().weight
+    if (weight > 0f) {
+      totalWeight += weight
+      return@forEach
+    }
+    val preferredMain = child.mainSize(Constraints.Infinity)
+    val main = if (mainAvailable == Constraints.Infinity) {
+      preferredMain
+    } else {
+      min(preferredMain, (mainAvailable - fixedSpace).coerceAtLeast(0))
+    }
+    fixedSpace += main
+    crossMax = max(crossMax, child.crossSize(main))
+  }
+  val weightUnitSpace = when {
+    totalWeight == 0f -> 0
+    mainAvailable == Constraints.Infinity -> Constraints.Infinity
+    else -> ((mainAvailable - fixedSpace).coerceAtLeast(0) / totalWeight).roundToInt()
+  }
+  children.forEach { child ->
+    val weight = child.parentData.asUniversalLayoutParentData().weight
+    if (weight > 0f) {
+      val main = if (weightUnitSpace == Constraints.Infinity) {
+        Constraints.Infinity
+      } else {
+        (weightUnitSpace * weight).roundToInt()
+      }
+      crossMax = max(crossMax, child.crossSize(main))
+    }
+  }
+  return crossMax
 }
 
 private fun MeasureScope.measureUniversalStack(
@@ -301,9 +437,10 @@ private fun MeasureScope.measureUniversalStack(
       verticalArrangement.spacing.roundToPx()
     }
     ).coerceAtLeast(0)
-  val totalSpacing = spacing * (measurables.size - 1).coerceAtLeast(0)
   val placeables = arrayOfNulls<Placeable>(measurables.size)
+  // Like Compose `Row` and `Column`, count only the spacing used so far, plus the gap after each child.
   var occupiedMain = 0
+  var spaceAfterLastFixed = 0
 
   measurables.forEachIndexed { index, measurable ->
     val parentData = measurable.parentData.asUniversalLayoutParentData()
@@ -311,8 +448,9 @@ private fun MeasureScope.measureUniversalStack(
       return@forEachIndexed
     }
 
-    val width = parentData.dimensions.resolveWidth(definiteWidth, density)
-    val height = parentData.dimensions.resolveHeight(definiteHeight, density)
+    // A fixed size comes from the child's `width()` or `height()`, so it can shrink to the space left, as in Compose `Row`.
+    val width = parentData.dimensions.resolveWidthFraction(definiteWidth)
+    val height = parentData.dimensions.resolveHeightFraction(definiteHeight)
     val resolvedMain = if (horizontal) {
       width
     } else {
@@ -321,7 +459,7 @@ private fun MeasureScope.measureUniversalStack(
     val remainingMain = if (maxMain == Constraints.Infinity) {
       Constraints.Infinity
     } else {
-      (maxMain - occupiedMain - totalSpacing).coerceAtLeast(0)
+      (maxMain - occupiedMain).coerceAtLeast(0)
     }
     // The percentage uses the whole stack.
     // The tight constraint is then limited to the incoming max, so 150% cannot paint past the parent.
@@ -337,27 +475,38 @@ private fun MeasureScope.measureUniversalStack(
     }
     val placeable = measurable.measure(childConstraints)
     placeables[index] = placeable
-    occupiedMain += if (horizontal) {
+    val childMain = if (horizontal) {
       placeable.width
     } else {
       placeable.height
     }
+    spaceAfterLastFixed = if (remainingMain == Constraints.Infinity) {
+      spacing
+    } else {
+      min(spacing, (remainingMain - childMain).coerceAtLeast(0))
+    }
+    occupiedMain += childMain + spaceAfterLastFixed
   }
 
   var totalWeight = 0f
+  var weightedCount = 0
   measurables.forEach { measurable ->
     val weight = measurable.parentData.asUniversalLayoutParentData().weight
     if (weight > 0f) {
       totalWeight += weight
+      weightedCount++
     }
   }
-  if (totalWeight > 0f) {
+  val weightedSpacing = spacing * (weightedCount - 1).coerceAtLeast(0)
+  if (totalWeight == 0f) {
+    occupiedMain -= spaceAfterLastFixed
+  } else {
     val targetMain = when {
       maxMain != Constraints.Infinity -> maxMain
       horizontal -> constraints.minWidth
       else -> constraints.minHeight
     }
-    var remaining = (targetMain - occupiedMain - totalSpacing).coerceAtLeast(0)
+    var remaining = (targetMain - occupiedMain - weightedSpacing).coerceAtLeast(0)
     var remainingWeight = totalWeight
     measurables.forEachIndexed { index, measurable ->
       val parentData = measurable.parentData.asUniversalLayoutParentData()
@@ -378,10 +527,10 @@ private fun MeasureScope.measureUniversalStack(
       val width = if (horizontal) {
         share
       } else {
-        parentData.dimensions.resolveWidth(definiteWidth, density)
+        parentData.dimensions.resolveWidthFraction(definiteWidth)
       }
       val height = if (horizontal) {
-        parentData.dimensions.resolveHeight(definiteHeight, density)
+        parentData.dimensions.resolveHeightFraction(definiteHeight)
       } else {
         share
       }
@@ -400,7 +549,17 @@ private fun MeasureScope.measureUniversalStack(
       }
     } ?: 0
   }
-  val contentMain = childMainSizes.sum() + totalSpacing
+  var weightedMain = 0
+  measurables.forEachIndexed { index, measurable ->
+    if (measurable.parentData.asUniversalLayoutParentData().weight > 0f) {
+      weightedMain += childMainSizes[index]
+    }
+  }
+  val contentMain = occupiedMain + if (weightedCount > 0) {
+    weightedMain + weightedSpacing
+  } else {
+    0
+  }
   val contentCross = placeables.maxOfOrNull {
     it?.let { placeable ->
       if (horizontal) {
