@@ -53,8 +53,7 @@ const UNMAPPED_POD_ALLOWLIST = new Set(['sqlite3']);
 
 // Expo apps do not depend on @react-native-community/cli, which provides the
 // `react-native spm` command; React Native's own script is always installed.
-const RERUN_SPM_UPDATE =
-  'Then run `node node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.';
+const RERUN_SPM_UPDATE = `Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`;
 
 /**
  * An error the plugin fails the sync with, namespaced so the failure is
