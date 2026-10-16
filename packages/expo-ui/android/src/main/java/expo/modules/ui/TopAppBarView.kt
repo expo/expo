@@ -49,7 +49,7 @@ fun FunctionalComposableScope.TopAppBarContent(props: TopAppBarProps) {
   TopAppBar(
     title = { Children(UIComposableScope(), filter = { isSlotWithName(it, "title") }) },
     navigationIcon = { Children(UIComposableScope(), filter = { isSlotWithName(it, "navigationIcon") }) },
-    actions = { Children(UIComposableScope(), filter = { isSlotWithName(it, "actions") }) },
+    actions = { Children(UIComposableScope(rowScope = this), filter = { isSlotWithName(it, "actions") }) },
     windowInsets = windowInsets,
     colors = TopAppBarDefaults.topAppBarColors(
       containerColor = props.colors.containerColor.compose,
