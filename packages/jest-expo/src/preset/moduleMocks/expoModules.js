@@ -615,10 +615,18 @@ module.exports = {
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
         ],
         ExpoNetwork: [
-          { name: 'getCellSignalStrengthAsync', argumentsCount: 0, key: 'getCellSignalStrengthAsync' },
+          {
+            name: 'getCellSignalStrengthAsync',
+            argumentsCount: 0,
+            key: 'getCellSignalStrengthAsync',
+          },
           { name: 'getIpAddressAsync', argumentsCount: 0, key: 'getIpAddressAsync' },
           { name: 'getNetworkStateAsync', argumentsCount: 0, key: 'getNetworkStateAsync' },
-          { name: 'getWifiSignalStrengthAsync', argumentsCount: 0, key: 'getWifiSignalStrengthAsync' },
+          {
+            name: 'getWifiSignalStrengthAsync',
+            argumentsCount: 0,
+            key: 'getWifiSignalStrengthAsync',
+          },
         ],
         ExpoNotificationCategoriesModule: [
           {

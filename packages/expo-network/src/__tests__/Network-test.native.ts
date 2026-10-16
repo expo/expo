@@ -74,7 +74,7 @@ describe('useCellSignalStrength', () => {
   it('returns the initial value from the native module', async () => {
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(2));
 
-    const { result } = renderHook(() => useCellSignalStrength());
+    const { result } = await renderHook(() => useCellSignalStrength());
 
     await waitFor(() => {
       expect(result.current).toBe(2);
@@ -84,13 +84,13 @@ describe('useCellSignalStrength', () => {
   it('updates when a cell signal strength event is emitted', async () => {
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(1));
 
-    const { result } = renderHook(() => useCellSignalStrength());
+    const { result } = await renderHook(() => useCellSignalStrength());
 
     await waitFor(() => {
       expect(result.current).toBe(1);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onCellSignalStrengthChanged', { strength: 4 });
     });
 
@@ -100,15 +100,15 @@ describe('useCellSignalStrength', () => {
   it('cleans up the listener on unmount', async () => {
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(0));
 
-    const { result, unmount } = renderHook(() => useCellSignalStrength());
+    const { result, unmount } = await renderHook(() => useCellSignalStrength());
 
     await waitFor(() => {
       expect(result.current).toBe(0);
     });
 
-    unmount();
+    await unmount();
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onCellSignalStrengthChanged', { strength: 3 });
     });
 
@@ -122,7 +122,7 @@ describe('useWifiSignalStrength', () => {
   it('returns the initial value from the native module', async () => {
     mockProperty(ExpoNetwork, 'getWifiSignalStrengthAsync', jest.fn().mockResolvedValue(3));
 
-    const { result } = renderHook(() => useWifiSignalStrength());
+    const { result } = await renderHook(() => useWifiSignalStrength());
 
     await waitFor(() => {
       expect(result.current).toBe(3);
@@ -132,13 +132,13 @@ describe('useWifiSignalStrength', () => {
   it('updates when a Wi-Fi signal strength event is emitted', async () => {
     mockProperty(ExpoNetwork, 'getWifiSignalStrengthAsync', jest.fn().mockResolvedValue(2));
 
-    const { result } = renderHook(() => useWifiSignalStrength());
+    const { result } = await renderHook(() => useWifiSignalStrength());
 
     await waitFor(() => {
       expect(result.current).toBe(2);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onWifiSignalStrengthChanged', { strength: 4 });
     });
 
@@ -157,14 +157,14 @@ describe('useActiveSignalStrength', () => {
     );
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(2));
 
-    const { result } = renderHook(() => useActiveSignalStrength());
+    const { result } = await renderHook(() => useActiveSignalStrength());
     await act(async () => {});
 
     await waitFor(() => {
       expect(result.current).toBe(2);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onCellSignalStrengthChanged', { strength: 4 });
     });
 
@@ -179,14 +179,14 @@ describe('useActiveSignalStrength', () => {
     );
     mockProperty(ExpoNetwork, 'getWifiSignalStrengthAsync', jest.fn().mockResolvedValue(3));
 
-    const { result } = renderHook(() => useActiveSignalStrength());
+    const { result } = await renderHook(() => useActiveSignalStrength());
     await act(async () => {});
 
     await waitFor(() => {
       expect(result.current).toBe(3);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onWifiSignalStrengthChanged', { strength: 1 });
     });
 
@@ -202,14 +202,14 @@ describe('useActiveSignalStrength', () => {
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(2));
     mockProperty(ExpoNetwork, 'getWifiSignalStrengthAsync', jest.fn().mockResolvedValue(4));
 
-    const { result } = renderHook(() => useActiveSignalStrength());
+    const { result } = await renderHook(() => useActiveSignalStrength());
     await act(async () => {});
 
     await waitFor(() => {
       expect(result.current).toBe(2);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onNetworkStateChanged', {
         type: NetworkStateType.WIFI,
         isConnected: true,
@@ -221,7 +221,7 @@ describe('useActiveSignalStrength', () => {
       expect(result.current).toBe(4);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onWifiSignalStrengthChanged', { strength: 1 });
     });
 
@@ -237,14 +237,14 @@ describe('useActiveSignalStrength', () => {
     mockProperty(ExpoNetwork, 'getCellSignalStrengthAsync', jest.fn().mockResolvedValue(2));
     mockProperty(ExpoNetwork, 'getWifiSignalStrengthAsync', jest.fn().mockResolvedValue(4));
 
-    const { result } = renderHook(() => useActiveSignalStrength());
+    const { result } = await renderHook(() => useActiveSignalStrength());
     await act(async () => {});
 
     await waitFor(() => {
       expect(result.current).toBe(2);
     });
 
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onNetworkStateChanged', {
         type: NetworkStateType.WIFI,
         isConnected: true,
@@ -257,7 +257,7 @@ describe('useActiveSignalStrength', () => {
     });
 
     // Cell events should no longer update the strength
-    act(() => {
+    await act(async () => {
       ExpoNetwork.emit('onCellSignalStrengthChanged', { strength: 0 });
     });
 
@@ -271,7 +271,7 @@ describe('useActiveSignalStrength', () => {
       jest.fn().mockResolvedValue({ type: NetworkStateType.ETHERNET })
     );
 
-    const { result } = renderHook(() => useActiveSignalStrength());
+    const { result } = await renderHook(() => useActiveSignalStrength());
     await act(async () => {});
 
     expect(result.current).toBe(INVALID_SIGNAL_STRENGTH);
