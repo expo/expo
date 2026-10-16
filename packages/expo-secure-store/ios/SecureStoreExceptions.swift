@@ -6,9 +6,10 @@ internal final class InvalidKeyException: Exception {
   }
 }
 
-internal final class InvalidAuthenticationOptionException: GenericException<String> {
+internal final class InvalidAuthenticationOptionException: GenericException<String?> {
   override var reason: String {
-    "Invalid value for requireAuthentication: \"\(param)\". Expected \"biometry\" or \"deviceCredentials\"."
+    let valueDescription = param.map { "\"\($0)\"" } ?? "null"
+    return "Invalid value for requireAuthentication: \(valueDescription). Expected true, false, \"biometry\", or \"deviceCredentials\"."
   }
 }
 
