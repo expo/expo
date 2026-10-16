@@ -3,7 +3,6 @@
 internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
-import os
 
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
@@ -37,26 +36,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// - are non-copyable. As value types, we would have to "borrow" them from React Native in an unsafe manner.
   internal let pointee: facebook.jsi.IRuntime
   internal let runtimePointee: facebook.jsi.Runtime
-  internal let scheduler: expo.RuntimeScheduler
 
   /// Strong handle that values hold instead of a `weak` reference to the runtime. See
   /// ``JavaScriptRuntimeHandle`` for why.
   internal let handle: JavaScriptRuntimeHandle
+
+  internal let scheduler: Scheduler
 
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
   /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
   /// freed here, matching the immortal (no-op) release semantics of the imported reference type.
   private let ownsRuntime: Bool
-
-  /// Thread ID of the JavaScript thread, captured at construction time. Used by `isOnJavaScriptThread()`
-  /// for a fast integer comparison instead of `Thread.current.name == "..."`.
-  /// Assumes runtime initializers always run on the JS thread.
-  private let jsThreadID: UInt64 = {
-    var id: UInt64 = 0
-    pthread_threadid_np(nil, &id)
-    return id
-  }()
 
   /// Actor for running runtime work.
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
@@ -68,7 +59,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -81,7 +72,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
     self.ownsRuntime = true
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -95,7 +86,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create())
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -124,7 +115,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create(scheduler, fn)
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn))
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -490,10 +481,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Runtime execution
 
+  // These forward to ``Scheduler``.
+
   /// Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
   /// Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
   public var supportsAsyncScheduling: Bool {
-    return scheduler.supportsAsyncScheduling()
+    return scheduler.supportsAsyncScheduling
   }
 
   /// Schedules a closure to be executed with granted synchronized access to the runtime.
@@ -501,21 +494,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void
   ) {
-    let cxxPriority = expo.RuntimeScheduler.Priority(rawValue: priority.rawValue) ?? .NormalPriority
-    scheduler.scheduleTask(cxxPriority) {
-      JavaScriptActor.assumeIsolated(closure)
-    }
+    scheduler.schedule(priority: priority, closure)
   }
 
   public func schedule(
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> Void
   ) {
-    schedule(priority: priority) {
-      Task.immediate_polyfill {
-        try await closure()
-      }
-    }
+    scheduler.schedule(priority: priority, closure)
   }
 
   /// Synchronously executes a closure on the JavaScript runtime thread, blocking the current thread until completion.
@@ -525,26 +511,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(@_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R) throws
     -> sending R
   {
-    if isOnJavaScriptThread() {
-      return try JavaScriptActor.assumeIsolated(closure)
-    }
-
-    var result: Result<R, any Error>!
-    let waiter = ThreadWaiter()
-
-    scheduler.scheduleTask(.ImmediatePriority) {
-      do {
-        result = .success(try JavaScriptActor.assumeIsolated(closure))
-      } catch {
-        result = .failure(error)
-      }
-      waiter.wake()
-    }
-
-    waiter.wait(until: {
-      result != nil
-    })
-    return try result.get()
+    return try scheduler.execute(closure)
   }
 
   /// Synchronously executes an async closure on the JavaScript runtime thread, blocking the current thread until completion.
@@ -554,30 +521,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) throws -> sending R {
-    let result = NonisolatedUnsafeVar<Result<R, any Error>>()
-    let runInline = isOnJavaScriptThread()
-    let waiter = ThreadWaiter()
-
-    func body() {
-      Task.immediate_polyfill(priority: .high) {
-        do {
-          result.value = .success(try await closure())
-        } catch {
-          result.value = .failure(error)
-        }
-        waiter.wake()
-      }
-    }
-    if runInline {
-      body()
-    } else {
-      scheduler.scheduleTask(.ImmediatePriority, body)
-    }
-
-    waiter.wait(until: {
-      result.value != nil
-    })
-    return try result.value.get()
+    return try scheduler.execute(closure)
   }
 
   /// Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
@@ -585,18 +529,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
   ) async throws -> sending R {
-    if isOnJavaScriptThread() {
-      return try JavaScriptActor.assumeIsolated(closure)
-    }
-    return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
-        do {
-          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
-        } catch {
-          continuation.resume(throwing: error)
-        }
-      }
-    }
+    return try await scheduler.execute(closure)
   }
 
   /// Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
@@ -604,20 +537,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) async throws -> sending R {
-    if isOnJavaScriptThread() {
-      return try await Task.immediate_polyfill(priority: .high, operation: closure).value
-    }
-    return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
-        Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
-          do {
-            continuation.resume(returning: try await closure())
-          } catch {
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-    }
+    return try await scheduler.execute(closure)
   }
 
   /// Asynchronously executes an async closure that produces a `JavaScriptValue` on the JavaScript
@@ -643,19 +563,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> Void
   ) {
-    if isOnJavaScriptThread() {
-      JavaScriptActor.assumeIsolated(closure)
-    } else {
-      schedule(priority: priority, closure)
-    }
+    scheduler.runOrSchedule(priority: priority, closure)
   }
 
   /// Checks whether the function is called on the JavaScript thread.
   @inline(__always)
   public final func isOnJavaScriptThread() -> Bool {
-    var current: UInt64 = 0
-    pthread_threadid_np(nil, &current)
-    return current == jsThreadID
+    return scheduler.isOnJavaScriptThread()
   }
 
   /// Whether the calling thread may use the runtime: its JavaScript thread, or any thread when the
@@ -1018,73 +932,6 @@ extension JavaScriptRuntime {
 
     public var description: String {
       return "'\(identifier)' is not a valid JavaScript identifier"
-    }
-  }
-}
-
-/// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
-private final class ThreadWaiter: @unchecked Sendable {
-  private enum Sleep {
-    case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
-    case semaphore(DispatchSemaphore)
-  }
-
-  private static let spinNanoseconds: UInt64 = 20_000
-
-  private let isWoken = OSAllocatedUnfairLock(initialState: false)
-  private let sleep: Sleep
-
-  init() {
-    // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
-    // it during the wait, in the same mode: the work the caller waits for may be delivered through
-    // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
-    // threads, such as dispatch workers, have nothing to run, so they wait on a semaphore.
-    let runLoop: CFRunLoop = CFRunLoopGetCurrent()
-    guard let mode = CFRunLoopCopyCurrentMode(runLoop) else {
-      sleep = .semaphore(DispatchSemaphore(value: 0))
-      return
-    }
-    var context = CFRunLoopSourceContext()
-    context.perform = { _ in }
-    let source: CFRunLoopSource = CFRunLoopSourceCreate(nil, 0, &context)
-    CFRunLoopAddSource(runLoop, source, mode)
-    sleep = .runLoop(runLoop, source, mode)
-  }
-
-  func wake() {
-    isWoken.withLock { isWoken in
-      isWoken = true
-    }
-    switch sleep {
-    case .runLoop(let runLoop, let source, _):
-      CFRunLoopSourceSignal(source)
-      CFRunLoopWakeUp(runLoop)
-    case .semaphore(let semaphore):
-      // Makes a system call only when the caller already sleeps in `wait`.
-      semaphore.signal()
-    }
-  }
-
-  func wait(until isFinished: () -> Bool) {
-    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
-    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
-      // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
-      // thread wakes up. After the deadline, the thread sleeps below.
-    }
-    switch sleep {
-    case .runLoop(_, let source, let mode):
-      defer {
-        // Also removes the source from the run loop. A later `wake()` does nothing.
-        CFRunLoopSourceInvalidate(source)
-      }
-      // The timeout is a backstop for a missed wake-up.
-      while !isFinished() {
-        CFRunLoopRunInMode(mode, 0.1, true)
-      }
-    case .semaphore(let semaphore):
-      if !isFinished() {
-        semaphore.wait()
-      }
     }
   }
 }
