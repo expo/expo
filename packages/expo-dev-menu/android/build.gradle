@@ -109,6 +109,8 @@ dependencies {
 
   debugOnly project(":expo-dev-menu-interface")
 
+  debugOnly 'androidx.preference:preference:1.2.1'
+
   debugOnly 'com.squareup.okhttp3:okhttp:4.9.2'
   debugOnly 'com.google.code.gson:gson:2.13.2'
 
