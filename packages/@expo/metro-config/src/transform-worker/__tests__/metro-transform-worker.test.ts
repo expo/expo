@@ -178,7 +178,10 @@ export function Component(props: Props) {
   const output = result.output[0]!;
 
   expect(output.data.code).toContain('react/compiler-runtime');
-  expect(output.data.code).toMatch(/reactcompilerruntime\.c\)\(2\)/i);
+  expect(output.data.code).toMatch(/reactcompilerruntime\.c\)\(3\)/i);
+  expect(output.data.code).toMatch(
+    /if \(\$\[0\] !== "([a-f0-9]+)"\) \{\s*for \(let i = 1; i < 3; i\+\+\) \$\[i\] = Symbol\.for\("react\.memo_cache_sentinel"\);\s*\$\[0\] = "\1";/
+  );
   expect(output.data.code).toContain('$RefreshReg$');
   expect(output.data.code).not.toContain('type Props');
   expect(output.data.code).not.toContain('<View>');
@@ -985,6 +988,7 @@ it('transforms a module with dependencies', async () => {
       HEADER_DEV,
       '"use strict";',
       'require(_dependencyMap[2], "./c");',
+      ';',
       'require(_dependencyMap[0], "./a");',
       'arbitrary(code);',
       'var b = require(_dependencyMap[1], "b");',
@@ -998,14 +1002,14 @@ it('transforms a module with dependencies', async () => {
 
   expect(
     generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
-  ).toMatchObject({ line: 4, column: 0 });
+  ).toMatchObject({ line: 5, column: 0 });
 
-  expect(originalPositionFor(trace, { line: 5, column: 0 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 6, column: 0 })).toMatchObject({
     line: 3,
     column: 0,
     name: null,
   });
-  expect(originalPositionFor(trace, { line: 6, column: 6 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 7, column: 6 })).toMatchObject({
     line: 4,
     column: 6,
     name: null,
@@ -1037,11 +1041,11 @@ it('transforms an es module with asyncToGenerator', async () => {
   const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
-    line: 10,
+    line: 11,
     column: 0,
   });
 
-  expect(originalPositionFor(trace, { line: 10, column: 9 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 11, column: 9 })).toMatchObject({
     line: 1,
     column: 22,
     name: null,
@@ -1096,6 +1100,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       '}',
       'var _c = require(_dependencyMap[0], "./c");',
       'var c = _interopDefault(_c);',
+      ';',
       '',
       'test(c.default);',
       '',
@@ -1105,7 +1110,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   const trace = toTraceMap(result.output[0]!, contents);
 
-  expect(originalPositionFor(trace, { line: 8, column: 5 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 9, column: 5 })).toMatchObject({
     line: 1,
     column: 26,
     name: null,

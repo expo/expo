@@ -3,6 +3,7 @@ import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -390,13 +391,14 @@ it("keeps Babel's .ts JSX rejection instead of widening TypeScript syntax", asyn
     options: options(),
     isDefaultExpoTransformer: true,
   });
-  await expect(native).rejects.toThrow(TransformSyntaxError);
-  await expect(native).rejects.toMatchObject({
+  const error = await native.catch((error: unknown) => error);
+  expect(error).toBeInstanceOf(TransformSyntaxError);
+  expect(error).toMatchObject({
     code: 'TRANSFORM_SYNTAX_ERROR',
     filename: typedFilename,
     loc: { line: 1, column: expect.any(Number) },
-    codeFrame: expect.stringContaining(source),
   });
+  expect(stripVTControlCharacters((error as TransformSyntaxError).codeFrame)).toContain(source);
 });
 
 it('matches Babel preset Expo runtime behavior and source positions for TypeScript', async () => {
