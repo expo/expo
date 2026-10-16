@@ -252,10 +252,7 @@ export interface NoxcturnalSourceFacts {
   hasPlatform: boolean;
   hasSelect: boolean;
   hasClass: boolean;
-  hasFinally: boolean;
-  hasSuper: boolean;
   hasAsync: boolean;
-  hasArrow: boolean;
   hasLetOrConst: boolean;
   hasStaticBlock: boolean;
   hasAsyncGenerator: boolean;
@@ -269,7 +266,7 @@ export interface NoxcturnalSourceFacts {
 }
 
 const SOURCE_SIGNAL =
-  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\bfinally\b|\bsuper\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
+  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
 
 export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFacts {
   const facts: NoxcturnalSourceFacts = {
@@ -287,10 +284,7 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     hasPlatform: false,
     hasSelect: false,
     hasClass: false,
-    hasFinally: false,
-    hasSuper: false,
     hasAsync: false,
-    hasArrow: source.includes('=>'),
     hasLetOrConst: /\b(?:let|const)\b/.test(source),
     hasStaticBlock: false,
     hasAsyncGenerator: false,
@@ -322,8 +316,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     else if (signal === 'EXPO_PUBLIC_') facts.hasPublicEnv = true;
     else if (signal === 'select') facts.hasSelect = true;
     else if (signal === 'class') facts.hasClass = true;
-    else if (signal === 'finally') facts.hasFinally = true;
-    else if (signal === 'super') facts.hasSuper = true;
     else if (signal.startsWith('async')) {
       facts.hasAsync = true;
       if (signal.includes('*')) facts.hasAsyncGenerator = true;
