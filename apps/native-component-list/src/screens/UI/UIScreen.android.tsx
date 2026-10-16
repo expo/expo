@@ -435,6 +435,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TopAppBar component',
+    route: 'ui/top-app-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TopAppBarScreen'));
+    },
+  },
+  {
     name: 'Tooltip component',
     route: 'ui/tooltip',
     options: {},

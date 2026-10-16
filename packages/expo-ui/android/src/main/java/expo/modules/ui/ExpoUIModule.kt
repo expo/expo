@@ -533,6 +533,12 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<TopAppBarProps>("TopAppBarView") {
+      Content { props ->
+        TopAppBarContent(props)
+      }
+    }
+
     ExpoUIView<HorizontalFloatingToolbarProps>("HorizontalFloatingToolbarView") {
       Content { props ->
         HorizontalFloatingToolbarContent(props)
