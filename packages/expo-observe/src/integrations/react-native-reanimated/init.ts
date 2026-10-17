@@ -27,7 +27,8 @@ const MAX_DISTINCT_MESSAGES_PER_WINDOW = 100;
 const MAX_MESSAGE_LENGTH = 500;
 
 // Maps the capped text of each message reported in the current window to the time it was
-// reported. A `Map` keeps insertion order, so the oldest report is always first.
+// reported. A `Map` keeps insertion order, so the oldest report is always first. The time comes
+// from the monotonic `performance.now()`, so a change to the device clock cannot stop expiry.
 const reportedErrors = new Map<string, number>();
 const reportedWarnings = new Map<string, number>();
 
@@ -69,7 +70,7 @@ function removeExpiredReports(reported: Map<string, number>, now: number): void 
 }
 
 function shouldReport(reported: Map<string, number>, cappedMessage: string): boolean {
-  const now = Date.now();
+  const now = performance.now();
   removeExpiredReports(reported, now);
   if (reported.has(cappedMessage) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
     return false;
