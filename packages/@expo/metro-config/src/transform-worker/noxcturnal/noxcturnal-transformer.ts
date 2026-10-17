@@ -526,7 +526,11 @@ function getEarlyFallbackReason(
       !(
         directive === 'dom' ||
         directive === 'server' ||
-        (directive === 'client' && options.customTransformOptions?.environment === 'react-server')
+        (directive === 'client' &&
+          (options.customTransformOptions?.environment === 'react-server' ||
+            ((options.customTransformOptions?.environment == null ||
+              options.customTransformOptions?.environment === 'node') &&
+              !sourceFacts.hasActionableClientDirective)))
       )
     ) {
       return 'expo-directive';
@@ -542,6 +546,8 @@ function getEarlyFallbackReason(
     !(
       (directive === 'client' &&
         (options.customTransformOptions?.environment == null ||
+          (options.customTransformOptions?.environment === 'node' &&
+            !sourceFacts.hasActionableClientDirective) ||
           options.customTransformOptions?.environment === 'react-server')) ||
       directive === 'dom' ||
       directive === 'server'
