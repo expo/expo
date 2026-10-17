@@ -93,9 +93,10 @@ public final class ClassDefinition: ObjectDefinition {
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
     }
 
-    // Register the JS class and its associated native type.
+    // Register the prototype of the JS class for its associated native type.
     if let sharedObjectType = associatedType as? DynamicSharedObjectType {
-      appContext.classRegistry.register(nativeClassId: sharedObjectType.typeIdentifier, javaScriptClass: klass)
+      let prototype = klass.getProperty("prototype").getObject()
+      appContext.classRegistry.register(nativeClassId: sharedObjectType.typeIdentifier, prototype: prototype)
     }
 
     return klass

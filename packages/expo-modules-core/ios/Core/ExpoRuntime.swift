@@ -22,6 +22,20 @@ public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
     return try getCoreObject().getPropertyAsFunction("SharedRef")
   }
 
+  /// Creates an instance of the base `SharedObject` class, or of the base `SharedRef` class if `isSharedRef` is true.
+  /// The prototypes of both classes are looked up once per runtime and cached.
+  @JavaScriptActor
+  internal func createBaseSharedObject(isSharedRef: Bool) throws -> JavaScriptObject {
+    let key = isSharedRef ? sharedRefPrototypeKey : sharedObjectPrototypeKey
+    let makePrototype = {
+      let baseClass = try isSharedRef ? self.getSharedRefClass() : self.getSharedObjectClass()
+      return try baseClass.asObject().getPropertyAsObject("prototype")
+    }
+    return try withCached(key, makePrototype) { (prototype: borrowing JavaScriptObject) in
+      return createObject(prototype: prototype)
+    }
+  }
+
   @JavaScriptActor
   internal func createNativeModuleObject() throws -> JavaScriptObject {
     return try getCoreObject()
@@ -42,3 +56,7 @@ public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
     return try createClass(name: name, inheriting: sharedRefBaseClass, constructor)
   }
 }
+
+/// Keys of the base `SharedObject` and `SharedRef` prototypes in each runtime's cache.
+private let sharedObjectPrototypeKey = JavaScriptRuntime.Cache.Key<JavaScriptObject.Ref>()
+private let sharedRefPrototypeKey = JavaScriptRuntime.Cache.Key<JavaScriptObject.Ref>()

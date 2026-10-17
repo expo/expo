@@ -230,11 +230,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
   /**
@@ -242,13 +240,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
-    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
+    let runtime = try self.runtime
+    let object = classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+      return runtime.createObject(prototype: prototype)
+    }
+    guard let object else {
       throw JavaScriptClassNotFoundException()
     }
-    return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
-    }
+    return object
   }
 
   // MARK: - Legacy modules
