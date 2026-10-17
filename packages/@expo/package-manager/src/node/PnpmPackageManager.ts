@@ -2,6 +2,9 @@ import env from '../utils/env';
 import { resolveWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeManagers';
 import { BasePackageManager } from './BasePackageManager';
 
+// Resolve through pnpm's `minimumReleaseAge` gate (on by default since pnpm 11) - Expo installs pin known versions (#44479)
+const MIN_RELEASE_AGE_OVERRIDE = '--config.minimumReleaseAge=0';
+
 export class PnpmPackageManager extends BasePackageManager {
   readonly name = 'pnpm';
   readonly bin = 'pnpm';
@@ -26,7 +29,7 @@ export class PnpmPackageManager extends BasePackageManager {
       namesOrFlags.unshift('--no-frozen-lockfile');
     }
 
-    return this.runAsync(['install', ...namesOrFlags]);
+    return this.runAsync(['install', ...namesOrFlags, MIN_RELEASE_AGE_OVERRIDE]);
   }
 
   addAsync(namesOrFlags: string[] = []) {
@@ -34,7 +37,7 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', ...namesOrFlags]);
+    return this.runAsync(['add', ...namesOrFlags, MIN_RELEASE_AGE_OVERRIDE]);
   }
 
   addDevAsync(namesOrFlags: string[] = []) {
@@ -42,7 +45,7 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--save-dev', ...namesOrFlags]);
+    return this.runAsync(['add', '--save-dev', ...namesOrFlags, MIN_RELEASE_AGE_OVERRIDE]);
   }
 
   addGlobalAsync(namesOrFlags: string[] = []) {
@@ -50,7 +53,7 @@ export class PnpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--global', ...namesOrFlags]);
+    return this.runAsync(['add', '--global', ...namesOrFlags, MIN_RELEASE_AGE_OVERRIDE]);
   }
 
   removeAsync(namesOrFlags: string[]) {

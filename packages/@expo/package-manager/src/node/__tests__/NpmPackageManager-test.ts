@@ -51,6 +51,71 @@ describe('NpmPackageManager', () => {
     });
   });
 
+  describe('minReleaseAge', () => {
+    it('disables the release age gate for npm 11.10 and newer', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.resolve({ stdout: '11.17.0\n' }))
+            : mockSpawnPromise()
+        );
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.installAsync();
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['install'],
+        expect.objectContaining({
+          env: expect.objectContaining({ npm_config_min_release_age: '0' }),
+        })
+      );
+    });
+
+    it('does not set the release age variable for npm older than 11.10', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.resolve({ stdout: '11.9.0\n' }))
+            : mockSpawnPromise()
+        );
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.installAsync();
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['install'],
+        expect.objectContaining({
+          env: expect.not.objectContaining({ npm_config_min_release_age: expect.anything() }),
+        })
+      );
+    });
+
+    it('installs without the release age variable when the version probe fails', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.reject(new Error('npm not found')))
+            : mockSpawnPromise()
+        );
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.installAsync();
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['install'],
+        expect.objectContaining({
+          env: expect.not.objectContaining({ npm_config_min_release_age: expect.anything() }),
+        })
+      );
+    });
+  });
+
   describe('runBinAsync', () => {
     it('executes npx with the expected command and options', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
