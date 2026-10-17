@@ -152,10 +152,10 @@ export interface ObserveIntegrationsConfig {
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `react-native-reanimated` integration, which reports Reanimated errors to Observe
-   * as errors named `reanimated.error`, and Reanimated warnings as events named
-   * `reanimated.warning`. Reanimated still prints them to the console. The integration reports
-   * each distinct message at most once per minute. It reports at most 100 distinct errors and 100
-   * distinct warnings in any one-minute period.
+   * as errors named `reanimated.error`. To also report Reanimated warnings as events named
+   * `reanimated.warning`, set `reportWarnings`. Reanimated still prints errors and warnings to the
+   * console. The integration reports each distinct message at most once every 15 minutes. It
+   * reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period.
    *
    * Requires `react-native-reanimated` 4.7.0 or later to be installed.
    *
@@ -184,6 +184,13 @@ export type ObserveReanimatedIntegrationConfig = {
    * @default true
    */
   strict?: boolean;
+  /**
+   * Whether the integration also reports Reanimated warnings to Observe, as events named
+   * `reanimated.warning`. Reanimated prints warnings to the console either way.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
 };
 
 /**
