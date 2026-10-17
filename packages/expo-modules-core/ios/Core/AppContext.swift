@@ -230,11 +230,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to the prototypes of JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
   /**

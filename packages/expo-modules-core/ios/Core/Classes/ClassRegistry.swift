@@ -10,10 +10,8 @@ internal final class ClassRegistry {
 
   // MARK: - Accessing
 
-  /**
-   Calls `body` with the prototype of the JavaScript class registered for the native class.
-   Returns `nil` when no class is registered.
-   */
+  /// Calls `body` with the prototype of the JavaScript class registered for the native class.
+  /// Returns `nil` when no class is registered.
   func withPrototype<R: ~Copyable>(
     nativeClassId: ObjectIdentifier,
     _ body: (borrowing JavaScriptObject) throws -> R
