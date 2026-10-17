@@ -732,4 +732,38 @@ struct JavaScriptPromiseTests {
     }
     #expect(isCollected)
   }
+
+  @Test
+  func `the teardown sweep releases the reason of an awaited rejected promise`() async throws {
+    // Like the fulfilled value above, the rejection reason is kept for later `await()` calls and must
+    // not outlive the runtime's teardown sweep.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakReason) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let reason = runtime.createObject()
+      let weakReason = reason.createWeak()
+      // A `JavaScriptError` made from a value rejects with that value itself.
+      promise.reject(JavaScriptError(runtime, value: reason.asValue()))
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakReason))
+    }
+    let didThrow = await Task.detached {
+      do {
+        _ = try await promise.value.await()
+        return false
+      } catch {
+        return true
+      }
+    }.value
+    #expect(didThrow)
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakReason.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
+  }
 }
