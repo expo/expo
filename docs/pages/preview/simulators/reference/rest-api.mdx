@@ -61,6 +61,7 @@ UUID means universally unique identifier.
 | `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"58"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                     |
 | `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                                |
 | `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                      |
+| `publicPreview`         | boolean       | No       | Set to `true` to make **Share** in the browser preview copy a public link that contains the preview token. Defaults to `false`, which uses private links. See [Open the browser preview](#open-the-browser-preview).                   |
 
 The application source options install and launch the app for every session type, including `appium`.
 
@@ -111,6 +112,7 @@ Returns `200 OK` with the new session's metadata:
     "platform": "ios",
     "status": "new",
     "remoteConfig": null,
+    "publicPreview": false,
     "maxDurationMinutes": 30,
     "maxIdleTimeMinutes": 5,
     "startedAt": null,
@@ -174,6 +176,7 @@ An agent-device session that is ready returns connection details alongside its m
       "webPreviewUrl": "https://preview.example.com",
       "webPreviewToken": "<preview-token>"
     },
+    "publicPreview": false,
     "maxDurationMinutes": 30,
     "maxIdleTimeMinutes": 5,
     "startedAt": "2026-08-28T10:01:00.000Z",
@@ -216,14 +219,24 @@ For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `A
 
 ### Open the browser preview
 
-Open the browser preview URL in a desktop browser. Do not open it on the remote device.
+Open the browser preview in a desktop browser. Do not open it on the remote device.
 
-When `webPreviewToken` is present, the preview is gated, and `webPreviewUrl` does not work without the token. Add the token to the URL:
+A session has a private browser preview link. The link opens only for a person who signs in to an Expo account that can view the project:
+
+```text
+<url>/preview
+```
+
+`<url>` is the `url` field of the session. When `publicPreview` is `false`, **Share** in the browser preview copies this private link.
+
+You can also make a public link that contains the preview token. Anyone who has a public link can view the simulator without an Expo login, and on iOS, control it. When `publicPreview` is `true`, **Share** in the browser preview copies the public link. The `publicPreview` setting does not remove the token from the response, so treat `webPreviewToken` as a secret in every session.
+
+`webPreviewUrl` is the address of the public preview, not the private link. When `webPreviewToken` is present, `webPreviewUrl` does not open without the token. Add the token only when you want a public link:
 
 - When the response includes `previewApiUrl`, `webPreviewUrl` is a page on expo.dev. Add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`.
 - Otherwise, add the token as a `token` query parameter: `<webPreviewUrl>?token=<webPreviewToken>`.
 
-To call `previewApiUrl`, add the token as a `token` query parameter. URL-encode the token in each case. EAS CLI builds these URLs for you in `eas simulator:get --json` output.
+To call `previewApiUrl`, add the token as a `token` query parameter. URL-encode the token in each case. For a session with `publicPreview` set to `true`, EAS CLI builds these URLs for you in `eas simulator:get --json` output. For other sessions, EAS CLI shows the private link and does not show the token.
 
 Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 

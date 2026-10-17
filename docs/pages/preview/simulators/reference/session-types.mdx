@@ -33,7 +33,7 @@ When a session is ready, EAS returns its connection details. EAS CLI writes them
 | `appium`           | `APPIUM_URL`, `APPIUM_CAPS` (JSON)                               | `appiumUrl`, `capabilities`, optional `webPreviewUrl` and `webPreviewToken`                                    |
 | `web-preview-only` | Only `EAS_SIMULATOR_SESSION_ID`                                  | `webPreviewUrl`, optional `webPreviewToken`                                                                    |
 
-The `remoteConfig` fields above are the REST API fields. When `webPreviewToken` is present, the browser preview URL works only with the token. See [Open the browser preview](/preview/simulators/reference/rest-api/#open-the-browser-preview) for how to add it. In `--json` output, EAS CLI adds the token to the URL for you. There, the field is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session.
+The `remoteConfig` fields above are the REST API fields. In the REST API, `webPreviewUrl` is the address of the public preview. When `webPreviewToken` is present, it opens only with the token, and a URL with the token is a public link. See [Open the browser preview](/preview/simulators/reference/rest-api/#open-the-browser-preview). In `--json` output, the field is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. By default, EAS CLI puts the private link in this field and leaves out the token. The private link requires an Expo login. For a session started with `--public-link`, EAS CLI puts the public link there, with the token.
 
 The tokens in these values give access to the remote device. Keep them secret. See [Expo Simulators security, permissions, and data retention](/preview/simulators/reference/security-and-data/).
 
@@ -63,9 +63,9 @@ The **Create new simulator** dialog on expo.dev offers the **Agent Device**, **A
 
 ## The removed `serve-sim` type
 
-EAS CLI 23.0.0 renamed the preview-only type from `serve-sim` to `web-preview-only`. EAS now rejects new sessions with `"type": "serve-sim"`. Upgrade to EAS CLI 23.2.0 or later and use `web-preview-only`.
+The preview-only type is now `web-preview-only`. Its old name was `serve-sim`. EAS rejects new sessions with `"type": "serve-sim"`. Update EAS CLI and use `web-preview-only`.
 
-Sessions created before the change still return `"type": "serve-sim"` from the REST API. In `--json` output, EAS CLI shows them as `web-preview-only`.
+Sessions created before the rename still return `"type": "serve-sim"` from the REST API. In `--json` output, EAS CLI shows them as `web-preview-only`.
 
 ## Common questions
 

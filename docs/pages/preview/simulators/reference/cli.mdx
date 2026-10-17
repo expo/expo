@@ -9,7 +9,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-The `simulator:*` commands are experimental. They appear in `eas --help` from EAS CLI 24.8.0. Install or update [EAS CLI](/eas/cli/) before running them:
+The `simulator:*` commands are experimental. Install or update [EAS CLI](/eas/cli/) before running them:
 
 <Terminal cmd={['$ eas simulator:start --help']} />
 
@@ -111,6 +111,7 @@ Important flags:
 | `--launch-arg`              | Argument passed to the installed app when it launches. Repeat the flag for multiple arguments                                                                                                                                                                                                                                                                 |
 | `--open-url`                | Expo or development-client URL to open in the installed app after launch                                                                                                                                                                                                                                                                                      |
 | `--type`                    | Session type. Defaults to `agent-device`. Every type includes a browser preview. Use `agent-device`, `appium`, or `argent` to add programmatic control, or `web-preview-only` for the browser preview only                                                                                                                                                    |
+| `--public-link`             | Print a public browser preview link that contains the preview token, and make **Share** in the preview copy it. Anyone with the link can view the simulator, and on iOS, control it. Without this flag, preview links require an Expo login with access to the project. See [Browser preview links](#browser-preview-links)                                   |
 | `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                                                                                                                                                                                                          |
 | `--max-duration-minutes`    | Automatic session stop time, up to the plan limit: 40 minutes on the Free plan and 115 minutes on paid plans. Defaults to the plan limit                                                                                                                                                                                                                      |
 | `--egress`                  | `local` routes the device's network traffic through this machine. On Android, all TCP traffic from the emulator. On iOS, HTTP(S) and WebSocket traffic that honors the system proxy or proxy environment variables, such as gRPC and libcurl. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/) |
@@ -141,7 +142,24 @@ Common JSON output fields have this shape. The fields inside `remoteConfig` depe
 }
 ```
 
-Treat `remoteConfig` as secret because it includes controller credentials. In `--json` output, the browser preview URL already includes its token. It is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session.
+Treat `remoteConfig` as secret because it includes controller credentials. The browser preview link is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session.
+
+### Browser preview links
+
+EAS CLI prints private browser preview links by default. A private link opens only for a person who signs in to an Expo account that can view the project:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
+```
+
+With `--public-link`, EAS CLI prints a public link that contains the preview token, with a warning. Anyone who has a public link can view the simulator without an Expo login, and on iOS, control it.
+
+| `--json` field                                            | Private links (default) | Public links (`--public-link`)              |
+| --------------------------------------------------------- | ----------------------- | ------------------------------------------- |
+| `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
+| `remoteConfig.previewApiUrl`                              | Not included            | The preview API URL, with the preview token |
+
+EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
 ### Interactive and non-interactive behavior
 
