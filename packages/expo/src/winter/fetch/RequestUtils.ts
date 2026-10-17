@@ -48,9 +48,11 @@ function isBlob(obj: any): obj is Blob {
 /**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
-export async function normalizeBodyInitAsync(
-  body: BodyInit | null | undefined
-): Promise<{ body: Uint8Array | null; overriddenHeaders?: NativeHeadersType }> {
+export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
+  body: Uint8Array | null;
+  overriddenHeaders?: NativeHeadersType;
+  defaultHeaders?: NativeHeadersType;
+}> {
   if (body == null) {
     return { body: null };
   }
@@ -69,10 +71,11 @@ export async function normalizeBodyInitAsync(
   }
 
   if (body instanceof Blob || isBlob(body)) {
-    return {
-      body: new Uint8Array(await blobToArrayBufferAsync(body)),
-      overriddenHeaders: [['Content-Type', body.type]],
-    };
+    const result = new Uint8Array(await blobToArrayBufferAsync(body));
+    // Like the Fetch standard, the Blob type is only used when the caller did not set a Content-Type
+    return body.type
+      ? { body: result, defaultHeaders: [['Content-Type', body.type]] }
+      : { body: result };
   }
 
   if (body instanceof URLSearchParams) {
