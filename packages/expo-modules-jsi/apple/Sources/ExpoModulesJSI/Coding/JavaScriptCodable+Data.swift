@@ -56,7 +56,7 @@ internal func makeJavaScriptUint8Array(
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue {
   return try runtime.withCached(
-    CacheKeys.uint8ArrayConstructor,
+    JavaScriptRuntime.CacheKeys.uint8ArrayConstructor,
     { try runtime.global().getPropertyAsFunction("Uint8Array") },
     { (constructor: borrowing JavaScriptFunction) in
       return try constructor.callAsConstructor(argument: arrayBuffer.asValue())

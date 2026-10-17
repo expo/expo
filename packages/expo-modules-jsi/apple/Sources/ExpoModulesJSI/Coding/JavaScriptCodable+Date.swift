@@ -70,7 +70,7 @@ internal final class DateFunctions {
 
 @JavaScriptActor
 private func dateFunctions(in runtime: borrowing JavaScriptRuntime) throws -> DateFunctions {
-  return try runtime.cached(CacheKeys.date) {
+  return try runtime.cached(JavaScriptRuntime.CacheKeys.date) {
     return try DateFunctions(in: runtime)
   }
 }

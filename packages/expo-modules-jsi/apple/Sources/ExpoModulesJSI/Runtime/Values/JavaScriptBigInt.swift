@@ -136,7 +136,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
     self.runtimeHandle = runtime.handle
     // The global `BigInt` function is looked up once per runtime and cached.
     self.pointee = try runtime.withCached(
-      CacheKeys.bigInt,
+      JavaScriptRuntime.CacheKeys.bigInt,
       { try runtime.global().getPropertyAsFunction("BigInt") },
       { (bigIntFunction: borrowing JavaScriptFunction) in
         // A single borrowed argument is passed without allocating an arguments buffer.

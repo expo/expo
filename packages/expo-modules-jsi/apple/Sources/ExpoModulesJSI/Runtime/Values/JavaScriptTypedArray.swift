@@ -34,7 +34,7 @@ public struct JavaScriptTypedArray: ~Copyable {
   @JavaScriptActor
   init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     let jsiRuntime = runtime.pointee
-    let propNames = runtime.cached(CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
+    let propNames = runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
     self.runtimeHandle = runtime.handle
     self.kind = Kind(
       rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)

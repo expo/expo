@@ -48,7 +48,7 @@ internal func javaScriptSetEntries(
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue? {
   let entries = try runtime.withCached(
-    CacheKeys.setEntries,
+    JavaScriptRuntime.CacheKeys.setEntries,
     {
       return try runtime.eval(
         label: "expo-modules-jsi/set-entries.js",
@@ -74,7 +74,7 @@ internal func makeJavaScriptSet(
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue {
   return try runtime.withCached(
-    CacheKeys.setConstructor,
+    JavaScriptRuntime.CacheKeys.setConstructor,
     { try runtime.global().getPropertyAsFunction("Set") },
     { (constructor: borrowing JavaScriptFunction) in
       return try constructor.callAsConstructor(argument: entries)
