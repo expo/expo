@@ -95,6 +95,7 @@ import androidx.glance.layout.wrapContentWidth
 import androidx.glance.semantics.contentDescription
 import androidx.glance.semantics.semantics
 import androidx.glance.text.EmittableText
+import androidx.glance.text.FontFamily
 import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.TextAlign
@@ -225,7 +226,12 @@ private fun ReadableMap.toPeekText(converterContext: ConverterContext): Emittabl
       fontWeight = props.fontWeight?.toGlanceFontWeight() ?: typography?.fontWeight,
       fontStyle = props.fontStyle?.toGlanceFontStyle(),
       textAlign = props.textAlign?.toGlanceTextAlign(),
-      textDecoration = props.textDecoration?.toGlanceTextDecoration()
+      textDecoration = props.textDecoration?.toGlanceTextDecoration(),
+      fontFamily = when (val family = props.fontFamily) {
+        null, "default" -> null
+        "sansSerif" -> FontFamily.SansSerif
+        else -> FontFamily(family)
+      }
     )
     it.maxLines = props.maxLines ?: Int.MAX_VALUE
   }
