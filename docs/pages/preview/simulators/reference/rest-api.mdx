@@ -215,7 +215,7 @@ The fields in `remoteConfig` depend on the session type. Connection details are 
 | `appium`           | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl` and `webPreviewToken`.                          |
 | `web-preview-only` | `webPreviewUrl` and optional `webPreviewToken`. This session type has no controller.                               |
 
-Every session type can also include `previewApiUrl`, the URL of the preview server's API. A web page on an origin in `frameAncestors` or `corsOrigins` uses `previewApiUrl` and `webPreviewToken` to show the session.
+Every session type can also include `previewApiUrl`, the URL of the preview host's API. A web page on an origin in `frameAncestors` or `corsOrigins` uses `previewApiUrl` and `webPreviewToken` to show the session.
 
 For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/simulators/how-to/drive-the-device/) for controller usage.
 
