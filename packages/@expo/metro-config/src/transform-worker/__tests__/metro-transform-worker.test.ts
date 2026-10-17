@@ -300,6 +300,119 @@ it('transforms a simple module', async () => {
   expect(result.dependencies).toEqual([]);
 });
 
+it.each([
+  ['native', 'ios', {}, false],
+  ['minified native', 'ios', {}, true],
+  ['graph-optimized native', 'ios', { optimize: 'true' }, false],
+  ['web', 'web', {}, false],
+  ['native server reference', 'ios', { environment: 'react-server' }, false],
+  ['web server', 'web', { environment: 'react-server' }, false],
+] as const)(
+  'uses the native module pipeline for %s assets',
+  async (_name, platform, custom, minify) => {
+    jest.spyOn(require('../getAssets'), 'getUniversalAssetData').mockResolvedValue({
+      __packager_asset: true,
+      fileSystemLocation: '/root/local',
+      httpServerLocation: '/assets/local',
+      files: ['/root/local/icon.png'],
+      path: '/root/local/icon.png',
+      name: 'icon',
+      type: 'png',
+      width: 10,
+      height: 20,
+      scales: [1],
+      hash: 'hash',
+      fileHashes: ['file-hash'],
+    });
+    const noxcturnal = require('noxcturnal') as typeof import('noxcturnal');
+    const nativeTransform = jest.spyOn(noxcturnal, 'transform');
+    const config = { ...baseConfig, assetRegistryPath: 'asset-registry' };
+    const options = {
+      ...baseTransformOptions,
+      type: 'asset' as const,
+      platform,
+      customTransformOptions: custom,
+      dev: !minify,
+      minify,
+    };
+    const transformAsset = (enabled: boolean) => {
+      const assetConfig = { ...config, unstable_noxcturnalTransformWorker: enabled };
+      return Transformer.transform(
+        assetConfig,
+        '/root',
+        '/root/local/icon.png',
+        Buffer.from('image data'),
+        options
+      );
+    };
+    const native = await transformAsset(true);
+    expect(nativeTransform).toHaveBeenCalled();
+    expect(nativeTransform.mock.results.at(-1)?.value.status).toBe('complete');
+    nativeTransform.mockRestore();
+    const legacy = await transformAsset(false);
+
+    const execute = (result: typeof native) => {
+      const module = { exports: undefined as any };
+      const load = (name: string) => {
+        if (name === 'asset-registry') return { registerAsset: (data: unknown) => data };
+        if (name === 'react-server-dom-webpack/server') {
+          return { createClientModuleProxy: (id: string) => ({ id }) };
+        }
+        throw new Error(`Unexpected asset dependency: ${name}`);
+      };
+      new Function('__d', result.output[0]!.data.code)((factory: Function) =>
+        factory(
+          {},
+          load,
+          load,
+          load,
+          module,
+          module.exports,
+          result.dependencies.map((d) => d.name)
+        )
+      );
+      return JSON.parse(JSON.stringify(module.exports));
+    };
+    expect(execute(native)).toEqual(execute(legacy));
+    expect(native.dependencies).toEqual(legacy.dependencies);
+    expect(native.output[0]!.type).toBe('js/module/asset');
+    expect(native.output[0]!.data.reactClientReference).toBe(
+      legacy.output[0]!.data.reactClientReference
+    );
+    expect(native.output[0]!.data.functionMap).toBeNull();
+    expect(native.output[0]!.data.map.names).toEqual([]);
+    expect(
+      originalPositionFor(toTraceMap(native.output[0]!, 'image data'), { line: 2, column: 0 })
+        .source
+    ).toBeNull();
+    if (platform === 'ios' && !('environment' in custom)) {
+      expect(execute(native)).not.toHaveProperty('files');
+      expect(execute(native)).not.toHaveProperty('fileSystemLocation');
+      expect(execute(native)).not.toHaveProperty('path');
+      expect(execute(native)).toHaveProperty('fileHashes', ['file-hash']);
+    }
+  }
+);
+
+it('reports a native asset transform bailout instead of falling back to Babel', async () => {
+  const noxcturnal = require('noxcturnal') as typeof import('noxcturnal');
+  jest.spyOn(noxcturnal, 'transform').mockReturnValueOnce({
+    status: 'bailout',
+    reason: 'unsupported-generated-source',
+    source: '',
+    diagnostics: [],
+  });
+
+  await expect(
+    Transformer.transform(baseConfig, '/root', '/root/local/icon.png', Buffer.from('image data'), {
+      ...baseTransformOptions,
+      type: 'asset',
+      platform: 'ios',
+      customTransformOptions: { environment: 'react-server' },
+    })
+  ).rejects.toThrow(/asset.*unsupported-generated-source/i);
+});
+
 it('uses Noxcturnal instead of the Babel preset for eligible node_modules', async () => {
   const contents = `module.exports = [process.env.EXPO_OS, process.env.NODE_ENV, __DEV__, require('dep')];`;
 

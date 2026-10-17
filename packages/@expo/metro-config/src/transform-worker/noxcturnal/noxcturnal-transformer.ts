@@ -135,7 +135,8 @@ export function metroPluginData(context: { pluginData: unknown }): MetroTransfor
 
 function createMetroTransformPluginData(
   input: NoxcturnalMetroTransformInput,
-  sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source)
+  sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source),
+  collectOnly = false
 ): MetroTransformPluginData {
   const hermesBytecode =
     getBaseProfile(input) === 'hermes-v1' && input.options.customTransformOptions?.bytecode === '1';
@@ -143,7 +144,7 @@ function createMetroTransformPluginData(
     ...createExpoTransformPluginData(input, sourceFacts),
     input,
     shared: {},
-    collectOnly: String(input.options.customTransformOptions?.optimize) === 'true',
+    collectOnly,
     normalizePseudoGlobals:
       input.options.minify &&
       !hermesBytecode &&
@@ -229,6 +230,13 @@ export interface NoxcturnalTransformInput {
   source: string;
   projectRoot: string;
   options: JsTransformOptions;
+  /** Exact semver exposed to Babel as its caller's `babelRuntimeVersion`. */
+  enableBabelRuntime?: boolean | string;
+  /** Optional precomputed source classification. */
+  sourceFacts?: NoxcturnalSourceFacts;
+}
+
+export interface NoxcturnalBabelConfig {
   /** False when Metro is invoking a custom Babel transformer. */
   isDefaultExpoTransformer: boolean;
   /**
@@ -236,10 +244,6 @@ export interface NoxcturnalTransformInput {
    * preset recipe. Config filenames and source text are deliberately irrelevant.
    */
   hasNonDefaultBabelConfig?: boolean;
-  /** Exact semver exposed to Babel as its caller's `babelRuntimeVersion`. */
-  enableBabelRuntime?: boolean | string;
-  /** Optional precomputed source classification. */
-  sourceFacts?: NoxcturnalSourceFacts;
 }
 
 export interface NoxcturnalSourceFacts {
@@ -501,7 +505,7 @@ function isSupportedJavaScriptSource(filename: string): boolean {
 }
 
 function getEarlyFallbackReason(
-  input: NoxcturnalTransformInput,
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig,
   allowProductionAppSource = false,
   sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source)
 ): string | null {
@@ -1132,24 +1136,28 @@ function createFullMetroPipeline(
       },
     });
   }
-  const compactPhases = input.config.unstable_compactOutput
-    ? [
-        {
-          name: 'metro-compact-output',
-          native: { compact: true },
-        } satisfies NativePipeline['phases'][number],
-      ]
-    : [];
+  return createMetroOutputPipeline(nox, input, [
+    ...sourcePhases,
+    ...(input.options.type === 'module' &&
+    input.options.experimentalImportSupport === true &&
+    !pluginData.collectOnly
+      ? [getMetroEsmGlobalsPhase(nox)]
+      : []),
+    input.options.type === 'script' ? getMetroScriptPhase(nox) : getMetroModulePhase(nox, input),
+  ]);
+}
+
+function createMetroOutputPipeline(
+  nox: Noxcturnal,
+  input: NoxcturnalMetroTransformInput,
+  phases: NativePipeline['phases']
+): NativePipeline {
   return nox.defineNativePipeline({
     phases: [
-      ...sourcePhases,
-      ...(input.options.type === 'module' &&
-      input.options.experimentalImportSupport === true &&
-      String(input.options.customTransformOptions?.optimize) !== 'true'
-        ? [getMetroEsmGlobalsPhase(nox)]
+      ...phases,
+      ...(input.config.unstable_compactOutput
+        ? [{ name: 'metro-compact-output', native: { compact: true } }]
         : []),
-      input.options.type === 'script' ? getMetroScriptPhase(nox) : getMetroModulePhase(nox, input),
-      ...compactPhases,
     ],
   });
 }
@@ -1160,7 +1168,7 @@ function createFullMetroPipeline(
  * wrapper. A fallback never exposes partially edited source.
  */
 export function transformFileFullyWithNoxcturnalSync(
-  input: NoxcturnalMetroTransformInput
+  input: NoxcturnalMetroTransformInput & NoxcturnalBabelConfig
 ): NoxcturnalMetroTransformAttempt {
   const sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source);
   const earlyReason = getEarlyFallbackReason(input, true, sourceFacts);
@@ -1172,7 +1180,11 @@ export function transformFileFullyWithNoxcturnalSync(
     return { status: 'fallback', reason: 'script-hashbang' };
   }
   const nox = loadNoxcturnal();
-  const pluginData = createMetroTransformPluginData(input, sourceFacts);
+  const pluginData = createMetroTransformPluginData(
+    input,
+    sourceFacts,
+    String(input.options.customTransformOptions?.optimize) === 'true'
+  );
   const pipeline = createFullMetroPipeline(nox, input, pluginData);
   const result = nox.transform(input.source, input.filename, pipeline, {
     parser: parserMode(input, sourceFacts),
@@ -1183,6 +1195,42 @@ export function transformFileFullyWithNoxcturnalSync(
   if (result.status !== 'complete') {
     return { status: 'fallback', reason: fallbackReason(result.reason) };
   }
+  return completeMetroTransform(nox, result);
+}
+
+export function transformAssetWithNoxcturnalSync(
+  input: NoxcturnalMetroTransformInput
+): Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }> {
+  const nox = loadNoxcturnal();
+  const pipeline = createMetroOutputPipeline(nox, input, [getMetroModulePhase(nox, input)]);
+  const result = nox.transform(input.source, input.filename, pipeline, {
+    parser: 'jsx',
+    sourceMapMode: 'boundary',
+    functionMap: false,
+    pluginData: createMetroTransformPluginData(input),
+  });
+  if (result.status !== 'complete') {
+    throw new Error(
+      `Noxcturnal could not transform asset ${input.filename} because its generated module is unsupported (${result.reason}). Disable unstable_noxcturnalTransformWorker and report this error to Expo.`
+    );
+  }
+
+  // Generated JavaScript has no source locations in the original binary asset.
+  result.map = { ...result.map, mappings: '', names: [] };
+  const complete = completeMetroTransform(nox, result);
+  return {
+    ...complete,
+    dependencies: complete.dependencies.map((dependency) => ({
+      ...dependency,
+      data: { ...dependency.data, locs: [] },
+    })),
+  };
+}
+
+function completeMetroTransform(
+  nox: Noxcturnal,
+  result: NativeTransformResult
+): Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }> {
   const dependencies = result.metadata.dependencies;
   const dependencyMapName = result.metadata.dependencyMapName;
   if (!Array.isArray(dependencies) || typeof dependencyMapName !== 'string') {
@@ -1208,7 +1256,7 @@ export function transformFileFullyWithNoxcturnalSync(
 }
 
 export async function transformFileFullyWithNoxcturnal(
-  input: NoxcturnalMetroTransformInput
+  input: NoxcturnalMetroTransformInput & NoxcturnalBabelConfig
 ): Promise<NoxcturnalMetroTransformAttempt> {
   return transformFileFullyWithNoxcturnalSync(input);
 }
@@ -1218,7 +1266,7 @@ export async function transformFileFullyWithNoxcturnal(
  * The production worker only uses the complete Metro pipeline above.
  */
 export function transformNodeModuleWithNoxcturnalSync(
-  input: NoxcturnalTransformInput
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig
 ): NoxcturnalTransformAttempt {
   const sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source);
   const earlyReason = getEarlyFallbackReason(input, true, sourceFacts);
@@ -1243,7 +1291,7 @@ export function transformNodeModuleWithNoxcturnalSync(
 }
 
 export async function transformNodeModuleWithNoxcturnal(
-  input: NoxcturnalTransformInput
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig
 ): Promise<NoxcturnalTransformAttempt> {
   return transformNodeModuleWithNoxcturnalSync(input);
 }
