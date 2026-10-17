@@ -349,4 +349,5 @@ export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents>
     contentDate?: number
   ): Promise<void>;
   getPushToken(): Promise<string | null>;
+  getProps(): string | null;
 }
