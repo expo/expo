@@ -87,6 +87,11 @@ public final class GlassView: ExpoView {
   private func installEffect() {
     isMounted = true
     stopWaitingForVisibility()
+    // React Native recycles views. A recycled view that was the parent of a faded-in GlassView
+    // stops this glass from rendering when it is mounted in the content view.
+    // Re-attaching the effect view makes UIKit evaluate the content views again.
+    glassEffectView.removeFromSuperview()
+    insertSubview(glassEffectView, at: 0)
     // Clear the stale effect before re-applying so UIKit fully tears down
     // the old UIGlassEffect, otherwise re-assigning does not render GlassView correctly.
     // https://github.com/expo/expo/issues/43732
