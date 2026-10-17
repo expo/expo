@@ -22,8 +22,8 @@ type Sample = {
   run: () => void;
 };
 
-// The integration reports each distinct message at most once per minute, so the samples that run
-// on both runtimes use different values in their messages.
+// The integration reports each distinct message at most once every 15 minutes, so the samples
+// that run on both runtimes use different values in their messages.
 const SAMPLES: Sample[] = [
   {
     label: 'Invalid spring config',
@@ -97,7 +97,7 @@ export default function ReanimatedExample() {
       <Text style={[styles.description, { color: theme.text.secondary }]}>
         Each button triggers a Reanimated log. Warnings become `reanimated.warning` events and
         errors become `reanimated.error` errors in EAS Observe. Each distinct message is reported at
-        most once per minute, so a second tap within a minute only prints to the console.
+        most once every 15 minutes, so a second tap within 15 minutes only prints to the console.
       </Text>
       <Button title="Run all" onPress={() => SAMPLES.forEach(runSample)} />
       {SAMPLES.map((sample) => {
