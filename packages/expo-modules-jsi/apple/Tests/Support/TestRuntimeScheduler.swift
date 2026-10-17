@@ -3,16 +3,17 @@
 import ExpoModulesJSI
 import Foundation
 
-/// A scheduler with a thread of its own, for tests whose runtime work has to be serialized with work
-/// arriving from other threads, such as a promise settled from a detached task. A standalone
-/// `JavaScriptRuntime()` has no JavaScript thread and runs scheduled work inline on whatever thread
-/// calls `schedule`, so such a settle would run JavaScript concurrently with the test body. A runtime
-/// made with ``makeRuntime()`` dispatches scheduled work to this scheduler's thread instead.
+/// A scheduler for tests whose runtime work has to be serialized with work arriving from other
+/// threads, such as a promise settled from a detached task. A standalone `JavaScriptRuntime()` has no
+/// scheduler and runs scheduled work inline on whatever thread calls `schedule`, so such a settle
+/// would run JavaScript concurrently with the test body. A runtime made with ``makeRuntime()``
+/// dispatches scheduled work to the JavaScript thread instead.
+///
+/// All test schedulers share one JavaScript thread: the thread of ``JavaScriptActor``, which runs on
+/// a thread of its own while no runtime is bound to it. So `@JavaScriptActor` code and the work
+/// scheduled on these runtimes run on the same thread, as they do in an app.
 final class TestRuntimeScheduler: @unchecked Sendable {
-  // A serial dispatch queue may use different worker threads between callbacks, but
-  // JavaScriptRuntime tracks affinity to the specific thread on which it was created.
   private let state: State
-  private let thread: Thread
 
   /// What the runtime gets as its opaque scheduler pointer. A retained `State` that is never released,
   /// like the handle React Native's host passes: the runtime may dispatch to it after this scheduler is
@@ -24,12 +25,6 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     let state = State()
     self.state = state
     self.opaquePointer = Unmanaged.passRetained(state).toOpaque()
-    self.thread = Thread {
-      state.run()
-    }
-    thread.name = "expo.modules.jsi.tests.runtime"
-    thread.start()
-    state.waitUntilReady()
   }
 
   deinit {
@@ -84,9 +79,12 @@ final class TestRuntimeScheduler: @unchecked Sendable {
 
   fileprivate final class State: @unchecked Sendable {
     private let condition = NSCondition()
-    private let ready = DispatchSemaphore(value: 0)
-    private var operations: [@convention(block) () -> Void] = []
+    private var queuedCount = 0
     private var isStopped = false
+    /// Work that was queued when the scheduler stopped. Kept, never released, like work left in the
+    /// queue of a scheduler that never runs again: releasing it could destroy JSI values after their
+    /// runtime is gone.
+    private var abandoned: [@convention(block) () -> Void] = []
 
     func schedule(_ operation: @escaping @convention(block) () -> Void) {
       condition.lock()
@@ -94,47 +92,44 @@ final class TestRuntimeScheduler: @unchecked Sendable {
         condition.unlock()
         return
       }
-      operations.append(operation)
+      queuedCount += 1
       condition.broadcast()
       condition.unlock()
+
+      // Run as a job of `JavaScriptActor`, which runs on its own thread while no runtime is bound.
+      // Tasks isolated to the actor are enqueued in the order they're created, so work runs in the
+      // order it was scheduled.
+      let operation = UncheckedSendable(value: operation)
+      Task { @JavaScriptActor in
+        self.runOperation(operation.value)
+      }
+    }
+
+    private func runOperation(_ operation: @escaping @convention(block) () -> Void) {
+      condition.lock()
+      queuedCount -= 1
+      if isStopped {
+        abandoned.append(operation)
+        condition.unlock()
+        return
+      }
+      condition.unlock()
+      operation()
     }
 
     func waitUntilQueued(_ count: Int) {
       condition.lock()
-      while operations.count < count && !isStopped {
+      while queuedCount < count && !isStopped {
         condition.wait()
       }
       condition.unlock()
     }
 
-    func waitUntilReady() {
-      ready.wait()
-    }
-
     func stop() {
       condition.lock()
       isStopped = true
-      condition.signal()
+      condition.broadcast()
       condition.unlock()
-    }
-
-    func run() {
-      ready.signal()
-
-      while true {
-        condition.lock()
-        while operations.isEmpty && !isStopped {
-          condition.wait()
-        }
-        if isStopped {
-          condition.unlock()
-          return
-        }
-        let operation = operations.removeFirst()
-        condition.unlock()
-
-        operation()
-      }
     }
   }
 }

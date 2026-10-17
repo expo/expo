@@ -27,9 +27,36 @@ extension JavaScriptRuntime {
       return id
     }()
 
+    /// Where ``JavaScriptActor`` runs its jobs when this runtime is bound to it.
+    internal let executorTarget: JavaScriptExecutor.Target
+
     internal init(_ pointee: expo.RuntimeScheduler, handle: JavaScriptRuntimeHandle) {
       self.pointee = pointee
       self.handle = handle
+      self.executorTarget = JavaScriptExecutor.Target(
+        threadID: jsThreadID,
+        runLoop: CFRunLoopGetCurrent(),
+        hostScheduler: pointee
+      )
+    }
+
+    /// Reports async `@JavaScriptActor` work started by a runtime that isn't bound to the actor: the
+    /// work would resume on the bound runtime's thread and touch this runtime from there. Asserts in
+    /// debug builds and logs otherwise. A runtime without a host scheduler has no thread of its own
+    /// and runs its work inline wherever it's called, so it's exempt.
+    @inline(__always)
+    private func checkBoundForAsyncWork() {
+      guard pointee.supportsAsyncScheduling(), jsThreadID != JavaScriptExecutor.shared.target.threadID else {
+        return
+      }
+      Self.reportUnboundAsyncWork()
+    }
+
+    private static func reportUnboundAsyncWork() {
+      Logger(subsystem: "expo.modules.jsi", category: "JavaScriptActor").error(
+        "Async @JavaScriptActor work was started by a runtime that isn't bound to JavaScriptActor. It runs on the bound runtime's JavaScript thread instead. Only one runtime can run async @JavaScriptActor work, see JavaScriptActor.bind(to:)."
+      )
+      assertionFailure("Async @JavaScriptActor work started by a runtime that isn't bound to JavaScriptActor")
     }
 
     /// Whether the runtime may still be alive. Safe from any thread: `false` is final, `true` may be stale.
@@ -79,6 +106,7 @@ extension JavaScriptRuntime {
       priority: JavaScriptRuntime.SchedulerPriority = .normal,
       _ closure: @escaping @JavaScriptActor () async throws -> Void
     ) {
+      checkBoundForAsyncWork()
       schedule(priority: priority) { () -> Void in
         Task.immediate_polyfill {
           try await closure()
@@ -162,6 +190,7 @@ extension JavaScriptRuntime {
 
     @available(*, noasync)
     internal func execute<R: Sendable>(_ closure: @escaping @JavaScriptActor () async throws -> R) throws -> sending R {
+      checkBoundForAsyncWork()
       guard mayBeAlive else {
         throw JavaScriptCallback.RuntimeLostError()
       }
@@ -195,6 +224,7 @@ extension JavaScriptRuntime {
     internal func execute<R: Sendable>(_ closure: @escaping @JavaScriptActor () async throws -> R) async throws
       -> sending R
     {
+      checkBoundForAsyncWork()
       guard mayBeAlive else {
         throw JavaScriptCallback.RuntimeLostError()
       }

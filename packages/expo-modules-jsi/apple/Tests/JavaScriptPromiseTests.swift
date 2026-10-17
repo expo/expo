@@ -467,14 +467,17 @@ struct JavaScriptPromiseTests {
       return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
     }
 
-    // The test body runs on the cooperative pool, never on the runtime's dedicated thread, so this
-    // `await()` is the off-thread case. Installing the callbacks calls `then`, which is JavaScript,
-    // and JavaScript for this runtime may only run on the thread that owns it.
-    #expect(testRuntime.runtime.isOnJavaScriptThread() == false)
+    // Awaited from a detached task on the cooperative pool, so this `await()` starts off the
+    // runtime's thread. (The suite is `@JavaScriptActor`, and test runtimes share the actor's
+    // thread.) Installing the callbacks calls `then`, which is JavaScript, and JavaScript for this
+    // runtime may only run on the thread that owns it.
+    let (wasOffThread, result) = try await Task.detached {
+      let wasOffThread = !testRuntime.runtime.isOnJavaScriptThread()
+      return (wasOffThread, UncheckedSendable(value: try await promise.value.await()))
+    }.value
+    #expect(wasOffThread)
 
-    let result = try await promise.value.await()
-
-    #expect(result.getInt() == 42)
+    #expect(result.value.getInt() == 42)
     #expect(installedOnJavaScriptThread.value == true)
   }
 

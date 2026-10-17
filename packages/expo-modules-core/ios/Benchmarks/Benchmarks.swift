@@ -8,8 +8,8 @@ import Testing
 /// the Release configuration, so the numbers reflect optimized code. Each case prints one `[benchmark]`
 /// line with the median and minimum ns/op.
 ///
-/// The suite is serialized so only one benchmark runs at a time: the `JavaScriptActor` executor runs
-/// jobs synchronously on the calling thread, so cases running in parallel would disturb each other's
-/// measurements.
+/// The suite is serialized so only one benchmark runs at a time: the `JavaScriptActor` cases all run
+/// on the actor's one thread and the others compete for the same cores, so cases running in parallel
+/// would disturb each other's measurements.
 @Suite(.serialized)
 struct Benchmarks {}

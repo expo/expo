@@ -269,9 +269,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     }
     let deferredPromise = DeferredPromise()
     // Installing calls `then`, which is JavaScript, so it has to run on the runtime's JavaScript
-    // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` does not get there on
-    // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
-    // inline when the caller is already on the JavaScript thread.
+    // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` runs this on the bound
+    // runtime's thread, which need not be this runtime's. `execute` runs the closure inline when the
+    // caller is already on this runtime's thread.
     try await scheduler.execute { [longLivedState, deferredPromise] runtime in
       let onFulfilled = runtime.createFunction { [weak longLivedState, weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined() }
