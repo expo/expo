@@ -572,18 +572,23 @@
                                userInfo:(nullable NSDictionary *)userInfo
                                callback:(void(^)(NSArray * _Nonnull results))callback
 {
-  __block EXTaskExecutionRequest *request;
-  
-  request = [[EXTaskExecutionRequest alloc] initWithCallback:^(NSArray * _Nonnull results) {
+  // `_requests` owns the request until its callback removes it. The callback only holds it weakly:
+  // clearing a `__block` strong reference from the callback could release the request while the launch
+  // thread below is still using it, when the last task finishes on another thread.
+  __block __weak EXTaskExecutionRequest *weakRequest = nil;
+  EXTaskExecutionRequest *request = [[EXTaskExecutionRequest alloc] initWithCallback:^(NSArray * _Nonnull results) {
     if (callback != nil) {
       callback(results);
     }
-    
-    @synchronized (self->_lockTarget) {
-      [self->_requests removeObject:request];
+
+    EXTaskExecutionRequest *strongRequest = weakRequest;
+    if (strongRequest != nil) {
+      @synchronized (self->_lockTarget) {
+        [self->_requests removeObject:strongRequest];
+      }
     }
-    request = nil;
   }];
+  weakRequest = request;
 
   @synchronized (_lockTarget) {
     [_requests addObject:request];
