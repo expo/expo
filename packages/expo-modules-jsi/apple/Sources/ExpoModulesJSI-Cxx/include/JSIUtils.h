@@ -46,6 +46,11 @@ inline jsi::Object objectFromFunction(jsi::IRuntime &runtime, const jsi::Functio
   return jsi::Value(runtime, function).getObject(runtime);
 }
 
+// `jsi::Object::create` takes the prototype as a value, so the prototype's handle is cloned into one.
+inline jsi::Object createObjectWithPrototype(jsi::IRuntime &runtime, const jsi::Object &prototype) {
+  return jsi::Object::create(runtime, jsi::Value(runtime, prototype));
+}
+
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
 // They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
 // which mangles non-ASCII property names coming from Swift strings.

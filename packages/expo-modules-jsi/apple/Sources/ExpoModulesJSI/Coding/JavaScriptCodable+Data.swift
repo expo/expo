@@ -43,9 +43,25 @@ extension Data: JavaScriptCodable {
         memcpy(arrayBuffer.data(), baseAddress, value.count)
       }
     }
-    let uint8ArrayConstructor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayConstructor.callAsConstructor(argument: arrayBuffer.asValue())
+    return try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
   }
+}
+
+/// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which
+/// is looked up once and cached, so an encode doesn't pay for the global property lookup.
+@usableFromInline
+@JavaScriptActor
+internal func makeJavaScriptUint8Array(
+  over arrayBuffer: borrowing JavaScriptArrayBuffer,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> JavaScriptValue {
+  return try runtime.withCached(
+    CacheKeys.uint8ArrayConstructor,
+    { try runtime.global().getPropertyAsFunction("Uint8Array") },
+    { (constructor: borrowing JavaScriptFunction) in
+      return try constructor.callAsConstructor(argument: arrayBuffer.asValue())
+    }
+  )
 }
 
 /// Thrown when decoding `Data` from a JavaScript value that is not a `Uint8Array`.
