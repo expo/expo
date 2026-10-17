@@ -17,6 +17,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.restoreAllMocks();
   // Restore original globals to avoid corrupting jsdom
   for (const key of Object.keys(stubWindow) as (keyof typeof stubWindow)[]) {
     const original = originalDescriptors[key];
@@ -93,4 +94,29 @@ test('turns a repeated push for the current entry into a replace', async () => {
   stubWindow.history.back();
   await settle();
   expect(stubWindow.history.state).toEqual({ id: 'a' });
+});
+
+test('waits for a slow traversal before running the next command', async () => {
+  const adapter = createBrowserHistoryAdapter();
+  const listener = jest.fn();
+  adapter.listen(listener);
+
+  adapter.apply({ type: 'browser-history', op: 'replace', entryId: 'a', path: '/a' });
+  adapter.apply({ type: 'browser-history', op: 'push', entryId: 'b', path: '/b' });
+  await settle();
+
+  // Firefox can take several hundred milliseconds to run a traversal when the main thread is busy.
+  const traverse = stubWindow.history.go;
+  jest
+    .spyOn(stubWindow.history, 'go')
+    .mockImplementation((n: number) => void setTimeout(() => traverse(n), 600));
+
+  adapter.apply({ type: 'browser-history', op: 'go', delta: -1 });
+  adapter.apply({ type: 'browser-history', op: 'replace', entryId: 'a', path: '/a?updated=1' });
+  await new Promise((resolve) => setTimeout(resolve, 900));
+
+  // The replace has to land on the entry the traversal selected, not on the one it left.
+  expect(stubWindow.history.state).toEqual({ id: 'a' });
+  expect(stubWindow.location.pathname + stubWindow.location.search).toBe('/a?updated=1');
+  expect(listener).not.toHaveBeenCalled();
 });
