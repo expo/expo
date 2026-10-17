@@ -87,7 +87,7 @@ describe('initReanimatedIntegration', () => {
     onLog({ level: ERROR, message: '[Reanimated] Something failed' });
 
     expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
-      source: 'reportedByUser',
+      source: 'integration',
       type: 'reanimated.error',
       message: '[Reanimated] Something failed',
       stacktrace: expect.any(String),
