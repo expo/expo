@@ -140,7 +140,7 @@ export function SimulatorScreen({
 }
 ```
 
-- `client.status` reports the connection state. A status of `error` usually means that the URL, the token, or the `--cors-origin` value is wrong.
+- `client.status` reports the connection state. If it stays `connecting`, check the URL, the token, and the `--cors-origin` value. A status of `error` means that the video stream failed, and `client.error` has the message.
 - `DeviceScreen` sends input to the device only when it has focus. Click the screen to focus it.
 - For an Android session, add `/vendor/serve-emu` to the preview host URL, as in the example above.
 
