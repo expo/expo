@@ -106,10 +106,11 @@ public final class SharedObjectRegistry: Sendable {
     // This property should be deprecated, but it's still used when passing as a view prop.
     // It's already defined in the JS base SharedObject class prototype,
     // but with the current implementation it's possible to use a raw object for registration.
-    jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: [.writable])
+    // No option set literals here: they build the set through a generic initializer on every call.
+    jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
 
-    if let sharedRef = nativeObject as? AnySharedRef {
-      jsObject.defineProperty("nativeRefType", value: sharedRef.nativeRefType, options: [])
+    if let sharedRefType = nativeObject.sharedRefType {
+      jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
     }
 
     let memoryPressure = nativeObject.getAdditionalMemoryPressure()
