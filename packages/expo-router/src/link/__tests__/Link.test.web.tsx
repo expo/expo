@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import { fireEvent, render } from '@testing-library/react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Link } from '../Link';
 
@@ -74,6 +74,34 @@ it('renders a Link with a slot and array style', () => {
     )
   ).toThrow(
     '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  );
+});
+
+it.each([undefined, null, false] as const)(
+  'moves a style function from the child onto the Slot when the Link style is %p',
+  (linkStyle) => {
+    const { getByTestId } = render(
+      <Link asChild href="/foo" style={linkStyle}>
+        <Pressable testID="pressable" style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+          <Text>Button</Text>
+        </Pressable>
+      </Link>
+    );
+    expect(getByTestId('pressable').style.opacity).toBe('1');
+  }
+);
+
+it('throws when the child has a style function and the Link has a style', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo" style={{ color: 'red' }}>
+        <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+          <Text>Button</Text>
+        </Pressable>
+      </Link>
+    )
+  ).toThrow(
+    '[expo-router]: You are passing a style function to a child of <Slot> while <Slot> also has a style. Consider combining both in the child function.'
   );
 });
 
