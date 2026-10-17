@@ -3,6 +3,7 @@ package expo.modules.updates.loader
 import android.net.Uri
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
@@ -12,6 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -32,6 +34,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 import java.util.Date
 import java.util.UUID
 
@@ -42,6 +45,11 @@ class FileDownloaderTest {
 
   @get:Rule
   val temporaryFolder = TemporaryFolder()
+
+  companion object {
+    // base64url-encoded SHA-256 of the string "hello"
+    private const val HELLO_SHA256_BASE64URL = "LPJNul-wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ"
+  }
 
   @Before
   fun setup() {
@@ -442,6 +450,123 @@ class FileDownloaderTest {
 
     Assert.assertNotNull(result)
     Assert.assertTrue(result.isNew)
+  }
+
+  @Test
+  fun test_downloadAsset_existingFileWithMatchingHash_isReusedWithoutDownloading() = runTest {
+    val config = UpdatesConfiguration(null, defaultConfigMap())
+    val assetEntity = AssetEntity("existing-asset", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      expectedHash = HELLO_SHA256_BASE64URL
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+    File(destinationDirectory, UpdatesUtils.createFilenameForAsset(assetEntity)).writeText("hello")
+
+    val client = mockk<OkHttpClient>()
+
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, database, client).downloadAsset(
+      assetEntity,
+      destinationDirectory,
+      JSONObject("{}"),
+      null,
+      null
+    )
+
+    Assert.assertFalse(result.isNew)
+    Assert.assertEquals("existing-asset.jpg", result.assetEntity.relativePath)
+    verify(exactly = 0) { client.newCall(any()) }
+  }
+
+  @Test
+  fun test_downloadAsset_existingTruncatedFile_isReplacedByFreshDownload() = runTest {
+    val config = UpdatesConfiguration(null, defaultConfigMap())
+    val assetEntity = AssetEntity("truncated-asset", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      expectedHash = HELLO_SHA256_BASE64URL
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+    val destination = File(destinationDirectory, UpdatesUtils.createFilenameForAsset(assetEntity))
+    // simulate a file left behind by a process that was killed while writing it
+    destination.writeText("hel")
+
+    val client = mockHelloClient()
+
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, database, client).downloadAsset(
+      assetEntity,
+      destinationDirectory,
+      JSONObject("{}"),
+      null,
+      null
+    )
+
+    Assert.assertTrue(result.isNew)
+    Assert.assertEquals("hello", destination.readText())
+    Assert.assertEquals(HELLO_SHA256_BASE64URL, UpdatesUtils.toBase64Url(result.assetEntity.hash!!))
+    verify(exactly = 1) { client.newCall(any()) }
+  }
+
+  @Test
+  fun test_downloadAsset_existingFileWithoutExpectedHash_isReusedAsIs() = runTest {
+    val config = UpdatesConfiguration(null, defaultConfigMap())
+    val assetEntity = AssetEntity("unverifiable-asset", "jpg").apply {
+      url = Uri.parse("https://example.com")
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+    val destination = File(destinationDirectory, UpdatesUtils.createFilenameForAsset(assetEntity))
+    destination.writeText("hel")
+
+    val client = mockk<OkHttpClient>()
+
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, database, client).downloadAsset(
+      assetEntity,
+      destinationDirectory,
+      JSONObject("{}"),
+      null,
+      null
+    )
+
+    Assert.assertFalse(result.isNew)
+    Assert.assertEquals("hel", destination.readText())
+    verify(exactly = 0) { client.newCall(any()) }
+  }
+
+  @Test
+  fun test_downloadAsset_writesNoTemporaryFilesNextToDestination() = runTest {
+    val config = UpdatesConfiguration(null, defaultConfigMap())
+    val assetEntity = AssetEntity("fresh-asset", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      expectedHash = HELLO_SHA256_BASE64URL
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, database, mockHelloClient()).downloadAsset(
+      assetEntity,
+      destinationDirectory,
+      JSONObject("{}"),
+      null,
+      null
+    )
+
+    Assert.assertTrue(result.isNew)
+    Assert.assertEquals(listOf("fresh-asset.jpg"), destinationDirectory.list()!!.toList())
+    Assert.assertEquals("hello", File(destinationDirectory, "fresh-asset.jpg").readText())
+  }
+
+  private fun defaultConfigMap() = mapOf<String, Any>(
+    UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+    UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
+  )
+
+  private fun mockHelloClient(): OkHttpClient = mockk {
+    every { newCall(any()) } returns mockk {
+      every { execute() } returns Response.Builder()
+        .request(Request.Builder().url("https://example.com").build())
+        .protocol(Protocol.HTTP_2)
+        .code(200)
+        .message("OK")
+        .body("hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+        .build()
+    }
   }
 
   @Test
