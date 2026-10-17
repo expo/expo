@@ -19,6 +19,8 @@ export function SegmentedControl({
   selectedIndex,
   values,
   tintColor,
+  activeTextColor,
+  inactiveTextColor,
   appearance,
 }: SegmentedControlProps) {
   const colorSchemeHook = useColorScheme();
@@ -96,6 +98,8 @@ export function SegmentedControl({
             key={index}
             value={value}
             tintColor={tintColor}
+            activeTextColor={activeTextColor}
+            inactiveTextColor={inactiveTextColor}
             appearance={colorScheme === 'dark' ? 'dark' : 'light'}
             onSelect={() => handleChange(index)}
           />

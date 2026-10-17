@@ -14,6 +14,8 @@ export function SegmentedControl(props: SegmentedControlProps) {
     onChange,
     onValueChange,
     tintColor,
+    activeTextColor,
+    inactiveTextColor,
     appearance,
     style,
   } = props;
@@ -24,23 +26,31 @@ export function SegmentedControl(props: SegmentedControlProps) {
     onChange?.(buildChangeEvent(index, val));
   };
 
-  const colors = tintColor ? { activeContainerColor: tintColor } : undefined;
+  const colors = {
+    ...(tintColor ? { activeContainerColor: tintColor } : undefined),
+    ...(activeTextColor ? { activeContentColor: activeTextColor } : undefined),
+    ...(inactiveTextColor ? { inactiveContentColor: inactiveTextColor } : undefined),
+  };
 
   return (
     <Host matchContents={{ vertical: true }} style={style} colorScheme={appearance}>
       <SingleChoiceSegmentedButtonRow>
-        {(values ?? []).map((label, index) => (
-          <SegmentedButton
-            key={index}
-            selected={index === selectedIndex}
-            onClick={() => handleClick(index)}
-            enabled={enabled}
-            colors={colors}>
-            <SegmentedButton.Label>
-              <Text>{label}</Text>
-            </SegmentedButton.Label>
-          </SegmentedButton>
-        ))}
+        {(values ?? []).map((label, index) => {
+          const isSelected = index === selectedIndex;
+          const textColor = isSelected ? activeTextColor : inactiveTextColor;
+          return (
+            <SegmentedButton
+              key={index}
+              selected={isSelected}
+              onClick={() => handleClick(index)}
+              enabled={enabled}
+              colors={Object.keys(colors).length > 0 ? colors : undefined}>
+              <SegmentedButton.Label>
+                <Text color={textColor}>{label}</Text>
+              </SegmentedButton.Label>
+            </SegmentedButton>
+          );
+        })}
       </SingleChoiceSegmentedButtonRow>
     </Host>
   );
