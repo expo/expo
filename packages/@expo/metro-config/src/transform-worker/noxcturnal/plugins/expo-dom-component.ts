@@ -23,7 +23,10 @@ export function createExpoDomComponentPlugin(
   return nox.defineNativePlugin<ExpoDomComponentState>({
     name: 'expo-dom-component',
     editEffect: 'bindings',
-    contract: { metadata: { writes: ['expoDomComponentReference'] } },
+    contract: {
+      syntax: { anyOf: ['Directive'] },
+      metadata: { writes: ['expoDomComponentReference'] },
+    },
     createState: (context) => ({
       input: expoPluginInput(context),
       enabled: false,

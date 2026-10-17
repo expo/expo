@@ -1126,6 +1126,7 @@ function createFullMetroPipeline(
         optimize: {
           constantFolding: true,
           deadCodeElimination: true,
+          moduleContext: true,
         },
         comments: true,
       },

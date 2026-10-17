@@ -3,6 +3,7 @@ import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -383,16 +384,21 @@ it("keeps Babel's .ts JSX rejection instead of widening TypeScript syntax", asyn
   const source = 'module.exports = <View />;';
   expect(() => transformWithBabelPreset(source, typedFilename)).toThrow();
 
-  const native = await transformNodeModuleWithNoxcturnal({
+  const native = transformNodeModuleWithNoxcturnal({
     filename: typedFilename,
     projectRoot: '/app',
     source,
     options: options(),
     isDefaultExpoTransformer: true,
   });
-  expect(native.status).toBe('fallback');
-  if (native.status !== 'fallback') return;
-  expect(native.reason).toContain('parse-error');
+  const error = await native.catch((error: unknown) => error);
+  expect(error).toBeInstanceOf(TransformSyntaxError);
+  expect(error).toMatchObject({
+    code: 'TRANSFORM_SYNTAX_ERROR',
+    filename: typedFilename,
+    loc: { line: 1, column: expect.any(Number) },
+  });
+  expect(stripVTControlCharacters((error as TransformSyntaxError).codeFrame)).toContain(source);
 });
 
 it('matches Babel preset Expo runtime behavior and source positions for TypeScript', async () => {
