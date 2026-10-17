@@ -20,7 +20,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 **Large payloads can be rejected by the underlying platform. Historically, some iOS releases refused values above roughly 2048 bytes. Expo does not enforce a limit, so make sure to handle native errors if you plan to store very large strings.**
 
-**The `requireAuthentication` option is not supported in Expo Go when biometric authentication is available due to a missing `NSFaceIDUsageDescription` key.**
+**The `requireAuthentication` option is not supported in Expo Go when Face ID is available due to a missing `NSFaceIDUsageDescription` key.**
 
 ## Installation
 
@@ -96,7 +96,7 @@ On iOS, values are stored using the [keychain services](https://developer.apple.
 - **On Android:** Data saved using `expo-secure-store` **will not be preserved upon app uninstallation**.
 - **On iOS:** Data saved using `expo-secure-store` **will persist across app uninstallations** if the app is reinstalled with the same bundle ID. This is due to how the iOS Keychain manages stored credentials. Keep in mind that this is not guaranteed and you should never rely on this implementation detail.
 
-Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
+Additionally, any data protected with the `requireAuthentication` option set to `'biometry'` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
 
 ### Exempting encryption prompt
 
