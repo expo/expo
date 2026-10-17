@@ -52,6 +52,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
+import expo.modules.ui.colors.withOverrides
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -69,6 +70,7 @@ internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
 internal data class HostProps(
   val colorScheme: MutableState<ExpoColorScheme?> = mutableStateOf(null),
   val seedColor: MutableState<android.graphics.Color?> = mutableStateOf(null),
+  val colorOverrides: MutableState<Map<String, android.graphics.Color>?> = mutableStateOf(null),
   val layoutDirection: MutableState<ExpoLayoutDirection> = mutableStateOf(ExpoLayoutDirection.LeftToRight),
   val useViewportSizeMeasurement: MutableState<Boolean> = mutableStateOf(false),
   val ignoreSafeAreaKeyboardInsets: MutableState<Boolean> = mutableStateOf(false),
@@ -153,9 +155,10 @@ internal class HostView(context: Context, appContext: AppContext) :
     val seededScheme = remember(seedArgb, isDark) {
       seedArgb?.let { seedColorScheme(it, isDark) }
     }
-    val colorScheme = seededScheme
+    val baseColorScheme = seededScheme
       ?: props.colorScheme.value?.toColorScheme(context)
       ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val colorScheme = baseColorScheme.withOverrides(props.colorOverrides.value.orEmpty())
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     // Material3's `MaterialTheme` does not provide `LocalContentColor` — only `Surface` does — so
