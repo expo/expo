@@ -102,6 +102,26 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
+  fun `test browser launch rejected by the system is reported as a coded exception`() = withWebBrowserMock {
+    // given
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true)
+    val securityException = SecurityException("Permission Denial: starting Intent { act=android.intent.action.VIEW } not exported from uid 10236")
+    every { mock.startCustomTabs(any(), any()) } throws securityException
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    val exception = runCatching {
+      module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
+    }.exceptionOrNull()
+
+    // then
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<BrowserActivityNotAllowedException>(), it.code)
+      assertEquals(securityException, it.cause)
+    }
+  }
+
+  @Test
   fun `test no exception thrown when no package manager found`() = withWebBrowserMock {
     // given
     val mock = mockkCustomTabsActivitiesHelper()
