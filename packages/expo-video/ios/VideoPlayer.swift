@@ -32,10 +32,16 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
         safeEmit(event: "playbackRateChange", payload: payload)
       }
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        ref.defaultRate = playbackRate
+      let playbackRate = playbackRate
+      runOnMainThread { [weak self] in
+        guard let self, !self.hasBeenReleased else {
+          return
+        }
+        if #available(iOS 16.0, tvOS 16.0, *) {
+          self.ref.defaultRate = playbackRate
+        }
+        self.ref.rate = playbackRate
       }
-      ref.rate = playbackRate
     }
   }
 
@@ -79,7 +85,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = VolumeChangedEventPayload(volume: volume, oldVolume: oldValue)
         safeEmit(event: "volumeChange", payload: payload)
       }
-      ref.volume = volume
+      let volume = volume
+      runOnMainThread { [weak self] in
+        guard let self, !self.hasBeenReleased else {
+          return
+        }
+        self.ref.volume = volume
+      }
     }
   }
 
@@ -89,7 +101,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = MutedChangedEventPayload(muted: isMuted, oldMuted: oldValue)
         safeEmit(event: "mutedChange", payload: payload)
       }
-      ref.isMuted = isMuted
+      let isMuted = isMuted
+      runOnMainThread { [weak self] in
+        guard let self, !self.hasBeenReleased else {
+          return
+        }
+        self.ref.isMuted = isMuted
+      }
       VideoManager.shared.setAppropriateAudioSessionOrWarn()
     }
   }
@@ -361,6 +379,26 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   private var hasBeenReleased: Bool {
     return didRelease.withLock { $0 }
+  }
+
+  // AVKit observes the player from the main thread. Changing the playback state from the JS thread
+  // can race with those KVO registrations, which crashes inside the pending KVO notification stack.
+  func play() {
+    runOnMainThread { [weak self] in
+      guard let self, !self.hasBeenReleased else {
+        return
+      }
+      self.ref.play()
+    }
+  }
+
+  func pause() {
+    runOnMainThread { [weak self] in
+      guard let self, !self.hasBeenReleased else {
+        return
+      }
+      self.ref.pause()
+    }
   }
 
   private func getBufferedPosition() -> Double {
