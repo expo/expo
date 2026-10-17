@@ -58,7 +58,9 @@ async function runAsync(programName, args = []) {
     ];
     const filteredLoadedModules = loadedModules.filter((modulePath) => !virtualModuleNames.has(modulePath));
     const existingLoadedModules = (await Promise.all(filteredLoadedModules.map(async (modulePath) => {
-        const relativePath = path_1.default.relative(projectRoot, modulePath);
+        // Use POSIX separators so that the `../` prefix of hoisted modules in a monorepo is stripped
+        // before matching the ignore paths, and so that the sources match across platforms.
+        const relativePath = (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, modulePath));
         if ((0, Path_1.isIgnoredPath)(relativePath, ignoredPaths)) {
             return null;
         }
