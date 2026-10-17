@@ -44,6 +44,21 @@ export function getSharedPayloads(): SharePayload[] {
 }
 
 /**
+ * Returns raw data shared with the app, including file display names when available.
+ * Reads file metadata off the JavaScript thread without copying shared files or resolving URLs.
+ * Returns an empty array if no data has been shared with the app.
+ *
+ * @platform android
+ * @experimental
+ */
+export async function getSharedPayloadsAsync(): Promise<SharePayload[]> {
+  if (!SharingNativeModule.getSharedPayloadsAsync) {
+    throw new UnavailabilityError('Sharing', 'getSharedPayloadsAsync');
+  }
+  return await SharingNativeModule.getSharedPayloadsAsync();
+}
+
+/**
  * Returns resolved data shared with the app. Compared to data returned from [`getSharedPayloads`](#sharinggetsharedpayloads) contains additional
  * information useful for reading and displaying the data. For example, when a web `URL` is shared with the app,
  * a resolved payload will contain additional information about the URL contents.
