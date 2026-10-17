@@ -85,8 +85,9 @@ Each benchmark prints one line to the xcodebuild log:
 ```
 
 Every benchmark is a test in the single `JSIBenchmarks` suite (extended across the files), which
-is `.serialized` so only one benchmark runs at a time: the `JavaScriptActor` executor runs jobs
-synchronously on the calling thread, so parallel suites would disturb each other's measurements.
+is `.serialized` so only one benchmark runs at a time: the `JavaScriptActor` cases all run on the
+actor's one thread and the others compete for the same cores, so parallel suites would disturb each
+other's measurements.
 Each test wraps its content in `benchmarkCase { runtime in ... }`, which creates a fresh runtime
 and runs the case in a high-priority task; at the testing library's default priority the scheduler
 sometimes places the run on efficiency cores, which produced multi-fold run-to-run swings.

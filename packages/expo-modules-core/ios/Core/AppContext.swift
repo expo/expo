@@ -467,11 +467,15 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     dispatch: UnsafeRawPointer?
   ) {
     if let scheduler, let dispatch {
-      _runtime = ExpoRuntime(
+      let runtime = ExpoRuntime(
         unsafePointer: runtimePointer,
         scheduler: scheduler,
         dispatch: dispatch
       )
+      _runtime = runtime
+      // `JavaScriptActor` runs its jobs on this runtime's JavaScript thread. Called again for the new
+      // runtime after a reload.
+      JavaScriptActor.bind(to: runtime)
     } else {
       _runtime = ExpoRuntime(unsafePointer: runtimePointer)
     }

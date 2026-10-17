@@ -467,14 +467,17 @@ struct JavaScriptPromiseTests {
       return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
     }
 
-    // The test body runs on the cooperative pool, never on the runtime's dedicated thread, so this
-    // `await()` is the off-thread case. Installing the callbacks calls `then`, which is JavaScript,
-    // and JavaScript for this runtime may only run on the thread that owns it.
-    #expect(testRuntime.runtime.isOnJavaScriptThread() == false)
+    // Awaited from a detached task on the cooperative pool, so this `await()` starts off the
+    // runtime's thread. (The suite is `@JavaScriptActor`, and test runtimes share the actor's
+    // thread.) Installing the callbacks calls `then`, which is JavaScript, and JavaScript for this
+    // runtime may only run on the thread that owns it.
+    let (wasOffThread, result) = try await Task.detached {
+      let wasOffThread = !testRuntime.runtime.isOnJavaScriptThread()
+      return (wasOffThread, UncheckedSendable(value: try await promise.value.await()))
+    }.value
+    #expect(wasOffThread)
 
-    let result = try await promise.value.await()
-
-    #expect(result.getInt() == 42)
+    #expect(result.value.getInt() == 42)
     #expect(installedOnJavaScriptThread.value == true)
   }
 
@@ -724,6 +727,40 @@ struct JavaScriptPromiseTests {
       awaited.release()
       runtime.longLivedObjects.clear()
       let isCollected = { weakObject.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
+  }
+
+  @Test
+  func `the teardown sweep releases the reason of an awaited rejected promise`() async throws {
+    // Like the fulfilled value above, the rejection reason is kept for later `await()` calls and must
+    // not outlive the runtime's teardown sweep.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakReason) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let reason = runtime.createObject()
+      let weakReason = reason.createWeak()
+      // A `JavaScriptError` made from a value rejects with that value itself.
+      promise.reject(JavaScriptError(runtime, value: reason.asValue()))
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakReason))
+    }
+    let didThrow = await Task.detached {
+      do {
+        _ = try await promise.value.await()
+        return false
+      } catch {
+        return true
+      }
+    }.value
+    #expect(didThrow)
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakReason.value.lock() == nil }
       runtime.collectGarbage(until: isCollected)
       return isCollected()
     }

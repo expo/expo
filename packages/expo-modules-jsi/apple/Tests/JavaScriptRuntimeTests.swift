@@ -251,12 +251,15 @@ struct JavaScriptRuntimeTests {
     let runtime = try #require(testRuntime.runtime)
 
     // Called off the runtime's JavaScript thread, so each call schedules a task that the host drops.
-    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
-      try await runtime.execute { 1 }
-    }
-    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
-      try await runtime.execute { () async in 1 }
-    }
+    // The suite is `@JavaScriptActor` and test runtimes share the actor's thread, so the calls run
+    // in a detached task to be off that thread.
+    let asyncResults = await Task.detached {
+      return [
+        await isRuntimeLostErrorAsync { try await runtime.execute { 1 } },
+        await isRuntimeLostErrorAsync { try await runtime.execute { () async in 1 } },
+      ]
+    }.value
+    #expect(asyncResults == [true, true])
     // The blocking overloads aren't available in async contexts, so they run on a thread of their own.
     let blockingResults = await withCheckedContinuation { (continuation: CheckedContinuation<[Bool], Never>) in
       Thread.detachNewThread {
@@ -268,6 +271,122 @@ struct JavaScriptRuntimeTests {
     }
     #expect(blockingResults == [true, true])
     await testRuntime.tearDown()
+  }
+
+  // MARK: - Thread affinity of the actor
+
+  @Test
+  func `schedule async stays on the JavaScript thread across every suspension point`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+    let checkpoints = await recordSuspensionMatrix(on: scheduled.runtime)
+
+    // A matrix that stopped early would pass vacuously, so check that every suspension ran.
+    #expect(checkpoints.map(\.label) == suspensionMatrixLabels)
+    expectNoThreadDrift(in: checkpoints)
+
+    withExtendedLifetime(scheduled) {}
+  }
+
+  @Test
+  func `thread affinity survives repeated suspension`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+
+    // Losing affinity is timing-dependent, so a single pass can land on the right thread by luck.
+    var drifted: [Checkpoint] = []
+    for _ in 0..<suspensionMatrixSoakCount {
+      let checkpoints = await recordSuspensionMatrix(on: scheduled.runtime)
+      drifted += checkpoints.filter { !$0.isOnJavaScriptThread }
+    }
+    #expect(drifted.isEmpty, "\(drifted.count) resumptions left the JavaScript thread: \(drifted)")
+
+    withExtendedLifetime(scheduled) {}
+  }
+
+  @Test
+  func `returning from another actor comes back to the JavaScript thread`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+    let runtime = scheduled.runtime
+
+    let checkpoints = await withCheckedContinuation { (continuation: CheckedContinuation<[Checkpoint], Never>) in
+      runtime.schedule {
+        var checkpoints: [Checkpoint] = []
+
+        await ProbeActor.shared.touch()
+        checkpoints.append(Checkpoint(label: "a hop through a default-executor actor", runtime: runtime))
+
+        await MainActor.run {}
+        checkpoints.append(Checkpoint(label: "a hop through the main actor", runtime: runtime))
+
+        continuation.resume(returning: checkpoints)
+      }
+    }
+
+    // The hop back from the main actor enqueues on `JavaScriptActor`'s executor, which sends it to
+    // the runtime's thread.
+    expectNoThreadDrift(in: checkpoints)
+
+    withExtendedLifetime(scheduled) {}
+  }
+
+  @Test
+  func `an unstructured task inherits the JavaScript thread`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+    let runtime = scheduled.runtime
+
+    let checkpoints = await withCheckedContinuation { (continuation: CheckedContinuation<[Checkpoint], Never>) in
+      runtime.schedule {
+        let nested = await Task { () -> Checkpoint in
+          try? await Task.sleep(for: .milliseconds(1))
+          return Checkpoint(label: "a nested unstructured task", runtime: runtime)
+        }.value
+        continuation.resume(
+          returning: [nested, Checkpoint(label: "the parent after awaiting it", runtime: runtime)]
+        )
+      }
+    }
+
+    // The nested task inherits the actor's isolation, and its JavaScript thread creates it, so the
+    // executor pins it to the same runtime.
+    expectNoThreadDrift(in: checkpoints)
+
+    withExtendedLifetime(scheduled) {}
+  }
+
+  @Test
+  func `a task that belongs to no runtime runs on the actor's thread`() async {
+    // Started on a dispatch worker, so neither a runtime nor a JavaScript thread claims it. With
+    // no runtime bound, it runs on the actor's own thread.
+    let threadName = await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+      DispatchQueue.global().async {
+        Task { @JavaScriptActor in
+          try? await Task.sleep(for: .milliseconds(1))
+          continuation.resume(returning: currentThreadName())
+        }
+      }
+    }
+    #expect(threadName == "expo.modules.jsi.JavaScriptActor")
+  }
+
+  @Test
+  func `a detached task does not inherit the JavaScript thread`() async {
+    let scheduled = await TestRuntimeScheduler().makeRuntime()
+    let runtime = scheduled.runtime
+
+    let isOnJavaScriptThread = await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+      runtime.schedule {
+        let value = await Task.detached {
+          // Suspend first: a detached task can start on the thread that created it.
+          try? await Task.sleep(for: .milliseconds(1))
+          return runtime.isOnJavaScriptThread()
+        }.value
+        continuation.resume(returning: value)
+      }
+    }
+
+    // A detached task is nonisolated, so it runs on the cooperative pool.
+    #expect(isOnJavaScriptThread == false)
+
+    withExtendedLifetime(scheduled) {}
   }
 
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
@@ -315,62 +434,6 @@ struct JavaScriptRuntimeTests {
 
   // A standalone runtime runs scheduled work inline on the caller, so the next four tests give the
   // runtime its own thread with `TestRuntimeScheduler` to make the caller wait for it.
-
-  @Test
-  func `execute sync waits without spinning on a thread without run loop sources`() async throws {
-    let testRuntime = await TestRuntimeScheduler().makeRuntime()
-    let runtime = testRuntime.runtime
-    let cpuTime = try await onSyncOffThread {
-      try measureThreadCPUTime {
-        try runtime.execute { @JavaScriptActor in
-          _ = usleep(200_000)
-        }
-      }
-    }
-    #expect(cpuTime < 0.05)
-  }
-
-  @Test
-  func `execute blocking-async waits without spinning on a thread without run loop sources`() async throws {
-    let testRuntime = await TestRuntimeScheduler().makeRuntime()
-    let runtime = testRuntime.runtime
-    let cpuTime = try await onSyncOffThread {
-      try measureThreadCPUTime {
-        try runtime.execute { @JavaScriptActor () async in
-          _ = usleep(200_000)
-        }
-      }
-    }
-    #expect(cpuTime < 0.05)
-  }
-
-  @Test
-  func `execute sync returns as soon as a short task finishes`() async throws {
-    let testRuntime = await TestRuntimeScheduler().makeRuntime()
-    let runtime = testRuntime.runtime
-    let elapsed = try await onSyncOffThread {
-      let start = ContinuousClock.now
-      for _ in 0..<20 {
-        try runtime.execute { @JavaScriptActor in }
-      }
-      return ContinuousClock.now - start
-    }
-    #expect(elapsed < .milliseconds(500))
-  }
-
-  @Test
-  func `execute blocking-async returns as soon as a short task finishes`() async throws {
-    let testRuntime = await TestRuntimeScheduler().makeRuntime()
-    let runtime = testRuntime.runtime
-    let elapsed = try await onSyncOffThread {
-      let start = ContinuousClock.now
-      for _ in 0..<20 {
-        try runtime.execute { @JavaScriptActor () async in }
-      }
-      return ContinuousClock.now - start
-    }
-    #expect(elapsed < .milliseconds(500))
-  }
 
   // MARK: - Host objects
 
@@ -1381,6 +1444,197 @@ private final class InlineRunFlag: @unchecked Sendable {
   var value = false
 }
 
+/// Blocking `execute` calls that measure how the caller waits. Serialized, so the tests that hold the
+/// JavaScript thread for a while don't slow down the ones that measure how fast the caller wakes up:
+/// test runtimes share the thread of `JavaScriptActor`.
+@Suite(.serialized)
+struct JavaScriptRuntimeBlockingExecuteTests {
+  @Test
+  func `execute sync waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute blocking-async waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor () async in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute sync returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
+  }
+
+  @Test
+  func `execute blocking-async returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor () async in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
+  }
+
+}
+
+/// Where one resumption of the suspension matrix landed. The thread id is recorded next to the
+/// JavaScript-thread check so a failure names the thread the work drifted to, instead of only
+/// reporting `false`.
+private struct Checkpoint: Sendable, CustomStringConvertible {
+  let label: String
+  let threadID: UInt64
+  let isOnJavaScriptThread: Bool
+
+  init(label: String, runtime: JavaScriptRuntime) {
+    self.label = label
+    self.threadID = currentThreadID()
+    self.isOnJavaScriptThread = runtime.isOnJavaScriptThread()
+  }
+
+  var description: String {
+    return "\(label) resumed on thread \(threadID)"
+  }
+}
+
+private func currentThreadID() -> UInt64 {
+  var threadID: UInt64 = 0
+  pthread_threadid_np(nil, &threadID)
+  return threadID
+}
+
+/// Every suspension ``recordSuspensionMatrix(on:)`` walks through, in order. Each one resumes
+/// through a different path in the Swift runtime, so they are not redundant.
+private let suspensionMatrixLabels = [
+  "task start",
+  "Task.yield()",
+  "Task.sleep",
+  "a continuation resumed from another thread",
+  "an async let child",
+  "a task group child",
+  "an awaited detached task",
+  "a nonisolated async function",
+]
+
+/// How many times the soak test repeats the matrix.
+private let suspensionMatrixSoakCount = 50
+
+/// Suspends a task scheduled on `runtime` once for every mechanism the Swift runtime uses to resume
+/// a task, and reports where each resumption landed. The caller asserts, on the test's own task.
+private func recordSuspensionMatrix(on runtime: JavaScriptRuntime) async -> [Checkpoint] {
+  return await withCheckedContinuation { (continuation: CheckedContinuation<[Checkpoint], Never>) in
+    runtime.schedule {
+      var checkpoints: [Checkpoint] = []
+
+      func record(_ label: String) {
+        checkpoints.append(Checkpoint(label: label, runtime: runtime))
+      }
+
+      record("task start")
+
+      await Task.yield()
+      record("Task.yield()")
+
+      try? await Task.sleep(for: .milliseconds(1))
+      record("Task.sleep")
+
+      await withCheckedContinuation { (inner: CheckedContinuation<Void, Never>) in
+        Thread.detachNewThread {
+          Thread.sleep(forTimeInterval: 0.001)
+          inner.resume()
+        }
+      }
+      record("a continuation resumed from another thread")
+
+      async let child: Void = suspendOffTheActor()
+      await child
+      record("an async let child")
+
+      await withTaskGroup(of: Void.self) { group in
+        group.addTask {
+          await suspendOffTheActor()
+        }
+        await group.waitForAll()
+      }
+      record("a task group child")
+
+      await Task.detached {
+        await suspendOffTheActor()
+      }.value
+      record("an awaited detached task")
+
+      await suspendOffTheActor()
+      record("a nonisolated async function")
+
+      continuation.resume(returning: checkpoints)
+    }
+  }
+}
+
+private func currentThreadName() -> String? {
+  return Thread.current.name
+}
+
+/// An actor that uses the default executor.
+private actor ProbeActor {
+  static let shared = ProbeActor()
+
+  func touch() {}
+}
+
+/// A suspension that really leaves `@JavaScriptActor`.
+@concurrent
+private func suspendOffTheActor() async {
+  try? await Task.sleep(for: .milliseconds(1))
+}
+
+/// Asserts that every checkpoint ran on the runtime's JavaScript thread, and on one thread.
+@discardableResult
+private func expectNoThreadDrift(
+  in checkpoints: [Checkpoint],
+  sourceLocation: SourceLocation = #_sourceLocation
+) -> Set<UInt64> {
+  for checkpoint in checkpoints where !checkpoint.isOnJavaScriptThread {
+    Issue.record("left the JavaScript thread: \(checkpoint)", sourceLocation: sourceLocation)
+  }
+  let threadIDs = Set(checkpoints.map(\.threadID))
+  #expect(
+    threadIDs.count == 1,
+    "the matrix ran across \(threadIDs.count) threads: \(checkpoints)",
+    sourceLocation: sourceLocation
+  )
+  return threadIDs
+}
+
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
 /// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
 /// Safe without synchronization: the dispatch always runs synchronously on the test's thread.
@@ -1416,6 +1670,15 @@ private func onSyncOffThread<R: Sendable>(
 private func isRuntimeLostError(_ body: () throws -> Int) -> Bool {
   do {
     _ = try body()
+    return false
+  } catch {
+    return error is JavaScriptCallback.RuntimeLostError
+  }
+}
+
+private func isRuntimeLostErrorAsync(_ body: () async throws -> Int) async -> Bool {
+  do {
+    _ = try await body()
     return false
   } catch {
     return error is JavaScriptCallback.RuntimeLostError

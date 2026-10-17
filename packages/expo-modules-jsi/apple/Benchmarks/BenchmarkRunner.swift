@@ -13,9 +13,9 @@ import Testing
 let benchmarksEnabled = ProcessInfo.processInfo.environment["EXPO_BENCHMARK"] == "1"
 
 /// Umbrella suite that all benchmarks belong to (as extensions in the other files).
-/// It's serialized so only one benchmark runs at a time: the `JavaScriptActor` executor
-/// runs jobs synchronously on the calling thread, so separate suites would execute
-/// concurrently on the parallel testing pool and disturb each other's measurements.
+/// It's serialized so only one benchmark runs at a time: the `JavaScriptActor` cases all run
+/// on the actor's one thread, and the others compete for the same cores, so separate suites
+/// running at once would disturb each other's measurements.
 @Suite(.enabled(if: benchmarksEnabled), .serialized)
 struct JSIBenchmarks {}
 
