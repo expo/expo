@@ -1,9 +1,12 @@
-internal actor DeferredPromise {
+/// The Swift-side receiver that `JavaScriptPromise.await()` suspends on. Isolated to
+/// `JavaScriptActor`, where both sides use it: `await()` reads it and the `then` callbacks settle it,
+/// so neither has to hop to another executor and back.
+@JavaScriptActor
+internal final class DeferredPromise {
   /// The value a promise was fulfilled with, in two refs made on the JavaScript thread when the
   /// promise settles. `handOut` holds the value itself and goes to the first `await()`, which moves it
   /// out without touching the runtime. `kept` holds a copy for any later `await()`, which clones it on
-  /// the JavaScript thread. Refs give the non-copyable value a shareable owner that can cross to this
-  /// actor and back.
+  /// the JavaScript thread. Refs give the non-copyable value a shareable owner.
   internal struct SettledValue: Sendable {
     let handOut: JavaScriptValue.Ref
     let kept: JavaScriptValue.Ref
@@ -23,7 +26,7 @@ internal actor DeferredPromise {
   /// Returns the ref to read the settled value from, and whether the caller owns it. An owned ref is
   /// the first read and can be taken as is; otherwise the caller has to clone the value on the
   /// JavaScript thread.
-  public func getValue() async throws(JavaScriptError) -> (ref: JavaScriptValue.Ref, isOwned: Bool) {
+  internal func getValue() async throws(JavaScriptError) -> (ref: JavaScriptValue.Ref, isOwned: Bool) {
     switch state {
     case .fulfilled(let settled):
       return read(settled)

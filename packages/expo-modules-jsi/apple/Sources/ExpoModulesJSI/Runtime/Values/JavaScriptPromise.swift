@@ -281,19 +281,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         let kept = value.copy().ref()
         let settled = DeferredPromise.SettledValue(handOut: value.ref(), kept: kept)
         longLivedState?.settledValue = settled
-        Task.immediate_polyfill {
-          await deferredPromise.resolve(settled)
-        }
+        settle(deferredPromise) { $0.resolve(settled) }
         return .undefined()
       }
       let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined() }
-        // Wrap the rejection value into a `JavaScriptError` here, on the JavaScript thread, rather
-        // than inside the off-thread actor, since building the error touches the runtime.
         let error = JavaScriptError(runtime, value: arguments[0])
-        Task.immediate_polyfill {
-          await deferredPromise.reject(error)
-        }
+        settle(deferredPromise) { $0.reject(error) }
         return .undefined()
       }
       // Parameter packs take copyable elements only, so the callbacks travel as refs.
@@ -310,6 +304,20 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       longLivedState.deferredPromise = deferredPromise
     }
     return deferredPromise
+  }
+}
+
+/// Settles the receiver right away when this thread is the one `JavaScriptActor` runs on, as it is for
+/// the bound runtime. A promise of another runtime settles on that runtime's thread, so it hops to the
+/// actor instead of touching the receiver from there.
+@JavaScriptActor
+private func settle(_ deferredPromise: DeferredPromise, _ body: @escaping @JavaScriptActor (DeferredPromise) -> Void) {
+  if JavaScriptExecutor.shared.isOnTargetThread() {
+    body(deferredPromise)
+  } else {
+    Task { @JavaScriptActor in
+      body(deferredPromise)
+    }
   }
 }
 
