@@ -89,6 +89,7 @@ exceptions:
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
   - '.*detach.*'
+  - '.*Detour.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
   - '.*DOM.*'
