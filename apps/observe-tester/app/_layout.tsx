@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Observe, ObserveRoot } from 'expo-observe';
 import { Stack } from 'expo-router';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { ReanimatedLogLevel } from 'react-native-reanimated';
 
 Observe.configure({
   environment: 'custom-env',
@@ -13,7 +14,11 @@ Observe.configure({
       oversizeThreshold: 1.5,
       includeUrlParams: false,
     },
-    'react-native-reanimated': true,
+    'react-native-reanimated': {
+      level: ReanimatedLogLevel.warn,
+      strict: true,
+      reportWarnings: true,
+    },
   },
 });
 
