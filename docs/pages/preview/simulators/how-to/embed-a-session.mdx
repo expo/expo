@@ -23,9 +23,9 @@ By default, only expo.dev can embed the preview or call the preview host's API. 
 
 Pass the origin of each page that shows the session. An origin is the scheme, host, and port of a URL, without a path. For example, the origin of `https://tools.example.com/qa/run` is `https://tools.example.com`.
 
-- Use `https`. Plain `http` is accepted only for `localhost`, `127.0.0.1`, and `[::1]`, so you can test with a local development server.
-- To allow all subdomains of a domain, use a wildcard such as `https://*.example.com`. The wildcard needs at least two labels after the star, so `https://*.com` is not accepted.
-- Repeat the flag to allow more origins. Each flag accepts up to 10 origins.
+- Use `https`. EAS accepts plain `http` only for `localhost`, `127.0.0.1`, and `[::1]`, so you can test with a local development server.
+- To allow all subdomains of a domain, use a wildcard such as `https://*.example.com`. The wildcard needs at least two labels after the star, so EAS rejects `https://*.com`.
+- Each flag takes one origin. Repeat a flag up to 10 times to allow more origins.
 
 EAS CLI rejects a value that is not an origin before it creates the session. For example, `--frame-ancestor https://tools.example.com/qa` returns an error that shows the correct value, `https://tools.example.com`.
 
