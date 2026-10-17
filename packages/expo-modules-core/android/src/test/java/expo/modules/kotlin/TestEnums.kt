@@ -19,3 +19,9 @@ enum class EnumWithString(val value: String) : Enumerable {
   VALUE2("value2"),
   VALUE3("value3")
 }
+
+enum class EnumWithBody(val value: String) : Enumerable {
+  VALUE1("value1") {
+    override fun toString() = "custom"
+  }
+}
