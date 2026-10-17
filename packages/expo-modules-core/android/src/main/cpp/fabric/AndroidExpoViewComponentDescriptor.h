@@ -4,6 +4,7 @@
 #include "AndroidExpoViewProps.h"
 #include "AndroidExpoViewState.h"
 #include "../types/FrontendConverter.h"
+#include "ExpoViewComponentRegistry.h"
 
 namespace react = facebook::react;
 
@@ -17,12 +18,7 @@ public:
 
   using Base::ExpoViewComponentDescriptor;
 
-  void setStateProps(
-    const std::unordered_map<
-      std::string,
-      std::shared_ptr<FrontendConverter>
-    > &stateProps
-  );
+  void setComponentRegistration(std::shared_ptr<ExpoViewComponentRegistration> registration);
 
   react::Props::Shared cloneProps(
     const react::PropsParserContext &context,
@@ -33,14 +29,7 @@ public:
   void adopt(react::ShadowNode &shadowNode) const override;
 
 private:
-  std::unordered_map<
-    std::string,
-    std::shared_ptr<FrontendConverter>
-  > stateProps_;
-
-  std::function<bool(const std::string &)> filterObjectKeys_ = [this](const std::string &key) {
-    return stateProps_.find(key) != stateProps_.end();
-  };
+  std::shared_ptr<ExpoViewComponentRegistration> registration_;
 };
 
 } // namespace expo
