@@ -30,7 +30,9 @@ function loadInit() {
 }
 
 function initAndGetOnLog(
-  config: Parameters<ReturnType<typeof loadInit>['initReanimatedIntegration']>[0] = true
+  config: Parameters<ReturnType<typeof loadInit>['initReanimatedIntegration']>[0] = {
+    reportWarnings: true,
+  }
 ): (data: LogData) => void {
   loadInit().initReanimatedIntegration(config);
   const onLog = mockConfigureReanimatedLogger.mock.calls.at(-1)?.[1];
@@ -60,8 +62,8 @@ describe('initReanimatedIntegration', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('passes the level and strict settings from the integration config', () => {
-    loadInit().initReanimatedIntegration({ level: ERROR, strict: false });
+  it('passes only the level and strict settings to Reanimated', () => {
+    loadInit().initReanimatedIntegration({ level: ERROR, strict: false, reportWarnings: true });
 
     expect(mockConfigureReanimatedLogger).toHaveBeenCalledWith(
       { level: ERROR, strict: false },
@@ -109,6 +111,19 @@ describe('initReanimatedIntegration', () => {
     });
     expect(mockAppMetrics.reportError).not.toHaveBeenCalled();
   });
+
+  it.each([true, {}, { reportWarnings: false }])(
+    'reports errors but not warnings for the integration config %p',
+    (config) => {
+      const onLog = initAndGetOnLog(config);
+
+      onLog({ level: WARN, message: 'warning' });
+      onLog({ level: ERROR, message: 'error' });
+
+      expect(mockAppMetrics.logEvent).not.toHaveBeenCalled();
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+    }
+  );
 
   it('does not print to the console, because Reanimated already does', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -165,52 +180,52 @@ describe('initReanimatedIntegration', () => {
     expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
   });
 
-  it('stops reporting new warnings after 100 distinct ones in a window', () => {
+  it('stops reporting new warnings after 20 distinct ones in a window', () => {
     const onLog = initAndGetOnLog();
 
-    for (let i = 0; i < 101; i++) {
+    for (let i = 0; i < 21; i++) {
       onLog({ level: WARN, message: `message ${i}` });
     }
 
-    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(20);
   });
 
-  it('stops reporting new errors after 100 distinct ones in a window', () => {
+  it('stops reporting new errors after 20 distinct ones in a window', () => {
     const onLog = initAndGetOnLog();
 
-    for (let i = 0; i < 101; i++) {
+    for (let i = 0; i < 21; i++) {
       onLog({ level: ERROR, message: `message ${i}` });
     }
 
-    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(20);
   });
 
   it('reports an error after the warning limit for the window is reached', () => {
     const onLog = initAndGetOnLog();
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       onLog({ level: WARN, message: `warning ${i}` });
     }
     onLog({ level: ERROR, message: 'error after warnings' });
 
-    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(20);
     expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
   });
 
   it('reports a warning after the error limit for the window is reached', () => {
     const onLog = initAndGetOnLog();
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       onLog({ level: ERROR, message: `error ${i}` });
     }
     onLog({ level: WARN, message: 'warning after errors' });
 
-    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(20);
     expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
   });
 
   describe('reporting window', () => {
-    const WINDOW_MS = 60_000;
+    const WINDOW_MS = 15 * 60_000;
 
     beforeEach(() => {
       jest.useFakeTimers({ now: 0 });
@@ -243,14 +258,14 @@ describe('initReanimatedIntegration', () => {
     it('reports new messages after a surge leaves the window', () => {
       const onLog = initAndGetOnLog();
 
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 20; i++) {
         onLog({ level: ERROR, message: `surge ${i}` });
       }
       onLog({ level: ERROR, message: 'dropped during surge' });
       jest.advanceTimersByTime(WINDOW_MS);
       onLog({ level: ERROR, message: 'after surge' });
 
-      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(101);
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(21);
       expect(mockAppMetrics.reportError).toHaveBeenLastCalledWith(
         expect.objectContaining({ message: 'after surge' })
       );

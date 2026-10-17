@@ -19,8 +19,8 @@ const REANIMATED_WARNING_EVENT = 'reanimated.warning';
 // window. The cap bounds the reports in a window when messages embed varying values, and the
 // window lets new messages be reported again after a surge. Errors and warnings have separate
 // windows, so a screen with many distinct warnings cannot stop errors from being reported.
-const REPORT_WINDOW_MS = 60_000;
-const MAX_DISTINCT_MESSAGES_PER_WINDOW = 100;
+const REPORT_WINDOW_MS = 15 * 60_000;
+const MAX_DISTINCT_MESSAGES_PER_WINDOW = 20;
 // Attribute values are sent on every dispatch, and strict-mode messages append a docs
 // reference, so the copied message is capped. Messages are also deduplicated by this capped
 // text, so two messages that differ only after the cap do not send the same attribute twice.
@@ -35,6 +35,7 @@ const reportedWarnings = new Map<string, number>();
 // The callback stays registered in Reanimated after the integration is turned off, because
 // configuring the logger again would reset the app's `level` and `strict`. It checks this flag.
 let isEnabled = false;
+let shouldReportWarnings = false;
 
 /**
  * A Reanimated error reported to Observe. The stack is set explicitly so it points at the
@@ -86,6 +87,9 @@ function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogDat
     return;
   }
   const isError = level === LOG_LEVEL_ERROR;
+  if (!isError && !shouldReportWarnings) {
+    return;
+  }
   const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
   if (!shouldReport(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
     return;
@@ -113,8 +117,9 @@ function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogDat
 
 /**
  * Configures Reanimated's logger with the integration's `level` and `strict` settings and a
- * callback that reports Reanimated errors to Observe as `reanimated.error` errors, and Reanimated
- * warnings as `reanimated.warning` events.
+ * callback that reports Reanimated errors to Observe as `reanimated.error` errors. When
+ * `reportWarnings` is set, the callback also reports Reanimated warnings as `reanimated.warning`
+ * events.
  */
 export function initReanimatedIntegration(
   config: NonNullable<ObserveIntegrationsConfig['react-native-reanimated']>
@@ -137,8 +142,9 @@ export function initReanimatedIntegration(
     return;
   }
 
-  const loggerConfig = typeof config === 'object' ? config : {};
+  const { reportWarnings = false, ...loggerConfig } = typeof config === 'object' ? config : {};
   reanimated.configureReanimatedLogger(loggerConfig, __expo_observe_reportReanimatedLog);
+  shouldReportWarnings = reportWarnings;
   isEnabled = true;
 }
 
