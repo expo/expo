@@ -76,13 +76,15 @@ internal class LocationProviderStatus(
 internal class Heading(
   @Field var trueHeading: Float = -1f,
   @Field var magHeading: Float = -1f,
-  @Field var accuracy: Int = 0
+  @Field var accuracy: Int = 0,
+  @Field var headingAccuracy: Int = 0
 ) {
   internal fun toBundle(): Bundle {
     return Bundle().apply {
       putFloat("trueHeading", trueHeading)
       putFloat("magHeading", magHeading)
       putInt("accuracy", accuracy)
+      putInt("headingAccuracy", headingAccuracy)
     }
   }
 }

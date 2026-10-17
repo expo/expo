@@ -96,11 +96,11 @@ public final class LocationModule: Module {
       return nil
     }
 
-    AsyncFunction("watchDeviceHeading") { (watchId: Int) in
+    AsyncFunction("watchDeviceHeading") { (watchId: Int, options: HeadingOptions) in
       try ensureForegroundLocationPermissions(appContext)
 
-      let options = LocationOptions(accuracy: .bestForNavigation, distanceInterval: 0)
-      let streamer = await DeviceHeadingStreamer(options: options)
+      let locationOptions = LocationOptions(accuracy: .bestForNavigation, distanceInterval: 0)
+      let streamer = await DeviceHeadingStreamer(options: locationOptions, headingOptions: options)
 
       locationStreamers[watchId] = streamer
 
@@ -113,7 +113,8 @@ public final class LocationModule: Module {
               "heading": [
                 "trueHeading": heading.trueHeading,
                 "magHeading": heading.magneticHeading,
-                "accuracy": normalizeAccuracy(heading.headingAccuracy)
+                "accuracy": normalizeAccuracy(heading.headingAccuracy),
+                "headingAccuracy": heading.headingAccuracy
               ]
             ])
           }

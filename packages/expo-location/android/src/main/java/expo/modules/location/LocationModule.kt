@@ -49,6 +49,7 @@ import expo.modules.location.records.GeocodeResponse
 import expo.modules.location.records.GeofencingOptions
 import expo.modules.location.records.Heading
 import expo.modules.location.records.HeadingEventResponse
+import expo.modules.location.records.HeadingOptions
 import expo.modules.location.records.LocationLastKnownOptions
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
@@ -91,6 +92,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mAccuracy = 0
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
+  private var mHeadingFilterDegrees: Double? = null
 
   // Motion activity
   private val mMotionActivityWatchIds = mutableSetOf<Int>()
@@ -217,8 +219,9 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
       return@AsyncFunction getProviderStatus()
     }
 
-    AsyncFunction("watchDeviceHeading") { watchId: Int ->
+    AsyncFunction("watchDeviceHeading") { watchId: Int, options: HeadingOptions ->
       mHeadingId = watchId
+      mHeadingFilterDegrees = options.headingFilter
       return@AsyncFunction startHeadingUpdate()
     }
 
@@ -653,7 +656,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
       // Make sure Delta is big enough to warrant an update
       // Currently: 50ms and ~2 degrees of change (android has a lot of useless updates block up the sending)
-      if (abs(orientation[0] - mLastAzimuth) > DEGREE_DELTA && System.currentTimeMillis() - mLastUpdate > TIME_DELTA) {
+      if (abs(orientation[0] - mLastAzimuth) > headingDegreeDelta() && System.currentTimeMillis() - mLastUpdate > TIME_DELTA) {
         mLastAzimuth = orientation[0]
         mLastUpdate = System.currentTimeMillis()
         val magneticNorth: Float = calcMagNorth(orientation[0])
@@ -665,7 +668,8 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
           heading = Heading(
             trueHeading = trueNorth,
             magHeading = magneticNorth,
-            accuracy = mAccuracy
+            accuracy = mAccuracy,
+            headingAccuracy = mAccuracy
           )
         )
         sendEvent(HEADING_EVENT_NAME, response.toBundle())
@@ -683,6 +687,15 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private fun calcMagNorth(azimuth: Float): Float {
     val azimuthDeg = Math.toDegrees(azimuth.toDouble()).toFloat()
     return (azimuthDeg + 360) % 360
+  }
+
+  private fun headingDegreeDelta(): Double {
+    val degrees = mHeadingFilterDegrees ?: return DEGREE_DELTA
+    // 0 or negative disables the degree gate, leaving only the time rate limit.
+    if (degrees <= 0.0) {
+      return 0.0
+    }
+    return Math.toRadians(degrees)
   }
 
   private fun calcTrueNorth(magNorth: Float): Float {
@@ -703,6 +716,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
     mHeadingId = 0
     mLastAzimuth = 0f
     mAccuracy = 0
+    mHeadingFilterDegrees = null
   }
 
   private fun resumeGeocoder() {
