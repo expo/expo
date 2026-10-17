@@ -202,7 +202,7 @@ The session page on expo.dev does not embed the preview. Select **Open preview**
 
 ### An iframe on your page does not show the preview
 
-The browser blocks the iframe when the origin of your page is not allowed. Start the session with `--frame-ancestor` set to the exact origin of the page, such as `https://tools.example.com`, without a path. Load the preview host URL from `remoteConfig.previewApiUrl` with its `token` query parameter. The private preview page on expo.dev cannot be embedded. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
+The browser blocks the iframe when the session does not allow the origin of your page. Start the session with `--frame-ancestor` set to the exact origin of the page, such as `https://tools.example.com`, without a path. Load the preview host URL from `remoteConfig.previewApiUrl` with its `token` query parameter. Other sites cannot embed the private preview page on expo.dev. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
 
 ### `@expo/hub-client` shows the status `error`
 
