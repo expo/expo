@@ -97,7 +97,7 @@ function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogDat
       new Error(message).stack,
       __expo_observe_reportReanimatedLog.name
     );
-    reportCaughtError(new ReanimatedError(message, stack));
+    reportCaughtError(new ReanimatedError(message, stack), 'integration');
     return;
   }
   AppMetrics.logEvent(REANIMATED_WARNING_EVENT, {
