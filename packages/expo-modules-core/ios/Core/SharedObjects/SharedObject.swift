@@ -36,6 +36,12 @@ open class SharedObject: AnySharedObject {
    */
   public init() {}
 
+  /// The value of `nativeRefType` on the JavaScript object, or `nil` when the object does not conform to
+  /// `AnySharedRef`.
+  internal var sharedRefType: String? {
+    return (self as? AnySharedRef)?.nativeRefType
+  }
+
   /**
    A function that will be called before the object is removed from the registry.
    */
