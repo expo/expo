@@ -79,6 +79,29 @@ describe('native header defaults', () => {
 
 afterEach(() => jest.useRealTimers());
 
+describe('scroll view hierarchy detector', () => {
+  it('renders for a visible native header', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('expo-router-scroll-view-detector')).toBeVisible();
+  });
+
+  it.each([
+    ['a hidden header', { headerShown: false }],
+    ['a custom header', { header: () => <View /> }],
+  ])('does not render for %s', async (_, options) => {
+    await renderRouter({
+      _layout: () => <Stack screenOptions={options} />,
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.queryByTestId('expo-router-scroll-view-detector')).toBeNull();
+  });
+});
+
 describe('native header user interface style', () => {
   it('applies screenOptions, per-screen overrides, and the theme fallback independently', async () => {
     await renderRouter(

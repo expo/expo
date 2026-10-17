@@ -10,6 +10,7 @@ import {
   ScreenStackItem,
 } from 'react-native-screens';
 
+import { ScrollViewHierarchyDetector } from '../../../utils/scroll-view-hierarchy-detector';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -432,6 +433,9 @@ const SceneView = ({
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
                   {render()}
+                  {header == null && headerShown !== false ? (
+                    <ScrollViewHierarchyDetector containerType="stack" />
+                  ) : null}
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>
