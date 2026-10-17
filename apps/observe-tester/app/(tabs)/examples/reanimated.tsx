@@ -7,12 +7,14 @@ import { Button } from '@/components/Button';
 import { useTheme } from '@/utils/theme';
 
 // `logger` is internal to Reanimated. It is the only way to emit a Reanimated error on demand,
-// because the real `logger.error` call sites are hard to reach. The path matches the source
+// because the real `logger.error` call sites are hard to reach. It also emits the React Native
+// runtime warning: on that runtime, an animation such as `withSpring` checks its config only when
+// the animation starts, and the animation starts on the UI runtime. The path matches the source
 // entry that Metro resolves through Reanimated's `react-native` field, so this is the same module
 // instance that Reanimated uses. It is required, not imported, so that TypeScript doesn't
 // type-check Reanimated's source with this app's settings.
 const { logger } = require('react-native-reanimated/src/common/logger') as {
-  logger: { error(message: string): void };
+  logger: { warn(message: string): void; error(message: string): void };
 };
 
 type Sample = {
@@ -26,11 +28,11 @@ type Sample = {
 // that run on both runtimes use different values in their messages.
 const SAMPLES: Sample[] = [
   {
-    label: 'Invalid spring config',
+    label: 'Synthetic logger.warn',
     kind: 'warning',
     runtime: 'RN',
     run: () => {
-      withSpring(1, { stiffness: -1 });
+      logger.warn('Sample warning from the React Native runtime (observe-tester)');
     },
   },
   {
