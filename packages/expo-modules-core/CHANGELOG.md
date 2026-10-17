@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [iOS] Update `expo-modules-macros` to 0.21.0. `@Record` types now convert between JavaScript and native code with less overhead and no longer need an app context. `@ExpoModule` and `@SharedObject` now report a build error when two `@JS` members of one object have the same JavaScript name, because JavaScript could reach only one of them. ([#51716](https://github.com/expo/expo/pull/51716) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51577](https://github.com/expo/expo/pull/51577))
+  - expo-modules-jsi@58.0.16
+
 ## 58.0.22
 
 ### Patch Changes
