@@ -1,17 +1,7 @@
 import { Platform } from 'expo';
 
 export type LocalAuthenticationResult =
-  | {
-      success: true;
-      /**
-       * A warning message emitted when authentication succeeded in a degraded mode. For example,
-       * on Android 9 and 10 requesting `biometricsSecurityLevel: 'strong'` with the device
-       * credential fallback enabled also accepts weak biometrics, as the system cannot combine
-       * strong biometrics and device credentials in a single prompt on those versions.
-       * @platform android
-       */
-      warning?: string;
-    }
+  | { success: true }
   | {
       success: false;
       error: LocalAuthenticationError;
@@ -126,19 +116,27 @@ export type LocalAuthenticationOptions = {
    * Sets the security class of biometric authentication to allow.
    * `strong` allows only Android Class 3 biometrics. For example, a fingerprint or a 3D face scan.
    * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3. For example, a camera-based face unlock.
-   * > On Android 9 and 10, the system cannot combine `strong` biometrics and device credentials in
-   * > a single prompt. On those versions, when the device fallback is enabled, `strong`
-   * > automatically falls back to `weak` and the successful authentication result contains a
-   * > `warning` reporting the downgrade. Set `disableDeviceFallback: true` to enforce
-   * > strong biometrics only.
+   *
+   * On Android 9 and 10, the system can't offer the device's screen lock in the same prompt as
+   * `strong` biometrics. When the device fallback is enabled, the prompt accepts only `strong`
+   * biometrics and shows a button that opens the system's screen lock confirmation (see
+   * `fallbackLabel`). On Android 10, that screen can first offer any biometric the system exposes,
+   * including Class 2 biometrics. Set `disableDeviceFallback: true` to accept only `strong`
+   * biometrics.
    * @platform android
    * @default 'weak'
    */
   biometricsSecurityLevel?: BiometricsSecurityLevel;
   /**
-   * Allows to customize the default `Use Passcode` label shown after several failed
-   * authentication attempts. Setting this option to an empty string disables this button from
-   * showing in the prompt.
+   * Allows customizing the label of the button that falls back to the device passcode.
+   *
+   * On iOS, the button is shown after several failed authentication attempts, and its label
+   * defaults to `Use Passcode`. Setting this option to an empty string hides the button.
+   *
+   * On Android, the button is shown only on Android 9 and 10, when `biometricsSecurityLevel` is
+   * `strong` and the device fallback is enabled. Its label defaults to a localized
+   * `Use screen lock`. The button can't be hidden, so an empty string also uses the default label.
+   * @platform android
    * @platform ios
    */
   fallbackLabel?: string;
