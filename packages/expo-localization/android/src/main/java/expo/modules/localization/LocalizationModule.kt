@@ -9,6 +9,7 @@ import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
 import android.util.Log
+import androidx.core.content.edit
 import androidx.core.os.LocaleListCompat
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import expo.modules.kotlin.modules.Module
@@ -18,6 +19,9 @@ import java.util.*
 
 private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
+private const val RTL_PREFERENCES = "expo.modules.localization.RTLPreferences"
+private const val SUPPORTS_RTL_FROM_CONFIG = "supportsRTLFromConfig"
+private const val FORCES_RTL_FROM_CONFIG = "forcesRTLFromConfig"
 
 class LocalizationModule : Module() {
   private var observer: () -> Unit = {}
@@ -52,14 +56,47 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    val supportsRTL =
-      context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull() ?: true
-    val forcesRTL =
-      context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull() ?: false
+    // The config plugin writes a string resource only for a non-default value, so "unset" (parsed as null)
+    // means either "not configured" or "no longer configured". We remember which values came from the config
+    // to tell the two apart, instead of writing the defaults on every launch and overwriting the app's own
+    // I18nManager.allowRTL / forceRTL calls.
+    val supportsRTL = context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull()
+    val forcesRTL = context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull()
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
-    I18nUtil.instance.allowRTL(context, supportsRTL)
-    I18nUtil.instance.forceRTL(context, forcesRTL)
+    resolveRTLPreference(context, SUPPORTS_RTL_FROM_CONFIG, supportsRTL, defaultValue = true)?.let {
+      I18nUtil.instance.allowRTL(context, it)
+    }
+    resolveRTLPreference(context, FORCES_RTL_FROM_CONFIG, forcesRTL, defaultValue = false)?.let {
+      I18nUtil.instance.forceRTL(context, it)
+    }
+  }
+
+  /**
+   * The value to write for an RTL preference, or null to leave the stored preference alone. Whether the
+   * value came from the app config is recorded, so that dropping the option restores the React Native
+   * default exactly once, on the first launch without it.
+   */
+  private fun resolveRTLPreference(
+    context: Context,
+    fromConfigKey: String,
+    configValue: Boolean?,
+    defaultValue: Boolean
+  ): Boolean? {
+    val preferences = context.getSharedPreferences(RTL_PREFERENCES, Context.MODE_PRIVATE)
+    val wasFromConfig = preferences.getBoolean(fromConfigKey, false)
+
+    if (wasFromConfig != (configValue != null)) {
+      preferences.edit {
+        if (configValue != null) {
+          putBoolean(fromConfigKey, true)
+        } else {
+          remove(fromConfigKey)
+        }
+      }
+    }
+
+    return configValue ?: defaultValue.takeIf { wasFromConfig }
   }
 
   private fun getMeasurementSystem(locale: Locale): String? {
