@@ -34,4 +34,11 @@ struct AudioRecordsTests {
   func `exposes the file extension matching the format`(format: AudioStreamFileFormat, expected: String) {
     #expect(format.fileExtension == expected)
   }
+
+  @Test func `defaults the lock screen skip intervals to ten seconds`() {
+    let options = LockScreenOptions()
+
+    #expect(options.seekForwardIntervalSeconds == 10.0)
+    #expect(options.seekBackwardIntervalSeconds == 10.0)
+  }
 }
