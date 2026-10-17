@@ -256,6 +256,19 @@ describe('initReanimatedIntegration', () => {
       );
     });
 
+    it('expires messages after the window when the device clock moves back', () => {
+      const ONE_HOUR_MS = 3_600_000;
+      jest.setSystemTime(ONE_HOUR_MS);
+      const onLog = initAndGetOnLog();
+
+      onLog({ level: WARN, message: 'repeated' });
+      jest.setSystemTime(0);
+      jest.advanceTimersByTime(WINDOW_MS);
+      onLog({ level: WARN, message: 'repeated' });
+
+      expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(2);
+    });
+
     it('expires each message at the end of its own window', () => {
       const onLog = initAndGetOnLog();
 
