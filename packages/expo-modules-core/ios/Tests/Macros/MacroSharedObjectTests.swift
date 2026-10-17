@@ -127,6 +127,28 @@ private struct MacroSharedObjectTests {
     #expect(try runtime.eval("'MacroNamedCounter' in expo.modules.MacroSharedObjectModule").asBool() == false)
   }
 
+  @Test
+  func `Object.prototype.toString tags an instance with its class name`() throws {
+    // React in development deep-compares props only when this returns `[object Object]`.
+    register(MacroSharedObjectModule(appContext: appContext))
+    let tag = try runtime.eval(
+      """
+      Object.prototype.toString.call(new expo.modules.MacroSharedObjectModule.MacroCounter(1))
+      """)
+    #expect(try tag.asString() == "[object MacroCounter]")
+  }
+
+  @Test
+  func `Object.prototype.toString tags an instance of a JS subclass with the subclass name`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let tag = try runtime.eval(
+      """
+      class JSCounter extends expo.modules.MacroSharedObjectModule.MacroCounter {}
+      Object.prototype.toString.call(new JSCounter(1))
+      """)
+    #expect(try tag.asString() == "[object JSCounter]")
+  }
+
   // MARK: - Construction
 
   @Test
