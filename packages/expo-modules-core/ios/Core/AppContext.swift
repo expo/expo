@@ -691,11 +691,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
           return
         }
-        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
-        // holds for the intended path, where the native state dies as the runtime finalizes on
-        // its own thread. A future cross-runtime sharing path that could drop this state's last
-        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
-        // hop back to the JS thread here first.
+        // Hermes runs this on its finalizer thread while the JS thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and `destroy()` can release JS objects
+        // here. Don't send that work to another thread: it would run after Hermes frees its
+        // values. A future cross-runtime sharing path that could drop this state's last JSI slot
+        // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
+        // would need to hop to the JS thread here first.
         nativeState.appContext.destroy()
       }
     }

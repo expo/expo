@@ -4,7 +4,7 @@ import Foundation
 /// Theoretically it does not act as a real actor; it uses a serial executor that executes jobs **synchronously**
 /// without hopping to the proper thread. Meaning that running these jobs on the JavaScript thread must be ensured
 /// externally before switching to the isolated context, e.g. using `schedule` function on `JavaScriptRuntime`
-/// or enforcing the isolation with `JavaScriptActor.assumeIsolated`.
+/// or assuming the isolation with `JavaScriptActor.assumeIsolated`.
 @globalActor
 public actor JavaScriptActor: GlobalActor {
   public static let shared = JavaScriptActor()
@@ -20,15 +20,14 @@ public actor JavaScriptActor: GlobalActor {
   /// An equivalent of `MainActor.assumeIsolated`, but for the `JavaScriptActor`. Assumes that the currently executing
   /// synchronous function is actually executing on the JavaScript thread and invokes an isolated version of the operation,
   /// allowing synchronous access to JavaScript runtime state without hopping through asynchronous boundaries.
+  /// Unlike `MainActor.assumeIsolated`, it doesn't check the current thread, so the caller must run on the JavaScript
+  /// thread, or where nothing else can use the runtime at the same time.
   /// The nonthrowing overload keeps `operation` nonescaping so its captured context can remain stack-allocated.
   @_alwaysEmitIntoClient
   @inline(__always)
   public static func assumeIsolated<T: ~Copyable>(_ operation: @JavaScriptActor () -> T) -> T {
     typealias IsolatedRunner = @JavaScriptActor (@JavaScriptActor () -> T) -> T
     typealias NonisolatedRunner = (@JavaScriptActor () -> T) -> T
-
-    // This will crash if the current context cannot be isolated.
-    checkIsolated()
 
     // Cast the capture-free runner rather than `operation` itself. `operation` remains nonescaping,
     // so its captures can stay in the caller's stack frame.
