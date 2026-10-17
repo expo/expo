@@ -278,6 +278,30 @@ export type PushTokenEvent = {
 };
 
 /**
+ * Event emitted for every Live Activity of this app, including ones started remotely by a push while the app was not running.
+ * Emitted when the activity is first seen and again for each push token it is issued.
+ * @platform iOS
+ */
+export type ActivityTokenEvent = {
+  /**
+   * The ID of the live activity.
+   */
+  activityId: string;
+  /**
+   * The name the activity's content was created with.
+   */
+  name: string;
+  /**
+   * The deep link URL from the activity's static attributes (empty when none was set).
+   */
+  url: string;
+  /**
+   * The activity's push token, or `null` if it has not been issued yet.
+   */
+  pushToken: string | null;
+};
+
+/**
  * Event emitted when a push-to-start token is received.
  * @platform ios
  */
@@ -311,6 +335,11 @@ export type ExpoWidgetsEvents = {
    * @platform ios
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+  /**
+   * Function that is invoked for every live activity (also remotely started ones) and each of its push tokens.
+   * @param event Activity details.
+   */
+  onExpoWidgetsActivityToken: (event: ActivityTokenEvent) => void;
 };
 
 /**
