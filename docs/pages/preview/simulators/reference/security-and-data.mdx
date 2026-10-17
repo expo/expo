@@ -62,7 +62,7 @@ A public link contains the preview token. Treat a public link as a secret. Anyon
 
 A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
-If a session starts with `--frame-ancestor` or `--cors-origin`, or with `frameAncestors` or `corsOrigins` in the REST API, EAS CLI prints the preview host URL with the preview token. Web pages on the allowed origins use the token to show the session. Anyone who can read such a page can get the token and control the device. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
+If a session starts with `--frame-ancestor` or `--cors-origin`, EAS CLI prints the preview host URL with the preview token. For a session that you create with `frameAncestors` or `corsOrigins`, the REST API returns the URL as `previewApiUrl` and the token as `webPreviewToken`. Web pages on the allowed origins use the token to show the session. Anyone who can read such a page can get the token and control the device. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
 
 ## Network access
 
