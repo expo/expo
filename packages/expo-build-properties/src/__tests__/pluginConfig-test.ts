@@ -17,6 +17,14 @@ describe(validateConfig, () => {
     }).toThrow();
   });
 
+  it('should throw error from invalid iOS region names', () => {
+    expect(() => validateConfig({ ios: { developmentRegion: 'en"; foo = bar' } })).toThrow();
+    expect(() => validateConfig({ ios: { knownRegions: ['en', 'pl pl'] } })).toThrow();
+    expect(() =>
+      validateConfig({ ios: { developmentRegion: 'zh-Hans', knownRegions: ['en', 'pt-BR'] } })
+    ).not.toThrow();
+  });
+
   it('should throw error from unsupported android versions', () => {
     expect(() =>
       validateConfig({ android: { minSdkVersion: 14 } })
