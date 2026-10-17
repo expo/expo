@@ -14,9 +14,16 @@ final class TestRuntimeScheduler: @unchecked Sendable {
   private let state: State
   private let thread: Thread
 
+  /// What the runtime gets as its opaque scheduler pointer. A retained `State` that is never released,
+  /// like the handle React Native's host passes: the runtime may dispatch to it after this scheduler is
+  /// gone, for example when a callback is released on another thread at the end of a test. `State`
+  /// drops work that arrives after `stop()`.
+  let opaquePointer: UnsafeMutableRawPointer
+
   init() {
     let state = State()
     self.state = state
+    self.opaquePointer = Unmanaged.passRetained(state).toOpaque()
     self.thread = Thread {
       state.run()
     }
@@ -27,10 +34,6 @@ final class TestRuntimeScheduler: @unchecked Sendable {
 
   deinit {
     state.stop()
-  }
-
-  var opaquePointer: UnsafeMutableRawPointer {
-    return Unmanaged.passUnretained(self).toOpaque()
   }
 
   func schedule(_ operation: @escaping @convention(block) () -> Void) {
@@ -74,7 +77,7 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     return TestRuntime(scheduler: self, owningRuntime: owningRuntime, runtime: runtime)
   }
 
-  private final class State: @unchecked Sendable {
+  fileprivate final class State: @unchecked Sendable {
     private let condition = NSCondition()
     private let ready = DispatchSemaphore(value: 0)
     private var operations: [@convention(block) () -> Void] = []
@@ -82,6 +85,10 @@ final class TestRuntimeScheduler: @unchecked Sendable {
 
     func schedule(_ operation: @escaping @convention(block) () -> Void) {
       condition.lock()
+      guard !isStopped else {
+        condition.unlock()
+        return
+      }
       operations.append(operation)
       condition.signal()
       condition.unlock()
@@ -146,6 +153,6 @@ let scheduleOnTestRuntime:
     guard let schedulerPointer else {
       return
     }
-    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
-    scheduler.schedule(callback)
+    let state = Unmanaged<TestRuntimeScheduler.State>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    state.schedule(callback)
   }
