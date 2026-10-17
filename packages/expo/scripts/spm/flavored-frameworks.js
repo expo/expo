@@ -15,6 +15,7 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const { SPM_UPDATE_COMMAND } = require('./commands');
 const { pluginError } = require('./diagnostics');
 
 const FLAVORS = ['debug', 'release'];
@@ -31,8 +32,10 @@ function stableFrameworkId(frameworkName) {
   return kebab.startsWith('expo-') ? kebab : `expo-${kebab}`;
 }
 
+const artifactDir = (baseDir, flavor) => path.join(baseDir, flavor, 'xcframeworks');
+
 function artifactCandidates(baseDir, flavor, frameworkName) {
-  const dir = path.join(baseDir, flavor, 'xcframeworks');
+  const dir = artifactDir(baseDir, flavor);
   return {
     xcframework: path.join(dir, `${frameworkName}.xcframework`),
     tarball: path.join(dir, `${frameworkName}.tar.gz`),
@@ -237,7 +240,7 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
       if (sources[flavor] == null) {
         throw pluginError({
           what: `${frameworkName} has an incomplete precompiled pair in ${baseDir}: missing ${flavor}.`,
-          how: 'Run the Expo prebuild pipeline for both Debug and Release before react-native spm update.',
+          how: `Run the Expo prebuild pipeline for both Debug and Release before \`${SPM_UPDATE_COMMAND}\`.`,
         });
       }
     }
@@ -252,6 +255,35 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
     });
   }
   return null;
+}
+
+/**
+ * The interface-only `<Product>Headers` XCFramework a product publishes in place of its
+ * binaries, from the same bases as its flavored frameworks. Null when no base has one.
+ */
+function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir }) {
+  const frameworkName = `${productName}Headers`;
+  for (const baseDir of artifactBaseDirs(packageName, moduleRoot)) {
+    const source = existingArtifactSource(baseDir, 'headers', frameworkName);
+    if (source == null) continue;
+    const xcframework = prepareArtifactSource(source, frameworkName, cacheDir, 'headers');
+    if (!fs.existsSync(path.join(xcframework, 'Info.plist'))) {
+      throw pluginError({
+        what: `${xcframework} has no Info.plist.`,
+        why: 'The XCFramework is incomplete, so Swift packages cannot compile against it.',
+        how: `Reinstall ${packageName}, or delete it and run the Expo prebuild pipeline for ${packageName} again.`,
+      });
+    }
+    return xcframework;
+  }
+  return null;
+}
+
+/** The directories `resolveHeadersXCFramework` searches, in lookup order. */
+function headersXCFrameworkDirs(packageName, moduleRoot) {
+  return artifactBaseDirs(packageName, moduleRoot).map((baseDir) =>
+    artifactDir(baseDir, 'headers')
+  );
 }
 
 /**
@@ -320,7 +352,7 @@ function isDirectory(candidate) {
       {
         what: `${candidate} could not be read: ${error.message}.`,
         why: 'The plugin cannot tell whether a precompiled dependency is there, and it will not silently build an app without one.',
-        how: 'Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+        how: `Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run \`${SPM_UPDATE_COMMAND}\` again.`,
       },
       { cause: error }
     );
@@ -475,8 +507,10 @@ module.exports = {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
   stableFrameworkId,
   validateFlavoredFramework,

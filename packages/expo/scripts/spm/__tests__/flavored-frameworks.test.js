@@ -8,8 +8,10 @@ const path = require('path');
 const {
   FLAVORS,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
@@ -346,5 +348,102 @@ describe('artifact preparation', () => {
       fs.readFileSync(path.join(destination, 'ExpoB.framework', 'Headers', 'ExpoB.h'), 'utf8'),
     ];
     expect(second).toEqual(first);
+  });
+});
+
+describe('resolveHeadersXCFramework', () => {
+  let root;
+  let oldOverride;
+  let moduleRoot;
+
+  /** `<output>/headers/xcframeworks/ExpoPairHeaders.xcframework`, the layout the prebuild writes. */
+  const headersIn = (output) =>
+    makeXcframework(path.join(output, 'headers'), 'ExpoPairHeaders', 'xcframeworks');
+  const resolve = () =>
+    resolveHeadersXCFramework({
+      packageName: 'test-package',
+      moduleRoot,
+      productName: 'ExpoPair',
+      cacheDir: path.join(root, 'cache'),
+    });
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-headers-'));
+    moduleRoot = path.join(root, 'module');
+    oldOverride = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = path.join(root, 'override');
+  });
+
+  afterEach(() => {
+    if (oldOverride == null) {
+      delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    } else {
+      process.env.EXPO_PRECOMPILED_MODULES_PATH = oldOverride;
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  it('returns null when no lookup base has the headers', () => {
+    expect(resolve()).toBeNull();
+  });
+
+  it('names the directories it searches, in lookup order', () => {
+    expect(headersXCFrameworkDirs('test-package', moduleRoot)).toEqual([
+      path.join(root, 'override', 'test-package', 'output', 'headers', 'xcframeworks'),
+      path.resolve(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'precompile',
+        '.build',
+        'test-package',
+        'output',
+        'headers',
+        'xcframeworks'
+      ),
+      path.join(moduleRoot, 'prebuilds', 'output', 'headers', 'xcframeworks'),
+    ]);
+  });
+
+  it('finds the headers the installed package ships under prebuilds/output', () => {
+    const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    expect(resolve()).toBe(shipped);
+  });
+
+  it('prefers EXPO_PRECOMPILED_MODULES_PATH over the installed package', () => {
+    headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    const override = headersIn(path.join(root, 'override', 'test-package', 'output'));
+    expect(resolve()).toBe(override);
+  });
+
+  itNotWindows('expands a bundled tarball into the cache', () => {
+    const source = path.join(root, 'source');
+    headersIn(source);
+    packTarball(
+      path.join(source, 'headers', 'xcframeworks'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoPairHeaders.tar.gz'
+      ),
+      ['ExpoPairHeaders.xcframework']
+    );
+
+    const resolved = resolve();
+    expect(resolved).toBe(
+      path.join(root, 'cache', 'expo-pair-headers', 'headers', 'ExpoPairHeaders.xcframework')
+    );
+    expect(fs.existsSync(path.join(resolved, 'Info.plist'))).toBe(true);
+  });
+
+  it('rejects an expanded XCFramework with no Info.plist', () => {
+    const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    fs.rmSync(path.join(shipped, 'Info.plist'));
+    expect(resolve).toThrow(`${shipped} has no Info.plist`);
   });
 });
