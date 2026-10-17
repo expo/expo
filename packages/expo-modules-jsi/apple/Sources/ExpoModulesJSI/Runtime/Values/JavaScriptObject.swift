@@ -794,7 +794,7 @@ internal final class DefinePropertyFunction {
 /// JavaScript thread like every other JSI call, which is where the runtime's cache is isolated.
 private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
   return JavaScriptActor.assumeIsolated {
-    runtime.cached(CacheKeys.objectDefineProperty) {
+    runtime.cached(JavaScriptRuntime.CacheKeys.objectDefineProperty) {
       do {
         let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
         return DefinePropertyFunction(function, in: runtime)
