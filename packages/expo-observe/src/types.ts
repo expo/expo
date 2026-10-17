@@ -161,8 +161,8 @@ export interface ObserveIntegrationsConfig {
    *
    * The integration configures Reanimated's logger with `configureReanimatedLogger`. To set the
    * logger's `level` and `strict` options, pass an object here. Don't call
-   * `configureReanimatedLogger` in your app, because a later call removes the integration's
-   * callback.
+   * `configureReanimatedLogger` in your app. A later call removes the integration's callback, and
+   * the integration replaces the `level` and `strict` options of an earlier call.
    *
    * @default false
    */
