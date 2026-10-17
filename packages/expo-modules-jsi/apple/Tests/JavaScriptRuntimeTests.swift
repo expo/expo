@@ -216,6 +216,60 @@ struct JavaScriptRuntimeTests {
     withExtendedLifetime(scheduler) {}
   }
 
+  @Test
+  func `schedule drops the work when the runtime is gone by the time it runs`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let didRun = InlineRunFlag()
+
+    await scheduler.run {
+      var runtime: JavaScriptRuntime? = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      // Queued behind this block, so it runs after the runtime below is gone.
+      runtime?.schedule {
+        didRun.value = true
+      }
+      runtime = nil
+    }
+    await scheduler.run {}
+
+    #expect(didRun.value == false)
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `execute throws RuntimeLostError when the host drops the task`() async throws {
+    let testRuntime = await ReleasableTestRuntime(dispatch: dropOnTestRuntime)
+    let runtime = try #require(testRuntime.runtime)
+
+    // Called off the runtime's JavaScript thread, so each call schedules a task that the host drops.
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { 1 }
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { () async in 1 }
+    }
+    // The blocking overloads aren't available in async contexts, so they run on a thread of their own.
+    let blockingResults = await withCheckedContinuation { (continuation: CheckedContinuation<[Bool], Never>) in
+      Thread.detachNewThread {
+        continuation.resume(returning: [
+          isRuntimeLostError { try runtime.execute { 1 } },
+          isRuntimeLostError { try runtime.execute { () async in 1 } },
+        ])
+      }
+    }
+    #expect(blockingResults == [true, true])
+    await testRuntime.tearDown()
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
@@ -1355,5 +1409,15 @@ private func onSyncOffThread<R: Sendable>(
         continuation.resume(throwing: error)
       }
     }
+  }
+}
+
+/// Whether `body` throws ``JavaScriptCallback/RuntimeLostError``.
+private func isRuntimeLostError(_ body: () throws -> Int) -> Bool {
+  do {
+    _ = try body()
+    return false
+  } catch {
+    return error is JavaScriptCallback.RuntimeLostError
   }
 }

@@ -14,10 +14,9 @@ internal import jsi
 /// The runtime owns its handle and marks it dead in `deinit`, so values that outlive the runtime still
 /// detect it through ``runtime`` or ``pointee`` returning `nil`.
 ///
-/// Unlike a `weak` reference, the liveness check is not atomic and does not keep the runtime alive for
-/// the rest of the call. Values must not be used concurrently with the runtime's `deinit`, which holds
-/// as long as the last reference to the runtime is released on the JavaScript thread (as
-/// `AppContext.destroy()` does).
+/// ``runtime`` and ``pointee`` are not atomic, so they are for the JavaScript thread only, where the
+/// runtime's `deinit` runs too as long as the last reference is released there (as
+/// `AppContext.destroy()` does). Other threads go through ``JavaScriptRuntime/Scheduler``.
 ///
 /// Not to be confused with the engine's handles to JavaScript values (`jsi::PointerValue`).
 internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
