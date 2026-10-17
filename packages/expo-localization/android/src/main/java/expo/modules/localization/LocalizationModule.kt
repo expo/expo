@@ -1,6 +1,9 @@
 package expo.modules.localization
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION
@@ -9,6 +12,7 @@ import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import expo.modules.kotlin.modules.Module
@@ -21,6 +25,10 @@ private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
 class LocalizationModule : Module() {
   private var observer: () -> Unit = {}
+
+  // The 12/24-hour clock and time zone settings don't change the `Configuration`,
+  // so they have to be observed through the system broadcasts sent when they change.
+  private var timeSettingsReceiver: Pair<Context, BroadcastReceiver>? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
@@ -44,10 +52,37 @@ class LocalizationModule : Module() {
         this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED)
       }
       Notifier.registerObserver(observer)
+      registerTimeSettingsReceiver()
     }
 
     OnDestroy {
       Notifier.deregisterObserver(observer)
+      unregisterTimeSettingsReceiver()
+    }
+  }
+
+  private fun registerTimeSettingsReceiver() {
+    val context = appContext.reactContext?.applicationContext ?: return
+    val receiver = object : BroadcastReceiver() {
+      override fun onReceive(context: Context, intent: Intent) {
+        this@LocalizationModule.sendEvent(CALENDAR_SETTINGS_CHANGED)
+      }
+    }
+    val filter = IntentFilter().apply {
+      addAction(Intent.ACTION_TIME_CHANGED)
+      addAction(Intent.ACTION_TIMEZONE_CHANGED)
+    }
+    ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+    timeSettingsReceiver = context to receiver
+  }
+
+  private fun unregisterTimeSettingsReceiver() {
+    val (context, receiver) = timeSettingsReceiver ?: return
+    timeSettingsReceiver = null
+    try {
+      context.unregisterReceiver(receiver)
+    } catch (e: IllegalArgumentException) {
+      Log.w("expo-localization", "Time settings receiver was already unregistered", e)
     }
   }
 
