@@ -217,11 +217,23 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     do {
       try device.lockForConfiguration()
       defer { device.unlockForConfiguration() }
-      let minZoom = 1.0
+      let minZoom = wideLensZoomFactor(device)
       device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, delegate.zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
+  }
+
+  // On a virtual device with an ultra-wide, zoom factor 1 is the ultra-wide; the wide lens takes over
+  // at the first switch-over factor, which is where the system Camera app's 1x sits.
+  private func wideLensZoomFactor(_ device: AVCaptureDevice) -> CGFloat {
+    let constituentTypes = device.constituentDevices.map(\.deviceType)
+    guard constituentTypes.contains(.builtInUltraWideCamera),
+      constituentTypes.contains(.builtInWideAngleCamera),
+      let switchOver = device.virtualDeviceSwitchOverVideoZoomFactors.first else {
+      return 1.0
+    }
+    return CGFloat(truncating: switchOver)
   }
 
   func getAvailableLenses() -> [LensInfo] {
