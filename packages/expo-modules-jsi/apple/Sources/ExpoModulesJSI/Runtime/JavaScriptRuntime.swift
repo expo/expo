@@ -167,13 +167,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Creates a new JavaScript object, using the provided object as the prototype.
-  /// Calls `Object.create(prototype)` under the hood.
+  /// Same as `Object.create(prototype)` in JS.
   public func createObject(prototype: borrowing JavaScriptObject) -> JavaScriptObject {
-    return try! global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("create")
-      .call(argument: prototype.asValue())
-      .getObject()
+    return JavaScriptObject(self, expo.createObjectWithPrototype(pointee, prototype.pointee))
   }
 
   /// Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
@@ -343,7 +339,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         """
       ).getFunction()
     }
-    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+    let klassValue = try withCached(CacheKeys.classFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
       return try factory.call(arguments: name)
     }
     let klassObject = klassValue.getObject()
@@ -942,9 +938,6 @@ private func createFunctionClosure(
 
   return expo.HostFunctionClosure(context, call, deallocate)
 }
-
-/// Key of the class factory in each runtime's cache.
-private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
 
 // MARK: - Errors
 

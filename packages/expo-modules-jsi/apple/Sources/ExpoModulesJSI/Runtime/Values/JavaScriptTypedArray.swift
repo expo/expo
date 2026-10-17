@@ -34,7 +34,7 @@ public struct JavaScriptTypedArray: ~Copyable {
   @JavaScriptActor
   init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     let jsiRuntime = runtime.pointee
-    let propNames = runtime.cached(PropNames.key) { PropNames(jsiRuntime) }
+    let propNames = runtime.cached(CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
     self.runtimeHandle = runtime.handle
     self.kind = Kind(
       rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
@@ -49,8 +49,6 @@ public struct JavaScriptTypedArray: ~Copyable {
   /// The property names the initializer reads. Creating a property name costs about as much as
   /// reading the property, so they are created once per runtime and kept in its cache.
   internal final class PropNames {
-    static let key = JavaScriptRuntime.Cache.Key<PropNames>()
-
     let constructor: facebook.jsi.PropNameID
     let name: facebook.jsi.PropNameID
     let byteLength: facebook.jsi.PropNameID
