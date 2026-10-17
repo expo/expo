@@ -82,7 +82,14 @@ Start the session with `--cors-origin` set to the origin of your page:
 
 Install the package in your web app:
 
-<Terminal cmd={['$ npm install @expo/hub-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install @expo/hub-client'],
+    yarn: ['$ yarn add @expo/hub-client'],
+    pnpm: ['$ pnpm add @expo/hub-client'],
+    bun: ['$ bun add @expo/hub-client'],
+  }}
+/>
 
 Give `DeviceClientProvider` the preview host URL without the `token` query parameter, and give it the token separately:
 
