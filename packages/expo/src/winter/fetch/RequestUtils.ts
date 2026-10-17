@@ -49,7 +49,8 @@ function isBlob(obj: any): obj is Blob {
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
 export async function normalizeBodyInitAsync(
-  body: BodyInit | null | undefined
+  body: BodyInit | null | undefined,
+  options: { formDataBoundary?: string } = {}
 ): Promise<{ body: Uint8Array | null; overriddenHeaders?: NativeHeadersType }> {
   if (body == null) {
     return { body: null };
@@ -86,7 +87,7 @@ export async function normalizeBodyInitAsync(
   }
 
   if (body instanceof FormData) {
-    const { body: result, boundary } = await convertFormDataAsync(body);
+    const { body: result, boundary } = await convertFormDataAsync(body, options.formDataBoundary);
 
     return {
       body: result,
@@ -140,7 +141,7 @@ export function overrideHeaders(
 /** Normalizes known HTTP methods to uppercase */
 export function normalizeMethod(method: string): string {
   const normalized = method.toUpperCase();
-  switch (method.toUpperCase()) {
+  switch (normalized) {
     case 'DELETE':
     case 'GET':
     case 'HEAD':
