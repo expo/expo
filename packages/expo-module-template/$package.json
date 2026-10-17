@@ -38,7 +38,7 @@
     "babel-preset-expo": "~58.0.17",
     "eslint": "~9.39.4",
     "eslint-config-universe": "^16.1.2",
-    "expo": "^58.0.14",
+    "expo": "^58.0.15",
     "jest": "^30.0.0",
     "jest-expo": "~58.0.11",
     "prettier": "^3.0.0",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Remove all `weak` references to `JavaScriptRuntime`, which makes every retain and release of the runtime faster. `JavaScriptRuntime.schedule`, `runOrSchedule` and `execute` now drop the work when the runtime is gone by the time it runs, and `execute` throws `RuntimeLostError` then. ([#51577](https://github.com/expo/expo/pull/51577) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.15
 
 ### Patch Changes

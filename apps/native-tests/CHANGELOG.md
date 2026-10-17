@@ -1,5 +1,12 @@
 # native-tests
 
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.15
+
 ## 1.0.8
 
 ### Patch Changes

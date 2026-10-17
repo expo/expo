@@ -1,5 +1,14 @@
 # bare-expo
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies.
+  - test-suite@1.0.9
+  - expo@58.0.15
+  - native-component-list@0.0.9
+
 ## 0.0.9
 
 ### Patch Changes
