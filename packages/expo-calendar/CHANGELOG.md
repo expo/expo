@@ -18,6 +18,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-25
 
+- [android] Add `getExtendedProperties()`, `setExtendedProperty()` and `deleteExtendedProperty()` to `ExpoCalendarEvent`, so that apps can recognize the events they created: Android has no `url` field to mark them with, and `CalendarContract.ExtendedProperties` — the mechanism meant for it — was not exposed. ([#49428](https://github.com/expo/expo/pull/49428) by [@MoOx](https://github.com/MoOx))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix the sign of alarm `relativeOffset` in the `next` API so that negative values fire before the event start, matching iOS and the legacy API.
