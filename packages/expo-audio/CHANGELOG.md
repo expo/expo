@@ -1,11 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🐛 Bug fixes
-
-- [Android] Fixed `AudioPlaylist` ignoring `AudioSource.headers` when loading remote tracks.
-
 ## 58.0.9
 
 ### Patch Changes
