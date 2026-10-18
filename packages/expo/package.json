@@ -219,7 +219,7 @@
     "prepack": "et create-expo-template-tarball",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json && tsc -p type-tests/tsconfig.json"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.0",

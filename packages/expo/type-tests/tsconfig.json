@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "files": ["web-style-assignability.ts"],
+  "include": []
+}
