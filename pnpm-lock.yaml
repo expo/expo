@@ -3904,6 +3904,9 @@ importers:
       expo-modules-autolinking:
         specifier: workspace:~
         version: link:../expo-modules-autolinking
+      expo-modules-cli:
+        specifier: workspace:~
+        version: link:../expo-modules-cli
       expo-modules-core:
         specifier: workspace:~
         version: link:../expo-modules-core
@@ -4091,9 +4094,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      expo-modules-cli:
-        specifier: workspace:*
-        version: link:../expo-modules-cli
 
   packages/expo-asset:
     dependencies:
@@ -4606,9 +4606,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      expo-modules-cli:
-        specifier: workspace:*
-        version: link:../expo-modules-cli
 
   packages/expo-dev-client:
     dependencies:
@@ -4981,9 +4978,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      expo-modules-cli:
-        specifier: workspace:*
-        version: link:../expo-modules-cli
 
   packages/expo-hinge:
     dependencies:

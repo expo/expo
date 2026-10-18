@@ -18,6 +18,7 @@
   },
   "bin": {
     "expo": "bin/cli",
+    "expo-modules": "bin/modules",
     "expo-modules-autolinking": "bin/autolinking",
     "fingerprint": "bin/fingerprint"
   },
@@ -242,6 +243,7 @@
     "expo-font": "workspace:~",
     "expo-keep-awake": "workspace:~",
     "expo-modules-autolinking": "workspace:~",
+    "expo-modules-cli": "workspace:~",
     "expo-modules-core": "workspace:~",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
