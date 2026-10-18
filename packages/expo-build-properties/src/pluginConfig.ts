@@ -473,6 +473,21 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
   ccacheEnabled?: boolean;
 
   /**
+   * Set the `GCC_OPTIMIZATION_LEVEL` Xcode build setting of all CocoaPods targets in their release build configurations.
+   * The values are the same as in Xcode: `'0'` (`-O0`), `'1'` (`-O1`), `'2'` (`-O2`), `'3'` (`-O3`), `'s'` (`-Os`), and `'z'` (`-Oz`).
+   * When this is not set, the pods use Xcode's default, which is `'s'` for release builds.
+   *
+   * The setting is applied to every build configuration that CocoaPods treats as release.
+   * This includes `Release` and any custom configuration that is not mapped to `:debug` in the **Podfile** (for example, `Staging`).
+   * Configurations that CocoaPods treats as debug are not changed.
+   *
+   * This setting affects C, C++, and Objective-C code only. Swift code is not affected.
+   * It also does not affect pods that ship precompiled code. By default, this includes React Native and its dependencies
+   * (unless `buildReactNativeFromSource` is `true`) and Expo modules that are available as precompiled XCFrameworks (unless `usePrecompiledModules` is `false`).
+   */
+  gccOptimizationLevel?: '0' | '1' | '2' | '3' | 's' | 'z';
+
+  /**
    * Enable aggregation of Privacy Manifests (`PrivacyInfo.xcprivacy`) from
    * CocoaPods resource bundles. If enabled, the manifests will be merged into a
    * single file. If not enabled, developers will need to manually aggregate them.
@@ -844,6 +859,11 @@ const schema: JSONSchema<PluginConfigType> = {
 
         networkInspector: { type: 'boolean', nullable: true },
         ccacheEnabled: { type: 'boolean', nullable: true },
+        gccOptimizationLevel: {
+          type: 'string',
+          enum: ['0', '1', '2', '3', 's', 'z'],
+          nullable: true,
+        },
         privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
 
         extraPods: {

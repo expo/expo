@@ -64,6 +64,15 @@ target 'minimaltester' do
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
 
+    if podfile_properties['ios.gccOptimizationLevel']
+      installer.target_installation_results.pod_target_installation_results.each do |_, target_installation_result|
+        target_installation_result.native_target.build_configurations.each do |build_configuration|
+          next if build_configuration.type == :debug
+          build_configuration.build_settings['GCC_OPTIMIZATION_LEVEL'] = podfile_properties['ios.gccOptimizationLevel']
+        end
+      end
+    end
+
     # The Xcode 27 iOS SDK rejects deployment targets below iOS 15.0. Some pods still
     # ship a lower target, so raise any below the app's minimum to keep the build valid.
     min_deployment_target = podfile_properties['ios.deploymentTarget'] || '16.4'

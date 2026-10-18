@@ -253,6 +253,21 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the ios.gccOptimizationLevel property', async () => {
+    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { gccOptimizationLevel: '2' } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResults).toMatchObject({
+      'ios.gccOptimizationLevel': '2',
+    });
+  });
+
   it('generates the android.buildArchs property', async () => {
     const pluginProps: PluginConfigType = {
       android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },

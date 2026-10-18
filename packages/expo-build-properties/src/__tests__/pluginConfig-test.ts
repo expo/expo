@@ -141,6 +141,14 @@ describe(validateConfig, () => {
     }).toThrow();
   });
 
+  it('should validate ios.gccOptimizationLevel', () => {
+    for (const gccOptimizationLevel of ['0', '1', '2', '3', 's', 'z'] as const) {
+      expect(() => validateConfig({ ios: { gccOptimizationLevel } })).not.toThrow();
+    }
+    expect(() => validateConfig({ ios: { gccOptimizationLevel: '4' as any } })).toThrow();
+    expect(() => validateConfig({ ios: { gccOptimizationLevel: 2 as any } })).toThrow();
+  });
+
   it('should validate ios.enableSceneSupport', () => {
     expect(() => {
       validateConfig({ ios: { enableSceneSupport: true } });

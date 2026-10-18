@@ -32,6 +32,10 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propValueGetter: (config) => config.ios?.ccacheEnabled?.toString(),
     },
     {
+      propName: 'ios.gccOptimizationLevel',
+      propValueGetter: (config) => config.ios?.gccOptimizationLevel,
+    },
+    {
       propName: 'apple.privacyManifestAggregationEnabled',
       propValueGetter: (config) =>
         (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
