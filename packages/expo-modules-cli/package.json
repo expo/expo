@@ -46,9 +46,6 @@
     "@types/node": "^22.14.0",
     "expo-modules-macros": "0.21.0"
   },
-  "peerDependencies": {
-    "expo": "*"
-  },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
