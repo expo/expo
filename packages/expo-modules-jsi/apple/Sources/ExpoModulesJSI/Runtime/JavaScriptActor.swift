@@ -127,15 +127,19 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
     let runLoop: CFRunLoop
     /// The handle rather than the runtime, which owns its target.
     let handle: JavaScriptRuntimeHandle?
-    /// How many blocking waits run the run loop on the target thread now. Only used on that thread.
-    /// A job that runs inside such a wait runs inside a host call, with JavaScript on the stack, so
-    /// it leaves the microtasks to the task that waits.
-    var nestedWaits = 0
+    /// Where the errors of the microtasks that the jobs run go, see `expo.drainMicrotasks`.
+    let hostScheduler: expo.RuntimeScheduler?
 
-    init(threadID: UInt64, runLoop: CFRunLoop, handle: JavaScriptRuntimeHandle?) {
+    init(
+      threadID: UInt64,
+      runLoop: CFRunLoop,
+      handle: JavaScriptRuntimeHandle?,
+      hostScheduler: expo.RuntimeScheduler?
+    ) {
       self.threadID = threadID
       self.runLoop = runLoop
       self.handle = handle
+      self.hostScheduler = hostScheduler
     }
   }
 
@@ -249,10 +253,20 @@ private final class JobDelivery: @unchecked Sendable {
 
   func run() {
     didRun = true
+    // A job sent before the host bound another runtime, or unbound this one, goes to the target bound
+    // now, so that the actor's jobs don't run on two threads at once.
+    guard let target, target === JavaScriptExecutor.shared.target else {
+      JavaScriptExecutor.shared.enqueue(job)
+      return
+    }
     job.runSynchronously(on: executor)
 
-    if let target, target.nestedWaits == 0, let runtime = target.handle?.pointee {
-      expo.drainMicrotasks(runtime)
+    if !expo.isInNestedRunLoopWait(), let runtime = target.handle?.pointee, let hostScheduler = target.hostScheduler,
+      !expo.drainMicrotasks(runtime, hostScheduler)
+    {
+      Logger(subsystem: "expo.modules.jsi", category: "JavaScriptActor").error(
+        "Stopped draining the microtasks after a JavaScriptActor job: they kept throwing errors."
+      )
     }
   }
 
@@ -273,7 +287,8 @@ private enum JavaScriptActorThread {
       target.value = JavaScriptExecutor.Target(
         threadID: JavaScriptExecutor.currentThreadID(),
         runLoop: CFRunLoopGetCurrent(),
-        handle: nil
+        handle: nil,
+        hostScheduler: nil
       )
       // A source that never fires keeps the run loop from returning when it has no work.
       var context = CFRunLoopSourceContext()

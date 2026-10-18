@@ -477,10 +477,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         scheduler: scheduler,
         dispatch: dispatch
       )
-      _runtime = runtime
       // `JavaScriptActor` runs its jobs on this runtime's JavaScript thread. Called again for the new
-      // runtime after a reload.
+      // runtime after a reload. Bound before the runtime is set, so that the actor's jobs go to this
+      // thread as soon as the runtime gets prepared, and so that the old runtime, which unbinds when
+      // it's replaced, no longer is the bound one.
       JavaScriptActor.bind(to: runtime)
+      _runtime = runtime
     } else {
       _runtime = ExpoRuntime(unsafePointer: runtimePointer)
     }

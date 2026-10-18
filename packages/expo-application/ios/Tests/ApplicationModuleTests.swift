@@ -8,7 +8,7 @@ import UIKit
 @testable import ExpoApplication
 @testable import ExpoModulesCore
 
-@Suite("ApplicationModule")
+@Suite("ApplicationModule", .bindsJavaScriptActor)
 @JavaScriptActor
 struct ApplicationModuleTests {
   let appContext: AppContext

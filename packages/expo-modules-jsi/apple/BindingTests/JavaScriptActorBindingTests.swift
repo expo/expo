@@ -102,6 +102,41 @@ struct JavaScriptActorBindingTests {
   }
 
   @Test
+  func `a job queued on the old thread before another runtime is bound runs on the new thread`() async throws {
+    let old = await ReactLikeRuntime(name: "binding.queued.old")
+    let new = await ReactLikeRuntime(name: "binding.queued.new")
+    JavaScriptActor.bind(to: old.runtime)
+    defer {
+      JavaScriptActor.bind(to: nil)
+    }
+
+    // Keeps the old thread busy, so the task's first job waits in its run loop.
+    let isBusy = DispatchSemaphore(value: 0)
+    let release = DispatchSemaphore(value: 0)
+    old.thread.perform {
+      isBusy.signal()
+      release.wait()
+    }
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      DispatchQueue.global().async {
+        isBusy.wait()
+        continuation.resume()
+      }
+    }
+
+    let task = Task { @JavaScriptActor in
+      currentThreadName()
+    }
+    // The old thread is still running when the new runtime is bound, as in a reload.
+    JavaScriptActor.bind(to: new.runtime)
+    release.signal()
+
+    #expect(await task.value == "binding.queued.new")
+    await old.release()
+    await new.release()
+  }
+
+  @Test
   func `a job sent to a stopped JavaScript thread runs on the thread bound next`() async throws {
     let old = await ReactLikeRuntime(name: "binding.old")
     let new = await ReactLikeRuntime(name: "binding.new")

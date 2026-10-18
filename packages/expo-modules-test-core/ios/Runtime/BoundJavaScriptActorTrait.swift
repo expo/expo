@@ -3,15 +3,17 @@
 import Testing
 
 /// Runs each test while no other test with this trait runs. Use it on suites that create a
-/// `TestAppContext`: each one binds `JavaScriptActor` to its runtime, and the actor runs its jobs on
+/// ``TestAppContext``: each one binds `JavaScriptActor` to its runtime, and the actor runs its jobs on
 /// the thread of one runtime at a time. Tests that run at the same time would bind it in turn, and
 /// one test's runtime would then be used from another test's thread.
-struct BoundJavaScriptActorTrait: SuiteTrait, TestTrait, TestScoping {
-  var isRecursive: Bool {
+public struct BoundJavaScriptActorTrait: SuiteTrait, TestTrait, TestScoping {
+  public init() {}
+
+  public var isRecursive: Bool {
     return true
   }
 
-  func provideScope(
+  public func provideScope(
     for test: Test,
     testCase: Test.Case?,
     performing function: @Sendable () async throws -> Void
@@ -34,7 +36,7 @@ struct BoundJavaScriptActorTrait: SuiteTrait, TestTrait, TestScoping {
 
 extension Trait where Self == BoundJavaScriptActorTrait {
   /// See ``BoundJavaScriptActorTrait``.
-  static var bindsJavaScriptActor: Self {
+  public static var bindsJavaScriptActor: Self {
     return BoundJavaScriptActorTrait()
   }
 }
