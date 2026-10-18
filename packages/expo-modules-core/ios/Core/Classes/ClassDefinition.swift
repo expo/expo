@@ -87,15 +87,15 @@ public final class ClassDefinition: ObjectDefinition {
 
     try decorate(object: klass, appContext: appContext)
 
+    let prototype = klass.getProperty("prototype").getObject()
+
     // Bind the macro's `@JS` members onto the prototype.
     if let sharedObjectType {
-      let prototype = klass.getProperty("prototype").getObject()
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
     }
 
     // Register the prototype of the JS class for its associated native type.
     if let sharedObjectType = associatedType as? DynamicSharedObjectType {
-      let prototype = klass.getProperty("prototype").getObject()
       appContext.classRegistry.register(nativeClassId: sharedObjectType.typeIdentifier, prototype: prototype)
     }
 
