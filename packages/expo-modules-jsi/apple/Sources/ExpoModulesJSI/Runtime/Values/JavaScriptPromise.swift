@@ -65,12 +65,21 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       return fulfilledValue != nil || rejectionReason != nil
     }
 
+    // A promise settles once, but a thenable that isn't a real promise may call its callbacks more
+    // than once. Only the first call counts, as it does for a real promise.
+
     func fulfill(_ value: consuming JavaScriptValue, runtime: JavaScriptRuntime) {
+      guard !isSettled else {
+        return
+      }
       fulfilledValue = consume value
       resumeAwaiters(runtime: runtime)
     }
 
     func reject(_ reason: consuming JavaScriptValue, runtime: JavaScriptRuntime) {
+      guard !isSettled else {
+        return
+      }
       rejectionReason = consume reason
       resumeAwaiters(runtime: runtime)
     }

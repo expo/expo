@@ -766,4 +766,48 @@ struct JavaScriptPromiseTests {
     }
     #expect(isCollected)
   }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `the teardown sweep makes a pending await throw RuntimeLostError`() async throws {
+    // Nothing can settle the promise once its runtime goes away, so the awaiting caller must not wait
+    // for good.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(testRuntime.runtime))
+    }
+    // Started on the actor, so the `await()` registers before the sweep below, which runs on the
+    // actor after it.
+    let awaitTask = Task { @JavaScriptActor () -> Bool in
+      do {
+        _ = try await promise.value.await()
+        return false
+      } catch is JavaScriptCallback.RuntimeLostError {
+        return true
+      } catch {
+        return false
+      }
+    }
+    try await testRuntime.scheduler.runIsolated {
+      testRuntime.runtime.longLivedObjects.clear()
+    }
+    #expect(await awaitTask.value)
+  }
+
+  @Test
+  func `a thenable that calls its callbacks more than once settles with the first call`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let thenable = try runtime.eval(
+        "({ then(resolve, reject) { resolve(1); resolve(2); reject(new Error('late')); } })"
+      ).getObject()
+      return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
+    }
+    let results = try await Task.detached {
+      let first = try await promise.value.await().getInt()
+      let second = try await promise.value.await().getInt()
+      return [first, second]
+    }.value
+    #expect(results == [1, 1])
+  }
 }
