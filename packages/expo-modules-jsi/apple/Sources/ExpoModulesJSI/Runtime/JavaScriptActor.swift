@@ -27,8 +27,24 @@ public actor JavaScriptActor: GlobalActor {
   /// Makes the actor run its jobs on the runtime's JavaScript thread. The host calls it when it
   /// creates the main runtime, and again for the new runtime after a reload. Passing `nil` goes back
   /// to the actor's own thread.
+  ///
+  /// The runtime must have a host scheduler, and the thread that created it must run its run loop,
+  /// like React Native's JavaScript thread does: the actor sends its jobs through that run loop.
   public static func bind(to runtime: JavaScriptRuntime?) {
+    if let runtime {
+      assert(
+        runtime.supportsAsyncScheduling,
+        "JavaScriptActor can only be bound to a runtime with a host scheduler, whose JavaScript thread runs its run loop"
+      )
+    }
     JavaScriptExecutor.shared.bind(runtime?.scheduler.executorTarget)
+  }
+
+  /// Sends the actor back to its own thread if the runtime is still the bound one. The host calls it
+  /// when the runtime goes away. Does nothing when another runtime has been bound since, for example
+  /// when the old runtime of a reload goes away after the new one is bound.
+  public static func unbind(from runtime: JavaScriptRuntime) {
+    JavaScriptExecutor.shared.unbind(runtime.scheduler.executorTarget)
   }
 
   /// An equivalent of `MainActor.assumeIsolated`, but for the `JavaScriptActor`. Assumes that the currently executing
@@ -94,10 +110,15 @@ public actor JavaScriptActor: GlobalActor {
 /// stable, as Swift requires. Only the thread it delivers jobs to changes, when the host binds a
 /// new runtime: React Native creates a new JavaScript thread for each React instance.
 ///
+/// Jobs go through the target thread's run loop, not through the host's scheduler. React's scheduler
+/// doesn't start a task while another one runs, so a job sent through it would never run while a
+/// task on the JavaScript thread waits for it, for example in a blocking `execute` with an async
+/// closure.
+///
 /// A job is a suspended task, and there is no way to throw into it, so the executor never drops a
-/// job: a task whose job is dropped never resumes. When the host drops the job, for example because
-/// the React instance is gone, the job runs on the executor's own thread instead, where runtime work
-/// fails its liveness checks.
+/// job: a task whose job is dropped never resumes. When the JavaScript thread stops before it runs a
+/// job (the React instance is gone), the job goes to the current target instead, where runtime work
+/// of the old runtime fails its liveness checks.
 internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   /// Where jobs go while a runtime is bound: its thread's run loop. After each job, the runtime's
   /// microtasks are drained, as React's scheduler does after each task.
@@ -106,6 +127,10 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
     let runLoop: CFRunLoop
     /// The handle rather than the runtime, which owns its target.
     let handle: JavaScriptRuntimeHandle?
+    /// How many blocking waits run the run loop on the target thread now. Only used on that thread.
+    /// A job that runs inside such a wait runs inside a host call, with JavaScript on the stack, so
+    /// it leaves the microtasks to the task that waits.
+    var nestedWaits = 0
 
     init(threadID: UInt64, runLoop: CFRunLoop, handle: JavaScriptRuntimeHandle?) {
       self.threadID = threadID
@@ -124,7 +149,28 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   private init() {}
 
   internal func bind(_ target: Target?) {
-    boundTarget.withLock { $0 = target }
+    let previous = boundTarget.withLock { bound -> Target? in
+      defer {
+        bound = target
+      }
+      return bound
+    }
+    // Released outside the lock: when it's the last reference to a stopped thread's run loop, the
+    // run loop releases the jobs it never ran, which enqueue themselves again.
+    _ = previous
+  }
+
+  internal func unbind(_ target: Target) {
+    let previous = boundTarget.withLock { bound -> Target? in
+      guard bound === target else {
+        return nil
+      }
+      defer {
+        bound = nil
+      }
+      return bound
+    }
+    _ = previous
   }
 
   /// Where jobs go now.
@@ -136,7 +182,7 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
 
   func enqueue(_ job: UnownedJob) {
     let target = self.target
-    let delivery = JobDelivery(job, executor: asUnownedSerialExecutor(), handle: target.handle)
+    let delivery = JobDelivery(job, executor: asUnownedSerialExecutor(), target: target)
 
     CFRunLoopPerformBlock(target.runLoop, CFRunLoopMode.commonModes.rawValue) {
       delivery.run()
@@ -182,47 +228,37 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
     pthread_threadid_np(nil, &current)
     return current
   }
-
-  fileprivate static func perform(_ job: UnownedJob, executor: UnownedSerialExecutor, on runLoop: CFRunLoop) {
-    CFRunLoopPerformBlock(runLoop, CFRunLoopMode.commonModes.rawValue) {
-      job.runSynchronously(on: executor)
-    }
-    CFRunLoopWakeUp(runLoop)
-  }
-
-  fileprivate static var fallbackRunLoop: CFRunLoop {
-    return ownTarget.runLoop
-  }
 }
 
 /// Runs a job on the target's run loop, then drains the runtime's microtasks. When the run loop is
-/// released without running it (the JavaScript thread has stopped), `deinit` sends the job to the
-/// executor's own thread instead, so the task still resumes. The runtime is gone then, so runtime
-/// work in the job fails its liveness checks.
+/// released without running it (the JavaScript thread has stopped), `deinit` enqueues the job again,
+/// to the current target, so the task still resumes and its jobs stay serial. The old runtime is gone
+/// then, so its runtime work in the job fails its liveness checks.
 private final class JobDelivery: @unchecked Sendable {
   private let job: UnownedJob
   private let executor: UnownedSerialExecutor
-  private let handle: JavaScriptRuntimeHandle?
+  /// Weak: the target holds the run loop, which holds this delivery until it runs or releases it.
+  private weak var target: JavaScriptExecutor.Target?
   private var didRun = false
 
-  init(_ job: UnownedJob, executor: UnownedSerialExecutor, handle: JavaScriptRuntimeHandle?) {
+  init(_ job: UnownedJob, executor: UnownedSerialExecutor, target: JavaScriptExecutor.Target) {
     self.job = job
     self.executor = executor
-    self.handle = handle
+    self.target = target
   }
 
   func run() {
     didRun = true
     job.runSynchronously(on: executor)
 
-    if let runtime = handle?.pointee {
+    if let target, target.nestedWaits == 0, let runtime = target.handle?.pointee {
       expo.drainMicrotasks(runtime)
     }
   }
 
   deinit {
     if !didRun {
-      JavaScriptExecutor.perform(job, executor: executor, on: JavaScriptExecutor.fallbackRunLoop)
+      JavaScriptExecutor.shared.enqueue(job)
     }
   }
 }

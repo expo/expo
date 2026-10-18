@@ -65,6 +65,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   private var _runtime: ExpoRuntime? {
     didSet {
+      if let oldValue, oldValue !== _runtime {
+        // Sends `JavaScriptActor` back to its own thread if the old runtime is still the bound one,
+        // so its jobs don't go to a JavaScript thread that is about to stop.
+        JavaScriptActor.unbind(from: oldValue)
+      }
       if _runtime == nil && oldValue != nil {
         destroy()
         return

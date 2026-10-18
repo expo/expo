@@ -444,7 +444,17 @@ private final class ThreadWaiter: @unchecked Sendable {
     }
     switch sleep {
     case .runLoop(_, let source, let mode):
+      // `JavaScriptActor` jobs run in this wait when it's on the actor's thread. Tells them that
+      // they run inside a host call.
+      let actorTarget = JavaScriptExecutor.shared.target
+      let isOnActorThread = actorTarget.threadID == JavaScriptExecutor.currentThreadID()
+      if isOnActorThread {
+        actorTarget.nestedWaits += 1
+      }
       defer {
+        if isOnActorThread {
+          actorTarget.nestedWaits -= 1
+        }
         // Also removes the source from the run loop. A later `wake()` does nothing.
         CFRunLoopSourceInvalidate(source)
       }

@@ -5,7 +5,7 @@ import Testing
 
 @testable import ExpoModulesCore
 
-@Suite("Exceptions")
+@Suite("Exceptions", .bindsJavaScriptActor)
 @JavaScriptActor
 struct ExceptionsTests {
   // MARK: - Native

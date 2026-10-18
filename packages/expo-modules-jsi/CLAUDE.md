@@ -21,13 +21,14 @@ apple/
 │   │   ├── Protocols/             # JavaScriptType, JavaScriptRepresentable, etc.
 │   │   ├── Runtime/               # JavaScriptRuntime, JavaScriptActor, JavaScriptRef
 │   │   │   └── Values/            # JS value wrappers (Value, Object, Array, Function, ArrayBuffer, TypedArray, Promise, BigInt, Error, WeakObject)
-│   │   └── Utilities/             # Error handling, DeferredPromise, helpers
+│   │   └── Utilities/             # Error handling, helpers
 │   └── ExpoModulesJSI-Cxx/        # C++ utilities bridging Swift ↔ JSI
 │       ├── include/               # In-package C++ headers
 │       │   └── Public/            # C++ headers shipped from the xcframework
 │       ├── JSIUtils.cpp
 │       └── TypedArray.cpp
 ├── Tests/                         # Swift Testing suites, one per type
+├── BindingTests/                  # Tests that bind JavaScriptActor, in a test target of their own
 ```
 
 In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
@@ -62,6 +63,8 @@ struct JavaScriptRuntimeTests {
 ```
 
 Tests are in `apple/Tests/` and each file covers one type. Some suites use the global actor `@JavaScriptActor` for executor isolation.
+
+Tests that bind `JavaScriptActor` to a runtime with `JavaScriptActor.bind(to:)` live in `apple/BindingTests/`, a test target of its own. The binding is process-wide, and each test target runs in a process of its own, so the other tests always run with no runtime bound.
 
 Run them with `pnpm test:integration` from the package root, which calls `apple/scripts/test.sh`. The script needs an installed host app's `Pods` directory (defaults to `$EXPO_ROOT_DIR/apps/bare-expo/ios/Pods`); override with `PODS_ROOT`. It symlinks React / hermesvm / ReactNativeDependencies xcframeworks into `apple/.test-frameworks/` so SPM can resolve them as relative-path binary targets, generates the `jsi` modulemap, and runs `xcodebuild test` against an iOS Simulator (override with `DESTINATION`). Extra args pass through to xcodebuild &mdash; e.g. `pnpm test -only-testing TestName`.
 
