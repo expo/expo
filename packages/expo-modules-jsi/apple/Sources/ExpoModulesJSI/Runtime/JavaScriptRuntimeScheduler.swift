@@ -36,7 +36,7 @@ extension JavaScriptRuntime {
       self.executorTarget = JavaScriptExecutor.Target(
         threadID: jsThreadID,
         runLoop: CFRunLoopGetCurrent(),
-        hostScheduler: pointee
+        handle: handle
       )
     }
 

@@ -181,6 +181,16 @@ inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
   runtime.instrumentation().collectGarbage(cause);
 }
 
+// Runs the microtasks queued by a `@JavaScriptActor` job, like React's `RuntimeScheduler` does after
+// each task. Errors thrown by a microtask are dropped: there is no caller to report them to.
+inline void drainMicrotasks(jsi::IRuntime &runtime) noexcept {
+  try {
+    while (!runtime.drainMicrotasks()) {
+    }
+  } catch (...) {
+  }
+}
+
 // MARK: - Result slots
 
 // Construct a host callback's result in place in the engine's result slot. `::new (slot) T(...)` is

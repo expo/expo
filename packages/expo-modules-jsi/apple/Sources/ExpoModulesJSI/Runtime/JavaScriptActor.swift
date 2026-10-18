@@ -99,18 +99,18 @@ public actor JavaScriptActor: GlobalActor {
 /// the React instance is gone, the job runs on the executor's own thread instead, where runtime work
 /// fails its liveness checks.
 internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
-  /// Where jobs go while a runtime is bound: its host scheduler when it has one, so jobs keep
-  /// React's ordering and the microtask checkpoint after each task, otherwise its thread's run loop.
+  /// Where jobs go while a runtime is bound: its thread's run loop. After each job, the runtime's
+  /// microtasks are drained, as React's scheduler does after each task.
   internal final class Target: @unchecked Sendable {
     let threadID: UInt64
     let runLoop: CFRunLoop
-    /// The host scheduler rather than the Swift `JavaScriptRuntime.Scheduler`, which owns its target.
-    let hostScheduler: expo.RuntimeScheduler?
+    /// The handle rather than the runtime, which owns its target.
+    let handle: JavaScriptRuntimeHandle?
 
-    init(threadID: UInt64, runLoop: CFRunLoop, hostScheduler: expo.RuntimeScheduler?) {
+    init(threadID: UInt64, runLoop: CFRunLoop, handle: JavaScriptRuntimeHandle?) {
       self.threadID = threadID
       self.runLoop = runLoop
-      self.hostScheduler = hostScheduler
+      self.handle = handle
     }
   }
 
@@ -136,17 +136,12 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
 
   func enqueue(_ job: UnownedJob) {
     let target = self.target
-    let executor = asUnownedSerialExecutor()
+    let delivery = JobDelivery(job, executor: asUnownedSerialExecutor(), handle: target.handle)
 
-    if let hostScheduler = target.hostScheduler, hostScheduler.supportsAsyncScheduling() {
-      let delivery = JobDelivery(job, executor: executor)
-      // Immediate priority and no liveness check: a job must always run.
-      hostScheduler.scheduleTask(.ImmediatePriority) {
-        delivery.run()
-      }
-      return
+    CFRunLoopPerformBlock(target.runLoop, CFRunLoopMode.commonModes.rawValue) {
+      delivery.run()
     }
-    Self.perform(job, executor: executor, on: target.runLoop)
+    CFRunLoopWakeUp(target.runLoop)
   }
 
   /// Converts the executor to the optimized form of borrowed executor reference.
@@ -200,23 +195,29 @@ internal final class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
   }
 }
 
-/// Runs a job that was sent through the host scheduler. When the host drops the task without running
-/// it (the React instance is gone), `deinit` sends the job to the executor's own thread instead, so
-/// the task still resumes. The runtime is gone then, so runtime work in the job fails its liveness
-/// checks.
+/// Runs a job on the target's run loop, then drains the runtime's microtasks. When the run loop is
+/// released without running it (the JavaScript thread has stopped), `deinit` sends the job to the
+/// executor's own thread instead, so the task still resumes. The runtime is gone then, so runtime
+/// work in the job fails its liveness checks.
 private final class JobDelivery: @unchecked Sendable {
   private let job: UnownedJob
   private let executor: UnownedSerialExecutor
+  private let handle: JavaScriptRuntimeHandle?
   private var didRun = false
 
-  init(_ job: UnownedJob, executor: UnownedSerialExecutor) {
+  init(_ job: UnownedJob, executor: UnownedSerialExecutor, handle: JavaScriptRuntimeHandle?) {
     self.job = job
     self.executor = executor
+    self.handle = handle
   }
 
   func run() {
     didRun = true
     job.runSynchronously(on: executor)
+
+    if let runtime = handle?.pointee {
+      expo.drainMicrotasks(runtime)
+    }
   }
 
   deinit {
@@ -236,7 +237,7 @@ private enum JavaScriptActorThread {
       target.value = JavaScriptExecutor.Target(
         threadID: JavaScriptExecutor.currentThreadID(),
         runLoop: CFRunLoopGetCurrent(),
-        hostScheduler: nil
+        handle: nil
       )
       // A source that never fires keeps the run loop from returning when it has no work.
       var context = CFRunLoopSourceContext()
