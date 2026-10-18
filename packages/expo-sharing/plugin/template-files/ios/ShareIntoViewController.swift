@@ -206,12 +206,12 @@ class ShareIntoViewController: SLComposeServiceViewController {
     }
 
     let fileName = url.lastPathComponent.isEmpty ? UUID().uuidString : url.lastPathComponent
-    let destinationURL = containerURL.appendingPathComponent(fileName)
+    // A unique directory keeps the original file name and stops files with the same name from replacing each other.
+    let destinationDirectory = containerURL.appendingPathComponent(UUID().uuidString, isDirectory: true)
+    let destinationURL = destinationDirectory.appendingPathComponent(fileName)
 
     do {
-      if FileManager.default.fileExists(atPath: destinationURL.path) {
-        try FileManager.default.removeItem(at: destinationURL)
-      }
+      try FileManager.default.createDirectory(at: destinationDirectory, withIntermediateDirectories: true)
       try FileManager.default.copyItem(at: url, to: destinationURL)
     } catch {
       print("Error copying file: \(error)")
