@@ -5429,10 +5429,16 @@ importers:
 
   packages/expo-modules-cli:
     dependencies:
+      '@babel/parser':
+        specifier: ^7.20.0
+        version: 7.29.7
       arg:
         specifier: ^5.0.2
         version: 5.0.2
     devDependencies:
+      '@babel/types':
+        specifier: ^7.20.0
+        version: 7.29.7
       '@expo/internal-scripts':
         specifier: workspace:*
         version: link:../@expo/internal-scripts
