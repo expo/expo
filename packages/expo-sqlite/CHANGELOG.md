@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- [Web] Fixed synchronous calls throwing `Sync operation timeout` while the worker is still starting. The wait now uses one wall-clock deadline, including in browsers that provide `Atomics.pause`. ([#51764](https://github.com/expo/expo/issues/51764) by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.13
 
 ### Patch Changes
