@@ -8,6 +8,7 @@ export function createPlatformSelectPlugin(
 ): DefinedNativePlugin {
   return nox.defineNativePlugin({
     name: 'expo-minify-platform-select',
+    contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
       nox.defineVisitor(
         'CallExpression',
