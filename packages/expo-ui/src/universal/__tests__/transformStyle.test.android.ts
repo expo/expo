@@ -1,4 +1,11 @@
-import { alpha, background, clickable, paddingAll } from '../../jetpack-compose/modifiers';
+import {
+  alpha,
+  background,
+  clickable,
+  height,
+  paddingAll,
+  width,
+} from '../../jetpack-compose/modifiers';
 import { transformToModifiers } from '../transformStyle';
 
 describe('transformToModifiers (Android)', () => {
@@ -26,5 +33,48 @@ describe('transformToModifiers (Android)', () => {
       clickable(onPress),
       userClick,
     ]);
+  });
+
+  it('emits width() for a numeric width', () => {
+    expect(transformToModifiers({ width: 100 }, {})).toEqual([width(100)]);
+  });
+
+  it('emits height() for a numeric height', () => {
+    expect(transformToModifiers({ height: 200 }, {})).toEqual([height(200)]);
+  });
+
+  it('emits width() and height() for numeric width and height', () => {
+    expect(transformToModifiers({ width: 100, height: 200 }, {})).toEqual([
+      width(100),
+      height(200),
+    ]);
+  });
+
+  // String values are not accepted — warn in dev, emit no modifier.
+  it('warns and emits no modifier for a string width', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
+    warn.mockRestore();
+  });
+
+  it('warns and emits no modifier for a string height', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ height: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('height does not accept string values')
+    );
+    warn.mockRestore();
+  });
+
+  it('warns for string width but still emits height() when height is numeric', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: 'auto' as any, height: 200 }, {})).toEqual([height(200)]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
+    warn.mockRestore();
   });
 });

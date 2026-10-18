@@ -8,7 +8,6 @@ import {
   padding,
   paddingAll,
   Shapes,
-  size,
   testID as testIDModifier,
   width,
   type ModifierConfig,
@@ -38,12 +37,21 @@ export function transformToModifiers(
 
   if (style) {
     // Sizing (outermost)
-    if (style.width != null && style.height != null) {
-      mods.push(size(style.width as number, style.height as number));
-    } else if (style.width != null) {
-      mods.push(width(style.width as number));
-    } else if (style.height != null) {
-      mods.push(height(style.height as number));
+    if (typeof style.width === 'string') {
+      __DEV__ &&
+        console.warn(
+          '[expo-ui] width does not accept string values; use the modifiers prop with fillMaxWidth() instead.'
+        );
+    } else if (style.width !== undefined) {
+      mods.push(width(style.width));
+    }
+    if (typeof style.height === 'string') {
+      __DEV__ &&
+        console.warn(
+          '[expo-ui] height does not accept string values; use the modifiers prop with fillMaxHeight() instead.'
+        );
+    } else if (style.height !== undefined) {
+      mods.push(height(style.height));
     }
 
     // Border + background + borderRadius handling.
