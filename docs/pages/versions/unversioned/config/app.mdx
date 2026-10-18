@@ -1,24 +1,85 @@
----
-title: app.json / app.config.js
-description: A reference of available properties in Expo app config.
-maxHeadingDepth: 5
----
 
-import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
-import schema from '~/public/static/schemas/unversioned/app-config-schema.json';
-import AppConfigSchemaTable from '~/ui/components/AppConfigSchemaTable';
-import { BoxLink } from '~/ui/components/BoxLink';
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [flash, setFlash] = useState('auto');
+  const [filter, setFilter] = useState('Natural');
 
-The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
+  if (!permission) {
+    return <View style={styles.center}><Text>Cargando...</Text></View>;
+  }
 
-<BoxLink
-  title="Configuration with app config"
-  description="For information on app configuration, the differences between various app config files, and how to use them dynamically."
-  href="/workflow/configuration/"
-  Icon={CodeSquare01Icon}
-/>
+  if (!permission.granted) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.text}>Necesitamos permiso para usar la cámara</Text>
+        <TouchableOpacity style={styles.button} onPress={requestPermission}>
+          <Text style={styles.text}>Permitir cámara</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
-## Properties
+  return (
+    <View style={styles.container}>
+      <CameraView style={styles.camera} facing="back" flash={flash}>
+        <View style={styles.top}>
+          <Text style={styles.title}>MI CÁMARA</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setFlash(
+              flash === 'auto' ? 'on' : flash === 'on' ? 'off' : 'auto'
+            )}
+          >
+            <Text style={styles.text}>Flash: {flash.toUpperCase()}</Text>
+          </TouchableOpacity>
+        </View>
 
-<AppConfigSchemaTable schema={schema} />
+        <View style={styles.bottom}>
+          <Text style={styles.text}>Filtro: {filter}</Text>
+          <View style={styles.filters}>
+            {['Natural', 'Vivo', 'Cálido', 'Frío', 'B/N'].map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={[styles.button, filter === item && styles.selected]}
+                onPress={() => setFilter(item)}
+              >
+                <Text style={styles.text}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Text style={styles.hint}>Toca el botón para tomar una foto</Text>
+        </View>
+      </CameraView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+  camera: { flex: 1, justifyContent: 'space-between' },
+  center: {
+    flex: 1, backgroundColor: '#111',
+    alignItems: 'center', justifyContent: 'center', padding: 20
+  },
+  top: {
+    paddingTop: 45, paddingHorizontal: 18,
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  bottom: { padding: 18, alignItems: 'center', gap: 12 },
+  title: { color: 'white', fontSize: 20, fontWeight: 'bold' },
+  text: { color: 'white', fontSize: 14 },
+  button: {
+    backgroundColor: '#333', padding: 12,
+    borderRadius: 20, margin: 3
+  },
+  selected: { backgroundColor: '#1677ff' },
+  filters: {
+    flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'
+  },
+  hint: { color: 'white', marginBottom: 12 }
+});
