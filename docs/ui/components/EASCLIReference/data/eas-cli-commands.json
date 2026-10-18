@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-10-17T08:10:46.607Z",
-    "cliVersion": "25.1.1"
+    "fetchedAt": "2026-10-18T08:11:21.013Z",
+    "cliVersion": "25.2.0"
   },
-  "totalCommands": 164,
+  "totalCommands": 166,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -33,8 +33,8 @@
     },
     {
       "command": "eas analytics [STATUS]",
-      "description": "display or change analytics settings",
-      "usage": "USAGE\n  $ eas analytics [STATUS]\n\nDESCRIPTION\n  display or change analytics settings"
+      "description": "display or change analytics settings (disabling analytics also disables experiments)",
+      "usage": "USAGE\n  $ eas analytics [STATUS]\n\nDESCRIPTION\n  display or change analytics settings (disabling analytics also disables experiments)"
     },
     {
       "command": "eas autocomplete [SHELL]",
@@ -527,6 +527,11 @@
       "usage": "USAGE\n  $ eas sim:availability [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  [EXPERIMENTAL] check whether EAS Simulator is enabled for the current project account\n\nALIASES\n  $ eas sim:availability"
     },
     {
+      "command": "eas sim:control [ACTION]",
+      "description": "[EXPERIMENTAL] run a serve-sim action on a remote iOS simulator session on EAS. Run without an action to list the actions the session supports. To save a screenshot locally, run `eas simulator:control screenshot.capture --output ./screenshot.png`.",
+      "usage": "USAGE\n  $ eas sim:control [ACTION...] [-h] [--id <value>] [--list] [--output <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [ACTION...]  Action to run, followed by its values in order or as name=value. Omit to list the actions. Put -- before\n               values that start with --.\n\nFLAGS\n  -h, --help             Show command help, or usage for the selected action from the session.\n      --id=<value>       Simulator session ID. Defaults to .env.eas-simulator.\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --list             List the actions the session supports.\n      --non-interactive  Run the command in non-interactive mode.\n      --output=<value>   Local path to save a returned file. For screenshots, --output ./screenshot.png sets the local\n                         filename; omit it to save with a generated filename in the current directory.\n\nDESCRIPTION\n  [EXPERIMENTAL] run a serve-sim action on a remote iOS simulator session on EAS. Run without an action to list the\n  actions the session supports. To save a screenshot locally, run `eas simulator:control screenshot.capture --output\n  ./screenshot.png`.\n\nALIASES\n  $ eas sim:control\n\nEXAMPLES\n  $ eas simulator:control\n\n  $ eas simulator:control --id <session-id>\n\n  $ eas simulator:control screenshot.capture --help\n\n  $ eas simulator:control clipboard.write -- --some-text\n\n  $ eas simulator:control hardwareKeyboard.set off\n\n  $ eas simulator:control permissions.set grant camera com.example.app\n\n  $ eas simulator:control app.install ./MyApp.ipa\n\n  $ eas simulator:control screenshot.capture --output ./screenshot.png\n\n  $ eas simulator:control screenshot.capture --output ./screenshot.png --id <session-id>"
+    },
+    {
       "command": "eas sim:egress",
       "description": "[EXPERIMENTAL] run the local egress client for a simulator session to route proxied HTTP(S) requests through this machine",
       "usage": "USAGE\n  $ eas sim:egress [--config-type dotenv|env]\n\nFLAGS\n  --config-type=<option>  [default: dotenv] Read session credentials from .env.eas-simulator (dotenv) or the current\n                          shell environment (env).\n                          <options: dotenv|env>\n\nDESCRIPTION\n  [EXPERIMENTAL] run the local egress client for a simulator session to route proxied HTTP(S) requests through this\n  machine\n\nALIASES\n  $ eas sim:egress"
@@ -570,6 +575,11 @@
       "command": "eas simulator:availability",
       "description": "[EXPERIMENTAL] check whether EAS Simulator is enabled for the current project account",
       "usage": "USAGE\n  $ eas simulator:availability [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  [EXPERIMENTAL] check whether EAS Simulator is enabled for the current project account\n\nALIASES\n  $ eas sim:availability"
+    },
+    {
+      "command": "eas simulator:control [ACTION]",
+      "description": "[EXPERIMENTAL] run a serve-sim action on a remote iOS simulator session on EAS. Run without an action to list the actions the session supports. To save a screenshot locally, run `eas simulator:control screenshot.capture --output ./screenshot.png`.",
+      "usage": "USAGE\n  $ eas simulator:control [ACTION...] [-h] [--id <value>] [--list] [--output <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [ACTION...]  Action to run, followed by its values in order or as name=value. Omit to list the actions. Put -- before\n               values that start with --.\n\nFLAGS\n  -h, --help             Show command help, or usage for the selected action from the session.\n      --id=<value>       Simulator session ID. Defaults to .env.eas-simulator.\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --list             List the actions the session supports.\n      --non-interactive  Run the command in non-interactive mode.\n      --output=<value>   Local path to save a returned file. For screenshots, --output ./screenshot.png sets the local\n                         filename; omit it to save with a generated filename in the current directory.\n\nDESCRIPTION\n  [EXPERIMENTAL] run a serve-sim action on a remote iOS simulator session on EAS. Run without an action to list the\n  actions the session supports. To save a screenshot locally, run `eas simulator:control screenshot.capture --output\n  ./screenshot.png`.\n\nALIASES\n  $ eas sim:control\n\nEXAMPLES\n  $ eas simulator:control\n\n  $ eas simulator:control --id <session-id>\n\n  $ eas simulator:control screenshot.capture --help\n\n  $ eas simulator:control clipboard.write -- --some-text\n\n  $ eas simulator:control hardwareKeyboard.set off\n\n  $ eas simulator:control permissions.set grant camera com.example.app\n\n  $ eas simulator:control app.install ./MyApp.ipa\n\n  $ eas simulator:control screenshot.capture --output ./screenshot.png\n\n  $ eas simulator:control screenshot.capture --output ./screenshot.png --id <session-id>"
     },
     {
       "command": "eas simulator:egress",
