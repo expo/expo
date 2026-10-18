@@ -903,21 +903,11 @@ class AudioModule : Module() {
             context,
             appContext,
             sources,
-            updateInterval,
-            DefaultDataSource.Factory(context)
+            updateInterval
           )
           playlist.loopMode = loop
-          playlist.setMediaItemCreator { source ->
-            source.uri?.let { uriString ->
-              val uri = uriString.toUri()
-              when {
-                isRawResource(uri) -> {
-                  val file = getResourceName(uri, uriString)
-                  MediaItem.fromUri(getRawResourceURI(file))
-                }
-                else -> MediaItem.fromUri(uri)
-              }
-            }
+          playlist.setMediaSourceCreator { source ->
+            createMediaItem(source)
           }
           playlist.loadInitialPlaylist()
           playlist.onPlaybackStateChange = { isPlaying ->
