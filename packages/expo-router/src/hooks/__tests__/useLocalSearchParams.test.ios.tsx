@@ -140,4 +140,23 @@ describe(useLocalSearchParams, () => {
       test: '/foo/bar/',
     });
   });
+
+  it.each([[['a?b c', '50%', 'd#e']], ['a?b c/50%/d#e']])(
+    'keeps catch-all values with reserved characters (%j)',
+    async (slug) => {
+      let params: UnknownOutputParams = {};
+      const screen = await renderRouter({
+        index: () => null,
+        '[...slug]': function Slug() {
+          params = useLocalSearchParams();
+          return null;
+        },
+      });
+
+      await act(() => router.push({ pathname: '/[...slug]', params: { slug } }));
+
+      expect(params).toEqual({ slug: ['a?b c', '50%', 'd#e'] });
+      expect(screen).toHavePathname('/a?b c/50%/d#e');
+    }
+  );
 });
