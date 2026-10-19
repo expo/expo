@@ -19,7 +19,7 @@ Expo UI TopAppBar matches the official Jetpack Compose [`TopAppBar`](https://dev
 
 ### Basic top app bar
 
-Put content in the `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots. Each slot is optional.
+Put content in the `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots. Each slot is optional. Set `style={{ typography: 'titleLarge' }}` on the title `Text` to use Material 3 title typography.
 
 ```tsx BasicTopAppBar.tsx
 import {
@@ -46,7 +46,7 @@ export default function BasicTopAppBar() {
           </IconButton>
         </TopAppBar.NavigationIcon>
         <TopAppBar.Title>
-          <Text>Inbox</Text>
+          <Text style={{ typography: 'titleLarge' }}>Inbox</Text>
         </TopAppBar.Title>
         <TopAppBar.Actions>
           <IconButton onClick={() => console.log('Edit')}>
@@ -61,7 +61,7 @@ export default function BasicTopAppBar() {
 
 ### Window insets
 
-By default, the app bar adds the status bar height above its content. It also adds any system bar or display cutout inset at its sides. If a parent view already adds that space, pass `windowInsets={{}}` to remove it.
+By default, the app bar adds the status bar height above its content. It also adds any system bar or display cutout inset at its sides. These insets assume the bar is at the top edge of the window, even inside a nested `Host`. If a parent view already handles the insets, pass `windowInsets={{}}`. This removes both the top and horizontal insets.
 
 ```tsx TopAppBarWithoutInsets.tsx
 import { Host, Text, TopAppBar } from '@expo/ui/jetpack-compose';
@@ -74,7 +74,7 @@ export default function TopAppBarWithoutInsets() {
       style={{ width: '100%' }}>
       <TopAppBar windowInsets={{}} modifiers={[fillMaxWidth()]}>
         <TopAppBar.Title>
-          <Text>Settings</Text>
+          <Text style={{ typography: 'titleLarge' }}>Settings</Text>
         </TopAppBar.Title>
       </TopAppBar>
     </Host>

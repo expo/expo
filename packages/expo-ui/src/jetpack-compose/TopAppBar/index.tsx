@@ -36,8 +36,10 @@ export interface TopAppBarProps {
   colors?: TopAppBarColors;
   /**
    * Insets in dp that the app bar adds around its content. Missing sides are `0`.
-   * An app that already handles the status bar in a parent view can pass `{}`.
-   * When omitted, the app bar uses `TopAppBarDefaults.windowInsets`.
+   * When omitted, the app bar uses `TopAppBarDefaults.windowInsets`, which assumes
+   * the bar is at the top edge of the window, even inside a nested `Host`.
+   * Pass `{}` when a parent handles the insets. This removes both the top status
+   * bar inset and the horizontal system bar and display cutout insets.
    */
   windowInsets?: PaddingValuesRecord;
   /**

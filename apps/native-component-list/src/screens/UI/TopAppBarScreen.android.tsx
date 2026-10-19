@@ -22,7 +22,7 @@ export default function TopAppBarScreen() {
       <Column verticalArrangement={{ spacedBy: 24 }} modifiers={[fillMaxWidth()]}>
         <TopAppBar windowInsets={{}} modifiers={[fillMaxWidth()]}>
           <TopAppBar.Title>
-            <ComposeText>Default colors</ComposeText>
+            <ComposeText style={{ typography: 'titleLarge' }}>Default colors</ComposeText>
           </TopAppBar.Title>
         </TopAppBar>
         <ColoredTopAppBar count={count} onAdd={() => setCount(count + 1)} />
@@ -50,7 +50,7 @@ function ColoredTopAppBar({ count, onAdd }: { count: number; onAdd: () => void }
         </IconButton>
       </TopAppBar.NavigationIcon>
       <TopAppBar.Title>
-        <ComposeText>Custom colors ({count})</ComposeText>
+        <ComposeText style={{ typography: 'titleLarge' }}>Custom colors ({count})</ComposeText>
       </TopAppBar.Title>
       <TopAppBar.Actions>
         <IconButton onClick={() => console.log('Edit')}>
