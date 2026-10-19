@@ -1,5 +1,13 @@
 # sqlite-inspector-webui
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51755](https://github.com/expo/expo/pull/51755), [#51797](https://github.com/expo/expo/pull/51797), [#51774](https://github.com/expo/expo/pull/51774))
+  - expo@58.0.15
+  - expo-router@58.0.24
+
 ## 0.0.9
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- Export the `VirtualAssetModule` type that `Asset.fromModule` accepts. ([#51797](https://github.com/expo/expo/pull/51797) by [@amandeepmittal](https://github.com/amandeepmittal))
+
 ## 58.0.16
 
 ### Patch Changes

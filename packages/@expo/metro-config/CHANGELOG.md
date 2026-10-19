@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Update to `noxcturnal@^0.1.4` for `experiments.noxcturnalTransformWorker`. This updates Flow erasure support, React Compiler transforms, and internal dependencies, and improves performance slightly. ([#51712](https://github.com/expo/expo/pull/51712) by [@kitten](https://github.com/kitten))
+- Avoid unnecessary noxcturnal bailout for modules with a `use client` directive for client bundles. ([#51663](https://github.com/expo/expo/pull/51663) by [@kitten](https://github.com/kitten))
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
 ## 58.0.14
 
 ### Patch Changes
