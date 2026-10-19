@@ -71,7 +71,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       if let jsObject = sharedObject.getJavaScriptObject() {
         return jsObject.asValue()
       }
-      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
+      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, isSharedRef: sharedObject.sharedRefType != nil)) else {
         // Throwing is not possible here due to swift-objC interop.
         log.warn("Unable to create a JS object for \(description)")
         return JavaScriptValue.undefined()
@@ -86,8 +86,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 }
 
-private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
-  let isSharedRef = nativeType is AnySharedRef.Type
+private func newBaseSharedObject(_ appContext: AppContext, isSharedRef: Bool) throws -> JavaScriptObject? {
   return try JavaScriptActor.assumeIsolated {
     return try appContext.runtime.createBaseSharedObject(isSharedRef: isSharedRef)
   }

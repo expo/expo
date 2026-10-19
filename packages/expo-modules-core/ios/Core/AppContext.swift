@@ -235,19 +235,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
-  /**
-   Creates a new JavaScript object with the class prototype associated with the given native class.
-   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-   */
+  /// Creates a new JavaScript object with the class prototype associated with the given native class.
+  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     let runtime = try self.runtime
-    let object = classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
     }
-    guard let object else {
-      throw JavaScriptClassNotFoundException()
-    }
-    return object
   }
 
   // MARK: - Legacy modules
