@@ -35,6 +35,12 @@ Only Release Managers, Admins, and Owners can run these commands. Run either com
 
 > **info** When you [transfer a project](/accounts/account-types/#transfer-projects-between-accounts) to another account, EAS removes protection from all of its channels. Protect them again in the new account if needed.
 
+### EAS Workflows and protected channels
+
+> **warning** [EAS Workflows](/eas/workflows/introduction/) `update` jobs cannot publish to a branch that a protected channel points to, even when a Release Manager, Admin, or Owner starts the run. This is a known limitation that we plan to fix.
+
+Until then, if your workflow publishes to a protected channel, remove protection from that channel with `eas channel:unprotect`, or run `eas update` outside EAS Workflows as a member with the Release Manager role or higher.
+
 ## Coming soon
 
 Protection for other resource types is in progress.
