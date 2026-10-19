@@ -320,7 +320,7 @@ const transform: BabelTransformer['transform'] = ({
   plugins,
 }: BabelTransformerArgs): ReturnType<BabelTransformer['transform']> => {
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
-  process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
+  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
 
   const done = debugEvent.span();
   try {
