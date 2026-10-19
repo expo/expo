@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [Android] Fix the main activity being kept in memory after it is destroyed. ([#51691](https://github.com/expo/expo/pull/51691) by [@zoontek](https://github.com/zoontek))
+
 ## 58.0.9
 
 ### Patch Changes

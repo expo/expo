@@ -1,5 +1,37 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Fix a deep link to a screen inside an existing navigator, such as a tab, stacking a second copy of that navigator on top of a presented modal or sheet instead of returning to it. Inside nested stacks a deep link again returns to a screen that is already there, as it did before SDK 58. ([#51649](https://github.com/expo/expo/pull/51649) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
+
+## 58.0.22
+
+### Patch Changes
+
+- [iOS] Fix the zoom transition when a screen opened with `Link.AppleZoom` is closed with `router.back()`. ([#51676](https://github.com/expo/expo/pull/51676) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51639](https://github.com/expo/expo/pull/51639))
+  - expo-glass-effect@58.0.4
+
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Disable automatic safe-area measurements on web to preserve streamed content during hydration. ([#51542](https://github.com/expo/expo/pull/51542) by [@hassankhan](https://github.com/hassankhan))
+- Replace ambiguous `null` and `undefined` return values with `RouterActionHandling` enum. ([#51448](https://github.com/expo/expo/pull/51448) by [@Ubax](https://github.com/Ubax))
+- Fix a crash when swiping the drawer on React Native 0.88. ([#51590](https://github.com/expo/expo/pull/51590) by [@Ubax](https://github.com/Ubax))
+- [iOS] Use native header appearance on iOS 26+ by default. Call `enableLegacyHeaderAppearance()` to restore the previous appearance. ([#51450](https://github.com/expo/expo/pull/51450) by [@Ubax](https://github.com/Ubax))
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.19
 
 ### Patch Changes

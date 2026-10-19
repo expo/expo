@@ -103,6 +103,9 @@ const loadedBabelPresetExpo = require(
   path.join(__dirname, '../../../../../../babel-preset-expo/src')
 );
 const babelPresetExpo = loadedBabelPresetExpo.default ?? loadedBabelPresetExpo;
+const { reactClientReferencesPlugin } = require(
+  path.join(__dirname, '../../../../../../babel-preset-expo/src/plugins/client-module-proxy-plugin')
+);
 const requireFromBabelPresetExpo = createRequire(
   path.join(__dirname, '../../../../../../babel-preset-expo/package.json')
 );
@@ -452,13 +455,64 @@ it.each([
   expect(result.result.code).not.toContain('react/compiler-runtime');
 });
 
-it('keeps compiled Expo workspace client directives on the Babel path', async () => {
-  const result = await transformNodeModuleWithNoxcturnal({
+it.each([
+  [true, undefined, workspaceFilename],
+  [false, undefined, workspaceFilename],
+  [true, 'node', workspaceFilename],
+  [false, 'node', workspaceFilename],
+  [true, 'node', filename],
+  [false, 'node', filename],
+] as const)(
+  'matches Babel for client directives (dev: %s, environment: %s, filename: %s)',
+  async (dev, environment, filename) => {
+    const source = `"use client"; module.exports = 1;`;
+    const input = {
+      filename,
+      projectRoot: '/repo/apps/example',
+      source,
+      options: options({ dev, customTransformOptions: { engine: 'hermes', environment } }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    };
+    const babelResult = babel.transformSync(source, {
+      filename: input.filename,
+      babelrc: false,
+      configFile: false,
+      plugins: [reactClientReferencesPlugin],
+      caller: {
+        name: 'metro',
+        isServer: environment === 'node',
+        isReactServer: false,
+        projectRoot: input.projectRoot,
+      } as babel.TransformCaller,
+    });
+    expect(canonicalModuleBody(babelResult!.code!)).toBe(canonicalModuleBody(source));
+
+    const result = await transformNodeModuleWithNoxcturnal(input);
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
+
+    const metroResult = await transformFileFullyWithNoxcturnal(input);
+    expect(metroResult.status).toBe('complete');
+    if (metroResult.status !== 'complete') return;
+    expect(canonicalModuleBody(metroResult.result.code, true)).toBe(canonicalModuleBody(source));
+    expect(metroResult.dependencies).toEqual([]);
+    expect(metroResult.result.metadata.reactClientReference).toBeUndefined();
+  }
+);
+
+it.each([
+  `"use client"; "use server"; export async function save() { return 1; }`,
+  `"use client"; "use dom"; export default function Component() { return null; }`,
+])('keeps actionable workspace client directives on Babel: %s', async (source) => {
+  const result = await transformFileFullyWithNoxcturnal({
     filename: '/repo/packages/expo-router/build/value.js',
     projectRoot: '/repo/apps/example',
-    source: `'use client'; module.exports = 1;`,
+    source,
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
+    config: fullConfig(),
   });
   expect(result).toEqual({ status: 'fallback', reason: 'expo-directive' });
 });
@@ -762,5 +816,34 @@ it.each([
     expect(result.status).toBe('fallback');
     if (result.status !== 'fallback') return;
     expect(result.reason).toContain('dom-component-');
+  }
+);
+
+it.each(['one', '"one"', '["one"]'])(
+  'extracts an inline server action from an object method with key %s',
+  async (key) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/actions.ts',
+      projectRoot: '/app',
+      source: `export function createActions(value) {
+        return { async ${key}() { "use server"; return value; } };
+      }`,
+      options: options({
+        platform: 'web',
+        customTransformOptions: { environment: 'react-server' },
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(() => babel.parseSync(result.result.code, { sourceType: 'script' })).not.toThrow();
+    expect(result.result.code).toContain('registerServerReference');
+    expect(result.result.code).toContain('.bind(null,');
+    expect(result.result.metadata.reactServerActions).toEqual({
+      id: './actions.ts',
+      names: [expect.stringContaining('$$INLINE_ACTION')],
+    });
   }
 );

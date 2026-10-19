@@ -1,5 +1,40 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Fix native memory that grew with each module class under Hermes V1, by about 0.57 MiB per class on React Native 0.86 and 0.87 and about 93 KiB on 0.88. `createClass` evaluated a new JavaScript source for each class, and Hermes keeps memory for every evaluated source until the runtime is destroyed. It now evaluates one class factory for each runtime and calls it for each class. On iOS, this code creates only the four base classes (`SharedObject`, `SharedRef`, `EventEmitter` and `NativeModule`). ([#51582](https://github.com/expo/expo/pull/51582) by [@amillez](https://github.com/amillez))
+- Fix an `-Wunused-result` warning in `Worklet.cpp` on Android when building with `react-native-worklets@0.13`. Running a worklet synchronously now discards its return value while the worklet runtime lock is still held, on Android and iOS. ([#51656](https://github.com/expo/expo/pull/51656) by [@tomekzaw](https://github.com/tomekzaw))
+- Fix the `Do not include this file directly` warnings from `react-native-worklets@0.13` on Android and iOS. The worklets integration now includes the specific `Serializable` headers instead of the deprecated `worklets/SharedItems/Serializable.h`. ([#51664](https://github.com/expo/expo/pull/51664) by [@tomekzaw](https://github.com/tomekzaw))
+- Updated dependencies. ([#51583](https://github.com/expo/expo/pull/51583))
+  - expo-modules-jsi@58.0.15
+
+## 58.0.21
+
+### Patch Changes
+
+- [Web] Fix `globalThis.expo` missing on web when Rolldown or `vite build` on Vite 8 drops `ensureNativeModulesAreInstalled` and the polyfill it imports. The module is now listed in `sideEffects`. ([#51624](https://github.com/expo/expo/pull/51624) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.20
+
+### Patch Changes
+
+- Change the optional `react-native-worklets` peer dependency to `0.13.0`, the version bundled with SDK 58. `npm install` no longer fails with `ERESOLVE` when the bundled `react-native-worklets` version is installed. Earlier `react-native-worklets` versions do not support React Native 0.88. ([#51493](https://github.com/expo/expo/pull/51493) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Speed up module registration at app launch by classifying definition elements without protocol conformance lookups. ([#51456](https://github.com/expo/expo/pull/51456) by [@Kudo](https://github.com/Kudo))
+- [iOS] Reduced the overhead of emitting events without a payload. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Speed up app launch by computing default module, class and view names without protocol conformance lookups. ([#51455](https://github.com/expo/expo/pull/51455) by [@Kudo](https://github.com/Kudo))
+- [iOS] Publish a headers XCFramework for `ExpoModulesCore` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesCoreHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51243](https://github.com/expo/expo/pull/51243), [#51562](https://github.com/expo/expo/pull/51562), [#51565](https://github.com/expo/expo/pull/51565), [#51564](https://github.com/expo/expo/pull/51564), [#51560](https://github.com/expo/expo/pull/51560), [#51558](https://github.com/expo/expo/pull/51558))
+  - expo-modules-jsi@58.0.14
+
 ## 58.0.18
 
 ### Patch Changes

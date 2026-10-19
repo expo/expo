@@ -18,6 +18,23 @@ private struct FailingEncodable: JavaScriptEncodable {
   }
 }
 
+/// Records whether `FlaggingEncodable` was encoded. Written on the JavaScript thread and read after the
+/// test drained it.
+private final class EncodeFlag: @unchecked Sendable {
+  var isEncoded = false
+}
+
+/// A `JavaScriptEncodable` that records when it's encoded, which happens only when the work that settles
+/// with it runs.
+private struct FlaggingEncodable: JavaScriptEncodable {
+  let flag: EncodeFlag
+
+  static func encode(_ value: FlaggingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    value.flag.isEncoded = true
+    return .undefined()
+  }
+}
+
 @Suite
 @JavaScriptActor
 struct JavaScriptPromiseTests {
@@ -654,6 +671,35 @@ struct JavaScriptPromiseTests {
     // Dropping the promise wrapper here must not touch a freed runtime. This is the crash point in
     // #47454; reaching the end of the test without a crash is the assertion.
     promise = nil
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `awaiting a promise whose runtime is gone throws RuntimeLostError`() async throws {
+    var promise: JavaScriptPromise? = nil
+    do {
+      let runtime = JavaScriptRuntime()
+      promise = try JavaScriptPromise(runtime)
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await promise?.await()
+    }
+    promise = nil
+  }
+
+  @Test
+  func `a resolve queued before the runtime goes away is dropped`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(testRuntime.runtime!))
+    }
+    let flag = EncodeFlag()
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      promise.value.resolve(FlaggingEncodable(flag: flag))
+    })
+
+    #expect(flag.isEncoded == false)
+    await testRuntime.tearDown()
   }
 
   @Test

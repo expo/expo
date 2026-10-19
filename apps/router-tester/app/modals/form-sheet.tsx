@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Screen() {
   return (
@@ -11,10 +12,12 @@ export default function Screen() {
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon="xmark" onPress={() => console.log('Xmark pressed')} />
       </Stack.Toolbar>
-      <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+      <SafeAreaView
+        edges={['left', 'right']}
+        style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
         <Text>Form Sheet Modal Content - Start</Text>
         <Text>Form Sheet Modal Content - End</Text>
-      </View>
+      </SafeAreaView>
     </>
   );
 }

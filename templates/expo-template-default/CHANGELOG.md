@@ -1,5 +1,45 @@
 # expo-template-default
 
+## 58.0.23
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+  - expo@58.0.14
+
+## 58.0.22
+
+### Patch Changes
+
+- Updated dependencies. ([#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-splash-screen@58.0.10
+  - expo@58.0.13
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51632](https://github.com/expo/expo/pull/51632), [#51636](https://github.com/expo/expo/pull/51636), [#51639](https://github.com/expo/expo/pull/51639))
+  - @expo/ui@58.0.19
+  - expo-glass-effect@58.0.4
+  - expo@58.0.12
+  - expo-router@58.0.21
+
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540), [#51606](https://github.com/expo/expo/pull/51606))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-system-ui@58.0.6
+  - expo-image@58.0.15
+  - @expo/ui@58.0.18
+
 ## 58.0.19
 
 ### Patch Changes

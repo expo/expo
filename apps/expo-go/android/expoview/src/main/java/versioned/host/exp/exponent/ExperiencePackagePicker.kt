@@ -77,8 +77,8 @@ import expo.modules.speech.SpeechModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
-import expo.modules.taskManager.TaskManagerModule
-import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.taskmanager.TaskManagerModule
+import expo.modules.taskmanager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage

@@ -1,5 +1,26 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- [iOS] Add an `alignment` prop to the SwiftUI `Host`. It sets where the content sits in the host when their sizes differ. A `matchContents` host anchored to the trailing edge of its row can now keep that edge still while its content animates to a new width. ([#51617](https://github.com/expo/expo/pull/51617) by [@maxlapides](https://github.com/maxlapides))
+
+## 58.0.19
+
+### Patch Changes
+
+- Add `accessibilityLabel`, `accessibilityHint` (iOS) and `testID` to the community `Slider`. The drop-in dropped them, so VoiceOver and TalkBack announced a slider by its value alone and end-to-end tools could not find it. iOS applies them as SwiftUI accessibility modifiers, Android as the `semantics` and `testID` modifiers, and web as `aria-label` and `data-testid`. ([#51632](https://github.com/expo/expo/pull/51632) by [@brentvatne](https://github.com/brentvatne))
+- [iOS] Stop shipping a precompiled iOS framework. `ArrangementView` and `onHingeChange` now work on iOS 27.1 without `buildFromSource` when the app is built with Xcode 27.1 or later. ([#51636](https://github.com/expo/expo/pull/51636) by [@brentvatne](https://github.com/brentvatne))
+
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Speed up app launch by naming the SwiftUI views without protocol conformance lookups. ([#51459](https://github.com/expo/expo/pull/51459) by [@Kudo](https://github.com/Kudo))
+- Fix Android universal TextInput placeholders ignoring textStyle. ([#51563](https://github.com/expo/expo/pull/51563) by [@sync](https://github.com/sync))
+- [iOS] Fix `Form` and `List` sections in a `Host` starting 20pt inside the large title beside the iPhone Duo's rail, where iOS drops its content margin. This works around a SwiftUI bug and applies only on an edge where the inset comes from a bar beside the content. ([#51606](https://github.com/expo/expo/pull/51606) by [@huntie](https://github.com/huntie))
+
 ## 58.0.17
 
 ### Patch Changes

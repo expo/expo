@@ -158,10 +158,15 @@ public macro SharedObject(_ name: String? = nil) =
 /// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no
 /// `@Field` wrapper needed — and the macro synthesizes the whole conversion surface from each
 /// property's static type: a memberwise `init`, the `from(object:appContext:)` /
-/// `from(dictionary:appContext:)` factories, and the `toDictionary(appContext:)` /
-/// `toObject(appContext:)` write side. The type is auto-conformed to `Record`; the synthesized
-/// methods override `Record`'s reflection-based defaults, so it stays usable anywhere a `Record`
-/// argument is expected.
+/// `from(dictionary:appContext:)` factories, the `toDictionary(appContext:)` /
+/// `toObject(appContext:)` write side, and the `JavaScriptDecodable` / `JavaScriptEncodable`
+/// conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to `Record`; the
+/// synthesized methods override `Record`'s reflection-based defaults, so it stays usable anywhere a
+/// `Record` argument is expected.
+///
+/// `decode(_:in:)` and `encode(_:in:)` use the runtime they receive and don't need an app context, so
+/// the record converts on any runtime. A class with an inheritance clause doesn't get them, so it
+/// converts only on a runtime that an app context prepared.
 ///
 /// Requiredness is inferred from each property: a default value makes it optional, an optional type
 /// makes it nullable and optional, and a non-optional property without a default is required (the
@@ -177,7 +182,7 @@ public macro SharedObject(_ name: String? = nil) =
 ///     }
 @attached(
   member,
-  names: named(init), named(from), named(toDictionary), named(toObject),
+  names: named(init), named(from), named(toDictionary), named(toObject), named(decode), named(encode),
   named(_assertTypesConformance))
 @attached(extension, conformances: Record)
 public macro Record() =

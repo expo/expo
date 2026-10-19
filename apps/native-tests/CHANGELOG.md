@@ -1,5 +1,53 @@
 # native-tests
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+  - expo@58.0.14
+  - expo-dev-client@58.0.14
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51676](https://github.com/expo/expo/pull/51676), [#51515](https://github.com/expo/expo/pull/51515), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-router@58.0.22
+  - expo-media-library@58.0.10
+  - expo-splash-screen@58.0.10
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo-notifications@58.1.5
+  - expo@58.0.13
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.12
+  - expo-router@58.0.21
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51442](https://github.com/expo/expo/pull/51442), [#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51514](https://github.com/expo/expo/pull/51514), [#51513](https://github.com/expo/expo/pull/51513), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo-background-task@58.0.11
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-updates@58.0.17
+  - expo-image@58.0.15
+  - expo-media-library@58.0.9
+  - expo-clipboard@58.0.3
+  - expo-dev-client@58.0.13
+  - expo-image-manipulator@58.0.14
+  - expo-notifications@58.1.4
+  - expo-observe@58.0.14
+  - expo-splash-screen@58.0.9
+
 ## 1.0.4
 
 ### Patch Changes

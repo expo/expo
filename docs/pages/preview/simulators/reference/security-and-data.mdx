@@ -47,9 +47,20 @@ The session page on expo.dev masks the token values by default. Anyone who can v
 
 ## Browser preview links
 
-The browser preview does not require an Expo login. When the preview is gated, the link contains a session token, and the page needs that token to show the preview.
+| Link              | Who can open it                                                    | How to get it                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Private (default) | A person who signs in to an Expo account that can view the project | EAS CLI output, **Open preview** on the session page, or **Share** in the preview                                                                            |
+| Public            | Anyone who has the link, without an Expo login                     | EAS CLI output or **Share** in the preview, for a session started with `--public-link` or `publicPreview: true`. Also, from the preview token of any session |
 
-Treat a preview link as a secret. Anyone with the link can see and use the simulator while the session runs. Share it only with the people who need it, and set a maximum duration on the session.
+A private link has this format:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
+```
+
+A public link contains the preview token. Treat a public link as a secret. Anyone with the link can see and use the simulator while the session runs. Share it only with the people who need it, and set a maximum duration on the session.
+
+A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
 ## Network access
 
@@ -100,7 +111,7 @@ No. Starting a session requires the Developer role or higher.
 
 <Collapsible summary="Can someone without an Expo account open my preview?">
 
-Yes, if they have the preview link. The preview page does not require an Expo login. When the preview is gated, the link must include the session token.
+Only with a public link. A private link requires an Expo login with access to the project. A public link contains the preview token and does not require a login. See [Browser preview links](#browser-preview-links).
 
 </Collapsible>
 

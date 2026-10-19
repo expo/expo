@@ -1,5 +1,34 @@
 # expo-template-blank
 
+## 58.0.23
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.14
+
+## 58.0.22
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.13
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.12
+
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo@58.0.11
+
 ## 58.0.19
 
 ### Patch Changes

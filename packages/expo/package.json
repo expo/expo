@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.10",
+  "version": "58.0.14",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -18,6 +18,7 @@
   },
   "bin": {
     "expo": "bin/cli",
+    "expo-modules": "bin/modules",
     "expo-modules-autolinking": "bin/autolinking",
     "fingerprint": "bin/fingerprint"
   },
@@ -242,6 +243,7 @@
     "expo-font": "workspace:~",
     "expo-keep-awake": "workspace:~",
     "expo-modules-autolinking": "workspace:~",
+    "expo-modules-cli": "workspace:~",
     "expo-modules-core": "workspace:~",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
@@ -255,7 +257,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.6",
+    "react-native": "0.88.0",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

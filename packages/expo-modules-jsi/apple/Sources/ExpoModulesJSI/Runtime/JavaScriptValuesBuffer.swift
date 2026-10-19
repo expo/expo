@@ -16,10 +16,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // Safe to use unowned: the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
   //
-  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
-  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
-  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
-  // native-side cost of a no-op host function call. `unowned(unsafe)` is a plain pointer store/load.
+  // `unowned(unsafe)` rather than `unowned`: a plain pointer store and load, with no reference
+  // counting on every buffer construction and destruction.
   internal unowned(unsafe) let runtime: JavaScriptRuntime
 
   // The start of the storage, type-erased because `facebook.jsi.Value` is not a public type.

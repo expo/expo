@@ -1,5 +1,105 @@
 # test-suite
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51582](https://github.com/expo/expo/pull/51582), [#51656](https://github.com/expo/expo/pull/51656), [#51664](https://github.com/expo/expo/pull/51664), [#51649](https://github.com/expo/expo/pull/51649))
+  - expo-modules-core@58.0.22
+  - expo-router@58.0.23
+  - expo@58.0.14
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51609](https://github.com/expo/expo/pull/51609), [#51693](https://github.com/expo/expo/pull/51693), [#51624](https://github.com/expo/expo/pull/51624), [#51689](https://github.com/expo/expo/pull/51689), [#51640](https://github.com/expo/expo/pull/51640), [#51676](https://github.com/expo/expo/pull/51676), [#51617](https://github.com/expo/expo/pull/51617), [#51515](https://github.com/expo/expo/pull/51515))
+  - expo-app-metrics@58.0.13
+  - expo-application@58.1.2
+  - expo-modules-core@58.0.21
+  - expo-crypto@58.0.7
+  - expo-location@58.0.17
+  - expo-blur@58.0.4
+  - expo-router@58.0.22
+  - @expo/ui@58.0.20
+  - expo-haptics@58.0.7
+  - expo-media-library@58.0.10
+  - expo-image@58.0.15
+  - expo-observe@58.0.15
+  - expo-auth-session@58.0.13
+  - expo-notifications@58.1.5
+  - expo@58.0.13
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51493](https://github.com/expo/expo/pull/51493), [#51632](https://github.com/expo/expo/pull/51632), [#51636](https://github.com/expo/expo/pull/51636), [#51639](https://github.com/expo/expo/pull/51639))
+  - expo-modules-core@58.0.20
+  - @expo/ui@58.0.19
+  - expo-glass-effect@58.0.4
+  - expo@58.0.12
+  - expo-router@58.0.21
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51456](https://github.com/expo/expo/pull/51456), [#51560](https://github.com/expo/expo/pull/51560), [#51455](https://github.com/expo/expo/pull/51455), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51243](https://github.com/expo/expo/pull/51243), [#51558](https://github.com/expo/expo/pull/51558), [#51514](https://github.com/expo/expo/pull/51514), [#51513](https://github.com/expo/expo/pull/51513), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51570](https://github.com/expo/expo/pull/51570), [#51540](https://github.com/expo/expo/pull/51540), [#51606](https://github.com/expo/expo/pull/51606))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-system-ui@58.0.6
+  - expo-modules-core@58.0.19
+  - expo-asset@58.0.16
+  - expo-image@58.0.15
+  - expo-video@58.0.11
+  - @expo/ui@58.0.18
+  - expo-media-library@58.0.9
+  - expo-task-manager@58.0.12
+  - expo-constants@58.0.12
+  - expo-file-system@58.0.9
+  - expo-app-metrics@58.0.12
+  - expo-application@58.1.1
+  - expo-audio@58.0.9
+  - expo-auth-session@58.0.12
+  - expo-background-fetch@58.0.11
+  - expo-battery@58.0.3
+  - expo-blob@58.0.3
+  - expo-blur@58.0.3
+  - expo-brightness@58.0.2
+  - expo-calendar@58.0.6
+  - expo-camera@58.0.10
+  - expo-cellular@58.0.3
+  - expo-checkbox@58.0.2
+  - expo-clipboard@58.0.3
+  - expo-contacts@58.0.7
+  - expo-crypto@58.0.6
+  - expo-device@58.0.5
+  - expo-eas-client@58.0.2
+  - expo-font@58.0.8
+  - expo-gl@58.0.3
+  - expo-glass-effect@58.0.3
+  - expo-haptics@58.0.6
+  - expo-image-manipulator@58.0.14
+  - expo-image-picker@58.0.10
+  - expo-keep-awake@58.0.3
+  - expo-linear-gradient@58.0.3
+  - expo-linking@58.0.13
+  - expo-localization@58.0.4
+  - expo-location@58.0.16
+  - expo-navigation-bar@58.0.4
+  - expo-network@58.0.3
+  - expo-notifications@58.1.4
+  - expo-observe@58.0.14
+  - expo-screen-orientation@58.0.3
+  - expo-secure-store@58.0.2
+  - expo-sms@58.0.2
+  - expo-speech@58.0.3
+  - expo-sqlite@58.0.13
+  - expo-store-review@58.0.2
+  - expo-web-browser@58.0.6
+  - @expo/html-elements@58.0.3
+
 ## 1.0.4
 
 ### Patch Changes
