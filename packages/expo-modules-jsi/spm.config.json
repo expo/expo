@@ -6,6 +6,7 @@
       "name": "ExpoModulesJSI",
       "podName": "ExpoModulesJSI",
       "headersXCFramework": true,
+      "publishAbiDescriptor": true,
       "platforms": [
         "iOS(\"16.4\")"
       ],
