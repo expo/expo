@@ -62,11 +62,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// its long-lived state. The values can only be touched on the JS thread while the runtime is
   /// alive, so schedule the work there; if the runtime is already gone, the teardown sweep has
   /// released everything and there is nothing to do (this is the `#47454` off-thread-drop case).
+  /// The release runs after a settle that is already scheduled, so the settle still finds the
+  /// resolve and reject functions.
   deinit {
     guard scheduler.mayBeAlive else {
       return
     }
-    scheduler.schedule { [longLivedState] runtime in
+    scheduler.scheduleRelease { [longLivedState] runtime in
       runtime.longLivedObjects.remove(longLivedState)
       longLivedState.allowRelease()
     }
