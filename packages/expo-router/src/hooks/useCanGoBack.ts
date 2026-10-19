@@ -25,9 +25,7 @@ import { CanGoBackContext } from '../react-navigation/core/CanGoBackContext';
 export function useCanGoBack(): boolean {
   const canGoBack = use(CanGoBackContext);
   if (canGoBack === undefined) {
-    throw new Error(
-      'useCanGoBack was called from a generated route. This is likely a bug in Expo Router.'
-    );
+    throw new Error('useCanGoBack was called from outside of Expo Router application.');
   }
   return canGoBack;
 }
