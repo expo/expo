@@ -37,9 +37,9 @@ Only Release Managers, Admins, and Owners can run these commands. Run either com
 
 ### EAS Workflows and protected channels
 
-> **warning** [EAS Workflows](/eas/workflows/introduction/) `update` jobs cannot publish to a branch that a protected channel points to, even when a Release Manager, Admin, or Owner starts the run. This is a known limitation that we plan to fix.
+> **warning** [EAS Workflows](/eas/workflows/introduction/) jobs run with Developer-level permissions. Update jobs therefore can't publish to a branch referenced by a protected channel, even when the run is started by a Release Manager, Admin, Owner, or robot with one of those roles. We're exploring a way to let you opt specific jobs into higher permissions.
 
-Until then, if your workflow publishes to a protected channel, remove protection from that channel with `eas channel:unprotect`, or run `eas update` outside EAS Workflows as a member with the Release Manager role or higher.
+If your workflow publishes to a protected channel, remove protection from that channel with `eas channel:unprotect`, or run `eas update` outside EAS Workflows with an access token for a user or robot with the Release Manager role or higher.
 
 ## Coming soon
 
