@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Fix web `ViewStyle` and `TextStyle` types disagreeing on `cursor`, `transitionDuration`, and `userSelect`. ([#51805](https://github.com/expo/expo/pull/51805) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823))
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - @expo/cli@58.1.13
+
 ## 58.0.15
 
 ### Patch Changes

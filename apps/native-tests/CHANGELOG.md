@@ -1,5 +1,14 @@
 # native-tests
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-image-manipulator@58.0.15
+  - expo-media-library@58.0.11
+  - expo@58.0.16
+
 ## 1.0.9
 
 ### Patch Changes
