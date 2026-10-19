@@ -1,0 +1,766 @@
+diff --git a/src/PackageResolve.d.ts b/src/PackageResolve.d.ts
+index 253c62b5d85852d25339d36dbba233bc9b631056..e2cd48677d92a7e0dc4ca849a14c79dfdc45c5e1 100644
+--- a/src/PackageResolve.d.ts
++++ b/src/PackageResolve.d.ts
+@@ -6,7 +6,7 @@
+  *
+  * @noformat
+  * @oncall react_native
+- * @generated SignedSource<<4a9146c2c7283c7a17d30b30025f1208>>
++ * @generated SignedSource<<425e22eb859efb9efbed799715751c3a>>
+  *
+  * This file was translated from Flow by scripts/generateTypeScriptDefinitions.js
+  * Original file: packages/metro-resolver/src/PackageResolve.js
+@@ -41,6 +41,29 @@ export declare function redirectModulePath(
+   }>,
+   modulePath: string,
+ ): string | false;
++/**
++ * Reuse the containing package for non-directory candidates in one directory.
++ * Initialize lazily so bare hits avoid a package lookup.
++ */
++export declare function createDirectoryRedirector(
++  context: ResolutionContext,
++  directory: string,
++): (absolutePath: string) => string | false;
++/**
++ * `redirectModulePath` for a module path whose containing package is already
++ * known. `packageRelativePath` is the path of the module relative to the
++ * package root, with system separators. Returns `false` if the module should
++ * be ignored, and `modulePath` if no `package.json` mapping is matched.
++ */
++export declare function redirectPackageSubpath(
++  context: Readonly<{mainFields: ResolutionContext['mainFields']}>,
++  modulePath: string,
++  containingPackage: Readonly<{
++    packageJson: PackageInfo['packageJson'];
++    rootPath: PackageInfo['rootPath'];
++  }>,
++  packageRelativePath: string,
++): string | false;
+ /**
+  * Get the mapped replacement for the given subpath defined by matching
+  * `mainFields` entries in the passed `package.json`
+diff --git a/src/PackageResolve.js b/src/PackageResolve.js
+index c1bcc60f2b4686ce1238314ee3fbdc4698726d9a..804034dd002cfb6ce475f30666aa937806d4b47c 100644
+--- a/src/PackageResolve.js
++++ b/src/PackageResolve.js
+@@ -3,9 +3,11 @@
+ Object.defineProperty(exports, "__esModule", {
+   value: true,
+ });
++exports.createDirectoryRedirector = createDirectoryRedirector;
+ exports.getPackageEntryPoint = getPackageEntryPoint;
+ exports.matchSubpathFromMainFields = matchSubpathFromMainFields;
+ exports.redirectModulePath = redirectModulePath;
++exports.redirectPackageSubpath = redirectPackageSubpath;
+ var _paths = require("./utils/paths");
+ var _nodePath = _interopRequireDefault(require("node:path"));
+ function _interopRequireDefault(e) {
+@@ -45,7 +47,6 @@ function redirectModulePath(context, modulePath) {
+   if (containingPackage == null) {
+     return modulePath;
+   }
+-  let redirectedPath;
+   if (modulePath.startsWith(".") || isModulePathAbsolute) {
+     const packageRelativeModulePath = isModulePathAbsolute
+       ? containingPackage.packageRelativePath
+@@ -53,28 +54,88 @@ function redirectModulePath(context, modulePath) {
+           _nodePath.default.dirname(containingPackage.packageRelativePath),
+           modulePath,
+         );
+-    redirectedPath = matchSubpathFromMainFields(
+-      "./" + (0, _paths.systemToPosixPath)(packageRelativeModulePath),
+-      containingPackage.packageJson,
+-      mainFields,
+-    );
+-    if (typeof redirectedPath === "string") {
+-      redirectedPath = _nodePath.default.isAbsolute(redirectedPath)
+-        ? _nodePath.default.normalize(redirectedPath)
+-        : _nodePath.default.join(containingPackage.rootPath, redirectedPath);
+-    }
+-  } else {
+-    redirectedPath = matchSubpathFromMainFields(
++    return redirectPackageSubpath(
++      context,
+       modulePath,
+-      containingPackage.packageJson,
+-      mainFields,
++      containingPackage,
++      packageRelativeModulePath,
+     );
+   }
++  const redirectedPath = matchSubpathFromMainFields(
++    modulePath,
++    containingPackage.packageJson,
++    mainFields,
++  );
+   if (redirectedPath != null) {
+     return redirectedPath;
+   }
+   return modulePath;
+ }
++function createDirectoryRedirector(context, directory) {
++  let redirect = null;
++  return (absolutePath) => {
++    if (redirect == null) {
++      redirect = createCandidateRedirect(context, directory);
++    }
++    return redirect(absolutePath);
++  };
++}
++function createCandidateRedirect(context, directory) {
++  const probe = directory.endsWith(_nodePath.default.sep)
++    ? directory + "package.json"
++    : directory + _nodePath.default.sep + "package.json";
++  const owning = context.getPackageForModule(probe);
++  if (
++    owning == null ||
++    !hasReplacementMap(owning.packageJson, context.mainFields)
++  ) {
++    return (absolutePath) => absolutePath;
++  }
++  const rootPrefix = owning.rootPath.endsWith(_nodePath.default.sep)
++    ? owning.rootPath
++    : owning.rootPath + _nodePath.default.sep;
++  return (absolutePath) => {
++    if (!absolutePath.startsWith(rootPrefix)) {
++      return redirectModulePath(context, absolutePath);
++    }
++    return redirectPackageSubpath(
++      context,
++      absolutePath,
++      owning,
++      absolutePath.slice(rootPrefix.length),
++    );
++  };
++}
++function hasReplacementMap(packageJson, mainFields) {
++  if (packageJson == null) {
++    return false;
++  }
++  for (let idx = 0; idx < mainFields.length; idx++) {
++    const value = packageJson[mainFields[idx]];
++    if (value != null && typeof value !== "string") {
++      return true;
++    }
++  }
++  return false;
++}
++function redirectPackageSubpath(
++  context,
++  modulePath,
++  containingPackage,
++  packageRelativePath,
++) {
++  const redirectedPath = matchSubpathFromMainFields(
++    "./" + (0, _paths.systemToPosixPath)(packageRelativePath),
++    containingPackage.packageJson,
++    context.mainFields,
++  );
++  if (typeof redirectedPath === "string") {
++    return _nodePath.default.isAbsolute(redirectedPath)
++      ? _nodePath.default.normalize(redirectedPath)
++      : _nodePath.default.join(containingPackage.rootPath, redirectedPath);
++  }
++  return redirectedPath === false ? false : modulePath;
++}
+ function matchSubpathFromMainFields(subpath, pkg, mainFields) {
+   let replacements = null;
+   for (let i = mainFields.length - 1; i >= 0; i--) {
+diff --git a/src/PackageResolve.js.flow b/src/PackageResolve.js.flow
+index c6e1efb74bbb8ca177e688afcfba929b00d3c3ba..0ca715d2d39ceff460540eac75ee6aa8c9cba556 100644
+--- a/src/PackageResolve.js.flow
++++ b/src/PackageResolve.js.flow
+@@ -83,7 +83,7 @@ export function redirectModulePath(
+    *
+    * - A relative specifier (beginning with '.'), which may be redirected by a
+    *   `package.json` file local to `context.originModulePath`.
+-   *     - Note: A path begining with '/' is treated as an absolute specifier
++   *     - Note: A path beginning with '/' is treated as an absolute specifier
+    *       (non-standard).
+    * - A bare specifier (e.g. 'some-pkg', 'some-pkg/foo'), which may be
+    *   redirected by `package.json` rules in the containing package.
+@@ -106,8 +106,6 @@ export function redirectModulePath(
+     return modulePath;
+   }
+ 
+-  let redirectedPath;
+-
+   if (modulePath.startsWith('.') || isModulePathAbsolute) {
+     const packageRelativeModulePath = isModulePathAbsolute
+       ? // If the module path is absolute, containingPackage is relative to it
+@@ -120,33 +118,23 @@ export function redirectModulePath(
+           path.dirname(containingPackage.packageRelativePath),
+           modulePath,
+         );
+-
+-    redirectedPath = matchSubpathFromMainFields(
+-      // Use prefixed POSIX path for lookup in package.json
+-      './' + systemToPosixPath(packageRelativeModulePath),
+-      containingPackage.packageJson,
+-      mainFields,
+-    );
+-
+-    if (typeof redirectedPath === 'string') {
+-      // BRITTLE ASSUMPTION: This is always treated as a package-relative path
+-      // and is converted back, even if the redirected path is a specifier
+-      // referring to another package.
+-      redirectedPath = path.isAbsolute(redirectedPath)
+-        ? path.normalize(redirectedPath)
+-        : path.join(containingPackage.rootPath, redirectedPath);
+-    }
+-  } else {
+-    // Otherwise, `modulePath` may be an unprefixed relative path or a bare
+-    // specifier (can also be an absolute specifier prefixed with a URL scheme).
+-    // This is used only by the "browser" spec.
+-    redirectedPath = matchSubpathFromMainFields(
++    return redirectPackageSubpath(
++      context,
+       modulePath,
+-      containingPackage.packageJson,
+-      mainFields,
++      containingPackage,
++      packageRelativeModulePath,
+     );
+   }
+ 
++  // Otherwise, `modulePath` may be an unprefixed relative path or a bare
++  // specifier (can also be an absolute specifier prefixed with a URL scheme).
++  // This is used only by the "browser" spec.
++  const redirectedPath = matchSubpathFromMainFields(
++    modulePath,
++    containingPackage.packageJson,
++    mainFields,
++  );
++
+   if (redirectedPath != null) {
+     return redirectedPath;
+   }
+@@ -154,6 +142,109 @@ export function redirectModulePath(
+   return modulePath;
+ }
+ 
++/**
++ * Reuse the containing package for non-directory candidates in one directory.
++ * Initialize lazily so bare hits avoid a package lookup.
++ */
++export function createDirectoryRedirector(
++  context: ResolutionContext,
++  directory: string,
++): (absolutePath: string) => string | false {
++  let redirect: ?(absolutePath: string) => string | false = null;
++  return (absolutePath: string): string | false => {
++    if (redirect == null) {
++      redirect = createCandidateRedirect(context, directory);
++    }
++    return redirect(absolutePath);
++  };
++}
++
++function createCandidateRedirect(
++  context: ResolutionContext,
++  directory: string,
++): (absolutePath: string) => string | false {
++  // Probe a file in this directory, avoiding nested candidate packages.
++  const probe = directory.endsWith(path.sep)
++    ? directory + 'package.json'
++    : directory + path.sep + 'package.json';
++  const owning = context.getPackageForModule(probe);
++  if (
++    owning == null ||
++    !hasReplacementMap(owning.packageJson, context.mainFields)
++  ) {
++    return (absolutePath: string) => absolutePath;
++  }
++  const rootPrefix = owning.rootPath.endsWith(path.sep)
++    ? owning.rootPath
++    : owning.rootPath + path.sep;
++  return (absolutePath: string): string | false => {
++    if (!absolutePath.startsWith(rootPrefix)) {
++      return redirectModulePath(context, absolutePath);
++    }
++    return redirectPackageSubpath(
++      context,
++      absolutePath,
++      owning,
++      absolutePath.slice(rootPrefix.length),
++    );
++  };
++}
++
++function hasReplacementMap(
++  packageJson: PackageJson,
++  mainFields: ResolutionContext['mainFields'],
++): boolean {
++  if (packageJson == null) {
++    return false;
++  }
++  for (let idx = 0; idx < mainFields.length; idx++) {
++    // $FlowFixMe[invalid-computed-prop] mainFields are package.json keys
++    const value = packageJson[mainFields[idx]];
++    if (value != null && typeof value !== 'string') {
++      return true;
++    }
++  }
++  return false;
++}
++
++/**
++ * `redirectModulePath` for a module path whose containing package is already
++ * known. `packageRelativePath` is the path of the module relative to the
++ * package root, with system separators. Returns `false` if the module should
++ * be ignored, and `modulePath` if no `package.json` mapping is matched.
++ */
++export function redirectPackageSubpath(
++  context: Readonly<{
++    mainFields: ResolutionContext['mainFields'],
++    ...
++  }>,
++  modulePath: string,
++  containingPackage: Readonly<{
++    packageJson: PackageInfo['packageJson'],
++    rootPath: PackageInfo['rootPath'],
++    ...
++  }>,
++  packageRelativePath: string,
++): string | false {
++  const redirectedPath = matchSubpathFromMainFields(
++    // Use prefixed POSIX path for lookup in package.json
++    './' + systemToPosixPath(packageRelativePath),
++    containingPackage.packageJson,
++    context.mainFields,
++  );
++
++  if (typeof redirectedPath === 'string') {
++    // BRITTLE ASSUMPTION: This is always treated as a package-relative path
++    // and is converted back, even if the redirected path is a specifier
++    // referring to another package.
++    return path.isAbsolute(redirectedPath)
++      ? path.normalize(redirectedPath)
++      : path.join(containingPackage.rootPath, redirectedPath);
++  }
++
++  return redirectedPath === false ? false : modulePath;
++}
++
+ /**
+  * Get the mapped replacement for the given subpath defined by matching
+  * `mainFields` entries in the passed `package.json`
+diff --git a/src/createDefaultContext.d.ts b/src/createDefaultContext.d.ts
+index be523fd87a5ff597fd38f0743d12102e7f78b6eb..c2a761e655724d1d18eae54904785972fb5c1adf 100644
+--- a/src/createDefaultContext.d.ts
++++ b/src/createDefaultContext.d.ts
+@@ -6,7 +6,7 @@
+  *
+  * @noformat
+  * @oncall react_native
+- * @generated SignedSource<<b5ad132ed29e3728d577bd155a4075d4>>
++ * @generated SignedSource<<a0604c894a58948aa743231bc0eb0fa3>>
+  *
+  * This file was translated from Flow by scripts/generateTypeScriptDefinitions.js
+  * Original file: packages/metro-resolver/src/createDefaultContext.js
+@@ -19,8 +19,9 @@ import type {ResolutionContext} from './types';
+ import type {TransformResultDependency} from 'metro/private/DeltaBundler/types';
+ 
+ type PartialContext = Readonly<
+-  Omit<ResolutionContext, 'redirectModulePath'> & {
++  Omit<ResolutionContext, 'redirectModulePath' | 'fileSystemOpenDir'> & {
+     redirectModulePath?: ResolutionContext['redirectModulePath'] | undefined;
++    fileSystemOpenDir?: ResolutionContext['fileSystemOpenDir'] | undefined;
+   }
+ >;
+ /**
+diff --git a/src/createDefaultContext.js b/src/createDefaultContext.js
+index 595b3f96344a6ddbd7055f5b9976090f7bb18621..ffc3d0791f0e78c9efbd7ab118993f22ec379394 100644
+--- a/src/createDefaultContext.js
++++ b/src/createDefaultContext.js
+@@ -5,11 +5,31 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = createDefaultContext;
+ var _PackageResolve = require("./PackageResolve");
++var _nodePath = _interopRequireDefault(require("node:path"));
++function _interopRequireDefault(e) {
++  return e && e.__esModule ? e : { default: e };
++}
+ function createDefaultContext(context, dependency) {
+   return {
+     redirectModulePath: (modulePath) =>
+       (0, _PackageResolve.redirectModulePath)(context, modulePath),
+     dependency,
+     ...context,
++    fileSystemOpenDir:
++      context.fileSystemOpenDir ??
++      ((directory) => {
++        const result = context.fileSystemLookup(directory);
++        if (!result.exists || result.type !== "d") {
++          return null;
++        }
++        const { realPath } = result;
++        return {
++          realPath,
++          lookup: (basename) =>
++            context.fileSystemLookup(
++              _nodePath.default.join(realPath, basename),
++            ),
++        };
++      }),
+   };
+ }
+diff --git a/src/createDefaultContext.js.flow b/src/createDefaultContext.js.flow
+index c16e3c26bf3e682ff6bf3442cc94995d8c699e0b..986a3d4ea430463e0469ed41bb308a61e1310e2e 100644
+--- a/src/createDefaultContext.js.flow
++++ b/src/createDefaultContext.js.flow
+@@ -13,10 +13,12 @@ import type {ResolutionContext} from './types';
+ import type {TransformResultDependency} from 'metro/private/DeltaBundler/types';
+ 
+ import {redirectModulePath} from './PackageResolve';
++import path from 'node:path';
+ 
+ type PartialContext = Readonly<{
+   ...ResolutionContext,
+   redirectModulePath?: ResolutionContext['redirectModulePath'],
++  fileSystemOpenDir?: ResolutionContext['fileSystemOpenDir'],
+ }>;
+ 
+ /**
+@@ -33,5 +35,21 @@ export default function createDefaultContext(
+       redirectModulePath(context, modulePath),
+     dependency,
+     ...context,
++    // NOTE: `fileSystemOpenDir` is currently not required for backwards-compatibility, but
++    // can be cleanly implemented with a fallback performing individual fileSystemLookup calls again
++    fileSystemOpenDir:
++      context.fileSystemOpenDir ??
++      (directory => {
++        const result = context.fileSystemLookup(directory);
++        if (!result.exists || result.type !== 'd') {
++          return null;
++        }
++        const {realPath} = result;
++        return {
++          realPath,
++          lookup: basename =>
++            context.fileSystemLookup(path.join(realPath, basename)),
++        };
++      }),
+   };
+ }
+diff --git a/src/index.d.ts b/src/index.d.ts
+index b2b7d8c67a27994f704c75eb7a614ad37ad125f4..2590f086af2cce4a85dc71ef2e4c111bae829c88 100644
+--- a/src/index.d.ts
++++ b/src/index.d.ts
+@@ -6,7 +6,7 @@
+  *
+  * @noformat
+  * @oncall react_native
+- * @generated SignedSource<<788c74a2982d6f2a21f8a1bc8182e0a4>>
++ * @generated SignedSource<<2459d463a9862b9d71f9a74f1953b6dd>>
+  *
+  * This file was translated from Flow by scripts/generateTypeScriptDefinitions.js
+  * Original file: packages/metro-resolver/src/index.js
+@@ -24,7 +24,9 @@ export type {
+   FileAndDirCandidates,
+   FileCandidates,
+   FileResolution,
++  FileSystemDir,
+   FileSystemLookup,
++  FileSystemOpenDir,
+   ResolutionContext,
+   Resolution,
+   ResolveAsset,
+diff --git a/src/index.js.flow b/src/index.js.flow
+index f17cbbf4fa668dc87880e2b3e23686a02e91f18c..60b3db57c2be17c7de2f47d16ee9b86cb896fe53 100644
+--- a/src/index.js.flow
++++ b/src/index.js.flow
+@@ -18,7 +18,9 @@ export type {
+   FileAndDirCandidates,
+   FileCandidates,
+   FileResolution,
++  FileSystemDir,
+   FileSystemLookup,
++  FileSystemOpenDir,
+   ResolutionContext,
+   Resolution,
+   ResolveAsset,
+diff --git a/src/resolve.js b/src/resolve.js
+index 1b7679ec1185dbbb8fa774ca4c3165939f8463e5..39a2ce8317570723f0cf069092358e66c33e21fd 100644
+--- a/src/resolve.js
++++ b/src/resolve.js
+@@ -584,10 +584,18 @@ function resolveFile(context, dirPath, fileName, platform) {
+   }
+   const candidateExts = [];
+   const filePathPrefix = _nodePath.default.join(dirPath, fileName);
++  const directory = _nodePath.default.dirname(filePathPrefix);
++  const openedDir = context.fileSystemOpenDir(directory);
+   const sfContext = {
+     ...context,
+     candidateExts,
+     filePathPrefix,
++    openedDir,
++    openedFrom: directory,
++    redirectCandidate: (0, _PackageResolve.createDirectoryRedirector)(
++      context,
++      directory,
++    ),
+   };
+   const sourceFileResolution = resolveSourceFile(sfContext, platform);
+   if (sourceFileResolution != null) {
+@@ -639,22 +647,46 @@ function resolveSourceFileForAllExts(context, sourceExt, platform) {
+ }
+ function resolveSourceFileForExt(context, extension) {
+   const filePath = `${context.filePathPrefix}${extension}`;
+-  const redirectedPath =
+-    extension !== ""
+-      ? (0, _PackageResolve.redirectModulePath)(context, filePath)
+-      : filePath;
+-  if (redirectedPath === false) {
+-    return {
+-      type: "empty",
+-    };
++  let lookupResult = lookupCandidate(context, filePath);
++  if (extension !== "") {
++    const redirectedPath =
++      lookupResult.exists && lookupResult.type === "d"
++        ? (0, _PackageResolve.redirectModulePath)(context, filePath)
++        : context.redirectCandidate(filePath);
++    if (redirectedPath === false) {
++      return {
++        type: "empty",
++      };
++    }
++    if (redirectedPath !== filePath) {
++      lookupResult = lookupCandidate(context, redirectedPath);
++    }
+   }
+-  const lookupResult = context.fileSystemLookup(redirectedPath);
+   if (lookupResult.exists && lookupResult.type === "f") {
+     return lookupResult.realPath;
+   }
+   context.candidateExts.push(extension);
+   return null;
+ }
++function lookupCandidate(context, absolutePath) {
++  const directory = context.openedFrom;
++  const prefix = directory.endsWith(_nodePath.default.sep)
++    ? directory
++    : directory + _nodePath.default.sep;
++  if (!absolutePath.startsWith(prefix)) {
++    return context.fileSystemLookup(absolutePath);
++  }
++  const basename = absolutePath.slice(prefix.length);
++  if (basename.length === 0 || basename.includes(_nodePath.default.sep)) {
++    return context.fileSystemLookup(absolutePath);
++  } else if (context.openedDir == null) {
++    return {
++      exists: false,
++    };
++  } else {
++    return context.openedDir.lookup(basename);
++  }
++}
+ function isRelativeImport(filePath) {
+   return /^[.][.]?(?:[/]|$)/.test(filePath);
+ }
+diff --git a/src/resolve.js.flow b/src/resolve.js.flow
+index 689958f743968ac5d5ad0f186770a8c0b3962132..0debd653476c3b6ee2830403da8404b509edb6fb 100644
+--- a/src/resolve.js.flow
++++ b/src/resolve.js.flow
+@@ -12,6 +12,8 @@
+ import type {
+   FileAndDirCandidates,
+   FileCandidates,
++  FileSystemDir,
++  FileSystemLookup,
+   Resolution,
+   ResolutionContext,
+   Result,
+@@ -28,6 +30,7 @@ import PackagePathNotExportedError from './errors/PackagePathNotExportedError';
+ import {resolvePackageTargetFromExports} from './PackageExportsResolve';
+ import {resolvePackageTargetFromImports} from './PackageImportsResolve';
+ import {
++  createDirectoryRedirector,
+   getPackageEntryPoint,
+   matchSubpathFromMainFields,
+   redirectModulePath,
+@@ -743,7 +746,17 @@ function resolveFile(
+ 
+   const candidateExts: Array<string> = [];
+   const filePathPrefix = path.join(dirPath, fileName);
+-  const sfContext = {...context, candidateExts, filePathPrefix};
++  // Share one directory walk across platform and extension candidates
++  const directory = path.dirname(filePathPrefix);
++  const openedDir = context.fileSystemOpenDir(directory);
++  const sfContext: SourceFileContext = {
++    ...context,
++    candidateExts,
++    filePathPrefix,
++    openedDir,
++    openedFrom: directory,
++    redirectCandidate: createDirectoryRedirector(context, directory),
++  };
+   const sourceFileResolution = resolveSourceFile(sfContext, platform);
+   if (sourceFileResolution != null) {
+     if (typeof sourceFileResolution === 'string') {
+@@ -758,6 +771,9 @@ type SourceFileContext = Readonly<{
+   ...ResolutionContext,
+   candidateExts: Array<string>,
+   filePathPrefix: string,
++  openedDir: ?FileSystemDir,
++  openedFrom: string,
++  redirectCandidate: (absolutePath: string) => string | false,
+ }>;
+ 
+ // Either a full path, or a restricted subset of Resolution.
+@@ -829,13 +845,21 @@ function resolveSourceFileForExt(
+   extension: string,
+ ): SourceFileResolution {
+   const filePath = `${context.filePathPrefix}${extension}`;
+-  const redirectedPath =
+-    // Any redirections for the bare path have already happened
+-    extension !== '' ? redirectModulePath(context, filePath) : filePath;
+-  if (redirectedPath === false) {
+-    return {type: 'empty'};
++  let lookupResult = lookupCandidate(context, filePath);
++  // NOTE: Plain paths without an extension already had redirections handled,
++  // so only candidates with an extension need to check for redirections here
++  if (extension !== '') {
++    const redirectedPath =
++      lookupResult.exists && lookupResult.type === 'd'
++        ? redirectModulePath(context, filePath)
++        : context.redirectCandidate(filePath);
++    if (redirectedPath === false) {
++      return {type: 'empty'};
++    }
++    if (redirectedPath !== filePath) {
++      lookupResult = lookupCandidate(context, redirectedPath);
++    }
+   }
+-  const lookupResult = context.fileSystemLookup(redirectedPath);
+   if (lookupResult.exists && lookupResult.type === 'f') {
+     return lookupResult.realPath;
+   }
+@@ -843,6 +867,33 @@ function resolveSourceFileForExt(
+   return null;
+ }
+ 
++/**
++ * Use the opened directory for direct children, falling back for other paths.
++ */
++function lookupCandidate(
++  context: SourceFileContext,
++  absolutePath: string,
++): ReturnType<FileSystemLookup> {
++  // Browser-field redirects can leave this directory. Only direct children
++  // can use its opened handle; other paths need a full filesystem lookup.
++  const directory = context.openedFrom;
++  // A filesystem root already ends in a separator.
++  const prefix = directory.endsWith(path.sep)
++    ? directory
++    : directory + path.sep;
++  if (!absolutePath.startsWith(prefix)) {
++    return context.fileSystemLookup(absolutePath);
++  }
++  const basename = absolutePath.slice(prefix.length);
++  if (basename.length === 0 || basename.includes(path.sep)) {
++    return context.fileSystemLookup(absolutePath);
++  } else if (context.openedDir == null) {
++    return {exists: false};
++  } else {
++    return context.openedDir.lookup(basename);
++  }
++}
++
+ function isRelativeImport(filePath: string) {
+   return /^[.][.]?(?:[/]|$)/.test(filePath);
+ }
+diff --git a/src/types.d.ts b/src/types.d.ts
+index 224c050f29ce08f18c307655f79d8288bd5fed2f..0a011758ff4aca8346c023f8c95b50e7078d3bbf 100644
+--- a/src/types.d.ts
++++ b/src/types.d.ts
+@@ -6,7 +6,7 @@
+  *
+  * @noformat
+  * @oncall react_native
+- * @generated SignedSource<<092d7ceea5aeb044e176dcd3b8019252>>
++ * @generated SignedSource<<7bae2fd8214237c0384251523ce894e0>>
+  *
+  * This file was translated from Flow by scripts/generateTypeScriptDefinitions.js
+  * Original file: packages/metro-resolver/src/types.js
+@@ -85,6 +85,19 @@ export type DoesFileExist = (filePath: string) => boolean;
+  * a real absolute path on existence.
+  */
+ export type FileSystemLookup = (absoluteOrProjectRelativePath: string) => {exists: false} | {exists: true; type: 'f' | 'd'; realPath: string};
++/**
++ * A directory opened by `fileSystemOpenDir`. `lookup` checks one direct child
++ * and matches `fileSystemLookup` of `realPath` joined with that basename.
++ */
++export type FileSystemDir = {
++  realPath: string;
++  lookup(basename: string): {exists: false} | {exists: true; type: 'f' | 'd'; realPath: string};
++};
++/**
++ * Open a directory handle allowing many files in it to be checked without repeating
++ * filesystem traversal. Returns null when the path is not an existing directory.
++ */
++export type FileSystemOpenDir = (absoluteOrProjectRelativePath: string) => null | undefined | FileSystemDir;
+ /**
+  * Given a directory path and the base asset name, return a list of all the
+  * asset file names that match the given base name in that directory. Return
+@@ -140,6 +153,12 @@ export type ResolutionContext = Readonly<{
+    * real path.
+    */
+   fileSystemLookup: FileSystemLookup;
++  /**
++   * Synchronously returns a handle to a directory, speeding up parallel file
++   * lookups by basename. `createDefaultContext` supplies a fallback using
++   * `fileSystemLookup` when omitted.
++   */
++  fileSystemOpenDir: FileSystemOpenDir;
+   /**
+    * The ordered list of fields to read in `package.json` to resolve a main
+    * entry point based on the "browser" field spec.
+diff --git a/src/types.js.flow b/src/types.js.flow
+index aae7f0c6f52e9c8c9d1e187305a39494941156d6..4e8a41f73438c76b7031796c5d7b43f36fc66e53 100644
+--- a/src/types.js.flow
++++ b/src/types.js.flow
+@@ -128,6 +128,25 @@ export type FileSystemLookup = (
+   absoluteOrProjectRelativePath: string,
+ ) => {exists: false} | {exists: true, type: 'f' | 'd', realPath: string};
+ 
++/**
++ * A directory opened by `fileSystemOpenDir`. `lookup` checks one direct child
++ * and matches `fileSystemLookup` of `realPath` joined with that basename.
++ */
++export type FileSystemDir = {
++  realPath: string,
++  lookup(
++    basename: string,
++  ): {exists: false} | {exists: true, type: 'f' | 'd', realPath: string},
++};
++
++/**
++ * Open a directory handle allowing many files in it to be checked without repeating
++ * filesystem traversal. Returns null when the path is not an existing directory.
++ */
++export type FileSystemOpenDir = (
++  absoluteOrProjectRelativePath: string,
++) => ?FileSystemDir;
++
+ /**
+  * Given a directory path and the base asset name, return a list of all the
+  * asset file names that match the given base name in that directory. Return
+@@ -196,6 +215,13 @@ export type ResolutionContext = Readonly<{
+    */
+   fileSystemLookup: FileSystemLookup,
+ 
++  /**
++   * Synchronously returns a handle to a directory, speeding up parallel file
++   * lookups by basename. `createDefaultContext` supplies a fallback using
++   * `fileSystemLookup` when omitted.
++   */
++  fileSystemOpenDir: FileSystemOpenDir,
++
+   /**
+    * The ordered list of fields to read in `package.json` to resolve a main
+    * entry point based on the "browser" field spec.

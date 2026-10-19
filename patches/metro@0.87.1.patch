@@ -1,0 +1,250 @@
+diff --git a/src/node-haste/DependencyGraph/ModuleResolution.d.ts b/src/node-haste/DependencyGraph/ModuleResolution.d.ts
+index 45eee6f33b4897f46831dc558aecd4b39890706e..7488b688234950e147df6171f0b87e4ed9012a0b 100644
+--- a/src/node-haste/DependencyGraph/ModuleResolution.d.ts
++++ b/src/node-haste/DependencyGraph/ModuleResolution.d.ts
+@@ -6,7 +6,7 @@
+  *
+  * @noformat
+  * @oncall react_native
+- * @generated SignedSource<<61350f4e1765f390693e1c2b075c4510>>
++ * @generated SignedSource<<83a35e7e1f7267f442dce4494f5ee754>>
+  *
+  * This file was translated from Flow by scripts/generateTypeScriptDefinitions.js
+  * Original file: packages/metro/src/node-haste/DependencyGraph/ModuleResolution.js
+@@ -18,7 +18,7 @@
+ import type {BundlerResolution, TransformResultDependency} from '../../DeltaBundler/types';
+ import type {Reporter} from '../../lib/reporting';
+ import type {ResolverInputOptions} from '../../shared/types';
+-import type {CustomResolver, DoesFileExist, FileCandidates, FileSystemLookup, Resolution, ResolveAsset} from 'metro-resolver';
++import type {CustomResolver, DoesFileExist, FileCandidates, FileSystemLookup, FileSystemOpenDir, Resolution, ResolveAsset} from 'metro-resolver';
+ import type {PackageForModule, PackageJson} from 'metro-resolver/private/types';
+ 
+ type Options = Readonly<{
+@@ -28,6 +28,7 @@ type Options = Readonly<{
+   emptyModulePath: string;
+   extraNodeModules: null | undefined | object;
+   fileSystemLookup: FileSystemLookup;
++  fileSystemOpenDir?: FileSystemOpenDir | undefined;
+   getHasteModulePath: (name: string, platform: null | undefined | string) => null | undefined | string;
+   getHastePackagePath: (name: string, platform: null | undefined | string) => null | undefined | string;
+   mainFields: ReadonlyArray<string>;
+diff --git a/src/node-haste/DependencyGraph/ModuleResolution.js b/src/node-haste/DependencyGraph/ModuleResolution.js
+index 4af5b5577e892e16c621897ff40d39707da5f205..09511bbd63a799408266c1406f0399a436f6c490 100644
+--- a/src/node-haste/DependencyGraph/ModuleResolution.js
++++ b/src/node-haste/DependencyGraph/ModuleResolution.js
+@@ -86,6 +86,7 @@ class ModuleResolver {
+       doesFileExist,
+       extraNodeModules,
+       fileSystemLookup,
++      fileSystemOpenDir,
+       getPackage,
+       getPackageForModule,
+       mainFields,
+@@ -112,6 +113,7 @@ class ModuleResolver {
+             doesFileExist,
+             extraNodeModules,
+             fileSystemLookup,
++            fileSystemOpenDir,
+             getPackage,
+             getPackageForModule,
+             isESMImport: dependency.data.isESMImport,
+diff --git a/src/node-haste/DependencyGraph/ModuleResolution.js.flow b/src/node-haste/DependencyGraph/ModuleResolution.js.flow
+index fef3b7fa63175bd914342667aeab699837e3c866..95768c9e0c3a9475f942cdf63a8cce62ee281c33 100644
+--- a/src/node-haste/DependencyGraph/ModuleResolution.js.flow
++++ b/src/node-haste/DependencyGraph/ModuleResolution.js.flow
+@@ -20,6 +20,7 @@ import type {
+   DoesFileExist,
+   FileCandidates,
+   FileSystemLookup,
++  FileSystemOpenDir,
+   Resolution,
+   ResolveAsset,
+ } from 'metro-resolver';
+@@ -40,6 +41,7 @@ type Options = Readonly<{
+   emptyModulePath: string,
+   extraNodeModules: ?Object,
+   fileSystemLookup: FileSystemLookup,
++  fileSystemOpenDir?: FileSystemOpenDir,
+   getHasteModulePath: (name: string, platform: ?string) => ?string,
+   getHastePackagePath: (name: string, platform: ?string) => ?string,
+   mainFields: ReadonlyArray<string>,
+@@ -110,6 +112,7 @@ export class ModuleResolver {
+       doesFileExist,
+       extraNodeModules,
+       fileSystemLookup,
++      fileSystemOpenDir,
+       getPackage,
+       getPackageForModule,
+       mainFields,
+@@ -137,6 +140,7 @@ export class ModuleResolver {
+             doesFileExist,
+             extraNodeModules,
+             fileSystemLookup,
++            fileSystemOpenDir,
+             getPackage,
+             getPackageForModule,
+             isESMImport: dependency.data.isESMImport,
+diff --git a/src/node-haste/DependencyGraph/createModuleResolver.js b/src/node-haste/DependencyGraph/createModuleResolver.js
+index 14b240e400dfd68d0fe836a04664c24c35077f1d..7a54ee7db508121001283b9684866474cdf84eb7 100644
+--- a/src/node-haste/DependencyGraph/createModuleResolver.js
++++ b/src/node-haste/DependencyGraph/createModuleResolver.js
+@@ -26,6 +26,32 @@ function createModuleResolver({ config, fileSystem, hasteMap, packageCache }) {
+       exists: false,
+     };
+   };
++  const openDir = fileSystem.openDir?.bind(fileSystem);
++  const fileSystemOpenDir =
++    openDir != null
++      ? (filePath) => {
++          const opened = openDir(filePath);
++          if (opened == null) {
++            return null;
++          }
++          return {
++            realPath: opened.realPath,
++            lookup(basename) {
++              const result = opened.lookup(basename);
++              if (result.exists) {
++                return {
++                  exists: true,
++                  realPath: result.realPath,
++                  type: result.type,
++                };
++              }
++              return {
++                exists: false,
++              };
++            },
++          };
++        }
++      : undefined;
+   return new _ModuleResolution.ModuleResolver({
+     assetExts: new Set(config.resolver.assetExts),
+     disableHierarchicalLookup: config.resolver.disableHierarchicalLookup,
+@@ -33,6 +59,7 @@ function createModuleResolver({ config, fileSystem, hasteMap, packageCache }) {
+     emptyModulePath: config.resolver.emptyModulePath,
+     extraNodeModules: config.resolver.extraNodeModules,
+     fileSystemLookup,
++    fileSystemOpenDir,
+     getHasteModulePath: (name, platform) =>
+       hasteMap.getModule(name, platform, true),
+     getHastePackagePath: (name, platform) =>
+@@ -52,14 +79,24 @@ function createModuleResolver({ config, fileSystem, hasteMap, packageCache }) {
+     projectRoot: config.projectRoot,
+     reporter: config.reporter,
+     resolveAsset: (dirPath, assetName, extension) => {
+-      const basePath = dirPath + _nodePath.default.sep + assetName;
+-      const assets = [
+-        basePath + extension,
++      const names = [
++        assetName + extension,
+         ...config.resolver.assetResolutions.map(
+-          (resolution) => basePath + "@" + resolution + "x" + extension,
++          (resolution) => assetName + "@" + resolution + "x" + extension,
+         ),
+-      ]
+-        .map((assetPath) => fileSystemLookup(assetPath).realPath)
++      ];
++      const opened = fileSystemOpenDir?.(dirPath);
++      if (fileSystemOpenDir != null && opened == null) {
++        return null;
++      }
++      const assets = names
++        .map((name) => {
++          const result =
++            opened != null
++              ? opened.lookup(name)
++              : fileSystemLookup(_nodePath.default.join(dirPath, name));
++          return result.exists && result.type === "f" ? result.realPath : null;
++        })
+         .filter(Boolean);
+       return assets.length ? assets : null;
+     },
+diff --git a/src/node-haste/DependencyGraph/createModuleResolver.js.flow b/src/node-haste/DependencyGraph/createModuleResolver.js.flow
+index fa2db68a69f16c5f13fcd152488f0129ebd33593..0de7d0755d6023bdde4b96978a02207a67d95155 100644
+--- a/src/node-haste/DependencyGraph/createModuleResolver.js.flow
++++ b/src/node-haste/DependencyGraph/createModuleResolver.js.flow
+@@ -12,7 +12,7 @@
+ import type {PackageCache} from '../PackageCache';
+ import type {ConfigT} from 'metro-config';
+ import type {FileSystem, HasteMap} from 'metro-file-map';
+-import type {FileSystemLookup} from 'metro-resolver';
++import type {FileSystemLookup, FileSystemOpenDir} from 'metro-resolver';
+ 
+ import getSchemeResolvers from '../../lib/getSchemeResolvers';
+ import {ModuleResolver} from './ModuleResolution';
+@@ -43,6 +43,31 @@ export default function createModuleResolver({
+     return {exists: false};
+   };
+ 
++  const openDir = fileSystem.openDir?.bind(fileSystem);
++  const fileSystemOpenDir: FileSystemOpenDir | void =
++    openDir != null
++      ? filePath => {
++          const opened = openDir(filePath);
++          if (opened == null) {
++            return null;
++          }
++          return {
++            realPath: opened.realPath,
++            lookup(basename) {
++              const result = opened.lookup(basename);
++              if (result.exists) {
++                return {
++                  exists: true,
++                  realPath: result.realPath,
++                  type: result.type,
++                };
++              }
++              return {exists: false};
++            },
++          };
++        }
++      : undefined;
++
+   return new ModuleResolver({
+     assetExts: new Set(config.resolver.assetExts),
+     disableHierarchicalLookup: config.resolver.disableHierarchicalLookup,
+@@ -50,6 +75,7 @@ export default function createModuleResolver({
+     emptyModulePath: config.resolver.emptyModulePath,
+     extraNodeModules: config.resolver.extraNodeModules,
+     fileSystemLookup,
++    fileSystemOpenDir,
+     getHasteModulePath: (name, platform) =>
+       hasteMap.getModule(name, platform, true),
+     getHastePackagePath: (name, platform) =>
+@@ -70,16 +96,27 @@ export default function createModuleResolver({
+     projectRoot: config.projectRoot,
+     reporter: config.reporter,
+     resolveAsset: (dirPath: string, assetName: string, extension: string) => {
+-      const basePath = dirPath + path.sep + assetName;
+-      const assets = [
+-        basePath + extension,
++      const names = [
++        assetName + extension,
+         ...config.resolver.assetResolutions.map(
+-          resolution => basePath + '@' + resolution + 'x' + extension,
++          resolution => assetName + '@' + resolution + 'x' + extension,
+         ),
+-      ]
+-        .map(assetPath => fileSystemLookup(assetPath).realPath)
++      ];
++      const opened = fileSystemOpenDir?.(dirPath);
++      if (fileSystemOpenDir != null && opened == null) {
++        return null;
++      }
++      const assets = names
++        .map(name => {
++          const result =
++            opened != null
++              ? opened.lookup(name)
++              : fileSystemLookup(path.join(dirPath, name));
++          // A directory such as `node_modules/lodash.zip` is not an asset, and
++          // must fall through to directory (package) resolution.
++          return result.exists && result.type === 'f' ? result.realPath : null;
++        })
+         .filter(Boolean);
+-
+       return assets.length ? assets : null;
+     },
+     resolveRequest: config.resolver.resolveRequest,
