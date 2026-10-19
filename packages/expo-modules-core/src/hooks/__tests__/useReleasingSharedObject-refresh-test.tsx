@@ -40,7 +40,7 @@ it('preserves the object and pending updates across Fast Refresh without replayi
   });
   const factory = jest.fn(() => new TestSharedObject());
   const update = jest.fn(() => pending);
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ source }: { source: number }) =>
       useReleasingSharedObjectWithLifecycle({ factory, shouldRecreate: () => false, update }, [
         source,
@@ -50,22 +50,22 @@ it('preserves the object and pending updates across Fast Refresh without replayi
   const object = result.current;
 
   mockRefreshVersion++;
-  rerender({ source: 0 });
+  await rerender({ source: 0 });
   await act(async () => {});
   expect(result.current).toBe(object);
   expect(object.release).not.toHaveBeenCalled();
   expect(update).not.toHaveBeenCalled();
 
-  rerender({ source: 1 });
+  await rerender({ source: 1 });
   mockRefreshVersion++;
-  rerender({ source: 1 });
+  await rerender({ source: 1 });
   await act(async () => finishUpdate());
   expect(result.current).toBe(object);
   expect(factory).toHaveBeenCalledTimes(1);
   expect(update).toHaveBeenCalledTimes(1);
   expect(object.release).not.toHaveBeenCalled();
 
-  unmount();
+  await unmount();
   await act(async () => {});
   expect(object.release).toHaveBeenCalledTimes(1);
 });
@@ -80,7 +80,7 @@ it('waits for new pending work when refresh changes dependencies and replaces th
     finishSecond = resolve;
   });
   const update = jest.fn().mockReturnValueOnce(first).mockReturnValueOnce(second);
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ kind, source }: { kind: number; source: number }) =>
       useReleasingSharedObjectWithLifecycle(
         {
@@ -94,23 +94,23 @@ it('waits for new pending work when refresh changes dependencies and replaces th
     { initialProps: { kind: 0, source: 0 } }
   );
   const original = result.current;
-  rerender({ kind: 0, source: 1 });
+  await rerender({ kind: 0, source: 1 });
   // Queue settlement, then refresh and start more work before microtasks run.
   finishFirst();
   mockRefreshVersion++;
-  rerender({ kind: 0, source: 2 });
+  await rerender({ kind: 0, source: 2 });
   expect(result.current).toBe(original);
   expect(update).toHaveBeenCalledTimes(2);
 
   mockRefreshVersion++;
-  rerender({ kind: 1, source: 0 });
+  await rerender({ kind: 1, source: 0 });
   const replacement = result.current;
   expect(replacement).not.toBe(original);
   await act(async () => {});
   expect(original.release).not.toHaveBeenCalled();
   expect(replacement.release).not.toHaveBeenCalled();
   expect(update).toHaveBeenCalledTimes(2);
-  unmount();
+  await unmount();
   await act(async () => {});
   expect(original.release).not.toHaveBeenCalled();
   expect(replacement.release).toHaveBeenCalledTimes(1);

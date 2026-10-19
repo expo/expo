@@ -24,7 +24,7 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
    It **must** be run on the thread used by the JavaScript runtime.
    */
   @JavaScriptActor
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any
 
   /**
    Casts the given Swift-side value to the wrapped type and returns it as `Any`.

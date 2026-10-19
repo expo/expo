@@ -1,5 +1,98 @@
 # expo-template-blank
 
+## 58.0.23
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.14
+
+## 58.0.22
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.13
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.12
+
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo@58.0.11
+
+## 58.0.19
+
+### Patch Changes
+
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536))
+  - expo@58.0.10
+
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.9
+
+## 58.0.17
+
+### Patch Changes
+
+- Updated dependencies. ([#49784](https://github.com/expo/expo/pull/49784), [#50536](https://github.com/expo/expo/pull/50536))
+  - expo@58.0.8
+
+## 58.0.16
+
+### Patch Changes
+
+- Updated dependencies. ([#50610](https://github.com/expo/expo/pull/50610))
+  - expo@58.0.7
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50863](https://github.com/expo/expo/pull/50863), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860))
+  - expo@58.0.6
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.5
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#50997](https://github.com/expo/expo/pull/50997), [#50988](https://github.com/expo/expo/pull/50988))
+  - expo@58.0.4
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50458](https://github.com/expo/expo/pull/50458), [#50853](https://github.com/expo/expo/pull/50853))
+  - expo@58.0.3
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#50885](https://github.com/expo/expo/pull/50885), [#50549](https://github.com/expo/expo/pull/50549))
+  - expo-status-bar@58.0.3
+  - expo@58.0.2
+
 ## 58.0.10
 
 ### Patch Changes

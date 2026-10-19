@@ -44,7 +44,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     throw SharedObject.NotFoundException()
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.kind == .number {
       let sharedObjectId = jsValue.getInt() as SharedObjectId
 
@@ -74,7 +74,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
         // Throwing is not possible here due to swift-objC interop.
         log.warn("Unable to create a JS object for \(description)")
-        return JavaScriptValue.undefined
+        return JavaScriptValue.undefined()
       }
 
       // Add newly created objects to the registry.

@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Fix the running background task being cancelled on Android when the app starts headless while a task is running. ([#51442](https://github.com/expo/expo/pull/51442) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#51570](https://github.com/expo/expo/pull/51570))
+  - expo-task-manager@58.0.12
+
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#49498](https://github.com/expo/expo/pull/49498))
+  - expo-task-manager@58.0.11
+
 ## 58.0.9
 
 ### Patch Changes

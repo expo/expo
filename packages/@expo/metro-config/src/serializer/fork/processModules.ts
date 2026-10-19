@@ -8,49 +8,20 @@
 
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
+import type { Options } from './js';
 import { isJsModule, wrapModule } from './js';
 
 export function processModules(
   modules: readonly Module[],
   {
     filter = () => true,
-    createModuleId,
-    dev,
-    includeAsyncPaths,
-    projectRoot,
-    serverRoot,
-    sourceUrl,
-    splitChunks,
-    skipWrapping,
-    computedAsyncModulePaths,
-  }: {
-    splitChunks: boolean;
+    ...options
+  }: Options & {
     filter?: (module: Module) => boolean;
-    createModuleId: (module: string) => number;
-    dev: boolean;
-    includeAsyncPaths: boolean;
-    projectRoot: string;
-    serverRoot: string;
-    sourceUrl?: string | null;
-    skipWrapping: boolean;
-    computedAsyncModulePaths: Record<string, string> | null;
   }
-): readonly [Module, { src: string; paths: Record<string, string> }][] {
+): readonly [Module, ReturnType<typeof wrapModule>][] {
   return [...modules]
     .filter(isJsModule)
     .filter(filter)
-    .map((module: Module) => [
-      module,
-      wrapModule(module, {
-        splitChunks,
-        createModuleId,
-        dev,
-        includeAsyncPaths,
-        projectRoot,
-        serverRoot,
-        sourceUrl,
-        skipWrapping,
-        computedAsyncModulePaths,
-      }),
-    ]);
+    .map((module: Module) => [module, wrapModule(module, options)]);
 }

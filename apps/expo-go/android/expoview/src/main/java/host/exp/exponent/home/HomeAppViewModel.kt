@@ -282,33 +282,23 @@ class HomeAppViewModel(
     )
   }
 
-  private val remoteSnackSessions: StateFlow<List<DevSession>> = flow {
-    while (true) {
-      try {
-        val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
-          "development-sessions",
-          typeOf<DevSessionResponse>()
+  private val remoteSnackSessions: StateFlow<List<DevSession>> = pollDevSessions {
+    restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
+      "development-sessions",
+      typeOf<DevSessionResponse>()
+    )
+      .data
+      .map { session ->
+        session.copy(
+          // The `development-sessions` not always contains source, but we can infer it based on the URL
+          source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
+            DevSessionSource.Snack
+          } else {
+            DevSessionSource.Desktop
+          }
         )
-        emit(
-          sessions
-            .data
-            .map { session ->
-              session.copy(
-                // The `development-sessions` not always contains source, but we can infer it based on the URL
-                source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
-                  DevSessionSource.Snack
-                } else {
-                  DevSessionSource.Desktop
-                }
-              )
-            }
-            .filter { session -> session.source == DevSessionSource.Snack }
-        )
-      } catch (_: Exception) {
-        emit(emptyList())
       }
-      delay(3000)
-    }
+      .filter { session -> session.source == DevSessionSource.Snack }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(5000),

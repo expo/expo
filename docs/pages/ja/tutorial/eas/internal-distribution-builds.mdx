@@ -75,7 +75,7 @@ EAS Build でビルドを作成して配布するには、次の手順に従い�
 
 内部配布ビルドの作成には [アプリの署名用認証情報](/app-signing/app-credentials/) が必要です。
 
-Android のアプリ署名は制約がゆるく、互換性のある **.apk** ファイルであればインストールできます。開発ビルドを作成したときに新しい Android Keystore が生成されているため、preview ビルド用に新しい keystore を生成する必要はありません。
+Android のアプリ署名は制約がゆるく、互換性のある **.apk** ファイルであればインストールできます。
 
 一方 Apple は、iOS デバイスへのアプリ配布に対してより厳しいルールを設けています。アプリの実行を許可するデバイスを明示的に列挙した ad hoc プロビジョニングプロファイルが必要です。アプリが特定の要件を満たす組織であれば、[Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/) を使って、より広い範囲に内部配布できる場合もあります。
 
@@ -87,11 +87,12 @@ Android のアプリ署名は制約がゆるく、互換性のある **.apk** �
 
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
+- preview ビルドは前の章で設定した独自の Android Application ID を使うため、EAS CLI から **Generate a new Android Keystore**（新しい Android Keystore を生成しますか？）と尋ねられます。<kbd>Y</kbd> を押します。
 - このコマンドが EAS Build を起動し、EAS ダッシュボードでビルドの進捗を確認できます。
 
 <ContentSpotlight
   alt="Android preview build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/android-preview-build.png"
+  src="/static/images/tutorial/eas/internal-distribution-builds-android-preview-build.webp"
   className="max-w-[800px]"
 />
 
@@ -119,7 +120,7 @@ ad hoc プロビジョニングプロファイルで署名されたアプリは�
 
 <ContentSpotlight
   alt="iOS preview build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/ios-preview-build.png"
+  src="/static/images/tutorial/eas/internal-distribution-builds-ios-preview-build.webp"
   className="max-w-[800px]"
 />
 
@@ -158,7 +159,7 @@ Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[�
 
 ### インストールする
 
-ビルドが完了すると Build artifact セクションが更新され、ビルドの完了が示されます。このセクションには、iOS 実機で開発ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
+ビルドが完了すると、Build artifact セクションにビルドの完了が表示されます。このセクションには、Android または iOS のデバイスで preview ビルドを実行するための手段として、Expo Orbit と Install ボタンが用意されています。
 
 - ビルドの詳細ページを開きます。ビルドを他の人と共有する場合は、そのリンクを送ります。相手はビルドの詳細ページや、Expo Orbit を含むビルド成果物の詳細を開けます。
 - Android または iOS のデバイスを USB でマシンに接続します。
@@ -173,8 +174,8 @@ Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[�
 - **Send a link to a device** セクションからリンクをコピーし、テスト用デバイスに送ります。
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in EAS dashboard"
-  src="/static/images/tutorial/eas/android-qr-code.png"
+  alt="Install on a test device popup with a QR code and an install link in EAS dashboard"
+  src="/static/images/tutorial/eas/android-development-build-qr-code.webp"
   className="max-w-[450px]"
 />
 
@@ -193,7 +194,7 @@ Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[�
 - Android の場合:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in EAS dashboard for Android"
+  alt="Development and preview variants installed on an Android device"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
   className="max-w-[270px]"
 />
@@ -201,7 +202,7 @@ Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[�
 - iOS の場合:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in EAS dashboard for iOS"
+  alt="Development and preview variants installed on an iOS device"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.webp"
   className="max-w-[250px]"
 />

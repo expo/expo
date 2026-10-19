@@ -55,12 +55,8 @@ function processEnvReplacement(
   name: string,
   state: ProcessEnvState
 ): unknown | typeof NO_PROCESS_ENV_REPLACEMENT {
-  const { filename, options, projectRoot } = state.input;
+  const { filename, options } = state.input;
   switch (name) {
-    case 'EXPO_PROJECT_ROOT':
-      return projectRoot;
-    case 'EXPO_ROUTER_ABS_APP_ROOT':
-      return routerRoot(state);
     case 'EXPO_ROUTER_APP_ROOT':
       return path.relative(path.dirname(filename), routerRoot(state));
     case 'EXPO_ROUTER_IMPORT_MODE':

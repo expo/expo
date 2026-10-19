@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Accept a `View` ref from React Native 0.87 and later in the `blurTarget` prop and the `BlurTargetView` `ref` prop. The prop types now use `ComponentRef<typeof View>`, so `useRef<ViewInstance>(null)` and `useRef<ComponentRef<typeof View>>(null)` type-check with the default React Native typings. With the default typings, a ref typed `useRef<View | null>(null)` no longer type-checks for these props. Type it as `useRef<ComponentRef<typeof View>>(null)` instead. ([#51640](https://github.com/expo/expo/pull/51640) by [@juliusmarminge](https://github.com/juliusmarminge))
+
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2
 
 ### Patch Changes

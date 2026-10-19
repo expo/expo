@@ -1,5 +1,42 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-dev-launcher@58.0.14
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51360](https://github.com/expo/expo/pull/51360))
+  - expo-dev-launcher@58.0.13
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51131](https://github.com/expo/expo/pull/51131), [#51130](https://github.com/expo/expo/pull/51130))
+  - expo-dev-launcher@58.0.12
+  - expo-dev-menu@58.0.11
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50951](https://github.com/expo/expo/pull/50951))
+  - expo-dev-launcher@58.0.11
+
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#50900](https://github.com/expo/expo/pull/50900))
+  - expo-dev-menu@58.0.10
+  - expo-dev-launcher@58.0.10
+
 ## 58.0.9
 
 ### Patch Changes

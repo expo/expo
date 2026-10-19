@@ -1,6 +1,6 @@
 {
   "name": "expo-app-metrics",
-  "version": "58.0.10",
+  "version": "58.0.13",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
   "keywords": [
     "ExpoAppMetrics",
@@ -49,10 +49,10 @@
     "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
+    "@expo/internal-scripts": "workspace:*",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

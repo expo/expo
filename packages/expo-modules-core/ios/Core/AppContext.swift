@@ -3,9 +3,10 @@ import ExpoModulesJSI
 
 /**
  The app context is an interface to a single Expo app.
+ Not `final` so that `TestAppContext` from `ExpoModulesTestCore` can subclass it.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
+public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -91,7 +92,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   public typealias UIRuntimeFactory = (
     _ appContext: AppContext,
-    _ pointerValue: JavaScriptValue,
+    _ pointerValue: borrowing JavaScriptValue,
     _ runtime: JavaScriptRuntime
   ) throws -> JavaScriptRuntime
 
@@ -494,6 +495,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
+    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    try coreModule._decorateModule(object: coreObject, in: runtime)
+
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()
 
@@ -560,8 +564,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
-    // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
-    // and cannot be a Dictionary value.
+    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
+    // cannot be a Dictionary value.
     let prototypeCache = WorkletPrototypeCache()
 
     // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
@@ -579,8 +583,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let typeId = ObjectIdentifier(type(of: nativeObject))
       let instance: JavaScriptObject
 
-      if let cachedPrototype = prototypeCache.store[typeId] {
-        instance = runtime.createObject(prototype: cachedPrototype.getObject())
+      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+        runtime.createObject(prototype: prototype)
+      }) {
+        instance = cachedInstance
       } else {
         guard let classDefinition = self.findClassDefinition(for: typeId) else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
@@ -590,8 +596,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
           appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        prototypeCache.store[typeId] = built.asValue()
         instance = runtime.createObject(prototype: built)
+        prototypeCache.store[typeId] = built.ref()
       }
 
       instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
@@ -639,9 +645,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
-    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
-    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
+    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
@@ -760,7 +764,27 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       return providerClass.init()
     }
 
-    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    // [2] Fallback to the framework that contains ExpoModulesCore itself (brownfield use case).
+    // Brownfield apps often prelink React Native and Expo into one dynamic framework; the
+    // generated provider is then compiled into that framework, so its Swift module is the
+    // framework's name and the main-bundle lookups above miss. Trying this bundle first avoids
+    // the `Bundle.allFrameworks` scan below, which materializes a bundle for every loaded
+    // framework and runs inside `+load` on every cold launch.
+    let coreBundle = Bundle(for: AppContext.self)
+    if coreBundle.bundlePath != Bundle.main.bundlePath {
+      let coreBundleNames = [
+        coreBundle.infoDictionary?["CFBundleExecutable"],
+        coreBundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: coreBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
+      }
+    }
+
+    // [3] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       let frameworkBundleNames = [
         bundle.infoDictionary?["CFBundleExecutable"],
@@ -774,7 +798,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       }
     }
 
-    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [4] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 
@@ -819,12 +843,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
 /**
  Reference-type store for cached worklet prototypes. Needed because JavaScriptObject
- is ~Copyable and cannot be stored in a Dictionary; we cache via JavaScriptValue
- (a class) and rehydrate a JavaScriptObject on use.
+ is ~Copyable and cannot be stored in a Dictionary; we cache the prototype as a
+ `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
 private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptValue] = [:]
+  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
 
 // MARK: - Public exceptions

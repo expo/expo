@@ -1,5 +1,76 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51477](https://github.com/expo/expo/pull/51477))
+  - expo-modules-autolinking@58.0.13
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - @expo/image-utils@0.12.5
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#49784](https://github.com/expo/expo/pull/49784), [#50536](https://github.com/expo/expo/pull/50536))
+  - expo-modules-autolinking@58.0.12
+  - @expo/config-types@58.0.3
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#49418](https://github.com/expo/expo/pull/49418), [#50956](https://github.com/expo/expo/pull/50956))
+  - @expo/config-plugins@58.0.7
+  - @expo/config@58.0.4
+  - expo-modules-autolinking@58.0.11
+
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047))
+  - expo-modules-autolinking@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/config@58.0.3
+  - @expo/image-utils@0.12.4
+  - expo-modules-autolinking@58.0.9
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50946](https://github.com/expo/expo/pull/50946), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - expo-modules-autolinking@58.0.8
+  - @expo/config@58.0.2
+  - @expo/image-utils@0.12.3
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#50549](https://github.com/expo/expo/pull/50549))
+  - expo-modules-autolinking@58.0.7
+
 ## 58.0.6
 
 ### Patch Changes

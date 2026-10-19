@@ -44,6 +44,6 @@ For integration or end-to-end projects, inspect [`apps/router-e2e`](../../apps/r
 
 ## Changelog and docs
 
-For a relevant [`CHANGELOG.md`](CHANGELOG.md) entry, write one short sentence about the user-visible change and include necessary breaking-change or migration information. Omit background, edge-case lists, unchanged behavior, and speculative effects; put implementation detail in the PR description or docs.
+For a relevant [changeset](../../.changeset/README.md) (do not edit `CHANGELOG.md` directly), write one short sentence about the user-visible change and include necessary breaking-change or migration information. Omit background, edge-case lists, unchanged behavior, and speculative effects; put implementation detail in the PR description or docs.
 
 Update affected guides or API reference in [`docs/`](../../docs/) when behavior or public API changes.

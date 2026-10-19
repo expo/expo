@@ -34,9 +34,6 @@ import { createExpoInlineManifestPlugin } from './plugins/expo-inline-manifest';
 import { createExpoRouterServerExportsPlugin } from './plugins/expo-router-server-exports';
 import { createExpoUiPlugin } from './plugins/expo-ui';
 import { createExpoWidgetsPlugin, hasExpoWidgets } from './plugins/expo-widgets';
-import { createFixHermesV1AsyncArrowNonSimpleParamsPlugin } from './plugins/fix-hermes-v1-async-arrow-non-simple-params';
-import { createFixHermesV1ClassInFinallyPlugin } from './plugins/fix-hermes-v1-class-in-finally';
-import { createFixHermesV1SuperInObjectAccessorPlugin } from './plugins/fix-hermes-v1-super-in-object-accessor';
 import { createImportMetaPlugin } from './plugins/import-meta';
 import { createInlineRequiresPlugin } from './plugins/inline-requires';
 import { createMetroDependencyPlugin } from './plugins/metro-dependency';
@@ -255,13 +252,7 @@ export interface NoxcturnalSourceFacts {
   hasPlatform: boolean;
   hasSelect: boolean;
   hasClass: boolean;
-  hasFinally: boolean;
-  hasSuper: boolean;
   hasAsync: boolean;
-  hasArrow: boolean;
-  hasAsyncArrowNonSimpleParamsCandidate: boolean;
-  hasClassInFinallyCandidate: boolean;
-  hasSuperInObjectAccessorCandidate: boolean;
   hasLetOrConst: boolean;
   hasStaticBlock: boolean;
   hasAsyncGenerator: boolean;
@@ -275,7 +266,7 @@ export interface NoxcturnalSourceFacts {
 }
 
 const SOURCE_SIGNAL =
-  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\bfinally\b|\bsuper\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
+  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
 
 export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFacts {
   const facts: NoxcturnalSourceFacts = {
@@ -293,17 +284,7 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     hasPlatform: false,
     hasSelect: false,
     hasClass: false,
-    hasFinally: false,
-    hasSuper: false,
     hasAsync: false,
-    hasArrow: source.includes('=>'),
-    hasAsyncArrowNonSimpleParamsCandidate: hasAsyncArrowNonSimpleParamsCandidate(source),
-    hasClassInFinallyCandidate: hasOrderedSignals(source, /\bfinally\b/g, /\bclass\b/g),
-    hasSuperInObjectAccessorCandidate: hasOrderedSignals(
-      source,
-      /\b(?:get|set)\b/g,
-      /\bsuper\s*(?:\.|\[)/g
-    ),
     hasLetOrConst: /\b(?:let|const)\b/.test(source),
     hasStaticBlock: false,
     hasAsyncGenerator: false,
@@ -335,8 +316,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     else if (signal === 'EXPO_PUBLIC_') facts.hasPublicEnv = true;
     else if (signal === 'select') facts.hasSelect = true;
     else if (signal === 'class') facts.hasClass = true;
-    else if (signal === 'finally') facts.hasFinally = true;
-    else if (signal === 'super') facts.hasSuper = true;
     else if (signal.startsWith('async')) {
       facts.hasAsync = true;
       if (signal.includes('*')) facts.hasAsyncGenerator = true;
@@ -344,50 +323,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     else if (signal.startsWith('#')) facts.hasPrivateSyntax = true;
   }
   return facts;
-}
-
-/**
- * Whether a left-hand signal occurs before a right-hand signal.
- *
- * Expressing this as `left[\s\S]*right` makes V8 retry the greedy middle from
- * every left-hand match when the right-hand signal is absent or near EOF. Large
- * generated bundles contain thousands of words such as `get`, so that shape is
- * quadratic. Two forward searches preserve the deliberately broad prerequisite
- * while making its worst case linear.
- */
-function hasOrderedSignals(source: string, left: RegExp, right: RegExp): boolean {
-  const leftMatch = left.exec(source);
-  if (leftMatch == null) return false;
-  right.lastIndex = leftMatch.index + leftMatch[0].length;
-  return right.test(source);
-}
-
-function hasAsyncArrowNonSimpleParamsCandidate(source: string): boolean {
-  let arrow = source.indexOf('=>');
-  let asyncSearchFrom = 0;
-  let asyncStart = -1;
-  while (arrow !== -1) {
-    for (let next = source.indexOf('async', asyncSearchFrom); next !== -1 && next < arrow; ) {
-      asyncStart = next;
-      asyncSearchFrom = next + 5;
-      next = source.indexOf('async', asyncSearchFrom);
-    }
-    if (
-      asyncStart !== -1 &&
-      !/[$\w]/.test(source[asyncStart - 1] ?? '') &&
-      !/[$\w]/.test(source[asyncStart + 5] ?? '')
-    ) {
-      const parameters = source.slice(asyncStart + 5, arrow).trim();
-      if (
-        !/^[$A-Z_a-z][$\w]*$/.test(parameters) &&
-        !/^\(\s*(?:[$A-Z_a-z][$\w]*\s*(?:,\s*[$A-Z_a-z][$\w]*\s*)*)?\)$/.test(parameters)
-      ) {
-        return true;
-      }
-    }
-    arrow = source.indexOf('=>', arrow + 2);
-  }
-  return false;
 }
 
 export interface NoxcturnalMetroTransformInput extends NoxcturnalTransformInput {
@@ -526,7 +461,11 @@ function getEarlyFallbackReason(
       !(
         directive === 'dom' ||
         directive === 'server' ||
-        (directive === 'client' && options.customTransformOptions?.environment === 'react-server')
+        (directive === 'client' &&
+          (options.customTransformOptions?.environment === 'react-server' ||
+            ((options.customTransformOptions?.environment == null ||
+              options.customTransformOptions?.environment === 'node') &&
+              !sourceFacts.hasActionableClientDirective)))
       )
     ) {
       return 'expo-directive';
@@ -542,6 +481,8 @@ function getEarlyFallbackReason(
     !(
       (directive === 'client' &&
         (options.customTransformOptions?.environment == null ||
+          (options.customTransformOptions?.environment === 'node' &&
+            !sourceFacts.hasActionableClientDirective) ||
           options.customTransformOptions?.environment === 'react-server')) ||
       directive === 'dom' ||
       directive === 'server'
@@ -857,15 +798,6 @@ function createPipeline(
     }
     addPlugin('cjs-detection', () => createCjsDetectionPlugin(nox));
   }
-  if (isHermesV1 && sourceFacts.hasAsyncArrowNonSimpleParamsCandidate) {
-    addPlugin('async-arrow', () => createFixHermesV1AsyncArrowNonSimpleParamsPlugin(nox));
-  }
-  if (isHermesV1 && sourceFacts.hasClassInFinallyCandidate) {
-    addPlugin('class-finally', () => createFixHermesV1ClassInFinallyPlugin(nox));
-  }
-  if (isHermesV1 && sourceFacts.hasSuperInObjectAccessorCandidate) {
-    addPlugin('super-accessor', () => createFixHermesV1SuperInObjectAccessorPlugin(nox));
-  }
   if (baseProfile === 'hermes-v0' || baseProfile === 'webview') {
     addPlugin('display-name', () => createReactDisplayNamePlugin(nox));
   }
@@ -1120,6 +1052,7 @@ function createFullMetroPipeline(
         optimize: {
           constantFolding: true,
           deadCodeElimination: true,
+          moduleContext: true,
         },
         comments: true,
       },

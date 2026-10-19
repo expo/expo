@@ -4,14 +4,14 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.1.0'
+version = '0.1.1'
 
 android {
   namespace 'expo.modules.ai'
   defaultConfig {
     minSdkVersion 26
     versionCode 1
-    versionName '0.1.0'
+    versionName '0.1.1'
     consumerProguardFiles 'consumer-rules.pro'
   }
 }

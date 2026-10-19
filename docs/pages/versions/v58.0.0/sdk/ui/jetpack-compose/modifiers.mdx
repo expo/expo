@@ -153,11 +153,30 @@ Fills available height.
 
 ### `width(value)`
 
-Sets an exact width.
+Sets an exact width, or the minimum or maximum [intrinsic width](https://developer.android.com/develop/ui/compose/layouts/intrinsic-measurements) of the content. The incoming constraints can still make the view narrower or wider than that width.
 
-| Parameter | Type     | Description  |
-| --------- | -------- | ------------ |
-| `value`   | `number` | Width in dp. |
+| Parameter | Type                      | Description                                                                                                                                                                                                                                                                                                                  |
+| --------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `number \| IntrinsicSize` | Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the minimum intrinsic width, the smallest width at which the content still draws correctly (for a text, its widest word). `IntrinsicSize.Max` uses the maximum intrinsic width, the width the content needs when nothing limits it (for a text, a single line). |
+
+One case is a `Host` with `matchContents`: the available width has no limit, so children with `weight` in a `Row` get no space. In the following example, `width(IntrinsicSize.Max)` gives the `Row` the width its content needs, `fillMaxWidth()` before it keeps the row filling a bounded width, and `weight(1)` gives the label the space left next to the switch:
+
+```tsx
+import { Host, Row, Switch, Text } from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  IntrinsicSize,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+<Host matchContents>
+  <Row modifiers={[fillMaxWidth(), width(IntrinsicSize.Max)]}>
+    <Text modifiers={[weight(1)]}>Errors only</Text>
+    <Switch value={checked} onCheckedChange={setChecked} />
+  </Row>
+</Host>;
+```
 
 ### `height(value)`
 
@@ -344,6 +363,27 @@ Applies a blur effect to the component.
 import { blur } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button modifiers={[blur(4)]}>Blurred button</Button>;
+```
+
+### `cornerRadius(radius)`
+
+Adds rounded corners to the component.
+
+> **info** Works only inside Android widgets built with `expo-widgets`, on Android 12 (API level 31) and later.
+
+Jetpack Compose has no exact equivalent of Glance's `cornerRadius`, so Expo UI ignores this modifier. Use [`clip(Shapes.RoundedCorner(radius))`](#clipshape) to round corners in an app.
+
+| Parameter | Type     | Description          |
+| --------- | -------- | -------------------- |
+| `radius`  | `number` | Corner radius in dp. |
+
+```tsx
+import {
+  background,
+  cornerRadius,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+<Box modifiers={[cornerRadius(12), background('#3498DB')]} />;
 ```
 
 ## Shadow recipes
@@ -625,6 +665,24 @@ Assigns a test identifier to the component for use in UI testing.
 import { testID } from '@expo/ui/jetpack-compose/modifiers';
 
 <Button modifiers={[testID('submit-button')]}>Submit</Button>;
+```
+
+### `semantics(params)`
+
+Sets semantic properties that accessibility and autofill services read.
+
+| Parameter                   | Type     | Description                                                                                 |
+| --------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `params.contentDescription` | `string` | What TalkBack announces for the element, in place of content that does not read well aloud. |
+| `params.contentType`        | `string` | An autofill hint, such as `'email'` or `'password'`.                                        |
+
+```tsx
+import { semantics } from '@expo/ui/jetpack-compose/modifiers';
+
+// The visible label is an abbreviation; TalkBack reads the full phrase.
+<Text modifiers={[semantics({ contentDescription: '1 week' })]}>
+  1W
+</Text>;
 ```
 
 ## API

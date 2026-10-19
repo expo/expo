@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Skip startup metrics for launches that start in the background (for example a background fetch or a silent push notification), and drop TTR and TTI longer than 3 minutes. Before, their TTR and TTI included the whole time until the user opened the app. ([#51609](https://github.com/expo/expo/pull/51609) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Fix startup metrics recorded after the first save (for example TTI after an update download) never being persisted. ([#51538](https://github.com/expo/expo/pull/51538) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
 ## 58.0.10
 
 ### Patch Changes

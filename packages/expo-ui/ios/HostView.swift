@@ -3,10 +3,27 @@
 import SwiftUI
 import ExpoModulesCore
 
-/// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
-/// actually placed them. Name it last in the chain: Yoga measures a hosted view from the `Host`
-/// component view, so any `Host` inset or alignment has to be inside this space, not outside it.
+/// Coordinate space anchored at the `Host`'s SwiftUI root, which macOS measures hosted React Native
+/// views from. iOS uses `HostingViewReference` instead, because this space starts after the
+/// safe-area inset that `UIHostingController` applies to the root.
 internal let expoHostCoordinateSpace = "expo.ui.host"
+
+/// The enclosing `Host`'s UIKit view, which Yoga laid out. iOS measures hosted React Native views
+/// from it.
+internal final class HostingViewReference {
+  weak var view: UIView?
+}
+
+private struct HostingViewEnvironmentKey: EnvironmentKey {
+  static let defaultValue: HostingViewReference? = nil
+}
+
+extension EnvironmentValues {
+  var expoHostingView: HostingViewReference? {
+    get { self[HostingViewEnvironmentKey.self] }
+    set { self[HostingViewEnvironmentKey.self] = newValue }
+  }
+}
 
 internal enum ExpoColorScheme: String, Enumerable {
   case light
@@ -43,10 +60,15 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
+  @Field var alignment: AlignmentOptions?
   @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
   @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
-  weak var hostingView: UIView?
+  let hostingViewReference = HostingViewReference()
+  var hostingView: UIView? {
+    get { hostingViewReference.view }
+    set { hostingViewReference.view = newValue }
+  }
 }
 
 struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
@@ -54,7 +76,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
-    let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let alignment = physicalAlignment(props.alignment?.toAlignment() ?? .topLeading, layoutDirection: layoutDirection)
     let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
     let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
     let pinHorizontal = !props.useViewportSizeMeasurement && props.matchContentsHorizontal
@@ -68,6 +90,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       HostLayout {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
+      .modifier(HostViewContentMarginsMitigation(layoutDirection: layoutDirection, hostingView: props.hostingView))
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -90,6 +114,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       ZStack(alignment: alignment) {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -111,6 +136,24 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     }
   }
 
+}
+
+/**
+ Mirrors the horizontal edge of `alignment` for a right-to-left `Host`. `FillAlignmentModifier` sits
+ outside `LayoutDirectionModifier`, so it reads leading and trailing in the hosting controller's
+ own direction.
+ */
+private func physicalAlignment(_ alignment: Alignment, layoutDirection: LayoutDirection) -> Alignment {
+  guard layoutDirection == .rightToLeft else {
+    return alignment
+  }
+  if alignment.horizontal == .leading {
+    return Alignment(horizontal: .trailing, vertical: alignment.vertical)
+  }
+  if alignment.horizontal == .trailing {
+    return Alignment(horizontal: .leading, vertical: alignment.vertical)
+  }
+  return alignment
 }
 
 /**

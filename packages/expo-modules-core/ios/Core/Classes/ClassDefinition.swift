@@ -6,6 +6,10 @@ import ExpoModulesJSI
  Represents a JavaScript class.
  */
 public final class ClassDefinition: ObjectDefinition {
+  public override var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(kind: .klass(self))
+  }
+
   /**
    Name of the class.
    */
@@ -28,13 +32,13 @@ public final class ClassDefinition: ObjectDefinition {
 
   private init(_ name: String, associatedType: AnyDynamicType, isSharedRef: Bool, elements: [AnyClassDefinitionElement] = []) {
     self.name = name
-    self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = associatedType
     self.isSharedRef = isSharedRef
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
-    let elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
+    self.constructor = elements.lazy.compactMap(constructorDefinition).first
+    let elementsWithoutConstructors = elements.filter { constructorDefinition($0) == nil }
 
     super.init(definitions: elementsWithoutConstructors)
   }
@@ -70,6 +74,11 @@ public final class ClassDefinition: ObjectDefinition {
         if let sharedObject = result as? SharedObject {
           appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
         }
+      } else if sharedObjectType != nil {
+        // Nothing built a native instance, so the object would reach JavaScript with no backing
+        // state and fail at its first member access. Classes whose inputs only the native side can
+        // supply land here: they need a `@JS init` or a DSL `Constructor` to be constructible.
+        throw Exceptions.ConstructorUnavailable(name)
       }
       return this
     }
@@ -152,7 +161,7 @@ extension JavaScriptObject: ClassAssociatedObject, AnyArgument {
     return DynamicJavaScriptType.shared
   }
 
-  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: borrowing JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
       throw Conversions.UnexpectedValueType((received: value.kind, expected: .object))
     }
@@ -164,13 +173,19 @@ extension SharedObject: ClassAssociatedObject {}
 // MARK: - Privates
 
 /**
- Checks whether the definition item is a constructor — a synchronous function whose name is "constructor".
+ Returns the definition item as a constructor, a synchronous function whose name is "constructor", or `nil`.
 
  We do it that way for the following two reasons:
  - It's easier to reuse existing `SyncFunctionDefinition`.
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
-private func isConstructor(_ item: AnyDefinition) -> Bool {
-  return (item as? AnySyncFunctionDefinition)?.name == "constructor"
+private func constructorDefinition(_ item: AnyDefinition) -> AnySyncFunctionDefinition? {
+  switch item._definitionClassification.kind {
+  case .function(let function), .staticFunction(let function):
+    // Only the element named "constructor" pays for the protocol cast.
+    return function.name == "constructor" ? function as? AnySyncFunctionDefinition : nil
+  default:
+    return nil
+  }
 }

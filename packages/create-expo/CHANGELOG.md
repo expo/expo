@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.5
+
+### Patch Changes
+
+- [iOS] Added a preview `--swiftpm` flag that enables `experiments.swiftPackageManager` in app.json and sets up iOS with Swift Package Manager instead of CocoaPods. ([#51038](https://github.com/expo/expo/pull/51038) by [@chrfalch](https://github.com/chrfalch))
+
 ## 5.1.4
 
 ### Patch Changes

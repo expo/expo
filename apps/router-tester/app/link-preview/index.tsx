@@ -19,6 +19,7 @@ const HomeIndex = () => {
       <CaseLink href="/link-preview/modals" text="Modals" />
       <CaseLink href="/link-preview/misc" text="Misc" />
       <CaseLink href="/link-preview/menu" text="Menu" />
+      <CaseLink href="/link-preview/corner-radius" text="Corner radius" />
       <CaseLink href="/link-preview/nested" text="Nested" />
       <CaseLink href="/link-preview/performance" text="Performance" />
       <CaseLink href="/link-preview/param" text="Param" />

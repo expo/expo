@@ -40,8 +40,8 @@ describe('LinkMenu', () => {
   );
 
   describe('inline and palette prop combinations', () => {
-    it('passes inline prop correctly when inline=true', () => {
-      render(
+    it('passes inline prop correctly when inline=true', async () => {
+      await render(
         <LinkMenu inline title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -58,8 +58,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('passes palette prop correctly when palette=true', () => {
-      render(
+    it('passes palette prop correctly when palette=true', async () => {
+      await render(
         <LinkMenu palette title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -75,8 +75,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('passes both inline and palette props when both are true', () => {
-      render(
+    it('passes both inline and palette props when both are true', async () => {
+      await render(
         <LinkMenu inline palette title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -92,8 +92,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('prefers palette over displayAsPalette', () => {
-      render(
+    it('prefers palette over displayAsPalette', async () => {
+      await render(
         <LinkMenu palette displayAsPalette={false} title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -108,8 +108,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('uses displayAsPalette when palette is not provided', () => {
-      render(
+    it('uses displayAsPalette when palette is not provided', async () => {
+      await render(
         <LinkMenu displayAsPalette title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -124,8 +124,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('prefers inline over displayInline (deprecated)', () => {
-      render(
+    it('prefers inline over displayInline (deprecated)', async () => {
+      await render(
         <LinkMenu inline displayInline={false} title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -140,8 +140,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('uses displayInline when inline is not provided', () => {
-      render(
+    it('uses displayInline when inline is not provided', async () => {
+      await render(
         <LinkMenu displayInline title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -156,8 +156,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('passes all deprecated and new props together correctly', () => {
-      render(
+    it('passes all deprecated and new props together correctly', async () => {
+      await render(
         <LinkMenu palette={false} displayAsPalette inline={false} displayInline title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,
@@ -173,8 +173,8 @@ describe('LinkMenu', () => {
       );
     });
 
-    it('handles undefined values for inline and palette', () => {
-      render(
+    it('handles undefined values for inline and palette', async () => {
+      await render(
         <LinkMenu title="Test">
           <LinkMenuAction title="test" onPress={() => {}} />
         </LinkMenu>,

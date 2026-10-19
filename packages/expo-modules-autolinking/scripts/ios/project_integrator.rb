@@ -143,7 +143,14 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
+          # Swift driver resolves the plugin path so it stays out of the compilation cache key.
+          macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
+        end
+
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
         end
 
         target.pod_targets.each do |pod_target|
@@ -316,6 +323,8 @@ module Expo
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
       podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      # Links only the scanned classes that compile for this platform.
+      target_platform_param = "--target-platform \"#{platform}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -372,6 +381,7 @@ module Expo
         #{app_root_param} \\
         #{podfile_properties_param} \\
         --platform "apple" \\
+        #{target_platform_param} \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end

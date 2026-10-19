@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -119,6 +120,26 @@ internal class HostView(context: Context, appContext: AppContext) :
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
+
+  /**
+   * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
+   * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
+   * the JS responder's view intercepting the stream, which cancels its native children.
+   */
+  internal var isDispatchingCancelFromParent = false
+    private set
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      return super.dispatchTouchEvent(ev)
+    }
+    isDispatchingCancelFromParent = true
+    try {
+      return super.dispatchTouchEvent(ev)
+    } finally {
+      isDispatchingCancelFromParent = false
+    }
+  }
 
   @Composable
   override fun ComposableScope.Content() {
@@ -276,7 +297,13 @@ internal class HostView(context: Context, appContext: AppContext) :
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
       }
 
-      onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))
+      // `onSizeChanged` runs inside the Compose measure pass. Emitting the event here reaches
+      // Fabric event listeners synchronously (e.g. reanimated's `onEventDispatch` hook), which
+      // can flush mount items and re-enter `onMeasure` of a view that is mid-measure — Compose
+      // then throws "performMeasureAndLayout called during measure layout" and takes down the
+      // ReactHost. Post the dispatch so it runs after the measure pass completes.
+      // See https://github.com/expo/expo/issues/47625.
+      post { onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble())) }
     }
   }
 

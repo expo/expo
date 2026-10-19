@@ -66,26 +66,68 @@ async function getTemplatePathspecs(): Promise<string[]> {
     .map((f) => `${TEMPLATE_PATH}/${f}`);
 }
 
+const TEMPLATE_PACKAGE_JSON_PATH = `${TEMPLATE_PATH}/package.json`;
+
+async function readPublishedPackageJsonAsync(ref: string) {
+  const packageJson = await Git.readFileAsync(ref, path.join(EXPO_DIR, TEMPLATE_PACKAGE_JSON_PATH));
+  let publishedPackageJson = packageJson;
+  for (const [dependency, name, range] of packageJson.matchAll(/"([^"]+)": "workspace:([~^*])"/g)) {
+    const packagePath = path.join(EXPO_DIR, 'packages', name, 'package.json');
+    const { version } = JSON.parse(await Git.readFileAsync(ref, packagePath));
+    publishedPackageJson = publishedPackageJson.replace(
+      dependency,
+      `"${name}": "${range === '*' ? '' : range}${version}"`
+    );
+  }
+  return publishedPackageJson;
+}
+
+async function diffPublishedPackageJsonAsync(fromRef: string, toRef: string) {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bare-diffs-'));
+  try {
+    const sides = [`a/${TEMPLATE_PACKAGE_JSON_PATH}`, `b/${TEMPLATE_PACKAGE_JSON_PATH}`];
+    await fs.outputFile(path.join(tempDir, sides[0]), await readPublishedPackageJsonAsync(fromRef));
+    await fs.outputFile(path.join(tempDir, sides[1]), await readPublishedPackageJsonAsync(toRef));
+    const { stdout: shortHead } = await Git.runAsync(['rev-parse', '--short', 'HEAD']);
+    const args = [
+      '-c',
+      `core.abbrev=${shortHead.trim().length}`,
+      'diff',
+      '--no-index',
+      '--no-prefix',
+    ];
+    const { stdout } = await spawnAsync('git', [...args, ...sides], { cwd: tempDir }).catch(
+      (error) => (error.status === 1 ? error : Promise.reject(error))
+    );
+    return stdout;
+  } finally {
+    await fs.remove(tempDir);
+  }
+}
+
 async function executeDiffCommand(
   diffDirPathRaw,
   sdkFrom: string,
   sdkTo: string,
   pathspecs: string[]
 ) {
-  const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
+  const fromRef = `origin/${sdkToBranch(sdkFrom)}`;
+  const toRef = `origin/${sdkToBranch(sdkTo)}`;
   const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
 
   await Git.fetchAsync();
 
-  const diff = await spawnAsync('git', ['diff', diffCommand, '--', ...pathspecs], {
+  const otherPathspecs = pathspecs.filter((pathspec) => pathspec !== TEMPLATE_PACKAGE_JSON_PATH);
+  const diff = await spawnAsync('git', ['diff', `${fromRef}..${toRef}`, '--', ...otherPathspecs], {
     cwd: EXPO_DIR,
   });
+  const contents = diff.stdout + (await diffPublishedPackageJsonAsync(fromRef, toRef));
 
   // write raw diff for later comparison to see if templates changed.
-  await fs.writeFile(diffPath, diff.stdout);
+  await fs.writeFile(diffPath, contents);
 
   // used for the consolidated JSON
-  return { name: `${sdkFrom}..${sdkTo}`, contents: diff.stdout };
+  return { name: `${sdkFrom}..${sdkTo}`, contents };
 }
 
 async function action({ check = false }: ActionOptions) {

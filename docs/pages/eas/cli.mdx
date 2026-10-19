@@ -2,7 +2,7 @@
 title: EAS CLI reference
 sidebar_title: EAS CLI
 description: EAS CLI is a command-line tool that allows you to interact with Expo Application Services (EAS) from your terminal.
-cliVersion: 24.8.0
+cliVersion: 25.2.0
 ---
 
 import { EASCLIReference } from '~/ui/components/EASCLIReference';
@@ -11,6 +11,10 @@ import { Terminal } from '~/ui/components/Snippet';
 You can use EAS Command-Line Interface (CLI) to build, update, submit, deploy or use workflows in your Expo and React Native project from a terminal window.
 
 ## Installation
+
+EAS CLI requires Node.js 20.18.3 or a later Node.js 20 release, or Node.js 22 or later. Use the [LTS version of Node.js](https://nodejs.org/en/).
+
+> **warning** Support for Node.js 20 is deprecated. EAS CLI prints a warning when it runs on Node.js 20. A future release will require Node.js 22 or later.
 
 You need to install the EAS CLI globally on your machine. You do this by running the following command:
 

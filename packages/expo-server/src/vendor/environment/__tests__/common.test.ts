@@ -1,6 +1,7 @@
 import { ImmutableRequest } from '../../../ImmutableRequest';
 import type {
   AssetInfo,
+  GetStreamingContentOptions,
   MiddlewareInfo,
   RawManifest,
   RenderingConfiguration,
@@ -296,11 +297,24 @@ describe('getHtml', () => {
   });
 
   it('uses the legacy SSR renderer for SDK 55 exports', async () => {
-    const mockLegacySSRModule = createMockLegacySSRModule();
+    const mockLegacySSRModule = createMockLegacySSRModule({
+      getStaticContent: jest.fn(async (_location, options) => {
+        // Older static renderers escape hrefs as strings and crash if passed normalized objects.
+        const css = options?.assets?.css
+          .map((entry) => (entry as string).replace(/&/g, '&amp;').replace(/"/g, '&quot;'))
+          .join(',');
+        const externalCss = options?.assets?.externalCss?.map((entry) => entry.href).join(',');
+        return `<html>${css}|${externalCss}</html>`;
+      }),
+    });
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: {
+          css: ['/style.css?a=1&b="two"'],
+          externalCss: [{ href: 'https://example.com/global.css' }],
+          js: ['/app.js'],
+        },
       },
       modules: { '_expo/server/render.js': mockLegacySSRModule },
     });
@@ -315,7 +329,9 @@ describe('getHtml', () => {
         namedRegex: new RegExp('^/path(?:/)?$'),
       })
     );
-    expect(result).toEqual('<html>Legacy SSR content</html>');
+    expect(result).toEqual(
+      '<html>/style.css?a=1&amp;b=&quot;two&quot;|https://example.com/global.css</html>'
+    );
 
     expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -324,7 +340,11 @@ describe('getHtml', () => {
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+        assets: {
+          css: ['/style.css?a=1&b="two"'],
+          externalCss: [{ href: 'https://example.com/global.css' }],
+          js: ['/app.js'],
+        },
       })
     );
     expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
@@ -337,25 +357,39 @@ describe('getHtml', () => {
     );
   });
 
-  it('passes location, request, and assets to `getStreamingContent()`', async () => {
-    const mockSSRModule = createMockSSRModule();
+  it('preserves legacy assets for older streaming render modules', async () => {
+    const mockSSRModule = createMockSSRModule({
+      getStreamingContent: jest.fn(async (_location: URL, options?: GetStreamingContentOptions) => {
+        const css = options?.assets?.css.map((entry) => String(entry)).join(',');
+        const externalCss = options?.assets?.externalCss?.map((entry) => entry.href).join(',');
+        return createMockHtmlStream(`<html>${css}|${externalCss}</html>`);
+      }) as unknown as ServerRenderModule['getStreamingContent'],
+    });
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: {
+          css: ['/style.css'],
+          externalCss: [{ href: 'https://example.com/global.css' }],
+          js: ['/app.js'],
+        },
       },
       modules: { '_expo/server/render.js': mockSSRModule },
     });
     const env = createEnvironment(input);
     const request = new Request('http://localhost/path?query=1');
 
-    await env.getHtml(
+    const result = await env.getHtml(
       request,
       createMockRoute({
         file: './path.tsx',
         page: '/path',
         namedRegex: new RegExp('^/path(?:/)?$'),
       })
+    );
+
+    expect(await new Response(result as ReadableStream).text()).toBe(
+      '<html>/style.css|https://example.com/global.css</html>'
     );
 
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
@@ -365,7 +399,11 @@ describe('getHtml', () => {
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+        assets: {
+          css: ['/style.css'],
+          externalCss: [{ href: 'https://example.com/global.css' }],
+          js: ['/app.js'],
+        },
       })
     );
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
@@ -383,7 +421,13 @@ describe('getHtml', () => {
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
-        assets: { css: ['/global.css'], js: ['/runtime.js', '/entry.js'] },
+        assets: {
+          css: [
+            { type: 'external', href: 'https://example.com/global.css' },
+            { type: 'css', href: '/global.css' },
+          ],
+          js: ['/runtime.js', '/entry.js'],
+        },
       },
       modules: { '_expo/server/render.js': mockSSRModule },
     });
@@ -395,7 +439,10 @@ describe('getHtml', () => {
         file: './index.tsx',
         page: '/index',
         namedRegex: new RegExp('^/(?:/)?$'),
-        assets: { css: [], js: ['/layout-chunk.js', '/index-chunk.js'] },
+        assets: {
+          css: [{ type: 'inline', source: '.route{}', hmrId: 'route' }],
+          js: ['/layout-chunk.js', '/index-chunk.js'],
+        },
       })
     );
 
@@ -403,21 +450,24 @@ describe('getHtml', () => {
       expect.any(URL),
       expect.objectContaining({
         assets: {
-          css: ['/global.css'],
-          externalCss: [],
+          css: [
+            { type: 'external', href: 'https://example.com/global.css' },
+            { type: 'css', href: '/global.css' },
+            { type: 'inline', source: '.route{}', hmrId: 'route' },
+          ],
           js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
         },
       })
     );
   });
 
-  it('merges top-level and per-route external CSS', async () => {
+  it('preserves legacy external CSS after merging top-level and per-route assets', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
         rendering: { mode: 'ssr', file: '_expo/server/render.js' },
         assets: {
-          css: [],
+          css: ['/global.css'],
           externalCss: [{ href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
           js: [],
         },
@@ -433,7 +483,7 @@ describe('getHtml', () => {
         page: '/index',
         namedRegex: new RegExp('^/(?:/)?$'),
         assets: {
-          css: [],
+          css: [{ type: 'css', href: '/route.css' }],
           externalCss: [
             { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
           ],
@@ -446,6 +496,7 @@ describe('getHtml', () => {
       expect.any(URL),
       expect.objectContaining({
         assets: expect.objectContaining({
+          css: ['/global.css', { type: 'css', href: '/route.css' }],
           externalCss: [
             { href: 'https://fonts.googleapis.com/css2?family=Roboto' },
             { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },

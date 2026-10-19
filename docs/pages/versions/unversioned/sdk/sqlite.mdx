@@ -9,10 +9,11 @@ platforms: ['android', 'ios', 'macos', 'tvos', 'web', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { AgentSkillSection } from '~/components/plugins/AgentSkillSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { DiffBlock } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
@@ -22,6 +23,10 @@ import { Step } from '~/ui/components/Step';
 ## Installation
 
 <APIInstallSection />
+
+### Agent skill
+
+<AgentSkillSection />
 
 ## Configuration in app config
 
@@ -112,6 +117,32 @@ If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can con
   }
 }
 ```
+
+### Use a custom WebAssembly build
+
+The config plugin properties, such as `enableFTS`, only apply to Android and iOS. On web, `expo-sqlite` uses a prebuilt WebAssembly build of SQLite without full-text search (FTS). To enable FTS or other compile options on web, build your own WebAssembly file from [`expo/wa-sqlite`](https://github.com/expo/wa-sqlite) with [Emscripten](https://emscripten.org/):
+
+<Terminal
+  cmd={[
+    '$ git clone https://github.com/expo/wa-sqlite.git',
+    '$ cd wa-sqlite',
+    '$ make deps',
+    '$ make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"',
+  ]}
+  cmdCopy='git clone https://github.com/expo/wa-sqlite.git && cd wa-sqlite && make deps && make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"'
+/>
+
+Copy **dist/wa-sqlite.wasm** to **assets/wa-sqlite-fts.wasm** in your project. Then pass it to [`configureWeb()`](#sqliteconfigureweboptions) before opening any database, for example, in your root layout:
+
+```tsx app/_layout.tsx
+import * as SQLite from 'expo-sqlite';
+
+if (process.env.EXPO_OS === 'web') {
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
+}
+```
+
+> **warning** Build from the `expo/wa-sqlite` revision that matches your `expo-sqlite` version. A build from another revision may fail to load.
 
 ## Usage
 

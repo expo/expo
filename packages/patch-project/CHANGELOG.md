@@ -1,5 +1,46 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/config-plugins@58.0.7
+  - @expo/config@58.0.4
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/config@58.0.3
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - @expo/config@58.0.2
+
 ## 58.0.10
 
 ### Patch Changes

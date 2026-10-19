@@ -1,6 +1,6 @@
 {
   "name": "expo-secure-store",
-  "version": "58.0.1",
+  "version": "58.0.2",
   "description": "Provides a way to encrypt and securely store key-value pairs locally on the device.",
   "keywords": [
     "expo",
@@ -38,15 +38,15 @@
     "prepack": "expo-module prepack"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

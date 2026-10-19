@@ -12,12 +12,12 @@ beforeEach(() => {
 });
 
 it(`restores the default style when the last NavigationBar unmounts`, async () => {
-  const { unmount } = render(<NavigationBar style="dark" />);
+  const { unmount } = await render(<NavigationBar style="dark" />);
 
   await flushUpdates();
 
   expect(ExpoNavigationBar.setStyle).toHaveBeenLastCalledWith('dark');
-  unmount();
+  await unmount();
 
   await flushUpdates();
 
@@ -25,7 +25,7 @@ it(`restores the default style when the last NavigationBar unmounts`, async () =
 });
 
 it(`restores the bar visibility when a hidden NavigationBar unmounts`, async () => {
-  const { rerender, unmount } = render(
+  const { rerender, unmount } = await render(
     <>
       <NavigationBar style="dark" />
       <NavigationBar hidden />
@@ -35,12 +35,12 @@ it(`restores the bar visibility when a hidden NavigationBar unmounts`, async () 
   await flushUpdates();
 
   expect(ExpoNavigationBar.setHidden).toHaveBeenLastCalledWith(true);
-  rerender(<NavigationBar style="dark" />);
+  await rerender(<NavigationBar style="dark" />);
 
   await flushUpdates();
 
   expect(ExpoNavigationBar.setHidden).toHaveBeenLastCalledWith(false);
-  unmount();
+  await unmount();
 
   await flushUpdates();
 });

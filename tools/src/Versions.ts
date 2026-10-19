@@ -68,7 +68,7 @@ export async function getVersionsAsync(
   if (!resp.ok) {
     throw new Error(`Failed to get versions from ${apiHost}: HTTP ${resp.status}`);
   }
-  const { data: result } = await resp.json();
+  const { data: result } = (await resp.json()) as { data?: VersionsSchema };
   if (!result?.sdkVersions || typeof result.sdkVersions !== 'object') {
     throw new Error(`Invalid versions response from ${apiHost}`);
   }
