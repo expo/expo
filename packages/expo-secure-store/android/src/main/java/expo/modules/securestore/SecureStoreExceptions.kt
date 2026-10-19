@@ -27,4 +27,4 @@ internal class InvalidAuthenticationOptionException(value: String?) :
   CodedException("Invalid value for requireAuthentication: \"$value\". Expected true, false, \"biometry\", or \"deviceCredentials\".")
 
 internal class UnsupportedDeviceCredentialsException :
-  CodedException("requireAuthentication: 'deviceCredentials' (device credential fallback) requires Android API 30 or higher")
+  CodedException("requireAuthentication: 'deviceCredentials' (device credential fallback) requires Android API 30 or higher. Check canUseDeviceCredentialsAuthentication() before you use it, or use 'biometry' on older devices.")

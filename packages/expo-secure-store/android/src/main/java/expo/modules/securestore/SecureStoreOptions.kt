@@ -1,5 +1,6 @@
 package expo.modules.securestore
 
+import android.os.Build
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
@@ -15,12 +16,18 @@ class SecureStoreOptions(
   @Field var requireConfirmation: Boolean = true
 ) : Record, Serializable {
   val authenticationRequirement: String?
-    get() = requireAuthentication?.let { value ->
-      if (value.`is`(Boolean::class)) {
-        normalizeAuthenticationRequirement(value.get(Boolean::class))
-      } else {
-        normalizeAuthenticationRequirement(value.get(String::class))
+    get() {
+      val requirement = requireAuthentication?.let { value ->
+        if (value.`is`(Boolean::class)) {
+          normalizeAuthenticationRequirement(value.get(Boolean::class))
+        } else {
+          normalizeAuthenticationRequirement(value.get(String::class))
+        }
       }
+      if (requirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        throw UnsupportedDeviceCredentialsException()
+      }
+      return requirement
     }
 }
 
