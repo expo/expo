@@ -2,6 +2,7 @@ package expo.modules.hinge
 
 import android.content.Context
 import android.hardware.SensorManager
+import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
@@ -12,6 +13,8 @@ class ExpoHingeModule : Module() {
   private val observer by lazy {
     HingeObserver(appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager)
   }
+
+  private val workletListeners = HingeWorkletListeners()
 
   @Volatile
   private var hasListeners = false
@@ -29,8 +32,21 @@ class ExpoHingeModule : Module() {
       observer.hinge
     }
 
+    Function("addWorkletListener") { worklet: Worklet ->
+      val id = workletListeners.add(worklet)
+      appContext.mainQueue.launch {
+        workletListeners.dispatch(id, observer.hinge) { appContext.uiRuntime }
+      }
+      id
+    }
+
+    Function("removeWorkletListener") { id: Int ->
+      workletListeners.remove(id)
+    }
+
     OnCreate {
       observer.onChange = { hinge ->
+        workletListeners.dispatch(hinge) { appContext.uiRuntime }
         if (hasListeners) {
           sendEvent(HINGE_CHANGE_EVENT, mapOf("hinge" to hinge))
         }
@@ -51,6 +67,7 @@ class ExpoHingeModule : Module() {
     }
 
     OnDestroy {
+      workletListeners.clear()
       observer.detach()
     }
 
