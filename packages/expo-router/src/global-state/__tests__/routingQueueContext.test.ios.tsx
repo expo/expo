@@ -123,6 +123,74 @@ it('warns when a second root binds the imperative router', async () => {
   error.mockRestore();
 });
 
+it('keeps the router bound to the newer root when the older root unmounts', async () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  let pending: RoutingIntent[] = [];
+
+  function Consumer() {
+    pending = use(PendingIntentsContext);
+    return null;
+  }
+
+  const olderRoot = await render(
+    <RoutingQueueProvider>
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  const newerRoot = await render(
+    <RoutingQueueProvider>
+      <Consumer />
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  await olderRoot.unmount();
+  await act(() => router.push('/test'));
+
+  expect(pending).toEqual([
+    queued({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/test', options: { event: 'PUSH' } },
+    }),
+  ]);
+
+  await newerRoot.unmount();
+  error.mockRestore();
+});
+
+it('binds the router to the older root again when the newer root unmounts', async () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  let pending: RoutingIntent[] = [];
+
+  function Consumer() {
+    pending = use(PendingIntentsContext);
+    return null;
+  }
+
+  const olderRoot = await render(
+    <RoutingQueueProvider>
+      <Consumer />
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  const newerRoot = await render(
+    <RoutingQueueProvider>
+      <RouterBridge />
+    </RoutingQueueProvider>
+  );
+  await newerRoot.unmount();
+  await act(() => router.push('/test'));
+
+  expect(pending).toEqual([
+    queued({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/test', options: { event: 'PUSH' } },
+    }),
+  ]);
+
+  await olderRoot.unmount();
+  error.mockRestore();
+});
+
 it('preserves enqueue order and drains on the following render', async () => {
   const snapshots: RoutingIntent[][] = [];
   const pendingSnapshots: boolean[] = [];
