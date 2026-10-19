@@ -54,9 +54,9 @@
 
 - (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
-- (void)setShadowNodeSize:(float)width height:(float)height;
+- (void)setShadowNodeSize:(float)width height:(float)height NS_SWIFT_UI_ACTOR;
 
-- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height NS_SWIFT_UI_ACTOR;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 

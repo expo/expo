@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { execFileSync } from 'child_process';
 import { readFileSync, unlinkSync } from 'fs';
 
 // --- Types ---
@@ -12,6 +13,10 @@ interface ReviewComment {
   severity: 'critical' | 'design' | 'suggestion' | 'nit';
   /** Substring of the target line's content. Used to verify/resolve the correct line in the diff. */
   line_content?: string;
+  /** First line of a multi-line comment. `line` is then the last line of the range. */
+  start_line?: number;
+  /** Substring of the start line's content. Resolves `start_line` the same way `line_content` resolves `line`. */
+  start_line_content?: string;
 }
 
 interface ReviewPayload {
@@ -162,45 +167,90 @@ async function fetchDiff(pullNumber: number): Promise<FileDiff[]> {
 
 // --- Line resolution ---
 
+type Resolution = 'exact' | 'resolved' | 'unverified';
+
+interface ResolvedLine {
+  line: number;
+  content: string | null;
+  resolution: Resolution;
+}
+
 interface ResolvedComment extends ReviewComment {
   resolvedLine: number;
   targetContent: string | null;
-  resolution: 'exact' | 'resolved' | 'unverified';
+  resolution: Resolution;
+  /** Resolved first line of a multi-line comment. */
+  resolvedStartLine?: number;
+  /** Content of every line from `resolvedStartLine` to `resolvedLine`, when all of them are in the diff. */
+  rangeContent?: string[];
+  /** Why a multi-line range can't be posted. Set only for multi-line comments. */
+  rangeError?: string;
+}
+
+function resolveLine(
+  fileDiffs: FileDiff[],
+  path: string,
+  side: 'LEFT' | 'RIGHT',
+  line: number,
+  lineContent: string | undefined
+): ResolvedLine {
+  if (!fileDiffs.length) {
+    return { line, content: null, resolution: 'unverified' };
+  }
+
+  // If line content is provided, use it to find the correct line
+  if (lineContent) {
+    const resolved = resolveLineFromContent(fileDiffs, path, side, lineContent, line);
+    if (resolved) {
+      return {
+        line: resolved.line,
+        content: resolved.content,
+        resolution: resolved.line === line ? 'exact' : 'resolved',
+      };
+    }
+  }
+
+  // Fall back to checking specified line
+  const content = getLineContent(fileDiffs, path, side, line);
+  return { line, content, resolution: content !== null ? 'exact' : 'unverified' };
 }
 
 function resolveComments(comments: ReviewComment[], fileDiffs: FileDiff[]): ResolvedComment[] {
   return comments.map((c) => {
-    if (!fileDiffs.length) {
-      return { ...c, resolvedLine: c.line, targetContent: null, resolution: 'unverified' as const };
-    }
-
-    // If line_content is provided, use it to find the correct line
-    if (c.line_content) {
-      const resolved = resolveLineFromContent(
-        fileDiffs,
-        c.path,
-        c.side || 'RIGHT',
-        c.line_content,
-        c.line
-      );
-      if (resolved) {
-        return {
-          ...c,
-          resolvedLine: resolved.line,
-          targetContent: resolved.content,
-          resolution: resolved.line === c.line ? ('exact' as const) : ('resolved' as const),
-        };
-      }
-    }
-
-    // Fall back to checking specified line
-    const content = getLineContent(fileDiffs, c.path, c.side || 'RIGHT', c.line);
-    return {
+    const side = c.side || 'RIGHT';
+    const end = resolveLine(fileDiffs, c.path, side, c.line, c.line_content);
+    const resolved: ResolvedComment = {
       ...c,
-      resolvedLine: c.line,
-      targetContent: content,
-      resolution: content !== null ? ('exact' as const) : ('unverified' as const),
+      resolvedLine: end.line,
+      targetContent: end.content,
+      resolution: end.resolution,
     };
+    if (c.start_line === undefined) {
+      return resolved;
+    }
+
+    const start = resolveLine(fileDiffs, c.path, side, c.start_line, c.start_line_content);
+    resolved.resolvedStartLine = start.line;
+    if (start.resolution === 'unverified' || end.resolution === 'unverified') {
+      resolved.rangeError = `The start or end line of the range isn't in the diff.`;
+      return resolved;
+    }
+    if (start.line >= end.line) {
+      resolved.rangeError = `The range starts at line ${start.line}, which isn't before its end line ${end.line}.`;
+      return resolved;
+    }
+    // GitHub requires the whole range to be in one diff hunk, which means every line in it is in the diff.
+    const rangeContent: string[] = [];
+    for (let line = start.line; line <= end.line; line++) {
+      const content = getLineContent(fileDiffs, c.path, side, line);
+      if (content === null) {
+        resolved.rangeError = `Line ${line} of the range isn't in the diff, so the range spans more than one diff hunk.`;
+        return resolved;
+      }
+      rangeContent.push(content);
+    }
+    resolved.rangeContent = rangeContent;
+    return resolved;
   });
 }
 
@@ -282,6 +332,31 @@ function validate(data: unknown): ReviewPayload {
     if (!['critical', 'design', 'suggestion', 'nit'].includes(c.severity)) {
       throw new Error(`comments[${i}].severity must be critical, design, suggestion, or nit`);
     }
+    if (c.start_line !== undefined) {
+      if (
+        typeof c.start_line !== 'number' ||
+        !Number.isInteger(c.start_line) ||
+        c.start_line <= 0
+      ) {
+        throw new Error(`comments[${i}].start_line must be a positive integer when provided`);
+      }
+      if (c.start_line >= c.line) {
+        throw new Error(
+          `comments[${i}].start_line (${c.start_line}) must be less than line (${c.line}). ` +
+            'For a single-line comment, remove start_line.'
+        );
+      }
+    }
+    if (c.start_line_content !== undefined) {
+      if (typeof c.start_line_content !== 'string') {
+        throw new Error(`comments[${i}].start_line_content must be a string when provided`);
+      }
+      if (c.start_line === undefined) {
+        throw new Error(
+          `comments[${i}].start_line_content requires start_line. Add start_line or remove start_line_content.`
+        );
+      }
+    }
   }
 
   return data as ReviewPayload;
@@ -303,6 +378,28 @@ function formatCommentBody(comment: ReviewComment): string {
 
 // --- GitHub API ---
 
+let cachedGitHubToken: string | undefined;
+
+function getGitHubToken(): string {
+  if (cachedGitHubToken) {
+    return cachedGitHubToken;
+  }
+  // Prefer the gh CLI login, so the review is posted as the user who runs the skill.
+  let token = '';
+  try {
+    token = execFileSync('gh', ['auth', 'token'], { encoding: 'utf8' }).trim();
+  } catch {}
+  token ||= process.env.GITHUB_TOKEN ?? '';
+  if (!token) {
+    throw new Error(
+      "Couldn't get a GitHub token: `gh auth token` failed (the gh CLI isn't installed or isn't logged in) and GITHUB_TOKEN isn't set.\n" +
+        'Run `gh auth login`, or set GITHUB_TOKEN, then run this command again.'
+    );
+  }
+  cachedGitHubToken = token;
+  return token;
+}
+
 async function githubRequest(
   path: string,
   options: {
@@ -311,14 +408,7 @@ async function githubRequest(
     accept?: string;
   } = {}
 ): Promise<unknown> {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    throw new Error(
-      'GITHUB_TOKEN environment variable is required.\n' +
-        'Set it with: export GITHUB_TOKEN=$(gh auth token)'
-    );
-  }
-
+  const token = getGitHubToken();
   const accept = options.accept ?? 'application/vnd.github+json';
   const url = `https://api.github.com${path}`;
   const resp = await fetch(url, {
@@ -355,6 +445,9 @@ async function postReview(review: ReviewPayload, resolved: ResolvedComment[]): P
 
   const apiComments = resolved.map((c) => ({
     path: c.path,
+    ...(c.resolvedStartLine !== undefined
+      ? { start_line: c.resolvedStartLine, start_side: c.side || 'RIGHT' }
+      : {}),
     line: c.resolvedLine,
     side: c.side || 'RIGHT',
     body: formatCommentBody(c),
@@ -406,14 +499,28 @@ function printPreview(review: ReviewPayload, resolved: ResolvedComment[]): void 
   if (resolved.length > 0) {
     console.log('\n--- Inline Comments ---');
     for (const c of resolved) {
-      const lineInfo =
-        c.resolvedLine !== c.line
-          ? ` (line ${c.line} -> ${c.resolvedLine} via line_content match)`
-          : '';
-      console.log(`\n  ${c.path}:${c.resolvedLine} ${c.side} [${c.severity}]${lineInfo}`);
+      const lineInfo: string[] = [];
+      if (c.resolvedStartLine !== undefined && c.resolvedStartLine !== c.start_line) {
+        lineInfo.push(`start line ${c.start_line} -> ${c.resolvedStartLine}`);
+      }
+      if (c.resolvedLine !== c.line) {
+        lineInfo.push(`line ${c.line} -> ${c.resolvedLine}`);
+      }
+      const lineInfoText = lineInfo.length ? ` (${lineInfo.join(', ')} via content match)` : '';
+      const location =
+        c.resolvedStartLine !== undefined
+          ? `${c.path}:${c.resolvedStartLine}-${c.resolvedLine}`
+          : `${c.path}:${c.resolvedLine}`;
+      console.log(`\n  ${location} ${c.side} [${c.severity}]${lineInfoText}`);
 
-      // Show target code line
-      if (c.targetContent !== null) {
+      // Show target code lines
+      if (c.rangeError) {
+        console.log(`  > ⚠️  ${c.rangeError} GitHub will reject this comment.`);
+      } else if (c.rangeContent) {
+        for (const content of c.rangeContent) {
+          console.log(`  > ${content}`);
+        }
+      } else if (c.targetContent !== null) {
         console.log(`  > ${c.targetContent.trimStart()}`);
       } else if (c.resolution === 'unverified') {
         console.log(`  > ⚠️  Line not found in diff — comment may land on wrong position`);
@@ -506,8 +613,21 @@ async function main(): Promise<void> {
       const resolved = resolveComments(review.comments, fileDiffs);
       printPreview(review, resolved);
 
+      const rangeErrors = resolved.filter((c) => c.rangeError);
+      if (rangeErrors.length > 0) {
+        console.error(
+          `\n${rangeErrors.length} multi-line comment(s) have a range that GitHub can't post (see the ⚠️ lines above).\n` +
+            'Fix start_line/start_line_content or line/line_content so the whole range is in one diff hunk, then run this command again.'
+        );
+        process.exit(1);
+      }
+
       // Warn about corrections
-      const corrections = resolved.filter((c) => c.resolvedLine !== c.line);
+      const corrections = resolved.filter(
+        (c) =>
+          c.resolvedLine !== c.line ||
+          (c.resolvedStartLine !== undefined && c.resolvedStartLine !== c.start_line)
+      );
       if (corrections.length > 0) {
         console.log(
           `\n⚠️  ${corrections.length} comment(s) had line numbers corrected via line_content matching.`

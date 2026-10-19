@@ -1,11 +1,11 @@
 package expo.modules.kotlin.sharedobjects
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.IncorrectRefTypeException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.toStrongReference
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.NonNullableTypeConverter
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
@@ -13,7 +13,7 @@ class SharedObjectTypeConverter<T : SharedObject>(
   val typeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<T>() {
   @Suppress("UNCHECKED_CAST")
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): T {
     val id = SharedObjectId(
       if (value is Dynamic) {
         value.asInt()
@@ -22,8 +22,8 @@ class SharedObjectTypeConverter<T : SharedObject>(
       }
     )
 
-    val appContext = context.toStrongReference()
-    val result = id.toNativeObject(appContext.runtime)
+    val runtime = context.runtime ?: throw Exceptions.RuntimeLost()
+    val result = id.toNativeObject(runtime)
     return result as T
   }
 
@@ -37,7 +37,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
 ) : NonNullableTypeConverter<T>() {
   private val sharedObjectTypeConverter = SharedObjectTypeConverter<T>(typeDescriptor)
 
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): T {
     val sharedObject = sharedObjectTypeConverter.convert(value, context, forceConversion)
 
     if (!checkType(sharedObject)) {

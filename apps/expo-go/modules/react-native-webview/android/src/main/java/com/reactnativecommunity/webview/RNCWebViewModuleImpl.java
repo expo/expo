@@ -8,12 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.util.Pair;
@@ -26,11 +24,7 @@ import android.widget.Toast;
 
 import com.facebook.common.activitylistener.ActivityListenerManager;
 import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -48,14 +42,12 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
     public static final String NAME = "RNCWebViewModule";
 
     public static final int PICKER = 1;
-    public static final int PICKER_LEGACY = 3;
     public static final int FILE_DOWNLOAD_PERMISSION_REQUEST = 1;
 
     final private ReactApplicationContext mContext;
 
     private DownloadManager.Request mDownloadRequest;
 
-    private ValueCallback<Uri> mFilePathCallbackLegacy;
     private ValueCallback<Uri[]> mFilePathCallback;
     private File mOutputImage;
     private File mOutputVideo;
@@ -67,7 +59,7 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        if (mFilePathCallback == null && mFilePathCallbackLegacy == null) {
+        if (mFilePathCallback == null) {
             return;
         }
 
@@ -100,20 +92,6 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
                     }
                 }
                 break;
-            case RNCWebViewModuleImpl.PICKER_LEGACY:
-                if (resultCode != RESULT_OK) {
-                    mFilePathCallbackLegacy.onReceiveValue(null);
-                } else {
-                    if (imageTaken) {
-                        mFilePathCallbackLegacy.onReceiveValue(getOutputUri(mOutputImage));
-                    } else if (videoTaken) {
-                        mFilePathCallbackLegacy.onReceiveValue(getOutputUri(mOutputVideo));
-                    } else {
-                        mFilePathCallbackLegacy.onReceiveValue(data.getData());
-                    }
-                }
-                break;
-
         }
 
         if (mOutputImage != null && !imageTaken) {
@@ -124,7 +102,6 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         }
 
         mFilePathCallback = null;
-        mFilePathCallbackLegacy = null;
         mOutputImage = null;
         mOutputVideo = null;
     }
@@ -197,10 +174,6 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         };
     }
 
-    public boolean isFileUploadSupported() {
-        return true;
-    }
-
     public void shouldStartLoadWithLockIdentifier(boolean shouldStart, double lockIdentifier) {
         final AtomicReference<ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState> lockObject = shouldOverrideUrlLoadingLock.getLock(lockIdentifier);
         if (lockObject != null) {
@@ -227,39 +200,11 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         }
 
         // we have one file selected
-        if (data.getData() != null && resultCode == RESULT_OK && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (data.getData() != null && resultCode == RESULT_OK) {
             return WebChromeClient.FileChooserParams.parseResult(resultCode, data);
         }
 
         return null;
-    }
-
-    public void startPhotoPickerIntent(String acceptType, ValueCallback<Uri> callback) {
-        mFilePathCallbackLegacy = callback;
-        Activity activity = mContext.getCurrentActivity();
-        Intent fileChooserIntent = getFileChooserIntent(acceptType);
-        Intent chooserIntent = Intent.createChooser(fileChooserIntent, "");
-
-        ArrayList<Parcelable> extraIntents = new ArrayList<>();
-        if (acceptsImages(acceptType)) {
-            Intent photoIntent = getPhotoIntent();
-            if (photoIntent != null) {
-                extraIntents.add(photoIntent);
-            }
-        }
-        if (acceptsVideo(acceptType)) {
-            Intent videoIntent = getVideoIntent();
-            if (videoIntent != null) {
-                extraIntents.add(videoIntent);
-            }
-        }
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents.toArray(new Parcelable[]{}));
-
-        if (chooserIntent.resolveActivity(activity.getPackageManager()) != null) {
-            activity.startActivityForResult(chooserIntent, PICKER_LEGACY);
-        } else {
-            Log.w("RNCWebViewModule", "there is no Activity to handle this Intent");
-        }
     }
 
     public boolean startPhotoPickerIntent(final String[] acceptTypes, final boolean allowMultiple, final ValueCallback<Uri[]> callback, final boolean isCaptureEnabled) {
@@ -331,7 +276,7 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         }
 
         boolean result = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        if (!result && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (!result) {
             PermissionAwareActivity PAactivity = getPermissionAwareActivity();
             PAactivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_DOWNLOAD_PERMISSION_REQUEST, getWebviewFileDownloaderPermissionListener(downloadingMessage, lackPermissionToDownloadMessage));
         }
@@ -389,20 +334,6 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         return intent;
     }
 
-    private Intent getFileChooserIntent(String acceptTypes) {
-        String _acceptTypes = acceptTypes;
-        if (acceptTypes.isEmpty()) {
-            _acceptTypes = MimeType.DEFAULT.value;
-        }
-        if (acceptTypes.matches("\\.\\w+")) {
-            _acceptTypes = getMimeTypeFromExtension(acceptTypes.replace(".", ""));
-        }
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(_acceptTypes);
-        return intent;
-    }
-
     private Intent getFileChooserIntent(String[] acceptTypes, boolean allowMultiple) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -412,36 +343,12 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
         return intent;
     }
 
-    private Boolean acceptsImages(String types) {
-        String mimeType = types;
-        if (types.matches("\\.\\w+")) {
-            mimeType = getMimeTypeFromExtension(types.replace(".", ""));
-        }
-        return mimeType.isEmpty() || mimeType.toLowerCase().contains(MimeType.IMAGE.value);
-    }
-
     private Boolean acceptsImages(String[] types) {
         String[] mimeTypes = getAcceptedMimeType(types);
         return arrayContainsString(mimeTypes, MimeType.DEFAULT.value) || arrayContainsString(mimeTypes, MimeType.IMAGE.value);
     }
 
-    private Boolean acceptsVideo(String types) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return false;
-        }
-
-        String mimeType = types;
-        if (types.matches("\\.\\w+")) {
-            mimeType = getMimeTypeFromExtension(types.replace(".", ""));
-        }
-        return mimeType.isEmpty() || mimeType.toLowerCase().contains(MimeType.VIDEO.value);
-    }
-
     private Boolean acceptsVideo(String[] types) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return false;
-        }
-
         String[] mimeTypes = getAcceptedMimeType(types);
         return arrayContainsString(mimeTypes, MimeType.DEFAULT.value) || arrayContainsString(mimeTypes, MimeType.VIDEO.value);
     }
@@ -486,12 +393,6 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
     }
 
     public Uri getOutputUri(File capturedFile) {
-        // for versions below 6.0 (23) we use the old File creation & permissions model
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Uri.fromFile(capturedFile);
-        }
-
-        // for versions 6.0+ (23) we use the FileProvider to avoid runtime permissions
         String packageName = mContext.getPackageName();
         return FileProvider.getUriForFile(mContext, packageName + ".fileprovider", capturedFile);
     }
@@ -499,39 +400,24 @@ public class RNCWebViewModuleImpl implements ActivityEventListener {
     public File getCapturedFile(MimeType mimeType) throws IOException {
         String prefix = "";
         String suffix = "";
-        String dir = "";
 
         switch (mimeType) {
             case IMAGE:
                 prefix = "image-";
                 suffix = ".jpg";
-                dir = Environment.DIRECTORY_PICTURES;
                 break;
             case VIDEO:
                 prefix = "video-";
                 suffix = ".mp4";
-                dir = Environment.DIRECTORY_MOVIES;
                 break;
 
             default:
                 break;
         }
 
-        String filename = prefix + String.valueOf(System.currentTimeMillis()) + suffix;
-        File outputFile = null;
+        File storageDir = mContext.getExternalFilesDir(null);
 
-        // for versions below 6.0 (23) we use the old File creation & permissions model
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            // only this Directory works on all tested Android versions
-            // ctx.getExternalFilesDir(dir) was failing on Android 5.0 (sdk 21)
-            File storageDir = Environment.getExternalStoragePublicDirectory(dir);
-            outputFile = new File(storageDir, filename);
-        } else {
-            File storageDir = mContext.getExternalFilesDir(null);
-            outputFile = File.createTempFile(prefix, suffix, storageDir);
-        }
-
-        return outputFile;
+        return File.createTempFile(prefix, suffix, storageDir);
     }
 
     private Boolean noAcceptTypesSet(String[] types) {

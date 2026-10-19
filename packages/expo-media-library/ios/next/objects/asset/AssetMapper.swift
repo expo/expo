@@ -7,13 +7,14 @@ class AssetMapper {
       id: "ph://\(phAsset.localIdentifier)",
       creationTime: mapCreationTime(phAsset.creationDate),
       duration: mapDuration(phAsset.duration),
-      uri: try await mapUri(phAsset),
+      uri: try await mapUri(phAsset, version: .CURRENT),
       filename: try mapFilename(phAsset),
       height: phAsset.pixelHeight,
       width: phAsset.pixelWidth,
       mediaType: mapMediaType(phAsset.mediaType),
       modificationTime: mapModificationTime(phAsset.modificationDate),
-      isFavorite: phAsset.isFavorite
+      isFavorite: phAsset.isFavorite,
+      mediaSubtypes: MediaSubtypeNext.from(phAsset.mediaSubtypes)
     )
   }
 
@@ -27,7 +28,8 @@ class AssetMapper {
       width: phAsset.pixelWidth,
       mediaType: mapMediaType(phAsset.mediaType),
       modificationTime: mapModificationTime(phAsset.modificationDate),
-      isFavorite: phAsset.isFavorite
+      isFavorite: phAsset.isFavorite,
+      mediaSubtypes: MediaSubtypeNext.from(phAsset.mediaSubtypes)
     )
   }
 
@@ -39,8 +41,8 @@ class AssetMapper {
     return duration > 0 ? Int(duration * 1000) : nil
   }
 
-  func mapUri(_ phAsset: PHAsset) async throws -> String {
-    return try await UriExtractor.extract(from: phAsset).absoluteString
+  func mapUri(_ phAsset: PHAsset, version: AssetUriVersion) async throws -> String {
+    return try await UriExtractor.extract(from: phAsset, version: version).absoluteString
   }
 
   func mapFilename(_ phAsset: PHAsset) throws -> String {

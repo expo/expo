@@ -32,6 +32,71 @@ struct JavaScriptObjectTests {
     #expect(object.getProperty("score").getInt() == 100)
   }
 
+  @Test
+  func `get property names preserves non-ASCII and empty keys`() throws {
+    let object = try runtime.eval("({ 'café': 1, '日本語': 2, '🎉': 3, '': 4 })").getObject()
+    #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
+  }
+
+  // MARK: - Non-ASCII property names
+
+  @Test
+  func `getProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '日本語': 'ok', '🎉': true, '': 'empty' })").getObject()
+    #expect(object.getProperty("café").isNumber() == true)
+    #expect(object.getProperty("日本語").isString() == true)
+    #expect(object.getProperty("🎉").isBool() == true)
+    #expect(object.getProperty("").isString() == true)
+    #expect(object.getProperty("cafe").isUndefined() == true)
+  }
+
+  @Test
+  func `hasProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '': 'empty' })").getObject()
+    #expect(object.hasProperty("café") == true)
+    #expect(object.hasProperty("") == true)
+    #expect(object.hasProperty("cafe") == false)
+    #expect(object.hasProperty("naïve") == false)
+  }
+
+  @Test
+  func `setProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.setProperty("café", value: 42.0)
+    object.setProperty("日本語", value: JavaScriptValue(runtime, "ok"))
+    object.setProperty("🎉", JavaScriptObject(runtime))
+    object.setProperty("", value: true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café'] === 42 && obj['日本語'] === 'ok' && obj[''] === true").getBool() == true)
+    #expect(try runtime.eval("typeof obj['🎉']").getString() == "object")
+    #expect(try runtime.eval("Object.keys(obj).join(',')").getString() == "café,日本語,🎉,")
+  }
+
+  @Test
+  func `deleteProperty removes a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'café': 42, 'cafe': 1 })").getObject()
+    object.deleteProperty("café")
+    #expect(object.hasProperty("café") == false)
+    #expect(object.hasProperty("cafe") == true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("'café' in obj").getBool() == false)
+  }
+
+  @Test
+  func `defineProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("café", value: 42.0, options: [.enumerable])
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café']").getInt() == 42)
+  }
+
+  @Test
+  func `getPropertyAsFunction finds a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
+    let function = try object.getPropertyAsFunction("zażółć")
+    #expect(try function.call().getString() == "gęślą jaźń")
+  }
+
   // MARK: - Property Access Tests
 
   @Suite("Property Access")
@@ -128,24 +193,21 @@ struct JavaScriptObjectTests {
     func `subscript with single key`() throws {
       let obj = try runtime.eval("({ name: 'Alice' })")
       let jsObject = obj.getObject()
-      let value = jsObject["name"]
-      #expect(value.getString() == "Alice")
+      #expect(jsObject["name"].getString() == "Alice")
     }
 
     @Test
     func `subscript with two nested keys`() throws {
       let obj = try runtime.eval("({ user: { name: 'Bob' } })")
       let jsObject = obj.getObject()
-      let value = jsObject["user", "name"]
-      #expect(value.getString() == "Bob")
+      #expect(jsObject["user", "name"].getString() == "Bob")
     }
 
     @Test
     func `subscript with three nested keys`() throws {
       let obj = try runtime.eval("({ data: { user: { age: 25 } } })")
       let jsObject = obj.getObject()
-      let value = jsObject["data", "user", "age"]
-      #expect(value.getInt() == 25)
+      #expect(jsObject["data", "user", "age"].getInt() == 25)
     }
 
     @Test
@@ -154,26 +216,22 @@ struct JavaScriptObjectTests {
       let nested = runtime.createObject()
       nested.setProperty("value", value: 42.0)
       root.setProperty("nested", nested)
-      let value = root["nested", "value"]
-      #expect(value.getInt() == 42)
+      #expect(root["nested", "value"].getInt() == 42)
     }
 
     @Test
     func `subscript returns undefined for non-existent property`() throws {
       let obj = try runtime.eval("({ a: 1 })")
       let jsObject = obj.getObject()
-      let value = jsObject["nonexistent"]
-      #expect(value.isUndefined() == true)
+      #expect(jsObject["nonexistent"].isUndefined() == true)
     }
 
     @Test
     func `nested subscript with mixed types`() throws {
       let obj = try runtime.eval("({ settings: { enabled: true, count: 10 } })")
       let jsObject = obj.getObject()
-      let enabled = jsObject["settings", "enabled"]
-      let count = jsObject["settings", "count"]
-      #expect(enabled.getBool() == true)
-      #expect(count.getInt() == 10)
+      #expect(jsObject["settings", "enabled"].getBool() == true)
+      #expect(jsObject["settings", "count"].getInt() == 10)
     }
   }
 
@@ -197,6 +255,20 @@ struct JavaScriptObjectTests {
       let object = JavaScriptObject(runtime)
       object.setProperty("pi", value: 3.14159)
       #expect(object.getProperty("pi").getDouble() == 3.14159)
+    }
+
+    @Test
+    func `set property with non-ASCII string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("greeting", value: "żółć 世界 🎉")
+      #expect(object.getProperty("greeting").getString() == "żółć 世界 🎉")
+    }
+
+    @Test
+    func `set property with empty string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("empty", value: "")
+      #expect(object.getProperty("empty").getString() == "")
     }
 
     @Test
@@ -238,8 +310,11 @@ struct JavaScriptObjectTests {
     @JavaScriptActor
     func `set property with async function closure`() async throws {
       let object = JavaScriptObject(runtime)
-      object.setProperty("addAsync") { this, arguments async throws in
-        return JavaScriptValue(self.runtime, arguments[0].getInt() + arguments[1].getInt())
+      object.setProperty("addAsync") { this, arguments in
+        let sum = arguments[0].getInt() + arguments[1].getInt()
+        return {
+          return JavaScriptValue(self.runtime, sum)
+        }
       }
       let fn = try object.getPropertyAsFunction("addAsync")
       let result = try await fn.call(arguments: 20, 22).getPromise().await()
@@ -275,7 +350,7 @@ struct JavaScriptObjectTests {
       object.defineProperty("test", descriptor: .init(value: JavaScriptValue(runtime, true)))
       #expect(object.hasProperty("test") == true)
       #expect(object.getProperty("test").getBool() == true)
-      #expect(object.getPropertyNames().contains("test") == false)  // non-enumerable by default
+      #expect(object.getPropertyNames().contains("test") == false) // non-enumerable by default
     }
 
     @Test
@@ -526,7 +601,11 @@ struct JavaScriptObjectTests {
     func `PropertyDescriptor with all properties`() {
       let value = JavaScriptValue(runtime, "test")
       let descriptor = JavaScriptObject.PropertyDescriptor(
-        configurable: true, enumerable: true, writable: true, value: value)
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: value
+      )
       let object = descriptor.toObject(runtime)
       #expect(object.hasProperty("configurable") == true)
       #expect(object.getProperty("configurable").getBool() == true)
@@ -541,10 +620,43 @@ struct JavaScriptObjectTests {
     @Test
     func `PropertyDescriptor to object conversion`() {
       let descriptor = JavaScriptObject.PropertyDescriptor(
-        configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: JavaScriptValue(runtime, 42)
+      )
       let object = descriptor.toObject(runtime)
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)
+    }
+  }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let value = try runtime.eval("({ answer: 42 })")
+    let object = try JavaScriptObject.decode(value, in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    let encoded = try JavaScriptObject.encode(object, in: runtime)
+    #expect(encoded.getObject().getProperty("answer").getInt() == 42)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("({ answer: 42 })").ref(), 42)
+    let object = try JavaScriptObject.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not an object`() throws {
+    let value = try runtime.eval("42")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(value, in: runtime)
     }
   }
 }

@@ -7,7 +7,7 @@ import { ScrollView, View, Text } from 'react-native';
 import Button from '../../components/Button';
 import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
 import TitledSwitch from '../../components/TitledSwitch';
-import { bigBuckBunnySource } from './videoSources';
+import { starVideoSource } from './videoSources';
 import { styles } from './videoStyles';
 
 const orientations = ['default', 'portrait', 'landscape'];
@@ -18,7 +18,7 @@ export default function VideoFullscreenScreen() {
   const [autoExitOnRotate, setAutoExitOnRotate] = useState(true);
   const [lockIndex, setLockIndex] = useState(0);
   const [eventHistory, setEventHistory] = useState<Record<number, string>>({});
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
+  const player = useVideoPlayer(starVideoSource, (player) => {
     player.loop = true;
     player.muted = true;
     player.showNowPlayingNotification = false;

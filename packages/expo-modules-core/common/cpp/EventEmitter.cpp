@@ -41,10 +41,11 @@ size_t Listeners::listenersCount(const std::string& eventName) noexcept {
 }
 
 void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept {
-  if (!listenersMap.contains(eventName)) {
+  auto entry = listenersMap.find(eventName);
+  if (entry == listenersMap.end()) {
     return;
   }
-  ListenersList &listenersList = listenersMap[eventName];
+  ListenersList &listenersList = entry->second;
   size_t listSize = listenersList.size();
 
   if (listSize == 0) {
@@ -64,7 +65,7 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
     }
     return;
   }
-  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  // When there is more than one listener, we copy the list to a vector as the list may be modified during the loop.
   std::vector<jsi::Function> listenersVector;
   listenersVector.reserve(listSize);
 
@@ -102,8 +103,11 @@ NativeState::~NativeState() {
 }
 
 NativeState::Shared NativeState::get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing) {
-  if (object.hasNativeState<NativeState>(runtime)) {
-    return object.getNativeState<NativeState>(runtime);
+  // The untyped `hasNativeState` is a single runtime call. The state is then fetched once, and its type is checked.
+  if (object.hasNativeState(runtime)) {
+    if (NativeState::Shared state = std::dynamic_pointer_cast<NativeState>(object.getNativeState(runtime))) {
+      return state;
+    }
   }
   if (createIfMissing) {
     NativeState::Shared state = std::make_shared<NativeState>();
@@ -188,10 +192,20 @@ jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eve
   std::shared_ptr<jsi::Value> listenerValue = std::make_shared<jsi::Value>(runtime, listener);
 
   jsi::HostFunctionType removeSubscription = [eventName, emitterValue, listenerValue](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    if (!listenerValue->isObject()) {
+      // The subscription has already been removed.
+      return jsi::Value::undefined();
+    }
     jsi::Object emitter = emitterValue->getObject(runtime);
     jsi::Function listener = listenerValue->getObject(runtime).getFunction(runtime);
 
     removeListener(runtime, emitter, eventName, listener);
+
+    // Values held by this host function are GC roots. The listener's closure often references the subscription
+    // (e.g. a React effect returning `() => subscription.remove()`), so keeping them after the removal would form
+    // a cycle through a root that the garbage collector can never break, leaking the listener and the emitter.
+    *emitterValue = jsi::Value::undefined();
+    *listenerValue = jsi::Value::undefined();
     return jsi::Value::undefined();
   };
 

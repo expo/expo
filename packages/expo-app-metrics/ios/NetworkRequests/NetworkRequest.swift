@@ -35,6 +35,33 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// Number of bytes received on the wire for the response (headers + body).
   public let responseBytesReceived: Int64?
 
+  /// How the OS satisfied the request, or `nil` when it did not classify the fetch (an
+  /// `NSURLProtocol` subclass intercepted the task, or no transaction was reported).
+  ///
+  /// `URLSession` timestamps and byte-counts a cache hit like any other response, so this is the
+  /// only way to tell a disk read from a download: without it a large cached response looks like
+  /// an impossible transfer rate.
+  public let fetchType: FetchType?
+
+  /// How a response was produced, mapped from `URLSessionTaskTransactionMetrics.resourceFetchType`.
+  /// Mirrors the Android `NetworkRequest.FetchType`, which additionally reports a conditional-GET
+  /// revalidation that `URLSession` folds into `cache`.
+  public enum FetchType: String, Sendable {
+    /// Fetched over the network.
+    case network
+    /// Served from the local URL cache without a network load.
+    case cache
+    /// Delivered by an HTTP/2 server push.
+    case serverPush = "server_push"
+  }
+
+  /// Whether the response came off the network rather than out of a cache or a server push.
+  /// `nil` when the OS did not classify the fetch, which callers must treat as unusable rather
+  /// than assume either way.
+  public var cameFromNetwork: Bool? {
+    return fetchType.map { $0 == .network }
+  }
+
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
   public let timings: Timings
 
@@ -42,11 +69,18 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// string rather than carrying `NSError` so the type stays `Sendable` and serializable.
   public let errorDescription: String?
 
+  /// Stable `domain:code` pair of the completion error (e.g. `NSURLErrorDomain:-1009`), or `nil`
+  /// when the task completed without one. Unlike `errorDescription`, which is localized free text,
+  /// this stays constant across locales and OS releases, so telemetry can group failures by it.
+  /// It feeds the low-cardinality `error.type` attribute of OpenTelemetry's semantic conventions.
+  public let errorType: String?
+
   /// Ordered list of redirect hops that preceded the final response. Empty when the task returned
   /// directly. Each entry describes one hop: `fromUrl` is the URL that returned the redirect,
-  /// `statusCode` is the 3xx code it returned, and `toUrl` is where the redirect pointed. For a
-  /// complete chain the first entry's `fromUrl` equals the parent event's `url`, and the last
-  /// entry's `toUrl` is where the request actually landed.
+  /// `statusCode` is the 3xx code it returned, `toUrl` is where the redirect pointed, and
+  /// `respondedAt` is when that 3xx response arrived. For a complete chain the first entry's
+  /// `fromUrl` equals the parent event's `url`, and the last entry's `toUrl` is where the request
+  /// actually landed.
   public let redirects: [Redirect]
 
   public struct Redirect: Sendable, Equatable {
@@ -56,6 +90,16 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     public let toUrl: URL
     /// The 3xx status code returned by `fromUrl` that caused this hop.
     public let statusCode: Int
+    /// When the 3xx response arrived (the hop transaction's `responseEndDate`), or `nil` when the
+    /// OS did not report it.
+    public let respondedAt: Date?
+
+    init(fromUrl: URL, toUrl: URL, statusCode: Int, respondedAt: Date? = nil) {
+      self.fromUrl = fromUrl
+      self.toUrl = toUrl
+      self.statusCode = statusCode
+      self.respondedAt = respondedAt
+    }
   }
 
   public struct Timings: Sendable, Equatable {
@@ -82,10 +126,47 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     public let responseStart: Date?
     public let responseEnd: Date?
 
+    /// When the last response byte arrived, or `nil` if the OS never reported one.
+    ///
+    /// Unlike `responseEnd`, this is never synthesized. `responseEnd` falls back to a wall-clock
+    /// timestamp taken when the snapshot was recorded, which is right for a duration but wrong for
+    /// a transfer window: a request that got headers and then died reports an end long after its
+    /// last byte, and dividing its bytes by that window describes the recording delay rather than
+    /// the connection.
+    public let measuredResponseEnd: Date?
+
     /// Total wall-clock duration of the task. Convenience: callers don't have to subtract
     /// `fetchStart` from `responseEnd` themselves, and we can populate this even when the
     /// individual phases are `nil` (cache hits, errors before headers).
     public let totalDuration: TimeInterval
+
+    /// Time from the start of the fetch until the first response byte arrived.
+    ///
+    /// This is not a measurement of network latency: it also covers DNS, the TCP and TLS
+    /// handshakes, sending the request, and the server's own processing time. A slow backend
+    /// inflates it the same way a slow network does. On a reused connection (the common case under
+    /// keep-alive) the handshakes are already done, so it sits much closer to one round trip plus
+    /// server time.
+    ///
+    /// `nil` when the response never produced headers, so callers can tell "not measured" from a
+    /// genuinely fast response.
+    public var timeToFirstByte: TimeInterval? {
+      return positiveInterval(from: fetchStart, to: responseStart)
+    }
+
+    /// Returns the interval between two optional timestamps, or `nil` if either is missing or the
+    /// result isn't strictly positive.
+    ///
+    /// Negative results are discarded because these are wall-clock dates and a clock adjustment
+    /// mid-request can invert them. Exactly zero is discarded too: a phase that completes inside one
+    /// clock tick was too fast to measure, and reporting `0` would claim it took no time at all.
+    private func positiveInterval(from start: Date?, to end: Date?) -> TimeInterval? {
+      guard let start, let end else {
+        return nil
+      }
+      let interval = end.timeIntervalSince(start)
+      return interval > 0 ? interval : nil
+    }
   }
 }
 
@@ -122,12 +203,34 @@ extension NetworkRequest {
     let url = request.url ?? URL(string: "about:blank")!
     let method = request.httpMethod ?? "GET"
 
-    // We use the last transaction so that redirects don't drop us back to the first hop. If a
-    // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
+    // Per-phase fields describe the transaction that produced the final response, so they come
+    // from the last transaction: redirects must not drop us back to the first hop's connection
+    // and byte counts. `fetchStart` is the exception. It anchors the whole request, including
+    // every redirect hop the span records as an event, so it comes from the first transaction.
+    // Taking it from the last one would start the window after hops that already happened.
     let transaction = metrics?.transactionMetrics.last
+    let firstTransaction = metrics?.transactionMetrics.first
+
+    // `.unknown` maps to nil rather than a guess: a cache hit reports byte counts and timestamps
+    // like any other response, so an unclassified fetch that was really a disk read would
+    // otherwise divide megabytes by the milliseconds it took to read them. Costs the throughput
+    // rate for tasks an `NSURLProtocol` subclass intercepted, which also report `.unknown`, and a
+    // missing rate beats an impossible one.
+    let fetchType: FetchType? = transaction.flatMap { transaction in
+      switch transaction.resourceFetchType {
+      case .networkLoad:
+        return .network
+      case .localCache:
+        return .cache
+      case .serverPush:
+        return .serverPush
+      default:
+        return nil
+      }
+    }
 
     let timings = NetworkRequest.Timings(
-      fetchStart: transaction?.fetchStartDate ?? fallbackStart,
+      fetchStart: firstTransaction?.fetchStartDate ?? fallbackStart,
       domainLookupStart: transaction?.domainLookupStartDate,
       domainLookupEnd: transaction?.domainLookupEndDate,
       connectStart: transaction?.connectStartDate,
@@ -138,6 +241,7 @@ extension NetworkRequest {
       requestEnd: transaction?.requestEndDate,
       responseStart: transaction?.responseStartDate,
       responseEnd: transaction?.responseEndDate ?? fallbackEnd,
+      measuredResponseEnd: transaction?.responseEndDate,
       totalDuration: metrics?.taskInterval.duration ?? fallbackEnd.timeIntervalSince(fallbackStart)
     )
 
@@ -149,7 +253,10 @@ extension NetworkRequest {
     //     Received` is wall-clock accurate in both environments.
     let requestBytesSent: Int64? = {
       if let transaction {
-        let fromTransaction = transaction.countOfRequestHeaderBytesSent + transaction.countOfRequestBodyBytesSent
+        // Clamped: these come from the OS and Swift traps on overflow, which must never take a host
+        // app down from inside an observability library.
+        let fromTransaction = transaction.countOfRequestHeaderBytesSent
+          .addingClamped(transaction.countOfRequestBodyBytesSent)
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -159,7 +266,8 @@ extension NetworkRequest {
     let responseBytesReceived: Int64? = {
       if let transaction {
         let fromTransaction =
-          transaction.countOfResponseHeaderBytesReceived + transaction.countOfResponseBodyBytesReceived
+          transaction.countOfResponseHeaderBytesReceived
+          .addingClamped(transaction.countOfResponseBodyBytesReceived)
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -190,7 +298,14 @@ extension NetworkRequest {
         else {
           continue
         }
-        result.append(Redirect(fromUrl: fromUrl, toUrl: toUrl, statusCode: response.statusCode))
+        result.append(
+          Redirect(
+            fromUrl: fromUrl,
+            toUrl: toUrl,
+            statusCode: response.statusCode,
+            respondedAt: current.responseEndDate
+          )
+        )
       }
       return result
     }()
@@ -203,8 +318,13 @@ extension NetworkRequest {
       networkProtocol: transaction?.networkProtocolName,
       requestBytesSent: requestBytesSent,
       responseBytesReceived: responseBytesReceived,
+      fetchType: fetchType,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
+      errorType: error.map {
+        let nsError = $0 as NSError
+        return "\(nsError.domain):\(nsError.code)"
+      },
       redirects: redirects
     )
   }

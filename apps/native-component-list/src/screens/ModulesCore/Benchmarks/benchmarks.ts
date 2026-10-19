@@ -386,6 +386,37 @@ export const GROUPS: Group[] = [
     ],
   },
   {
+    id: 'addStringsAsync',
+    title: 'addStringsAsync(a, b)',
+    description:
+      'Asynchronous variant of `addStrings`. Adds Promise allocation/resolution on top of the string conversion cost and stresses how arguments cross the asynchronous boundary. Only Expo Module is implemented — no Turbo or Bridge counterpart.',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
+    benchmarks: [
+      {
+        id: 'expo',
+        label: 'AsyncFunction',
+        available: ExpoModule?.addStringsAsync != null,
+        async run(iterations) {
+          await ExpoModule.addStringsAsync('hello ', 'world');
+          return timeAsync(iterations, () => {
+            return ExpoModule.addStringsAsync('hello ', 'world');
+          });
+        },
+      },
+      {
+        id: 'expo-synthesized',
+        label: '@JS',
+        available: ExpoModule?.addStringsAsyncSynthesized != null,
+        async run(iterations) {
+          await ExpoModule.addStringsAsyncSynthesized('hello ', 'world');
+          return timeAsync(iterations, () => {
+            return ExpoModule.addStringsAsyncSynthesized('hello ', 'world');
+          });
+        },
+      },
+    ],
+  },
+  {
     id: 'passthrough',
     title: 'passthrough({ x, y })',
     description:

@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI FlowRow matches the official Jetpack Compose [FlowRow](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#FlowRow) API and arranges children in a horizontal flow that wraps to the next line when it runs out of space.
@@ -28,21 +29,53 @@ Expo UI FlowRow matches the official Jetpack Compose [FlowRow](https://developer
 
 `FlowRow` arranges children in a horizontal flow that wraps to the next line when it runs out of space.
 
-```tsx FlowRowExample.tsx
-import { Host, FlowRow, Text } from '@expo/ui/jetpack-compose';
-import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+<ComponentExample
+  title="FlowRowExample.tsx"
+  src="/static/images/expo-ui/examples/flowrow-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/flowrow-basic-android-dark.webp"
+  alt="Six tag labels flowing across three lines, wrapping at the edge of the screen">
+
+```tsx
+import {
+  Host,
+  FlowRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+  paddingAll,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function FlowRowExample() {
-  const tags = ['React Native', 'Expo', 'Android', 'Jetpack Compose', 'Material 3', 'Kotlin'];
+  const colors = useMaterialColors();
+  const tags = [
+    'React Native',
+    'Expo',
+    'Android',
+    'Jetpack Compose',
+    'Material 3',
+    'Kotlin',
+  ];
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <FlowRow
         horizontalArrangement={{ spacedBy: 8 }}
         verticalArrangement={{ spacedBy: 8 }}
         modifiers={[paddingAll(16)]}>
         {tags.map(tag => (
-          <Text key={tag}>{tag}</Text>
+          <Text
+            key={tag}
+            style={{ fontSize: 28 }}
+            color={colors.onBackground}
+            modifiers={[
+              border(1, colors.outline),
+              padding(12, 6, 12, 6),
+            ]}>
+            {tag}
+          </Text>
         ))}
       </FlowRow>
     </Host>
@@ -50,10 +83,15 @@ export default function FlowRowExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { FlowRow } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/flowrow" apiName="FlowRow" />
+<APISection
+  packageName="expo-ui/jetpack-compose/flowrow"
+  apiName="FlowRow"
+/>

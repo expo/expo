@@ -6,47 +6,46 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.View
-import expo.modules.haptics.arguments.HapticsImpactType
-import expo.modules.haptics.arguments.HapticsNotificationType
-import expo.modules.haptics.arguments.HapticsSelectionType
-import expo.modules.haptics.arguments.HapticsVibrationType
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.haptics.arguments.HapticType
+import expo.modules.haptics.arguments.ImpactStyle
+import expo.modules.haptics.arguments.NotificationType
+import expo.modules.haptics.arguments.SelectionType
+import expo.modules.haptics.arguments.VibrationType
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
+@ExpoModule("ExpoHaptics")
 class HapticsModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val vibrator: Vibrator
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+      (androidContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
     } else {
       @Suppress("DEPRECATION")
-      context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+      androidContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoHaptics")
+  @JS
+  suspend fun notificationAsync(type: NotificationType): Unit = vibrate(type.vibration)
 
-    AsyncFunction("notificationAsync") { type: String ->
-      vibrate(HapticsNotificationType.fromString(type))
-    }
+  @JS
+  suspend fun impactAsync(style: ImpactStyle): Unit = vibrate(style.vibration)
 
-    AsyncFunction<Unit>("selectionAsync") {
-      vibrate(HapticsSelectionType)
-    }
+  @JS
+  suspend fun selectionAsync(): Unit = vibrate(SelectionType)
 
-    AsyncFunction("impactAsync") { style: String ->
-      vibrate(HapticsImpactType.fromString(style))
-    }
-
-    AsyncFunction("performHapticsAsync") { type: HapticType ->
-      val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
-      view?.performHapticFeedback(type.toHapticFeedbackType())
-    }
+  @JS
+  suspend fun performHapticsAsync(type: HapticType): Unit = withContext(Dispatchers.Main) {
+    currentActivity
+      ?.findViewById<View>(android.R.id.content)
+      ?.performHapticFeedback(type.toHapticFeedbackType())
   }
 
-  private fun vibrate(type: HapticsVibrationType) {
+  private suspend fun vibrate(type: VibrationType): Unit = withContext(Dispatchers.IO) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       vibrator.vibrate(VibrationEffect.createWaveform(type.timings, type.amplitudes, -1))
     } else {

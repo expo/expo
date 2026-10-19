@@ -1,6 +1,6 @@
 import { detectAgent } from 'agent-cli-detector';
 
-const debug = require('debug')('expo:telemetry:agent') as typeof console.log;
+import { debugEvent as event } from '../events';
 
 export type AgentTelemetryContext = {
   id: string;
@@ -25,7 +25,7 @@ function resolveAgentTelemetryContext(): AgentTelemetryContext | null {
     }
     return { id: agent.id, sessionId: agent.sessionId };
   } catch (error: any) {
-    debug('Failed to detect coding agent: %s', error?.message ?? error);
+    event('agent_detect_failed', { error: event.error(error as Error) });
     return null;
   }
 }

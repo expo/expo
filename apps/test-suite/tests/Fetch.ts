@@ -2,10 +2,19 @@ import * as FS from 'expo-file-system/legacy';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
+import { requireNotNull } from '../utils/requireNotNull';
+
 export const name = 'Fetch';
 
-export function test({ describe, expect, it, ...t }) {
-  describe('Response types', () => {
+export async function test({ describe, expect, it, ...t }: JasmineInterface) {
+  const httpbin = await gateOnHostAsync(
+    { describe, it, pending: t.pending },
+    'https://httpbin.io/get'
+  );
+
+  httpbin.describe('Response types', () => {
     setupTestTimeout(t);
 
     it('should support redirect and contain basic properties', async () => {
@@ -33,6 +42,25 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.byteLength).toBe(20);
     });
 
+    it('should process blob with size and type', async () => {
+      const resp = await fetch('https://httpbin.io/bytes/20');
+      const blob = await resp.blob();
+      expect(blob.size).toBe(20);
+      expect(blob.type).toBe('application/octet-stream');
+    });
+
+    it('should read blob content back through FileReader', async () => {
+      const resp = await fetch('https://httpbin.io/base64/aGVsbG8gYmxvYg==');
+      const blob = await resp.blob();
+      const buffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+      });
+      expect(new TextDecoder().decode(buffer)).toBe('hello blob');
+    });
+
     it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.io/get');
       expect(resp.ok).toBe(true);
@@ -42,7 +70,7 @@ export function test({ describe, expect, it, ...t }) {
       await delayAsync(500);
 
       const chunks = [];
-      const reader = resp.body.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -64,7 +92,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Response clone', () => {
+  httpbin.describe('Response clone', () => {
     setupTestTimeout(t);
 
     it('should clone a response and read both bodies independently', async () => {
@@ -132,7 +160,7 @@ export function test({ describe, expect, it, ...t }) {
 
     it('should throw a TypeError when cloning a response with a locked body', async () => {
       const resp = await fetch('https://httpbin.io/get');
-      resp.body!.getReader();
+      requireNotNull(resp.body).getReader();
       let error: TypeError | null = null;
       try {
         resp.clone();
@@ -146,7 +174,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Redirect handling', () => {
+  httpbin.describe('Redirect handling', () => {
     setupTestTimeout(t);
 
     it('should follow redirects by default', async () => {
@@ -223,7 +251,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Request body', () => {
+  httpbin.describe('Request body', () => {
     setupTestTimeout(t);
 
     it('should post with json', async () => {
@@ -281,7 +309,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Headers', () => {
+  httpbin.describe('Headers', () => {
     setupTestTimeout(t);
 
     it('should process request and response headers', async () => {
@@ -296,7 +324,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Cookies', () => {
+  httpbin.describe('Cookies', () => {
     setupTestTimeout(t);
 
     it('should include cookies when credentials are set to include', async () => {
@@ -317,7 +345,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Error handling', () => {
+  httpbin.describe('Error handling', () => {
     setupTestTimeout(t);
 
     it('should process 404', async () => {
@@ -389,7 +417,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -420,7 +448,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -434,12 +462,12 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
-      expect(error.message).toContain('Fetch request has been canceled');
+      expect(error?.message).toContain('Fetch request has been canceled');
       expect(hasReceivedChunk).toBe(false);
     });
   });
 
-  describe('Streaming', () => {
+  httpbin.describe('Streaming', () => {
     setupTestTimeout(t);
 
     it('should stream response', async () => {
@@ -448,7 +476,7 @@ export function test({ describe, expect, it, ...t }) {
           Accept: 'text/event-stream',
         },
       });
-      const reader = resp.body.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       const chunks = [];
       while (true) {
         const { done, value } = await reader.read();
@@ -469,10 +497,11 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of body) {
         chunks.push(chunk);
       }
       expect(chunks.length).toBeGreaterThan(3);
@@ -487,10 +516,11 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of body) {
         chunks.push(chunk);
         if (chunks.length === 2) {
           break;
@@ -500,7 +530,7 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
-  describe('Concurrent requests', () => {
+  httpbin.describe('Concurrent requests', () => {
     setupTestTimeout(t);
 
     it('should process multiple requests concurrently', async () => {
@@ -537,7 +567,7 @@ export function test({ describe, expect, it, ...t }) {
   addLocalFileTestSuite({ describe, expect, it, ...t });
 }
 
-function addLocalFileTestSuite({ describe, expect, it, ...t }) {
+function addLocalFileTestSuite({ describe, expect, it, ...t }: JasmineInterface) {
   if (Platform.OS === 'web') {
     return;
   }
@@ -611,10 +641,10 @@ function addLocalFileTestSuite({ describe, expect, it, ...t }) {
 }
 
 function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
-  let originalTimeout;
+  let originalTimeout: number;
 
   t.beforeAll(() => {
-    // Increase the timeout in general because httpbin.test.k6.io can be slow.
+    // Increase the timeout in general because httpbin.io can be slow.
     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
   });

@@ -13,6 +13,7 @@ import {
   getTestPath,
   projectRoot,
   readJson,
+  runScriptPassing,
 } from './utils';
 
 /** Absolute path to the local expo-module-template package */
@@ -263,7 +264,16 @@ describe('--platform option', () => {
     const fakeProject = createFakeProject('local-platform-project');
 
     await executePassing(
-      ['my-module', '--local', '--platform', 'android', '--source', localTemplatePath],
+      [
+        'my-module',
+        '--local',
+        '--platform',
+        'android',
+        '--source',
+        localTemplatePath,
+        '--package-manager',
+        'pnpm',
+      ],
       { cwd: fakeProject }
     );
 
@@ -278,6 +288,9 @@ describe('--platform option', () => {
     // android/ should exist, ios/ should not
     expectFileExists('local-platform-project/modules/my-module', 'android');
     expectFileNotExists('local-platform-project/modules/my-module', 'ios');
+
+    // Local modules never get their own pnpm-workspace.yaml
+    expectFileNotExists('local-platform-project/modules/my-module', 'pnpm-workspace.yaml');
 
     // Web stub should be present
     expect(
@@ -312,6 +325,8 @@ describe('non-interactive module creation', () => {
       'https://github.com/test',
       '--repo',
       'https://github.com/test/ci-module',
+      '--package-manager',
+      'pnpm',
     ]);
 
     // Check essential files exist
@@ -333,6 +348,23 @@ describe('non-interactive module creation', () => {
 
     // The module should be built (TypeScript compiled)
     expectFileExists(projectName, 'build');
+
+    // The template's lint and test setup should work with its dependencies
+    await runScriptPassing(projectName, 'lint');
+    fs.mkdirSync(getTestPath(projectName, 'src/__tests__'));
+    fs.writeFileSync(
+      getTestPath(projectName, 'src/__tests__/smoke-test.ts'),
+      [
+        `import { Platform } from 'react-native';`,
+        ``,
+        `it('runs with the jest-expo preset', () => {`,
+        `  expect(Platform.OS).toBe('ios');`,
+        `});`,
+        ``,
+      ].join('\n')
+    );
+    const testResult = await runScriptPassing(projectName, 'test');
+    expect(testResult.stderr).toMatch(/Tests:\s+1 passed/);
   });
 
   it('warns when target directory is not empty but continues', async () => {
@@ -526,15 +558,24 @@ describe('non-interactive defaults warning', () => {
     const result = await executePassing([
       projectName,
       '--no-example',
-      '--name', 'PartialDefaults',
-      '--description', 'Provided description',
-      '--package', 'com.test.partial',
-      '--author-name', 'Test Author',
-      '--author-email', 'test@example.com',
-      '--author-url', 'https://github.com/test',
-      '--repo', 'https://github.com/test/partial',
-      '--license', 'Apache-2.0',
-      '--module-version', '1.0.0',
+      '--name',
+      'PartialDefaults',
+      '--description',
+      'Provided description',
+      '--package',
+      'com.test.partial',
+      '--author-name',
+      'Test Author',
+      '--author-email',
+      'test@example.com',
+      '--author-url',
+      'https://github.com/test',
+      '--repo',
+      'https://github.com/test/partial',
+      '--license',
+      'Apache-2.0',
+      '--module-version',
+      '1.0.0',
       '--source',
       localTemplatePath,
     ]);
@@ -549,10 +590,14 @@ describe('non-interactive defaults warning', () => {
     await executePassing([
       projectName,
       '--no-example',
-      '--name', 'CustomLicenseVersion',
-      '--package', 'com.test.custom',
-      '--license', 'Apache-2.0',
-      '--module-version', '2.0.0',
+      '--name',
+      'CustomLicenseVersion',
+      '--package',
+      'com.test.custom',
+      '--license',
+      'Apache-2.0',
+      '--module-version',
+      '2.0.0',
       '--source',
       localTemplatePath,
     ]);
@@ -600,10 +645,12 @@ describe('add-platform-support', () => {
 
   it('adds android support to an apple-only module with Function and AsyncFunction', async () => {
     const project = createFakeProject('aps-fn-project');
-    const modulePath = await createLocalModule(project, 'aps-fn', ['apple'], [
-      'Function',
-      'AsyncFunction',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-fn',
+      ['apple'],
+      ['Function', 'AsyncFunction']
+    );
 
     await executePassing([
       'add-platform-support',
@@ -642,10 +689,12 @@ describe('add-platform-support', () => {
 
   it('adds apple support to an android-only module with View and ViewEvent', async () => {
     const project = createFakeProject('aps-view-project');
-    const modulePath = await createLocalModule(project, 'aps-view', ['android'], [
-      'View',
-      'ViewEvent',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-view',
+      ['android'],
+      ['View', 'ViewEvent']
+    );
 
     await executePassing([
       'add-platform-support',
@@ -844,12 +893,7 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     let thrownError: any;
     try {
       // execute() already sets CI=1, so non-interactive mode is active
-      await execute([
-        'add-platform-support',
-        modulePath,
-        '--source',
-        localTemplatePath,
-      ]);
+      await execute(['add-platform-support', modulePath, '--source', localTemplatePath]);
     } catch (e) {
       thrownError = e;
     }
@@ -859,10 +903,12 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
   it('uses --features flag to override auto-detected features', async () => {
     const project = createFakeProject('aps-features-flag-project');
     // Module has Function + AsyncFunction in native source
-    const modulePath = await createLocalModule(project, 'aps-ff', ['apple'], [
-      'Function',
-      'AsyncFunction',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-ff',
+      ['apple'],
+      ['Function', 'AsyncFunction']
+    );
 
     // But we override with just View when adding android
     await executePassing([
@@ -891,5 +937,33 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     const ktContent = fs.readFileSync(path.join(pkgDir, moduleKt), 'utf-8');
     expect(ktContent).toContain('View(');
     expect(ktContent).not.toContain('AsyncFunction(');
+  });
+});
+
+describe('standalone SharedObject imports', () => {
+  it('installs and builds outside an Expo app', async () => {
+    const projectName = 'shared-object-standalone';
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'DependencyProbe',
+      '--package-manager',
+      'npm',
+      '--author-name',
+      'Test',
+      '--author-email',
+      'test@example.com',
+      '--author-url',
+      'https://example.com',
+      '--repo',
+      'https://example.com/module',
+      '--features',
+      'SharedObject',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expectFileExists(projectName, 'build/DependencyProbeModuleSharedObject.d.ts');
   });
 });

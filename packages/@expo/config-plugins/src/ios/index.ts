@@ -4,6 +4,7 @@ export * as BuildScheme from './BuildScheme';
 export * as BundleIdentifier from './BundleIdentifier';
 export * as DeploymentTarget from './DeploymentTarget';
 export * as DevelopmentTeam from './DevelopmentTeam';
+export * as DevServer from './DevServer';
 export * as DeviceFamily from './DeviceFamily';
 export * as Entitlements from './Entitlements';
 export * as Google from './Google';

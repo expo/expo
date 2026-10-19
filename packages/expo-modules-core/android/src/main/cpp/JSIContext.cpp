@@ -332,6 +332,7 @@ void JSIContext::prepareForDeallocation() noexcept {
     unbindJSIContext(runtimeHolder->get());
     runtimeHolder.reset();
   }
+  jsHeapAccessExecutor.reset();
   jniDeallocator.reset();
   wasDeallocated_ = true;
 }

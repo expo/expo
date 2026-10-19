@@ -5,9 +5,9 @@ import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shar
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
+import { debugEvent } from '../metro/metroDebugEvents';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-
-const debug = require('debug')('expo:metro:options') as typeof console.log;
 
 /** Enforce conversion of `true` to `'true'` */
 function toBoolStr(x: true): 'true';
@@ -22,7 +22,7 @@ export type MetroEnvironment = 'node' | 'react-server' | 'client';
 export type ExpoMetroOptions = {
   platform: string;
   mainModuleName: string;
-  mode: string;
+  mode: EnvironmentMode;
   minify?: boolean;
   environment?: MetroEnvironment;
   serializerOutput?: 'static';
@@ -33,6 +33,8 @@ export type ExpoMetroOptions = {
   bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
+  /** The chunking strategy to use when `splitChunks` is enabled. */
+  chunkingStrategy?: 'granular' | 'legacy';
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot?: string;
   /** Enable React compiler support in Babel. */
@@ -69,6 +71,7 @@ export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  chunkingStrategy?: 'granular' | 'legacy';
   usedExports?: boolean;
   exporting?: boolean;
 };
@@ -120,7 +123,11 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
-export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+export function getAsyncRoutesFromExpoConfig(
+  exp: ExpoConfig,
+  mode: EnvironmentMode,
+  platform: string
+) {
   let asyncRoutesSetting;
 
   if (exp.extra?.router?.asyncRoutes) {
@@ -146,7 +153,21 @@ export function getMetroDirectBundleOptionsForExpoConfig(
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
+    chunkingStrategy: getChunkingStrategyFromExpoConfig(exp),
   });
+}
+
+export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'granular' | 'legacy' {
+  const experiments = exp.experiments as
+    | (NonNullable<ExpoConfig['experiments']> & {
+        chunking?: { mode: 'granular' | 'legacy' };
+      })
+    | undefined;
+  return experiments?.chunking?.mode === 'granular' &&
+    !exp.experiments?.reactServerComponentRoutes &&
+    !exp.experiments?.reactServerFunctions
+    ? 'granular'
+    : 'legacy';
 }
 
 export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
@@ -168,6 +189,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     isExporting,
     inlineSourceMap,
     splitChunks,
+    chunkingStrategy,
     usedExports,
     reactCompiler,
     optimize,
@@ -186,7 +208,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   const isHermes = engine === 'hermes';
 
   if (isExporting) {
-    debug('Disabling lazy bundling for export build');
+    debugEvent('options_lazy_disabled_for_export', {});
     options.lazy = false;
   }
 
@@ -251,6 +273,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      chunkingStrategy,
       usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
@@ -421,7 +444,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
 /**
  * Convert all path separators to `/`, including on Windows.
- * Metro asumes that all module specifiers are posix paths.
+ * Metro assumes that all module specifiers are posix paths.
  * References to directories can still be Windows-style paths in Metro.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script

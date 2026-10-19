@@ -13,9 +13,8 @@ import { template } from '@babel/core';
 import type { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
 import assert from 'node:assert';
 
+import { debugEvent } from '../transform-worker/events';
 import { withLocation } from './helpers';
-
-const debug = require('debug')('expo:metro-config:import-export-plugin') as typeof console.log;
 
 function nullthrows<T>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -184,10 +183,9 @@ export function importExportPlugin({
                           loc,
                         });
                       } else {
-                        debug(
-                          'Unexpected export named declaration with object pattern without name.',
-                          p.toString()
-                        );
+                        debugEvent('import_export:unexpected_object_pattern', {
+                          node: p.toString(),
+                        });
                       }
                     });
                   }
@@ -209,10 +207,9 @@ export function importExportPlugin({
                           loc,
                         });
                       } else {
-                        debug(
-                          'Unexpected export named declaration with array pattern without name.',
-                          e?.toString()
-                        );
+                        debugEvent('import_export:unexpected_array_pattern', {
+                          node: e?.toString() ?? '',
+                        });
                       }
                     });
                   }
@@ -228,10 +225,7 @@ export function importExportPlugin({
                         loc,
                       });
                     } else {
-                      debug(
-                        'Unexpected export named declaration with identifier without name.',
-                        id.toString()
-                      );
+                      debugEvent('import_export:unexpected_identifier', { node: id.toString() });
                     }
                   }
                   break;
@@ -249,7 +243,7 @@ export function importExportPlugin({
                 loc,
               });
             } else {
-              debug('Unexpected export named declaration without id.', declaration.toString());
+              debugEvent('import_export:unexpected_declaration', { node: declaration.toString() });
             }
           }
 
@@ -287,10 +281,9 @@ export function importExportPlugin({
                 });
                 break;
               default:
-                debug(
-                  'Unexpected export named declaration specifier type.',
-                  (s as object).toString()
-                );
+                debugEvent('import_export:unexpected_specifier', {
+                  node: (s as object).toString(),
+                });
                 break;
             }
           });

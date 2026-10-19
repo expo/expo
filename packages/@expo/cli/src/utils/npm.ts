@@ -9,9 +9,8 @@ import slugify from 'slugify';
 import { Readable } from 'stream';
 
 import { CommandError } from './errors';
+import { event } from './events';
 import { extractStream } from './tar';
-
-const debug = require('debug')('expo:utils:npm') as typeof console.log;
 
 export function sanitizeNpmPackageName(name: string): string {
   // https://github.com/npm/validate-npm-package-name/#naming-rules
@@ -46,7 +45,7 @@ export async function npmViewAsync(...props: string[]): Promise<JSONValue> {
   const cmd = ['view', ...props, '--json'];
   const results = (await spawnAsync('npm', cmd)).stdout?.trim();
   const cmdString = `npm ${cmd.join(' ')}`;
-  debug('Run:', cmdString);
+  event('npm_run', { command: cmdString });
   if (!results) {
     return null;
   }
@@ -105,12 +104,13 @@ function renameNpmTarballEntries(expName: string | undefined) {
     }
   };
   if (expName) {
-    const androidName = IOSConfig.XcodeUtils.sanitizedName(expName.toLowerCase());
     const iosName = IOSConfig.XcodeUtils.sanitizedName(expName);
+    // Lowercase after sanitizing so the result always matches content renames
+    // (slugify's charmap is case-asymmetric).
     const lowerCaseName = iosName.toLowerCase();
     return (input: string, typeflag: TarTypeFlag) => {
       input = input
-        .replace(/HelloWorld/g, input.includes('android') ? androidName : iosName)
+        .replace(/HelloWorld/g, input.includes('android') ? lowerCaseName : iosName)
         .replace(/helloworld/g, lowerCaseName);
       return renameConfigs(input, typeflag);
     };
@@ -152,7 +152,7 @@ export async function downloadAndExtractNpmModuleAsync(
   props: ExtractProps
 ): Promise<string> {
   const url = await getNpmUrlAsync(npmName);
-  debug('Fetch from URL:', url);
+  event('npm_fetch_url', { url });
   return await extractNpmTarballFromUrlAsync(url, output, props);
 }
 
@@ -177,16 +177,31 @@ export async function packNpmTarballAsync(packageDir: string): Promise<string> {
     })
   ).stdout?.trim();
   try {
-    const [json] = JSON.parse(results) as { filename: string }[];
+    const packages = normalizeNpmPackResult(JSON.parse(results));
+    const packageInfo = packages?.[0];
     assert(
-      typeof json?.filename === 'string',
-      'Expected filename property on JSON array of type "string"'
+      packageInfo &&
+        typeof packageInfo === 'object' &&
+        'filename' in packageInfo &&
+        typeof packageInfo.filename === 'string',
+      'Expected filename property in npm pack JSON output of type "string"'
     );
-    return path.resolve(packageDir, json.filename);
+    return path.resolve(packageDir, packageInfo.filename);
   } catch (error: any) {
     const cmdString = `npm ${cmdArgs.join(' ')}`;
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
+  }
+}
+
+/** Normalize the npm pack JSON formats used before and after npm 12 */
+export function normalizeNpmPackResult(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) {
+    return result;
+  } else if (result && typeof result === 'object') {
+    return Object.values(result);
+  } else {
+    return null;
   }
 }

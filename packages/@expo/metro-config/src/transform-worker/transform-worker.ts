@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
+import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import countLines from '@expo/metro/metro/lib/countLines';
 import { relative, dirname } from 'node:path';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 import { getBrowserslistTargets } from './browserslist';
+import type { Dependency } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
 import {
   collectCssImports,
@@ -22,21 +22,17 @@ import {
   transformCssModuleWeb,
 } from './css-modules';
 import { parseEnvFile } from './dot-env-development';
+import { event, debugEvent } from './events';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
+import type { ExpoCustomTransformOptions, ExpoJsTransformerConfig } from './types';
 
 export interface TransformResponse {
-  readonly dependencies: readonly TransformResultDependency[];
-  // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
-  // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
-  // because the `Bundler.transformFile` wrapper swaps the
-  // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
+  readonly dependencies: readonly Dependency[];
   readonly output: readonly ExpoJsOutput[];
 }
-
-const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
@@ -54,7 +50,40 @@ function getStringArray(value: any): string[] | undefined {
 }
 
 export async function transform(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
+  projectRoot: string,
+  filename: string,
+  data: Buffer,
+  options: JsTransformOptions
+): Promise<TransformResponse> {
+  const done = debugEvent.span();
+  try {
+    const result = await transformImpl(config, projectRoot, filename, data, options);
+    const customTransformOptions = options.customTransformOptions as
+      | ExpoCustomTransformOptions
+      | undefined;
+    if (customTransformOptions?.prewarm === '1') {
+      for (const output of result.output) {
+        (output as ExpoJsOutput).data.skipCache = true;
+      }
+    }
+    done('file', {
+      file: toPosixPath(filename),
+      platform: options.platform ?? null,
+      environment: customTransformOptions?.environment ?? null,
+      type: options.type,
+      deps: result.dependencies.length,
+      cached: false,
+    });
+    return result;
+  } catch (error) {
+    event('failed', { file: toPosixPath(filename), error: event.error(error as Error) });
+    throw error;
+  }
+}
+
+async function transformImpl(
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -79,7 +108,7 @@ export async function transform(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        debug('Parsed client boundaries:', clientBoundaries);
+        debugEvent('client_boundaries:parsed', { boundaries: clientBoundaries });
 
         // Inject source
         const src =
@@ -211,7 +240,7 @@ function isReactServerEnvironment(options: JsTransformOptions): boolean {
 }
 
 async function transformCss(
-  config: JsTransformerConfig,
+  config: ExpoJsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
@@ -246,7 +275,7 @@ async function transformCss(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+      // NOTE(cedric): use POSIX-formatted filename for consistent CSS module class names.
       // This affects the content hashes, which should be stable across platforms.
       filename: toPosixPath(filename),
       src: code,
@@ -267,6 +296,7 @@ async function transformCss(
         type: 'js/module',
         data: {
           ...jsModuleResults.output[0]!.data,
+          skipCache: !!postcssResults.hasPostcss || undefined,
 
           // Append additional css metadata for static extraction.
           css: {
@@ -348,6 +378,7 @@ async function transformCss(
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
         css: cssOutput,
+        skipCache: !!postcssResults.hasPostcss || undefined,
       },
     },
   ];

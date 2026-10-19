@@ -176,7 +176,9 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
   }
 
   private fun refreshServers() {
-    if (_state.value.isRefreshing) return
+    if (_state.value.isRefreshing) {
+      return
+    }
     _state.value = _state.value.copy(isRefreshing = true)
 
     viewModelScope.launch {

@@ -60,6 +60,8 @@ You can configure `expo-tracking-transparency` using its built-in [config plugin
   ]}
 />
 
+To localize this iOS permission message, keep `userTrackingPermission` as the default value and add `NSUserTrackingUsageDescription` to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Expo writes the localized values to **InfoPlist.strings** during prebuild.
+
 <ConfigReactNative>
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
@@ -130,7 +132,7 @@ import * as ExpoTrackingTransparency from 'expo-tracking-transparency';
 
 The following permissions are added automatically through the library's **AndroidManifest.xml**.
 
-| Android Permission                        | Description                                                                                                                                                                    |
+| Android permission                        | Description                                                                                                                                                                    |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `com.google.android.gms.permission.AD_ID` | Allows access to the Advertising ID for tracking and analytics. Required for apps targeting Android 13 (API level 33) or higher that use Google Play services' Advertising ID. |
 

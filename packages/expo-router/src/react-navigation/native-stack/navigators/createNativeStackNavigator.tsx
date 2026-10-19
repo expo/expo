@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -13,7 +14,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
@@ -23,12 +23,12 @@ import type {
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
 } from '../types';
+import { makePopAction } from '../utils/makePopAction';
 import { NativeStackView } from '../views/NativeStackView';
 
 function NativeStackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -37,7 +37,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -46,7 +46,6 @@ function NativeStackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -56,6 +55,7 @@ function NativeStackNavigator({
   });
 
   const meta = use(NavigationMetaContext);
+  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
   React.useEffect(() => {
     if (meta && 'type' in meta && meta.type === 'native-tabs') {
@@ -83,14 +83,18 @@ function NativeStackNavigator({
     });
   }, [meta, navigation, state.index, state.key]);
 
+  const pop = makePopAction(navigation.dispatchSync, state.key);
+
   return (
     <NavigationContent>
       <NativeStackView
         {...rest}
         state={state}
-        navigation={navigation}
         descriptors={descriptors}
-        describe={describe}
+        emit={navigation.emit}
+        isPreloaded={(key) => state.routes.find((route) => route.key === key)?.isPreloaded === true}
+        isRemovalPrevented={(key) => routesWithRemovalPrevented.has(key)}
+        pop={pop}
       />
     </NavigationContent>
   );
@@ -110,7 +114,6 @@ export function createNativeStackNavigator<
     };
     Navigator: typeof NativeStackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(NativeStackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(NativeStackNavigator)();
 }

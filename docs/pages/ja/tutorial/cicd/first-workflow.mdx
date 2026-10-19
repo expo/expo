@@ -1,0 +1,261 @@
+---
+title: '最初の EAS Workflows ジョブを実行する'
+sidebar_title: 最初の EAS Workflows ジョブ
+description: ワークフローファイル、ジョブ、トリガーを作成し、ジョブを連結することで、Expo アプリ向けの EAS Workflows の基本を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { JobTypes } from '~/ui/components/FlowDiagram/Diagrams/JobTypes';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+この章では、最初の EAS Workflows ジョブを作成します。
+
+## この章で学べること
+
+- EAS ダッシュボードにメッセージを出力するカスタムワークフローを作成して実行する
+- `main` へのプッシュのたびにワークフローが走るよう、自動トリガーを設定する
+- 複数のジョブを連結し、あるジョブの出力を次のジョブに渡す
+- EAS ダッシュボードでワークフローのログとジョブグラフを読む
+
+## ワークフローファイルの仕組み
+
+ワークフローファイルは、プロジェクトの **.eas/workflows/** ディレクトリに置かれる YAML ファイルです。各ファイルには、実行するジョブと、それぞれのジョブがたどるステップを定義します。
+
+<JobTypes />
+
+ワークフローファイルには、1 つ以上のジョブと、任意でトリガーを記述します。実行されると、EAS はファイルを読み取り、環境をプロビジョニングして、その環境でジョブを実行します。
+
+## EAS Workflows のジョブの種類
+
+EAS Workflows には 2 種類のジョブがあります。
+
+- **事前パッケージ済みジョブ：** `type` フィールドを使うジョブです。`build`、`submit`、`update` など、どの操作を実行するかを EAS に伝えます。すると EAS は、その操作用にあらかじめ構成されたステップを実行します。
+- **カスタムジョブ：** `type` フィールドの代わりに `steps` を使うジョブです。各ステップのコマンドを `run` で自分で記述します。カスタムジョブを使うと、ワークフローの実行時に何を行うか、特定のコマンドをいつ実行するかを自分で制御できます。
+
+## 最初のワークフローを作成する
+
+カスタムジョブを使って最初のワークフローを作成し、EAS 上で実行してみましょう。
+
+<Step label="1">
+
+### ワークフローディレクトリを作成する
+
+Expo プロジェクトのルートに **.eas/workflows/** ディレクトリを作成します。EAS はこの場所にあるワークフローファイルだけを探します。
+
+<Terminal cmd={['$ mkdir -p .eas/workflows']} />
+
+</Step>
+
+<Step label="2">
+
+### hello.yml ファイルを追加する
+
+**.eas/workflows/** の中に **hello.yml** という名前のファイルを作成します。このファイルでは、単一のカスタムジョブを使って最初のワークフローを定義します。このジョブは `"Hello, Workflows"` を出力するシェルコマンドを実行します。
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, Workflows" # Any shell command works here
+```
+
+上のワークフローでは、次の構文を使用しています。
+
+- `name` は、EAS ダッシュボードに表示されるワークフローの名前です。
+- `jobs` には、実行する 1 つ以上のジョブを記述します。各ジョブには一意の ID があります（この例では `greet`）。
+- `steps` は、ジョブが順番に実行する一連のタスクです。`type` フィールドを持たず `steps` を持つジョブは、カスタムジョブです。
+- `run` は、ステップ内で実行するシェルコマンドです。ここでは `echo` を実行してメッセージを出力しています。どんなシェルコマンドでも使えます。
+
+</Step>
+
+<Step label="3">
+
+### ワークフローを手動で実行する
+
+EAS 上でワークフローを実行するには、ターミナルウィンドウから次のコマンドを実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
+
+`eas workflow:run` コマンドは、ワークフローファイルを EAS にアップロードします。続いてファイル内に定義されたジョブを実行し、EAS CLI がジョブの様子を確認できる EAS ダッシュボードの URL を出力します。
+
+</Step>
+
+<Step label="4">
+
+### ジョブのログを確認する
+
+前のステップで出力された URL をブラウザーで開きます。ワークフローのページでは、`greet` ジョブとそのステータスを確認できます。ジョブが完了したら、ステップの出力を展開して、出力されたメッセージ `Hello, Workflows` を確認します。
+
+<ContentSpotlight
+  alt="Hello World ワークフローの実行について、ジョブのログを展開して表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-job-logs-dashboard.png"
+  className="max-w-160"
+/>
+
+EAS ダッシュボードは、あらゆるワークフロージョブの確認とデバッグを行う場所です。**Workflow graph** には、ジョブをトリガーしたものとジョブの一意な ID が表示されます。
+
+**Workflow file** タブに切り替えてみましょう。これはステップ 2 で書いたワークフローファイルで、実行時の内容がそのまま保存されています。
+
+> **info** **ヒント：** プロジェクトのすべてのワークフローは [Workflows ページ](https://expo.dev/accounts/[account]/projects/[project]/workflows)で一覧でき、ステータスや種類で絞り込めます。
+
+</Step>
+
+## ワークフローを自動で実行する
+
+一度きりの実行ならターミナルから `eas workflow:run` を実行すれば済みますが、多くのチームは GitHub のイベントで自動的に走るワークフローを求めます。自動トリガーがあれば、誰もワークフローの実行を覚えておく必要がありません。ワークフローの設定は、ビルド対象のコードと同じリポジトリの中に置かれます。
+
+> **info** **注：** トリガーとは、CI/CD パイプラインをいつ開始するかを決めるルールです。手動での実行を必要とせずにパイプラインが自動的に走るきっかけとなるイベント（コードのプッシュやプルリクエストなど）を定義します。
+
+トリガーはワークフローファイルの `on` キーで定義します。EAS は該当する GitHub イベントを監視し、自動的にワークフローを実行します。
+
+<Step label="1">
+
+### 自動トリガーを追加する
+
+既存のワークフローファイルに `on.push.branches` トリガーを追加してみましょう。
+
+- `on` キーは、どの GitHub イベントでワークフローをトリガーするかを定義します
+- `push` フィールドは、いつトリガーするかを定義します
+- `branches` フィールドでは、`main` ブランチにコードがプッシュされたときにワークフローを自動実行する、といった指定ができます
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+# @info #
+on:
+  push:
+    branches: ['main'] # Fires on every push to main branch
+# @end #
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, Workflows"
+```
+
+`branches` フィールドには、GitHub リポジトリに存在する任意のブランチ名を指定できます。`['main', 'develop', 'staging']` のように複数のブランチを指定すれば、そのいずれかにプッシュしたときにワークフローがトリガーされます。
+
+</Step>
+
+<Step label="2">
+
+### 変更をコミットして GitHub にプッシュする
+
+ワークフローファイルをコミットし、`main` ブランチにプッシュします。
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/hello.yml',
+    '$ git commit -m "Add hello workflow"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/hello.yml && git commit -m 'Add hello workflow' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### 自動トリガーを確認する
+
+> **info** **ヒント：** このステップは、ローカルの Expo プロジェクトが GitHub にプッシュされていて、その GitHub リポジトリが EAS に接続されていることが前提です。確認するには、`git remote -v` を実行してローカルリポジトリが GitHub の URL を指していることを確かめ、[EAS の GitHub 設定](https://expo.dev/accounts/[account]/projects/[projectName]/github)を開いてリポジトリが接続されていることを確認します。
+
+EAS ダッシュボードでプロジェクトの [Workflows ページ](https://expo.dev/accounts/[account]/projects/[project]/workflows)を開き、新しいジョブを確認しましょう。
+
+<ContentSpotlight
+  alt="GitHub リポジトリの main ブランチへのプッシュによって自動的にトリガーされたワークフローの実行を表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-github-triggered-run.png"
+  className="max-w-160"
+/>
+
+EAS ダッシュボードでは、**Workflow graph** タブにこのプッシュのコミットメッセージとブランチの参照が表示されます。ワークフローのヘッダー下にあるステータス欄でも、**Trigger** と **Triggered by** が同じ情報を示しています。
+
+</Step>
+
+## その他のトリガーの種類
+
+このチュートリアルの後の章で使用する、その他のトリガーの種類は次のとおりです。
+
+- `on.pull_request`：対象のブランチに向けたプルリクエストが作成または更新されたときに実行されます
+- `on.push` と `tags` の組み合わせ：一致するパターンのタグが GitHub リポジトリにプッシュされたときに実行されます
+- `on.pull_request_labeled`：特定のラベルがプルリクエストに追加されたときに実行されます
+
+## ジョブを連結する
+
+ここまではワークフローファイルに 1 つのジョブだけを実装しました。ワークフローファイルには複数のジョブを含められます。あるジョブの入力を、前のジョブの出力に依存させることもできます。ワークフローファイルの中で複数のジョブを連結してみましょう。
+
+<Step label="1">
+
+### hello.yml を更新する
+
+**hello.yml** ファイルを更新して、カスタムジョブと事前パッケージ済みジョブを追加してみましょう。ここで使う事前パッケージ済みジョブは [`doc`](/eas/workflows/pre-packaged-jobs/#doc) という名前で、EAS ダッシュボード上に Markdown を描画します。
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+jobs:
+  greet:
+    # @info #
+    outputs:
+      greeting: ${{ steps.set_greeting.outputs.greeting }} # Expose the step output at the job level
+    # @end #
+    steps:
+      - id: set_greeting
+        run: set-output greeting "Hello from EAS Workflows"
+  show_info:
+    # @info #
+    needs: [greet] # Wait for greet to finish, then read its outputs
+    type: doc # Pre-packaged job that renders Markdown on the dashboard
+    # @end #
+    params:
+      md: |
+        # Workflow Output
+        **${{ needs.greet.outputs.greeting }}**
+```
+
+上のワークフローファイルは、次のことを行っています。
+
+- `greet` ジョブを定義しています。これはカスタムジョブです。[`set-output`](/eas/workflows/syntax/#set-output) シェル関数を使って `greeting` という値を設定しています。ジョブレベルの `outputs` フィールドがステップの出力を公開し、他のジョブから参照できるようにします。
+- `show_info` ジョブを定義しています。`needs: [greet]` によって `greet` ジョブの完了を待ち、その出力にアクセスします。そのうえで、事前パッケージ済みの `doc` ジョブタイプを使って EAS ダッシュボードに Markdown ドキュメントを描画します。この Markdown の内容には、前のジョブで設定した `greeting` の値が含まれます。
+
+> **info** **ヒント：** EAS Workflows では、ジョブはデフォルトで並列に実行されます。ジョブを待たせるのが `needs` フィールドです。`needs` を使うジョブが開始する前に正常終了していなければならないジョブの ID を並べます。`needs` に並べたジョブが失敗した場合、依存する側のジョブはスキップされます。
+
+</Step>
+
+<Step label="2">
+
+### 連結したワークフローを実行する
+
+連結されたジョブの動きを確認するために、ターミナルウィンドウから次のコマンドを実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
+
+EAS CLI が出力した EAS ダッシュボードのリンクを開きます。**Logs** の下を見ると、まず `greet` ジョブが実行されているのが分かります。それが完了すると `show_info` ジョブが実行され、前のジョブの出力を使って Markdown の内容が描画されます。
+
+<ContentSpotlight
+  alt="最初のジョブの完了後に 2 つの連結されたジョブが順に実行される様子を表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-chained-jobs.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## 後片付け
+
+この章のあとは、**hello.yml** ファイルを削除してください。以降の章では使用しません。残しておきたい場合は、`main` へのプッシュのたびに実行されないよう `on.push` トリガーを取り除いておきます。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/first-workflow"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 1 章：最初の EAS Workflows ジョブ"
+  summary="カスタムジョブのワークフローを作成し、手動と自動の両方でトリガーし、needs と outputs を使ってジョブを連結し、EAS ダッシュボードでジョブの実行を確認しました。"
+  nextChapterDescription="次の章では、フィンガープリントを使って不要な再ビルドを回避しながら開発ビルドを自動化する方法を学びます。"
+  nextChapterTitle="開発ビルド"
+  nextChapterLink="/ja/tutorial/cicd/development-builds"
+/>

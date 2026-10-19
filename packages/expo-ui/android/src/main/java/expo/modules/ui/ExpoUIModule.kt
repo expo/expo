@@ -2,6 +2,7 @@
 
 package expo.modules.ui
 
+import android.os.Handler
 import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
@@ -28,11 +29,14 @@ import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.FilledIconButtonContent
 import expo.modules.ui.button.FilledTonalIconButtonContent
 import expo.modules.ui.button.OutlinedIconButtonContent
+import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
+import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
+import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
@@ -55,15 +59,30 @@ import okhttp3.OkHttpClient
 class ExpoUIModule : Module() {
   var okHttpClient: OkHttpClient? = null
     private set
+  var imageLoader: ImageLoader? = null
+    private set
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
     OnCreate {
-      okHttpClient = OkHttpClient.Builder().build()
+      val context = requireNotNull(appContext.reactContext) {
+        "ExpoUIModule requires an active React context"
+      }
+      okHttpClient = appContext.createOkHttpClientBuilder().build()
+      imageLoader = ImageLoader(context, requireNotNull(okHttpClient))
     }
 
     OnDestroy {
+      // `RNHostView` publishes its content origin into a process-global registry keyed by view tag.
+      // Tags restart in the next app context, so an entry whose view was never torn down would be
+      // read by an unrelated view after a reload.
+      NativeStatePropsGetter().clearAllContentOrigins()
+      // React Native destroys modules on a background thread, but `ZeroContentOrigins` is UI-thread only.
+      Handler(Looper.getMainLooper()).post { ZeroContentOrigins.clear() }
+
+      imageLoader?.close()
+      imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
@@ -77,6 +96,13 @@ class ExpoUIModule : Module() {
         val callback = WorkletCallback()
         callback.worklet = worklet
         callback
+      }
+
+      Function("setWorklet") { callback: WorkletCallback, worklet: Worklet ->
+        // Dispatch on main thread as callback is read on the main thread
+        appContext.mainQueue.launch {
+          callback.worklet = worklet
+        }
       }
 
       Property("__expo_ui_shared_object__") { _: WorkletCallback ->
@@ -144,7 +170,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {
@@ -155,7 +185,19 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class)
+    View(RNHostView::class) {
+      // Also consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
+      // `RootNodeKind` trait so `measure()` reports positions relative to this view. Kotlin reads
+      // the same prop to decide whether this view dispatches its subtree's touches, so the
+      // position in `measure()` and the dispatcher can never disagree.
+      Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
+        view.setLayoutRoot(layoutRoot)
+      }
+
+      OnViewDestroys { view: RNHostView ->
+        view.clearPublishedContentOrigin()
+      }
+    }
 
     View(SlotView::class) {
       Events("onSlotEvent")
@@ -163,8 +205,20 @@ class ExpoUIModule : Module() {
     View(InnerTextFieldView::class)
     View(PlaceholderView::class)
     View(IconView::class)
+    View(ImageView::class) {
+      Events("onLoad", "onError")
+    }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
@@ -312,6 +366,14 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
+      Events("onValueChange", "onValueChangeFinished")
+
+      Content { props ->
+        VerticalSliderContent(props)
+      }
+    }
+
     ExpoUIView<ShapeProps>("ShapeView") {
       Content { props ->
         ShapeContent(props)
@@ -338,12 +400,29 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DateRangePickerProps>("DateRangePickerView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+
+      Content { props ->
+        DateRangePickerContent(props) { onDateRangeSelected(it) }
+      }
+    }
+
     ExpoUIView<DatePickerDialogProps>("DatePickerDialogView") {
       val onDateSelected by Event<DatePickerResult>()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
         ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+      }
+    }
+
+    ExpoUIView<DateRangePickerDialogProps>("DateRangePickerDialogView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        ExpoDateRangePickerDialogContent(props, { onDateRangeSelected(it) }, { onDismissRequest(Unit) })
       }
     }
 

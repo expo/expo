@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import Foundation
 import Testing
 
 @testable import ExpoModulesCore
@@ -11,13 +12,25 @@ private struct ProgressEvent {
   var percent: Int = 0
 }
 
-@ExpoModule
+@SharedObject
+private final class MacroEmittingObject: SharedObject {
+  @Event
+  var onTicked: (ProgressEvent) -> Void
+}
+
+@ExpoModule(classes: [MacroEmittingObject.self])
 private final class MacroEmitter: Module {
   @Event
   var onProgress: (ProgressEvent) -> Void
 
   @Event
   var onDone: () -> Void
+
+  @Event
+  var onCount: (Int64) -> Void
+
+  @Event
+  var onTimestamp: (Date) -> Void
 }
 
 @Suite("Macro event")
@@ -59,6 +72,58 @@ private struct MacroEventTests {
     module.onDone()
 
     try await expectResult(equals: 1)
+  }
+
+  @Test
+  func `emits a no-payload event with undefined as the only argument`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('done', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
+      """)
+    module.onDone()
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "1:undefined")
+  }
+
+  @Test
+  func `emits a 64-bit integer payload as a bigint`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('count', payload => { globalThis.result = typeof payload + ':' + payload })
+      """)
+    module.onCount(42)
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "bigint:42")
+  }
+
+  @Test
+  func `emits a date payload as a JS Date`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('timestamp', payload => {
+        globalThis.result = Object.prototype.toString.call(payload) + ':' + (payload instanceof Date ? payload.getTime() : payload)
+      })
+      """)
+    module.onTimestamp(Date(timeIntervalSince1970: 1_700_000_000))
+    let result = try runtime.eval("globalThis.result").asString()
+    #expect(result == "[object Date]:1700000000000")
+  }
+
+  @Test
+  func `emits an event from a shared object to a JS listener`() async throws {
+    let object = MacroEmittingObject()
+    // Encoding pairs the native object with a JS object and registers it; stash that on a global so a
+    // listener can be attached from JS.
+    let encoded = try MacroEmittingObject.encode(object, in: runtime)
+    try runtime.global().setProperty("emittingObject", value: encoded)
+    try runtime.eval("""
+      globalThis.result = null
+      emittingObject.addListener('ticked', payload => { globalThis.result = payload.percent })
+      """)
+
+    object.onTicked(ProgressEvent(percent: 30))
+
+    try await expectResult(equals: 30)
   }
 
   nonisolated private func expectResult(equals expected: Int) async throws {

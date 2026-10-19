@@ -3,7 +3,6 @@
 #import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
@@ -12,7 +11,6 @@
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
-#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
 
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
@@ -22,10 +20,6 @@
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
-#endif
-
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -185,8 +179,19 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #endif
 }
 
++ (void)disablePackagerServerAccess
+{
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+  // Guarded because the function isn't declared in builds without packager support
+  // (matches the guard in React/Base/RCTBundleURLProvider.h).
+  RCTBundleURLProviderAllowPackagerServerAccess(NO);
+#endif
+}
+
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
+  [EXDevLauncherController disablePackagerServerAccess];
+
   _delegate = delegate;
   _launchOptions = launchOptions;
   NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
@@ -309,12 +314,33 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
+  if ([EXDevLauncherFingerprintCheck handle:url]) {
+    return YES;
+  }
+
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
 
+  // The dev menu params apply to every launcher command, with or without a `__expo_url`.
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
+
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
-    // edgecase: this is a dev launcher url but it doesnt specify what url to open
+    NSURL *externalDeepLink = [EXDevLauncherURLHelper externalDeepLinkFromLauncherURL:url];
+    if (externalDeepLink) {
+      // e.g. `myapp://login?__expo_disable_fab=1`: the reserved params are applied above, the app
+      // receives the rest as its initial URL. While the app is already running, the linking
+      // subscribers still deliver the original URL; `unwrapDevLaunchURL` in expo-linking drops
+      // the reserved params on the JS side.
+      return [self _handleExternalDeepLink:externalDeepLink options:options];
+    }
+    if ([self isAppRunning] && ![EXDevLauncherURLHelper isLegacyLauncherURL:url]) {
+      // e.g. `exp+slug://?__expo_disable_fab=1` while a project is open: the params are applied
+      // above and there is nothing to open, so keep the project running.
+      return true;
+    }
+    // edgecase: this is a dev launcher url but it doesn't specify what url to open
     // fallback to navigating to the launcher home screen
     [self launchDefaultUrlFallbackOrNavigateToLauncher];
     return true;
@@ -392,6 +418,12 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       onSuccess:(void (^ _Nullable)(void))onSuccess
         onError:(void (^ _Nullable)(NSError *error))onError
 {
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+  // A dev server has been chosen — re-allow packager access (denied at launcher boot in
+  // `start:launchOptions:`). Replaces the RCTBundleURLProvider.guessPackagerHost swizzle.
+  RCTBundleURLProviderAllowPackagerServerAccess(YES);
+#endif
+
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
   _possibleManifestURL = expoUrl;
@@ -409,8 +441,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     projectUrl = expoUrl;
   }
 
-  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:url];
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {
@@ -537,11 +571,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
-    // Connect to the websocket, ignore downloaded update bundles
-    if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
-      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
-    }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
@@ -718,11 +747,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return nil;
   }
 
-  NSDateFormatter *formatter = [NSDateFormatter new];
-  formatter.dateStyle = NSDateFormatterMediumStyle;
-  formatter.timeStyle = NSDateFormatterNoStyle;
-  NSString *formattedDate = [formatter stringFromDate:expiration];
- 
   NSCalendar *calendar = [NSCalendar currentCalendar];
   NSDate *today = [calendar startOfDayForDate:[NSDate date]];
   NSDate *expirationDay = [calendar startOfDayForDate:expiration];

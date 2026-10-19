@@ -1,5 +1,4 @@
 import ExpoModulesCore
-internal import React
 
 private let selector = ["request", "Record", "Permission", ":"]
 
@@ -8,16 +7,30 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     return "audioRecording"
   }
 
+  static var microphoneUsageDescription: Any? {
+    Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"]
+  }
+
   public func getPermissions() -> [AnyHashable: Any] {
-    let systemStatus = AVAudioSession.sharedInstance().recordPermission
+    return Self.permissions(
+      systemStatus: AVAudioSession.sharedInstance().recordPermission,
+      usageDescription: Self.microphoneUsageDescription
+    )
+  }
+
+  static func permissions(
+    systemStatus: AVAudioSession.RecordPermission,
+    usageDescription: Any?
+  ) -> [AnyHashable: Any] {
     var status: EXPermissionStatus
 
-    guard (Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"]) != nil else {
-      RCTFatal(RCTErrorWithMessage("""
-        This app is missing NSMicrophoneUsageDescription, so audio services will fail.
-        Add one of these keys to your bundle's Info.plist.
-      """))
-      return ["status": EXPermissionStatusDenied]
+    guard usageDescription != nil else {
+      log.error("""
+        This app is missing NSMicrophoneUsageDescription, so audio recording will fail. \
+        Add the key to the app's Info.plist, or set the `microphonePermission` option on the \
+        expo-audio config plugin.
+        """)
+      return ["status": EXPermissionStatusDenied.rawValue]
     }
 
     switch systemStatus {
@@ -36,7 +49,22 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     ]
   }
 
+  static func requireUsageDescription(_ usageDescription: Any? = AudioRecordingRequester.microphoneUsageDescription) throws {
+    guard usageDescription != nil else {
+      throw MicrophoneUsageDescriptionException()
+    }
+  }
+
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+    requestPermissions(usageDescription: Self.microphoneUsageDescription, resolver: resolve, rejecter: reject)
+  }
+
+  func requestPermissions(usageDescription: Any?, resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+    guard usageDescription != nil else {
+      resolve(Self.permissions(systemStatus: AVAudioSession.sharedInstance().recordPermission, usageDescription: nil))
+      return
+    }
+
     typealias PermissionRequestFunction = @convention(c) (AnyObject, Selector, @escaping (Bool) -> Void) -> Void
     let recordPermissionSelector = NSSelectorFromString(selector.joined())
 

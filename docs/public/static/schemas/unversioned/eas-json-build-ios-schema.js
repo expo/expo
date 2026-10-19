@@ -72,7 +72,7 @@ export default [
       "Xcode project's scheme. If a project:",
       '   - Has multiple schemes, you should set this value.',
       '   - Has only one scheme, it will be detected automatically.',
-      '   - Have multiple schemes schemes and if this value is **not** set, EAS CLI will prompt you to select one of them.',
+      '   - Have multiple schemes and if this value is **not** set, EAS CLI will prompt you to select one of them.',
     ],
   },
   {

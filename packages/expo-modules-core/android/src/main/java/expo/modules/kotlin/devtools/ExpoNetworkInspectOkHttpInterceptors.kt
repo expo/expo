@@ -36,7 +36,11 @@ class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
           it.priorResponse = response
         }
       } else {
-        val body = if (shouldParseBody(response)) peekResponseBody(response) else null
+        val body = if (shouldParseBody(response)) {
+          peekResponseBody(response)
+        } else {
+          null
+        }
         delegate.didReceiveResponse(requestId, request, response, body)
         body?.close()
       }
@@ -105,7 +109,7 @@ internal fun peekResponseBody(
   try {
     if (peeked.request(byteCount + 1)) {
       // When the request() returns true,
-      // it means the source have more available bytes then [byteCount].
+      // it means the source has more available bytes than [byteCount].
       return null
     }
   } catch (_: IOException) {}

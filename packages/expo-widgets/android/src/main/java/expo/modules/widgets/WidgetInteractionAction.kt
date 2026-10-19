@@ -1,37 +1,55 @@
 package expo.modules.widgets
 
 import android.content.Context
-import androidx.glance.GlanceId
+import android.content.Intent
+import android.net.Uri
 import androidx.glance.action.Action
-import androidx.glance.action.ActionParameters
-import androidx.glance.action.actionParametersOf
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.action.actionSendBroadcast
+import expo.modules.widgets.notifications.ExpoWidgetsNotificationReceiver
 
-private val sourceKey = ActionParameters.Key<String>("source")
-private val targetKey = ActionParameters.Key<String>("target")
+internal const val WIDGET_INTERACTION_ACTION = "expo.modules.widgets.ACTION_WIDGET_INTERACTION"
+internal const val NOTIFICATION_INTERACTION_ACTION = "expo.modules.widgets.ACTION_NOTIFICATION_INTERACTION"
+internal const val WIDGET_INTERACTION_SOURCE_EXTRA = "expo.modules.widgets.extra.SOURCE"
+internal const val WIDGET_INTERACTION_TARGET_EXTRA = "expo.modules.widgets.extra.TARGET"
+internal const val WIDGET_INTERACTION_NOTIFICATION_ID_EXTRA = "expo.modules.widgets.extra.NOTIFICATION_ID"
+
+internal sealed interface InteractionSource {
+  val name: String
+
+  data class Widget(override val name: String) : InteractionSource
+
+  data class Notification(override val name: String, val notificationId: String) : InteractionSource
+}
 
 internal data class WidgetInteraction(
-  val source: String,
+  val source: InteractionSource,
   val target: String
 )
 
-internal fun WidgetInteraction.toGlanceAction(): Action {
-  return actionRunCallback<WidgetInteractionAction>(
-    actionParametersOf(
-      sourceKey to source,
-      targetKey to target
-    )
-  )
-}
+internal fun WidgetInteraction.toGlanceAction(context: Context): Action {
+  val intent = when (source) {
+    is InteractionSource.Widget -> Intent(WIDGET_INTERACTION_ACTION)
+      .setComponent(widgetProviderComponentName(context, source.name))
 
-class WidgetInteractionAction : ActionCallback {
-  override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-    val source = parameters[sourceKey] ?: return
-    val target = parameters[targetKey] ?: return
-
-    WidgetsInteraction.handle(context.applicationContext, source, target)
+    is InteractionSource.Notification -> Intent(NOTIFICATION_INTERACTION_ACTION)
+      .setClass(context, ExpoWidgetsNotificationReceiver::class.java)
+      // Extras do not participate in PendingIntent identity. Glance's default URI uses the
+      // same appWidgetId for every notification, so provide our own stable button identity.
+      .setData(
+        Uri.Builder()
+          .scheme("expo-widgets")
+          .authority("notification")
+          .appendPath(source.name)
+          .appendPath(source.notificationId)
+          .appendPath(target)
+          .build()
+      )
+      .putExtra(WIDGET_INTERACTION_NOTIFICATION_ID_EXTRA, source.notificationId)
   }
+  intent
+    .putExtra(WIDGET_INTERACTION_SOURCE_EXTRA, source.name)
+    .putExtra(WIDGET_INTERACTION_TARGET_EXTRA, target)
+  return actionSendBroadcast(intent)
 }
 
 internal object WidgetsInteraction {
@@ -42,7 +60,7 @@ internal object WidgetsInteraction {
     val updatedProps = evaluateWidgetButtonPress(context, layout, props, environment)
 
     if (updatedProps != null) {
-      WidgetsStorage.set(context, props.orEmpty() + updatedProps, "__expo_widgets_${source}_props")
+      WidgetsStorage.set(context, "__expo_widgets_${source}_props", props.orEmpty() + updatedProps)
     }
 
     WidgetsEvents.sendUserInteraction(source, target)

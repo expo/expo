@@ -11,7 +11,7 @@ import expo.modules.kotlin.types.OptimizedRecord
  * - When used as input:
  *   - name is required
  *   - either `type` is required or `isLocalAccount` must be true
- * - When returning to JS, none field is required
+ * - When returning to JS, no field is required
  *   - `isLocalAccount` is inferred based on `type`
  */
 @OptimizedRecord
@@ -33,7 +33,11 @@ class CalendarSource : Record {
     get() = jsIsLocalAccount ?: false
 
   val resolvedType: String?
-    get() = if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else type
+    get() = if (isLocalAccount) {
+      CalendarContract.ACCOUNT_TYPE_LOCAL
+    } else {
+      type
+    }
 
   fun assertValidForNewCalendar() {
     if (name == null) {

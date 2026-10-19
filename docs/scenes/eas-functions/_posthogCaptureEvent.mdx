@@ -1,0 +1,20 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+| Property       | Type    | Required    | Description                                                                                                                                                                                  |
+| -------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event`        | string  | <YesIcon /> | The name of the event to send.                                                                                                                                                               |
+| `distinct_id`  | string  | <NoIcon />  | The person to attribute the event to. When omitted, the event is sent anonymously and does not create a person profile.                                                                      |
+| `properties`   | json    | <NoIcon />  | Properties to attach to the event.                                                                                                                                                           |
+| `api_key`      | string  | <NoIcon />  | PostHog project API key. Defaults to the `EXPO_PUBLIC_POSTHOG_API_KEY` environment variable set by `eas integrations:posthog:connect`, falling back to `POSTHOG_API_KEY` if that is not set. |
+| `host`         | string  | <NoIcon />  | PostHog host. Defaults to the `EXPO_PUBLIC_POSTHOG_HOST` environment variable, or `https://us.posthog.com`.                                                                                  |
+| `ignore_error` | boolean | <NoIcon />  | When `true`, a failure to send the event is logged but does not fail the step. Defaults to `false`.                                                                                          |
+
+<BoxLink
+  title="eas/posthog_capture_event source code"
+  description="View the source code for the eas/posthog_capture_event function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/capturePosthogEvent.ts"
+/>

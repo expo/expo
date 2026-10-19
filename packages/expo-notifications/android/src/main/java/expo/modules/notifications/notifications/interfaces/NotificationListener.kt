@@ -18,8 +18,11 @@ interface NotificationListener {
    */
   fun onNotificationResponseReceived(response: NotificationResponse): Boolean = false
 
-  /** Callback called when notification response is received through package lifecycle listeners. */
-  fun onNotificationResponseIntentReceived(extras: Bundle) {}
+  /**
+   * Callback called when notification response is received through package lifecycle listeners.
+   * @return Whether the notification response has been handled
+   */
+  fun onNotificationResponseIntentReceived(extras: Bundle): Boolean = false
 
   /** Callback called when some notifications are dropped. */
   fun onNotificationsDropped() {}

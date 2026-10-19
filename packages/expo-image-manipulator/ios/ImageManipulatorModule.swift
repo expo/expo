@@ -10,16 +10,16 @@ public class ImageManipulatorModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { (source: Either<URL, SharedRef<UIImage>>) -> ImageManipulatorContext in
+    Function("manipulate") { (source: Either<URL, SharedRef<UIImage>>, options: ImageLoadOptions?) -> ImageManipulatorContext in
       let context = ImageManipulatorContext { [weak appContext] in
         guard let appContext else {
           throw Exceptions.AppContextLost()
         }
         if let url: URL = source.get() {
-          return try await loadImage(atUrl: url, appContext: appContext)
+          return try await loadImage(atUrl: url, appContext: appContext, options: options)
         }
         if let image: SharedRef<UIImage> = source.get() {
-          return image.ref
+          return downscaledIfExceedsBounds(image.ref, maxWidth: options?.maxWidth.map(Double.init), maxHeight: options?.maxHeight.map(Double.init))
         }
         throw Exceptions.RuntimeLost()
       }

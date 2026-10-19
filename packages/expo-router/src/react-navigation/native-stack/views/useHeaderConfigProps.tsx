@@ -1,4 +1,5 @@
 'use client';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
   type HeaderBarButtonItemMenuAction,
@@ -15,7 +16,7 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
-import { Color } from '../../../utils/color';
+import { isLight } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
 import type {
@@ -26,6 +27,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../types';
 import { processFonts } from './FontProcessor';
+import { getPlatformHeaderTransparent, isLegacyHeaderAppearanceEnabled } from './headerAppearance';
 
 type Props = NativeStackNavigationOptions & {
   headerTopInsetEnabled: boolean;
@@ -98,7 +100,7 @@ const processBarButtonItems = (
 
         if (badge) {
           const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
+          const badgeTextColor = isLight(badgeBackgroundColor) ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,
@@ -184,11 +186,12 @@ export function useHeaderConfigProps({
   headerShown,
   headerStyle,
   headerBlurEffect,
+  headerUserInterfaceStyle,
   headerTintColor,
   headerTitle,
   headerTitleAlign,
   headerTitleStyle,
-  headerTransparent,
+  headerTransparent: headerTransparentOption,
   headerSearchBarOptions,
   headerTopInsetEnabled,
   headerBack,
@@ -200,23 +203,47 @@ export function useHeaderConfigProps({
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
+
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
   const headerNativeProps = unstable_nativeProps?.headerConfig;
 
+  const platformHeaderTransparent = getPlatformHeaderTransparent(headerTransparentOption);
+  // With Liquid Glass, the header uses the system fonts and bar unless the legacy appearance is enabled
+  const usesNativeAppearance =
+    Platform.OS === 'ios' && isLiquidGlassAvailable() && !isLegacyHeaderAppearanceEnabled();
+  const usesThemeFonts = !usesNativeAppearance;
+
   const headerBackTitleStyleFlattened =
-    StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
+    StyleSheet.flatten([usesThemeFonts && fonts.regular, headerBackTitleStyle]) || {};
   const headerLargeTitleStyleFlattened =
     StyleSheet.flatten([
-      Platform.select({ ios: fonts.heavy, default: fonts.medium }),
+      usesThemeFonts && Platform.select({ ios: fonts.heavy, default: fonts.medium }),
       headerLargeTitleStyle,
     ]) || {};
   const headerTitleStyleFlattened =
     StyleSheet.flatten([
-      Platform.select({ ios: fonts.bold, default: fonts.medium }),
+      usesThemeFonts && Platform.select({ ios: fonts.bold, default: fonts.medium }),
       headerTitleStyle,
     ]) || {};
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
+
+  // When nothing sets the header background, the native appearance uses the Liquid Glass system bar
+  const usesSystemBackground =
+    usesNativeAppearance &&
+    platformHeaderTransparent == null &&
+    headerStyleFlattened.backgroundColor == null &&
+    headerBackground == null;
+  const headerTransparent = usesSystemBackground || platformHeaderTransparent;
+
+  const headerBackgroundColor =
+    headerStyleFlattened.backgroundColor ??
+    (headerBackground != null ||
+    headerTransparent ||
+    // The title becomes invisible if background color is set with large title on iOS 26
+    (Platform.OS === 'ios' && headerLargeTitleEnabled)
+      ? 'transparent'
+      : colors.card);
 
   const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = processFonts([
     headerBackTitleStyleFlattened.fontFamily,
@@ -233,12 +260,19 @@ export function useHeaderConfigProps({
   const titleColor =
     'color' in headerTitleStyleFlattened
       ? headerTitleStyleFlattened.color
-      : (headerTintColor ?? colors.text);
+      : isLiquidGlassAvailable() && (headerTransparent || headerBackgroundColor === 'transparent')
+        ? // On iOS 26, we want header title to change color based on content underneath
+          // So we don't set an explicit color when header is transparent
+          // Unless a custom tint color is explicitly provided
+          headerTintColor
+        : (headerTintColor ?? colors.text);
   const titleFontSize =
     'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
 
-  const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
+  // Also used by react-native-screens for the scroll edge appearance of a regular title
+  const largeTitleBackgroundColor =
+    headerLargeStyleFlattened.backgroundColor ?? (usesSystemBackground ? 'transparent' : undefined);
   const largeTitleColor =
     'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
   const largeTitleFontSize =
@@ -260,15 +294,6 @@ export function useHeaderConfigProps({
   if (titleFontWeight != null) {
     headerTitleStyleSupported.fontWeight = titleFontWeight;
   }
-
-  const headerBackgroundColor =
-    headerStyleFlattened.backgroundColor ??
-    (headerBackground != null ||
-    headerTransparent ||
-    // The title becomes invisible if background color is set with large title on iOS 26
-    (Platform.OS === 'ios' && headerLargeTitleEnabled)
-      ? 'transparent'
-      : colors.card);
 
   const canGoBack = headerBack != null;
 
@@ -377,7 +402,7 @@ export function useHeaderConfigProps({
         <>
           {headerLeftElement != null || typeof headerTitle === 'function' ? (
             // The style passed to header left, together with title element being wrapped
-            // in flex view is reqruied for proper header layout, in particular,
+            // in flex view is required for proper header layout, in particular,
             // for the text truncation to work.
             <ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
               {headerLeftElement}
@@ -458,7 +483,7 @@ export function useHeaderConfigProps({
     hideShadow:
       headerShadowVisible === false ||
       headerBackground != null ||
-      (headerTransparent && headerShadowVisible !== true),
+      (platformHeaderTransparent && headerShadowVisible !== true),
     largeTitle: headerLargeTitleEnabled,
     largeTitleBackgroundColor,
     largeTitleColor,
@@ -470,13 +495,13 @@ export function useHeaderConfigProps({
     titleColor,
     titleFontFamily,
     titleFontSize,
-    titleFontWeight: String(titleFontWeight),
+    titleFontWeight: titleFontWeight != null ? String(titleFontWeight) : undefined,
     topInsetEnabled: headerTopInsetEnabled,
     translucent: translucent === true,
     children,
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
-    experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    experimental_userInterfaceStyle: headerUserInterfaceStyle ?? (dark ? 'dark' : 'light'),
     ...headerNativeProps,
   } as const;
 }

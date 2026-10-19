@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,7 +15,10 @@ dependencies {
   implementation("expo.modules:expo-autolinking-plugin-shared")
   implementation("org.json:json:20250517")
   implementation(gradleApi())
-  compileOnly("com.android.tools.build:gradle:8.5.0")
+  // Matches FUSED_AGP_VERSION in the config plugin — the newest AGP the plugin can
+  // run against (forced in fused mode). Compiling against a newer major than the
+  // runtime AGP risks NoSuchMethodError on changed APIs.
+  compileOnly("com.android.tools.build:gradle:8.13.0")
 }
 
 java {
@@ -22,7 +26,7 @@ java {
   targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions { jvmTarget = JavaVersion.VERSION_11.toString() } }
+tasks.withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
 
 group = "expo.modules"
 

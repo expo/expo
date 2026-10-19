@@ -24,7 +24,11 @@ internal class SimpleShareIntentDataParser {
         listOf(
           SharePayload().apply {
             value = text
-            shareType = if (isUrl) ShareType.Url else ShareType.Text
+            shareType = if (isUrl) {
+              ShareType.Url
+            } else {
+              ShareType.Text
+            }
             mimeType = "text/plain"
           }
         )

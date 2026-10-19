@@ -47,7 +47,7 @@ class AutolinkingIntegrationImpl : AutolinkingIntegration {
 
   private fun getConfig(project: Project): ExpoAutolinkingConfig {
     val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
-      ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
+      ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please make sure that `useExpoModules` was called in `settings.gradle`.")
     return gradleExtension.config
   }
 }

@@ -1,12 +1,11 @@
-/* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -23,7 +22,6 @@ describe('exports for hermes with no bytecode', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
         },
@@ -80,7 +78,6 @@ describe('exports for hermes with no bytecode and no minification', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
         },

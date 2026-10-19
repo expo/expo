@@ -106,7 +106,7 @@ class ExpectedType(
   constructor(vararg expectedTypes: CppType) : this(*expectedTypes.map { SingleType(it) }.toTypedArray())
 
   /**
-   * A convenient property to return combined int value of expected types.
+   * A convenient property to return the combined int value of expected types.
    */
   private val innerCombinedTypes: Int = innerPossibleTypes.fold(0) { acc, current -> acc or current.getCppType() }
 
@@ -129,7 +129,9 @@ class ExpectedType(
   }
 
   override operator fun equals(other: Any?): Boolean {
-    if (other !is ExpectedType) return false
+    if (other !is ExpectedType) {
+      return false
+    }
 
     if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) {
       return false

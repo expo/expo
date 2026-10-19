@@ -4,7 +4,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.unwrap
 import java.lang.ref.WeakReference
@@ -17,7 +17,7 @@ data object IncompatibleValue : DeferredValue()
 class UnconvertedValue(
   private val unconvertedValue: Any,
   private val typeConverter: TypeConverter<*>,
-  context: AppContext?
+  context: ConverterContext
 ) : DeferredValue() {
   private val contextHolder = WeakReference(context)
 
@@ -25,7 +25,8 @@ class UnconvertedValue(
 
   fun getConvertedValue(): Any {
     if (convertedValue == null) {
-      convertedValue = typeConverter.convert(unconvertedValue, contextHolder.get(), forceConversion = true)
+      val context = contextHolder.get() ?: throw Exceptions.ConverterContextLost()
+      convertedValue = typeConverter.convert(unconvertedValue, context, forceConversion = true)
     }
 
     return convertedValue!!

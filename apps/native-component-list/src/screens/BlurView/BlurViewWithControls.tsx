@@ -1,8 +1,14 @@
-import { BlurTint, BlurView, ExperimentalBlurMethod, BlurTargetView } from 'expo-blur';
+import { BlurView, BlurTargetView } from 'expo-blur';
+import type { BlurTint, BlurViewProps, ExperimentalBlurMethod } from 'expo-blur';
 import { Image } from 'expo-image';
 import React, { useCallback, memo, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import Animated, { useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
@@ -13,8 +19,8 @@ const backgroundImage = require('../../../assets/images/large-example.jpg');
 const expoImage = require('../../../assets/images/logo-wordmark.png');
 
 export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod }) => {
-  const animatedIntensity = useSharedValue<number | undefined>(100);
-  const manualIntensity = useSharedValue<number | undefined>(0);
+  const animatedIntensity = useSharedValue(100);
+  const manualIntensity = useSharedValue(0);
   const [manualIntensityIsActive, setManualIntensityIsActive] = useResettingState(false, 3000);
   const [manualIntensityState, setManualIntensityState] = useState(0);
   const blurTargetRef = useRef<View | null>(null);
@@ -29,6 +35,10 @@ export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod
     animatedIntensity.value = withRepeat(withTiming(0, { duration: 2000 }), -1, true);
   }, []);
 
+  const animatedProps = useAnimatedProps<BlurViewProps>(() => ({
+    intensity: manualIntensityIsActive ? manualIntensity.value : animatedIntensity.value,
+  }));
+
   return (
     <View style={styles.container}>
       <View>
@@ -39,7 +49,7 @@ export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod
           blurTarget={blurTargetRef}
           style={styles.blurView}
           tint={props.tint}
-          intensity={manualIntensityIsActive ? manualIntensity : animatedIntensity}
+          animatedProps={animatedProps}
           blurMethod={props.blurMethod}>
           <Text style={styles.nonBlurredText}>{props.tint}</Text>
           <Slider

@@ -7,10 +7,6 @@ import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 
-const debug = require('debug')(
-  'expo:doctor:dependencies:bundledNativeModules'
-) as typeof console.log;
-
 export type BundledNativeModules = Record<string, string>;
 
 /**
@@ -29,7 +25,6 @@ export async function getVersionedNativeModulesAsync(
 ): Promise<BundledNativeModules> {
   if (sdkVersion !== 'UNVERSIONED' && !env.EXPO_OFFLINE && !options.skipRemoteVersions) {
     try {
-      debug('Fetching bundled native modules from the server...');
       return await getNativeModuleVersionsAsync(sdkVersion);
     } catch (error: any) {
       if (error instanceof CommandError && (error.code === 'OFFLINE' || error.code === 'API')) {
@@ -42,7 +37,6 @@ export async function getVersionedNativeModulesAsync(
     }
   }
 
-  debug('Fetching bundled native modules from the local JSON file...');
   return await getBundledNativeModulesAsync(projectRoot);
 }
 

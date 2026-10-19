@@ -2,10 +2,10 @@
 import type { RedirectConfig } from 'expo-router';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { createStaticServe } from '../../utils/server';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -23,7 +23,7 @@ describe('exports static', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_ASYNC: '',
+          E2E_ROUTER_ASYNC: 'false',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             { source: '/styled-redirect', destination: '/styled' },
           ] as RedirectConfig[]),

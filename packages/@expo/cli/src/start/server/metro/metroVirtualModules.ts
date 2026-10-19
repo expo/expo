@@ -72,7 +72,7 @@ function ensureStartsWithNullByte(id: string): string {
   // Because you'll likely need to return the path somewhere, we should just assert with a useful error message instead of
   // attempting to mutate the value behind the scenes. This ensures correctness in the resolution.
   if (!id.startsWith('\0')) {
-    throw new Error(`Virtual modules in Expo CLI must start with with null byte (\\0), got: ${id}`);
+    throw new Error(`Virtual modules in Expo CLI must start with a null byte (\\0), got: ${id}`);
   }
   return id;
 }

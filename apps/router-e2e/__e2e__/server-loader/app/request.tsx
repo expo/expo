@@ -3,8 +3,8 @@ import type { LoaderFunction } from 'expo-router/server';
 import { Suspense } from 'react';
 
 import { Loading } from '../components/Loading';
-import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Table, TableRow } from '../components/Table';
 
 export const loader: LoaderFunction = (request, params) => {
   // In SSG, request is undefined since there's no HTTP request at build-time
@@ -24,12 +24,12 @@ export const loader: LoaderFunction = (request, params) => {
     }
   }
 
-  let headers: { key: string; value: string }[] = [];
+  const headers: { key: string; value: string }[] = [];
   request.headers.forEach((value, key) => {
     headers.push({ key, value });
   });
   return {
-    headers: headers,
+    headers,
     url: request.url,
     method: request.method,
   };
@@ -62,4 +62,4 @@ const RequestScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

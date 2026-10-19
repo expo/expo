@@ -80,3 +80,17 @@ actor RESTClient {
     return .apiError(firstError.message)
   }
 }
+
+extension RESTClient {
+  private static let clientAuthoredMessages: Set<String> = [
+    "Invalid URL",
+    "Failed to encode request",
+    "Invalid response from server",
+    "Failed to decode response"
+  ]
+
+  /// True for a message this client wrote itself rather than one relayed from the server.
+  static func isClientAuthoredMessage(_ message: String) -> Bool {
+    clientAuthoredMessages.contains(message) || message.hasPrefix("Server error (")
+  }
+}

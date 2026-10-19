@@ -5,8 +5,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.DatabaseLauncher
@@ -46,7 +46,7 @@ import java.util.Date
 class LoaderTask(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val directory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -281,7 +281,6 @@ class LoaderTask(
   }
 
   private suspend fun launchFallbackUpdateFromDisk() {
-    val database = databaseHolder.database
     val launcher =
       DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger, scope)
     candidateLauncher = launcher
@@ -320,7 +319,6 @@ class LoaderTask(
   }
 
   private suspend fun launchRemoteUpdateInBackground() {
-    val database = databaseHolder.database
     callback.onRemoteCheckForUpdateStarted()
     val remoteLoader = RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate, scope)
 
@@ -442,7 +440,6 @@ class LoaderTask(
     synchronized(this@LoaderTask) {
       val finalizedLaunchedUpdate = finalizedLauncher?.launchedUpdate
       if (finalizedLaunchedUpdate != null) {
-        val database = databaseHolder.database
         Reaper.reapUnusedUpdates(
           configuration,
           database,

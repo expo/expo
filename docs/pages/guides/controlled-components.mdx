@@ -1,0 +1,270 @@
+---
+title: Controlled components
+description: Learn how to use controlled components in React Native to control a TextInput, format text as app users type, restrict input, and keep the cursor stable.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { UpdateLoopDiagram } from '~/scenes/guides/controlled-components/UpdateLoopDiagram';
+import { WorkletPathDiagram } from '~/scenes/guides/controlled-components/WorkletPathDiagram';
+
+Every input has a current value, such as the text in an input field, the position of a switch, or the selection in a picker. A **controlled component** keeps the value in state you manage. The input displays whatever the state holds and every change the user makes updates that state. That state is the single source of truth.
+
+Controlled components pair a prop that sets the value with a callback that reports changes. This page focuses on [`TextInput`](https://reactnative.dev/docs/textinput), React Native's component for entering text, because a text input is where controlling the value is most useful and hardest to get right. For `Switch`, `Checkbox`, and `Picker`, see [Control other components](#control-other-components).
+
+## Control a text input
+
+React Native's `TextInput` component is uncontrolled by default. It keeps its text internally and works without a [`value`](https://reactnative.dev/docs/textinput#value) prop. Passing `value` makes it controlled. From then on, React forces the native field to match that prop.
+
+The following example keeps a name in state. `value` displays the state, and [`onChangeText`](https://reactnative.dev/docs/textinput#onchangetext) updates it on every keystroke:
+
+```tsx
+import { useState } from 'react';
+import { TextInput } from 'react-native';
+
+export default function NameInput() {
+  const [name, setName] = useState('');
+
+  return <TextInput value={name} onChangeText={setName} placeholder="Name" />;
+}
+```
+
+In React Native, this update loop is asynchronous: each update round-trips through the JavaScript thread. A keystroke updates the native field first and then fires `onChangeText`. Your state update triggers a re-render, and the new value travels back to the native field. On the web, React reconciles inputs synchronously against the DOM. Most controlled input problems trace back to that round-trip.
+
+The following diagram shows how a keystroke travels through the update loop:
+
+<UpdateLoopDiagram />
+
+<Collapsible summary="Differences from controlled inputs on web">
+
+If you have written [controlled inputs for the web](https://react.dev/reference/react-dom/components/input#controlling-an-input-with-a-state-variable), three things change in React Native:
+
+- The usual change handler is `onChangeText` and receives the new text directly instead of an event object.
+- React Native has no [`preventDefault`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault), so you cannot block a keystroke before it appears. Instead, sanitize the text in `onChangeText` and pass the result back through `value`.
+- The update is asynchronous, so the field reflects your state one round-trip later.
+
+The following example shows the same input on both platforms:
+
+```tsx
+// Web (react-dom)
+<input value={text} onChange={event => setText(event.target.value)} />
+
+// React Native
+<TextInput value={text} onChangeText={setText} />
+```
+
+</Collapsible>
+
+## Choose between controlled and uncontrolled inputs
+
+A controlled input is useful when something has to react to every keystroke: validating live, counting characters, enabling the submit button only after the field is valid, or formatting the input as the user types.
+
+An uncontrolled input is useful when you only need the value at the end of an interaction, such as when the user submits a search. It also avoids a re-render on every keystroke. To build one, set the initial text with the [`defaultValue`](https://reactnative.dev/docs/textinput#defaultvalue) prop and read the final value with the [`onSubmitEditing`](https://reactnative.dev/docs/textinput#onsubmitediting) prop:
+
+```tsx
+import { TextInput } from 'react-native';
+
+export default function SearchInput({ onSearch }: { onSearch: (query: string) => void }) {
+  return (
+    <TextInput
+      defaultValue=""
+      onSubmitEditing={event => onSearch(event.nativeEvent.text)}
+      placeholder="Search"
+      returnKeyType="search"
+    />
+  );
+}
+```
+
+The following table compares controlled and uncontrolled inputs:
+
+|                          | Controlled                                | Uncontrolled                                                                                             |
+| ------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Value lives in           | React state                               | The native input                                                                                         |
+| Set with                 | `value` and `onChangeText`                | `defaultValue`                                                                                           |
+| Read with                | React state                               | `onChangeText`, `onSubmitEditing`, [`onEndEditing`](https://reactnative.dev/docs/textinput#onendediting) |
+| Re-renders per keystroke | Yes                                       | No                                                                                                       |
+| Use when                 | Live validation, formatting, dependent UI | Search boxes, read-on-submit forms                                                                       |
+
+### Format input as users type
+
+To format text such as a phone number, a currency amount, or a date as the user types, transform the string inside `onChangeText` and store the formatted result back in state.
+
+The following example formats a phone number as the user types:
+
+```tsx
+import { useState } from 'react';
+import { TextInput } from 'react-native';
+
+function formatPhone(input: string) {
+  const digits = input.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+export default function PhoneInput() {
+  const [phone, setPhone] = useState('');
+
+  return (
+    <TextInput
+      value={phone}
+      onChangeText={text => setPhone(formatPhone(text))}
+      keyboardType="phone-pad"
+      placeholder="(555) 123-4567"
+    />
+  );
+}
+```
+
+Because the formatted string differs from what the user typed, the field briefly shows the raw text during the gap between steps 2 and 5 in the diagram above.
+
+### Restrict what users can type
+
+Formatting rewrites the whole string. Restricting input removes characters instead, with the same wiring. Let `onChangeText` fire, strip the unwanted characters, and push the clean value back through `value`.
+
+The following example keeps only digits in the field:
+
+```tsx
+<TextInput
+  value={amount}
+  onChangeText={text => setAmount(text.replace(/[^0-9]/g, ''))}
+  keyboardType="number-pad"
+/>
+```
+
+For length limits and read-only fields, prefer the [`maxLength`](https://reactnative.dev/docs/textinput#maxlength) and [`editable`](https://reactnative.dev/docs/textinput#editable) props. They apply on the native side and do not flicker:
+
+```tsx
+// Cap the length
+<TextInput value={code} onChangeText={setCode} maxLength={6} />
+
+// Prevent all edits
+<TextInput value={value} editable={false} />
+```
+
+Setting [`keyboardType`](https://reactnative.dev/docs/textinput#keyboardtype) (for example, `number-pad`, `decimal-pad`, or `phone-pad`) shows a matching keyboard, but it does not enforce anything: hardware keyboards and pasted text can still insert other characters, so keep the `onChangeText` filter.
+
+### Force uppercase input
+
+Forcing uppercase is the same pattern as formatting. Pair the transform with [`autoCapitalize`](https://reactnative.dev/docs/textinput#autocapitalize) so the on-screen keyboard produces capital letters to begin with.
+
+The following example stores a coupon code in uppercase:
+
+```tsx
+<TextInput
+  value={code}
+  onChangeText={text => setCode(text.toUpperCase())}
+  autoCapitalize="characters"
+  placeholder="COUPON"
+/>
+```
+
+### Keep the cursor in place while formatting
+
+Before React Native's [New Architecture](/guides/new-architecture/), reformatting the value inside `onChangeText` snapped the cursor to the end of the field, which made edits in the middle of the input difficult.
+
+In React Native and Expo apps that use the New Architecture, typing in the middle of the field keeps the cursor in place as long as `onChangeText` passes the text back unchanged. When it returns transformed text, the native field has to map the old cursor position onto the new string, and that mapping can miss when the transform inserts or removes characters.
+
+To keep the cursor stable while formatting:
+
+- Prefer native props such as `maxLength` and `editable` over reimplementing them in JavaScript. See [Restrict what users can type](#restrict-what-users-can-type).
+- Use a mask library that handles the cursor math for you. See [When to use a library](#when-to-use-a-library).
+- Move formatting onto the UI thread. See [Remove formatting flicker with worklets](#remove-formatting-flicker-with-worklets).
+
+### Remove formatting flicker with worklets
+
+Formatting in JavaScript round-trips through state and a re-render before the native field updates, so the field can briefly show the raw text before the formatted value replaces it. The universal [`TextInput`](/versions/latest/sdk/ui/universal/textinput/) from [`@expo/ui`](/versions/latest/sdk/ui/) removes that round-trip. Its `value` is an observable state object created with `useNativeState`, and `onChangeText` can be a worklet that runs synchronously on the UI thread. The formatted value lands in the same frame as the keystroke.
+
+The following diagram shows the same keystroke on the worklet path:
+
+<WorkletPathDiagram />
+
+The following example formats a phone number on the UI thread as the user types. It requires:
+
+- `@expo/ui`: The universal `TextInput` is available in SDK 56 and later. See the [installation instructions](/versions/latest/sdk/ui/universal/textinput/#installation).
+- [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/): Worklet functions need its runtime.
+
+```tsx
+import { Host, TextInput, useNativeState } from '@expo/ui';
+import { useCallback } from 'react';
+
+function formatPhone(input: string) {
+  'worklet';
+  const digits = input.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+export default function PhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleChangeText = useCallback(
+    (value: string) => {
+      'worklet';
+      const formatted = formatPhone(value);
+      if (formatted !== value) {
+        phone.value = formatted;
+        // Snaps to end for demo. Real masks need smarter cursor handling.
+        selection.value = { start: formatted.length, end: formatted.length };
+      }
+    },
+    [phone, selection]
+  );
+
+  return (
+    <Host matchContents={{ vertical: true }}>
+      <TextInput
+        value={phone}
+        selection={selection}
+        keyboardType="phone-pad"
+        placeholder="(555) 123-4567"
+        onChangeText={handleChangeText}
+      />
+    </Host>
+  );
+}
+```
+
+The `formatted !== value` check skips the rewrite when formatting leaves the text unchanged. When the mask does rewrite the string, write `selection.value` together with `phone.value`. Otherwise, the cursor falls out of sync with the rewritten text, and fast typing lands characters in the wrong position. Moving the cursor to the end is the simplest correct behavior when the user types at the end of the field. A production mask that supports mid-string edits needs smarter cursor handling.
+
+The platform-specific text fields from `@expo/ui` support the same controlled and worklet patterns. See the controlled text field examples for [Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/textfield/#controlled-text-field) and [SwiftUI](/versions/latest/sdk/ui/swift-ui/textfield/#controlled-text-field), and the [worklet masking example](/versions/latest/sdk/ui/universal/textinput/#worklet-masking) for the universal `TextInput`.
+
+## When to use a library
+
+Hand-rolled formatting works for one or two fields. A library handles the cursor math and locale rules for edge cases such as international phone numbers, currency separators, credit card numbers, and dates:
+
+- For masking: [`react-native-mask-input`](https://github.com/CaioQuirinoMedeiros/react-native-mask-input) or [`react-native-mask-text`](https://github.com/akinncar/react-native-mask-text).
+- For form state and validation across many fields: [React Hook Form](https://react-hook-form.com/) or [Formik](https://formik.org/docs/guides/react-native). With React Hook Form, wrap `TextInput` in its `Controller` component because `register` does not bind to native inputs.
+
+## Control other components
+
+The controlled pattern extends beyond text inputs. Any component that pairs a value prop with a change callback follows the same pattern as `TextInput`.
+
+[`Switch`](https://reactnative.dev/docs/switch) is the strictest example. `TextInput` opts into controlled mode when you pass `value`, but `Switch` is always controlled. Unless `onValueChange` updates the `value` prop, the switch reverts to the value you passed. You can pass the state to `value` and update it from `onValueChange`, which reports a boolean instead of a string:
+
+```tsx
+import { useState } from 'react';
+import { Switch } from 'react-native';
+
+export default function NotificationsToggle() {
+  const [enabled, setEnabled] = useState(false);
+
+  return <Switch value={enabled} onValueChange={setEnabled} />;
+}
+```
+
+The same pattern appears across other components:
+
+- [`RefreshControl`](https://reactnative.dev/docs/refreshcontrol) treats `refreshing` as a controlled prop. Set it to `true` inside `onRefresh` and back to `false` when the refresh finishes. If it never changes, the indicator stops immediately.
+- [`Checkbox`](/versions/latest/sdk/checkbox/) from `expo-checkbox` pairs `value` with `onValueChange`.
+- [`Picker`](/versions/latest/sdk/picker/) from `@react-native-picker/picker` pairs `selectedValue` with `onValueChange`.
+
+These components emit one discrete value per interaction, so the cursor and flicker problems that come with formatting text do not apply.
+
+## Additional resources
+
+- [`TextInput` in the `@expo/ui` reference](/versions/latest/sdk/ui/universal/textinput/): The worklet-based input, its installation, and the full prop list.
+- [Keyboard handling](/guides/keyboard-handling/): Managing the layout around the on-screen keyboard.
+- [`TextInput` in the React Native documentation](https://reactnative.dev/docs/textinput): The complete prop list for the core component.

@@ -18,6 +18,8 @@ declare class BenchmarkingExpoModule extends NativeModule {
   addStrings(a: string, b: string): string;
   addStringsSynthesized(a: string, b: string): string;
   addStringsOptimized(a: string, b: string): string;
+  addStringsAsync(a: string, b: string): Promise<string>;
+  addStringsAsyncSynthesized(a: string, b: string): Promise<string>;
   foldArray(array: number[]): number;
   foldArraySynthesized(array: number[]): number;
   passthroughDict(point: { x: number; y: number }): { x: number; y: number };

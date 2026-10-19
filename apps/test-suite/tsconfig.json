@@ -1,6 +1,11 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "strict": true,
+    // TypeScript 6 no longer picks up `@types` packages implicitly, so the
+    // jasmine globals the test modules rely on and the jest globals used by
+    // the `__tests__` unit tests have to be listed here.
+    "types": ["jasmine", "jest"],
     "paths": {
       "ThemeProvider": ["../common/ThemeProvider"]
     }

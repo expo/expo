@@ -16,7 +16,7 @@ function browserSupportsWebGL() {
   }
 }
 
-function optionalRequire(requirer) {
+function optionalRequire<T>(requirer: () => T): T | undefined {
   try {
     return requirer();
   } catch {
@@ -84,10 +84,13 @@ export function getTestModules() {
   }
 
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/ExpoUIMeasurement'));
+    modules.push(require('./tests/ExpoUIHostSize'));
+    modules.push(require('./tests/ExpoUIRNHostViewSize'));
     modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
-    modules.push(require('./tests/CalendarNext'));
+    modules.push(require('./tests/Calendar'));
   }
 
   if (Platform.OS === 'android') {
@@ -100,8 +103,8 @@ export function getTestModules() {
 
   if (Platform.OS === 'web') {
     modules.push(
+      require('./tests/Contacts-legacy'),
       require('./tests/Contacts'),
-      require('./tests/ContactsNext'),
       require('./tests/Localization'),
       require('./tests/Recording'),
       optionalRequire(() => require('./tests/Notifications')),
@@ -146,13 +149,13 @@ export function getTestModules() {
     // Has uncontrolled view controllers
     modules.push(require('./tests/SMS'));
     // Requires permission
+    modules.push(optionalRequire(() => require('./tests/Contacts-legacy')));
     modules.push(optionalRequire(() => require('./tests/Contacts')));
-    modules.push(optionalRequire(() => require('./tests/ContactsNext')));
-    modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
+    modules.push(optionalRequire(() => require('./tests/Calendar-legacy')));
+    modules.push(optionalRequire(() => require('./tests/CalendarReminders-legacy')));
     if (!isRunningInExpoGo()) {
+      modules.push(optionalRequire(() => require('./tests/MediaLibrary-legacy')));
       modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-      modules.push(optionalRequire(() => require('./tests/MediaLibraryNext')));
     }
 
     modules.push(optionalRequire(() => require('./tests/Battery')));

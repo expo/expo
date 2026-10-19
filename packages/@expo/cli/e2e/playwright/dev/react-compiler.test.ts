@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 import klawSync from 'klaw-sync';
-import { assert } from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -16,6 +15,8 @@ const projectRoot = getRouterE2ERoot();
 const baseDir = 'dist-react-compiler';
 
 test.describe(baseDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -26,7 +27,7 @@ test.describe(baseDir, () => {
   test.describe('default', () => {
     const inputDir = 'dist-react-compiler-default';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
@@ -42,25 +43,21 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
     test('bundle contains live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
     });
 
@@ -86,7 +83,7 @@ test.describe(baseDir, () => {
   test.describe('without live bindings', () => {
     const inputDir = 'dist-react-compiler-no-live-bindings';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       const res = await executeExpoAsync(
         projectRoot,
@@ -94,7 +91,8 @@ test.describe(baseDir, () => {
         {
           env: {
             NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
+            // Exercise the broken bindings in the browser instead of failing during prerendering.
+            EXPO_USE_STATIC: 'single',
             E2E_ROUTER_SRC: 'compiler',
             E2E_ROUTER_COMPILER: 'true',
             EXPO_UNSTABLE_LIVE_BINDINGS: 'false',
@@ -109,27 +107,23 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
     test('bundle does not have live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
-      expect(bundleContent).toContain('e.useBananas=function()');
+      expect(bundleContent).toMatch(/\w+\.useBananas=function\(\)/);
     });
 
     // This test generally ensures no errors are thrown during an export loading.

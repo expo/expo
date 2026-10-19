@@ -4,13 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.media.MediaActionSound
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.util.Size
 import android.view.OrientationEventListener
@@ -48,12 +48,12 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
 import expo.modules.camera.common.CameraMountErrorEvent
 import expo.modules.camera.common.PictureSavedEvent
+import expo.modules.camera.common.RecordingProgressEvent
 import expo.modules.camera.records.BarcodeSettings
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraMode
@@ -78,8 +78,10 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.File
@@ -126,6 +128,7 @@ class ExpoCameraView(
   private var cameraProvider: ProcessCameraProvider? = null
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
+  private var barcodeAnalyzer: BarcodeAnalyzer? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
   private var glSurfaceTexture: SurfaceTexture? = null
@@ -134,7 +137,11 @@ class ExpoCameraView(
   private var previewView = PreviewView(context).apply {
     elevation = 0f
   }
-  private val scope = CoroutineScope(Dispatchers.Main)
+  private val scope = CoroutineScope(
+    Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
+      Log.e(CameraViewModule.TAG, "Unhandled exception in camera coroutine", throwable)
+    }
+  )
   private var shouldCreateCamera = false
   private var previewPaused = false
 
@@ -239,6 +246,9 @@ class ExpoCameraView(
     }
   )
 
+  private val onRecordingProgress by EventDispatcher<RecordingProgressEvent>()
+  private var lastRecordingProgressTimestamp = 0L
+
   // Scanning-related properties
   private var shouldScanBarcodes = false
 
@@ -287,13 +297,7 @@ class ExpoCameraView(
           if (!animateShutter) {
             return
           }
-          rootView.postDelayed({
-            rootView.foreground = Color.WHITE.toDrawable()
-            rootView.postDelayed(
-              { rootView.foreground = null },
-              ANIMATION_FAST_MILLIS
-            )
-          }, ANIMATION_SLOW_MILLIS)
+          flashShutter(this@ExpoCameraView)
         }
 
         override fun onCaptureSuccess(image: ImageProxy) {
@@ -352,6 +356,7 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong() * 1000)
       .build()
+    val progressIntervalMs = (maxOf(0.1, options.progressUpdateInterval) * 1000).toLong()
 
     recorder?.let {
       if (!mute && ActivityCompat.checkSelfPermission(
@@ -378,6 +383,20 @@ class ExpoCameraView(
             }
             is VideoRecordEvent.Start -> {
               isRecording = true
+              lastRecordingProgressTimestamp = 0L
+            }
+            is VideoRecordEvent.Status -> {
+              val now = SystemClock.uptimeMillis()
+              if (isRecording && now - lastRecordingProgressTimestamp >= progressIntervalMs) {
+                lastRecordingProgressTimestamp = now
+                onRecordingProgress(
+                  RecordingProgressEvent(
+                    duration = event.recordingStats.recordedDurationNanos / 1_000_000_000.0,
+                    fileSize = event.recordingStats.numBytesRecorded,
+                    maxDuration = options.maxDuration.takeIf { it > 0 }?.toDouble()
+                  )
+                )
+              }
             }
             is VideoRecordEvent.Finalize -> {
               when (event.error) {
@@ -430,12 +449,25 @@ class ExpoCameraView(
     }
   }
 
-  @SuppressLint("UnsafeOptInUsageError")
   private suspend fun createCamera() {
     if (!shouldCreateCamera || previewPaused) {
       return
     }
     shouldCreateCamera = false
+    try {
+      configureAndBindCamera()
+    } catch (e: Exception) {
+      shouldCreateCamera = true
+      onMountError(
+        CameraMountErrorEvent(
+          "Camera could not be started, it may be unavailable or in use by another app: ${e.message ?: e.javaClass.simpleName}"
+        )
+      )
+    }
+  }
+
+  @SuppressLint("UnsafeOptInUsageError")
+  private suspend fun configureAndBindCamera() {
     val cameraProvider = ProcessCameraProvider.awaitInstance(context)
 
     ratio?.let {
@@ -498,7 +530,12 @@ class ExpoCameraView(
       .filter(cameraProvider.availableCameraInfos)
       .firstOrNull()
     val videoCapture = createVideoCapture(selectedCameraInfo)
-    imageAnalysisUseCase = createImageAnalyzer()
+    releaseBarcodeAnalyzer()
+    imageAnalysisUseCase = if (shouldScanBarcodes) {
+      createImageAnalyzer()
+    } else {
+      null
+    }
 
     val useCases = UseCaseGroup.Builder().apply {
       addUseCase(preview)
@@ -514,20 +551,14 @@ class ExpoCameraView(
       }
     }.build()
 
-    try {
-      cameraProvider.unbindAll()
-      camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
-      camera?.let {
-        observeCameraState(it.cameraInfo)
-      }
-      // Set the previous zoom level after recreating the camera
-      setCameraZoom(zoom)
-      this.cameraProvider = cameraProvider
-    } catch (_: Exception) {
-      onMountError(
-        CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
-      )
+    cameraProvider.unbindAll()
+    camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+    camera?.let {
+      observeCameraState(it.cameraInfo)
     }
+    // Set the previous zoom level after recreating the camera
+    setCameraZoom(zoom)
+    this.cameraProvider = cameraProvider
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =
@@ -542,17 +573,22 @@ class ExpoCameraView(
       .also { analyzer ->
         if (shouldScanBarcodes && CameraUtils.isMLKitBarcodeScannerAvailable()) {
           try {
-            analyzer.setAnalyzer(
-              ContextCompat.getMainExecutor(context),
-              BarcodeAnalyzer(barcodeFormats) {
-                onBarcodeScanned(it)
-              }
-            )
+            barcodeAnalyzer = BarcodeAnalyzer(barcodeFormats) {
+              onBarcodeScanned(it)
+            }.also {
+              analyzer.setAnalyzer(ContextCompat.getMainExecutor(context), it)
+            }
           } catch (e: Exception) {
             Log.e(CameraViewModule.TAG, "Failed to initialize BarcodeAnalyzer: ${e.message}")
           }
         }
       }
+
+  private fun releaseBarcodeAnalyzer() {
+    imageAnalysisUseCase?.clearAnalyzer()
+    barcodeAnalyzer?.close()
+    barcodeAnalyzer = null
+  }
 
   private fun buildResolutionSelector(): ResolutionSelector {
     val strategy = if (pictureSize.isNotEmpty()) {
@@ -862,6 +898,7 @@ class ExpoCameraView(
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()
+    releaseBarcodeAnalyzer()
     glSurfaceTexture?.release()
   }
 }

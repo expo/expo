@@ -29,24 +29,37 @@ export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string
   return config.updates?.url ?? null;
 }
 
-export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
+export function getAppVersion(
+  config: Pick<ExpoConfig, 'version'> & {
+    android?: Pick<Android, 'version'>;
+    ios?: Pick<IOS, 'version'>;
+  },
+  platform?: 'android' | 'ios'
+): string {
+  if (platform === 'ios' && config.ios?.version) {
+    return config.ios.version;
+  }
+  if (platform === 'android' && config.android?.version) {
+    return config.android.version;
+  }
   return config.version ?? '1.0.0';
 }
 
 export function getNativeVersion(
   config: Pick<ExpoConfig, 'version'> & {
-    android?: Pick<Android, 'versionCode'>;
-    ios?: Pick<IOS, 'buildNumber'>;
+    android?: Pick<Android, 'version' | 'versionCode'>;
+    ios?: Pick<IOS, 'version' | 'buildNumber'>;
   },
   platform: 'android' | 'ios'
 ): string {
-  const version = IOSVersion.getVersion(config);
   switch (platform) {
     case 'ios': {
+      const version = IOSVersion.getVersion(config);
       const buildNumber = IOSVersion.getBuildNumber(config);
       return `${version}(${buildNumber})`;
     }
     case 'android': {
+      const version = AndroidVersion.getVersionName(config) ?? '1.0.0';
       const versionCode = AndroidVersion.getVersionCode(config);
       return `${version}(${versionCode})`;
     }
@@ -74,8 +87,8 @@ export async function getRuntimeVersionNullableAsync(
 export async function getRuntimeVersionAsync(
   projectRoot: string,
   config: Pick<ExpoConfig, 'version' | 'runtimeVersion' | 'sdkVersion'> & {
-    android?: Pick<Android, 'versionCode' | 'runtimeVersion'>;
-    ios?: Pick<IOS, 'buildNumber' | 'runtimeVersion'>;
+    android?: Pick<Android, 'version' | 'versionCode' | 'runtimeVersion'>;
+    ios?: Pick<IOS, 'version' | 'buildNumber' | 'runtimeVersion'>;
   },
   platform: 'android' | 'ios'
 ): Promise<string | null> {
@@ -105,13 +118,13 @@ export async function getRuntimeVersionAsync(
 export async function resolveRuntimeVersionPolicyAsync(
   policy: 'appVersion' | 'nativeVersion' | 'sdkVersion',
   config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
-    android?: Pick<Android, 'versionCode'>;
-    ios?: Pick<IOS, 'buildNumber'>;
+    android?: Pick<Android, 'version' | 'versionCode'>;
+    ios?: Pick<IOS, 'version' | 'buildNumber'>;
   },
   platform: 'android' | 'ios'
 ): Promise<string> {
   if (policy === 'appVersion') {
-    return getAppVersion(config);
+    return getAppVersion(config, platform);
   } else if (policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
   } else if (policy === 'sdkVersion') {
@@ -157,6 +170,17 @@ export function getUpdatesBsdiffPatchSupportEnabled(
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
   return config.updates?.fallbackToCacheTimeout ?? 0;
+}
+
+export function getUpdatesMaxUpdatesToKeep(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): number | undefined {
+  const value = config.updates?.maxUpdatesToKeep;
+  // Android manifest integer metadata is limited to signed 32-bit values.
+  if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 2147483647)) {
+    throw new Error('updates.maxUpdatesToKeep must be an integer between 2 and 2147483647.');
+  }
+  return value;
 }
 
 export function getUpdatesCheckOnLaunch(
@@ -234,4 +258,8 @@ export function getDisableAntiBrickingMeasures(
   config: Pick<ExpoConfigUpdates, 'updates'>
 ): boolean | undefined {
   return config.updates?.disableAntiBrickingMeasures;
+}
+
+export function getUpdatesExcludeFromBackup(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  return config.updates?.excludeFromBackup ?? false;
 }

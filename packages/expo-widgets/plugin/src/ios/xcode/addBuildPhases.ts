@@ -1,11 +1,15 @@
-import { XcodeProject } from 'expo/config-plugins';
+import type { XcodeProject } from 'expo/config-plugins';
 import type { PBXFile } from 'xcode';
 
 type BuildPhase = {
   files: { value: string; comment: string }[];
 };
 
-type BuildPhaseType = 'PBXSourcesBuildPhase' | 'PBXCopyFilesBuildPhase' | 'PBXFrameworksBuildPhase';
+type BuildPhaseType =
+  | 'PBXSourcesBuildPhase'
+  | 'PBXCopyFilesBuildPhase'
+  | 'PBXFrameworksBuildPhase'
+  | 'PBXResourcesBuildPhase';
 
 type ProductFile = PBXFile & {
   uuid: string;
@@ -21,11 +25,13 @@ export function addBuildPhases(
     groupName,
     productFile,
     widgetFiles,
+    resourceFileRefs,
   }: {
     targetUuid: string;
     groupName: string;
     productFile: ProductFile;
     widgetFiles: string[];
+    resourceFileRefs: string[];
   }
 ) {
   const buildPath = `""`;
@@ -73,6 +79,47 @@ export function addBuildPhases(
   }
   if (!xcodeProject.pbxBuildFileSection()[productFile.uuid]) {
     xcodeProject.addToPbxBuildFileSection(productFile);
+  }
+
+  if (
+    resourceFileRefs.length > 0 &&
+    !getBuildPhaseObject(xcodeProject, 'PBXResourcesBuildPhase', targetUuid)
+  ) {
+    xcodeProject.addBuildPhase(
+      [],
+      'PBXResourcesBuildPhase',
+      'Resources',
+      targetUuid,
+      folderType,
+      buildPath
+    );
+  }
+
+  const resourcesBuildPhase = getBuildPhaseObject(
+    xcodeProject,
+    'PBXResourcesBuildPhase',
+    targetUuid
+  );
+  const buildFiles = xcodeProject.pbxBuildFileSection();
+  for (const fileRef of new Set(resourceFileRefs)) {
+    if (
+      !resourcesBuildPhase ||
+      resourcesBuildPhase.files.some(({ value }) => buildFiles[value]?.fileRef === fileRef)
+    ) {
+      continue;
+    }
+    const resourceBuildFile = {
+      uuid: xcodeProject.generateUuid(),
+      fileRef,
+      target: targetUuid,
+      basename: 'Localizable.strings',
+      group: 'Resources',
+    } as ProductFile;
+    xcodeProject.addToPbxBuildFileSection(resourceBuildFile);
+    resourcesBuildPhase.files.push({
+      value: resourceBuildFile.uuid,
+      comment: `${resourceBuildFile.basename} in ${resourceBuildFile.group}`,
+    });
   }
 
   // Frameworks build phase

@@ -32,24 +32,16 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       documentPickerVC.presentationController?.delegate = pickerDelegate
       documentPickerVC.allowsMultipleSelection = options.multiple
 
-      if UIDevice.current.userInterfaceIdiom == .pad {
-        let viewFrame = currentVc.view.frame
-        documentPickerVC.popoverPresentationController?.sourceRect = CGRect(
-          x: viewFrame.midX,
-          y: viewFrame.maxY,
-          width: 0,
-          height: 0
-        )
-        documentPickerVC.popoverPresentationController?.sourceView = currentVc.view
-        documentPickerVC.modalPresentationStyle = .pageSheet
-      }
+      SceneGeometry.anchorPopover(of: documentPickerVC, to: currentVc.view)
+      documentPickerVC.modalPresentationStyle = .pageSheet
       currentVc.present(documentPickerVC, animated: true)
     }.runOnQueue(.main)
   }
 
   func didPickDocumentsAt(urls: [URL]) {
     guard let options = self.pickingContext?.options,
-      let promise = self.pickingContext?.promise else {
+      let promise = self.pickingContext?.promise
+    else {
       log.error("Picking context has been lost.")
       return
     }
@@ -153,7 +145,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     } else {
       if let uti = UTTypeCreatePreferredIdentifierForTag(
         kUTTagClassFilenameExtension,
-        pathExtension as NSString, nil
+        pathExtension as NSString,
+        nil
       )?.takeRetainedValue() {
         if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
           return mimetype as String

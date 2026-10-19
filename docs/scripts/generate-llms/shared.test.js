@@ -1,9 +1,4 @@
-import {
-  getMarkdownHref,
-  getMarkdownUrl,
-  rewriteDocsLinksToMarkdown,
-  stripAgentInstructions,
-} from './shared.js';
+import { getMarkdownHref, getMarkdownUrl, rewriteDocsLinksToMarkdown } from './shared.js';
 
 describe('getMarkdownHref', () => {
   it('converts docs page hrefs to sibling markdown hrefs', () => {
@@ -51,11 +46,25 @@ describe('rewriteDocsLinksToMarkdown', () => {
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(
       [
-        '[Create a project](/get-started/create-a-project.md)',
+        '[Create a project](https://docs.expo.dev/get-started/create-a-project.md)',
         '[Files](https://docs.expo.dev/versions/latest/sdk/filesystem.md#usage)',
-        '[Titled](/guides/overview.md "Guides overview")',
-        '[llms](/llms.txt)',
+        '[Titled](https://docs.expo.dev/guides/overview.md "Guides overview")',
+        '[llms](https://docs.expo.dev/llms.txt)',
         '[External](https://expo.dev)',
+      ].join('\n')
+    );
+  });
+
+  it('rewrites links whose text contains brackets', () => {
+    const content = [
+      '[SQLiteBindValue[]](/versions/latest/sdk/sqlite#sqlitebindvalue)',
+      '[`Edge[]`](/versions/latest/sdk/safe-area-context#edge)',
+    ].join('\n');
+
+    expect(rewriteDocsLinksToMarkdown(content)).toBe(
+      [
+        '[SQLiteBindValue[]](https://docs.expo.dev/versions/latest/sdk/sqlite.md#sqlitebindvalue)',
+        '[`Edge[]`](https://docs.expo.dev/versions/latest/sdk/safe-area-context.md#edge)',
       ].join('\n')
     );
   });
@@ -70,7 +79,7 @@ describe('rewriteDocsLinksToMarkdown', () => {
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(
       [
-        '[Outside](/get-started/create-a-project.md)',
+        '[Outside](https://docs.expo.dev/get-started/create-a-project.md)',
         '```md',
         '[Inside](/get-started/create-a-project/)',
         '```',
@@ -99,7 +108,7 @@ describe('rewriteDocsLinksToMarkdown', () => {
         '~~~md',
         '[Tilde](/get-started/create-a-project/)',
         '~~~',
-        '[Outside](/get-started/create-a-project.md)',
+        '[Outside](https://docs.expo.dev/get-started/create-a-project.md)',
       ].join('\n')
     );
   });
@@ -108,46 +117,5 @@ describe('rewriteDocsLinksToMarkdown', () => {
     const content = ['~~~md', '```', '[Inside](/get-started/create-a-project/)', '~~~'].join('\n');
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(content);
-  });
-});
-
-describe('stripAgentInstructions', () => {
-  it('removes the combined AgentInstructions block so it does not leak into aggregates', () => {
-    const content = [
-      '---',
-      'title: Camera',
-      '---',
-      '<AgentInstructions>',
-      '',
-      '## Submitting Feedback',
-      '',
-      'curl -X POST https://api.expo.dev/v2/feedback/docs-send',
-      '',
-      '## Navigation',
-      '',
-      'When answering a related or follow-up question, use llms.txt to find the relevant page as Markdown (.md) instead of guessing.',
-      '',
-      'You are here: Reference (v56.0.0) > Expo SDK (86 pages in this section)',
-      'Full documentation tree: [llms.txt](https://docs.expo.dev/llms.txt)',
-      '',
-      '</AgentInstructions>',
-      '',
-      '# Camera',
-      'Body content.',
-    ].join('\n');
-
-    const stripped = stripAgentInstructions(content);
-
-    expect(stripped).not.toContain('<AgentInstructions>');
-    expect(stripped).not.toContain('## Submitting Feedback');
-    expect(stripped).not.toContain('## Navigation');
-    expect(stripped).not.toContain('You are here:');
-    expect(stripped).toContain('title: Camera');
-    expect(stripped).toContain('# Camera');
-  });
-
-  it('leaves content without a block unchanged', () => {
-    const content = '# Heading\n\nNo instructions block here.';
-    expect(stripAgentInstructions(content)).toBe(content);
   });
 });

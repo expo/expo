@@ -12,7 +12,11 @@ import { Icon } from '../../jetpack-compose/Icon';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Text as ComposeText } from '../../jetpack-compose/Text';
 import { useMaterialColors } from '../../jetpack-compose/colors';
+import type { PopupProperties } from '../../types';
 import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
+
+// Clipped popups drop the status bar offset, so edge-to-edge menus near the bottom detach from the anchor.
+const POPUP_PROPERTIES: PopupProperties = { clippingEnabled: false };
 
 function actionId(action: MenuAction): string {
   return action.id ?? action.title;
@@ -82,7 +86,10 @@ function MenuActionItem({ action, onPressAction, dismissAll, destructiveColor }:
       );
     }
     return (
-      <DropdownMenu expanded={submenuExpanded} onDismissRequest={() => setSubmenuExpanded(false)}>
+      <DropdownMenu
+        expanded={submenuExpanded}
+        onDismissRequest={() => setSubmenuExpanded(false)}
+        properties={POPUP_PROPERTIES}>
         <DropdownMenu.Trigger>
           <DropdownMenuItem
             enabled={!attributes?.disabled}
@@ -155,6 +162,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   const {
     ref,
     actions,
+    colorScheme,
     onPressAction,
     onOpenMenu,
     onCloseMenu,
@@ -189,8 +197,11 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
 
   return (
     <View style={style} testID={testID}>
-      <Host matchContents>
-        <DropdownMenu expanded={expanded} onDismissRequest={dismissAll}>
+      <Host colorScheme={colorScheme} matchContents>
+        <DropdownMenu
+          expanded={expanded}
+          onDismissRequest={dismissAll}
+          properties={POPUP_PROPERTIES}>
           <DropdownMenu.Trigger>
             <RNHostView matchContents>
               <Pressable

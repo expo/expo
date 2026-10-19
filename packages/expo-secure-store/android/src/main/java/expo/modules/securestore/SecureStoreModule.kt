@@ -150,7 +150,7 @@ open class SecureStoreModule : Module() {
           return hybridAESEncryptor.decryptItem(key, encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
-          throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme)", key, options.keychainService)
+          throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme", key, options.keychainService)
         }
       }
     } catch (e: KeyPermanentlyInvalidatedException) {
@@ -201,7 +201,12 @@ open class SecureStoreModule : Module() {
        back a value.
        */
       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(
+        value,
+        secretKeyEntry,
+        options,
+        authenticationHelper
+      )
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 
@@ -241,22 +246,12 @@ open class SecureStoreModule : Module() {
   }
 
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
-    var success = true
-    val prefs = getSharedPreferences()
-    val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
-    val legacyPrefs = PreferenceManager.getDefaultSharedPreferences(reactContext)
-
-    if (prefs.contains(keychainAwareKey)) {
-      success = prefs.edit().remove(keychainAwareKey).commit()
-    }
-
-    if (prefs.contains(key)) {
-      success = prefs.edit().remove(key).commit() && success
-    }
-
-    if (legacyPrefs.contains(key)) {
-      success = legacyPrefs.edit().remove(key).commit() && success
-    }
+    val success = removeItem(
+      getSharedPreferences(),
+      PreferenceManager.getDefaultSharedPreferences(reactContext),
+      key,
+      createKeychainAwareKey(key, options.keychainService)
+    )
 
     if (!success) {
       throw DeleteException("Could not delete the item from SecureStore", key, options.keychainService)
@@ -294,7 +289,7 @@ open class SecureStoreModule : Module() {
   }
 
   /**
-   * Each key is stored under a keychain service that requires authentication, or one that doesn't
+   * Each key is stored under a keychain service that requires authentication, or one that doesn't.
    * Keys used to be stored under a single keychain, which led to different behaviour on iOS and Android.
    * Because of that we need to check if there are any keys stored with the old secure-store key format.
    */
@@ -328,7 +323,7 @@ open class SecureStoreModule : Module() {
         throw KeyStoreException("The entry for the keystore alias \"$keystoreAlias\" is not a ${keyStoreEntryClass.simpleName}")
       }
       keyStoreEntryClass.cast(entry)
-        ?: throw KeyStoreException("The entry for the keystore alias \"$keystoreAlias\" couldn't be cast to correct class")
+        ?: throw KeyStoreException("The entry for the keystore alias \"$keystoreAlias\" couldn't be cast to the correct class")
     } else {
       null
     }
@@ -386,4 +381,15 @@ open class SecureStoreModule : Module() {
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }
+}
+
+internal fun removeItem(
+  prefs: SharedPreferences,
+  legacyPrefs: SharedPreferences,
+  key: String,
+  keychainAwareKey: String
+): Boolean {
+  val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
+  val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
+  return removedFromPrefs && removedFromLegacyPrefs
 }

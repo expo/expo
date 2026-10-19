@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { InfoPlist, InterfaceOrientation } from './IosConfig.types';
 import { createInfoPlistPluginWithPropertyGuard } from '../plugins/ios-plugins';
+import type { InfoPlist, InterfaceOrientation } from './IosConfig.types';
 
 export const withOrientation = createInfoPlistPluginWithPropertyGuard(
   setOrientation,

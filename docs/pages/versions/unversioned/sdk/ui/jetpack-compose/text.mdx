@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Text`](../universal/text) — it renders the appropriate native component per platform.
@@ -30,77 +31,172 @@ Expo UI Text matches the official Jetpack Compose [Text styling](https://develop
 
 ### Basic text
 
-```tsx BasicTextExample.tsx
-import { Host, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="BasicTextExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-basic-android-dark.webp"
+  alt="A single line of text reading Hello, world!">
+
+```tsx
+import {
+  Host,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 
 export default function BasicTextExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Text>Hello, world!</Text>
+      <Text color={colors.onBackground}>Hello, world!</Text>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Typography styles
 
 Use the `style` prop with `typography` to apply Material 3 typography presets.
 
-```tsx TypographyExample.tsx
-import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="TypographyExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-typography-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-typography-android-dark.webp"
+  alt="Four lines showing the display large, headline medium, body small, and label large type scales">
+
+```tsx
+import {
+  Host,
+  Text,
+  Column,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function TypographyExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
       <Column modifiers={[paddingAll(16)]}>
-        <Text style={{ typography: 'displayLarge' }}>Display Large</Text>
-        <Text style={{ typography: 'headlineMedium' }}>Headline Medium</Text>
-        <Text style={{ typography: 'bodySmall' }}>Body Small</Text>
-        <Text style={{ typography: 'labelLarge' }}>Label Large</Text>
+        <Text
+          color={colors.onBackground}
+          style={{ typography: 'displayLarge' }}>
+          Display Large
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ typography: 'headlineMedium' }}>
+          Headline Medium
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ typography: 'bodySmall' }}>
+          Body Small
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ typography: 'labelLarge' }}>
+          Label Large
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Text with maxLines and overflow
 
 Control text truncation with `maxLines` and `overflow`.
 
-```tsx TextOverflowExample.tsx
-import { Host, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="TextOverflowExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-overflow-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-overflow-android-dark.webp"
+  alt="A paragraph clipped to two lines ending in an ellipsis">
+
+```tsx
+import {
+  Host,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { width } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function TextOverflowExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
-      <Text maxLines={2} overflow="ellipsis" modifiers={[width(200)]}>
-        This is a long paragraph of text that will be truncated after two lines with an ellipsis at
-        the end to indicate there is more content.
+      <Text
+        color={colors.onBackground}
+        maxLines={2}
+        overflow="ellipsis"
+        modifiers={[width(200)]}>
+        This is a long paragraph of text that will be truncated
+        after two lines with an ellipsis at the end to indicate
+        there is more content.
       </Text>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Styled text
 
 Apply custom text styles including font weight, style, size, and decoration.
 
-```tsx StyledTextExample.tsx
-import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="StyledTextExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-styled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-styled-android-dark.webp"
+  alt="Five lines showing bold, italic, underlined, letter-spaced, and pink centered text">
+
+```tsx
+import {
+  Host,
+  Text,
+  Column,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function StyledTextExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
       <Column modifiers={[paddingAll(16)]}>
-        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Bold text</Text>
-        <Text style={{ fontStyle: 'italic' }}>Italic text</Text>
-        <Text style={{ textDecoration: 'underline' }}>Underlined text</Text>
-        <Text style={{ letterSpacing: 4 }}>Spaced out text</Text>
-        <Text color="#E91E63" style={{ fontSize: 18, textAlign: 'center' }}>
+        <Text
+          color={colors.onBackground}
+          style={{ fontWeight: 'bold', fontSize: 20 }}>
+          Bold text
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ fontStyle: 'italic' }}>
+          Italic text
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ textDecoration: 'underline' }}>
+          Underlined text
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ letterSpacing: 4 }}>
+          Spaced out text
+        </Text>
+        <Text
+          color="#E91E63"
+          style={{ fontSize: 18, textAlign: 'center' }}>
           Colored and centered
         </Text>
       </Column>
@@ -109,44 +205,70 @@ export default function StyledTextExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Nested text
 
 Nest `<Text>` components to apply inline styles to parts of a sentence. Child spans inherit styles from their parent. For example, a bold parent with an italic child renders the child as bold and italic.
 
-```tsx NestedTextExample.tsx
-import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="NestedTextExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-nested-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-nested-android-dark.webp"
+  alt="Four sentences with inline spans in italic, bold, underline, blue, and a yellow highlight">
+
+```tsx
+import {
+  Host,
+  Text,
+  Column,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function NestedTextExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
       <Column modifiers={[paddingAll(16)]}>
         {/* Bold parent, italic child inherits bold */}
-        <Text style={{ fontWeight: 'bold' }}>
+        <Text
+          color={colors.onBackground}
+          style={{ fontWeight: 'bold' }}>
           Hello <Text style={{ fontStyle: 'italic' }}>world</Text>!
         </Text>
 
         {/* Mixed inline styles */}
-        <Text style={{ fontSize: 16 }}>
-          Normal, <Text style={{ fontStyle: 'italic' }}>italic</Text>,{' '}
+        <Text color={colors.onBackground} style={{ fontSize: 16 }}>
+          Normal,{' '}
+          <Text style={{ fontStyle: 'italic' }}>italic</Text>,{' '}
           <Text style={{ fontWeight: 'bold' }}>bold</Text>, and{' '}
-          <Text style={{ textDecoration: 'underline' }}>underlined</Text>
+          <Text style={{ textDecoration: 'underline' }}>
+            underlined
+          </Text>
         </Text>
 
         {/* Color and background overrides per span */}
-        <Text style={{ fontSize: 18 }}>
+        <Text color={colors.onBackground} style={{ fontSize: 18 }}>
           Click{' '}
           <Text color="#007AFF" style={{ fontWeight: 'bold' }}>
             here
           </Text>{' '}
-          or <Text style={{ background: '#FFEB3B' }}>highlighted</Text>
+          or{' '}
+          <Text style={{ background: '#FFEB3B' }}>highlighted</Text>
         </Text>
 
         {/* Deep nesting — styles accumulate */}
-        <Text style={{ fontWeight: 'bold' }}>
+        <Text
+          color={colors.onBackground}
+          style={{ fontWeight: 'bold' }}>
           Bold{' '}
           <Text style={{ fontStyle: 'italic' }}>
-            bold+italic <Text style={{ textDecoration: 'underline' }}>bold+italic+underline</Text>
+            bold+italic{' '}
+            <Text style={{ textDecoration: 'underline' }}>
+              bold+italic+underline
+            </Text>
           </Text>
         </Text>
       </Column>
@@ -155,26 +277,55 @@ export default function NestedTextExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom fonts
 
 Use fonts loaded via [`expo-font`](/versions/latest/sdk/font/) by passing the font family name to `style.fontFamily`.
 
-```tsx CustomFontExample.tsx
-import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CustomFontExample.tsx"
+  src="/static/images/expo-ui/examples/composetext-font-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/composetext-font-android-dark.webp"
+  alt="Three lines rendered in the system serif, system monospace, and Inter Bold fonts">
+
+```tsx
+import {
+  Host,
+  Text,
+  Column,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function CustomFontExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
       <Column modifiers={[paddingAll(16)]}>
-        <Text style={{ fontFamily: 'serif', fontSize: 16 }}>System serif font</Text>
-        <Text style={{ fontFamily: 'monospace', fontSize: 16 }}>System monospace font</Text>
-        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 16 }}>Custom Inter Bold font</Text>
+        <Text
+          color={colors.onBackground}
+          style={{ fontFamily: 'serif', fontSize: 16 }}>
+          System serif font
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ fontFamily: 'monospace', fontSize: 16 }}>
+          System monospace font
+        </Text>
+        <Text
+          color={colors.onBackground}
+          style={{ fontFamily: 'Inter-Bold', fontSize: 16 }}>
+          Custom Inter Bold font
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -182,4 +333,7 @@ export default function CustomFontExample() {
 import { Text } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/text" apiName="Text" />
+<APISection
+  packageName="expo-ui/jetpack-compose/text"
+  apiName="Text"
+/>

@@ -75,6 +75,11 @@ const Platform = {
    * When `true`, synchronous native invocations cannot be executed.
    */
   isAsyncDebugging,
+  /**
+   * Denotes if the app is running on a Meta Quest device.
+   * This is always `false` on iOS and web.
+   */
+  isQuest: globalThis.expo?.isRunningOnQuest ?? false,
 };
 
 export default Platform;

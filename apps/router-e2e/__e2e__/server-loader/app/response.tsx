@@ -3,14 +3,23 @@ import { type LoaderFunction } from 'expo-router/server';
 import { setResponseHeaders } from 'expo-server';
 import { Suspense } from 'react';
 
+import { Loading } from '../components/Loading';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
-import { Loading } from '../components/Loading';
 
 export const loader: LoaderFunction = (request) => {
   // In SSG, request is unavailable since there's no HTTP request at build time
   if (!request) {
-    return { foo: null };
+    return Response.json(
+      { foo: null },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=604800',
+          // Not on the SSG header allowlist; never reaches clients
+          'X-Loader-Header': 'loader-value',
+        },
+      }
+    );
   }
 
   const url = new URL(request.url);
@@ -61,4 +70,4 @@ const ResponseScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

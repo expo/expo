@@ -1,4 +1,4 @@
-# Expo Documentation
+# Expo documentation
 
 This is the public documentation for **Expo**, its SDK, client, and services (**EAS**). This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
@@ -67,13 +67,17 @@ These metadata items include:
 - `title`: Title of the page shown as the heading and in search results.
 - `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
-- `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
+- `hidden`: Whether to hide the page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `sidebar_order`: A number that weights the page within its sidebar group. Defaults to `0`. A negative value sorts the page above the alphabetical run, a positive value below it.
+- `inExpoGo`: Whether to list an SDK reference page under Third-party libraries instead of Expo SDK in the sidebar. Defaults to `false`.
 - `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 - `isNew`: Whether to display the new badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `isDeprecated`: Whether to display the deprecated badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `isAlpha`: Whether to display the alpha badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
+- `isBeta`: Whether to display the beta badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
+- `isPreview`: Whether to display the preview badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `searchRank`: A number between 0 and 100 that represents the relevance of a page. This value is mapped to Algolia's `record.weight.pageRank` property. Higher values indicate higher priority. We set this value to `5` by default, otherwise specified in the frontmatter.
 - `searchPosition`: The position of a page in the search results. This value is mapped to Algolia's `record.weight.position` property. Algolia sets this value to `0` by default. Pages with lower values appear higher in the results. We set this value to `50` by default, otherwise specified in the frontmatter.
 - `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.
@@ -233,7 +237,7 @@ If you need to link from one MDX file to another, use the static/full path to th
 - From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-Validate all current links by running `pnpm lint-links` script.
+Validate all current links by running the `pnpm check-internal-links` script after a build (it scans the exported site in **out**).
 
 ### Update latest version of API reference docs
 
@@ -466,7 +470,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 ### Code block variables
 
-Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from `sdk-versions.json` at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
+Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from the shared SDK compatibility registry at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
 
 **Available variables:**
 
@@ -499,7 +503,7 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
 
-All variables are defined in `common/code-utilities.ts` and sourced from the first (latest) entry in `ui/components/SDKTables/sdk-versions.json`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in that file.
+All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add a new key to the object returned by `buildVariablesForSdk` in `common/code-utilities.ts`.
 
 > [!NOTE]
 > These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.

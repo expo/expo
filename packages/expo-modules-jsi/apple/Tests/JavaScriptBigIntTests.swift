@@ -137,7 +137,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `create from string beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
     #expect(bigInt.isInt64() == false)
     let str = try bigInt.toString()
     #expect(str == "9223372036854775808")
@@ -169,7 +169,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `asInt64 throws when beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
     #expect(throws: BigIntConversionError.self) {
       try bigInt.asInt64()
     }
@@ -455,7 +455,7 @@ struct JavaScriptBigIntTests {
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 42)
     let result = try runtime.global()
       .getPropertyAsFunction("identity")
-      .call(arguments: bigInt.asValue())
+      .call(arguments: bigInt.asValue().ref())
       .getBigInt()
 
     #expect((result == bigInt) == true)
@@ -468,7 +468,7 @@ struct JavaScriptBigIntTests {
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 21)
     let result = try runtime.global()
       .getPropertyAsFunction("double")
-      .call(arguments: bigInt.asValue())
+      .call(arguments: bigInt.asValue().ref())
       .getBigInt()
 
     #expect(result.getInt64() == 42)

@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import { emitDomLinkEvent } from '../domComponents/emitDomEvent';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { LinkToOptions } from '../global-state/routing';
-import { linkTo } from '../global-state/routing';
+import { useRouterActions } from '../global-state/useRouterActions';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import { shouldLinkExternally } from '../utils/url';
 
@@ -38,12 +38,15 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 };
 
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
+  const router = useRouterActions();
   const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
+    // TODO: Align external links: anchors stay in the same tab, while a non-anchor `asChild`
+    // falls back to `linkTo` and `Linking.openURL`, which opens a new tab.
     if (shouldHandleMouseEvent(event)) {
       if (emitDomLinkEvent(href, options)) {
         return;
       }
-      linkTo(href, options);
+      router.linkTo(href, options);
     }
   };
 

@@ -2,19 +2,19 @@ import Photos
 import AVFoundation
 
 class UriExtractor {
-  static func extract(from phAsset: PHAsset) async throws -> URL {
+  static func extract(from phAsset: PHAsset, version: AssetUriVersion) async throws -> URL {
     switch phAsset.mediaType {
     case .image:
-      return try await extract(fromImage: phAsset)
+      return try await extract(fromImage: phAsset, version: version)
     case .video:
-      return try await extract(fromVideo: phAsset)
+      return try await extract(fromVideo: phAsset, version: version)
     default:
       throw FailedToExtractUri("Unsupported media type")
     }
   }
 
-  private static func extract(fromImage phAsset: PHAsset) async throws -> URL {
-    let result = try await phAsset.requestContentEditingInput()
+  private static func extract(fromImage phAsset: PHAsset, version: AssetUriVersion) async throws -> URL {
+    let result = try await phAsset.requestContentEditingInput(options: imageRequestOptions(for: version))
     guard let contentEditingInput = result.input else {
       throw FailedToExtractUri("Missing content editing input for image")
     }
@@ -24,11 +24,29 @@ class UriExtractor {
     return url
   }
 
-  private static func extract(fromVideo phAsset: PHAsset) async throws -> URL {
+  // Photos renders the edits into the image it returns, unless we say we can handle the
+  // adjustment data ourselves. Then it returns the image those edits were applied to.
+  static func imageRequestOptions(for version: AssetUriVersion) -> PHContentEditingInputRequestOptions {
+    let options = PHContentEditingInputRequestOptions()
+    options.isNetworkAccessAllowed = true
+    if version == .ORIGINAL {
+      options.canHandleAdjustmentData = { _ in true }
+    }
+    return options
+  }
+
+  static func videoRequestOptions(for version: AssetUriVersion) -> PHVideoRequestOptions {
     let options = PHVideoRequestOptions()
-    options.version = .original
+    options.version = version.toPHVideoRequestOptionsVersion()
+    options.isNetworkAccessAllowed = true
+    // without this an asset stored in iCloud can come back downscaled
+    options.deliveryMode = .highQualityFormat
+    return options
+  }
+
+  private static func extract(fromVideo phAsset: PHAsset, version: AssetUriVersion) async throws -> URL {
     let result = try await PHImageManager.default()
-      .requestAVAsset(forVideo: phAsset, options: options)
+      .requestAVAsset(forVideo: phAsset, options: videoRequestOptions(for: version))
     guard let avAsset = result.asset else {
       throw FailedToExtractUri("Missing AVAsset for video")
     }

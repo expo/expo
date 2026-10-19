@@ -2,7 +2,6 @@
 
 import { TextDecoder, TextEncoder } from 'node:util';
 
-import MockWebSocket from './MockWebSocket';
 import {
   cleanupDevToolsPluginInstances,
   getDevToolsPluginClientAsync,
@@ -10,6 +9,7 @@ import {
 import { DevToolsPluginClientImplApp } from '../DevToolsPluginClientImplApp';
 import { DevToolsPluginClientImplBrowser } from '../DevToolsPluginClientImplBrowser';
 import { getConnectionInfo } from '../getConnectionInfo';
+import MockWebSocket from './MockWebSocket';
 
 jest.mock('../getConnectionInfo');
 

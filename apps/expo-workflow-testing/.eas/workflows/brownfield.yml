@@ -1,5 +1,9 @@
 name: E2E Test Suite for Expo Brownfield
 
+defaults:
+  tools:
+    pnpm: '12.2.1'
+
 on:
   workflow_dispatch: {}
   push:
@@ -17,6 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/brownfield.yml
       - packages/expo-brownfield/**

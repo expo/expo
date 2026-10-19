@@ -14,7 +14,7 @@ class ImageService {
   func url(from imageData: Data, filename: String) throws -> String {
     let imageFileURL = try prepareCacheFileURL(filename: filename)
     try imageData.write(to: imageFileURL, options: .atomic)
-    return imageFileURL.path
+    return imageFileURL.absoluteString
   }
 
   func imageData(from url: String) throws -> Data? {
@@ -38,6 +38,8 @@ class ImageService {
     guard FileSystemUtilities.ensureDirExists(at: baseDirectoryURL) else {
       throw FailedToCacheContactImage("The contacts cache directory does not exist")
     }
-    return baseDirectoryURL.appendingPathComponent(filename)
+    // Contact identifiers can contain "/" (e.g. "com.apple.introductions.accepted/494"), which
+    // `appendingPathComponent` would treat as a nested directory that doesn't exist.
+    return baseDirectoryURL.appendingPathComponent(filename.replacingOccurrences(of: "/", with: "_"))
   }
 }

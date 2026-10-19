@@ -46,6 +46,16 @@ const parameters: FunctionParameter[] = [
     ],
   },
   {
+    name: 'Skip on cache hit',
+    type: 'enum',
+    platforms: ['ios', 'android'],
+    values: [
+      { name: 'none (default)', value: 'none' },
+      { name: 'memory', value: 'memory' },
+      { name: 'all', value: 'all' },
+    ],
+  },
+  {
     name: 'Use only fadeDuration',
     type: 'boolean',
     initial: false,
@@ -54,32 +64,46 @@ const parameters: FunctionParameter[] = [
 
 export default function ImageTransitionsScreen() {
   const [source, setSource] = useState<ImageSource | null>({ uri: getRandomImageUri() });
+  const [recycleCount, setRecycleCount] = useState(0);
   const [args, updateArgument] = useArguments(parameters);
-  const [duration, effect, timing, onlyFadeDuration] = args as [
+  const [duration, effect, timing, skipOnCacheHit, onlyFadeDuration] = args as [
     ImageTransition['duration'],
     ImageTransition['effect'],
     ImageTransition['timing'],
+    ImageTransition['skipOnCacheHit'],
     boolean,
   ];
 
   const changeImage = useCallback(() => {
     setSource({ uri: getRandomImageUri() });
-  }, [source]);
+  }, []);
 
-  const transition = onlyFadeDuration ? null : { duration, effect, timing };
+  const recycle = useCallback(() => {
+    const next = recycleCount + 1;
+    setRecycleCount(next);
+    setSource({ uri: getRecycledImageUri(next) });
+  }, [recycleCount]);
+
+  const transition = onlyFadeDuration ? null : { duration, effect, timing, skipOnCacheHit };
 
   return (
     <View style={styles.container}>
       <Image
         style={styles.image}
         source={source ?? []}
+        recyclingKey={String(recycleCount)}
         transition={transition}
         fadeDuration={duration}
-        cachePolicy="none"
+        cachePolicy="memory-disk"
       />
 
       <View style={styles.configurator}>
-        <Button style={styles.actionButton} title="Change image" onPress={changeImage} />
+        <Button
+          style={styles.actionButton}
+          title="Change image (source change)"
+          onPress={changeImage}
+        />
+        <Button style={styles.actionButton} title="Recycle view (cache hit)" onPress={recycle} />
 
         <Configurator parameters={parameters} onChange={updateArgument} value={args} />
       </View>
@@ -89,6 +113,10 @@ export default function ImageTransitionsScreen() {
 
 function getRandomImageUri(): string {
   return `https://picsum.photos/seed/${generateSeed()}/3000/2000`;
+}
+
+function getRecycledImageUri(count: number): string {
+  return `https://picsum.photos/seed/recycle-${count % 2}/3000/2000`;
 }
 
 const styles = StyleSheet.create({
@@ -106,6 +134,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   actionButton: {
-    marginVertical: 15,
+    marginVertical: 8,
   },
 });

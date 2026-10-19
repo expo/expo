@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import ObjectiveC.runtime
 
 private var cropFixDriverKey: UInt8 = 0
@@ -88,9 +89,10 @@ extension UIImagePickerController {
   }
 
   var cropView: UIView? {
+    let scale = SceneGeometry.displayScale(for: view)
     return findView(named: "PLCropOverlayCropView", from: view)?
       .subviews
-      .first(where: { $0.bounds.isSquare })
+      .first(where: { $0.bounds.isSquare(scale: scale) })
   }
 
   private func findView(named className: String, from view: UIView) -> UIView? {
@@ -162,8 +164,8 @@ private final class CropFixDriver: NSObject {
 }
 
 private extension CGRect {
-  var isSquare: Bool {
-    let tolerance = 2 / UIScreen.main.scale
+  func isSquare(scale: CGFloat) -> Bool {
+    let tolerance = 2 / scale
     return width >= 44 && abs(width - height) <= tolerance
   }
 

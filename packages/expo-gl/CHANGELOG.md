@@ -1,16 +1,41 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
+
+- [iOS] Fixed the GL surface using a cached main-screen scale instead of the scale of the scene the view is in. ([#48169](https://github.com/expo/expo/pull/48169) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `takeSnapshotAsync` sizing the image from the main screen's scale rather than the scale the drawable was rendered at. ([#48528](https://github.com/expo/expo/pull/48528) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
 
 ### 💡 Others
 
 - Update docs to `createContextAsync` and `destroyContextAsync` methods which purpose wasn't documented and [was confusing](https://github.com/expo/expo/issues/40037). ([#47200](https://github.com/expo/expo/pull/47200) by [@HubertBer](https://github.com/HubertBer))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-19
 

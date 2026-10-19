@@ -548,7 +548,7 @@ export type RecurrenceRule = {
    */
   daysOfTheYear?: number[];
   /**
-   * TAn array of numbers that filters which recurrences to include. For example, for an event that
+   * An array of numbers that filters which recurrences to include. For example, for an event that
    * recurs every Monday, passing 2 here will make it recur every other Monday.
    * `-366` to `366` (not including `0`). Negative indicates a value from the end of the range.
    * This field is only valid for `Calendar.Frequency.Yearly`.

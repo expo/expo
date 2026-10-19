@@ -58,6 +58,13 @@ const robotStub: Actor = {
   accounts: [],
 };
 
+const partnerActorStub: Actor = {
+  __typename: 'PartnerActor',
+  id: 'userId',
+  username: 'partner-username',
+  accounts: [],
+};
+
 function mockLoginRequest() {
   nock(getExpoApiBaseUrl())
     .post('/v2/auth/loginAsync')
@@ -235,5 +242,9 @@ describe(getActorDisplayName, () => {
 
   it('returns robot prefix only for robot actors without firstName', () => {
     expect(getActorDisplayName({ ...robotStub, firstName: undefined })).toBe('robot');
+  });
+
+  it('returns username for partner provisioned actors', () => {
+    expect(getActorDisplayName(partnerActorStub)).toBe('partner-username');
   });
 });

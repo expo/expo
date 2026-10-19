@@ -74,6 +74,17 @@ function asyncRequireImpl<T>(
   // On web, split chunks may already be preloaded via `<script>` tags, so importing
   // synchronously first prevents double-loading the script
   if (process.env.EXPO_OS === 'web') {
+    const bundlePath = paths?.[String(moduleID)];
+    if (Array.isArray(bundlePath)) {
+      const loadBundle = (globalThis as any)[`${__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`];
+      if (loadBundle?.isReady?.(bundlePath)) return importAll();
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) return maybeLoadBundlePromise.then(importAll);
+      throw new Error(
+        `Cannot import module ${moduleName ?? moduleID}: the async bundle loader is unavailable. ` +
+          `Load the initial Expo bundle before importing these chunks: ${bundlePath.join(', ')}`
+      );
+    }
     try {
       return importAll();
     } catch (error) {
@@ -94,30 +105,22 @@ function asyncRequireImpl<T>(
   return importAll();
 }
 
+type PromiseWithResult<T> = Promise<T> & {
+  _result?: T | Promise<T>;
+};
+
 function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
   moduleName?: string
-): PromiseLike<T> & { _result?: T | Promise<T> } {
+): PromiseWithResult<T> {
   const ret = asyncRequireImpl<T>(moduleID, paths, moduleName);
-  if (!(ret instanceof Promise)) {
-    // We return a thenable with an added `unstable_importMaybeSync`-like
-    // `_result` property to bypass this being force-converted to a promise
-    // for rehydration
-    return {
-      _result: ret,
-      then(resolve, reject) {
-        return Promise.resolve(ret).then(resolve, reject);
-      },
-    };
-  } else {
-    return {
-      _result: ret,
-      then(resolve, reject) {
-        return ret.then(resolve, reject);
-      },
-    };
-  }
+  // We return a Promise with an added `unstable_importMaybeSync`-like
+  // `_result` property to bypass this being force-converted to a promise
+  // for rehydration
+  const promise: PromiseWithResult<T> = Promise.resolve(ret);
+  promise._result = ret;
+  return promise;
 }
 
 // Synchronous version of asyncRequire, which can still return a promise

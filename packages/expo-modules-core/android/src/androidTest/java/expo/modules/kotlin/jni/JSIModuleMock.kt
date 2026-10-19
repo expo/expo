@@ -45,6 +45,7 @@ private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
 internal inline fun withJSIInterop(
   vararg modules: Module,
   numberOfReloads: Int = 1,
+  jsHeapAccessExecutor: JSHeapAccessExecutor? = null,
   block: JSIContext.(methodQueue: TestScope) -> Unit
 ) {
   val (appContextMock, runtimeContext) = defaultAppContextMock()
@@ -90,6 +91,7 @@ internal inline fun withJSIInterop(
         runtimePtr,
         callInvokerHolder
       )
+    jsiContext.setJSHeapAccessExecutor(jsHeapAccessExecutor)
 
     every { runtimeContext.jsiContext } answers { jsiContext }
 

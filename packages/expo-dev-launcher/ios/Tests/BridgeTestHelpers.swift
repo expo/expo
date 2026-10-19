@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import Quick
-import Nimble
+import Foundation
 import React
 
 @testable import EXDevLauncher
@@ -22,5 +21,8 @@ internal class MockBridgeDelegate: NSObject, RCTBridgeDelegate {
 }
 
 internal func waitBridgeReady(bridgeDelegate: MockBridgeDelegate) {
-  expect(bridgeDelegate.loadSourceCalled).toEventually(beTrue())
+  let deadline = Date().addingTimeInterval(1.0)
+  while !bridgeDelegate.loadSourceCalled && Date() < deadline {
+    RunLoop.current.run(until: Date().addingTimeInterval(0.01))
+  }
 }

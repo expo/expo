@@ -413,10 +413,12 @@ export class Package {
    */
   async hasNativeTestsAsync(platform: Platform): Promise<boolean> {
     if (platform === 'android') {
-      return (
-        fs.pathExists(path.join(this.path, this.androidSubdirectory, 'src/test')) ||
-        fs.pathExists(path.join(this.path, this.androidSubdirectory, 'src/androidTest'))
+      const results = await Promise.all(
+        ['src/test', 'src/testDebug', 'src/androidTest'].map((dir) =>
+          fs.pathExists(path.join(this.path, this.androidSubdirectory, dir))
+        )
       );
+      return results.some(Boolean);
     }
     if (platform === 'ios') {
       return (

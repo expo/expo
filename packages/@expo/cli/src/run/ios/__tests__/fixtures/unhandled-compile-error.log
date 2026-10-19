@@ -1,0 +1,18 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace BareExpo.xcworkspace -configuration Release -scheme BareExpo
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+
+CompileC /Users/runner/work/expo/apps/bare-expo/ios/build/Pods.build/Release-iphonesimulator/expo-dev-launcher.build/Objects-normal/arm64/EXDevLauncherController.o /Users/runner/work/expo/packages/expo-dev-launcher/ios/EXDevLauncherController.m normal arm64 objective-c com.apple.compilers.llvm.clang.1_0 (in target 'expo-dev-launcher' from project 'Pods')
+    cd /Users/runner/work/expo/apps/bare-expo/ios/Pods
+/Users/runner/work/expo/packages/expo-dev-launcher/ios/EXDevLauncherController.m:185:3: error: call to undeclared function 'RCTBundleURLProviderAllowPackagerServerAccess'; ISO C99 and later do not support implicit function declarations
+  RCTBundleURLProviderAllowPackagerServerAccess(NO);
+  ^
+1 error generated.
+
+** BUILD FAILED **
+
+The following build commands failed:
+	CompileC EXDevLauncherController.o EXDevLauncherController.m normal arm64 objective-c com.apple.compilers.llvm.clang.1_0 (in target 'expo-dev-launcher' from project 'Pods')
+(1 failure)

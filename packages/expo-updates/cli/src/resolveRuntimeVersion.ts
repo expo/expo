@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import chalk from 'chalk';
 
 import { Command } from './cli';
@@ -59,8 +60,10 @@ Resolve expo-updates runtime version
 
   const runtimeVersionInfo = await withConsoleDisabledAsync(async () => {
     try {
+      const projectRoot = getProjectRoot(args);
+      loadProjectEnv(projectRoot, { mode: consumeConfigEnvMode() ?? 'production' });
       return await resolveRuntimeVersionAsync(
-        getProjectRoot(args),
+        projectRoot,
         platform,
         {
           silent: true,

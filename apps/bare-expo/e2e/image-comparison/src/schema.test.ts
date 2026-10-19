@@ -16,7 +16,7 @@ describe('Zod schema validation', () => {
   it('should validate data with testID and mode', () => {
     const parsedBody = schema.parse(testData);
 
-    expect(parsedBody).toEqual({ ...testData, resizingFactor: 0.5 });
+    expect(parsedBody).toEqual({ ...testData, resizingFactor: 0.5, captureMode: 'screen' });
 
     expect(
       schema.parse({
@@ -39,6 +39,7 @@ describe('Zod schema validation', () => {
       resizingFactor: 0.5,
       similarityThreshold: 0.05,
       testID: undefined,
+      captureMode: 'screen',
     });
   });
 
@@ -77,6 +78,62 @@ describe('Zod schema validation', () => {
     });
 
     expect(result.similarityThreshold).toBe(0.15);
+  });
+
+  it('should default captureMode to screen', () => {
+    const result = schema.parse({
+      baseImage: 'expo-image/test.base.png',
+      currentScreenshot: 'expo-image/test.png',
+      diffOutputPath: '~/.maestro/tests/expo-image/test.diff.png',
+      platform: 'ios' as const,
+      mode: 'keep-originals' as const,
+      testID: 'test-id',
+    });
+
+    expect('captureMode' in result && result.captureMode).toBe('screen');
+  });
+
+  it('should treat the undefined string as the default captureMode', () => {
+    const result = schema.parse({
+      baseImage: 'expo-image/test.base.png',
+      currentScreenshot: 'expo-image/test.png',
+      diffOutputPath: '~/.maestro/tests/expo-image/test.diff.png',
+      platform: 'ios' as const,
+      mode: 'keep-originals' as const,
+      testID: 'test-id',
+      // maestro passes undefined env values as the 'undefined' string
+      captureMode: 'undefined',
+    });
+
+    expect('captureMode' in result && result.captureMode).toBe('screen');
+  });
+
+  it('should accept the in-process captureMode', () => {
+    const result = schema.parse({
+      baseImage: 'expo-image/test.base.png',
+      currentScreenshot: 'expo-image/test.png',
+      diffOutputPath: '~/.maestro/tests/expo-image/test.diff.png',
+      platform: 'ios' as const,
+      mode: 'keep-originals' as const,
+      testID: 'test-id',
+      captureMode: 'in-process',
+    });
+
+    expect('captureMode' in result && result.captureMode).toBe('in-process');
+  });
+
+  it('should reject an unknown captureMode', () => {
+    expect(() =>
+      schema.parse({
+        baseImage: 'expo-image/test.base.png',
+        currentScreenshot: 'expo-image/test.png',
+        diffOutputPath: '~/.maestro/tests/expo-image/test.diff.png',
+        platform: 'ios' as const,
+        mode: 'keep-originals' as const,
+        testID: 'test-id',
+        captureMode: 'out-of-process',
+      })
+    ).toThrow();
   });
 
   it('should allow explicit similarityThreshold to override default', () => {

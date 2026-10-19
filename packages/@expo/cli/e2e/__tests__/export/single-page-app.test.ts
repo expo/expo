@@ -2,9 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot, getPageHtml, findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -107,14 +107,21 @@ describe('exports with single-page', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link');
     expect(links.length).toBe(
-      // Global CSS and CSS Module
-      4
+      // Safe-area CSS, global CSS, and CSS Module (preload + stylesheet)
+      6
     );
 
     const linkStrings = links.map((l) => l.toString());
 
     expect(linkStrings).toEqual(
       expect.arrayContaining([
+        // Safe-area CSS (preload + stylesheet)
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
         // Global CSS
         expect.stringMatching(
           /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/

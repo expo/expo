@@ -2,7 +2,6 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -20,7 +19,7 @@ class ArrayTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Array<*> {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): Array<*> {
     val jsArray = value.asArray() ?: throw DynamicCastException(ReadableArray::class)
     val array = createTypedArray(jsArray.size())
     for (i in 0 until jsArray.size()) {
@@ -37,7 +36,7 @@ class ArrayTypeConverter(
     return array
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Array<*> {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): Array<*> {
     return if (arrayElementConverter.isTrivial() && !forceConversion) {
       value as Array<*>
     } else {

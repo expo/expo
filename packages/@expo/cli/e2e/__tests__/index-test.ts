@@ -1,8 +1,8 @@
 /* eslint-env jest */
 import fs from 'fs/promises';
 
-import { projectRoot } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
@@ -39,6 +39,13 @@ it('runs `npx expo --help`', async () => {
         run:ios, run:android, prebuild
         install, customize, config, serve
         login, logout, whoami, register
+
+      Agent Commands
+        command, command:ps, command:events
+        Discover recorded Expo CLI sessions and replay structured events:
+        $ npx expo command:ps --active --json
+        $ npx expo command:events <session-id> --since 5m
+        Add --help to either command for selectors and filtering options.
 
       Options
         --version, -v   Version number

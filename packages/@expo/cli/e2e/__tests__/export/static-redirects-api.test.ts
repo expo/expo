@@ -2,11 +2,11 @@
 import type { RedirectConfig } from 'expo-router';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { createBackgroundServer } from '../../utils/server';
 import { getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

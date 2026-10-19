@@ -10,8 +10,7 @@ import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { installExitHooks } from '../../utils/exit';
-
-const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
+import { debugEvent } from './devtoolsEvents';
 
 /**
  * The MCP server
@@ -56,10 +55,9 @@ export async function maybeCreateMCPServerAsync({
   const mcpServerUrlObject = new URL(normalizedServer);
   const scheme = mcpServerUrlObject.protocol ?? 'wss:';
   const mcpServerUrl = `${scheme}//${mcpServerUrlObject.host}`;
-  debug(`Creating MCP tunnel - server URL: ${mcpServerUrl}`);
+  debugEvent('mcp_tunnel_create', { url: mcpServerUrl });
 
   try {
-    debug(`Loading MCP modules: expo-mcp=${mcpPackagePath}, mcp-tunnel=${mcpTunnelPackagePath}`);
     const { addMcpCapabilities } = (await loadModule(mcpPackagePath)) as {
       addMcpCapabilities: (server: McpServerProxy, projectRoot: string) => void;
     };
@@ -69,9 +67,6 @@ export async function maybeCreateMCPServerAsync({
 
     const logger = {
       ...Log,
-      debug(...message: any[]): void {
-        debug(...message);
-      },
       info(...message: any[]): void {
         Log.log(...message);
       },
@@ -95,7 +90,7 @@ export async function maybeCreateMCPServerAsync({
 
     return server;
   } catch (error: unknown) {
-    debug(`Error creating MCP tunnel: ${error}`);
+    debugEvent('mcp_tunnel_failed', { error: debugEvent.error(error as Error) });
   }
   return null;
 }

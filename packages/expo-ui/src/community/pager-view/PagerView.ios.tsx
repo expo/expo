@@ -9,7 +9,7 @@ import {
   useState,
   type ReactElement,
 } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { useNativeState, worklets } from '../../State';
 import { Group } from '../../swift-ui/Group';
@@ -88,6 +88,12 @@ export function PagerView(props: PagerViewProps) {
   const pageCount = validChildren.length;
   const pageCountRef = useRef(0);
   pageCountRef.current = pageCount;
+
+  const isScrollingRef = useRef(false);
+  // The SwiftUI scroll doesn't cancel React Native touches on its pages. Like
+  // React Native's `ScrollView`, take the touch from the page content while
+  // the pager moves, so a swipe or a tap that stops it doesn't press anything.
+  const shouldCaptureTouch = () => isScrollingRef.current;
 
   // Clamp on first render — out-of-range initials produce an id that matches
   // no `Group`, leaving `.scrollPosition(id:)` silently stuck at 0.
@@ -188,17 +194,24 @@ export function PagerView(props: PagerViewProps) {
   );
   const geometryModifier = useScrollGeometryChange(handleScrollGeometry);
 
-  const phaseModifier = onPageScrollStateChanged
-    ? onScrollPhaseChange((phase) =>
-        onPageScrollStateChanged(wrapNativeEvent({ pageScrollState: phaseToPageState(phase) }))
-      )
-    : null;
+  const phaseModifier = onScrollPhaseChange((phase) => {
+    const pageScrollState = phaseToPageState(phase);
+    isScrollingRef.current = pageScrollState !== 'idle';
+    onPageScrollStateChanged?.(wrapNativeEvent({ pageScrollState }));
+  });
 
   const pages = validChildren.map((child, index) => (
     <Group
       key={child.key ?? String(index)}
       modifiers={[containerRelativeFrame({ axes: 'horizontal' }), id(String(index))]}>
-      <RNHostView>{child}</RNHostView>
+      <RNHostView>
+        <View
+          style={styles.page}
+          onStartShouldSetResponderCapture={shouldCaptureTouch}
+          onMoveShouldSetResponderCapture={shouldCaptureTouch}>
+          {child}
+        </View>
+      </RNHostView>
     </Group>
   ));
 
@@ -209,11 +222,11 @@ export function PagerView(props: PagerViewProps) {
     scrollDisabled(!scrollEnabledState),
     scrollPosition(activePageState, { onChange: handleScrolledIDChange }),
     ...(geometryModifier ? [geometryModifier] : []),
-    ...(phaseModifier ? [phaseModifier] : []),
+    phaseModifier,
   ];
 
   return (
-    <Host style={style ?? { flex: 1 }} ignoreSafeArea="all" {...passthrough}>
+    <Host style={style ?? { flex: 1 }} ignoreSafeArea="container" {...passthrough}>
       <ScrollView axes="horizontal" showsIndicators={false} modifiers={modifiers}>
         <LazyHStack spacing={0} modifiers={[scrollTargetLayout()]}>
           {pages}
@@ -271,3 +284,7 @@ function warnIfPreIOS18ScrollCallbacksDropped(
     );
   }
 }
+
+const styles = StyleSheet.create({
+  page: { flex: 1 },
+});

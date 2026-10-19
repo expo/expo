@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
+import type { ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { getTextFromChildren } from '../../utils';
@@ -73,7 +74,7 @@ export type TextShadow = {
   /**
    * The color of the shadow.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * The horizontal offset of the shadow in dp.
    */
@@ -147,7 +148,7 @@ export type TextSpanStyleBase = {
   /**
    * The background color behind the text.
    */
-  background?: string;
+  background?: ColorValue;
 
   /**
    * The shadow applied to the text.
@@ -190,7 +191,7 @@ export type TextStyle = TextSpanStyleBase & {
  */
 type TextSpanRecord = TextSpanStyleBase & {
   text?: string;
-  color?: string;
+  color?: ColorValue;
   children?: TextSpanRecord[];
 };
 
@@ -204,7 +205,7 @@ export interface TextProps {
   /**
    * The color of the text.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * How visual overflow should be handled.

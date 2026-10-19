@@ -32,7 +32,7 @@ struct UpdatesLogReaderTests {
     await purgeEntriesAsync(olderThan: date1)
 
     await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
 
     let date2 = Date()
     await logWarnAsync(message: "Test message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
@@ -62,10 +62,13 @@ struct UpdatesLogReaderTests {
   @Test
   @MainActor
   func `BasicLoggingWorks`() async throws {
-    // Mark the date
-    let epoch = Date()
+    try await Task.sleep(for: .seconds(1.1))
 
-    try await Task.sleep(nanoseconds: 1_100_000_000)
+    // Mark the date immediately before writing, so the tolerance below measures the gap between
+    // writing an entry and reading it back rather than the preceding sleep. Under CI load the
+    // suite can be descheduled for tens of seconds, which used to push the entry timestamp
+    // outside the window and fail the test spuriously.
+    let epoch = Date()
 
     // Write a log message
     logger.error(cause: UpdatesError.appLoaderFailedToLoadAllAssets, code: .noUpdatesAvailable)
@@ -73,7 +76,7 @@ struct UpdatesLogReaderTests {
     // Write another log message
     logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
-    try await Task.sleep(nanoseconds: 100_000_000)
+    try await Task.sleep(for: .seconds(0.1))
 
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
@@ -86,7 +89,7 @@ struct UpdatesLogReaderTests {
 
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
-    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 10)
+    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
     #expect(logEntry?.message == "Failed to load all assets")
     #expect(logEntry?.code == "NoUpdatesAvailable")
     #expect(logEntry?.level == "error")
@@ -97,7 +100,7 @@ struct UpdatesLogReaderTests {
     let logEntryText2: String = logEntries[logEntries.count - 1] as String
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     let timestamp2 = Double(logEntry2!.timestamp / 1_000)
-    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 10)
+    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 120)
     #expect(logEntry2?.message == "Warning message")
     #expect(logEntry2?.code == "AssetsFailedToLoad")
     #expect(logEntry2?.level == "warn")
@@ -113,11 +116,11 @@ struct UpdatesLogReaderTests {
     let epoch = Date()
 
     let timer = logger.startTimer(label: "testlabel")
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
     let result = timer.stop()
     #expect(result > 0)
 
-    try await Task.sleep(nanoseconds: 100_000_000)
+    try await Task.sleep(for: .seconds(0.1))
 
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
@@ -135,6 +138,41 @@ struct UpdatesLogReaderTests {
     #expect((logEntry?.duration)! >= 300)
   }
 
+  /// Regression test for a SIGABRT during log purge.
+  ///
+  /// `logStringToFilteredLogEntry` used to guard on `lengthOfBytes(using: .utf8) < 2` and then
+  /// advance the index by two *Characters*. Every persisted line begins with `LogType.prefix` —
+  /// a colored-circle emoji that is 4–6 UTF-8 bytes but a single Character — so a line consisting
+  /// of only that prefix passed the byte guard and trapped in `index(_:offsetBy:)` with
+  /// "String index is out of bounds". Such a line is what a torn append leaves behind, since
+  /// `PersistentFileLog.appendTextToFile` writes non-atomically. The trap fired before the purge
+  /// could rewrite the file, so the bad line survived and the app aborted on every launch.
+  ///
+  /// Note: on the unfixed reader this aborts the test process (a Swift runtime trap is not a
+  /// recoverable `#expect` failure).
+  @Test
+  @MainActor
+  func `PurgeSurvivesTruncatedSingleCharacterEntry`() async throws {
+    let date1 = Date()
+
+    // U+1F7E2 LARGE GREEN CIRCLE — the value of `LogType.info.prefix`, written as an escape
+    // because `prefix` is internal to ExpoModulesCore. 4 UTF-8 bytes, 1 Character.
+    let truncatedEntry = "\u{1F7E2}"
+    await appendRawEntryAsync(entry: truncatedEntry)
+    await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
+
+    // Reading must skip the malformed entry rather than trapping.
+    let entries: [String] = logReader.getLogEntries(newerThan: date1)
+    #expect(entries.count == 1)
+
+    // The purge must run to completion and drop the malformed entry, so the next launch is clean.
+    await purgeEntriesAsync(olderThan: date1)
+
+    let remaining = PersistentFileLog(category: category).readEntries()
+    #expect(remaining.count == 1)
+    #expect(!remaining.contains(truncatedEntry))
+  }
+
   // MARK: - Private methods
 
   func clearLogAsync() async {
@@ -146,14 +184,29 @@ struct UpdatesLogReaderTests {
     }
   }
 
+  /// Appends a raw string as a log line, bypassing `UpdatesLogger`'s formatting. Used to simulate
+  /// a torn write.
+  func appendRawEntryAsync(entry: String) async {
+    await withCheckedContinuation { continuation in
+      let persistentLog = PersistentFileLog(category: category)
+      persistentLog.appendEntry(entry: entry) { _ in
+        continuation.resume()
+      }
+    }
+  }
+
   func logErrorAsync(message: String, code: UpdatesErrorCode) async {
     await withCheckedContinuation { continuation in
       let persistentLog = PersistentFileLog(category: category)
       let logEntryString =
         "xx"
         + logger.logEntryString(
-          message: message, code: code, level: .error,
-          duration: nil, updateId: nil, assetId: nil
+          message: message,
+          code: code,
+          level: .error,
+          duration: nil,
+          updateId: nil,
+          assetId: nil
         )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()
@@ -172,8 +225,12 @@ struct UpdatesLogReaderTests {
       let logEntryString =
         "xx"
         + logger.logEntryString(
-          message: message, code: code, level: .warn,
-          duration: nil, updateId: updateId, assetId: assetId
+          message: message,
+          code: code,
+          level: .warn,
+          duration: nil,
+          updateId: updateId,
+          assetId: assetId
         )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()

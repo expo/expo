@@ -30,6 +30,10 @@ open class DevMenuModule: Module {
       DevMenuManager.shared.hideMenu()
     }
 
+    AsyncFunction("setToolsButtonVisible") { (visible: Bool) in
+      DevMenuManager.shared.setShowFloatingActionButton(visible)
+    }
+
     AsyncFunction("addDevMenuCallbacks") { (callbacks: [[String: Any]]) in
       DevMenuManager.shared.registeredCallbacks.removeAll()
 

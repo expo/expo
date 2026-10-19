@@ -24,13 +24,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "56.0.16"
+version = "58.0.14"
 
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "56.0.16"
+    versionName "58.0.14"
   }
 
   buildTypes {
@@ -104,14 +104,11 @@ dependencies {
   debugOnly project(":expo-updates-interface")
   debugOnly project(":expo-dev-menu")
 
-  debugOnly 'commons-io:commons-io:2.6'
-
   debugOnly 'com.squareup.okhttp3:okhttp:4.9.2'
   debugOnly 'com.google.code.gson:gson:2.13.2'
 
   debugOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   debugOnly("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-  debugOnly "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 
   def composeVersion = "1.9.0"
 

@@ -69,7 +69,7 @@ internal final class ExpoCalendarEvent: ExpoCalendarItem {
 
   func initialize(eventRecord: EventNext, nullableFields: [String]? = nil) throws {
     guard let event = self.event else {
-      throw EventNotFoundException("EKevent not found")
+      throw EventNotFoundException("EKEvent not found")
     }
     try initialize(event: event, eventRecord: eventRecord, nullableFields: nullableFields)
   }

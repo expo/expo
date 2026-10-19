@@ -1,14 +1,103 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fix the main activity being kept in memory after it is destroyed. ([#51691](https://github.com/expo/expo/pull/51691) by [@zoontek](https://github.com/zoontek))
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config-plugins@58.0.9
+  - @expo/image-utils@0.12.5
+
+## 58.0.8
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config-plugins@58.0.8
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4))
+  - @expo/config-plugins@58.0.7
+
+## 58.0.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/image-utils@0.12.4
+
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - @expo/image-utils@0.12.3
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- [Android] Fix the splash screen staying visible over the app on Android 12 and 13 when the activity stops before the splash screen exits, for example when the app starts while the device is locked. This removes the workaround added in #44584. ([#50818](https://github.com/expo/expo/pull/50818) by [@zoontek](https://github.com/zoontek))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config-plugins@58.0.4
+  - @expo/image-utils@0.12.2
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Generate a transparent Android splash drawable when the config plugin has no image. ([#49371](https://github.com/expo/expo/pull/49371) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+
+## 57.0.5 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.10 — 2026-05-23
 
@@ -761,7 +850,7 @@ _This version does not introduce any user-facing changes._
 - On Android fixed `SplashScreen` methods not working in managed workflow. Scoped the `SplashScreen` native object to the separate `singletons` sub-package to work with versioned code. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@expo/configure-splash-screen` to `v0.2.0`.
   - This version fixes the problem with the wrong `SplashScreen.show` method signature on Android. It properly adds the `ReactRootView` parameter now.
-  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
+  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-package on Android.
 - `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout. Every parameter has to provided via the `--[option name]` syntax now.
 
 ## 0.6.1 - 2020-09-17

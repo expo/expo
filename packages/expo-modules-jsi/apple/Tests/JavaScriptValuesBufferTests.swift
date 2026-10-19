@@ -16,6 +16,23 @@ struct JavaScriptValuesBufferTests {
   }
 
   @Test
+  func `copying accepts runtime-free values`() throws {
+    let buffer = JavaScriptValuesBuffer.copying(
+      in: runtime,
+      values: [
+        JavaScriptValue.Ref(.undefined()), JavaScriptValue.Ref(.null()), JavaScriptValue.Ref(.number(1)),
+        JavaScriptValue.Ref(.true()), JavaScriptValue.Ref(JavaScriptValue(runtime, "four")),
+      ]
+    )
+    #expect(buffer.count == 5)
+    #expect(buffer[0].isUndefined() == true)
+    #expect(buffer[1].isNull() == true)
+    #expect(try buffer[2].asInt() == 1)
+    #expect(try buffer[3].asBool() == true)
+    #expect(try buffer[4].asString() == "four")
+  }
+
+  @Test
   func `empty buffer has zero count and deinits cleanly`() {
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 0)
     #expect(buffer.count == 0)
@@ -51,11 +68,11 @@ struct JavaScriptValuesBufferTests {
     // Allocate a buffer that captures the JS object as an argument; the result is
     // discarded and `deinit` runs at the end of this statement. If `deinit` skipped
     // `deinitialize`, the contained `jsi::Value` would still hold a strong ref and
-    // the weak handle would survive `gc()`.
-    _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
+    // the weak handle would survive the collection below.
+    _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue().ref())
     _ = consume object
 
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { weak.lock() == nil }
 
     let stillAlive = weak.lock() != nil
     #expect(stillAlive == false)

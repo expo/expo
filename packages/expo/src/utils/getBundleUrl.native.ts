@@ -1,11 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-/// <reference path="../ts-declarations/react-native.d.ts" />
-
-import SourceCode from 'react-native/Libraries/NativeModules/specs/NativeSourceCode';
-
 export function getBundleUrl(): string | null {
-  let scriptURL = SourceCode.getConstants().scriptURL;
+  // NOTE(@kitten): Requiring this initialises module bridge, which may not be available server-side
+  let scriptURL: string | null;
+  try {
+    const { NativeSourceCode } = require('react-native/unstable-internals-do-not-use');
+    scriptURL = NativeSourceCode.getConstants().scriptURL;
+  } catch {
+    return null;
+  }
   if (scriptURL == null) {
     return null;
   }

@@ -267,10 +267,10 @@ android {
 }
 ```
 
-The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
+The rest of the configuration at this point is the same as for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
 
-- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file:
-  ```xml android/app/src/development/res/value/strings.xml
+- To change the name of the app built with the development profile, create an **android/app/src/development/res/values/strings.xml** file:
+  ```xml android/app/src/development/res/values/strings.xml
   <resources>
       <string name="app_name">MyApp - Dev</string>
   </resources>
@@ -329,7 +329,7 @@ Open project in Xcode, click on the project name in the navigation panel, right 
 
 <ContentSpotlight
   alt="Duplicate Xcode target"
-  src="/static/images/eas-build/variants/1-ios-duplicate-target.png"
+  src="/static/images/eas-build/variants/1-ios-duplicate-target.webp"
   className="max-w-[720px]"
 />
 
@@ -344,7 +344,7 @@ Configure a scheme for the new target:
 
 <ContentSpotlight
   alt="Xcode scheme list"
-  src="/static/images/eas-build/variants/2-scheme-list.png"
+  src="/static/images/eas-build/variants/2-scheme-list.webp"
   className="max-w-[720px]"
 />
 
@@ -359,7 +359,7 @@ By default, the newly created target has separate **Info.plist** file (in the ab
 
 <ContentSpotlight
   alt="Xcode build settings"
-  src="/static/images/eas-build/variants/3-target-build-settings.png"
+  src="/static/images/eas-build/variants/3-target-build-settings.webp"
   className="max-w-[720px]"
 />
 

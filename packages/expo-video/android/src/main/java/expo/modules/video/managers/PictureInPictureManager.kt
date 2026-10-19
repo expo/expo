@@ -224,6 +224,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
         .remove(fragment)
         .commitAllowingStateLoss()
     }
+    pipHelperFragment = null
   }
 
   private fun electAutoPipViewCandidate() {

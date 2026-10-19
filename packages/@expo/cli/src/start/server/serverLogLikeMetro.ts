@@ -16,8 +16,6 @@ import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
 import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 
-const debug = require('debug')('expo:metro:logger') as typeof console.log;
-
 const CONSOLE_METHODS = [
   'trace',
   'info',
@@ -155,9 +153,8 @@ export function parseErrorStringToObject(errorString: string) {
       message,
       stack: parsedStack,
     };
-  } catch (e) {
+  } catch {
     // If parsing fails, return the original error string
-    debug('Failed to parse error stack:', e);
     return null;
   }
 }

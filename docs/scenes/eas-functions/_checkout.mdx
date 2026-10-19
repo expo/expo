@@ -1,0 +1,15 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { NoIcon } from '~/ui/components/DocIcons';
+
+| Property | Type     | Required   | Description                                                                                                     |
+| -------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| `ref`    | `string` | <NoIcon /> | Git branch, tag, or full commit SHA to check out. Defaults to the ref that triggered the build or workflow job. |
+
+<BoxLink
+  title="eas/checkout source code"
+  description="View the source code for the eas/checkout function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+/>

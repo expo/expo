@@ -13,6 +13,57 @@ struct CodablePoint: Equatable {
   var y: Double = 0
 }
 
+// Covers the optional/nullable field shape: `label` is nullable-and-optional, `note` optional with a
+// default. Neither is required, so both may be omitted from the source object.
+@Record
+struct CodableLabeledPoint: Equatable {
+  var x: Double = 0
+  var label: String? = nil
+  var note: String = "unset"
+}
+
+// Covers a required field (non-optional, no default). `from(object:)` throws when it is omitted.
+@Record
+struct CodableRequiredPoint: Equatable {
+  var x: Double
+  var y: Double = 0
+}
+
+// Covers a record whose field is itself a record, exercising nested `from(object:)`/`toObject()`.
+@Record
+struct CodableLine: Equatable {
+  var start: CodablePoint = CodablePoint()
+  var end: CodablePoint = CodablePoint()
+}
+
+// Covers non-`Double` field types in one place: string, int, bool, array, and dictionary.
+@Record
+struct CodableMixed: Equatable {
+  var name: String = ""
+  var count: Int = 0
+  var enabled: Bool = false
+  var tags: [String] = []
+  var scores: [String: Int] = [:]
+}
+
+// Covers the zero-field boundary: the field-iteration loops run over nothing.
+@Record
+struct CodableEmpty: Equatable {}
+
+// Covers binary fields: a typed array and an array buffer as record fields. Both decode as
+// views into the JS-owned memory rather than copies.
+@Record
+struct CodableBinary {
+  var data: Uint8Array
+  var buffer: ArrayBuffer
+}
+
+// A record without the macro, so it converts through `Record`'s default `decode` and `encode`.
+struct ReflectedPoint: Record {
+  @Field var x: Double = 0
+  @Field var y: Double = 0
+}
+
 @Suite("JavaScriptCodable+Record")
 @JavaScriptActor
 struct JavaScriptCodableRecordTests {
@@ -70,7 +121,7 @@ struct JavaScriptCodableRecordTests {
     let bareRuntime = JavaScriptRuntime()
     let value = try bareRuntime.eval("({ x: 1, y: 2 })")
     #expect(throws: Exceptions.AppContextNotFound.self) {
-      _ = try CodablePoint.decode(value, in: bareRuntime)
+      _ = try ReflectedPoint.decode(value, in: bareRuntime)
     }
   }
 
@@ -78,7 +129,150 @@ struct JavaScriptCodableRecordTests {
   func `record encode throws when the runtime has no app context`() throws {
     let bareRuntime = JavaScriptRuntime()
     #expect(throws: Exceptions.AppContextNotFound.self) {
-      _ = try CodablePoint.encode(CodablePoint(x: 1, y: 2), in: bareRuntime)
+      _ = try ReflectedPoint.encode(ReflectedPoint(), in: bareRuntime)
     }
+  }
+
+  @Test
+  func `macro record converts on a runtime with no app context`() throws {
+    let bareRuntime = JavaScriptRuntime()
+    let value = try bareRuntime.eval("({ x: 1, y: 2 })")
+    let decoded = try CodablePoint.decode(value, in: bareRuntime)
+    #expect(decoded == CodablePoint(x: 1, y: 2))
+    let object = try CodablePoint.encode(decoded, in: bareRuntime).getObject()
+    #expect(object.getProperty("x").getDouble() == 1)
+    #expect(object.getProperty("y").getDouble() == 2)
+  }
+
+  // MARK: - Optional and nullable fields
+
+  @Test
+  func `round-trips a record whose optional field is set`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ x: 1, label: 'a', note: 'b' })")
+    let decoded = try CodableLabeledPoint.decode(value, in: runtime)
+    #expect(decoded == CodableLabeledPoint(x: 1, label: "a", note: "b"))
+    let reencoded = try CodableLabeledPoint.encode(decoded, in: runtime)
+    let object = reencoded.getObject()
+    #expect(object.getProperty("label").getString() == "a")
+    #expect(object.getProperty("note").getString() == "b")
+  }
+
+  @Test
+  func `encodes a nil optional field as JS null`() throws {
+    let runtime = try runtime
+    let encoded = try CodableLabeledPoint.encode(CodableLabeledPoint(x: 1, label: nil, note: "b"), in: runtime)
+    #expect(encoded.getObject().getProperty("label").isNull() == true)
+  }
+
+  @Test
+  func `decodes a null optional field as nil`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ x: 1, label: null, note: 'b' })")
+    let decoded = try CodableLabeledPoint.decode(value, in: runtime)
+    #expect(decoded.label == nil)
+  }
+
+  @Test
+  func `keeps the declared default when an optional field is omitted`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ x: 1 })")
+    let decoded = try CodableLabeledPoint.decode(value, in: runtime)
+    #expect(decoded.label == nil)
+    #expect(decoded.note == "unset")
+  }
+
+  // MARK: - Required fields and conversion errors
+
+  @Test
+  func `decode throws when a required field is missing`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ y: 2 })")
+    #expect(throws: (any Error).self) {
+      _ = try CodableRequiredPoint.decode(value, in: runtime)
+    }
+  }
+
+  @Test
+  func `decode throws when a field has the wrong type`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ x: 'not a number', y: 2 })")
+    #expect(throws: (any Error).self) {
+      _ = try CodablePoint.decode(value, in: runtime)
+    }
+  }
+
+  // MARK: - Nested and multi-type fields
+
+  @Test
+  func `round-trips a record containing a nested record`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ start: { x: 1, y: 2 }, end: { x: 3, y: 4 } })")
+    let decoded = try CodableLine.decode(value, in: runtime)
+    #expect(decoded == CodableLine(start: CodablePoint(x: 1, y: 2), end: CodablePoint(x: 3, y: 4)))
+    let reencoded = try CodableLine.encode(decoded, in: runtime)
+    let start = reencoded.getObject().getProperty("start").getObject()
+    #expect(start.getProperty("x").getDouble() == 1)
+    #expect(start.getProperty("y").getDouble() == 2)
+  }
+
+  @Test
+  func `round-trips a record with string, int, bool, array and dictionary fields`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ name: 'a', count: 3, enabled: true, tags: ['x', 'y'], scores: { a: 1 } })")
+    let decoded = try CodableMixed.decode(value, in: runtime)
+    #expect(decoded == CodableMixed(name: "a", count: 3, enabled: true, tags: ["x", "y"], scores: ["a": 1]))
+    let reencoded = try CodableMixed.encode(decoded, in: runtime)
+    let object = reencoded.getObject()
+    #expect(object.getProperty("name").getString() == "a")
+    #expect(object.getProperty("count").getInt() == 3)
+    #expect(object.getProperty("enabled").getBool() == true)
+    #expect(object.getProperty("tags").getArray().length == 2)
+    #expect(object.getProperty("scores").getObject().getProperty("a").getInt() == 1)
+  }
+
+  // MARK: - Empty record
+
+  @Test
+  func `round-trips an empty record`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({})")
+    let decoded = try CodableEmpty.decode(value, in: runtime)
+    #expect(decoded == CodableEmpty())
+    let reencoded = try CodableEmpty.encode(decoded, in: runtime)
+    #expect(reencoded.isObject() == true)
+  }
+
+  // MARK: - Binary fields
+
+  @Test
+  func `decodes typed array and array buffer fields`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ data: new Uint8Array([1, 2, 3]), buffer: new ArrayBuffer(8) })")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    #expect(decoded.data.kind == .Uint8Array)
+    #expect(decoded.data.length == 3)
+    #expect(decoded.data[1] == 2)
+    #expect(decoded.buffer.byteLength == 8)
+  }
+
+  @Test
+  func `typed array field is a view into the JS memory`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("globalThis.binarySource = { data: new Uint8Array([1, 2, 3]), buffer: new ArrayBuffer(8) }")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    decoded.data[0] = 42
+    #expect(try runtime.eval("binarySource.data[0]").getInt() == 42)
+  }
+
+  @Test
+  func `encodes a record with binary fields back to JS`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ data: new Uint8Array([9, 8]), buffer: new ArrayBuffer(4) })")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    let encoded = try CodableBinary.encode(decoded, in: runtime)
+    runtime.global().setProperty("encodedBinary", value: encoded)
+    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool() == true)
+    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool() == true)
   }
 }

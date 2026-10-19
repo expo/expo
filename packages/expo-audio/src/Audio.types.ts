@@ -112,15 +112,18 @@ export type AudioPlayerOptions = {
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
   /**
-   * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
-   * This prevents interrupting other audio sources (like videos) when the audio ends.
+   * If set to `true`, the audio session (iOS) or audio focus (Android) will remain active when this
+   * player pauses or finishes playback.
    *
-   * Useful for sound effects that should not interfere with ongoing video playback or other audio.
-   * The audio session for this player will not be deactivated automatically when the player finishes playback.
+   * On iOS, the `AVAudioSession` stays active. On Android, any audio focus acquired by the player is
+   * retained. Android does not request audio focus in modes that mix with other audio, but the player
+   * will retain focus if a later audio mode change causes it to be acquired.
    *
-   * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+   * > **Note:** If needed, you can manually deactivate audio and release focus using
+   * > `setIsAudioActiveAsync(false)`.
    *
    * @platform ios
+   * @platform android
    * @default false
    */
   keepAudioSessionActive?: boolean;
@@ -138,6 +141,18 @@ export type AudioPlayerOptions = {
    * @platform android
    */
   preferredForwardBufferDuration?: number;
+  /**
+   * Whether the player can switch to AirPlay's external playback mode. In this mode, iOS sends
+   * the media URL directly to the AirPlay device and the local player only sends playback
+   * commands to it.
+   *
+   * Set to `false` to keep the local player in control. Audio still routes to the AirPlay device
+   * through the audio session, and playback notifications (including looping) keep working.
+   *
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback?: boolean;
 };
 
 /**
@@ -297,6 +312,15 @@ export type RecorderState = {
   isRecording: boolean;
   /** Duration of the current recording in milliseconds. */
   durationMillis: number;
+  /**
+   * Current size of the recording file in bytes, or `0` if no recording file exists yet.
+   *
+   * The value reflects the bytes already flushed to disk, so during an active recording it can lag
+   * slightly behind real time. On web, it updates when the browser delivers recorded data
+   * (typically when the recording stops), and the value is an approximation that may differ
+   * slightly from the final file size.
+   */
+  fileSize: number;
   /** Whether the media services have been reset (typically indicates a system interruption). */
   mediaServicesDidReset: boolean;
   /** Current audio level/volume being recorded (if metering is enabled). */
@@ -346,8 +370,9 @@ export type BitRateStrategy = 'constant' | 'longTermAverage' | 'variableConstrai
  */
 export type RecordingStartOptions = {
   /**
-   * The duration in seconds after which recording should automatically stop.
-   * If not provided, recording continues until manually stopped.
+   * The maximum duration of recorded audio, in seconds. Time spent paused does not count
+   * toward the limit. A limited recording keeps the same limit when resumed without options.
+   * If not provided when starting a new recording, recording continues until manually stopped.
    *
    * @platform ios
    * @platform android
@@ -392,6 +417,23 @@ export type RecordingOptions = {
    * @platform ios
    */
   directory?: RecordingDirectory;
+  /**
+   * The basename of the recording file (without extension). The SDK appends `extension`
+   * and writes into `<directory>/Audio/<fileName><extension>` on Android and `<directory>/ExpoAudio/<fileName><extension>` on iOS.
+   *
+   * If omitted, defaults to a random UUID.
+   *
+   * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
+   * at runtime so callers cannot escape the recording directory.
+   *
+   * > **Note:** When using the default `cache` [`directory`](#recordingdirectory), the system may delete
+   * > the file when it is not being used. Use `document` [`directory`](#recordingdirectory) or [`expo-file-system`](/versions/latest/sdk/filesystem/)
+   * > to retain it.
+   *
+   * @platform android
+   * @platform ios
+   */
+  fileName?: string;
   /**
    * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
    */
@@ -561,11 +603,17 @@ export type AudioMode = {
   /**
    * Determines how the audio session interacts with other audio sessions.
    *
-   * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+   * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+   *   and may resume when your app no longer needs focus.
+   * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+   *   their audio and should not automatically resume when your app no longer needs focus.
    * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
    * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
    *   On Android, this means no audio focus is requested. Best suited for sound effects,
    *   UI feedback, or short audio clips.
+   *
+   * > **Note:** `doNotMixPersistent` does not keep the audio session active after playback
+   * > stops by itself. Set **keepAudioSessionActive** to `true` to keep it active.
    *
    * @default 'mixWithOthers'
    */
@@ -613,7 +661,10 @@ export type AudioMode = {
  *
  * Controls how your app's audio interacts with other apps' audio.
  *
- * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+ * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+ *   and may resume when your app no longer needs focus.
+ * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+ *   their audio and should not automatically resume when your app no longer needs focus.
  * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
  * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
  *
@@ -621,11 +672,12 @@ export type AudioMode = {
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
  *   audio focus loss callbacks (for example, during phone calls) when using this mode.
  *
- *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix` or
+ *  > `doNotMixPersistent`.
  *
  * @default 'mixWithOthers'
  */
-export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
+export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'doNotMixPersistent' | 'duckOthers';
 
 /**
  * @deprecated Use `InterruptionMode` instead, which now works on both platforms.

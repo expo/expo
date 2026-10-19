@@ -23,7 +23,6 @@ for (const outputMode of outputModes) {
       env: {
         NODE_ENV: 'development',
         EXPO_USE_STATIC: outputMode,
-        E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: inputDir,
         E2E_ROUTER_ASYNC: 'development',
         E2E_RSC_ENABLED: '1',
@@ -34,7 +33,7 @@ for (const outputMode of outputModes) {
       },
     });
 
-    test.beforeEach(async () => {
+    test.beforeAll(async () => {
       console.time('expo start');
       await expoStart.startAsync();
       console.timeEnd('expo start');
@@ -43,7 +42,7 @@ for (const outputMode of outputModes) {
       await expoStart.fetchBundleAsync('/');
       console.timeEnd('Eagerly bundled JS');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoStart.stopAsync();
     });
 

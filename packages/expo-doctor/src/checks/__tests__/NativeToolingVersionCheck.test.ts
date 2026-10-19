@@ -135,7 +135,7 @@ describe('runAsync', () => {
     expect(result).resolves.toMatchObject({ isSuccessful: true });
   });
 
-  test('returns error if sdk version < 52.0.0 and xcode version > 16.2', async () => {
+  test('returns error if SDK 51 uses Xcode > 16.2', async () => {
     jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.3.0' });
 
     const check = new NativeToolingVersionCheck();
@@ -149,21 +149,26 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeFalsy();
   });
 
-  test('returns success if sdk version >= 52.0.0 and xcode version > 16.2', async () => {
-    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.3.0' });
+  test.each([
+    ['52.0.0', '15.4.0'],
+    ['53.0.0', '15.4.0'],
+    ['54.0.0', '16.0.0'],
+    ['56.0.0', '26.3.0'],
+  ])('returns success if SDK %s has no enforced Xcode range', async (sdkVersion, xcodeVersion) => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion });
 
     const check = new NativeToolingVersionCheck();
     const result = await check.runAsync({
       ...additionalProjectProps,
       exp: {
         ...additionalProjectProps.exp,
-        sdkVersion: '52.0.0',
+        sdkVersion,
       },
     });
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  test('returns success if sdk version < 52.0.0 and xcode version <= 16.2', async () => {
+  test('returns success if SDK 51 uses Xcode 16.2', async () => {
     jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.2.0' });
 
     const check = new NativeToolingVersionCheck();
@@ -185,8 +190,8 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  test('returns error if sdk version >= 55.0.0 and xcode version < 26', async () => {
-    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '25.0.0' });
+  test('returns error if SDK 55 uses Xcode < 26.0', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '25.4.0' });
 
     const check = new NativeToolingVersionCheck();
     const result = await check.runAsync({
@@ -199,7 +204,7 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeFalsy();
   });
 
-  test('returns success if sdk version >= 55.0.0 and xcode version >= 26', async () => {
+  test('returns success if SDK 55 uses Xcode 26.0', async () => {
     jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '26.0.0' });
 
     const check = new NativeToolingVersionCheck();
@@ -208,6 +213,34 @@ describe('runAsync', () => {
       exp: {
         ...additionalProjectProps.exp,
         sdkVersion: '55.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  test('returns error for the SDK 57 and Xcode 26.3 environment from issue #48802', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '26.3.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '57.0.12',
+      },
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  test('returns success if SDK 57 uses Xcode 26.4', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '26.4.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '57.0.12',
       },
     });
     expect(result.isSuccessful).toBeTruthy();

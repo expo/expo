@@ -9,18 +9,18 @@ struct UrlAddressMapper: ContactRecordMapper {
 
   func newRecordToCNLabeledValue(_ record: NewUrlAddressRecord) -> CNLabeledValue<NSString> {
     let value = (record.url ?? "") as NSString
-    return CNLabeledValue(label: record.label, value: value)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: value)
   }
 
   func existingRecordToCNLabeledValue(_ record: ExistingUrlAddressRecord) -> CNLabeledValue<NSString> {
     let value = (record.url ?? "") as NSString
-    return CNLabeledValue(label: record.label, value: value)
+    return CNLabeledValue(label: ContactLabelMapper.toCNLabel(record.label), value: value)
   }
 
   func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<NSString>) -> ExistingUrlAddressRecord {
     return ExistingUrlAddressRecord(
       id: labeledValue.identifier,
-      label: labeledValue.label ?? CNLabelOther,
+      label: ContactLabelMapper.toRecordLabel(labeledValue.label),
       url: labeledValue.value as String
     )
   }
@@ -28,7 +28,7 @@ struct UrlAddressMapper: ContactRecordMapper {
   func apply(patch: PatchUrlAddressRecord, to cnLabeledValue: CNLabeledValue<NSString>) -> CNLabeledValue<NSString> {
     var toModify = cnLabeledValue
     if case .value(let label) = patch.label {
-      toModify = toModify.settingLabel(label)
+      toModify = toModify.settingLabel(ContactLabelMapper.toCNLabel(label))
     }
     if case .value(let url) = patch.url {
       toModify = toModify.settingValue((url ?? "") as NSString)

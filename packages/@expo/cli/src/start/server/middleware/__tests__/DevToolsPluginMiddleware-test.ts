@@ -59,6 +59,8 @@ function createServerRequest(url: string): ServerRequest {
     headers: { host: 'localhost:8081' },
     rawHeaders: ['host', 'localhost:8081'],
     socket: {} as any,
+    destroyed: false,
+    destroy: jest.fn() as any,
     once: jest.fn() as any,
   });
 }
@@ -216,7 +218,8 @@ describe(DevToolsPluginMiddleware, () => {
       const requestHandler = jest.fn(async (request: Request) => {
         const url = new URL(request.url);
         return new Response(JSON.stringify({ pathname: url.pathname, query: url.search }), {
-          status: 200,
+          status: 201,
+          statusText: 'Created',
           headers: { 'Content-Type': 'application/json' },
         });
       });
@@ -237,13 +240,42 @@ describe(DevToolsPluginMiddleware, () => {
         response
       );
 
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(201);
+      expect(response.statusMessage).toBe('Created');
+      expect(response.setHeader).toHaveBeenCalledWith('content-type', 'application/json');
       // The plugin prefix is stripped so handlers see package-relative URLs.
       expect(JSON.parse(response.body())).toEqual({
         pathname: '/api/hello',
         query: '?name=world',
       });
       expect(requestHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should abort the plugin request when the response closes while the handler resolves', async () => {
+      const response = createStreamingResponse();
+      let requestSignal: AbortSignal | undefined;
+      const requestHandler = jest.fn(async (request: Request) => {
+        requestSignal = request.signal;
+        response.destroy();
+        return new Response('body');
+      });
+      const middleware = createMiddleware(
+        createPluginManager({
+          packageName: 'hello-plugin',
+          packageRoot: '/root/packages/hello-plugin',
+          serverEntryPoint: '/root/packages/hello-plugin/dist/server.js',
+          getRequestHandlerAsync: async () => requestHandler,
+        })
+      );
+
+      await middleware.handleRequestAsync(
+        createServerRequest('http://localhost:8081/_expo/plugins/hello-plugin/api/hello'),
+        response
+      );
+      await delayAsync(0);
+
+      expect(requestSignal?.aborted).toBe(true);
+      expect(response.setHeader).not.toHaveBeenCalled();
     });
 
     it('should fall back to static serving when the handler returns null', async () => {

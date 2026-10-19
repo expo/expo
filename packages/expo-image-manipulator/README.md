@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides functions that let you manipulation images on the local file system, eg: resize, crop.
+Provides functions that let you manipulate images on the local file system, eg: resize, crop.
 
 # API documentation
 

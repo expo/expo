@@ -1,23 +1,209 @@
 # Changelog
 
-## Unpublished
+## 58.0.15
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Update to `noxcturnal@^0.1.4` for `experiments.noxcturnalTransformWorker`. This updates Flow erasure support, React Compiler transforms, and internal dependencies, and improves performance slightly. ([#51712](https://github.com/expo/expo/pull/51712) by [@kitten](https://github.com/kitten))
+- Avoid unnecessary noxcturnal bailout for modules with a `use client` directive for client bundles. ([#51663](https://github.com/expo/expo/pull/51663) by [@kitten](https://github.com/kitten))
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Fix edge-cases in root dependency resolution for `expo-router`, `react-native/setup-env`, and `expo/build/winter` runtime resolution. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Refactor package version cache key resolution and resolve `react-native-worklets` version optionally through `react-native-reanimated`. ([#51526](https://github.com/expo/expo/pull/51526) by [@kitten](https://github.com/kitten))
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+  - @expo/config@58.0.6
+
+## 58.0.12
+
+### Patch Changes
+
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+  - @expo/config@58.0.5
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+  - @expo/config@58.0.4
+
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- [Internal] Resolve the `setup-env` run-before-main module with `@expo/require-utils`. ([#51177](https://github.com/expo/expo/pull/51177) by [@huntie](https://github.com/huntie))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Remove `INTERNAL_CALLSITES_REGEX` entries that no longer match any stack frame. ([#50989](https://github.com/expo/expo/pull/50989) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+  - @expo/config@58.0.3
+
+## 58.0.8
+
+### Patch Changes
+
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+- Stop collapsing every `node_modules` stack frame, so errors thrown inside a library point to where they were thrown. ([#50973](https://github.com/expo/expo/pull/50973) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config@58.0.2
+
+## 58.0.7
+
+### Patch Changes
+
+- Keep `EXPO_ROUTER_IMPORT_MODE` synchronous in server bundles when async routes are enabled, matching `babel-preset-expo`. ([#50867](https://github.com/expo/expo/pull/50867) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/config@58.0.1
+  - @expo/env@2.5.1
+  - @expo/json-file@11.2.1
+  - @expo/require-utils@58.0.2
+
+## 58.0.5 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
 
 ### 🐛 Bug fixes
 
-- Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Bump `hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
+- Keep the synchronous Expo Router import mode for native production bundles in the Noxcturnal transformer, matching `babel-preset-expo`. ([#50319](https://github.com/expo/expo/pull/50319) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add support for separate restored and output Metro transform cache directories. ([#50023](https://github.com/expo/expo/pull/50023) by [@sjchmiela](https://github.com/sjchmiela))
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- Use Metro's compact source maps in place of Expo's packed source map format. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add `experiments.noxcturnalTransformWorker` with native transformer experiment ([#48443](https://github.com/expo/expo/pull/48443) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix source line counts after environment serializer plugins modify virtual modules ([#48835](https://github.com/expo/expo/pull/48835) by [@kitten](https://github.com/kitten))
+- Seal web worker chunks to prevent common chunk splitting from applying to them ([#49227](https://github.com/expo/expo/pull/49227) by [@kitten](https://github.com/kitten))
+- Skip the `default` key in the `_interopNamespace` live-bindings helper, so a namespace import of a CommonJS module with an own `default` export no longer throws `Cannot assign to property 'default' which has only a getter` ([#49930](https://github.com/expo/expo/pull/49930) by [@expo-bot](https://github.com/expo-bot))
+
+### 💡 Others
+
+- [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
+- [Internal] Declare Expo's Metro type extensions explicitly. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
+- Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
+- [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
+- Expand `skipCache` flag to data and support `prewarm` custom transform option ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- Point Metro's `assetRegistryPath` at `react-native/asset-registry`, which replaces the `@react-native/assets-registry` package as of React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Don't rename require in tests/snapshots. ([#50039](https://github.com/expo/expo/pull/50039) by [@robhogan](https://github.com/robhogan))
+- Don't rename require in transform worker tests. ([#50143](https://github.com/expo/expo/pull/50143) by [@robhogan](https://github.com/robhogan))
+
+## 57.0.7 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-17
+
+### 🐛 Bug fixes
+
+- Fix `composeSourceMaps` crashing on Hermes source-map segments with a negative original position ([#47752](https://github.com/expo/expo/pull/47752) by [@kitten](https://github.com/kitten))
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
+
+## 57.0.3 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-30
+
+### 🐛 Bug fixes
+
 - Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
+
+## 57.0.1 - 2026-06-27
 
 ### 💡 Others
 
 - Add misc. OOT platforms as base `react-native` paths for module configs like `getPolyfills` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
-- Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
-- [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Bump `hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
 - [Internal] Pass through the `media` query of `css-external` assets in metadata ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.14 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Fix stack frame collapsing for Windows paths. ([#46645](https://github.com/expo/expo/pull/46645) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
 
 ## 56.0.13 — 2026-05-26
 
@@ -568,7 +754,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Exclude `beforeAssetSerializationPlugins.preModules` from `stableChunkSource` ([#33344](https://github.com/expo/expo/pull/33344) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Use POSIX-formatted relative module paths to stabelize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
+- Use POSIX-formatted relative module paths to stabilize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted filenames when transforming CSS modules for consistent class names. ([#33394](https://github.com/expo/expo/pull/33394) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted relative CSS asset paths for URL consistency across platforms. ([#33395](https://github.com/expo/expo/pull/33395) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted check to handle virtual RSC module with correctly escaped client boundary paths across platforms. ([#33396](https://github.com/expo/expo/pull/33396) by [@byCedric](https://github.com/byCedric))

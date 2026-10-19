@@ -1,0 +1,243 @@
+//  Copyright (c) 2023 650 Industries, Inc. All rights reserved.
+
+import Testing
+
+@testable import EXUpdates
+
+import EXManifests
+
+class TestStateChangeEventManager: UpdatesEventManager {
+  var lastContext: UpdatesStateContext? = nil
+  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
+
+  func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
+    lastContext = context
+  }
+}
+
+@Suite("UpdatesStateMachine")
+struct UpdatesStateMachineTests {
+  @Test
+  func `instantiates`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    #expect(machine.getStateForTesting() == .idle)
+  }
+
+  @Test
+  func `sequence numbers`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    #expect(machine.getStateForTesting() == .idle)
+
+    #expect(machine.context.sequenceNumber == 0)
+
+    machine.processEventForTesting(.startStartup)
+    machine.processEventForTesting(.check)
+    machine.processEventForTesting(.checkCompleteUnavailable)
+    machine.processEventForTesting(.endStartup)
+
+    #expect(machine.context.sequenceNumber == 4)
+  }
+
+  @Test
+  func `restart`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    #expect(machine.getStateForTesting() == .idle)
+
+    #expect(machine.context.isRestarting == false)
+    machine.processEventForTesting(.restart)
+    #expect(machine.context.isRestarting == true)
+    #expect(machine.context.sequenceNumber == 1)
+
+    machine.resetAndIncrementRestartCountForTesting()
+    #expect(machine.context.restartCount == 1)
+    #expect(machine.context.isRestarting == false)
+    #expect(machine.context.sequenceNumber == 2)
+  }
+
+  @Test
+  func `should handle startStartup and endStartup`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.startStartup)
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(testStateChangeEventManager.lastContext?.isStartupProcedureRunning == true)
+
+    machine.processEventForTesting(.endStartup)
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(testStateChangeEventManager.lastContext?.isStartupProcedureRunning == false)
+  }
+
+  @Test
+  func `should handle check and checkCompleteAvailable`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.check)
+    #expect(machine.getStateForTesting() == .checking)
+    #expect(testStateChangeEventManager.lastContext?.isChecking == true)
+
+    machine.processEventForTesting(.checkCompleteWithUpdate(manifest: ["updateId": "0000-xxxx"]))
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.isChecking == false)
+    #expect(machine.context.checkError == nil)
+    #expect((machine.context.latestManifest?["updateId"] as? String ?? "") == "0000-xxxx")
+    #expect(machine.context.isUpdateAvailable == true)
+    #expect(machine.context.isUpdatePending == false)
+    #expect(testStateChangeEventManager.lastContext?.isUpdateAvailable == true)
+    let values = testStateChangeEventManager.lastContext
+    #expect(values?.isUpdateAvailable == true)
+  }
+
+  @Test
+  func `should handle check and checkCompleteUnavailable`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.check)
+    #expect(machine.getStateForTesting() == .checking)
+
+    machine.processEventForTesting(.checkCompleteUnavailable)
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.isChecking == false)
+    #expect(machine.context.checkError == nil)
+    #expect(machine.context.latestManifest == nil)
+    #expect(machine.context.isUpdateAvailable == false)
+    #expect(machine.context.isUpdatePending == false)
+  }
+
+  @Test
+  func `should handle a completed download with an update`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    #expect(machine.getStateForTesting() == .downloading)
+
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["updateId": "0000-xxxx"]))
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.isChecking == false)
+    #expect(machine.context.downloadError == nil)
+    #expect((machine.context.latestManifest?["updateId"] as? String ?? "") == "0000-xxxx")
+    #expect((machine.context.downloadedManifest?["updateId"] as? String ?? "") == "0000-xxxx")
+    #expect(machine.context.isUpdateAvailable == true)
+    #expect(machine.context.isUpdatePending == true)
+    #expect(machine.context.rollback == nil)
+  }
+
+  @Test
+  func `should handle a completed download with a rollback`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    #expect(machine.getStateForTesting() == .downloading)
+
+    machine.processEventForTesting(.downloadCompleteWithRollback)
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.isDownloading == false)
+    #expect(machine.context.downloadError == nil)
+    #expect(machine.context.isUpdatePending == true)
+  }
+
+  @Test
+  func `should handle download progress`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    #expect(machine.getStateForTesting() == .downloading)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 0)
+
+    machine.processEventForTesting(.downloadProgress(progress: 0.5))
+    #expect(machine.getStateForTesting() == .downloading)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 0.5)
+
+    machine.processEventForTesting(.downloadCompleteUnavailable)
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
+  func `should handle rollback`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+    let commitTime = Date()
+    machine.processEventForTesting(.check)
+    #expect(machine.getStateForTesting() == .checking)
+
+    machine.processEventForTesting(.checkCompleteWithRollback(rollbackCommitTime: commitTime))
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.isChecking == false)
+    #expect(machine.context.checkError == nil)
+    #expect(machine.context.latestManifest == nil)
+    #expect(machine.context.isUpdateAvailable == true)
+    #expect(machine.context.isUpdatePending == false)
+    #expect(machine.context.rollback?.commitTime == commitTime)
+  }
+
+  @Test
+  func `entering the downloading state first lets a download error reach the context`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // This is the sequence both StartupProcedure implementations use when a background update
+    // fails while the machine is idle.
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
+
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.downloadError?["message"] == "Failed to download remote update: HTTP 502")
+  }
+
+  @Test
+  func `an event that is not allowed from the current state is dropped`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // `downloadError` is only allowed while downloading. From idle it must be rejected without
+    // trapping, so that a startup failure cannot take down the app.
+    machine.processEventForTesting(.downloadError(errorMessage: "boom"))
+
+    #expect(machine.getStateForTesting() == .idle)
+    #expect(machine.context.downloadError == nil)
+  }
+
+  @Test
+  func `the warning for a dropped event carries the error message it discarded`() async throws {
+    // A unique category keeps this suite's entries out of the production log file, as
+    // `UpdatesLogReaderTests` does.
+    let category = "expo-updates-tests-\(UUID().uuidString)"
+    let logger = UpdatesLogger(category: category)
+    let logReader = UpdatesLogReader(category: category)
+    let since = Date()
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: logger, eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // Some callers reach `processStateEvent` without logging the failure themselves, so this
+    // warning is the only record of what was lost.
+    machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
+
+    let entry = try await droppedEventWarning(logReader: logReader, newerThan: since)
+    #expect(entry.contains("event = downloadError"))
+    #expect(entry.contains("Failed to download remote update: HTTP 502"))
+  }
+
+  /// The log handler writes asynchronously, so poll until the warning lands.
+  private func droppedEventWarning(logReader: UpdatesLogReader, newerThan: Date) async throws -> String {
+    for _ in 0..<50 {
+      let entries = logReader.getLogEntries(newerThan: newerThan).filter { entry in
+        entry.contains("invalid transition requested, event dropped")
+      }
+      if let entry = entries.first {
+        return entry
+      }
+      try await Task.sleep(for: .milliseconds(100))
+    }
+    Issue.record("No dropped-event warning was written to the updates log")
+    return ""
+  }
+}

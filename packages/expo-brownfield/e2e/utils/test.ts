@@ -144,7 +144,7 @@ export const buildTestCommon = async ({
 /**
  * Expects the prebuild to be successful at the given project root and platform
  */
-export const expectPrebuild = async (projectRoot: string, platform: 'android' | 'ios') => {
+export const expectPrebuild = (projectRoot: string, platform: 'android' | 'ios') => {
   const prebuildDir = path.join(projectRoot, platform);
   expect(fs.existsSync(prebuildDir)).toBe(true);
 
@@ -162,12 +162,10 @@ interface ExpectFileOptions {
   content?: string[] | string;
 }
 
-export const expectFile = async ({
-  projectRoot,
-  fileName,
-  filePath,
-  content,
-}: ExpectFileOptions) => {
+// NOTE: deliberately synchronous — callers don't await this helper, so if it were
+// async, failed expect()s would surface as unhandled rejections that Jest ignores
+// instead of failing the test.
+export const expectFile = ({ projectRoot, fileName, filePath, content }: ExpectFileOptions) => {
   let fullFilePath: string;
 
   if (fileName) {
@@ -219,7 +217,7 @@ type ExpectFilesOptions =
       expected: ExpectedFileName[];
     };
 
-export const expectFiles = async (options: ExpectFilesOptions) => {
+export const expectFiles = (options: ExpectFilesOptions) => {
   if ('content' in options) {
     options.fileNames.forEach((fileName) => {
       expectFile({ projectRoot: options.projectRoot, fileName, content: options.content });

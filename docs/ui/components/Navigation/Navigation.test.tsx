@@ -7,6 +7,7 @@ import { u as node } from 'unist-builder';
 import { visit } from 'unist-util-visit';
 
 import { createHeadingManager } from '~/common/headingManager';
+import { axe } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
 import { findActiveRoute, Navigation } from './Navigation';
@@ -87,6 +88,20 @@ describe(Navigation, () => {
     expect(screen.getByText('Adding an image')).toBeInTheDocument();
     // Tutorial -> Building apps ->
     expect(screen.getByText('Submitting to store')).toBeInTheDocument();
+  });
+
+  it('has no axe violations', async () => {
+    const headingManager = prepareHeadingManager();
+    const { container } = render(
+      <HeadingsContext.Provider value={headingManager}>
+        <MemoryRouterProvider>
+          <Navigation routes={nodes} />
+        </MemoryRouterProvider>
+      </HeadingsContext.Provider>
+    );
+    expect(
+      await axe(container, { rules: { 'nested-interactive': { enabled: false } } })
+    ).toHaveNoViolations();
   });
 });
 

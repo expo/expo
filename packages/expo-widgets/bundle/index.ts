@@ -15,16 +15,66 @@ declare global {
     props: Dictionary,
     environment: Dictionary & { target?: string }
   ) => Dictionary | undefined;
+  var __expoWidgetEnvironment: Dictionary | undefined;
+}
+
+/**
+ * Resolve components at the render boundary so parents can inspect their JSX children.
+ * Identity is the native type plus the outermost explicit key, or flattened sibling index.
+ * Keys must be unique among flattened siblings; dynamic lists should provide explicit keys.
+ */
+function normalizeWidgetTree(node: unknown, position: string | number = 0): unknown {
+  let key: string | null = null;
+  while (React.isValidElement(node) && typeof node.type === 'function') {
+    key ??= node.key;
+    const rendered = node.type(node.props);
+    node = Array.isArray(rendered)
+      ? jsxRuntime.jsx(React.Fragment, { children: rendered })
+      : rendered;
+  }
+
+  if (Array.isArray(node)) {
+    return node.flat(Infinity).map((child, index) => normalizeWidgetTree(child, index));
+  }
+  if (React.isValidElement(node)) {
+    const props = { ...node.props };
+    if ('children' in props) {
+      props.children = normalizeWidgetTree(props.children);
+    }
+    return {
+      ...node,
+      props,
+      __expoWidgetIdentity: JSON.stringify([node.type, key ?? node.key ?? position]),
+    };
+  }
+  if (node && typeof node === 'object') {
+    // Live Activities and notifications return section maps. Native renderers need each root
+    // to be an element, even when a section returns an array of children.
+    return Object.fromEntries(
+      Object.entries(node).map(([section, child]) => [
+        section,
+        normalizeWidgetTree(
+          Array.isArray(child) ? jsxRuntime.jsx(React.Fragment, { children: child }) : child,
+          section
+        ),
+      ])
+    );
+  }
+  return node;
 }
 
 const __expoWidgetRender = function (props: Dictionary, environment: Dictionary) {
-  const { timestamp, ...rest } = environment;
+  // `materialColors` backs the native expo-ui module stub and stays out of the layout environment.
+  const { timestamp, materialColors, ...rest } = environment;
   const decoratedEnvironment: Dictionary = { ...rest };
   if (timestamp) {
     decoratedEnvironment.date = new Date(timestamp as number);
   }
+  globalThis.__expoWidgetEnvironment = { ...decoratedEnvironment, materialColors };
 
-  return decorateInteractiveTargets(globalThis.__expoWidgetLayout(props, decoratedEnvironment));
+  return decorateInteractiveTargets(
+    normalizeWidgetTree(globalThis.__expoWidgetLayout(props, decoratedEnvironment))
+  );
 };
 
 const __expoWidgetHandlePress = function (
@@ -34,6 +84,16 @@ const __expoWidgetHandlePress = function (
   const { target, ...renderEnvironment } = environment;
 
   function findAndCallOnPress(node?: Dictionary): Dictionary | undefined {
+    if (node && typeof node === 'object' && !('type' in node)) {
+      for (const section of Object.values(node)) {
+        const result = findAndCallOnPress(section as Dictionary);
+        if (result) {
+          return result;
+        }
+      }
+      return undefined;
+    }
+
     const props = node?.props as {
       onButtonPress?: () => Dictionary;
       onButtonPressed?: () => Dictionary;
@@ -59,10 +119,10 @@ const __expoWidgetHandlePress = function (
 };
 
 Object.assign(globalThis, {
-  ...uiGlobals,
-  ...jsxRuntime,
-  ...React,
   ...ReactNative,
+  ...React,
+  ...jsxRuntime,
+  ...uiGlobals,
   React,
   __expoWidgetRender,
   __expoWidgetHandlePress,

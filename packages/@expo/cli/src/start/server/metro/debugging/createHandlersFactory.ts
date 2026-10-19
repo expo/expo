@@ -1,5 +1,6 @@
 import type { CreateCustomMessageHandlerFn } from '@react-native/dev-middleware';
 
+import { event } from '../inspectorEvents';
 import { NetworkResponseHandler } from './messageHandlers/NetworkResponse';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './messageHandlers/VscodeDebuggerGetPossibleBreakpoints';
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './messageHandlers/VscodeDebuggerSetBreakpointByUrl';
@@ -8,14 +9,12 @@ import { VscodeRuntimeEvaluateHandler } from './messageHandlers/VscodeRuntimeEva
 import { VscodeRuntimeGetPropertiesHandler } from './messageHandlers/VscodeRuntimeGetProperties';
 import { pageIsSupported } from './pageIsSupported';
 
-const debug = require('debug')('expo:metro:debugging:messageHandlers') as typeof console.log;
-
 export function createHandlersFactory(): CreateCustomMessageHandlerFn {
   return (connection) => {
-    debug('Initializing for connection: ', connection.page.title);
+    event('handler_init', { title: connection.page.title });
 
     if (!pageIsSupported(connection.page)) {
-      debug('Aborted, unsupported page capabiltiies:', connection.page.capabilities);
+      event('handler_unsupported', { title: connection.page.title });
       return null;
     }
 
@@ -31,14 +30,11 @@ export function createHandlersFactory(): CreateCustomMessageHandlerFn {
     ].filter((middleware) => middleware.isEnabled());
 
     if (!handlers.length) {
-      debug('Aborted, all handlers are disabled');
+      event('handler_all_disabled', {});
       return null;
     }
 
-    debug(
-      'Initialized with handlers: ',
-      handlers.map((middleware) => middleware.constructor.name).join(', ')
-    );
+    event('handler_ready', { handlers: handlers.map((m) => m.constructor.name).join(', ') });
 
     return {
       handleDeviceMessage: (message: any) =>
@@ -57,15 +53,6 @@ export function createHandlersFactory(): CreateCustomMessageHandlerFn {
   };
 }
 
-function withMessageDebug(type: 'device' | 'debugger', message: any, result?: null | boolean) {
-  const status = result ? 'handled' : 'ignored';
-  const prefix = type === 'device' ? '(debugger) <- (device)' : '(debugger) -> (device)';
-
-  try {
-    debug(`%s = %s:`, prefix, status, JSON.stringify(message));
-  } catch {
-    debug(`%s = %s:`, prefix, status, 'message not serializable');
-  }
-
+function withMessageDebug(_type: 'device' | 'debugger', _message: any, result?: null | boolean) {
   return result || undefined;
 }

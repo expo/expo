@@ -1,15 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
 {
   "concurrentIoLimit": 1,
+  "configPluginSourceType": "package",
   "enableReactImportsPatcher": false,
   "hashAlgorithm": "sha1",
+  "nativeModuleSourceType": "package",
   "platforms": [
     "android",
     "ios",
   ],
-  "sourceSkips": 512,
+  "sourceSkips": 57859,
   "useCNGForPlatforms": {
     "android": false,
     "ios": false,

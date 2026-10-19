@@ -9,9 +9,13 @@ public final class GlassEffectModule: Module {
     Constant("isLiquidGlassAvailable") {
       #if compiler(>=6.2)  // Xcode 26
       if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {  // iOS 26
+        // The system ignores `UIDesignRequiresCompatibility` in apps built with the iOS 27 SDK, so
+        // for those the opt-out below no longer describes what the app renders.
+        if #available(iOS 27.0, tvOS 27.0, macOS 27.0, *), buildSDKMajorVersion() >= 27 {  // iOS 27
+          return true
+        }
         if let infoPlist = Bundle.main.infoDictionary,
           let requiresCompatibility = infoPlist["UIDesignRequiresCompatibility"] as? Bool {
-          // TODO(@uabx): Add a check for maximum SDK version when apple disables this flag
           return !requiresCompatibility  // If the app requires compatibility then it will not use liquid glass
         }
         return true
@@ -103,4 +107,20 @@ public final class GlassEffectModule: Module {
       }
     }
   }
+}
+
+/**
+ Major version of the SDK the app was built with, read from the `DTPlatformVersion` that Xcode
+ stamps into the app's Info.plist. Returns 0 for a bundle Xcode didn't stamp, so callers fall back
+ to the behavior of the older SDK.
+
+ Read at runtime rather than through `#if compiler(...)` because the Swift version and the SDK
+ version don't move together: Xcode 26.6 already ships Swift 6.3.
+ */
+private func buildSDKMajorVersion() -> Int {
+  guard let platformVersion = Bundle.main.infoDictionary?["DTPlatformVersion"] as? String,
+    let major = Int(platformVersion.prefix { $0.isNumber }) else {
+    return 0
+  }
+  return major
 }

@@ -1,6 +1,7 @@
 import type { RouteNode } from '../Route';
-import { sortRoutes } from '../Route';
+import { sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
+import { findRouteNodeAndParamsForState, getValidInitialRouteName } from '../routeNode';
 
 const asRouteNode = (route: string): RouteNode => {
   return {
@@ -86,5 +87,58 @@ describe(sortRoutes, () => {
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('index'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('a'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('(a)'))).toBe(1);
+  });
+});
+
+const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
+  ...asRouteNode('_layout'),
+  type: 'layout',
+  loadRoute: () => ({ unstable_settings: { anchor } }),
+  children,
+});
+
+describe(getValidInitialRouteName, () => {
+  it('returns the registered route name for a valid setting', () => {
+    const node = asLayoutNode('a', [asRouteNode('a')]);
+
+    expect(getValidInitialRouteName(node)).toBe('a');
+  });
+
+  it('resolves a directory setting to its registered index route', () => {
+    const node = asLayoutNode('a', [asRouteNode('a/index')]);
+
+    expect(getValidInitialRouteName(node)).toBe('a/index');
+  });
+
+  it('sorts a resolved directory setting before other routes', () => {
+    const node = asLayoutNode('a', [asRouteNode('b'), asRouteNode('a/index')]);
+
+    expect(
+      node.children
+        .sort(sortRoutesWithInitial(getValidInitialRouteName(node)))
+        .map(({ route }) => route)
+    ).toEqual(['a/index', 'b']);
+  });
+
+  it('throws for a missing route', () => {
+    const node = asLayoutNode('missing', [asRouteNode('index'), asRouteNode('settings/index')]);
+    node.contextKey = './app/(tabs)/_layout.tsx';
+
+    expect(() => getValidInitialRouteName(node)).toThrow(
+      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.anchor` to the name of a route in this layout.'
+    );
+  });
+
+  it('returns undefined without a route node', () => {
+    expect(getValidInitialRouteName(null)).toBeUndefined();
+  });
+});
+
+describe(findRouteNodeAndParamsForState, () => {
+  it('returns no route node without nested state', () => {
+    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+      routeNode: undefined,
+      params: {},
+    });
   });
 });

@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 struct NewSocialProfileRecord: NewRecord {
-  @Field var label: String
+  @Field var label: String?
   @Field var username: String?
   @Field var service: String?
   @Field var url: String?
@@ -10,7 +10,7 @@ struct NewSocialProfileRecord: NewRecord {
 
 struct ExistingSocialProfileRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
-  @Field var label: String
+  @Field var label: String?
   @Field var username: String?
   @Field var service: String?
   @Field var url: String?

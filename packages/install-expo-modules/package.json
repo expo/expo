@@ -1,6 +1,6 @@
 {
   "name": "install-expo-modules",
-  "version": "0.15.0",
+  "version": "0.18.2",
   "description": "Tools to install expo-modules for existing react-native projects",
   "keywords": [
     "expo",
@@ -25,11 +25,17 @@
     "build"
   ],
   "main": "build/index.js",
+  "exports": {
+    ".": "build/index.js",
+    "./package.json": "./package.json"
+  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
+    "prebuild": "expo-module clean",
     "build": "ncc build ./src/index.ts -o build/",
+    "prebuild:prod": "expo-module clean",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -42,17 +48,17 @@
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/config-plugins": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "@expo/package-manager": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
-    "@types/semver": "^7.0.0",
+    "@types/semver": "^7.7.1",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.0",
+    "glob": "^13.0.6",
     "prompts": "^2.3.2",
     "resolve-from": "^5.0.0",
-    "semver": "7.5.4",
+    "semver": "7.7.4",
     "terminal-link": "^2.1.1",
     "xcparse": "^0.0.3"
   }

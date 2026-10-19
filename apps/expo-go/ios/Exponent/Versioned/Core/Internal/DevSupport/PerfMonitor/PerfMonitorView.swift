@@ -2,6 +2,7 @@
 
 import SwiftUI
 import UIKit
+import ExpoModulesCore
 
 struct PerfMonitorView: View {
   @ObservedObject var viewModel: PerfMonitorViewModel
@@ -13,7 +14,7 @@ struct PerfMonitorView: View {
   private static let borderColor = Color.white.opacity(0.08)
 
   private var cardWidth: CGFloat {
-    min(UIScreen.main.bounds.width * PerfMonitorConstants.screenWidthRatio, PerfMonitorConstants.maxWidth)
+    min(SceneGeometry.bounds().width * PerfMonitorConstants.screenWidthRatio, PerfMonitorConstants.maxWidth)
   }
 
   var body: some View {

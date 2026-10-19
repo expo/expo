@@ -1,5 +1,39 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
+
+/// Carries a single answer out of a host function back to the test body. Written on the runtime's
+/// JavaScript thread and read after the `await()` that triggered the write has resumed, so the two
+/// accesses are already ordered.
+private final class ThreadFlag: @unchecked Sendable {
+  var value: Bool?
+}
+
+/// A `JavaScriptEncodable` whose `encode` always throws, for exercising the encodable `resolve`'s
+/// encode-failure path.
+private struct FailingEncodable: JavaScriptEncodable {
+  struct EncodingError: Error {}
+  static func encode(_ value: FailingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    throw EncodingError()
+  }
+}
+
+/// Records whether `FlaggingEncodable` was encoded. Written on the JavaScript thread and read after the
+/// test drained it.
+private final class EncodeFlag: @unchecked Sendable {
+  var isEncoded = false
+}
+
+/// A `JavaScriptEncodable` that records when it's encoded, which happens only when the work that settles
+/// with it runs.
+private struct FlaggingEncodable: JavaScriptEncodable {
+  let flag: EncodeFlag
+
+  static func encode(_ value: FlaggingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    value.flag.isEncoded = true
+    return .undefined()
+  }
+}
 
 @Suite
 @JavaScriptActor
@@ -10,6 +44,62 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
 
     #expect(promise.isDeferred == true)
+  }
+
+  @Test
+  func `deferred promises from separate runtimes settle independently`() async throws {
+    let first = JavaScriptRuntime()
+    let second = JavaScriptRuntime()
+    let firstPromise = try JavaScriptPromise(first)
+    let secondPromise = try JavaScriptPromise(second)
+    firstPromise.resolve(1.0)
+    secondPromise.resolve(2.0)
+    #expect(try await firstPromise.await().getDouble() == 1.0)
+    #expect(try await secondPromise.await().getDouble() == 2.0)
+  }
+
+  @Test
+  func `creating many deferred promises reuses one runtime-level helper`() throws {
+    let runtime = JavaScriptRuntime()
+    for _ in 0..<1_000 {
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(42.0)
+    }
+    // The only object the wrapper may leave on `globalThis` is the long-lived-objects anchor; a
+    // per-promise helper leaking into the global scope would show up as extra own properties.
+    let ownGlobals = try runtime.eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    let freshGlobals = try JavaScriptRuntime().eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    #expect(ownGlobals - freshGlobals <= 1)
+  }
+
+  @Test
+  func `creating and settling a deferred promise installs no then handlers until awaited`() async throws {
+    let runtime = JavaScriptRuntime()
+    try runtime.eval(
+      """
+      globalThis.thenCalls = 0;
+      const originalThen = Promise.prototype.then;
+      Promise.prototype.then = function (...args) {
+        globalThis.thenCalls++;
+        return originalThen.apply(this, args);
+      };
+      """
+    )
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(42.0)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 0)
+    #expect(try await promise.await().getInt() == 42)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 1)
+  }
+
+  @Test
+  func `awaiting a deferred promise that settled long before delivers the value`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve("late")
+    // Let the settle run and the engine drain its reactions before anything is awaited.
+    try runtime.eval("for (let i = 0; i < 10; i++) {}")
+    #expect(try await promise.await().getString() == "late")
   }
 
   @Test
@@ -34,6 +124,45 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `resolve with a both-conforming value keeps its representable type`() async throws {
+    // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
+    // encodable overload is disfavored, so it resolves through the representable path and stays a JS
+    // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
+    // safe-integer range (`Int.encode`).
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(Int64(42))
+    let result = try await promise.await()
+    #expect(result.isNumber() == true)
+    #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve promise with an encodable-only value`() async throws {
+    // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
+    // promise through the encodable overload. It encodes to a JS `Date`.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    let date = Date(timeIntervalSince1970: 1000)
+    promise.resolve(date)
+    let result = try await promise.await()
+    let milliseconds = try result.getObject().callFunction("getTime").asDouble()
+    #expect(milliseconds == 1_000_000)
+  }
+
+  @Test
+  func `resolve rejects the promise when encoding throws`() async throws {
+    // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
+    // reject with the thrown error rather than fulfill.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(FailingEncodable())
+    await #expect(throws: Error.self) {
+      _ = try await promise.await()
+    }
+  }
+
+  @Test
   func `resolve promise with string`() async throws {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
@@ -54,8 +183,26 @@ struct JavaScriptPromiseTests {
     promise.resolve(obj.asValue())
 
     let result = try await promise.await()
-    #expect(result.isObject())
+    #expect(result.isObject() == true)
     #expect(result.getObject().getProperty("value").getInt() == 42)
+  }
+
+  @Test
+  func `awaiting a settled promise again delivers the value again`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+
+    let obj = runtime.createObject()
+    obj.setProperty("value", value: 42)
+    promise.resolve(obj.asValue())
+
+    let first = try await promise.await()
+    let second = try await promise.await()
+    #expect(first.getObject().getProperty("value").getInt() == 42)
+    #expect(second.getObject().getProperty("value").getInt() == 42)
+    // Both reads clone the same settled object.
+    let isSameObject = first.isEqual(to: second)
+    #expect(isSameObject)
   }
 
   @Test
@@ -70,7 +217,7 @@ struct JavaScriptPromiseTests {
     promise.reject(TestError())
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -89,7 +236,7 @@ struct JavaScriptPromiseTests {
     let rejectedPromise = try runtime.eval("Promise.reject(new Error('test error'))").getPromise()
 
     await #expect(throws: Error.self) {
-      try await rejectedPromise.await()
+      _ = try await rejectedPromise.await()
     }
   }
 
@@ -101,11 +248,15 @@ struct JavaScriptPromiseTests {
       const promise = Promise.resolve(42);
       promise.then = undefined;
       promise;
-      """)
+      """
+    )
 
     #expect(throws: Error.self) {
       _ = try promiseValue.getPromise()
     }
+    // A failed initializer must not leave its state registered, or it would pin the promise object
+    // in the collection until teardown even though no `JavaScriptPromise` escaped.
+    #expect(runtime.longLivedObjects.count == 0)
   }
 
   @Test
@@ -123,7 +274,7 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     let value = promise.asValue()
 
-    #expect(value.isObject())
+    #expect(value.isObject() == true)
   }
 
   @Test
@@ -173,10 +324,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.null)
+    promise.resolve(JavaScriptValue.null())
 
     let result = try await promise.await()
-    #expect(result.isNull())
+    #expect(result.isNull() == true)
   }
 
   @Test
@@ -184,10 +335,10 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.undefined)
+    promise.resolve(JavaScriptValue.undefined())
 
     let result = try await promise.await()
-    #expect(result.isUndefined())
+    #expect(result.isUndefined() == true)
   }
 
   @Test
@@ -260,7 +411,7 @@ struct JavaScriptPromiseTests {
       .getPromise()
 
     await #expect(throws: Error.self) {
-      return try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -271,7 +422,7 @@ struct JavaScriptPromiseTests {
 
     // Resolve from a task
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.resolve(JavaScriptValue(runtime, 99))
     }
 
@@ -289,13 +440,42 @@ struct JavaScriptPromiseTests {
     // Reject after the await has already suspended on the pending promise. This must throw, not
     // resume the awaiting caller with the rejection value as if it were fulfilled.
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.reject(TestError())
     }
 
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
+  }
+
+  @Test
+  func `awaiting off the JavaScript thread installs the then callbacks on it`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let installedOnJavaScriptThread = ThreadFlag()
+
+    let promise = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      // A thenable whose `then` records where the engine called it from, then fulfills right away
+      // so the `await()` below completes and the recorded answer can be read.
+      let thenable = runtime.createObject()
+      let then = runtime.createFunction("then") { _, arguments in
+        installedOnJavaScriptThread.value = runtime.isOnJavaScriptThread()
+        return try arguments[0].getFunction().call(arguments: 42)
+      }
+      thenable.setProperty("then", value: then.asValue())
+      return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
+    }
+
+    // The test body runs on the cooperative pool, never on the runtime's dedicated thread, so this
+    // `await()` is the off-thread case. Installing the callbacks calls `then`, which is JavaScript,
+    // and JavaScript for this runtime may only run on the thread that owns it.
+    #expect(testRuntime.runtime.isOnJavaScriptThread() == false)
+
+    let result = try await promise.value.await()
+
+    #expect(result.getInt() == 42)
+    #expect(installedOnJavaScriptThread.value == true)
   }
 
   @Test
@@ -369,5 +549,184 @@ struct JavaScriptPromiseTests {
     let promise = try runtime.eval("Promise.resolve(42)").getPromise()
 
     #expect(promise.isDeferred == false)
+  }
+
+  // MARK: - Long-lived object registration
+
+  @Test
+  func `deferred promise registers as a long-lived object`() throws {
+    let runtime = JavaScriptRuntime()
+    #expect(runtime.longLivedObjects.count == 0)
+
+    let promise = try JavaScriptPromise(runtime)
+    _ = promise.isDeferred
+
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `wrapping an existing promise registers to own its object`() throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try runtime.eval("Promise.resolve(42)").getPromise()
+    #expect(promise.isDeferred == false)
+
+    // Even a wrapped promise owns a JSI object that must not be released against a freed runtime,
+    // so it registers to have that object swept at teardown.
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `settling keeps the promise registered while the wrapper is alive`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    #expect(runtime.longLivedObjects.count == 1)
+
+    promise.resolve(JavaScriptValue(runtime, 42))
+    _ = try await promise.await()
+
+    // Settling releases the resolve/reject functions, but the state stays registered so it continues
+    // to own the promise object for as long as the wrapper is alive (it is only deregistered when the
+    // wrapper is dropped, see the tests below, or by the teardown sweep).
+    #expect(promise.isDeferred == false)
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `dropping a settled promise deregisters its state`() async throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(JavaScriptValue(runtime, 42))
+      _ = try await promise.await()
+      #expect(runtime.longLivedObjects.count == 1)
+      // Leaving the scope drops the last owner of the wrapper.
+    }
+
+    // Dropping the wrapper deregisters its state and releases the promise object, so a stream of
+    // short-lived promises doesn't pin their objects (and resolution values) until teardown.
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `dropping an unsettled promise deregisters its state`() throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try JavaScriptPromise(runtime)
+      #expect(promise.isDeferred == true)
+      #expect(runtime.longLivedObjects.count == 1)
+      // The promise is never settled; dropping the wrapper here is the only owner going away.
+    }
+
+    // Even an unsettled promise releases its state when its wrapper is dropped: nothing outside can
+    // settle it anymore, so keeping it registered would only pin the object until teardown.
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `dropping a wrapped promise deregisters its state`() throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try runtime.eval("Promise.resolve(42)").getPromise()
+      #expect(promise.isDeferred == false)
+      #expect(runtime.longLivedObjects.count == 1)
+    }
+
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `an unsettled deferred promise is released by the teardown sweep`() throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    #expect(runtime.longLivedObjects.count == 1)
+
+    // The promise is never settled; the runtime's teardown sweep must release its long-lived state.
+    runtime.longLivedObjects.clear()
+
+    #expect(runtime.longLivedObjects.count == 0)
+    // After the sweep the settle functions are released, so it can no longer be settled.
+    #expect(promise.isDeferred == false)
+  }
+
+  @Test
+  func `an unsettled deferred promise outliving its runtime does not crash on teardown`() throws {
+    // Reproduces the shape of the promise-teardown crash (#47454): a deferred promise is still in
+    // flight when its runtime is torn down. Before the state was owned by the runtime's
+    // `LongLivedObjectCollection`, its JSI values were released after the Hermes runtime was already
+    // destroyed, a use-after-free. Now the runtime's teardown sweep releases the state on the JS
+    // thread while the runtime is still valid.
+    var promise: JavaScriptPromise? = nil
+
+    do {
+      let runtime = JavaScriptRuntime()
+      promise = try JavaScriptPromise(runtime)
+      #expect(promise?.isDeferred == true)
+      // Leaving the scope releases the runtime while the promise is still unsettled. Its teardown
+      // sweep must release the promise's state before Hermes is destroyed.
+    }
+
+    // Dropping the promise wrapper here must not touch a freed runtime. This is the crash point in
+    // #47454; reaching the end of the test without a crash is the assertion.
+    promise = nil
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `awaiting a promise whose runtime is gone throws RuntimeLostError`() async throws {
+    var promise: JavaScriptPromise? = nil
+    do {
+      let runtime = JavaScriptRuntime()
+      promise = try JavaScriptPromise(runtime)
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await promise?.await()
+    }
+    promise = nil
+  }
+
+  @Test
+  func `a resolve queued before the runtime goes away is dropped`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(testRuntime.runtime!))
+    }
+    let flag = EncodeFlag()
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      promise.value.resolve(FlaggingEncodable(flag: flag))
+    })
+
+    #expect(flag.isEncoded == false)
+    await testRuntime.tearDown()
+  }
+
+  @Test
+  func `the teardown sweep releases the value of an awaited promise`() async throws {
+    // The receiver keeps the settled value so a later `await()` can read it again. It must not keep
+    // it past the runtime's teardown sweep: a value destroyed after its runtime is a use-after-free.
+    // The runtime work stays on the scheduler's thread, which owns the runtime.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      let weakObject = object.createWeak()
+      promise.resolve(object.asValue())
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakObject))
+    }
+    // Moved into a ref, so the awaited value is released on the runtime's thread below.
+    let awaited = try await promise.value.await().ref()
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      awaited.release()
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakObject.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
   }
 }

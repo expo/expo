@@ -87,7 +87,7 @@ class DocumentPickerModule : Module() {
     )
     val outputFile = File(outputFilePath)
     context.contentResolver.openInputStream(documentUri).use { inputStream ->
-      inputStream ?: throw FileNotFoundException("Inputstream for $documentUri was null.")
+      inputStream ?: throw FileNotFoundException("InputStream for $documentUri was null.")
       FileOutputStream(outputFile).use { outputStream ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           FileUtils.copy(inputStream, outputStream)

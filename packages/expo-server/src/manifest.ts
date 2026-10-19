@@ -1,15 +1,25 @@
 import type { ReactNode } from 'react';
 
+export type CssAsset =
+  | { type: 'css'; href: string }
+  | { type: 'inline'; source: string; hmrId?: string }
+  | { type: 'external'; href: string; media?: string };
+
 /**
  * Asset manifest for client hydration bundles.
  *
  * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
  */
 export interface AssetInfo {
-  css: string[];
   /**
-   * External stylesheets (`@import url(https://...)`) extracted from the bundled CSS. Rendered
-   * verbatim as `<link rel="stylesheet">` so attributes like `media` are preserved in the SSR HTML.
+   * Ordered CSS assets; strings are legacy bundled stylesheet hrefs.
+   *
+   * String form is deprecated, with support removed in SDK 60
+   */
+  css: (CssAsset | string)[];
+  /**
+   * External stylesheets from legacy manifests.
+   * @deprecated To be removed in SDK 60
    */
   externalCss?: ExternalCssInfo[];
   js: string[];
@@ -17,11 +27,26 @@ export interface AssetInfo {
   favicon?: string;
 }
 
-/** A single external stylesheet `<link>` (e.g. from `@import url(https://...)`). */
+/**
+ * A single external stylesheet `<link>` (e.g. from `@import url(https://...)`).
+ *
+ * @deprecated To be removed in SDK 60
+ */
 export interface ExternalCssInfo {
   href: string;
   /** Media query baked into the `<link>` tag, when present. */
   media?: string;
+}
+
+export function normalizeCssAssets(assets?: AssetInfo): CssAsset[] {
+  const css = (assets?.css ?? []).map(
+    (entry): CssAsset => (typeof entry === 'string' ? { type: 'css', href: entry } : entry)
+  );
+  // NOTE(@hassankhan): We still need to support SDK 55-57 deployments
+  const externalCss = (assets?.externalCss ?? []).map(
+    ({ href, media }): CssAsset => ({ type: 'external', href, media })
+  );
+  return [...css, ...externalCss];
 }
 
 /**
@@ -72,6 +97,29 @@ export interface RouteInfo<TRegex = RegExp | string> {
   assets?: AssetInfo;
 }
 
+/**
+ * A per-path header rule, applied to matching page responses only.
+ *
+ * For scalar headers, the order is headers already on the response (set by
+ * `expo-server` or declared by the route itself), then matching rules, then
+ * global `headers`. When multiple rules match a path, the rule declared last
+ * in the `pageHeaders` array takes precedence.
+ *
+ * For array headers, always append. Values from `headers` come first,
+ * then `pageHeaders`.
+ */
+export interface PageHeaderInfo<TRegex = RegExp | string> {
+  /**
+   * Regex for matching the requested path against this rule.
+   */
+  namedRegex: TRegex;
+  /**
+   * Headers to apply to matching responses. Scalar values are set unless the response already
+   * carries the header; array values always append.
+   */
+  headers: Record<string, string | string[]>;
+}
+
 export interface RoutesManifest<TRegex = RegExp | string> {
   /**
    * Middleware function that runs before any route matching.
@@ -82,6 +130,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * Headers to be applied to all responses from the server.
    */
   headers?: Record<string, string | string[]>;
+  /**
+   * Headers to be applied to path-specific responses from the server.
+   */
+  pageHeaders?: PageHeaderInfo<TRegex>[];
   /**
    * Routes that are matched after HTML routes and invoke WinterCG-compliant functions.
    */
@@ -112,6 +164,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * When present, HTML routes are rendered at runtime instead of being served from pre-rendered files.
    */
   rendering?: RenderingConfiguration;
+  /**
+   * Set to `development` when the server was exported with `expo export --dev`.
+   */
+  mode?: 'development';
 }
 
 export type RawManifest = RoutesManifest<string>;
@@ -137,4 +193,6 @@ export interface GetStreamingContentOptions {
   } | null;
   request?: Request;
   assets?: AssetInfo;
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 }

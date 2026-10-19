@@ -6,7 +6,7 @@ import AuthenticationServices
 private class PresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     #if os(iOS)
-    return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
     #else
     return NSApp.mainWindow ?? ASPresentationAnchor()
     #endif
@@ -61,7 +61,10 @@ final internal class WebAuthSession {
 
   func open(_ promise: Promise) {
     authSession?.presentationContextProvider = presentationContextProvider
-    authSession?.start()
+    guard authSession?.start() == true else {
+      promise.reject(WebAuthSessionFailedToStartException())
+      return
+    }
     self.promise = promise
   }
 

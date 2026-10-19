@@ -4,8 +4,7 @@ import path from 'path';
 import { copyAsync, isPathInside, maybeRealpathSync } from '../utils/dir';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-
-const debug = require('debug')('expo:public-folder') as typeof console.log;
+import { debugEvent } from './events';
 
 /**
  * Resolve `EXPO_PUBLIC_FOLDER` against the project root and ensure the result
@@ -33,7 +32,7 @@ export function getUserDefinedFile(projectRoot: string, possiblePaths: string[])
   for (const possiblePath of possiblePaths) {
     const fullPath = path.join(publicPath, possiblePath);
     if (fs.existsSync(fullPath)) {
-      debug(`Found user-defined public file: ` + possiblePath);
+      debugEvent('public_folder:found_file', { possiblePath });
       return fullPath;
     }
   }

@@ -3,8 +3,7 @@ import plist from '@expo/plist';
 import fs from 'fs';
 
 import { AppIdResolver } from '../AppIdResolver';
-
-const debug = require('debug')('expo:start:platforms:ios:AppleAppIdResolver') as typeof console.log;
+import { event } from '../events';
 
 /** Resolves the iOS bundle identifier from the Expo config or native files. */
 export class AppleAppIdResolver extends AppIdResolver {
@@ -18,7 +17,7 @@ export class AppleAppIdResolver extends AppIdResolver {
       // Never returns nullish values.
       return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
     } catch (error: any) {
-      debug('Expected error checking for native project:', error.message);
+      event('apple_app_id_native_check_error', { error: event.error(error as Error) });
       return false;
     }
   }
@@ -31,7 +30,7 @@ export class AppleAppIdResolver extends AppIdResolver {
         return bundleId;
       }
     } catch (error: any) {
-      debug('Expected error resolving the bundle identifier from the pbxproj:', error);
+      event('apple_app_id_pbxproj_error', { error: event.error(error as Error) });
     }
 
     // Check Info.plist
@@ -42,7 +41,7 @@ export class AppleAppIdResolver extends AppIdResolver {
         return data.CFBundleIdentifier;
       }
     } catch (error) {
-      debug('Expected error resolving the bundle identifier from the project Info.plist:', error);
+      event('apple_app_id_plist_error', { error: event.error(error as Error) });
     }
 
     return null;

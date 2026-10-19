@@ -6,13 +6,18 @@ import {
 } from 'expo';
 
 import type {
+  AlbumMetadata,
+  AlbumType,
   AssetField,
   AssetFieldValueMap,
   AssetMetadata,
+  AssetUriOptions,
+  CollectionAssetField,
   GranularPermission,
   MediaTypeFilter,
   MediaLibraryAssetsChangeEvent,
   SortDescriptor,
+  SortableAssetField,
 } from '../types';
 import type { NativeAlbumClass } from './types/NativeAlbumClass.types';
 import type { NativeAssetClass } from './types/NativeAssetClass.types';
@@ -70,7 +75,7 @@ class NativeAssetWeb implements NativeAssetClass {
   getShape() {
     return unavailable('Asset.getShape');
   }
-  getUri() {
+  getUri(_options?: AssetUriOptions) {
     return unavailable('Asset.getUri');
   }
   getWidth() {
@@ -120,6 +125,12 @@ class NativeAlbumWeb implements NativeAlbumClass {
   getTitle() {
     return unavailable('Album.getTitle');
   }
+  getAssetCount() {
+    return unavailable('Album.getAssetCount');
+  }
+  getType(): Promise<AlbumType> {
+    return unavailable('Album.getType');
+  }
   delete() {
     return unavailable('Album.delete');
   }
@@ -149,13 +160,30 @@ class NativeAlbumWeb implements NativeAlbumClass {
   static getAll(): Promise<NativeAlbumClass[]> {
     return unavailable('Album.getAll');
   }
+
+  static getAlbumsMetadata(): Promise<AlbumMetadata[]> {
+    return unavailable('Album.getAlbumsMetadata');
+  }
+
+  static getSmartAlbums(): Promise<NativeAlbumClass[]> {
+    return unavailable('Album.getSmartAlbums');
+  }
 }
 
 class NativeQueryWeb implements NativeQueryClass {
-  eq<T extends AssetField>(_field: T, _value: AssetFieldValueMap[T]) {
+  eq<T extends Exclude<AssetField, CollectionAssetField>>(
+    _field: T,
+    _value: AssetFieldValueMap[T]
+  ) {
     return this;
   }
-  within<T extends AssetField>(_field: T, _value: AssetFieldValueMap[T][]) {
+  within<T extends Exclude<AssetField, CollectionAssetField>>(
+    _field: T,
+    _value: AssetFieldValueMap[T][]
+  ) {
+    return this;
+  }
+  contains<T extends CollectionAssetField>(_field: T, _value: AssetFieldValueMap[T][number]) {
     return this;
   }
   gt(_field: AssetField, _value: number) {
@@ -176,7 +204,7 @@ class NativeQueryWeb implements NativeQueryClass {
   offset(_offset: number) {
     return this;
   }
-  orderBy(_sortDescriptors: SortDescriptor | AssetField) {
+  orderBy(_sortDescriptors: SortDescriptor | SortableAssetField) {
     return this;
   }
   album(_album: NativeAlbumClass) {

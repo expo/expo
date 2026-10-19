@@ -11,10 +11,6 @@ inputs:
     description: 'Author name to display in notification'
     required: false
     default: 'GitHub Actions'
-  job_name:
-    description: 'Job name to display (defaults to github.job)'
-    required: false
-    default: ${{ github.job }}
   github_token:
     description: 'GitHub token for API calls'
     required: false
@@ -38,7 +34,7 @@ runs:
       id: details
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       env:
-        JOB_NAME: ${{ inputs.job_name }}
+        CHECK_RUN_ID: ${{ job.check_run_id }}
         JOB_STATUS: ${{ inputs.status }}
         INCLUDE_FIELDS: ${{ inputs.fields }}
         ARTIFACT_URL: ${{ inputs.artifact_url }}
@@ -84,25 +80,18 @@ runs:
           let tookField = 'N/A';
 
           if (fields.includes('job') || fields.includes('took')) {
-            const jobs = await github.paginate(
-              github.rest.actions.listJobsForWorkflowRun,
-              {
-                owner,
-                repo,
-                run_id: context.runId
-              }
-            );
-
-            // JOB_NAME doesn't include matrix values, but listJobsForWorkflowRun returns job names with matrix.
-            // e.g., JOB_NAME="android-test-e2e" but job.name="android-test-e2e (36)"
-            // We use startsWith to match the base job name and support matrix jobs.
-            const baseJobName = process.env.JOB_NAME;
-            const currentJob = jobs.find(job =>
-              job.name === baseJobName || job.name.startsWith(`${baseJobName} (`)
-            );
+            // The check run id of a job is also its workflow job id.
+            const currentJob = await github.rest.actions
+              .getJobForWorkflowRun({ owner, repo, job_id: Number(process.env.CHECK_RUN_ID) })
+              .then(
+                ({ data }) => data,
+                (error) => {
+                  core.warning(`Could not get job ${process.env.CHECK_RUN_ID}: ${error.message}`);
+                  return null;
+                }
+              );
 
             if (currentJob) {
-              // Use formatted job name (with matrix) for display
               jobField = `<${currentJob.html_url}|${currentJob.name}>`;
 
               const startTime = new Date(currentJob.started_at).getTime();
@@ -126,14 +115,14 @@ runs:
           // [outputs] color and text based on status
           const status = process.env.JOB_STATUS.toLowerCase();
           let color = 'danger';
-          let text = ':no_entry: Failed GitHub Actions\n';
+          let text = ':no_entry: Failed GitHub Actions';
 
           if (status === 'success') {
             color = 'good';
-            text = ':white_check_mark: Succeeded GitHub Actions\n';
+            text = ':white_check_mark: Succeeded GitHub Actions';
           } else if (status === 'cancelled') {
             color = 'warning';
-            text = ':warning: Cancelled GitHub Actions\n';
+            text = ':warning: Cancelled GitHub Actions';
           }
 
           // [outputs] fields
@@ -180,19 +169,25 @@ runs:
             }
           }
 
-          core.setOutput('fields', JSON.stringify(slackFields));
-          core.setOutput('color', color);
-          core.setOutput('text', text);
-          core.setOutput('author_name', escape(process.env.AUTHOR_NAME));
+          // Emit the whole request body as JSON rather than as separate values
+          // interpolated into a YAML template. The action parses the payload input
+          // with js-yaml, which rejects a newline inside a quoted scalar
+          // ("deficient indentation"), so any value containing one would break the
+          // template. JSON.stringify escapes those characters instead.
+          core.setOutput('payload', JSON.stringify({
+            text,
+            attachments: [
+              {
+                color,
+                author_name: escape(process.env.AUTHOR_NAME),
+                fields: slackFields,
+              },
+            ],
+          }));
 
     - name: Send to Slack
-      uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+      uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
       with:
         webhook: ${{ inputs.webhook }}
         webhook-type: incoming-webhook
-        payload: |
-          text: "${{ steps.details.outputs.text }}"
-          attachments:
-            - color: "${{ steps.details.outputs.color }}"
-              author_name: "${{ steps.details.outputs.author_name }}"
-              fields: ${{ steps.details.outputs.fields }}
+        payload: ${{ steps.details.outputs.payload }}

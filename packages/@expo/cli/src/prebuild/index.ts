@@ -3,6 +3,8 @@ import chalk from 'chalk';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { logCmdError } from '../utils/errors';
+import { getConfigEnvMode, loadEnvFiles } from '../utils/nodeEnv';
 
 export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
@@ -47,23 +49,16 @@ export const expoPrebuild: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx expo prebuild -h` shows as fast as possible.
-  const [
-    // ./prebuildAsync
-    { prebuildAsync },
-    // ./resolveOptions
-    { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
-    // ../utils/errors
-    { logCmdError },
-  ] = await Promise.all([
-    import('./prebuildAsync.js'),
-    import('./resolveOptions.js'),
-    import('../utils/errors.js'),
-  ]);
+  return (async () => {
+    const projectRoot = getProjectRoot(args);
+    loadEnvFiles(projectRoot, { mode: getConfigEnvMode() });
 
-  return (() => {
-    return prebuildAsync(getProjectRoot(args), {
-      // Parsed options
+    const [
+      { prebuildAsync },
+      { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
+    ] = await Promise.all([import('./prebuildAsync.js'), import('./resolveOptions.js')]);
+
+    return prebuildAsync(projectRoot, {
       clean: !args['--no-clean'],
 
       packageManager: resolvePackageManagerOptions(args),

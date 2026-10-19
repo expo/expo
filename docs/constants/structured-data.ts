@@ -1,3 +1,5 @@
+import { BASE_DESCRIPTIONS } from '../common/i18n';
+
 type BreadcrumbItem = {
   name: string;
   url?: string;
@@ -65,18 +67,35 @@ export function buildFAQPageSchema(items: FAQItem[]) {
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Expo Documentation',
+  name: 'Expo documentation',
+  description: BASE_DESCRIPTIONS.en,
   url: 'https://docs.expo.dev',
   publisher: {
     '@type': 'Organization',
     name: 'Expo',
+    legalName: '650 Industries, Inc.',
+    description: BASE_DESCRIPTIONS.en,
     url: 'https://expo.dev',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'support@expo.dev',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '624 University Ave, FL1',
+      addressLocality: 'Palo Alto',
+      addressRegion: 'CA',
+      postalCode: '94301',
+      addressCountry: 'US',
+    },
     logo: {
       '@type': 'ImageObject',
       url: 'https://docs.expo.dev/static/images/expo-logo.svg',
     },
     sameAs: [
       'https://github.com/expo',
+      'https://www.npmjs.com/org/expo',
       'https://x.com/expo',
       'https://bsky.app/profile/expo.dev',
       'https://www.linkedin.com/company/expo-dev/',

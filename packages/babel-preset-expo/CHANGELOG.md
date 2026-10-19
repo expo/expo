@@ -1,8 +1,102 @@
 # Changelog
 
-## Unpublished
+## 58.0.18
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
+## 58.0.17
+
+No changes in this release.
+
+## 58.0.16
+
+No changes in this release.
+
+## 58.0.15
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+No changes in this release.
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.11
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.10
+
+No changes in this release.
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.8
+
+No changes in this release.
+
+## 58.0.7
+
+No changes in this release.
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.5 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- Record inlined `EXPO_PUBLIC_*` env vars in `cacheVary` metadata so the value is invalidating when it changes ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` as `undefined` inside `node_modules` when the flag is unset to allow cache invaliation as intended ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
@@ -10,10 +104,48 @@
 
 ### 🐛 Bug fixes
 
-- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Escape backslashes when serializing `'widget'` functions so escape sequences like `\n` in a widget layout survive the template-literal round-trip instead of corrupting the stored function and crashing the widget with `SyntaxError: Unexpected EOF`. ([#47626](https://github.com/expo/expo/pull/47626) by [@alecmolloy](https://github.com/alecmolloy))
+- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
+- Disable `@babel/plugin-transform-object-rest-spread` in Hermes v1 and Modern Web sub-presets. The ordering dependence on `@babel/plugin-transform-destructuring` could cause computed exclusion to be missed ([#49278](https://github.com/expo/expo/pull/49278) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+
+## 57.0.5 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 56.0.15 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.14 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.13 — 2026-05-26
 

@@ -1,7 +1,6 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
@@ -10,7 +9,7 @@ class NullableTypeConverter<Type : Any>(
   private val innerConverter: TypeConverter<Type>
 ) : TypeConverter<Type> {
 
-  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): Type? {
+  override fun convert(value: Any?, context: ConverterContext, forceConversion: Boolean): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       return null
     }

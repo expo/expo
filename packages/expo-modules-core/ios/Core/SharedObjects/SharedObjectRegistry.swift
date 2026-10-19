@@ -96,7 +96,8 @@ public final class SharedObjectRegistry: Sendable {
     // A native object that already carries a native state was paired in an earlier runtime. Reuse its
     // id rather than minting a new one: the C++ `NativeState.objectId` is immutable and drives the
     // releaser/`delete`, so a fresh id would disagree with it and leak this object's registry entry.
-    let id = nativeObject.nativeState != nil ? nativeObject.sharedObjectId : pullNextId()
+    let existingNativeState = unreleasedNativeState(of: nativeObject)
+    let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
 
     // Assign the ID and the app context to the object.
     nativeObject.sharedObjectId = id
@@ -124,7 +125,7 @@ public final class SharedObjectRegistry: Sendable {
     // Reuse it so all runtimes share one native state (and one underlying C++ pointee, via
     // `acquireShared`); a fresh state per runtime would leave `nativeObject.nativeState` pointing at
     // whichever ran last and lose the earlier runtimes' pairings.
-    let nativeState = nativeObject.nativeState ?? {
+    let nativeState = existingNativeState ?? {
       let releaser: ObjectReleaser = { [weak self] id in
         self?.delete(id)
       }
@@ -169,6 +170,7 @@ public final class SharedObjectRegistry: Sendable {
     state.withLock { state in
       if let nativeState = state.pairs[id] {
         let native = nativeState.native
+        nativeState.markReleased()
         native.sharedObjectWillRelease()
         // Reset an ID on the object.
         native.sharedObjectId = 0
@@ -230,10 +232,19 @@ public final class SharedObjectRegistry: Sendable {
     // The id table and the native object both resolve to the same `SharedObjectNativeState`, which
     // owns the per-runtime JS counterparts, so a single lookup serves both. Prefer the native object's
     // own back-pointer and fall back to the id table for objects whose back-pointer was cleared.
-    let nativeState = nativeObject.nativeState ?? state.withLock { state in
+    let nativeState = unreleasedNativeState(of: nativeObject) ?? state.withLock { state in
       return state.pairs[nativeObject.sharedObjectId]
     }
     return nativeState?.javaScriptObject(in: runtime)
+  }
+
+  /// Returns the native object's native state, or `nil` if it was released. A released native state can
+  /// outlive the release on a JS object that couldn't drop it (for example a frozen one).
+  private func unreleasedNativeState(of nativeObject: SharedObject) -> SharedObjectNativeState? {
+    guard let nativeState = nativeObject.nativeState, !nativeState.isReleased else {
+      return nil
+    }
+    return nativeState
   }
 
   /**

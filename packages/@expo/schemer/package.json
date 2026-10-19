@@ -1,6 +1,6 @@
 {
   "name": "@expo/schemer",
-  "version": "2.2.1",
+  "version": "2.4.2",
   "description": "Centralized scheme validation library for Expo",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "bugs": {
@@ -32,13 +32,11 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "ajv": "^8.1.0",
-    "ajv-formats": "^2.0.2",
-    "json-schema-traverse": "^1.0.0",
+    "@expo/schema-utils": "workspace:*",
     "probe-image-size": "^7.1.0"
   },
   "devDependencies": {
-    "@types/probe-image-size": "^7.2.4",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/probe-image-size": "^7.2.4"
   }
 }

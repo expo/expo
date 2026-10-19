@@ -59,6 +59,17 @@ struct JavaScriptActorTests {
   }
 
   @Test
+  func `assumeIsolated preserves typed error`() {
+    struct CustomError: Error {}
+
+    #expect(throws: CustomError.self) {
+      try JavaScriptActor.assumeIsolated { () throws(CustomError) -> Int in
+        throw CustomError()
+      }
+    }
+  }
+
+  @Test
   func `assumeIsolated can modify captured variables`() {
     var counter = 0
     JavaScriptActor.assumeIsolated {
@@ -125,7 +136,7 @@ struct JavaScriptActorTests {
     // async outside, async inside
     try await runtime.execute {
       JavaScriptActor.assertIsolated()
-      try await Task.sleep(nanoseconds: 0)  // makes the closure async
+      try await Task.sleep(nanoseconds: 0) // makes the closure async
       JavaScriptActor.assertIsolated()
     }
   }
@@ -135,7 +146,7 @@ struct JavaScriptActorTests {
     // sync outside, async inside
     try runtime.execute {
       JavaScriptActor.assertIsolated()
-      try await Task.sleep(nanoseconds: 0)  // makes the closure async
+      try await Task.sleep(nanoseconds: 0) // makes the closure async
       JavaScriptActor.assertIsolated()
     }
   }

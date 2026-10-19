@@ -11,6 +11,7 @@ import type { DOMPropsInternal } from './dom-internal.types';
 import type { BridgeMessage, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
+  DOM_READY,
   getInjectBodySizeObserverScript,
   getInjectEventScript,
   MATCH_CONTENTS_EVENT,
@@ -174,6 +175,12 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
             height: data.height,
           });
         }
+        return;
+      }
+
+      if (type === DOM_READY) {
+        // Re-send the props the DOM side missed while the WebView was loading.
+        emit({ type: '$$props', data: smartActions });
         return;
       }
 

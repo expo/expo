@@ -2,7 +2,9 @@ package expo.modules.devlauncher.react
 
 import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -21,7 +23,11 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
   }
 
   override fun getUseDeveloperSupport(): Boolean? {
-    return if (DevLauncherController.wasInitialized()) DevLauncherController.instance.useDeveloperSupport else null
+    return if (DevLauncherController.wasInitialized()) {
+      DevLauncherController.instance.useDeveloperSupport
+    } else {
+      null
+    }
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
@@ -35,6 +41,16 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
       return null
     }
     return HermesExecutorFactory()
+  }
+
+  override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
+    reactNativeHost.setDevMenuConfiguration(
+      DevMenuConfiguration(
+        devMenuEnabled = true,
+        shakeGestureEnabled = false,
+        keyboardShortcutsEnabled = true
+      )
+    )
   }
 
   override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {

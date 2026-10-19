@@ -129,6 +129,20 @@ describe(mergeWithDuplicate, () => {
       duplicates: a.duplicates,
     });
   });
+
+  it('does not list the returned resolution as its own duplicate', () => {
+    const a = { ...BASE_RESOLUTION, path: 'a', depth: 0 };
+    const b = {
+      ...BASE_RESOLUTION,
+      path: 'b',
+      depth: 1,
+      duplicates: [{ ...BASE_RESOLUTION, path: 'a' }],
+    };
+    expect(mergeWithDuplicate(a, b)).toMatchObject({
+      path: 'a',
+      duplicates: [expect.objectContaining({ path: 'b' })],
+    });
+  });
 });
 
 describe(mergeResolutionResults, () => {

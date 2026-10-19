@@ -38,7 +38,7 @@ export function ResourceSavingView({ visible, children, style, ...rest }: Props)
         collapsable={false}
         removeClippedSubviews={
           // On iOS & macOS, set removeClippedSubviews to true only when not focused
-          // This is an workaround for a bug where the clipped view never re-appears
+          // This is a workaround for a bug where the clipped view never re-appears
           Platform.OS === 'ios' || Platform.OS === 'macos' ? !visible : true
         }
         style={[

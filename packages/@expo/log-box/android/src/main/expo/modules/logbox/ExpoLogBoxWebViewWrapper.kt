@@ -3,12 +3,14 @@
 package expo.modules.logbox
 
 import android.app.Activity
+import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -19,12 +21,16 @@ import kotlinx.coroutines.launch
 class ExpoLogBoxWebViewWrapper(
   val actions: Actions,
   val props: Map<String, Any>,
-  val context: Activity
+  val context: Activity,
+  /** URL the running bundle was loaded from, when it was served over HTTP. */
+  private val bundleUrl: String? = null
 ) {
   val webView: WebView = WebView(context).apply {
     setBackgroundColor(Color.BLACK)
     settings.javaScriptEnabled = true
-    setWebContentsDebuggingEnabled(true)
+    if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+      setWebContentsDebuggingEnabled(true)
+    }
     // This interface is defined by the Expo DOM Components WebView Wrapper
     // and must always be the same as [add link]
     addJavascriptInterface(
@@ -48,6 +54,18 @@ class ExpoLogBoxWebViewWrapper(
     loadUrl("file:///android_asset/ExpoLogBox.bundle/index.html")
   }
 
+  private fun getDevServerOrigin(): String {
+    val bundleUri = bundleUrl?.toUri()
+    val scheme = bundleUri?.scheme
+    // A bundle loaded from disk has no reachable origin.
+    if (bundleUri != null && (scheme == "http" || scheme == "https")) {
+      bundleUri.authority?.let { authority ->
+        return "$scheme://$authority"
+      }
+    }
+    return "http://${AndroidInfoHelpers.getServerHost(context)}"
+  }
+
   private fun initializeLogBoxDomEnvironment() {
     val initialProps = mapOf(
       "names" to actions.getNames(),
@@ -57,7 +75,7 @@ class ExpoLogBoxWebViewWrapper(
     val gson = Gson()
     val jsonObject = gson.toJson(initialProps)
 
-    val devServerOrigin = "http://${AndroidInfoHelpers.getServerHost(context)}"
+    val devServerOrigin = getDevServerOrigin()
     val script = """
             var process=globalThis.process||{};process.env=process.env||{};
             process.env.EXPO_DEV_SERVER_ORIGIN='$devServerOrigin';

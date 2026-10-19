@@ -1,23 +1,28 @@
+import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import type {
-  Dependency,
+  Dependency as MetroDependency,
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
-import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import * as path from 'path';
 
+import type { Dependency as ExpoTransformDependency } from '../../../transform-worker/collect-dependencies';
 import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
-import { wrapTransformResultMaps } from '../../packedMap';
+import type { ChunkingStrategy } from '../../serializerAssets';
 
 export const projectRoot = '/app';
 
-const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues(null);
+const METRO_CONFIG_DEFAULTS = metroConfigDefaults.getDefaultValues();
 
-function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
+type ExpoResolvedDependency = Omit<MetroDependency, 'data'> & {
+  data: ExpoTransformDependency;
+};
+
+function toDependencyMap(...deps: ExpoResolvedDependency[]): Map<string, MetroDependency> {
   const map = new Map();
 
   for (const dep of deps) {
@@ -87,6 +92,9 @@ export async function microBundle({
   resolve?: (from: string, id: string) => string;
   options?: {
     dev?: boolean;
+    lazy?: boolean;
+    /** Include weak-only modules to preserve older test fixtures. */
+    legacyTraverseWeakDependencies?: boolean;
     platform?: string;
     baseUrl?: string;
     output?: 'static';
@@ -98,6 +106,7 @@ export async function microBundle({
     inlineSourceMaps?: boolean;
     minify?: boolean;
     splitChunks?: boolean;
+    chunkingStrategy?: ChunkingStrategy;
     treeshake?: boolean;
     optimize?: boolean;
     inlineRequires?: boolean;
@@ -166,6 +175,8 @@ export async function microBundle({
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
+      // Resolve every edge, even if its target was already visited.
+      onResolve?.(absPath);
       if (visited.has(absPath)) {
         const mod = modules.get(absPath);
         if (mod && parent?.path) mod.inverseDependencies.add(parent.path);
@@ -176,7 +187,6 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      onResolve?.(absPath);
       const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
@@ -192,6 +202,14 @@ export async function microBundle({
 
         try {
           const resolved = resolve(id, dep.data.name);
+          if (
+            (dep.data.data.asyncType === 'weak' && !options.legacyTraverseWeakDependencies) ||
+            (options.lazy && dep.data.data.asyncType != null)
+          ) {
+            // @ts-expect-error
+            dep.absolutePath = path.join(projectRoot, resolved);
+            continue;
+          }
           await recurseWith([resolved], module, (fp) => {
             // @ts-expect-error
             dep.absolutePath = fp;
@@ -256,6 +274,7 @@ export async function microBundle({
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,
+              chunkingStrategy: options.chunkingStrategy,
               // NOTE(cedric): exporting mode should always be provided explicitly, but we can't easily do that in the tests
               exporting: !dev,
             }
@@ -275,7 +294,7 @@ export async function microBundle({
       getRunModuleStatement(moduleId: number | string) {
         return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
       },
-      includeAsyncPaths: dev,
+      includeAsyncPaths: options.lazy ?? dev,
       shouldAddToIgnoreList(_module: Module) {
         return false;
       },
@@ -312,29 +331,25 @@ export async function parseModule(
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const codeBuffer = Buffer.from(code);
 
-  // Mirror the production `Bundler.transformFile` wrapper so test
-  // fixtures see the same `data.map` shape readers do.
-  const { output, dependencies } = wrapTransformResultMaps(
-    await expoMetroTransformWorker.transform(
-      // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
-      {
-        ...METRO_CONFIG_DEFAULTS.transformer,
-        asyncRequireModulePath: 'expo-mock/async-require',
-        unstable_allowRequireContext: true,
-        allowOptionalDependencies: true,
-        assetPlugins: [],
-        babelTransformerPath: '@expo/metro-config/build/babel-transformer',
-        ...transformConfig,
-      },
-      projectRoot,
-      absoluteFilePath,
-      codeBuffer,
-      {
-        inlineRequires: false,
-        ...transformOptions,
-        inlinePlatform: true,
-      }
-    )
+  const { output, dependencies } = await expoMetroTransformWorker.transform(
+    // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
+    {
+      ...METRO_CONFIG_DEFAULTS.transformer,
+      asyncRequireModulePath: 'expo-mock/async-require',
+      unstable_allowRequireContext: true,
+      allowOptionalDependencies: true,
+      assetPlugins: [],
+      babelTransformerPath: '@expo/metro-config/build/babel-transformer',
+      ...transformConfig,
+    },
+    projectRoot,
+    absoluteFilePath,
+    codeBuffer,
+    {
+      inlineRequires: false,
+      ...transformOptions,
+      inlinePlatform: true,
+    }
   );
 
   return {

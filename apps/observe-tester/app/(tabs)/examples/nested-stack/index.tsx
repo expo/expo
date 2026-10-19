@@ -29,6 +29,11 @@ export default function NestedStackIndex() {
         onPress={() => router.push('/examples/nested-stack/foo')}
       />
       <Button
+        title="Filtered params"
+        description="Open [userId]/[accountId]?firstName=Ada&tab=posts with accountId and firstName filtered"
+        onPress={() => router.push('/examples/nested-stack/42/acct-123?firstName=Ada&tab=posts')}
+      />
+      <Button
         title="Nested → modal"
         description="Push into a nested stack that opens a modal"
         onPress={() => router.push('/examples/nested-stack/nested')}

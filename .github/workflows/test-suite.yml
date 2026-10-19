@@ -4,10 +4,11 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
+      - .github/actions/setup-maestro/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -20,21 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
-    paths:
-      - .github/actions/detect-platform-change/action.yml
-      - .github/workflows/test-suite.yml
-      - .github/actions/use-android-emulator/action.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!packages/create-expo/**'
-      - '!packages/create-expo-nightly/**'
-      - '!packages/create-expo-module/**'
-      - '!**.md'
-      - '!**/__tests__/**'
-      - '!**/__mocks__/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -42,6 +29,10 @@ concurrency:
 
 jobs:
   detect-platform-changes:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
     runs-on: ubuntu-24.04
     outputs:
       should_build_ios: ${{ steps.build.outputs.should_run_ios }}
@@ -50,7 +41,7 @@ jobs:
       should_test_android: ${{ steps.e2e.outputs.should_run_android }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🧐 Detect build-relevant platform changes
         id: build
         uses: ./.github/actions/detect-platform-change
@@ -67,6 +58,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
@@ -87,6 +79,7 @@ jobs:
             "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
+            "packages/expo-app-metrics/**/android/**",
             "packages/expo-constants/**/android/**",
             "packages/expo-crypto/**/android/**",
             "packages/expo-file-system/**/android/**",
@@ -94,6 +87,7 @@ jobs:
             "packages/expo-image/**/android/**",
             "packages/expo-keep-awake/**/android/**",
             "packages/expo-localization/**/android/**",
+            "packages/expo-router/**/android/**",
             "packages/expo-sqlite/**/android/**",
             "packages/expo-video/**/android/**",
             "apps/bare-expo/**/android/**"
@@ -110,6 +104,7 @@ jobs:
             "packages/expo-image/**/ios/**",
             "packages/expo-keep-awake/**/ios/**",
             "packages/expo-localization/**/ios/**",
+            "packages/expo-router/**/ios/**",
             "packages/expo-sqlite/**/ios/**",
             "packages/expo-video/**/ios/**",
             "apps/bare-expo/**/ios/**"
@@ -117,6 +112,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite.yml,
             .github/actions/use-android-emulator/action.yml,
+            .github/actions/setup-maestro/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/expo-modules-core/**",
@@ -130,6 +126,7 @@ jobs:
             "packages/expo-image/**",
             "packages/expo-keep-awake/**",
             "packages/expo-localization/**",
+            "packages/expo-router/**",
             "packages/expo-sqlite/**",
             "packages/expo-video/**",
             pnpm-lock.yaml,
@@ -144,31 +141,28 @@ jobs:
       actions: write
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-      - name: 🍺 Install required tools
-        run: |
-          brew install watchman || true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@12fd324f1d0b43274fdc8130f6980590a667c455 # v1.312.0
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           bundler-cache: true
           ruby-version: 3.2.2
       - name: Setup ccache
         uses: ./.github/actions/setup-ccache
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
@@ -178,6 +172,7 @@ jobs:
         with:
           ccache: 'true'
           bare-expo-pods: 'true'
+          ccache-variant: 'e2e-release'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
@@ -209,7 +204,7 @@ jobs:
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack iOS project (bare-expo)
-        uses: expo/actions/repack-app-artifact@150c682164cec02a2d43347b70906d234d33f575 # main
+        uses: expo/actions/repack-app-artifact@79ae40f3ccaa24e0d8ef3fa742bae68968f0ab16 # main
         timeout-minutes: 55
         env:
           EXPO_DEBUG: 1
@@ -217,6 +212,7 @@ jobs:
           RCT_USE_PREBUILT_RNCORE: 1
           RCT_USE_RN_DEP: 1
           EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1 # Temporary workaround for build error before expo-router migration
+          XCODE_XCCONFIG_FILE: ${{ github.workspace }}/.github/xcode/active-arch-only.xcconfig
         with:
           platform: ios
           fingerprint-state-file: ${{ runner.temp }}/fingerprint-state.json
@@ -230,6 +226,7 @@ jobs:
             ./scripts/start-ios-e2e-test.ts --build
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
+          include-hidden-files: true # Upload "assets/__node_modules/.pnpm/"
       - name: Show ccache stats
         run: ccache -s -v
       - name: 🔔 Notify on Slack
@@ -246,7 +243,7 @@ jobs:
     runs-on: macos-26
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
@@ -268,15 +265,15 @@ jobs:
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
       - name: 🍺 Install Maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: ./.github/actions/setup-maestro
         with:
-          version: 10
+          version: 2.6.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
       - name: 🔨 Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
@@ -356,7 +353,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -364,7 +361,7 @@ jobs:
         with:
           bun-version: 1.x
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -373,11 +370,11 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
@@ -395,9 +392,9 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      - name: 🧪 Test image comparison utilities
-        run: bun test
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 🧪 Test e2e utilities
+        run: bun test e2e/image-comparison scripts/lib
+        working-directory: apps/bare-expo
       - name: ⚛️ Display React Native config
         run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
@@ -418,7 +415,7 @@ jobs:
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack Android project (bare-expo)
-        uses: expo/actions/repack-app-artifact@150c682164cec02a2d43347b70906d234d33f575 # main
+        uses: expo/actions/repack-app-artifact@79ae40f3ccaa24e0d8ef3fa742bae68968f0ab16 # main
         timeout-minutes: 35
         env:
           EXPO_DEBUG: 1
@@ -452,7 +449,7 @@ jobs:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -465,18 +462,18 @@ jobs:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk/release
       - name: 🍺 Install Maestro
-        run: |
+        uses: ./.github/actions/setup-maestro
+        with:
           # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
           # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
           # the Android emulator in CI.
-          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.4.0 bash
-          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+          version: 2.4.0
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'

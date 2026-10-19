@@ -87,12 +87,12 @@ internal struct SymbolEffectOptionsConfig: Record {
     case .nonRepeating:
       options = .nonRepeating
     case .continuous:
-      if #available(iOS 18.0, tvOS 18.0, *) {
+      if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
         options = .repeat(.continuous)
       }
       // iOS 17: indefinite effects loop by default, so `.default` is fine here.
     case .periodic:
-      if #available(iOS 18.0, tvOS 18.0, *) {
+      if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
         options = .repeat(.periodic(repeatCount, delay: repeatDelay))
       }
     case .none:
@@ -248,7 +248,7 @@ private func buildDisappearEffect(_ config: SymbolEffectConfig) -> DisappearSymb
   }
 }
 
-@available(iOS 18.0, tvOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
 private func buildWiggleEffect(_ config: SymbolEffectConfig) -> WiggleSymbolEffect {
   let directed: WiggleSymbolEffect = if let angle = config.customAngle {
     .wiggle.custom(angle: angle)
@@ -272,7 +272,7 @@ private func buildWiggleEffect(_ config: SymbolEffectConfig) -> WiggleSymbolEffe
   }
 }
 
-@available(iOS 18.0, tvOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
 private func buildBreatheEffect(_ config: SymbolEffectConfig) -> BreatheSymbolEffect {
   let styled: BreatheSymbolEffect = switch config.style {
   case .pulse: .breathe.pulse
@@ -286,7 +286,7 @@ private func buildBreatheEffect(_ config: SymbolEffectConfig) -> BreatheSymbolEf
   }
 }
 
-@available(iOS 18.0, tvOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
 private func buildRotateEffect(_ config: SymbolEffectConfig) -> RotateSymbolEffect {
   let directed: RotateSymbolEffect = switch config.direction {
   case .clockwise: .rotate.clockwise
@@ -300,7 +300,7 @@ private func buildRotateEffect(_ config: SymbolEffectConfig) -> RotateSymbolEffe
   }
 }
 
-@available(iOS 26.0, tvOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
 private func buildDrawOnEffect(_ config: SymbolEffectConfig) -> DrawOnSymbolEffect {
   return switch config.scope {
   case .byLayer: .drawOn.byLayer
@@ -310,7 +310,7 @@ private func buildDrawOnEffect(_ config: SymbolEffectConfig) -> DrawOnSymbolEffe
   }
 }
 
-@available(iOS 26.0, tvOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
 private func buildDrawOffEffect(_ config: SymbolEffectConfig) -> DrawOffSymbolEffect {
   let played: DrawOffSymbolEffect = switch config.playbackStyle {
   case .reversed: .drawOff.reversed
@@ -349,31 +349,31 @@ private func applyIndefiniteEffect<TargetView: View>(
   case .disappear:
     view.symbolEffect(buildDisappearEffect(config), options: options, isActive: isActive)
   case .wiggle:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildWiggleEffect(config), options: options, isActive: isActive)
     } else {
       view
     }
   case .breathe:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildBreatheEffect(config), options: options, isActive: isActive)
     } else {
       view
     }
   case .rotate:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildRotateEffect(config), options: options, isActive: isActive)
     } else {
       view
     }
   case .drawOn:
-    if #available(iOS 26.0, tvOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       view.symbolEffect(buildDrawOnEffect(config), options: options, isActive: isActive)
     } else {
       view
     }
   case .drawOff:
-    if #available(iOS 26.0, tvOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       view.symbolEffect(buildDrawOffEffect(config), options: options, isActive: isActive)
     } else {
       view
@@ -397,19 +397,19 @@ private func applyDiscreteEffect<TargetView: View>(
   case .variableColor:
     view.symbolEffect(buildVariableColorEffect(config), options: options, value: value)
   case .wiggle:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildWiggleEffect(config), options: options, value: value)
     } else {
       view
     }
   case .breathe:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildBreatheEffect(config), options: options, value: value)
     } else {
       view
     }
   case .rotate:
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       view.symbolEffect(buildRotateEffect(config), options: options, value: value)
     } else {
       view

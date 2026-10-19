@@ -12,8 +12,7 @@ import {
   hasRequiredIOSFilesAsync,
 } from '../prebuild/clearNativeFolder';
 import { intersecting } from './array';
-
-const debug = require('debug')('expo:utils:scheme') as typeof console.log;
+import { event } from './events';
 
 // sort longest to ensure uniqueness.
 // this might be undesirable as it causes the QR code to be longer.
@@ -35,17 +34,17 @@ function resolveExpoOrLongestScheme(schemes: string[]): string[] {
 export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
   try {
     const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
-    debug(`ios application Info.plist path:`, infoPlistBuildProperty);
     if (infoPlistBuildProperty) {
+      event('scheme_ios_plist_path', { path: infoPlistBuildProperty });
       const configPath = path.join(projectRoot, 'ios', infoPlistBuildProperty);
       const rawPlist = fs.readFileSync(configPath, 'utf8');
       const plistObject = plist.parse(rawPlist);
       const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
-      debug(`ios application schemes:`, schemes);
+      event('scheme_ios_schemes', { schemes });
       return resolveExpoOrLongestScheme(schemes);
     }
   } catch (error) {
-    debug(`expected error collecting ios application schemes for the main target:`, error);
+    event('scheme_ios_error', { error: event.error(error as Error) });
   }
   // No ios folder or some other error
   return [];
@@ -57,10 +56,10 @@ export async function getSchemesForAndroidAsync(projectRoot: string): Promise<st
     const configPath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
     const manifest = await AndroidConfig.Manifest.readAndroidManifestAsync(configPath);
     const schemes = await AndroidConfig.Scheme.getSchemesFromManifest(manifest);
-    debug(`android application schemes:`, schemes);
+    event('scheme_android_schemes', { schemes });
     return resolveExpoOrLongestScheme(schemes);
   } catch (error) {
-    debug(`expected error collecting android application schemes for the main activity:`, error);
+    event('scheme_android_error', { error: event.error(error as Error) });
     // No android folder or some other error
     return [];
   }

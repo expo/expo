@@ -4,7 +4,12 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
 import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
-import type { NativeTabOptions, NativeTabsProps, SymbolOrImageSource } from '../types';
+import type {
+  IconRenderingMode,
+  NativeTabOptions,
+  NativeTabsProps,
+  SymbolOrImageSource,
+} from '../types';
 
 export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
   default?: ColorValue;
@@ -29,7 +34,7 @@ export type AwaitedIcon =
     }
   | {
       src?: ImageSourcePropType;
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
@@ -48,7 +53,7 @@ export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
       }
     };
     loadIcon();
-    // Checking `src` rather then icon here, to avoid unnecessary re-renders
+    // Checking `src` rather than icon here, to avoid unnecessary re-renders
     // The icon object can be recreated, while src should stay the same
     // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
     // So we should be safe with promise resolving
@@ -69,7 +74,7 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
 
 export function convertComponentSrcToImageSource(
   src: React.ReactElement,
-  renderingMode?: 'template' | 'original'
+  renderingMode?: IconRenderingMode
 ) {
   let result: SymbolOrImageSource | undefined;
   if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {

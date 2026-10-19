@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 import { useNavigation, useTheme } from '../../native';
 import type { HeaderOptions, Layout } from '../types';
 import { useFrameSize } from '../useFrameSize';
@@ -311,7 +311,7 @@ export function Header(props: Props) {
                   headerTransparent &&
                   (backgroundStyle.backgroundColor === 'transparent' ||
                     (backgroundStyle.backgroundColor &&
-                      Color(backgroundStyle.backgroundColor)?.alpha() === 0))
+                      alpha(backgroundStyle.backgroundColor) === 0))
                     ? 'none'
                     : 'auto',
               },

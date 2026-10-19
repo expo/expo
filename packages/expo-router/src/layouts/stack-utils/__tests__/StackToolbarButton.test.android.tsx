@@ -5,13 +5,13 @@ import type { NativeToolbarButtonProps } from '../toolbar/StackToolbarButton/typ
 import { ToolbarColorContext, type ToolbarColors } from '../toolbar/context';
 
 jest.mock('@expo/ui/jetpack-compose', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
   return {
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     Badge: jest.fn((props) => <View testID="Badge" {...props} />),
     Box: jest.fn((props) => <View testID="Box" {...props} />),
-    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
+    Text: jest.fn((props) => <Text testID="ComposeText" {...props} />),
   };
 });
 
@@ -66,16 +66,16 @@ describe('NativeToolbarButton', () => {
   };
 
   describe('tint color logic', () => {
-    it('sets tint to null when imageRenderingMode is original', () => {
-      render(<NativeToolbarButton {...defaultProps} imageRenderingMode="original" />);
+    it('sets tint to null when imageRenderingMode is original', async () => {
+      await render(<NativeToolbarButton {...defaultProps} imageRenderingMode="original" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: null,
       });
     });
 
-    it('sets tint to null when imageRenderingMode is original even with tintColor prop', () => {
-      render(
+    it('sets tint to null when imageRenderingMode is original even with tintColor prop', async () => {
+      await render(
         <NativeToolbarButton {...defaultProps} imageRenderingMode="original" tintColor="red" />
       );
 
@@ -84,8 +84,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('uses provided tintColor when imageRenderingMode is template', () => {
-      render(
+    it('uses provided tintColor when imageRenderingMode is template', async () => {
+      await render(
         <NativeToolbarButton {...defaultProps} imageRenderingMode="template" tintColor="red" />
       );
 
@@ -94,24 +94,24 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', () => {
-      render(<NativeToolbarButton {...defaultProps} imageRenderingMode="template" />);
+    it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', async () => {
+      await render(<NativeToolbarButton {...defaultProps} imageRenderingMode="template" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
       });
     });
 
-    it('uses provided tintColor when imageRenderingMode is undefined', () => {
-      render(<NativeToolbarButton {...defaultProps} tintColor="red" />);
+    it('uses provided tintColor when imageRenderingMode is undefined', async () => {
+      await render(<NativeToolbarButton {...defaultProps} tintColor="red" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'red',
       });
     });
 
-    it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', () => {
-      render(<NativeToolbarButton {...defaultProps} />);
+    it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', async () => {
+      await render(<NativeToolbarButton {...defaultProps} />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
@@ -128,32 +128,35 @@ describe('NativeToolbarButton', () => {
       );
     }
 
-    it('uses context tintColor when no prop tintColor', () => {
-      renderWithColors(defaultProps, { tintColor: 'context-tint' });
+    it('uses context tintColor when no prop tintColor', async () => {
+      await renderWithColors(defaultProps, { tintColor: 'context-tint' });
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'context-tint',
       });
     });
 
-    it('prop tintColor takes precedence over context tintColor', () => {
-      renderWithColors({ ...defaultProps, tintColor: 'prop-tint' }, { tintColor: 'context-tint' });
+    it('prop tintColor takes precedence over context tintColor', async () => {
+      await renderWithColors(
+        { ...defaultProps, tintColor: 'prop-tint' },
+        { tintColor: 'context-tint' }
+      );
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'prop-tint',
       });
     });
 
-    it('falls back to default when no prop or context tintColor', () => {
-      renderWithColors(defaultProps, {});
+    it('falls back to default when no prop or context tintColor', async () => {
+      await renderWithColors(defaultProps, {});
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         tint: 'dynamic:onSurface',
       });
     });
 
-    it('context tintColor ignored when imageRenderingMode is original', () => {
-      renderWithColors(
+    it('context tintColor ignored when imageRenderingMode is original', async () => {
+      await renderWithColors(
         { ...defaultProps, imageRenderingMode: 'original' },
         { tintColor: 'context-tint' }
       );
@@ -177,10 +180,10 @@ describe('NativeToolbarButton', () => {
       consoleSpy.mockRestore();
     });
 
-    it('returns null and warns when source is missing in development', () => {
+    it('returns null and warns when source is missing in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      const { toJSON } = render(<NativeToolbarButton />);
+      const { toJSON } = await render(<NativeToolbarButton />);
 
       expect(toJSON()).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -188,10 +191,10 @@ describe('NativeToolbarButton', () => {
       );
     });
 
-    it('returns null without warning in production', () => {
+    it('returns null without warning in production', async () => {
       process.env.NODE_ENV = 'production';
 
-      const { toJSON } = render(<NativeToolbarButton />);
+      const { toJSON } = await render(<NativeToolbarButton />);
 
       expect(toJSON()).toBeNull();
       expect(consoleSpy).not.toHaveBeenCalled();
@@ -201,8 +204,8 @@ describe('NativeToolbarButton', () => {
   describe('prop forwarding', () => {
     it.each([false, true, undefined])(
       'passes hidden %s as visible={!hidden} to AnimatedItemContainer',
-      (hidden) => {
-        render(<NativeToolbarButton {...defaultProps} hidden={hidden} />);
+      async (hidden) => {
+        await render(<NativeToolbarButton {...defaultProps} hidden={hidden} />);
 
         expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
           visible: !hidden,
@@ -212,8 +215,8 @@ describe('NativeToolbarButton', () => {
 
     it.each([false, true, undefined])(
       'passes disabled %s as enabled={!disabled} to IconButton',
-      (disabled) => {
-        render(<NativeToolbarButton {...defaultProps} disabled={disabled} />);
+      async (disabled) => {
+        await render(<NativeToolbarButton {...defaultProps} disabled={disabled} />);
 
         expect(MockedIconButton.mock.calls[0]![0]).toMatchObject({
           enabled: !disabled,
@@ -221,18 +224,18 @@ describe('NativeToolbarButton', () => {
       }
     );
 
-    it('passes onPress as onClick to IconButton', () => {
+    it('passes onPress as onClick to IconButton', async () => {
       const onPress = jest.fn();
-      render(<NativeToolbarButton {...defaultProps} onPress={onPress} />);
+      await render(<NativeToolbarButton {...defaultProps} onPress={onPress} />);
 
       expect(MockedIconButton.mock.calls[0]![0]).toMatchObject({
         onClick: onPress,
       });
     });
 
-    it('passes source and size=24 to Icon', () => {
+    it('passes source and size=24 to Icon', async () => {
       const source = { uri: 'my-icon' };
-      render(<NativeToolbarButton {...defaultProps} source={source} />);
+      await render(<NativeToolbarButton {...defaultProps} source={source} />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         source,
@@ -240,16 +243,16 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('passes accessibilityLabel to Icon as contentDescription', () => {
-      render(<NativeToolbarButton {...defaultProps} accessibilityLabel="Open settings" />);
+    it('passes accessibilityLabel to Icon as contentDescription', async () => {
+      await render(<NativeToolbarButton {...defaultProps} accessibilityLabel="Open settings" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         contentDescription: 'Open settings',
       });
     });
 
-    it('passes accessibilityLabel even when imageRenderingMode is original', () => {
-      render(
+    it('passes accessibilityLabel even when imageRenderingMode is original', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           imageRenderingMode="original"
@@ -262,8 +265,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('omits contentDescription when accessibilityLabel is not provided', () => {
-      render(<NativeToolbarButton {...defaultProps} />);
+    it('omits contentDescription when accessibilityLabel is not provided', async () => {
+      await render(<NativeToolbarButton {...defaultProps} />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         contentDescription: undefined,
@@ -272,8 +275,8 @@ describe('NativeToolbarButton', () => {
   });
 
   describe('badge rendering', () => {
-    it('renders Box with Badge and text when badge has a value', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+    it('renders Box with Badge and text when badge has a value', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
 
       expect(MockedBox).toHaveBeenCalled();
       expect(MockedBox.mock.calls[0]![0]).toMatchObject({
@@ -286,16 +289,16 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('renders Badge without children when badge value is empty string (dot indicator)', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '' }} />);
+    it('renders Badge without children when badge value is empty string (dot indicator)', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '' }} />);
 
       expect(MockedBox).toHaveBeenCalled();
       expect(MockedBadge).toHaveBeenCalled();
       expect(MockedComposeText).not.toHaveBeenCalled();
     });
 
-    it('passes containerColor from badge.style.backgroundColor', () => {
-      render(
+    it('passes containerColor from badge.style.backgroundColor', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           badge={{ value: '5', style: { backgroundColor: 'red' } }}
@@ -307,8 +310,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('passes contentColor from badge.style.color', () => {
-      render(
+    it('passes contentColor from badge.style.color', async () => {
+      await render(
         <NativeToolbarButton {...defaultProps} badge={{ value: '5', style: { color: 'white' } }} />
       );
 
@@ -317,30 +320,30 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('does not render Box when badge prop is undefined', () => {
-      render(<NativeToolbarButton {...defaultProps} />);
+    it('does not render Box when badge prop is undefined', async () => {
+      await render(<NativeToolbarButton {...defaultProps} />);
 
       expect(MockedBox).not.toHaveBeenCalled();
     });
 
-    it('converts numeric badge value to string', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: 42 }} />);
+    it('converts numeric badge value to string', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: 42 }} />);
 
       expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
         children: '42',
       });
     });
 
-    it('AnimatedItemContainer visible works with badge present', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '1' }} hidden />);
+    it('AnimatedItemContainer visible works with badge present', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '1' }} hidden />);
 
       expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
         visible: false,
       });
     });
 
-    it('does not render badge text when value is null', () => {
-      render(
+    it('does not render badge text when value is null', async () => {
+      await render(
         <NativeToolbarButton {...defaultProps} badge={{ value: null as unknown as string }} />
       );
 
@@ -349,8 +352,8 @@ describe('NativeToolbarButton', () => {
       expect(MockedComposeText).not.toHaveBeenCalled();
     });
 
-    it('renders badge text "0" when value is 0', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: 0 }} />);
+    it('renders badge text "0" when value is 0', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: 0 }} />);
 
       expect(MockedComposeText).toHaveBeenCalled();
       expect(MockedComposeText.mock.calls[0]![0]).toMatchObject({
@@ -358,8 +361,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('passes fontSize from badge.style to ComposeText', () => {
-      render(
+    it('passes fontSize from badge.style to ComposeText', async () => {
+      await render(
         <NativeToolbarButton {...defaultProps} badge={{ value: '1', style: { fontSize: 10 } }} />
       );
 
@@ -368,8 +371,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('passes fontFamily from badge.style to ComposeText', () => {
-      render(
+    it('passes fontFamily from badge.style to ComposeText', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           badge={{ value: '1', style: { fontFamily: 'monospace' } }}
@@ -381,8 +384,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('passes supported fontWeight from badge.style to ComposeText', () => {
-      render(
+    it('passes supported fontWeight from badge.style to ComposeText', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           badge={{ value: '1', style: { fontWeight: '700' } }}
@@ -394,10 +397,10 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('warns and omits unsupported fontWeight values', () => {
+    it('warns and omits unsupported fontWeight values', async () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      render(
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           badge={{ value: '1', style: { fontWeight: 'semibold' } }}
@@ -413,24 +416,24 @@ describe('NativeToolbarButton', () => {
       consoleSpy.mockRestore();
     });
 
-    it('applies alpha modifier to Badge when disabled with badge', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} disabled />);
+    it('applies alpha modifier to Badge when disabled with badge', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} disabled />);
 
       expect(MockedBadge.mock.calls[0]![0]).toMatchObject({
         modifiers: [{ type: 'alpha', alpha: 0.38 }],
       });
     });
 
-    it('does not apply alpha modifier to Badge when enabled with badge', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+    it('does not apply alpha modifier to Badge when enabled with badge', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
 
       expect(MockedBadge.mock.calls[0]![0].modifiers).toBeUndefined();
     });
   });
 
   describe('accessibility with badge', () => {
-    it('appends badge value to contentDescription', () => {
-      render(
+    it('appends badge value to contentDescription', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           accessibilityLabel="Notifications"
@@ -443,8 +446,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('does not append badge value when badge has no value', () => {
-      render(
+    it('does not append badge value when badge has no value', async () => {
+      await render(
         <NativeToolbarButton
           {...defaultProps}
           accessibilityLabel="Notifications"
@@ -457,8 +460,8 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('does not set contentDescription when no accessibilityLabel', () => {
-      render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+    it('does not set contentDescription when no accessibilityLabel', async () => {
+      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
 
       expect(MockedIcon.mock.calls[0]![0].contentDescription).toBeUndefined();
     });

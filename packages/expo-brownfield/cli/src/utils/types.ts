@@ -20,6 +20,7 @@ export interface AndroidConfig extends CommonConfig {
   library: string;
   tasks: string[];
   variant: BuildVariant;
+  fused: boolean;
 }
 
 export interface PackageConfiguration {

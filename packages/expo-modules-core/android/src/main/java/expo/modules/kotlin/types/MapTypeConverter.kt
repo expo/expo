@@ -3,7 +3,6 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -27,12 +26,12 @@ class MapTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): Map<*, *> {
     val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
     return convertFromReadableMap(jsMap, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): Map<*, *> {
     return if (valueConverter.isTrivial() && !forceConversion) {
       value as Map<*, *>
     } else {
@@ -51,7 +50,7 @@ class MapTypeConverter(
     }
   }
 
-  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+  private fun convertFromReadableMap(jsMap: ReadableMap, context: ConverterContext, forceConversion: Boolean): Map<*, *> {
     val result = mutableMapOf<String, Any?>()
 
     jsMap.entryIterator.forEach { (key, value) ->

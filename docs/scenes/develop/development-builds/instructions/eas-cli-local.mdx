@@ -1,0 +1,130 @@
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+## Create a development build locally with EAS CLI
+
+Any EAS Build can run on your own machine by adding the `--local` flag: EAS provides credentials, signing, and build profiles, while compilation happens on your computer with your native toolchain.
+
+This requires your local development environment to be set up with the necessary native build tools. Read more about [running EAS Build locally](/build-reference/local-builds/).
+
+### Host platform support
+
+|             | Android           | iOS Simulator | iPhone device   |
+| ----------- | ----------------- | ------------- | --------------- |
+| **macOS**   | <YesIcon/>        | <YesIcon/>    | <YesIcon/> (\*) |
+| **Windows** | <YesIcon/> (\*\*) | <NoIcon />    | <NoIcon />      |
+| **Linux**   | <YesIcon/>        | <NoIcon />    | <NoIcon />      |
+
+> (\*) All builds that run on an iPhone device require a paid [Apple Developer](https://developer.apple.com) account for build signing. <br />
+> (\*\*) No first-class support, but possible with [WSL](https://expo.fyi/wsl.md).
+
+<Prerequisites>
+  <Requirement title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+  <Requirement title="EAS CLI">
+    The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
+  </Requirement>
+  <Requirement title="Native build tools">
+    Local compilation needs your development environment set up: [Android
+    Studio](/workflow/android-studio-emulator/) for Android builds,
+    [Xcode](/workflow/ios-simulator/) for iOS builds.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+<Collapsible summary="Are you using this library in an existing React Native project?">
+
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+</Collapsible>
+
+<Collapsible summary="What does a development build look like?">
+
+<ContentSpotlight
+  alt="expo-dev-client launcher and menu UIs on Android and iOS."
+  src="/static/images/dev-client/launcher-screen-android-ios.webp"
+  caption={`When you run a development build it will look like this, only with your app name and icon included rather than "RHT". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Build the native app on your machine
+
+If your project doesn't have an **eas.json** yet, the EAS CLI will prompt you to create one with a default `development` profile.
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal cmd={['$ eas build --platform android --profile development --local']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal cmd={['$ eas build --platform ios --profile development --local']} />
+
+For a simulator build, set the [`simulator`](/eas/json/#simulator) option to `true` in the `development` profile in **eas.json** first.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### Install the app
+
+The output of a local build is an archive (**.apk** for Android, or an **.app**/**.ipa** for iOS). Drag and drop it onto your Android Emulator or iOS Simulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install it from your machine to any device.
+
+</Step>
+
+<Step label="4">
+
+### Start the JavaScript bundler
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+Since your project has `expo-dev-client` installed, this command targets your development build instead of Expo Go.
+
+</Step>

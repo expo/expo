@@ -4,7 +4,7 @@ import os from 'node:os';
 import { describe, it } from 'node:test';
 import path from 'path';
 
-import { findDerivedDataDirsAsync } from './Prune';
+import { findBundledPrebuildDirsAsync, findDerivedDataDirsAsync } from './Prune';
 
 describe('findDerivedDataDirsAsync', () => {
   it('targets frameworks/ (DerivedData) and never the xcframeworks/ deliverables', async () => {
@@ -63,6 +63,41 @@ describe('findDerivedDataDirsAsync', () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'prebuild-prune-'));
     try {
       assert.deepEqual(await findDerivedDataDirsAsync(tmp), []);
+    } finally {
+      await fs.remove(tmp);
+    }
+  });
+});
+
+describe('findBundledPrebuildDirsAsync', () => {
+  it('finds bundled prebuilds/ for scoped and unscoped packages, and nothing else', async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'prebuild-bundled-'));
+    try {
+      await fs.outputFile(
+        path.join(tmp, 'expo-modules-core', 'prebuilds', 'output', 'release', 'x.tar.gz'),
+        'tar'
+      );
+      await fs.ensureDir(path.join(tmp, '@expo', 'ui', 'prebuilds', 'output'));
+      // A package with no bundled prebuilds must not be selected.
+      await fs.ensureDir(path.join(tmp, 'expo-image', 'ios'));
+      // `prebuilds` nested inside a package's node_modules is not a bundled deliverable.
+      await fs.ensureDir(path.join(tmp, 'expo-image', 'node_modules', 'dep', 'prebuilds'));
+
+      const dirs = (await findBundledPrebuildDirsAsync(tmp)).sort();
+
+      assert.deepEqual(dirs, [
+        path.join(tmp, '@expo', 'ui', 'prebuilds'),
+        path.join(tmp, 'expo-modules-core', 'prebuilds'),
+      ]);
+    } finally {
+      await fs.remove(tmp);
+    }
+  });
+
+  it('returns nothing when the packages root does not exist', async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'prebuild-bundled-'));
+    try {
+      assert.deepEqual(await findBundledPrebuildDirsAsync(path.join(tmp, 'nope')), []);
     } finally {
       await fs.remove(tmp);
     }

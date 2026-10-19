@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
+    },
+  },
+  {
     name: 'Radio Button component',
     route: 'ui/radio-button',
     options: {},
@@ -88,6 +96,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./DateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Date Range Picker component',
+    route: 'ui/date-range-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DateRangePickerScreen'));
     },
   },
   {
@@ -323,6 +339,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyColumn.Items and LazyRow.Items data (experimental)',
+    route: 'ui/lazy-items',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyItemsScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},
@@ -336,6 +360,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'Host touch after ripple',
+    route: 'ui/host-touch-after-ripple',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostTouchAfterRippleScreen'));
     },
   },
   {

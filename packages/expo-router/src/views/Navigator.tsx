@@ -4,13 +4,17 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useContextKey } from '../Route';
+import { ScreenErrorBoundaryContext, useContextKey, useRouteNode } from '../Route';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
+import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
+import type { ErrorBoundaryProps } from './Try';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -27,12 +31,21 @@ type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
 type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
-  initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
   screenOptions?: UseNavigationBuilderOptions['screenOptions'];
   children?: UseNavigationBuilderOptions['children'];
+  activityEnabled?: UseNavigationBuilderOptions['activityEnabled'];
+  /**
+   * Number of screens above a route that hides its content when `activityEnabled` is `true`.
+   * @default 2
+   */
+  activityDefaultThreshold?: number;
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+  /** A component to render when an individual screen in this navigator throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
+
+// TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
 
 /**
  * An unstyled custom navigator. Good for basic web layouts.
@@ -40,42 +53,56 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  * @hidden
  */
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
-  initialRouteName,
   screenOptions,
   children,
+  activityEnabled,
+  activityDefaultThreshold = 2,
   router,
   routerOptions,
+  unstable_screenErrorBoundary,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
     screens,
     children: nonScreenChildren,
-    protectedScreens,
+    guardedRedirects,
   } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
   });
 
-  const sortedScreens = useSortedScreens(screens ?? [], protectedScreens);
+  const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
 
   router ||= StackRouter as unknown as T;
 
-  const navigation = useNavigationBuilder(router, {
-    // Used for getting the parent with navigation.getParent('/normalized/path')
-    ...routerOptions,
-    id: contextKey,
-    children: sortedScreens || [<Screen key="default" />],
-    screenOptions,
-    initialRouteName,
-  });
+  const navigation = useNavigationBuilder(
+    router,
+    {
+      // Used for getting the parent with navigation.getParent('/normalized/path')
+      ...routerOptions,
+      id: contextKey,
+      children: sortedScreens || [<Screen key="default" />],
+      activityEnabled,
+      screenOptions,
+      initialRouteName: getValidInitialRouteName(node),
+    },
+    { activityDefaultThreshold }
+  );
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
   if (!sortedScreens.length) {
     console.warn(`Navigator at "${contextKey}" has no children.`);
     return null;
   }
+
+  const content = (
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      {nonScreenChildren}
+    </GuardContextProvider>
+  );
 
   return (
     <NavigatorContext.Provider
@@ -84,7 +111,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      {unstable_screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+          {content}
+        </ScreenErrorBoundaryContext>
+      ) : (
+        content
+      )}
     </NavigatorContext.Provider>
   );
 }
@@ -100,24 +133,15 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotNavigator(props: NavigatorProps<any>) {
-  const contextKey = useContextKey();
+function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
+  const focusedRouteKey = state.routes[state.index]?.key;
 
-  // Allows adding Screen components as children to configure routes.
-  const { screens, protectedScreens } = useFilterScreenChildren([], {
-    contextKey,
-  });
-
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    ...props,
-    id: contextKey,
-    children: useSortedScreens(screens ?? [], protectedScreens),
-  });
-
-  return (
-    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-  );
+  return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
+
+const RouterSlot = createStandardRouterNavigator(SlotContent, StackRouter, {
+  activityDefaultThreshold: 1,
+});
 
 /**
  * Renders the currently selected content.
@@ -130,13 +154,17 @@ function SlotNavigator(props: NavigatorProps<any>) {
  * the current `_layout`, you can use this to determine if you are inside
  * a custom navigator or not.
  */
-export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
+export function Slot(
+  props: Omit<NavigatorProps<any>, 'children' | 'activityEnabled' | 'activityDefaultThreshold'> & {
+    activityEnabled?: boolean;
+  }
+) {
   const contextKey = useContextKey();
   const context = React.use(NavigatorContext);
 
   if (context?.contextKey !== contextKey) {
     // The _layout has changed since the last navigator
-    return <SlotNavigator {...props} />;
+    return <RouterSlot {...props} />;
   }
 
   /*
@@ -153,8 +181,9 @@ function NavigatorSlot() {
   const context = useNavigatorContext();
 
   const { state, descriptors } = context;
+  const focusedRouteKey = state.routes[state.index]?.key;
 
-  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
+  return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
 /**
@@ -162,11 +191,11 @@ function NavigatorSlot() {
  */
 export function DefaultNavigator() {
   if (process.env.EXPO_OS === 'android') {
-    return <SlotNavigator />;
+    return <RouterSlot />;
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <SlotNavigator />
+      <RouterSlot />
     </SafeAreaView>
   );
 }

@@ -103,3 +103,31 @@ test('does not rewrite /eas/** paths that are canonical (workflows, hosting, met
   expect(getRedirectPath('/eas/hosting/introduction/')).toEqual('/eas/hosting/introduction/');
   expect(getRedirectPath('/eas/metadata/')).toEqual('/eas/metadata/');
 });
+
+test('redirects deleted create-a-build page to the introduction EAS path', () => {
+  expect(getRedirectPath('/develop/development-builds/create-a-build/')).toEqual(
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+  );
+});
+
+test('redirects deleted expo-go-to-dev-build page to the introduction build locally section', () => {
+  expect(getRedirectPath('/develop/development-builds/expo-go-to-dev-build/')).toEqual(
+    '/develop/development-builds/introduction/#build-locally'
+  );
+});
+
+test('redirects expo-av reference paths to their expo-audio and expo-video replacements', () => {
+  expect(getRedirectPath('/versions/latest/sdk/av/')).toEqual('/versions/latest/sdk/audio/');
+  expect(getRedirectPath('/versions/latest/sdk/audio-av/')).toEqual('/versions/latest/sdk/audio/');
+  expect(getRedirectPath('/versions/latest/sdk/video-av/')).toEqual('/versions/latest/sdk/video/');
+});
+
+test('routes removed SDK 54 expo-av paths to the latest rename in two hops', () => {
+  const avFirstHop = getRedirectPath('/versions/v54.0.0/sdk/av/');
+  expect(avFirstHop).toEqual('/versions/latest/sdk/av/');
+  expect(getRedirectPath(avFirstHop)).toEqual('/versions/latest/sdk/audio/');
+
+  const videoFirstHop = getRedirectPath('/versions/v54.0.0/sdk/video-av/');
+  expect(videoFirstHop).toEqual('/versions/latest/sdk/video-av/');
+  expect(getRedirectPath(videoFirstHop)).toEqual('/versions/latest/sdk/video/');
+});

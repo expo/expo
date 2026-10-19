@@ -3,6 +3,28 @@
 import SwiftUI
 import ExpoModulesCore
 
+/// Coordinate space anchored at the `Host`'s SwiftUI root, which macOS measures hosted React Native
+/// views from. iOS uses `HostingViewReference` instead, because this space starts after the
+/// safe-area inset that `UIHostingController` applies to the root.
+internal let expoHostCoordinateSpace = "expo.ui.host"
+
+/// The enclosing `Host`'s UIKit view, which Yoga laid out. iOS measures hosted React Native views
+/// from it.
+internal final class HostingViewReference {
+  weak var view: UIView?
+}
+
+private struct HostingViewEnvironmentKey: EnvironmentKey {
+  static let defaultValue: HostingViewReference? = nil
+}
+
+extension EnvironmentValues {
+  var expoHostingView: HostingViewReference? {
+    get { self[HostingViewEnvironmentKey.self] }
+    set { self[HostingViewEnvironmentKey.self] = newValue }
+  }
+}
+
 internal enum ExpoColorScheme: String, Enumerable {
   case light
   case dark
@@ -31,16 +53,22 @@ internal enum ExpoLayoutDirection: String, Enumerable {
   }
 }
 
-internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable {
+internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable, ExpoSwiftUI.HostingViewAware {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
   @Field var seedColor: Color?
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
+  @Field var alignment: AlignmentOptions?
   @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
   @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
+  let hostingViewReference = HostingViewReference()
+  var hostingView: UIView? {
+    get { hostingViewReference.view }
+    set { hostingViewReference.view = newValue }
+  }
 }
 
 struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
@@ -48,16 +76,22 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
-    let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let alignment = physicalAlignment(props.alignment?.toAlignment() ?? .topLeading, layoutDirection: layoutDirection)
+    let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
+    let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
+    let pinHorizontal = !props.useViewportSizeMeasurement && props.matchContentsHorizontal
+    let pinVertical = !props.useViewportSizeMeasurement && props.matchContentsVertical
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
       let HostLayout = props.useViewportSizeMeasurement
-        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
+        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection, hostingView: props.hostingView))
         : AnyLayout(ZStackLayout(alignment: alignment))
       HostLayout {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
+      .modifier(HostViewContentMarginsMitigation(layoutDirection: layoutDirection, hostingView: props.hostingView))
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -68,10 +102,19 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(
+        alignment: alignment,
+        fillHorizontal: fillHorizontal,
+        fillVertical: fillVertical,
+        pinHorizontal: pinHorizontal,
+        pinVertical: pinVertical
+      ))
+      .coordinateSpace(name: expoHostCoordinateSpace)
     } else {
       ZStack(alignment: alignment) {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -82,34 +125,45 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(
+        alignment: alignment,
+        fillHorizontal: fillHorizontal,
+        fillVertical: fillVertical,
+        pinHorizontal: pinHorizontal,
+        pinVertical: pinVertical
+      ))
+      .coordinateSpace(name: expoHostCoordinateSpace)
     }
   }
 
-  private func safeAreaSize() -> CGSize {
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? UIScreen.main.bounds.size
+}
 
-    let width = safeSize.width > 0 ? safeSize.width : UIScreen.main.bounds.width
-    let height = safeSize.height > 0 ? safeSize.height : UIScreen.main.bounds.height
-    return CGSize(width: width, height: height)
+/**
+ Mirrors the horizontal edge of `alignment` for a right-to-left `Host`. `FillAlignmentModifier` sits
+ outside `LayoutDirectionModifier`, so it reads leading and trailing in the hosting controller's
+ own direction.
+ */
+private func physicalAlignment(_ alignment: Alignment, layoutDirection: LayoutDirection) -> Alignment {
+  guard layoutDirection == .rightToLeft else {
+    return alignment
   }
+  if alignment.horizontal == .leading {
+    return Alignment(horizontal: .trailing, vertical: alignment.vertical)
+  }
+  if alignment.horizontal == .trailing {
+    return Alignment(horizontal: .leading, vertical: alignment.vertical)
+  }
+  return alignment
 }
 
 /**
  A Layout designed for the `useViewportSizeMeasurement` behavior.
- If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand its children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
   let layoutDirection: LayoutDirection
+  weak var hostingView: UIView?
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
@@ -146,26 +200,19 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
-    let screenSize = UIScreen.main.bounds.size
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? screenSize
-
-    let width = safeSize.width > 0 ? safeSize.width : screenSize.width
-    let height = safeSize.height > 0 ? safeSize.height : screenSize.height
-    return CGSize(width: width, height: height)
+#if os(macOS)
+    // `SceneGeometry` is built on `UIWindowScene`, which has no macOS counterpart. The closest
+    // analogue to a window's safe area is its content layout rect, which excludes the title bar.
+    let window = hostingView?.window ?? NSApplication.shared.keyWindow ?? NSApplication.shared.windows.first
+    return window?.contentLayoutRect.size ?? .zero
+#else
+    return SceneGeometry.safeAreaSize(for: hostingView)
+#endif
   }
 }
 
 /**
- A ViewModifier that listens for view size change the dispatch the `onLayoutContent` event
+ A ViewModifier that listens for view size changes and dispatches the `onLayoutContent` event
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps
@@ -199,6 +246,34 @@ private struct GeometryChangeModifier: ViewModifier {
             .onChange(of: geometry.size) { dispatchOnLayoutContent($0) }
         }
       }
+    }
+  }
+}
+
+private struct FillAlignmentModifier: ViewModifier {
+  let alignment: Alignment
+  let fillHorizontal: Bool
+  let fillVertical: Bool
+  let pinHorizontal: Bool
+  let pinVertical: Bool
+
+  func body(content: Content) -> some View {
+    if fillHorizontal || fillVertical || pinHorizontal || pinVertical {
+      // A `matchContents` axis needs a `0` minimum as well. Without it the frame keeps the
+      // content's own size whenever that size is larger than the proposal, and the hosting
+      // controller centers the overflow instead of keeping it at `alignment`. The proposal is
+      // smaller on every frame where the hosting view still has the previous content size.
+      content.frame(
+        minWidth: pinHorizontal ? 0 : nil,
+        maxWidth: fillHorizontal || pinHorizontal ? .infinity : nil,
+        minHeight: pinVertical ? 0 : nil,
+        maxHeight: fillVertical || pinVertical ? .infinity : nil,
+        alignment: alignment
+      )
+    } else {
+      // Leave the view untouched (useViewportSizeMeasurement) so the layout proposal reaches the
+      // content's own layout unmodified.
+      content
     }
   }
 }

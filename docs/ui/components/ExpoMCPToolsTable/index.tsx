@@ -35,7 +35,7 @@ function formatAvailability(tool: { availability: string; requirements?: string 
 
 export function ExpoMCPToolsTable() {
   return (
-    <Table headers={['Tool', 'Description', 'Example Prompt', 'Availability']}>
+    <Table headers={['Tool', 'Description', 'Example prompt', 'Availability']}>
       {data.tools.map(tool => (
         <Row key={tool.name}>
           <Cell>

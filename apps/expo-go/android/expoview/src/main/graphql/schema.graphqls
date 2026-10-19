@@ -20,6 +20,11 @@ type RootQuery {
   _doNotUse: String @deprecated(reason: "Not used.")
 
   """
+  The current user's chat token usage and limit.
+  """
+  viewerChatTokenUsage: ChatTokenUsage!
+
+  """
   Query interface for user preferences
   """
   userPreference: UserPreferenceQuery!
@@ -35,9 +40,9 @@ type RootQuery {
   accountSSOConfigurationPublicData: AccountSSOConfigurationPublicDataQuery!
 
   """
-  Top-level query object for querying Actors.
+  Top-level query object for querying AppleDeviceRegistrationRequest publicly.
   """
-  actor: ActorQuery! @deprecated(reason: "Public actor queries are no longer supported")
+  appleDeviceRegistrationRequestPublicData: AppleDeviceRegistrationRequestPublicDataQuery!
 
   """
   Top-level query object for querying Apple Device registration requests.
@@ -65,11 +70,6 @@ type RootQuery {
   Look up app by app id
   """
   appByAppId(appId: String!): App @deprecated(reason: "Use 'byId' field under 'app'.")
-
-  """
-  Public apps in the app directory
-  """
-  allPublicApps("Filter to use to filter public app list" filter: AppsFilter!, "Method to sort by" sort: AppSort!, offset: Int, limit: Int): [App] @deprecated(reason: "Use 'all' field under 'app'.")
 
   """
   Top-level query object for querying App Store Connect API Keys.
@@ -113,14 +113,57 @@ type RootQuery {
   channels: ChannelQuery!
 
   """
+  Top-level query object for querying Convex Integration information.
+  """
+  convexIntegration: ConvexIntegrationQuery!
+
+  """
+  Top-level query object for querying dashboard chats.
+  """
+  dashboardChat: DashboardChatQuery!
+
+  """
   Top-level query object for querying Deployments.
   """
   deployments: DeploymentQuery!
+
+  deviceRunSessionArtifacts: DeviceRunSessionArtifactQuery!
+
+  deviceRunSessions: DeviceRunSessionQuery!
+
+  """
+  Top-level query object for querying Echo chats.
+  """
+  echoChat: EchoChatQuery!
+
+  """
+  Top-level query object for querying Echo message parts.
+  """
+  echoMessagePart: EchoMessagePartQuery!
+
+  """
+  Top-level query object for querying Echo messages.
+  """
+  echoMessage: EchoMessageQuery!
+
+  """
+  Top-level query object for querying Echo projects.
+  """
+  echoProject: EchoProjectQuery!
+
+  """
+  Top-level query object for querying Echo versions.
+  """
+  echoVersion: EchoVersionQuery!
+
+  embeddedUpdates: EmbeddedUpdateQuery!
 
   """
   Top-level query object for querying Experimentation configuration.
   """
   experimentation: ExperimentationQuery!
+
+  expoGoBuild: ExpoGoBuildQuery!
 
   """
   Top-level query object for querying GitHub App information and resources it has access to.
@@ -139,7 +182,10 @@ type RootQuery {
 
   jobRun: JobRunQuery!
 
-  project: ProjectQuery! @deprecated(reason: "Snacks and apps should be queried separately")
+  """
+  Top-level query object for querying PostHog Integration information.
+  """
+  posthogIntegration: PostHogIntegrationQuery!
 
   """
   Top-level query object for querying Runtimes.
@@ -154,6 +200,8 @@ type RootQuery {
   statuspageService: StatuspageServiceQuery!
 
   submissions: SubmissionQuery!
+
+  turtleBrownfieldArtifacts: TurtleBrownfieldArtifactQuery!
 
   """
   fetch all updates in a group
@@ -171,23 +219,9 @@ type RootQuery {
   userActorPublicData: UserActorPublicDataQuery!
 
   """
-  Top-level query object for querying UserActors.
-  """
-  userActor: UserActorQuery! @deprecated(reason: "Public user queries are no longer supported")
-
-  """
   Top-level query object for querying UserInvitationPublicData publicly.
   """
   userInvitationPublicData: UserInvitationPublicDataQuery!
-
-  """
-  Top-level query object for querying Users.
-  """
-  user: UserQuery! @deprecated(reason: "Public user queries are no longer supported")
-
-  userByUserId(userId: String!): User @deprecated(reason: "Use 'byId' field under 'user'.")
-
-  userByUsername(username: String!): User @deprecated(reason: "Use 'byUsername' field under 'user'.")
 
   """
   Top-level query object for querying Vexo Integration information.
@@ -240,11 +274,6 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 scalar String
 
 """
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
-"""
-scalar Int
-
-"""
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
 """
 scalar ID
@@ -254,6 +283,11 @@ type RootMutation {
   This is a placeholder field
   """
   _doNotUse: String @deprecated(reason: "Not used.")
+
+  """
+  Mutations for App Store Connect apps.
+  """
+  appStoreConnectApp: AppStoreConnectAppMutation!
 
   """
   Mutations that create, update, and delete pinned dashboard views
@@ -286,6 +320,8 @@ type RootMutation {
   Mutations for Actor experiments
   """
   actorExperiment: ActorExperimentMutation!
+
+  agentProviderConnection: AgentProviderConnectionMutation!
 
   """
   Mutations that modify the build credentials for an Android app
@@ -378,7 +414,21 @@ type RootMutation {
   """
   build(buildId: ID): BuildMutation!
 
+  convexProject: ConvexProjectMutation!
+
+  convexTeamConnection: ConvexTeamConnectionMutation!
+
+  """
+  Mutations for dashboard chats
+  """
+  dashboardChat: DashboardChatMutation!
+
   deployments: DeploymentsMutation!
+
+  """
+  Mutations that create, start, and stop device run sessions
+  """
+  deviceRunSession: DeviceRunSessionMutation!
 
   """
   Mutations for Discord users
@@ -386,9 +436,46 @@ type RootMutation {
   discordUser: DiscordUserMutation!
 
   """
-  Mutations that modify an EmailSubscription
+  Mutations for Echo chats
   """
-  emailSubscription: EmailSubscriptionMutation!
+  echoChat: EchoChatMutation!
+
+  """
+  Mutations for Echo messages
+  """
+  echoMessage: EchoMessageMutation!
+
+  """
+  Mutations for Echo message parts
+  """
+  echoMessagePart: EchoMessagePartMutation!
+
+  """
+  Mutations for Echo projects
+  """
+  echoProject: EchoProjectMutation!
+
+  """
+  Mutations for Echo repository management via the GitHub App
+  """
+  echoRepository: EchoRepositoryMutation!
+
+  """
+  Mutations for Echo turns
+  """
+  echoTurn: EchoTurnMutation!
+
+  """
+  Mutations for Echo versions
+  """
+  echoVersion: EchoVersionMutation!
+
+  embeddedUpdateAsset: EmbeddedUpdateAssetMutation!
+
+  """
+  Mutations that register embedded update bundles for bundle diffing.
+  """
+  embeddedUpdate: EmbeddedUpdateMutation!
 
   """
   Mutations that create and delete EnvironmentSecrets
@@ -399,6 +486,11 @@ type RootMutation {
   Mutations that create and delete EnvironmentVariables
   """
   environmentVariable: EnvironmentVariableMutation!
+
+  """
+  Mutations for the exit-interview chat shown when a user cancels their plan.
+  """
+  exitInterview: ExitInterviewMutation!
 
   """
   Mutations that modify App fingerprints
@@ -414,6 +506,8 @@ type RootMutation {
   Mutations that utilize services facilitated by the GitHub App
   """
   githubApp: GitHubAppMutation!
+
+  githubAppRegistration: GitHubAppRegistrationMutation!
 
   """
   Mutations for GitHub build triggers
@@ -474,6 +568,12 @@ type RootMutation {
   """
   notificationPreference: NotificationPreferenceMutation!
 
+  posthogOrganizationConnection: PostHogOrganizationConnectionMutation!
+
+  posthogProject: PostHogProjectMutation!
+
+  realtimeLogs: RealtimeLogsMutation!
+
   """
   Mutations that create, update, and delete Robots
   """
@@ -493,6 +593,16 @@ type RootMutation {
   Mutations that modify an EAS Submit submission
   """
   submission: SubmissionMutation!
+
+  supabaseConnection: SupabaseConnectionMutation!
+
+  supabaseProject: SupabaseProjectMutation!
+
+  tunnels: TunnelsMutation!
+
+  turtleBrownfieldArtifacts: TurtleBrownfieldArtifactMutation!
+
+  turtleSshSession: TurtleSshSessionMutation!
 
   updateBranch: UpdateBranchMutation!
 
@@ -538,6 +648,12 @@ type RootMutation {
   websiteNotifications: WebsiteNotificationMutation!
 
   customDomain: CustomDomainMutation!
+
+  workflowCache: WorkflowCacheMutation!
+
+  workflowDeviceTestCaseResult: WorkflowDeviceTestCaseResultMutation!
+
+  workflowJobAppleDeviceRegistrationRequest: WorkflowJobAppleDeviceRegistrationRequestMutation!
 
   workflowJobApproval: WorkflowJobApprovalMutation!
 
@@ -700,6 +816,96 @@ enum AppleDeviceClass {
   UNKNOWN
 }
 
+"""
+Filter for account member types in membersPaginated query
+"""
+enum AccountMemberType {
+  """
+  All members (default)
+  """
+  ALL
+
+  """
+  Human members (Users + SSOUsers)
+  """
+  HUMAN
+
+  """
+  Robot members only
+  """
+  ROBOT
+
+  """
+  SSO users only
+  """
+  SSO_USER
+}
+
+"""
+Aggregate statistics about account members
+"""
+type AccountMemberStats {
+  """
+  Total count of all members
+  """
+  totalCount: Int!
+
+  """
+  Count of human members (Users + SSOUsers)
+  """
+  humanCount: Int!
+
+  """
+  Count of SSO users only
+  """
+  ssoUserCount: Int!
+
+  """
+  Count of robot members
+  """
+  robotCount: Int!
+
+  """
+  Count of members with OWN permission
+  """
+  ownerCount: Int!
+
+  """
+  Whether all human members (Users only, not SSO) have 2FA enabled.
+  Also checks the implicit account owner for personal accounts.
+  """
+  allHave2FAEnabled: Boolean!
+}
+
+"""
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+"""
+scalar Int
+
+"""
+The `Boolean` scalar type represents `true` or `false`.
+"""
+scalar Boolean
+
+"""
+Onboarding milestone stats for an account
+"""
+type AccountOnboardingStats {
+  hasTeamMembers: Boolean! @deprecated(reason: "Onboarding widget experiment removed")
+
+  firstProjectCreatedAt: DateTime
+
+  firstBuildCompletedAt: DateTime
+
+  firstUpdateCreatedAt: DateTime
+
+  firstSubmissionCompletedAt: DateTime
+
+  hasConfiguredUpdate: Boolean! @deprecated(reason: "Onboarding widget experiment removed")
+
+  hasConfiguredWorkflow: Boolean!
+}
+
 type Charge {
   id: ID!
 
@@ -715,11 +921,6 @@ type Charge {
 
   receiptUrl: String
 }
-
-"""
-The `Boolean` scalar type represents `true` or `false`.
-"""
-scalar Boolean
 
 type OfferPrerequisite {
   type: String!
@@ -743,38 +944,6 @@ type Offer {
   features: [Feature]
 
   prerequisite: OfferPrerequisite
-}
-
-type Card {
-  cardHolder: String
-
-  brand: String
-
-  last4: String
-
-  expYear: Int
-
-  expMonth: Int
-}
-
-type Address {
-  line1: String
-
-  city: String
-
-  state: String
-
-  zip: String
-
-  country: String
-}
-
-type PaymentDetails {
-  id: ID!
-
-  card: Card
-
-  address: Address
 }
 
 type Concurrencies {
@@ -831,6 +1000,8 @@ enum EASTotalPlanEnablementUnit {
 
   CONCURRENCY
 
+  EVENT
+
   REQUEST
 
   UPDATER
@@ -875,6 +1046,8 @@ type SubscriptionDetails {
 
   status: String
 
+  paymentFailedAt: DateTime
+
   isDowngrading: Boolean
 
   futureSubscription: FutureSubscription
@@ -884,6 +1057,8 @@ type SubscriptionDetails {
   coupon: StripeCoupon
 
   planEnablement(serviceMetric: EASServiceMetric!): PlanEnablement
+
+  includedAgentCreditsInCents: Int!
 
   upcomingInvoice: Invoice
 }
@@ -914,8 +1089,6 @@ type BillingPeriod {
 
 type Billing {
   id: ID!
-
-  payment: PaymentDetails @deprecated(reason: "No longer used")
 
   subscription: SubscriptionDetails
 
@@ -950,6 +1123,14 @@ type Account {
 
   requireTwoFactor: Boolean!
 
+  aiChatEnabled: Boolean!
+
+  """
+  Whether EAS Observe ingestion is paused for this account. Accounts that have not configured
+  the setting are treated as false (ingestion enabled).
+  """
+  observeIngestionPaused: Boolean!
+
   createdAt: DateTime!
 
   updatedAt: DateTime!
@@ -966,7 +1147,12 @@ type Account {
   """
   Snacks associated with this account
   """
-  snacks(offset: Int!, limit: Int!): [Snack!]!
+  snacks(offset: Int!, limit: Int!): [Snack!]! @deprecated(reason: "Use snacksPaginated")
+
+  """
+  Paginated list of Snacks associated with this account, sorted by most recent activity.
+  """
+  snacksPaginated(first: Int, after: String, last: Int, before: String): AccountSnacksConnection!
 
   """
   Apps associated with this account
@@ -1006,14 +1192,24 @@ type Account {
   ownerUserActor: UserActor
 
   """
-  Owning UserActor of this account if personal account
-  """
-  userActorOwner: UserActor @deprecated(reason: "Deprecated in favor of ownerUserActor")
-
-  """
   Actors associated with this account and permissions they hold
   """
-  users: [UserPermission!]!
+  users: [UserPermission!]! @deprecated(reason: "Deprecated in favor of membersPaginated and memberStats")
+
+  """
+  Paginated list of members (actors) associated with this account and their permissions
+  """
+  membersPaginated(first: Int, after: String, last: Int, before: String, "Filter members by type. Defaults to ALL." memberType: AccountMemberType, filter: AccountMembersFilterInput): AccountMembersConnection!
+
+  """
+  Aggregate statistics about account members.
+  """
+  memberStats: AccountMemberStats!
+
+  """
+  Onboarding milestone stats for this account
+  """
+  onboardingStats: AccountOnboardingStats!
 
   """
   Permission info for the viewer on this account
@@ -1071,8 +1267,6 @@ type Account {
 
   appleTeams(appleTeamIdentifier: String, offset: Int, limit: Int): [AppleTeam!]! @deprecated(reason: "Use appleTeamsPaginated")
 
-  appleDevices(identifier: String, offset: Int, limit: Int): [AppleDevice!]! @deprecated(reason: "Use appleDevicesPaginated")
-
   appleDistributionCertificates: [AppleDistributionCertificate!]! @deprecated(reason: "Use appleDistributionCertificatesPaginated")
 
   applePushKeys: [ApplePushKey!]! @deprecated(reason: "Use applePushKeysPaginated")
@@ -1114,6 +1308,11 @@ type Account {
   githubAppInstallations: [GitHubAppInstallation!]!
 
   """
+  GitHub Enterprise app registration for an account
+  """
+  githubAppRegistration: GitHubAppRegistration
+
+  """
   Whether an Account plan falls into AppDevDomainName's free or paid tier
   """
   isFreeAppDevDomainTier: Boolean!
@@ -1126,23 +1325,41 @@ type Account {
   accountFeatureGates(filter: [String!]): JSONObject!
 
   """
+  Convex team connections for this account
+  """
+  convexTeamConnections: [ConvexTeamConnection!]!
+
+  """
+  PostHog organization connection for this account
+  """
+  posthogOrganizationConnection: PostHogOrganizationConnection
+
+  """
+  Supabase connection for this account
+  """
+  supabaseConnection: SupabaseConnection
+
+  """
   Vexo account connection for this account
   """
   vexoAccountConnection: VexoAccountConnection
 
-  accessTokens: [AccessToken]! @deprecated(reason: "Legacy access tokens are deprecated")
+  """
+  AI provider connections available to agent sandbox sessions.
+  """
+  agentProviderConnections: [AgentProviderConnection!]!
 
-  requiresAccessTokenForPushSecurity: Boolean! @deprecated(reason: "Legacy access tokens are deprecated")
+  """
+  Echo projects for this account (paginated, most recent first)
+  """
+  echoProjects(first: Int, after: String): EchoProjectConnection!
 
-  unlimitedBuilds: Boolean! @deprecated(reason: "See isCurrent")
+  concurrencyConsumers(limit: Int! = 500): [ConcurrencyConsumer!]!
 
-  availableBuilds: Int @deprecated(reason: "Build packs are no longer supported")
-
-  subscriptionChangesPending: Boolean @deprecated(reason: "No longer needed")
-
-  willAutoRenewBuilds: Boolean @deprecated(reason: "Build packs are no longer supported")
-
-  hasBuilds: Boolean! @deprecated(reason: "No longer needed")
+  """
+  Most recently active first
+  """
+  viewerDashboardChats(first: Int, after: String, last: Int, before: String): DashboardChatConnection!
 
   environmentVariableEnvironments: [EnvironmentVariableEnvironment!]!
 
@@ -1162,6 +1379,18 @@ type AccountAppsEdge {
   cursor: String!
 
   node: App!
+}
+
+type AccountSnacksConnection {
+  pageInfo: PageInfo!
+
+  edges: [AccountSnacksEdge!]!
+}
+
+type AccountSnacksEdge {
+  cursor: String!
+
+  node: Snack!
 }
 
 type AccountAppleTeamsConnection {
@@ -1260,10 +1489,40 @@ type AuditLogEdge {
   node: AuditLog!
 }
 
+type AccountMembersConnection {
+  pageInfo: PageInfo!
+
+  edges: [AccountMembersEdge!]!
+}
+
+type AccountMembersEdge {
+  cursor: String!
+
+  node: UserPermission!
+}
+
 input AccountAppsFilterInput {
   sortByField: AccountAppsSortByField!
 
   searchTerm: String
+}
+
+input AccountMembersFilterInput {
+  """
+  Case-insensitive substring match on username, email, and name
+  """
+  searchTerm: String
+
+  """
+  Filter members by 2FA status. Only regular users are returned when set, since SSO users
+  and robots don't have 2FA. Requires admin permission on the account.
+  """
+  isSecondFactorAuthenticationEnabled: Boolean
+
+  """
+  Filter members by role. Only OWNER, ADMIN, DEVELOPER, and VIEW_ONLY are supported.
+  """
+  role: Role
 }
 
 input AppleTeamFilterInput {
@@ -1370,6 +1629,46 @@ interface Actor {
   Experiments associated with this actor
   """
   experiments: [ActorExperiment!]!
+}
+
+enum AgentProvider {
+  ANTHROPIC
+
+  OPENAI
+}
+
+enum AgentProviderConnectionStatus {
+  VALID
+
+  INVALID
+
+  UNABLE_TO_VERIFY
+}
+
+type AgentProviderConnection {
+  id: ID!
+
+  account: Account!
+
+  createdByActor: Actor
+
+  provider: AgentProvider!
+
+  name: String
+
+  providerAccountId: String
+
+  providerAccountEmail: String
+
+  providerPlan: String
+
+  expiresAt: DateTime
+
+  status: AgentProviderConnectionStatus!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
 }
 
 type AndroidAppBuildCredentials {
@@ -1514,6 +1813,8 @@ type App implements Project {
   """
   insights: AppInsights!
 
+  observe: AppObserve!
+
   """
   App query field for querying details about an app's push notifications
   """
@@ -1535,11 +1836,36 @@ type App implements Project {
 
   pushSecurityEnabled: Boolean!
 
+  """
+  Whether EAS Observe ingestion is paused for this app. Apps that have not configured the setting
+  are treated as false (ingestion enabled). An account-level pause takes precedence.
+  """
+  observeIngestionPaused: Boolean!
+
+  """
+  Tells you if the project can show the Observe promotional notification. This field is part of
+  the observe-notification experiment.
+  """
+  isEligibleForObserveNotice: Boolean! @deprecated(reason: "This field is deprecated from its first release. It supplies data for the observe-notification promotion on the project page. It will be removed when the promotion ends. Do not rely on it.")
+
   assetLimitPerUpdateGroup: Int!
+
+  appStoreConnectApp: AppStoreConnectApp
+
+  """
+  Connection status for this project's App Store Connect-triggered workflows.
+  """
+  appStoreConnectWorkflowConnectionStatus: AppStoreConnectWorkflowConnectionStatus!
+
+  convexProject: ConvexProject
+
+  posthogProject: PostHogProject
 
   logRocketProject: LogRocketProject
 
   sentryProject: SentryProject
+
+  supabaseProject: SupabaseProject
 
   buildProfiles: [String!]!
 
@@ -1652,19 +1978,37 @@ type App implements Project {
 
   fingerprintsPaginated(first: Int, after: String, last: Int, before: String, filter: FingerprintFilterInput): AppFingerprintsConnection!
 
+  embeddedUpdatesPaginated(first: Int, after: String, last: Int, before: String, filter: EmbeddedUpdateFilterInput): AppEmbeddedUpdatesConnection!
+
+  updatesTimeline(first: Int, after: String, last: Int, before: String, filter: UpdatesTimelineFilter): UpdatesTimelineConnection!
+
+  deviceRunSessionsPaginated(first: Int, after: String, last: Int, before: String, filter: DeviceRunSessionFilterInput): AppDeviceRunSessionsConnection!
+
+  """
+  Every tag used by this app's device run sessions, sorted alphabetically.
+  """
+  deviceRunSessionTags: [String!]!
+
   latestAppVersionByPlatformAndApplicationIdentifier(platform: AppPlatform!, applicationIdentifier: String!): AppVersion
 
-  workflows: [Workflow!]!
+  workflows(filter: AppWorkflowFilterInput): [Workflow!]!
 
   workflowRunsPaginated(first: Int, after: String, last: Int, before: String, filter: AppWorkflowRunFilterInput): AppWorkflowRunsConnection!
 
   workflowRunGitBranchesPaginated(first: Int, after: String, last: Int, before: String, filter: WorkflowRunGitBranchFilterInput): AppWorkflowRunGitBranchesConnection!
+
+  turtleBrownfieldArtifactsPaginated(first: Int, after: String, last: Int, before: String, filter: BrownfieldArtifactFilterInput): BrownfieldArtifactsConnection!
 
   githubRepository: GitHubRepository
 
   githubRepositorySettings: GitHubRepositorySettings
 
   githubBuildTriggers: [GitHubBuildTrigger!]!
+
+  """
+  Whether this app qualifies for the observe-notification-lapsed-paid experiment
+  """
+  isEligibleForObserveLapsedPaidNotification: Boolean!
 
   vexoApp: VexoApp
 
@@ -1674,7 +2018,7 @@ type App implements Project {
 
   resourceClassExperiment: ResourceClassExperiment
 
-  profileImageUrl: String
+  profileImageUrl(width: AppProfileImageWidth): String
 
   """
   Notification preferences of the viewer for this app
@@ -1687,27 +2031,7 @@ type App implements Project {
 
   privacy: String! @deprecated(reason: "No longer supported")
 
-  privacySetting: AppPrivacy! @deprecated(reason: "No longer supported")
-
-  lastPublishedTime: DateTime! @deprecated(reason: "No longer supported")
-
-  packageUsername: String! @deprecated(reason: "No longer supported")
-
   packageName: String! @deprecated(reason: "No longer supported")
-
-  accessTokens: [AccessToken]! @deprecated(reason: "Legacy access tokens are deprecated")
-
-  requiresAccessTokenForPushSecurity: Boolean! @deprecated(reason: "Legacy access tokens are deprecated")
-
-  isLikedByMe: Boolean! @deprecated(reason: "'likes' have been deprecated.")
-
-  likeCount: Int! @deprecated(reason: "'likes' have been deprecated.")
-
-  trendScore: Float! @deprecated(reason: "'likes' have been deprecated.")
-
-  likedBy(offset: Int, limit: Int): [User]! @deprecated(reason: "'likes' have been deprecated.")
-
-  users: [User] @deprecated(reason: "No longer supported")
 
   description: String! @deprecated(reason: "Classic updates have been deprecated.")
 
@@ -1722,53 +2046,14 @@ type App implements Project {
   updated: DateTime! @deprecated(reason: "Classic updates have been deprecated.")
 
   """
-  ID of latest classic update release
-  """
-  latestReleaseId: ID! @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
-  Whether the latest classic update publish is using a deprecated SDK version
-  """
-  isDeprecated: Boolean! @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
   SDK version of the latest classic update publish, 0.0.0 otherwise
   """
   sdkVersion: String! @deprecated(reason: "Classic updates have been deprecated.")
 
   """
-  Classic update release channel names (to be removed)
-  """
-  releaseChannels: [String!]! @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
-  Classic update release channel names that have at least one build
-  """
-  buildsReleaseChannels: [String!]! @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
-  githubUrl field from most recent classic update manifest
-  """
-  githubUrl: String @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
-  android.playStoreUrl field from most recent classic update manifest
-  """
-  playStoreUrl: String @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
-  ios.appStoreUrl field from most recent classic update manifest
-  """
-  appStoreUrl: String @deprecated(reason: "Classic updates have been deprecated.")
-
-  """
   Info about the icon specified in the most recent classic update manifest
   """
   icon: AppIcon @deprecated(reason: "Classic updates have been deprecated.")
-
-  latestReleaseForReleaseChannel(platform: AppPlatform!, releaseChannel: String!): AppRelease @deprecated(reason: "Classic updates have been deprecated.")
-
-  isDeleting: Boolean! @deprecated(reason: "Use lastDeletionAttemptTime !== null instead")
 
   environmentVariableEnvironments: [EnvironmentVariableEnvironment!]!
 
@@ -1794,6 +2079,20 @@ type App implements Project {
   workerDeployment(deploymentIdentifier: WorkerDeploymentIdentifier!): WorkerDeployment
 
   workerDeployments(first: Int, after: String, last: Int, before: String): WorkerDeploymentsConnection!
+
+  """
+  Caches associated with this app, ordered by last access time (most recent first).
+  """
+  workflowCachesPaginated(first: Int, after: String, last: Int, before: String): AppWorkflowCachesConnection!
+
+  """
+  Per-type caching configuration for this app.
+  """
+  workflowCachingConfig: WorkflowCachingConfig!
+
+  workflowDeviceTestCaseInsights(timespan: WorkflowDeviceTestCaseInsightsTimespanInput!, filters: WorkflowDeviceTestCaseInsightsFiltersInput): WorkflowDeviceTestCaseInsights!
+
+  workflowDeviceTestCaseHistory(path: String!, timespan: WorkflowDeviceTestCaseInsightsTimespanInput!, filters: WorkflowDeviceTestCaseHistoryFiltersInput): WorkflowDeviceTestCaseHistory!
 
   workflowsInsights: AppWorkflowsInsights!
 }
@@ -1888,12 +2187,31 @@ type AppleAppIdentifier {
   parentAppleAppIdentifier: AppleAppIdentifier
 }
 
+"""
+Publicly visible data for an AppleDeviceRegistrationRequest.
+"""
+type AppleDeviceRegistrationRequestPublicData {
+  id: ID!
+}
+
 type AppleDeviceRegistrationRequest {
   id: ID!
 
   account: Account!
 
   appleTeam: AppleTeam!
+
+  closedAt: DateTime
+
+  """
+  Device that satisfied this request, including when enrollment matched a pre-existing device.
+  """
+  resolvedAppleDevice: AppleDevice
+
+  """
+  Workflow job waiting for registration review when this request was created from a workflow run.
+  """
+  workflowJob: WorkflowJob
 }
 
 type AppleDevice {
@@ -2022,6 +2340,2465 @@ type AppleTeam {
   lastDeletionAttemptTime: DateTime
 }
 
+"""
+EAS Update download activity (app_metrics download samples plus update metadata).
+"""
+type AppObserveEasUpdates {
+  """
+  Updates with download statistics. Forward pagination only. Defaults to newest first.
+  """
+  list(first: Int, after: String, filter: AppObserveEasUpdatesFilter!, orderBy: AppObserveEasUpdatesOrderBy): AppObserveUpdatesConnection!
+}
+
+input AppObserveEasUpdatesFilter {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+}
+
+input AppObserveEasUpdatesOrderBy {
+  field: AppObserveUpdatesOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+input AppObserveUpdatesInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  first: Int
+
+  after: String
+
+  orderBy: AppObserveUpdatesOrderBy
+}
+
+input AppObserveUpdatesOrderBy {
+  field: AppObserveUpdatesOrderByField!
+
+  direction: AppObserveUpdatesOrderByDirection!
+}
+
+enum AppObserveUpdatesOrderByField {
+  FIRST_SEEN_AT
+
+  DOWNLOAD_COUNT
+
+  MEDIAN_DOWNLOAD_TIME
+
+  P90_DOWNLOAD_TIME
+}
+
+enum AppObserveUpdatesOrderByDirection {
+  ASC
+
+  DESC
+}
+
+type AppObserveUpdate {
+  appUpdateId: String!
+
+  appVersion: String!
+
+  appUpdateMessage: String
+
+  firstSeenAt: DateTime!
+
+  downloadCount: Int!
+
+  medianDownloadTime: Float!
+
+  p90DownloadTime: Float!
+}
+
+type AppObserveUpdateEdge {
+  cursor: String!
+
+  node: AppObserveUpdate!
+}
+
+type AppObserveUpdatesConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveUpdateEdge!]!
+
+  totalCount: Int!
+
+  totalDownloads: Int!
+}
+
+"""
+Unhandled JS errors: app_events exception rows.
+"""
+type AppObserveErrors {
+  """
+  Distinct error groups (the issues list), grouped by fingerprint.
+  """
+  groups(input: AppObserveErrorsGroupsInput!): AppObserveErrorGroups!
+
+  """
+  Headline error stats: crash-free rates and error/affected counts.
+  """
+  stats(input: AppObserveErrorsStatsInput!): AppObserveErrorStats!
+
+  """
+  Time-bucketed exception counts split into fatal vs non-fatal.
+  """
+  timeSeries(input: AppObserveErrorsTimeSeriesInput!): AppObserveErrorTimeSeries!
+
+  """
+  Breaks one error group down by app version, OS, device, or country.
+  """
+  breakdown(input: AppObserveErrorsBreakdownInput!): AppObserveErrorGroupBreakdown!
+
+  """
+  Individual error occurrences. Defaults to newest first.
+  """
+  occurrences(first: Int, after: String, last: Int, before: String, filter: AppObserveErrorOccurrencesFilter, orderBy: AppObserveErrorOccurrencesOrderBy): AppObserveErrorConnection!
+
+  """
+  A single error by id. Null when missing, aged out, or the id belongs to a user-defined event.
+  """
+  error(id: ID!): AppObserveError
+}
+
+"""
+One unhandled JS error (an app_events exception row).
+"""
+type AppObserveError implements AppObserveLog {
+  id: ID!
+
+  timestamp: DateTime!
+
+  ingestedAt: DateTime
+
+  sessionId: String
+
+  severityNumber: Int
+
+  severityText: String
+
+  body: String
+
+  properties: [AppObserveEventProperty!]!
+
+  type: String
+
+  message: String
+
+  """
+  Symbolicated when a build with a matching source map exists; otherwise as reported.
+  """
+  stacktrace: String
+
+  """
+  Build whose uploaded source map symbolicated stacktrace; null when the stack trace is shown as reported.
+  """
+  symbolicationBuild: Build
+
+  source: String
+
+  isFatal: Boolean
+
+  fingerprint: String
+
+  appIdentifier: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  clientVersion: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  deviceModel: String!
+
+  deviceLanguageTag: String
+
+  environment: String
+
+  easClientId: String!
+
+  countryCode: String
+}
+
+type AppObserveErrorConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveErrorEdge!]!
+}
+
+type AppObserveErrorEdge {
+  cursor: String!
+
+  node: AppObserveError!
+}
+
+input AppObserveErrorsGroupsInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  severity: AppObserveErrorSeverity
+
+  source: String
+
+  """
+  Restrict to one error group.
+  """
+  fingerprint: String
+
+  orderBy: AppObserveErrorGroupsOrderBy
+
+  """
+  Bucket size for each group's timeSeries. Defaults to daily.
+  """
+  bucketIntervalMinutes: Int
+}
+
+input AppObserveErrorsStatsInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+}
+
+input AppObserveErrorsTimeSeriesInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  bucketIntervalMinutes: Int
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  """
+  Restrict to one error group.
+  """
+  fingerprint: String
+}
+
+input AppObserveErrorsBreakdownInput {
+  fingerprint: String!
+
+  dimension: AppObserveErrorBreakdownDimension!
+
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+}
+
+input AppObserveErrorOccurrencesFilter {
+  """
+  Restrict to one error group.
+  """
+  fingerprint: String
+
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  startTime: DateTime
+
+  endTime: DateTime
+
+  sessionId: String
+
+  easClientId: String
+}
+
+input AppObserveErrorOccurrencesOrderBy {
+  field: AppObserveErrorOccurrencesOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+enum AppObserveErrorOccurrencesOrderByField {
+  TIMESTAMP
+}
+
+enum AppObserveErrorSeverity {
+  FATAL
+
+  ERROR
+}
+
+enum AppObserveErrorGroupsOrderBy {
+  MOST_FREQUENT
+
+  MOST_USERS
+
+  LAST_SEEN
+
+  FIRST_SEEN
+}
+
+input AppObserveErrorGroupsInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  """
+  Restrict to fatal-only or non-fatal-only errors.
+  """
+  severity: AppObserveErrorSeverity
+
+  """
+  Restrict to a capture source (e.g. global).
+  """
+  source: String
+
+  """
+  Restrict to a single group, e.g. to fetch one group's header on the detail page.
+  """
+  fingerprint: String
+
+  orderBy: AppObserveErrorGroupsOrderBy
+
+  """
+  Bucket width in minutes for the per-group timeSeries field. Only used when timeSeries is selected. Defaults to 1440 (daily).
+  """
+  bucketIntervalMinutes: Int
+}
+
+type AppObserveErrorGroup {
+  """
+  Stable grouping key (sha256 over error type + entropy-normalized message).
+  """
+  fingerprint: String!
+
+  """
+  Error class/type, from the most recent occurrence (e.g. TypeError).
+  """
+  exceptionType: String
+
+  """
+  Error message, from the most recent occurrence.
+  """
+  exceptionMessage: String
+
+  """
+  How the error was captured, from the most recent occurrence (e.g. global).
+  """
+  errorSource: String
+
+  """
+  FATAL if any occurrence in the group was fatal, otherwise ERROR.
+  """
+  severity: AppObserveErrorSeverity!
+
+  isFatal: Boolean!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+
+  affectedSessionCount: Int!
+
+  firstSeenAt: DateTime!
+
+  lastSeenAt: DateTime!
+
+  """
+  Distinct device OS values seen for this group (e.g. Android, iOS).
+  """
+  platforms: [String!]!
+
+  """
+  Per-platform occurrence and unique-user counts, sorted by eventCount descending. Covers every device OS seen (iOS, Android, iPadOS, ...), so the counts sum to the group totals.
+  """
+  platformCounts: [AppObserveErrorGroupPlatformCount!]!
+
+  """
+  Occurrences over the query window, bucketed ascending. Sparse (empty buckets omitted); the client fills gaps. Renders as the list sparkline. Bucket width is set via AppObserveErrorGroupsInput.bucketIntervalMinutes.
+  """
+  timeSeries: [AppObserveErrorTimeSeriesBucket!]!
+}
+
+type AppObserveErrorGroupPlatformCount {
+  """
+  Device OS value, e.g. iOS, Android, iPadOS.
+  """
+  platform: String!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+}
+
+type AppObserveErrorGroups {
+  groups: [AppObserveErrorGroup!]!
+
+  """
+  True when more groups exist than were returned (top-N truncation).
+  """
+  isTruncated: Boolean!
+}
+
+"""
+Filters for the error-stats header. Same release/time/platform filters used across Observe.
+"""
+input AppObserveErrorStatsInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+}
+
+type AppObserveErrorStats {
+  """
+  Total exception events in range.
+  """
+  totalErrors: Int!
+
+  fatalCount: Int!
+
+  nonFatalCount: Int!
+
+  """
+  Distinct users that hit any exception.
+  """
+  affectedUsers: Int!
+
+  """
+  Distinct sessions that hit any exception.
+  """
+  affectedSessions: Int!
+
+  """
+  Fraction (0..1) of active sessions without a fatal error. Denominator spans app_metrics and app_events.
+  """
+  crashFreeSessions: Float!
+
+  """
+  Fraction (0..1) of active users without a fatal error.
+  """
+  crashFreeUsers: Float!
+}
+
+"""
+AppObserveErrorStats for one platform; iOS includes iPadOS and tvOS.
+"""
+type AppObserveErrorPlatformStats {
+  platform: AppObservePlatform!
+
+  """
+  Total exception events in range on this platform.
+  """
+  totalErrors: Int!
+
+  fatalCount: Int!
+
+  nonFatalCount: Int!
+
+  """
+  Distinct users on this platform that hit any exception.
+  """
+  affectedUsers: Int!
+
+  """
+  Distinct sessions on this platform that hit any exception.
+  """
+  affectedSessions: Int!
+
+  """
+  Fraction (0..1) of this platform's active sessions without a fatal error.
+  """
+  crashFreeSessions: Float!
+
+  """
+  Fraction (0..1) of this platform's active users without a fatal error.
+  """
+  crashFreeUsers: Float!
+}
+
+"""
+Filters for the error time series. Same release/time/platform filters used across Observe, plus the bucket size.
+"""
+input AppObserveErrorTimeSeriesInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  """
+  Bucket width in minutes. Defaults to 60.
+  """
+  bucketIntervalMinutes: Int
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  """
+  Restrict to one error group for the detail page's occurrences-over-time chart. Omit for the overview chart.
+  """
+  fingerprint: String
+}
+
+type AppObserveErrorTimeSeriesBucket {
+  """
+  Start of the bucket interval.
+  """
+  bucket: DateTime!
+
+  fatalCount: Int!
+
+  nonFatalCount: Int!
+
+  """
+  Approximate count of unique affected users in this bucket. Not summable across buckets.
+  """
+  affectedUsers: Int!
+}
+
+type AppObserveErrorTimeSeries {
+  buckets: [AppObserveErrorTimeSeriesBucket!]!
+
+  """
+  Sum of fatalCount across all buckets.
+  """
+  totalFatalCount: Int!
+
+  """
+  Sum of nonFatalCount across all buckets.
+  """
+  totalNonFatalCount: Int!
+}
+
+enum AppObserveErrorBreakdownDimension {
+  APP_VERSION
+
+  OS
+
+  DEVICE
+
+  COUNTRY
+}
+
+"""
+Filters for the per-group breakdown. Same release/time/platform filters used across Observe.
+"""
+input AppObserveErrorGroupBreakdownInput {
+  fingerprint: String!
+
+  dimension: AppObserveErrorBreakdownDimension!
+
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+}
+
+type AppObserveErrorBreakdownBucket {
+  """
+  Dimension value (app version, OS, device model, or country code). Empty string when unknown.
+  """
+  key: String!
+
+  count: Int!
+
+  uniqueUserCount: Int!
+}
+
+type AppObserveErrorGroupBreakdown {
+  """
+  Buckets ordered by count descending.
+  """
+  buckets: [AppObserveErrorBreakdownBucket!]!
+
+  """
+  True when more buckets exist than were returned (top-N truncation).
+  """
+  isTruncated: Boolean!
+}
+
+"""
+Performance metrics (the app_metrics table): startup, navigation, and update-download samples.
+"""
+type AppObserveMetrics {
+  """
+  Time-bucketed aggregates for one metric, with app-version markers.
+  """
+  timeSeries(input: AppObserveMetricTimeSeriesInput!): AppObserveTimeSeries!
+
+  """
+  Individual metric samples. Defaults to newest first.
+  """
+  list(first: Int, after: String, last: Int, before: String, filter: AppObserveMetricsListFilter, orderBy: AppObserveMetricsListOrderBy): AppObserveMetricConnection!
+
+  """
+  A single metric sample by id. Null when missing or aged out; sessionEventCount/userEventCount are always null here.
+  """
+  metric(id: ID!): AppObserveMetric
+}
+
+"""
+One performance-metric sample (a row in app_metrics).
+"""
+type AppObserveMetric {
+  id: ID!
+
+  timestamp: DateTime!
+
+  name: String!
+
+  value: Float!
+
+  eventBatchId: ID!
+
+  sessionId: String
+
+  parentSessionId: String
+
+  ingestedAt: DateTime
+
+  easClientId: String!
+
+  deviceLanguageTag: String
+
+  deviceModel: String!
+
+  deviceName: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  countryCode: String
+
+  appIdentifier: String!
+
+  appName: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  clientVersion: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  routeName: String
+
+  tags: JSON!
+
+  customParams: JSON
+
+  environment: String
+
+  sessionEventCount: Int
+
+  userEventCount: Int
+}
+
+type AppObserveMetricConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveMetricEdge!]!
+}
+
+type AppObserveMetricEdge {
+  cursor: String!
+
+  node: AppObserveMetric!
+}
+
+input AppObserveMetricsListFilter {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  """
+  Metric name, e.g. `expo.app_startup.tti`.
+  """
+  name: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  """
+  Filter by the update the device was *running* at sample time (the app_update_id column).
+  """
+  appUpdateId: String
+
+  """
+  Filter by the update that was *downloaded* (the expo.update_id tag). Distinct from appUpdateId (running update); the two are not interchangeable.
+  """
+  downloadedUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  startTime: DateTime
+
+  endTime: DateTime
+
+  sessionId: String
+
+  easClientId: String
+
+  routeName: String
+}
+
+input AppObserveMetricsListOrderBy {
+  field: AppObserveMetricsListOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+enum AppObserveMetricsListOrderByField {
+  TIMESTAMP
+
+  VALUE
+}
+
+input AppObserveMetricTimeSeriesInput {
+  """
+  Metric name, e.g. `expo.app_startup.tti`.
+  """
+  name: String!
+
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  bucketIntervalMinutes: Int
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  routeName: String
+}
+
+type AppObserveTimeSeries {
+  buckets: [AppObserveTimeSeriesBucket!]!
+
+  statistics: AppObserveTimeSeriesStatistics!
+
+  eventCount: Int!
+
+  appVersionMarkers: [AppObserveAppVersion!]!
+
+  latestVersionStatistics: AppObserveVersionStatistics
+
+  previousVersionStatistics: AppObserveVersionStatistics
+}
+
+type AppObserveVersionStatistics {
+  appVersion: String!
+
+  statistics: AppObserveVersionMarkerStatistics!
+}
+
+type AppObserveTimeSeriesBucket {
+  bucket: DateTime!
+
+  average: Float
+
+  median: Float
+
+  p80: Float
+
+  p90: Float
+
+  p99: Float
+
+  min: Float
+
+  max: Float
+
+  count: Int!
+}
+
+type AppObserveTimeSeriesStatistics {
+  average: Float
+
+  median: Float
+
+  p80: Float
+
+  p90: Float
+
+  p99: Float
+
+  min: Float
+
+  max: Float
+
+  count: Int!
+}
+
+type AppObserveVersionMarkerStatistics {
+  average: Float
+
+  median: Float
+
+  p80: Float
+
+  p90: Float
+
+  p99: Float
+
+  min: Float
+
+  max: Float
+}
+
+input AppObserveTimeSeriesInput {
+  metricName: String!
+
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  bucketIntervalMinutes: Int
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  routeName: String
+}
+
+type AppObserveEvent {
+  id: ID!
+
+  timestamp: DateTime!
+
+  metricName: String!
+
+  metricValue: Float!
+
+  eventBatchId: ID!
+
+  sessionId: String
+
+  parentSessionId: String
+
+  ingestedAt: DateTime
+
+  easClientId: String!
+
+  deviceLanguageTag: String
+
+  deviceModel: String!
+
+  deviceName: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  countryCode: String
+
+  appIdentifier: String!
+
+  appName: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  clientVersion: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  routeName: String
+
+  tags: JSON!
+
+  customParams: JSON
+
+  environment: String
+
+  sessionEventCount: Int
+
+  userEventCount: Int
+}
+
+type AppObserveEventsConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveEventEdge!]!
+}
+
+type AppObserveEventEdge {
+  cursor: String!
+
+  node: AppObserveEvent!
+}
+
+input AppObserveEventsFilter {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  metricName: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  """
+  Filter by the update the device was *running* at event time (the app_update_id column).
+  """
+  appUpdateId: String
+
+  """
+  Filter by the update that was *downloaded* (the expo.update_id tag), as surfaced by the EAS Update Recent updates download drill-down. Distinct from appUpdateId (running update); the two are not interchangeable.
+  """
+  downloadedUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  startTime: DateTime
+
+  endTime: DateTime
+
+  sessionId: String
+
+  easClientId: String
+
+  routeName: String
+}
+
+input AppObserveEventsOrderBy {
+  field: AppObserveEventsOrderByField!
+
+  direction: AppObserveEventsOrderByDirection!
+}
+
+enum AppObserveEventsOrderByField {
+  TIMESTAMP
+
+  METRIC_VALUE
+}
+
+type AppObserveAppVersion {
+  appVersion: String!
+
+  firstSeenAt: DateTime!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+
+  """
+  Unique users whose most recent supported-metric event in
+  `[startTime, endTime)` was on this version. Each active user
+  contributes to exactly one version, so summing this field across the
+  returned versions yields the total active users in the window (equal
+  to `AppObserve.uniqueActiveUserCount` up to HyperLogLog noise).
+  A version may be returned with `lastSeenUserCount = 0` when
+  every user who touched it later moved to a newer version. Users with
+  no events in the window are not counted on any version.
+  """
+  lastSeenUserCount: Int!
+
+  metrics: [AppObserveAppVersionMetric!]!
+
+  buildNumbers: [AppObserveAppBuildNumber!]!
+
+  updates: [AppObserveAppUpdate!]!
+}
+
+type AppObserveAppVersionMetric {
+  metricName: String!
+
+  eventCount: Int!
+
+  statistics: AppObserveVersionMarkerStatistics!
+}
+
+type AppObserveAppBuildNumber {
+  appBuildNumber: String!
+
+  firstSeenAt: DateTime!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+
+  """
+  Unique users whose most recent supported-metric event in the queried
+  range was on this (appVersion, appBuildNumber) tuple.
+  """
+  lastSeenUserCount: Int!
+
+  easBuilds: [AppObserveAppEasBuild!]!
+
+  """
+  Summary restricted to events running this build's embedded bundle
+  (no OTA update applied). Null when the build has no such events
+  in the queried time range.
+  """
+  embedded: AppObserveAppBuildEmbeddedSummary
+
+  """
+  Updates seen on this build number in the queried time range. Each
+  entry's counts and EAS builds are scoped to this (appVersion,
+  appBuildNumber, appUpdateId) tuple.
+  """
+  updates: [AppObserveAppUpdate!]!
+}
+
+type AppObserveAppBuildEmbeddedSummary {
+  firstSeenAt: DateTime!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+
+  """
+  Unique users whose most recent supported-metric event in the queried
+  range ran this build's embedded bundle.
+  """
+  lastSeenUserCount: Int!
+}
+
+type AppObserveAppEasBuild {
+  easBuildId: String!
+
+  firstSeenAt: DateTime!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+}
+
+type AppObserveAppUpdate {
+  appUpdateId: String!
+
+  appUpdateMessage: String
+
+  firstSeenAt: DateTime!
+
+  eventCount: Int!
+
+  uniqueUserCount: Int!
+
+  """
+  Unique users whose most recent supported-metric event in the queried
+  range matched this update at its current nesting level.
+  """
+  lastSeenUserCount: Int!
+
+  easBuilds: [AppObserveAppEasBuild!]!
+}
+
+"""
+Navigation performance per route (app_metrics navigation samples).
+"""
+type AppObserveNavigation {
+  """
+  Per-route navigation summaries.
+  """
+  routes(first: Int, after: String, last: Int, before: String, filter: AppObserveNavigationFilter!, orderBy: AppObserveNavigationOrderBy): AppObserveNavigationRoutesConnection!
+}
+
+input AppObserveNavigationFilter {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  environment: String
+
+  routeNames: [String!]
+}
+
+input AppObserveNavigationOrderBy {
+  field: AppObserveNavigationRoutesOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+input AppObserveNavigationRoutesFilter {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  environment: String
+
+  routeNames: [String!]
+}
+
+input AppObserveNavigationRoutesOrderBy {
+  field: AppObserveNavigationRoutesOrderByField!
+
+  direction: AppObserveEventsOrderByDirection!
+}
+
+enum AppObserveNavigationRoutesOrderByField {
+  NAVIGATION_COUNT
+
+  MEDIAN_COLD_TTR
+
+  P90_COLD_TTR
+
+  MEDIAN_WARM_TTR
+
+  P90_WARM_TTR
+
+  MEDIAN_TTI
+
+  P90_TTI
+
+  ROUTE_NAME
+}
+
+type AppObserveNavigationRoutesConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveNavigationRouteEdge!]!
+}
+
+type AppObserveNavigationRouteEdge {
+  cursor: String!
+
+  node: AppObserveNavigationRoute!
+}
+
+"""
+Per-route navigation timing breakdown. The "Navigations" count shown in the
+dashboard is `coldTtr.count` (one cold-TTR event per user navigation).
+Per-metric `median`/`p90` are null when `count` is 0 so the client can
+distinguish "no data" from "0ms".
+"""
+type AppObserveNavigationRoute {
+  routeName: String!
+
+  coldTtr: AppObserveNavigationStat!
+
+  warmTtr: AppObserveNavigationStat!
+
+  tti: AppObserveNavigationStat!
+}
+
+type AppObserveNavigationStat {
+  count: Int!
+
+  median: Float
+
+  p90: Float
+}
+
+"""
+Overview-tab aggregates, across all versions unless a comparison narrows them.
+"""
+type AppObserveOverview {
+  """
+  Active users and sessions for the engagement band.
+  """
+  engagement(input: AppObserveEngagementInput!): AppObserveOverviewEngagement!
+
+  """
+  Crash-free rates with previous-period comparison for the stability tiles.
+  """
+  stability(input: AppObserveStabilityInput!): AppObserveOverviewStability!
+
+  """
+  Per-version, per-platform metric summaries for the version-comparison matrix.
+  """
+  versionComparison(input: AppObserveOverviewVersionComparisonInput!): AppObserveOverviewVersionComparison!
+
+  """
+  Per-update comparison within one app version: the embedded bundle plus each OTA update.
+  """
+  updateComparison(input: AppObserveOverviewUpdateComparisonInput!): AppObserveOverviewUpdateComparison!
+}
+
+input AppObserveEngagementInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  """
+  Series bucket size. Defaults to one day.
+  """
+  bucketIntervalMinutes: Int
+
+  environment: String
+}
+
+"""
+Stability-tile filters. No release filters: the tiles always span all versions.
+"""
+input AppObserveStabilityInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  """
+  Series bucket size. Defaults to one day.
+  """
+  bucketIntervalMinutes: Int
+
+  environment: String
+}
+
+"""
+Engagement-band filters. No release filters: the band always spans all versions.
+"""
+input AppObserveOverviewEngagementInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  """
+  Series bucket size. Defaults to one day.
+  """
+  bucketIntervalMinutes: Int
+
+  environment: String
+}
+
+type AppObserveOverviewEngagement {
+  activeUsers: AppObserveOverviewEngagementStat!
+
+  sessions: AppObserveOverviewEngagementStat!
+}
+
+type AppObserveOverviewEngagementStat {
+  total: Int!
+
+  previousPeriodTotal: Int!
+
+  """
+  Per-bucket approximate uniques; buckets do not sum to `total`.
+  """
+  series: [AppObserveOverviewEngagementBucket!]!
+}
+
+type AppObserveOverviewEngagementBucket {
+  bucketStart: DateTime!
+
+  count: Int!
+}
+
+"""
+Stability-tile filters. No release filters: the tiles always span all versions.
+"""
+input AppObserveOverviewStabilityInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  """
+  Series bucket size. Defaults to one day.
+  """
+  bucketIntervalMinutes: Int
+
+  environment: String
+}
+
+type AppObserveOverviewStability {
+  """
+  Fraction (0..1) of active sessions without a fatal error.
+  """
+  crashFreeSessions: Float!
+
+  """
+  Fraction (0..1) of active users without a fatal error.
+  """
+  crashFreeUsers: Float!
+
+  """
+  Same fractions for the equal-length window before startTime; null when it had no activity.
+  """
+  previousPeriodCrashFreeSessions: Float
+
+  previousPeriodCrashFreeUsers: Float
+
+  """
+  Fatal exception events in range.
+  """
+  crashCount: Int!
+
+  """
+  Fatal exception events in the equal-length window before startTime.
+  """
+  previousPeriodCrashCount: Int!
+
+  """
+  Distinct users that hit a fatal error in range.
+  """
+  crashedUsers: Int!
+
+  previousPeriodCrashedUsers: Int!
+
+  """
+  All exception events in range, for distinguishing quiet apps from crash-free ones.
+  """
+  totalErrors: Int!
+
+  series: [AppObserveOverviewStabilityBucket!]!
+}
+
+type AppObserveOverviewStabilityBucket {
+  bucketStart: DateTime!
+
+  crashCount: Int!
+
+  """
+  Approximate unique users that hit any exception in this bucket. Not summable across buckets.
+  """
+  affectedUsers: Int!
+}
+
+input AppObserveOverviewVersionComparisonInput {
+  """
+  Versions to compare (max 10, any order). Defaults to the two highest versions.
+  """
+  appVersions: [String!]
+
+  """
+  Metric names to aggregate. Defaults to all metrics available on the account's plan.
+  """
+  metricNames: [String!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+}
+
+type AppObserveOverviewVersionComparison {
+  """
+  Every version with data in range, highest version first, for the version picker.
+  """
+  allVersions: [AppObserveOverviewVersionSummary!]!
+
+  """
+  Compared versions, lowest version first. Requested versions with no data are omitted.
+  """
+  versions: [AppObserveOverviewVersion!]!
+
+  """
+  Aggregate across every release in range; the comparison baseline.
+  """
+  allReleases: AppObserveOverviewAllReleases!
+}
+
+type AppObserveOverviewAllReleases {
+  uniqueUserCount: Int!
+
+  """
+  One entry per (metric, platform) with data in range; one entry per exact device platform.
+  """
+  metrics: [AppObserveOverviewVersionMetric!]!
+}
+
+type AppObserveOverviewVersionSummary {
+  appVersion: String!
+
+  firstSeenAt: DateTime!
+
+  uniqueUserCount: Int!
+}
+
+type AppObserveOverviewVersion {
+  appVersion: String!
+
+  firstSeenAt: DateTime!
+
+  uniqueUserCount: Int!
+
+  """
+  One entry per (metric, platform) with data in range; each device OS (iOS, iPadOS, tvOS, macOS, Android) is a separate platform.
+  """
+  metrics: [AppObserveOverviewVersionMetric!]!
+
+  """
+  Error stats for this version, one entry per platform with activity; iOS includes iPadOS and tvOS.
+  """
+  stability: [AppObserveErrorPlatformStats!]!
+}
+
+type AppObserveOverviewVersionMetric {
+  metricName: String!
+
+  platform: AppObservePlatform!
+
+  eventCount: Int!
+
+  statistics: AppObserveVersionMarkerStatistics!
+}
+
+input AppObserveOverviewUpdateComparisonInput {
+  appVersion: String!
+
+  """
+  Metric names to aggregate. Defaults to all metrics available on the account's plan.
+  """
+  metricNames: [String!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+}
+
+type AppObserveOverviewUpdateComparison {
+  """
+  Embedded bundle first, then OTA updates oldest first. Only updates with runtime data appear.
+  """
+  updates: [AppObserveOverviewUpdate!]!
+}
+
+type AppObserveOverviewUpdate {
+  """
+  Null for the embedded bundle.
+  """
+  appUpdateId: ID
+
+  isEmbedded: Boolean!
+
+  """
+  EAS update message; null for the embedded bundle or when the update row no longer exists.
+  """
+  message: String
+
+  """
+  When the update was published; null for the embedded bundle.
+  """
+  publishedAt: DateTime
+
+  firstSeenAt: DateTime!
+
+  uniqueUserCount: Int!
+
+  eventCount: Int!
+
+  """
+  Downloads recorded in range across platforms; null when none were recorded
+  (and always for the embedded bundle). Download data is paid-only: on the
+  free tier and legacy plans this is always null.
+  """
+  downloadCount: Int
+
+  """
+  One entry per platform with downloads in range; empty for the embedded bundle and on the free tier and legacy plans.
+  """
+  downloads: [AppObserveOverviewUpdateDownload!]!
+
+  """
+  One entry per (metric, platform) with data in range.
+  """
+  metrics: [AppObserveOverviewUpdateMetric!]!
+
+  """
+  Error stats for this update, one entry per platform with activity; iOS includes iPadOS and tvOS.
+  """
+  stability: [AppObserveErrorPlatformStats!]!
+}
+
+type AppObserveOverviewUpdateDownload {
+  platform: AppObservePlatform!
+
+  downloadCount: Int!
+
+  medianDownloadTime: Float!
+}
+
+type AppObserveOverviewUpdateMetric {
+  metricName: String!
+
+  platform: AppObservePlatform!
+
+  eventCount: Int!
+
+  statistics: AppObserveVersionMarkerStatistics!
+}
+
+"""
+Any app_events log row: a user-defined event or an error.
+"""
+interface AppObserveLog {
+  id: ID!
+
+  timestamp: DateTime!
+
+  ingestedAt: DateTime
+
+  sessionId: String
+
+  severityNumber: Int
+
+  severityText: String
+
+  body: String
+
+  properties: [AppObserveEventProperty!]!
+
+  appIdentifier: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  clientVersion: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  deviceModel: String!
+
+  deviceLanguageTag: String
+
+  environment: String
+
+  easClientId: String!
+
+  countryCode: String
+}
+
+type AppObserveSession {
+  id: ID!
+
+  """
+  Metric samples in the session.
+  """
+  metrics(first: Int, after: String, last: Int, before: String, orderBy: AppObserveMetricsListOrderBy): AppObserveMetricConnection!
+
+  """
+  Logs in the session: user-defined events and errors interleaved.
+  """
+  logs(first: Int, after: String, last: Int, before: String, orderBy: AppObserveLogsOrderBy): AppObserveLogConnection!
+}
+
+type AppObserveLogConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveLogEdge!]!
+}
+
+type AppObserveLogEdge {
+  cursor: String!
+
+  node: AppObserveLog!
+}
+
+input AppObserveLogsOrderBy {
+  field: AppObserveLogsOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+enum AppObserveLogsOrderByField {
+  TIMESTAMP
+}
+
+type AppObserve {
+  events(first: Int, after: String, last: Int, before: String, filter: AppObserveEventsFilter, orderBy: AppObserveEventsOrderBy): AppObserveEventsConnection! @deprecated(reason: "Use metrics.list instead.")
+
+  timeSeries(input: AppObserveTimeSeriesInput!): AppObserveTimeSeries! @deprecated(reason: "Use metrics.timeSeries instead.")
+
+  appVersions(input: AppObserveReleasesInput!): [AppObserveAppVersion!]!
+
+  """
+  Approximate count of unique users (`eas_client_id`) with at least one
+  supported-metric event in `[startTime, endTime)`. Uses a ClickHouse
+  HyperLogLog sketch, so the value can drift by a small percent on apps
+  with very large user bases. `metricNames` on the input is currently
+  ignored: the count is always over all supported metrics, matching the
+  universe used by `appVersions` headline counts.
+  """
+  uniqueActiveUserCount(input: AppObserveReleasesInput!): Int!
+
+  totalEventCount: Int!
+
+  environments(platform: AppObservePlatform, "Filter to these platforms. Cannot be set together with platform." platforms: [AppObservePlatform!], startTime: DateTime, endTime: DateTime): [String!]!
+
+  """
+  Highest Expo SDK version seen in telemetry over the trailing 30 days; null when none was reported.
+  """
+  latestExpoSdkVersion: String
+
+  customEventNames(platform: AppObservePlatform, "Filter to these platforms. Cannot be set together with platform." platforms: [AppObservePlatform!], startTime: DateTime!, endTime: DateTime!, environment: String, appVersion: String, appBuildNumber: String, appUpdateId: String, appEasBuildId: String, isEmbeddedUpdate: Boolean, orderBy: AppObserveCustomEventNamesOrderBy): AppObserveCustomEventNames! @deprecated(reason: "Use userEvents.names instead.")
+
+  customEventCounts(input: AppObserveCustomEventCountsInput!): AppObserveCustomEventCounts! @deprecated(reason: "Unused; no replacement planned.")
+
+  customEventList(first: Int, after: String, last: Int, before: String, filter: AppObserveCustomEventListFilter, orderBy: AppObserveCustomEventListOrderBy): AppObserveCustomEventListConnection! @deprecated(reason: "Use userEvents.list (or errors.occurrences for exceptions) instead.")
+
+  """
+  A single custom event by the `id` of an `AppObserveCustomEvent`. Null when the app has no
+  such event, including when it has aged out of retention.
+  """
+  customEvent(id: ID!): AppObserveCustomEvent @deprecated(reason: "Use userEvents.event, errors.error, or log instead.")
+
+  """
+  A single metric event by the `id` of an `AppObserveEvent`. Null when the app has no such
+  event, including when it has aged out of retention or the id is not one this API issued.
+
+  `sessionEventCount` and `userEventCount` are always null here: they are aggregates over a
+  time range, and a single event does not supply one.
+  """
+  event(id: ID!): AppObserveEvent @deprecated(reason: "Use metrics.metric instead.")
+
+  """
+  Distinct unhandled-JS-error groups (the issues list), grouped by fingerprint.
+  """
+  errorGroups(input: AppObserveErrorGroupsInput!): AppObserveErrorGroups! @deprecated(reason: "Use errors.groups instead.")
+
+  """
+  Headline error stats for the overview: crash-free rates and error/affected counts.
+  """
+  errorStats(input: AppObserveErrorStatsInput!): AppObserveErrorStats! @deprecated(reason: "Use errors.stats instead.")
+
+  """
+  Time-bucketed exception counts split into fatal vs non-fatal, for the stacked-bar chart.
+  """
+  errorTimeSeries(input: AppObserveErrorTimeSeriesInput!): AppObserveErrorTimeSeries! @deprecated(reason: "Use errors.timeSeries instead.")
+
+  """
+  Breaks a single error group down by app version, OS, device, or country (detail page bars).
+  """
+  errorGroupBreakdown(input: AppObserveErrorGroupBreakdownInput!): AppObserveErrorGroupBreakdown! @deprecated(reason: "Use errors.breakdown instead.")
+
+  """
+  Update download activity (the Recent updates list). Not available on the free tier or legacy plans.
+  """
+  updates(input: AppObserveUpdatesInput!): AppObserveUpdatesConnection! @deprecated(reason: "Use easUpdates.list instead.")
+
+  navigationRoutes(first: Int, after: String, last: Int, before: String, filter: AppObserveNavigationRoutesFilter!, orderBy: AppObserveNavigationRoutesOrderBy): AppObserveNavigationRoutesConnection! @deprecated(reason: "Use navigation.routes instead.")
+
+  """
+  Active users and sessions for the Overview engagement band, across all versions.
+  """
+  overviewEngagement(input: AppObserveOverviewEngagementInput!): AppObserveOverviewEngagement! @deprecated(reason: "Use overview.engagement instead.")
+
+  """
+  Crash-free rates with previous-period comparison for the Overview stability tiles.
+  """
+  overviewStability(input: AppObserveOverviewStabilityInput!): AppObserveOverviewStability! @deprecated(reason: "Use overview.stability instead.")
+
+  """
+  Per-version, per-platform metric summaries for the Overview version-comparison matrix.
+  """
+  overviewVersionComparison(input: AppObserveOverviewVersionComparisonInput!): AppObserveOverviewVersionComparison! @deprecated(reason: "Use overview.versionComparison instead.")
+
+  """
+  Per-update comparison within one app version: the embedded bundle plus each OTA update.
+  """
+  overviewUpdateComparison(input: AppObserveOverviewUpdateComparisonInput!): AppObserveOverviewUpdateComparison! @deprecated(reason: "Use overview.updateComparison instead.")
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `timeSeries`/`events`/`event` fields.
+  """
+  metrics: AppObserveMetrics!
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `customEventNames`/`customEventList`/`customEvent` fields.
+  """
+  userEvents: AppObserveUserEvents!
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `errorGroups`/`errorStats`/`errorTimeSeries`/`errorGroupBreakdown` fields.
+  """
+  errors: AppObserveErrors!
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `navigationRoutes` field.
+  """
+  navigation: AppObserveNavigation!
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `updates` field.
+  """
+  easUpdates: AppObserveEasUpdates!
+
+  """
+  Namespaced successor API (ENG-26160). Prefer over the flat `overview*` fields.
+  """
+  overview: AppObserveOverview!
+
+  """
+  One session's metrics and logs for the timeline (ENG-26160). Unknown session ids yield empty lists.
+  """
+  session(id: ID!): AppObserveSession!
+
+  """
+  A single log (user-defined event or error) by `event_id`. Null when missing or aged out of retention.
+  """
+  log(id: ID!): AppObserveLog
+}
+
+enum AppObservePlatform {
+  IOS
+
+  ANDROID
+
+  IPADOS
+
+  TVOS
+
+  MACOS
+}
+
+enum AppObserveEventsOrderByDirection {
+  ASC
+
+  DESC
+}
+
+enum AppObserveOrderDirection {
+  ASC
+
+  DESC
+}
+
+enum AppObservePropertyType {
+  STRING
+
+  NUMBER
+
+  BOOLEAN
+
+  JSON
+}
+
+type AppObserveEventProperty {
+  key: String!
+
+  value: String!
+
+  type: AppObservePropertyType!
+}
+
+input AppObserveReleasesInput {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  metricNames: [String!]
+}
+
+"""
+User-defined events (`Observe.logEvent`): app_events log rows, excluding errors.
+"""
+type AppObserveUserEvents {
+  """
+  Distinct event names with counts over the time range.
+  """
+  names(input: AppObserveUserEventNamesInput!): AppObserveUserEventNames!
+
+  """
+  Individual user-defined events. Defaults to newest first.
+  """
+  list(first: Int, after: String, last: Int, before: String, filter: AppObserveUserEventListFilter, orderBy: AppObserveUserEventListOrderBy): AppObserveUserEventConnection!
+
+  """
+  A single user-defined event by id. Null when missing, aged out, or the id belongs to an error.
+  """
+  event(id: ID!): AppObserveUserEvent
+}
+
+"""
+One user-defined event (an app_events row that is not an exception).
+"""
+type AppObserveUserEvent implements AppObserveLog {
+  id: ID!
+
+  name: String!
+
+  """
+  Human-friendly label from the expo.log.display_name attribute; null when the event was logged without one.
+  """
+  displayName: String
+
+  timestamp: DateTime!
+
+  ingestedAt: DateTime
+
+  sessionId: String
+
+  severityNumber: Int
+
+  severityText: String
+
+  body: String
+
+  properties: [AppObserveEventProperty!]!
+
+  appIdentifier: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  clientVersion: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  deviceModel: String!
+
+  deviceLanguageTag: String
+
+  environment: String
+
+  easClientId: String!
+
+  countryCode: String
+}
+
+type AppObserveUserEventConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveUserEventEdge!]!
+}
+
+type AppObserveUserEventEdge {
+  cursor: String!
+
+  node: AppObserveUserEvent!
+}
+
+type AppObserveUserEventName {
+  name: String!
+
+  count: Int!
+}
+
+type AppObserveUserEventNames {
+  names: [AppObserveUserEventName!]!
+
+  isTruncated: Boolean!
+}
+
+input AppObserveUserEventNamesInput {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  environment: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  orderBy: AppObserveUserEventNamesOrderBy
+}
+
+input AppObserveUserEventNamesOrderBy {
+  field: AppObserveUserEventNamesOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+enum AppObserveUserEventNamesOrderByField {
+  NAME
+
+  COUNT
+}
+
+input AppObserveUserEventListFilter {
+  """
+  Filter to these platforms.
+  """
+  platforms: [AppObservePlatform!]
+
+  """
+  Event name. The reserved `exception` name is rejected; errors live in the errors namespace.
+  """
+  name: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  startTime: DateTime
+
+  endTime: DateTime
+
+  sessionId: String
+
+  easClientId: String
+
+  propertyFilters: [AppObserveUserEventPropertyFilter!]
+}
+
+input AppObserveUserEventPropertyFilter {
+  key: String!
+
+  value: String!
+}
+
+input AppObserveUserEventListOrderBy {
+  field: AppObserveUserEventListOrderByField!
+
+  direction: AppObserveOrderDirection!
+}
+
+enum AppObserveUserEventListOrderByField {
+  TIMESTAMP
+}
+
+input AppObserveCustomEventListOrderBy {
+  field: AppObserveCustomEventListOrderByField!
+
+  direction: AppObserveEventsOrderByDirection!
+}
+
+enum AppObserveCustomEventListOrderByField {
+  TIMESTAMP
+}
+
+type AppObserveCustomEventName {
+  eventName: String!
+
+  count: Int!
+}
+
+type AppObserveCustomEventNames {
+  names: [AppObserveCustomEventName!]!
+
+  isTruncated: Boolean!
+}
+
+input AppObserveCustomEventNamesOrderBy {
+  field: AppObserveCustomEventNamesOrderByField!
+
+  direction: AppObserveCustomEventNamesOrderByDirection!
+}
+
+enum AppObserveCustomEventNamesOrderByField {
+  EVENT_NAME
+
+  COUNT
+}
+
+enum AppObserveCustomEventNamesOrderByDirection {
+  ASC
+
+  DESC
+}
+
+input AppObserveCustomEventCountsInput {
+  eventName: String!
+
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform. One of platform or platforms is required.
+  """
+  platforms: [AppObservePlatform!]
+
+  startTime: DateTime!
+
+  endTime: DateTime!
+
+  bucketIntervalMinutes: Int
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+}
+
+type AppObserveCustomEventCountBucket {
+  bucket: DateTime!
+
+  count: Int!
+}
+
+type AppObserveCustomEventCounts {
+  buckets: [AppObserveCustomEventCountBucket!]!
+
+  totalCount: Int!
+}
+
+input AppObserveCustomEventPropertyFilter {
+  key: String!
+
+  value: String!
+}
+
+input AppObserveCustomEventListFilter {
+  platform: AppObservePlatform
+
+  """
+  Filter to these platforms. Cannot be set together with platform.
+  """
+  platforms: [AppObservePlatform!]
+
+  eventName: String
+
+  appVersion: String
+
+  appBuildNumber: String
+
+  appUpdateId: String
+
+  appEasBuildId: String
+
+  isEmbeddedUpdate: Boolean
+
+  environment: String
+
+  startTime: DateTime
+
+  endTime: DateTime
+
+  sessionId: String
+
+  easClientId: String
+
+  propertyFilters: [AppObserveCustomEventPropertyFilter!]
+
+  """
+  Restrict to one error group. Combine with the exception eventName to list a group's occurrences.
+  """
+  errorFingerprint: String
+}
+
+type AppObserveCustomEvent {
+  id: ID!
+
+  eventName: String!
+
+  """
+  Human-friendly label from the expo.log.display_name attribute; null when the event was logged without one.
+  """
+  displayName: String
+
+  timestamp: DateTime!
+
+  ingestedAt: DateTime
+
+  sessionId: String
+
+  severityNumber: Int
+
+  severityText: String
+
+  body: String
+
+  properties: [AppObserveEventProperty!]!
+
+  appIdentifier: String!
+
+  appVersion: String!
+
+  appBuildNumber: String!
+
+  appUpdateId: String
+
+  appUpdateMessage: String
+
+  appEasBuildId: String
+
+  expoSdkVersion: String
+
+  reactNativeVersion: String
+
+  clientVersion: String
+
+  deviceOs: String!
+
+  deviceOsVersion: String!
+
+  deviceModel: String!
+
+  deviceLanguageTag: String
+
+  environment: String
+
+  easClientId: String!
+
+  countryCode: String
+
+  """
+  Error fields below are populated only for exception events (eventName: exception).
+  """
+  exceptionType: String
+
+  exceptionMessage: String
+
+  exceptionStacktrace: String
+
+  """
+  Build whose uploaded source map symbolicated exceptionStacktrace; null when the stack trace is shown as reported.
+  """
+  symbolicationBuild: Build
+
+  errorSource: String
+
+  isFatal: Boolean
+
+  errorFingerprint: String
+}
+
+type AppObserveCustomEventEdge {
+  cursor: String!
+
+  node: AppObserveCustomEvent!
+}
+
+type AppObserveCustomEventListConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppObserveCustomEventEdge!]!
+}
+
 type NotificationsSentOverTimeData {
   data: LineChartData!
 }
@@ -2093,9 +4870,105 @@ type AppStoreConnectApiKey {
 
   roles: [AppStoreConnectUserRole!]
 
+  remoteAppStoreConnectApps(bundleIdentifier: String): [RemoteAppStoreConnectApp!]!
+
   createdAt: DateTime!
 
   updatedAt: DateTime!
+}
+
+input AppStoreConnectAppInput {
+  appId: ID!
+
+  appStoreConnectApiKeyId: ID!
+
+  ascAppIdentifier: String!
+}
+
+type DeleteAppStoreConnectAppResult {
+  id: ID!
+}
+
+type AppStoreConnectAppMutation {
+  """
+  Create an App Store Connect app for an Expo app.
+  """
+  createAppStoreConnectApp(appStoreConnectAppInput: AppStoreConnectAppInput!): AppStoreConnectApp!
+
+  """
+  Delete an App Store Connect app by ID.
+  """
+  deleteAppStoreConnectApp(appStoreConnectAppId: ID!): DeleteAppStoreConnectAppResult!
+}
+
+type AppStoreConnectApp {
+  id: ID!
+
+  app: App!
+
+  appStoreConnectApiKey: AppStoreConnectApiKey!
+
+  ascAppIdentifier: String!
+
+  webhookIdentifier: ID!
+
+  webhookEventTypes: [String!]!
+
+  remoteAppStoreConnectApp: RemoteAppStoreConnectApp
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+enum AppStoreConnectBuildUploadState {
+  AWAITING_UPLOAD
+
+  PROCESSING
+
+  COMPLETE
+
+  FAILED
+}
+
+enum AppStoreConnectBuildProcessingState {
+  PROCESSING
+
+  FAILED
+
+  INVALID
+
+  VALID
+}
+
+type AppStoreConnectBuildUpload {
+  ascBuildUploadIdentifier: String!
+
+  uploadState: AppStoreConnectBuildUploadState!
+
+  version: String
+
+  buildNumber: String
+
+  uploadedDate: DateTime
+
+  createdDate: DateTime
+
+  appStoreConnectBuild: AppStoreConnectBuild
+}
+
+type AppStoreConnectBuild {
+  ascBuildIdentifier: String!
+
+  processingState: AppStoreConnectBuildProcessingState!
+
+  buildNumber: String
+
+  minOsVersion: String
+
+  uploadedDate: DateTime
+
+  expirationDate: DateTime
 }
 
 enum AppPlatform {
@@ -2118,36 +4991,12 @@ enum AppInternalDistributionBuildPrivacy {
   PRIVATE
 }
 
-type AppRelease {
-  id: ID!
-
-  hash: String!
-
-  publishedTime: DateTime!
-
-  publishingUsername: String!
-
-  sdkVersion: String!
-
-  runtimeVersion: String
-
-  version: String!
-
-  s3Key: String!
-
-  s3Url: String!
-
-  manifest: JSON!
-}
-
 type AppIcon {
   url: String!
 
   primaryColor: String
 
   originalUrl: String!
-
-  colorPalette: JSON @deprecated(reason: "No longer supported")
 }
 
 input UpdatesFilter {
@@ -2164,6 +5013,36 @@ input UpdatesFilterV2 {
   runtimeVersions: [String!]
 }
 
+enum AppProfileImageWidth {
+  SMALL
+
+  MEDIUM
+
+  LARGE
+
+  EXTRA_LARGE
+}
+
+"""
+Whether a project has an App Store Connect connection for its ASC-triggered workflows.
+"""
+enum AppStoreConnectWorkflowConnectionStatus {
+  """
+  The project has no workflows with an on.app_store_connect trigger.
+  """
+  NO_APP_STORE_CONNECT_WORKFLOWS
+
+  """
+  The project has App Store Connect-triggered workflows but no connection.
+  """
+  HAS_WORKFLOWS_MISSING_CONNECTION
+
+  """
+  An App Store Connect app connection is linked to this project.
+  """
+  HAS_WORKFLOWS_IS_CONNECTED
+}
+
 input SubmissionFilter {
   platform: AppPlatform
 
@@ -2177,11 +5056,19 @@ input AppWorkflowRunTimeRangeInput {
 }
 
 input AppWorkflowRunFilterInput {
+  workflowId: ID
+
   requestedGitRef: String
 
   status: WorkflowRunStatus
 
   timeRange: WorkflowRunTimeRangeInput
+
+  searchTerm: String
+}
+
+input AppWorkflowFilterInput {
+  requestedGitRef: String
 }
 
 input BuildFilter {
@@ -2276,6 +5163,26 @@ type AppFingerprintsConnection {
   edges: [AppFingerprintEdge!]!
 }
 
+type AppEmbeddedUpdatesConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppEmbeddedUpdateEdge!]!
+}
+
+type AppEmbeddedUpdateEdge {
+  cursor: String!
+
+  node: EmbeddedUpdate!
+}
+
+input EmbeddedUpdateFilterInput {
+  platform: AppPlatform
+
+  runtimeVersion: String
+
+  channel: String
+}
+
 type AppBuildEdge {
   cursor: String!
 
@@ -2286,6 +5193,36 @@ type AppFingerprintEdge {
   cursor: String!
 
   node: Fingerprint!
+}
+
+input DeviceRunSessionFilterInput {
+  types: [DeviceRunSessionType!]
+
+  statuses: [DeviceRunSessionStatus!]
+
+  platforms: [AppPlatform!]
+
+  """
+  Case-insensitive prefix match on the session name.
+  """
+  name: String
+
+  """
+  Matches sessions carrying every listed tag. Case-insensitive.
+  """
+  tags: [String!]
+}
+
+type AppDeviceRunSessionsConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppDeviceRunSessionEdge!]!
+}
+
+type AppDeviceRunSessionEdge {
+  cursor: String!
+
+  node: DeviceRunSession!
 }
 
 type AppWorkflowRunsConnection {
@@ -2316,6 +5253,14 @@ type AppWorkflowRunGitBranchNode {
   name: String!
 
   lastRunAt: DateTime!
+}
+
+input BrownfieldArtifactFilterInput {
+  platform: AppPlatform
+
+  bundleName: String
+
+  version: String
 }
 
 input BuildFilterInput {
@@ -2467,8 +5412,6 @@ type AuditLog {
 
 type UserAuditLog {
   id: ID!
-
-  user: User! @deprecated(reason: "Use userActor instead")
 
   userActor: UserActor!
 
@@ -2633,6 +5576,8 @@ enum BuildPhase {
 
   READ_APP_CONFIG
 
+  READ_EAS_JSON
+
   READ_PACKAGE_JSON
 
   RUN_EXPO_DOCTOR
@@ -2642,6 +5587,8 @@ enum BuildPhase {
   START_BUILD
 
   INSTALL_CUSTOM_TOOLS
+
+  SSH_SESSION
 
   PREPARE_PROJECT
 
@@ -2655,11 +5602,21 @@ enum BuildPhase {
 
   PREPARE_CREDENTIALS
 
+  CONFIGURE_ANDROID_VERSION
+
+  CALCULATE_EXPO_UPDATES_RUNTIME_VERSION
+
   CONFIGURE_EXPO_UPDATES
+
+  EAGER_BUNDLE
 
   SAVE_CACHE
 
+  CACHE_STATS
+
   UPLOAD_APPLICATION_ARCHIVE
+
+  UPLOAD_EMBEDDED_BUNDLE
 
   UPLOAD_BUILD_ARTIFACTS
 
@@ -2676,6 +5633,8 @@ enum BuildPhase {
   FIX_GRADLEW
 
   RUN_GRADLEW
+
+  GRADLE_BUILD_PROFILE
 
   INSTALL_PODS
 
@@ -2699,9 +5658,13 @@ enum BuildPhase {
 
   DOWNLOAD_APPLICATION_ARCHIVE
 
+  PARSE_XCACTIVITYLOG
+
   PARSE_CUSTOM_WORKFLOW_CONFIG
 
   CUSTOM
+
+  COMPLETE_JOB
 }
 
 enum BuildCredentialsSource {
@@ -2828,7 +5791,9 @@ type Build implements ActivityTimelineProjectActivity & BuildOrBuildJob {
 
   artifacts: BuildArtifacts
 
-  logFiles: [String!]!
+  logFiles: [String!]! @deprecated(reason: "Use logFileUrls instead")
+
+  logFileUrls: [String!]!
 
   updatedAt: DateTime!
 
@@ -2870,6 +5835,8 @@ type Build implements ActivityTimelineProjectActivity & BuildOrBuildJob {
 
   updateChannel: UpdateChannel
 
+  embeddedUpdate: EmbeddedUpdate
+
   metrics: BuildMetrics
 
   distribution: DistributionType
@@ -2885,8 +5852,6 @@ type Build implements ActivityTimelineProjectActivity & BuildOrBuildJob {
   gitRef: String
 
   projectRootDirectory: String
-
-  githubRepositoryOwnerAndName: String @deprecated(reason: "Use 'githubRepository' field instead")
 
   isGitWorkingTreeDirty: Boolean
 
@@ -2906,7 +5871,9 @@ type Build implements ActivityTimelineProjectActivity & BuildOrBuildJob {
 
   requiredPackageManager: String
 
-  selectedImage: String @deprecated(reason: "Check logs instead.")
+  selectedImage: String @deprecated(reason: "Use 'resolvedImage' for the concrete image the build runs on.")
+
+  resolvedImage: String
 
   customNodeVersion: String
 
@@ -2952,6 +5919,11 @@ type Build implements ActivityTimelineProjectActivity & BuildOrBuildJob {
   cliVersion: String
 
   workflowJob: WorkflowJob
+
+  """
+  The active ssh session for this build, if any.
+  """
+  sshSession: TurtleSshSession
 }
 
 type BuildArtifacts {
@@ -2962,8 +5934,6 @@ type BuildArtifacts {
   buildArtifactsUrl: String
 
   xcodeBuildLogsUrl: String
-
-  fingerprintUrl: String @deprecated(reason: "Use 'runtime.fingerprint.debugInfoUrl' instead.")
 }
 
 type BuildError {
@@ -2984,6 +5954,83 @@ type BuildMetrics {
   buildDuration: Int
 }
 
+"""
+A non-negative integer number of bytes.
+"""
+scalar ByteSize
+
+union ChannelBuildOrEmbeddedUpdate = Build|EmbeddedUpdate
+
+type ChannelBuildOrEmbeddedUpdateEdge {
+  cursor: String!
+
+  node: ChannelBuildOrEmbeddedUpdate!
+}
+
+type ChannelBuildsAndEmbeddedUpdatesConnection {
+  pageInfo: PageInfo!
+
+  edges: [ChannelBuildOrEmbeddedUpdateEdge!]!
+}
+
+"""
+A human user's chat token usage over the trailing 30 days, with their fair-usage limit.
+"""
+type ChatTokenUsage {
+  usedTokens: Int!
+
+  """
+  Null when the user's plan has no chat token limit.
+  """
+  limitTokens: Int
+
+  isLimitExceeded: Boolean!
+}
+
+union ConcurrencyConsumer = Build|JobRun
+
+type ConvexProject {
+  id: ID!
+
+  app: App!
+
+  convexTeamConnection: ConvexTeamConnection!
+
+  convexProjectIdentifier: String!
+
+  convexProjectName: String!
+
+  convexProjectSlug: String!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type ConvexTeamConnection {
+  id: ID!
+
+  account: Account!
+
+  convexTeamIdentifier: String!
+
+  convexTeamName: String!
+
+  convexTeamSlug: String!
+
+  invitedEmail: String
+
+  invitedAt: DateTime
+
+  convexProjects: [ConvexProject!]!
+
+  hasBeenClaimed: Boolean!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
 type PageInfo {
   hasPreviousPage: Boolean!
 
@@ -2992,6 +6039,85 @@ type PageInfo {
   startCursor: String
 
   endCursor: String
+}
+
+enum DashboardChatMessageRole {
+  USER
+
+  ASSISTANT
+}
+
+"""
+Terminal state of an assistant message
+"""
+enum DashboardChatMessageStatus {
+  COMPLETED
+
+  ERROR
+
+  CANCELED
+}
+
+type DashboardChatMessageEdge {
+  node: DashboardChatMessage!
+
+  cursor: String!
+}
+
+type DashboardChatMessageConnection {
+  edges: [DashboardChatMessageEdge!]!
+
+  pageInfo: PageInfo!
+}
+
+type DashboardChatMessage {
+  id: ID!
+
+  """
+  Client-supplied; unique per chat, not globally
+  """
+  clientMessageId: String!
+
+  role: DashboardChatMessageRole!
+
+  status: DashboardChatMessageStatus
+
+  """
+  UIMessage parts, stored verbatim, ordered by index
+  """
+  parts: [JSONObject!]!
+}
+
+type DashboardChatEdge {
+  node: DashboardChat!
+
+  cursor: String!
+}
+
+type DashboardChatConnection {
+  edges: [DashboardChatEdge!]!
+
+  pageInfo: PageInfo!
+}
+
+"""
+A dashboard AI chat conversation, private to the user who created it.
+"""
+type DashboardChat {
+  id: ID!
+
+  account: Account!
+
+  title: String
+
+  lastMessageAt: DateTime
+
+  createdAt: DateTime!
+
+  """
+  Most recent first
+  """
+  messages(first: Int, after: String, last: Int, before: String): DashboardChatMessageConnection!
 }
 
 input DeploymentBuildFilterInput {
@@ -3054,6 +6180,200 @@ type DeploymentEdge {
   node: Deployment!
 }
 
+type DeviceRunSessionArtifact {
+  id: ID!
+
+  deviceRunSession: DeviceRunSession!
+
+  name: String!
+
+  filename: String!
+
+  kind: String
+
+  fileSizeBytes: Float
+
+  downloadUrl: String!
+
+  metadata: JSONObject
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+enum DeviceRunSessionStatus {
+  NEW
+
+  IN_PROGRESS
+
+  STOPPED
+
+  ERRORED
+}
+
+enum DeviceRunSessionType {
+  AGENT_DEVICE
+
+  """
+  A session accessed only through its web preview.
+  """
+  WEB_PREVIEW_ONLY
+
+  SERVE_SIM @deprecated(reason: "Use WEB_PREVIEW_ONLY instead.")
+
+  ARGENT
+
+  APPIUM
+}
+
+enum DeviceRunSessionResourceClass {
+  MEDIUM
+
+  LARGE
+}
+
+type AgentDeviceRunSessionRemoteConfig {
+  agentDeviceRemoteSessionUrl: String!
+
+  agentDeviceRemoteSessionToken: String!
+
+  """
+  URL of the web preview surface for the session. Null when a web preview is
+  not available for the session.
+  """
+  webPreviewUrl: String
+
+  """
+  Session token gating the web preview. Null when the preview runs ungated.
+  """
+  webPreviewToken: String
+}
+
+type WebPreviewOnlyRunSessionRemoteConfig {
+  webPreviewUrl: String!
+}
+
+"""
+Legacy remote config for SERVE_SIM sessions. Use WEB_PREVIEW_ONLY sessions and
+WebPreviewOnlyRunSessionRemoteConfig instead.
+"""
+type ServeSimRunSessionRemoteConfig {
+  previewUrl: String!
+
+  """
+  Session token gating the preview. Null when the preview runs ungated.
+  """
+  previewToken: String
+
+  streamUrl: String @deprecated(reason: "Use previewUrl instead.")
+}
+
+type ArgentRunSessionRemoteConfig {
+  toolsUrl: String!
+
+  toolsAuthToken: String
+
+  """
+  URL of the web preview surface for the session. Null when a web preview is
+  not available for the session.
+  """
+  webPreviewUrl: String
+
+  """
+  Session token gating the web preview. Null when the preview runs ungated.
+  """
+  webPreviewToken: String
+}
+
+type AppiumRunSessionRemoteConfig {
+  """
+  Appium server URL for the remote device.
+  """
+  appiumUrl: String!
+
+  """
+  W3C capabilities for the device that backs this session.
+  """
+  capabilities: JSONObject!
+
+  """
+  URL of the web preview surface for the session. Null when a web preview is
+  not available for the session.
+  """
+  webPreviewUrl: String
+
+  """
+  Session token gating the web preview. Null when the preview runs ungated.
+  """
+  webPreviewToken: String
+}
+
+union DeviceRunSessionRemoteConfig = AgentDeviceRunSessionRemoteConfig|WebPreviewOnlyRunSessionRemoteConfig|ServeSimRunSessionRemoteConfig|ArgentRunSessionRemoteConfig|AppiumRunSessionRemoteConfig
+
+type DeviceRunSession {
+  id: ID!
+
+  app: App!
+
+  initiatingActor: Actor
+
+  turtleJobRun: JobRun
+
+  remoteConfig: DeviceRunSessionRemoteConfig
+
+  """
+  Human-readable label chosen by whoever started the session. Null when the
+  session was started without one.
+  """
+  name: String
+
+  """
+  Free-form labels for grouping sessions, for example one per app variant.
+  """
+  tags: [String!]!
+
+  type: DeviceRunSessionType!
+
+  """
+  The version of the package backing the device run session. Null means the session is
+  pinned to "latest" at the consumer side.
+  """
+  packageVersion: String
+
+  """
+  EAS Build installed and launched for this session. Null when the session uses
+  a direct application archive URL or starts without an app.
+  """
+  build: Build
+
+  """
+  Direct application archive URL installed and launched for this session. Null when
+  the session uses an EAS Build or starts without an app.
+  """
+  applicationArchiveUrl: String
+
+  platform: AppPlatform!
+
+  status: DeviceRunSessionStatus!
+
+  """
+  Number of minutes without observed session activity after which the session
+  is stopped automatically. Null when the session has no idle timeout.
+  """
+  maxIdleTimeMinutes: Int
+
+  startedAt: DateTime
+
+  finishedAt: DateTime
+
+  artifacts: [DeviceRunSessionArtifact!]!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
 type DiscordUser {
   id: ID!
 
@@ -3072,10 +6392,435 @@ type DiscordUserMetadata {
   discordAvatarUrl: String!
 }
 
+enum EchoChatState {
+  ACTIVE
+
+  ARCHIVED
+}
+
+enum EchoAgentType {
+  CLAUDE_CODE
+
+  GEMINI
+
+  CODEX
+}
+
+type EchoChatEdge {
+  node: EchoChat!
+
+  cursor: String!
+}
+
+type EchoChatConnection {
+  edges: [EchoChatEdge!]!
+
+  pageInfo: PageInfo!
+}
+
+type EchoChat {
+  id: ID!
+
+  """
+  Parent project
+  """
+  echoProject: EchoProject!
+
+  title: String
+
+  agentType: EchoAgentType
+
+  state: EchoChatState!
+
+  stats: JSONObject
+
+  agentMetadata: JSONObject
+
+  """
+  Messages belonging to this chat (paginated, most recent first)
+  """
+  echoMessages(first: Int, after: String): EchoMessageConnection!
+}
+
+enum EchoMessagePartType {
+  TEXT
+
+  REASONING
+
+  FILE
+
+  SOURCE
+
+  STEP
+
+  TOOL
+
+  COMPACTION
+
+  SUBTASK
+
+  DATA
+}
+
+type EchoMessagePart {
+  id: ID!
+
+  """
+  Parent message
+  """
+  echoMessage: EchoMessage!
+
+  type: EchoMessagePartType!
+
+  index: Int!
+
+  data: JSONObject!
+}
+
+"""
+Echo message role
+"""
+enum EchoMessageRole {
+  USER
+
+  ASSISTANT
+}
+
+type EchoMessageEdge {
+  node: EchoMessage!
+
+  cursor: String!
+}
+
+type EchoMessageConnection {
+  edges: [EchoMessageEdge!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int
+}
+
+type EchoMessage {
+  id: ID!
+
+  """
+  Parent chat
+  """
+  echoChat: EchoChat!
+
+  """
+  User who sent the message (for user messages)
+  """
+  user: User
+
+  """
+  Turn ID (legacy alias for echoTurn.id, prefer echoTurn)
+  """
+  turnId: ID
+
+  """
+  Turn entity for grouping user message + assistant response
+  """
+  echoTurn: EchoTurn
+
+  role: EchoMessageRole!
+
+  """
+  Parent message (for conversation branching)
+  """
+  parentEchoMessage: EchoMessage
+
+  metadata: JSONObject
+
+  completedAt: DateTime
+
+  """
+  Message parts (text, tool calls, etc.) ordered by index
+  """
+  echoMessageParts: [EchoMessagePart!]!
+}
+
+enum EchoProjectVisibility {
+  PUBLIC
+
+  PRIVATE
+}
+
+type EchoProjectThumbnail {
+  url: String!
+
+  visualHash: String
+
+  accentColor: String
+
+  width: Int
+
+  height: Int
+}
+
+type EchoProjectIcon {
+  url: String!
+
+  accentColor: String
+}
+
+enum EchoProjectIconSource {
+  AI_GENERATED
+
+  USER_UPLOADED
+}
+
+type EchoProjectIconGalleryItem {
+  id: ID!
+
+  url: String!
+
+  source: EchoProjectIconSource!
+
+  prompt: String
+
+  model: String
+
+  accentColor: String
+
+  createdAt: DateTime!
+}
+
+type EchoProjectGithubInfo {
+  installationId: Int!
+
+  repoOwner: String!
+
+  repoName: String!
+
+  repoUrl: String!
+
+  branch: String!
+
+  accountType: String
+}
+
+type EchoProjectEdge {
+  node: EchoProject!
+
+  cursor: String!
+}
+
+type EchoProjectConnection {
+  edges: [EchoProjectEdge!]!
+
+  pageInfo: PageInfo!
+}
+
+type EchoProjectImage {
+  id: ID!
+
+  url: String!
+
+  createdAt: DateTime!
+}
+
+type EchoProject {
+  id: ID!
+
+  account: Account!
+
+  createdByActor: Actor
+
+  displayName: String
+
+  slug: String
+
+  description: String
+
+  visibility: EchoProjectVisibility!
+
+  thumbnail: EchoProjectThumbnail
+
+  icon: EchoProjectIcon
+
+  echoProjectIcon: EchoProjectIconGalleryItem
+
+  githubInfo: EchoProjectGithubInfo
+
+  initFromEchoProject: EchoProject
+
+  initFromGitHubUrl: String
+
+  currentPreviewEchoVersion: EchoVersion
+
+  updatedAt: DateTime!
+
+  lastMessageAt: DateTime
+
+  echoChats(first: Int, after: String): EchoChatConnection!
+
+  echoVersions(first: Int, after: String): EchoVersionConnection!
+
+  images: [EchoProjectImage!]!
+
+  iconGallery: [EchoProjectIconGalleryItem!]!
+
+  """
+  Environment variables for this Echo project
+  """
+  environmentVariables(filterNames: [String!], environment: EnvironmentVariableEnvironment): [EnvironmentVariable!]!
+
+  """
+  Environment variables for this Echo project with decrypted secret values.
+  Used by the frontend to show secret values and for sandbox injection.
+  """
+  environmentVariablesIncludingSensitive(filterNames: [String!], environment: EnvironmentVariableEnvironment): [EnvironmentVariableWithSecret!]!
+}
+
+enum EchoTurnCompletionStatus {
+  COMPLETED
+
+  ERROR
+
+  CANCELLED
+}
+
+type EchoTurn {
+  id: ID!
+
+  """
+  Parent chat
+  """
+  echoChat: EchoChat!
+
+  """
+  Terminal status of the turn (null if still in progress)
+  """
+  completionStatus: EchoTurnCompletionStatus
+
+  """
+  Error message when completionStatus is ERROR
+  """
+  error: String
+
+  createdAt: DateTime!
+
+  completedAt: DateTime
+
+  """
+  Messages in this turn
+  """
+  echoMessages: [EchoMessage!]!
+}
+
+enum EchoVersionSource {
+  AGENT
+
+  REVERT
+
+  MANUAL
+
+  GITHUB
+}
+
+enum EchoBuildStatus {
+  SUCCESS
+
+  FAILED
+
+  PENDING
+
+  BUILDING
+}
+
+enum EchoChangeType {
+  ADDED
+
+  MODIFIED
+
+  DELETED
+
+  RENAMED
+}
+
+type EchoVersionEdge {
+  node: EchoVersion!
+
+  cursor: String!
+}
+
+type EchoVersionConnection {
+  edges: [EchoVersionEdge!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int
+}
+
+"""
+Visual metadata for version screenshots (thumbnail)
+"""
+type EchoVersionThumbnail {
+  url: String!
+
+  visualHash: String
+
+  accentColor: String
+
+  width: Int
+
+  height: Int
+}
+
+type EchoVersion {
+  id: ID!
+
+  """
+  Parent project
+  """
+  echoProject: EchoProject!
+
+  """
+  Chat that created this version (optional)
+  """
+  echoChat: EchoChat
+
+  source: EchoVersionSource!
+
+  """
+  Turn ID (legacy alias for echoTurn.id, prefer echoTurn)
+  """
+  turnId: ID
+
+  """
+  Turn that created this version
+  """
+  echoTurn: EchoTurn
+
+  gitCommitHash: String
+
+  gitCommitMessage: String
+
+  gitBranch: String!
+
+  """
+  Version this was reverted from (if applicable)
+  """
+  revertedFromEchoVersion: EchoVersion
+
+  buildStatus: EchoBuildStatus!
+
+  buildError: String
+
+  diffs: JSON!
+
+  thumbnail: EchoVersionThumbnail
+
+  previewDeployment: JSONObject
+}
+
 enum EntityTypeName {
   AccountEntity
 
   AccountSSOConfigurationEntity
+
+  AgentProviderConnectionEntity
 
   AndroidAppCredentialsEntity
 
@@ -3085,6 +6830,8 @@ enum EntityTypeName {
 
   AppStoreConnectApiKeyEntity
 
+  AppStoreConnectAppEntity
+
   AppleDeviceEntity
 
   AppleDistributionCertificateEntity
@@ -3093,11 +6840,23 @@ enum EntityTypeName {
 
   AppleTeamEntity
 
+  BillingContractEntity
+
   BranchEntity
 
   ChannelEntity
 
+  ConvexProjectEntity
+
+  ConvexTeamConnectionEntity
+
   CustomerEntity
+
+  EchoProjectEntity
+
+  EchoVersionEntity
+
+  EnvironmentVariableEntity
 
   GoogleServiceAccountKeyEntity
 
@@ -3107,9 +6866,21 @@ enum EntityTypeName {
 
   LogRocketProjectEntity
 
+  PostHogOrganizationConnectionEntity
+
+  PostHogProjectEntity
+
+  SupabaseConnectionEntity
+
+  SupabaseProjectEntity
+
   UserInvitationEntity
 
   UserPermissionEntity
+
+  VexoAccountConnectionEntity
+
+  VexoAppEntity
 
   WorkerCustomDomainEntity
 
@@ -3120,6 +6891,8 @@ enum EntityTypeName {
   WorkflowEntity
 
   WorkflowRevisionEntity
+
+  WorkflowScheduleEntity
 }
 
 enum UserEntityTypeName {
@@ -3129,11 +6902,17 @@ enum UserEntityTypeName {
 
   GitHubUserEntity
 
+  OAuthIdentityEntity
+
+  PartnerProvisionedActorEntity
+
   PasswordEntity
 
   SSOUserEntity
 
   UserEntity
+
+  UserPasskeyCredentialEntity
 
   UserPermissionEntity
 
@@ -3164,6 +6943,8 @@ enum EnvironmentVariableScope {
   PROJECT
 
   SHARED
+
+  ECHO_PROJECT
 }
 
 enum EnvironmentVariableVisibility {
@@ -3203,8 +6984,6 @@ type EnvironmentVariable {
   isGlobal: Boolean
 
   fileName: String
-
-  apps: [App!]! @deprecated(reason: "Environment variables are automatically linked to all apps")
 }
 
 type EnvironmentVariableWithSecret {
@@ -3323,6 +7102,44 @@ type GitHubAppInstallation {
   installationIdentifier: Int!
 
   metadata: GitHubAppInstallationMetadata!
+
+  """
+  The GitHub Enterprise registration this installation belongs to, or null for the default
+  github.com app.
+  """
+  registration: GitHubAppRegistration
+}
+
+"""
+A GitHub Enterprise app.
+"""
+type GitHubAppRegistration {
+  id: ID!
+
+  """
+  The Expo account that owns this registration.
+  """
+  account: Account!
+
+  """
+  The GHE app slug.
+  """
+  slug: String!
+
+  """
+  Origin of the GitHub Enterprise instance, e.g. https://github.example.com or https://example.ghe.com. No trailing slash.
+  """
+  origin: String!
+
+  """
+  Public OAuth client id of the GHE app.
+  """
+  githubClientIdentifier: String!
+
+  """
+  URL of the app's page on its GitHub instance, e.g. https://github.example.com/github-apps/expo.
+  """
+  githubAppUrl: String!
 }
 
 enum GitHubBuildTriggerType {
@@ -3451,9 +7268,13 @@ type GitHubRepository {
   metadata: GitHubRepositoryMetadata!
 
   createdAt: DateTime!
+
+  lastDeletionAttemptTime: DateTime
 }
 
 type GitHubRepositoryMetadata {
+  id: ID!
+
   githubRepoOwnerName: String!
 
   githubRepoName: String!
@@ -3635,8 +7456,6 @@ type IosAppBuildCredentials {
   iosDistributionType: IosDistributionType!
 
   iosAppCredentials: IosAppCredentials!
-
-  appleDevices: [AppleDevice] @deprecated(reason: "Get Apple Devices from AppleProvisioningProfile instead")
 }
 
 input IosAppCredentialsFilter {
@@ -3729,15 +7548,32 @@ type JobRun {
 
   isWaived: Boolean!
 
-  childJobRun: JobRun @deprecated(reason: "No longer supported")
-
   createdAt: DateTime!
+
+  enqueuedAt: DateTime
 
   expiresAt: DateTime!
 
   name: String!
 
   errors: [JobRunError!]!
+
+  """
+  String describing the worker profile used to run this job run.
+  """
+  resourceClassDisplayName: String!
+
+  workflowJob: WorkflowJob
+
+  """
+  Max run time in seconds for this job run.
+  """
+  maxRunTimeSeconds: Int!
+
+  """
+  The active ssh session for this job run, if any.
+  """
+  sshSession: TurtleSshSession
 }
 
 type KeystoreGenerationUrl {
@@ -3894,6 +7730,71 @@ type Notification {
   websiteMessage: String!
 }
 
+enum OAuthProvider {
+  apple
+
+  github
+
+  google
+}
+
+type OAuthIdentity {
+  id: ID!
+
+  provider: OAuthProvider!
+
+  email: String!
+
+  login: String
+}
+
+"""
+Represents a partner-provisioned actor.
+"""
+type PartnerActor implements Actor {
+  id: ID!
+
+  username: String!
+
+  email: String!
+
+  firstName: String
+
+  created: DateTime!
+
+  isExpoAdmin: Boolean!
+
+  displayName: String!
+
+  lastDeletionAttemptTime: DateTime
+
+  """
+  Primary account
+  """
+  primaryAccount: Account!
+
+  """
+  Associated accounts
+  """
+  accounts: [Account!]!
+
+  """
+  Access Tokens belonging to this actor
+  """
+  accessTokens: [AccessToken!]!
+
+  """
+  Server feature gate values for this actor, optionally filtering by desired gates.
+  Only resolves for the viewer.
+  """
+  featureGates(filter: [String!]): JSONObject!
+
+  """
+  Experiments associated with this actor
+  """
+  experiments: [ActorExperiment!]!
+}
+
 type PendingSentryInstallation {
   id: ID!
 
@@ -3918,6 +7819,50 @@ type PinnedDashboardView {
   view: DashboardViewPin!
 }
 
+enum PostHogRegion {
+  US
+
+  EU
+}
+
+type PostHogOrganizationConnection {
+  id: ID!
+
+  account: Account!
+
+  posthogOrganizationIdentifier: String!
+
+  posthogOrganizationName: String!
+
+  posthogRegion: PostHogRegion!
+
+  posthogProjects: [PostHogProject!]!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type PostHogProject {
+  id: ID!
+
+  app: App!
+
+  posthogOrganizationConnection: PostHogOrganizationConnection!
+
+  posthogProjectIdentifier: String!
+
+  posthogProjectName: String!
+
+  posthogProjectToken: String!
+
+  posthogHost: String!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
 interface Project {
   id: ID!
 
@@ -3936,6 +7881,16 @@ interface Project {
   username: String!
 
   iconUrl: String @deprecated(reason: "No longer supported")
+}
+
+type RemoteAppStoreConnectApp {
+  ascAppIdentifier: String!
+
+  bundleIdentifier: String!
+
+  name: String
+
+  appStoreIconUrl: String
 }
 
 """
@@ -4029,6 +7984,8 @@ type Runtime {
   builds(first: Int, after: String, last: Int, before: String, filter: RuntimeBuildsFilterInput): AppBuildsConnection!
 
   buildCount(channel: String, statuses: [BuildStatus!]): Int!
+
+  embeddedUpdateCount(channel: String): Int!
 }
 
 """
@@ -4148,13 +8105,15 @@ type SSOUser implements Actor & UserActor {
 
   fullName: String
 
-  profilePhoto: String!
+  profilePhoto: String! @deprecated(reason: "Use primaryAccountProfileImageUrl instead")
 
   created: DateTime!
 
   appCount: Int!
 
   isExpoAdmin: Boolean!
+
+  isStaffModeEnabled: Boolean!
 
   displayName: String!
 
@@ -4169,7 +8128,7 @@ type SSOUser implements Actor & UserActor {
 
   accounts: [Account!]!
 
-  primaryAccountProfileImageUrl: String
+  primaryAccountProfileImageUrl: String!
 
   """
   Access Tokens belonging to this actor, none at present
@@ -4180,11 +8139,6 @@ type SSOUser implements Actor & UserActor {
   Snacks associated with this account
   """
   snacks(offset: Int!, limit: Int!): [Snack!]!
-
-  """
-  Apps this user has published. If this user is the viewer, this field returns the apps the user has access to.
-  """
-  apps(offset: Int!, limit: Int!, includeUnpublished: Boolean): [App!]! @deprecated(reason: "Use Account.appsPaginated instead")
 
   """
   Coalesced project activity for all apps belonging to all accounts this user belongs to. Only resolves for the viewer.
@@ -4218,17 +8172,7 @@ type SSOUser implements Actor & UserActor {
 
   websiteNotificationsPaginated(first: Int, after: String, last: Int, before: String): WebsiteNotificationsConnection!
 
-  industry: String @deprecated(reason: "No longer supported")
-
-  location: String @deprecated(reason: "No longer supported")
-
-  githubUsername: String @deprecated(reason: "No longer supported")
-
-  twitterUsername: String @deprecated(reason: "No longer supported")
-
-  appetizeCode: String @deprecated(reason: "No longer supported")
-
-  preferences: UserPreferences!
+  preferences: UserPreferences! @deprecated(reason: "No longer stored. Use userPreference instead.")
 }
 
 """
@@ -4395,12 +8339,6 @@ enum SubmissionStatus {
   CANCELED
 }
 
-enum SubmissionAndroidArchiveType {
-  APK
-
-  AAB
-}
-
 enum SubmissionAndroidReleaseStatus {
   DRAFT
 
@@ -4473,6 +8411,8 @@ type Submission implements ActivityTimelineProjectActivity {
   workflowJob: WorkflowJob
 
   jobRun: JobRun
+
+  appStoreConnectBuildUpload: AppStoreConnectBuildUpload
 }
 
 type SubmissionError {
@@ -4492,13 +8432,58 @@ type IosSubmissionConfig {
 type AndroidSubmissionConfig {
   applicationIdentifier: String @deprecated(reason: "applicationIdentifier is deprecated and will be auto-detected on submit")
 
-  archiveType: SubmissionAndroidArchiveType @deprecated(reason: "archiveType is deprecated and will be null")
-
   track: String!
 
   releaseStatus: SubmissionAndroidReleaseStatus
 
   rollout: Float
+}
+
+type SupabaseOrganization {
+  id: ID!
+
+  slug: String!
+
+  name: String!
+}
+
+type SupabaseConnection {
+  id: ID!
+
+  account: Account!
+
+  """
+  The organization new projects are provisioned under. Chosen at connect time; defaults to the first.
+  """
+  supabaseOrganizationSlug: String!
+
+  supabaseOrganizationName: String!
+
+  supabaseProjects: [SupabaseProject!]!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type SupabaseProject {
+  id: ID!
+
+  app: App!
+
+  supabaseConnection: SupabaseConnection!
+
+  supabaseProjectRef: String!
+
+  supabaseProjectName: String!
+
+  supabaseProjectUrl: String!
+
+  supabaseRegion: String!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
 }
 
 type TimelineActivityConnection {
@@ -4521,6 +8506,76 @@ input TimelineActivityFilterInput {
   releaseChannels: [String!]
 
   channels: [String!]
+}
+
+type BrownfieldArtifact {
+  id: ID!
+
+  platform: AppPlatform!
+
+  bundleName: String!
+
+  version: String!
+
+  sizeBytes: Int
+
+  downloadUrl: String
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type BrownfieldArtifactEdge {
+  cursor: String!
+
+  node: BrownfieldArtifact!
+}
+
+type BrownfieldArtifactsConnection {
+  pageInfo: PageInfo!
+
+  edges: [BrownfieldArtifactEdge!]!
+}
+
+enum TurtleSshTransportType {
+  UPTERM_V1
+}
+
+"""
+Everything a client needs to open the ssh connection, reported by the worker once it has dialed
+the relay. Reading this decrypts the connection secret, so it is gated at account PUBLISH.
+"""
+type TurtleSshConnectionConfig {
+  type: TurtleSshTransportType!
+
+  host: String!
+
+  secret: String!
+
+  reconnecting: Boolean!
+}
+
+type TurtleSshSessionSettings {
+  idleTimeoutSeconds: Int!
+}
+
+type TurtleSshSession {
+  id: ID!
+
+  initiatingActor: Actor
+
+  jobRun: JobRun
+
+  build: Build
+
+  connectionConfig: TurtleSshConnectionConfig!
+
+  sessionSettings: TurtleSshSessionSettings!
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
 }
 
 type UpdateBranch {
@@ -4586,6 +8641,11 @@ type UpdateChannel {
 
   isPaused: Boolean!
 
+  """
+  Only account admins may release to a protected channel.
+  """
+  isProtected: Boolean!
+
   createdAt: DateTime!
 
   updatedAt: DateTime!
@@ -4594,7 +8654,15 @@ type UpdateChannel {
 
   latestRuntimes(first: Int, after: String, last: Int, before: String): ChannelRuntimesConnection!
 
+  buildsAndEmbeddedUpdatesPaginated(first: Int, after: String, last: Int, before: String): ChannelBuildsAndEmbeddedUpdatesConnection!
+
+  buildCount: Int!
+
+  embeddedUpdateCount: Int!
+
   app: App!
+
+  lastDeletionAttemptTime: DateTime
 }
 
 type ChannelRuntimesConnection {
@@ -4615,6 +8683,96 @@ type RuntimeWithLastActivity {
   lastActivityPostgresSerialized: String!
 }
 
+type UpdateDiffReceipt {
+  id: ID!
+
+  appId: ID!
+
+  baseUpdateId: ID!
+
+  updateId: ID!
+
+  state: String!
+
+  fileSize: Int
+
+  errorCode: String
+
+  errorMessage: String
+
+  baseUpdate: Update
+
+  downloadUrl: String
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type UpdateDiffReceiptConnection {
+  pageInfo: PageInfo!
+
+  edges: [UpdateDiffReceiptEdge!]!
+}
+
+type UpdateDiffReceiptEdge {
+  cursor: String!
+
+  node: UpdateDiffReceipt!
+}
+
+enum UpdateDiffReceiptOrderByField {
+  CREATED_AT
+
+  STATE
+}
+
+enum UpdateDiffReceiptOrderByDirection {
+  ASC
+
+  DESC
+}
+
+enum UpdateDiffReceiptStateValue {
+  QUEUED
+
+  IN_PROGRESS
+
+  SUCCESS
+
+  WONT_COMPUTE
+
+  FAILURE
+}
+
+input UpdateDiffReceiptOrderByClause {
+  field: UpdateDiffReceiptOrderByField!
+
+  direction: UpdateDiffReceiptOrderByDirection
+
+  stateOrder: [UpdateDiffReceiptStateValue!]
+}
+
+input UpdateDiffReceiptFilterInput {
+  """
+  Excludes diff receipts whose diffs have been downloaded.
+  Downloads are determined from ClickHouse metrics. Results are
+  approximate when more than 1000 downloaded diffs exist.
+  """
+  omitDownloadedDiffs: Boolean
+}
+
+type UpdateGroup {
+  """
+  The shared update_group UUID of the member updates.
+  """
+  id: ID!
+
+  createdAt: DateTime!
+
+  updates: [Update!]!
+}
+
 type UpdateInsights {
   id: ID!
 
@@ -4625,6 +8783,8 @@ type UpdateInsights {
   averageAssetMetrics: [AverageAssetMetrics!]!
 
   cumulativeAverageMetrics: CumulativeAverageMetrics!
+
+  sizeBreakdownByCategory: [SizeBreakdownCategory!]!
 }
 
 type AverageAssetMetrics {
@@ -4633,6 +8793,12 @@ type AverageAssetMetrics {
   count: Int!
 
   storageKey: String!
+
+  baseUpdate: Update
+
+  baseUpdateId: ID
+
+  baseUpdateDownloadUrl: String
 }
 
 type CumulativeAverageMetrics {
@@ -4669,6 +8835,14 @@ type CumulativeUpdatesDataset {
   cumulative: [Int!]!
 
   difference: [Int!]!
+}
+
+type SizeBreakdownCategory {
+  category: String!
+
+  totalBytes: Float!
+
+  assetCount: Int!
 }
 
 type Update implements ActivityTimelineProjectActivity {
@@ -4738,6 +8912,45 @@ type Update implements ActivityTimelineProjectActivity {
   assetHostOverride: String
 
   workflowJob: WorkflowJob
+
+  diffReceipts(first: Int!, after: String, orderBy: [UpdateDiffReceiptOrderByClause!], filter: UpdateDiffReceiptFilterInput): UpdateDiffReceiptConnection!
+}
+
+enum UpdatesTimelineItemType {
+  UPDATE_GROUP
+
+  EMBEDDED_UPDATE
+}
+
+union UpdatesTimelineItem = UpdateGroup|EmbeddedUpdate
+
+input UpdatesTimelineFilter {
+  types: [UpdatesTimelineItemType!]
+
+  platform: AppPlatform
+
+  runtimeVersions: [String!]
+
+  channel: String
+
+  """
+  Case-insensitive substring match on update group message, branch name, and runtime version,
+  plus prefix match on update ID, update group ID, and git commit hash.
+  Embedded updates are matched on channel, runtime version, and ID prefix.
+  """
+  searchTerm: String
+}
+
+type UpdatesTimelineEdge {
+  cursor: String!
+
+  node: UpdatesTimelineItem!
+}
+
+type UpdatesTimelineConnection {
+  pageInfo: PageInfo!
+
+  edges: [UpdatesTimelineEdge!]!
 }
 
 type CodeSigningInfo {
@@ -4785,9 +8998,15 @@ enum UsageMetricsGranularity {
 }
 
 enum EASService {
+  AGENT
+
   BUILDS
 
   JOBS
+
+  MCP
+
+  OBSERVE
 
   UPDATES
 }
@@ -4797,7 +9016,13 @@ enum EASServiceMetric {
 
   BANDWIDTH_USAGE
 
+  CREDIT_USAGE
+
   MANIFEST_REQUESTS
+
+  MCP_REQUESTS
+
+  OBSERVE_EVENTS
 
   UNIQUE_UPDATERS
 
@@ -4813,6 +9038,8 @@ enum EASServiceMetric {
 enum UsageMetricType {
   BANDWIDTH
 
+  CREDIT
+
   REQUEST
 
   UPDATE
@@ -4822,6 +9049,8 @@ enum UsageMetricType {
   BUILD
 
   MINUTE
+
+  EVENT
 }
 
 enum EASBuildBillingResourceClass {
@@ -4922,6 +9151,15 @@ type EstimatedOverageAndCost {
   metadata: AccountUsageMetadata
 }
 
+type UnavailableServiceUsageMetric {
+  service: EASService!
+
+  """
+  User-displayable explanation of why the service's estimate is missing.
+  """
+  message: String!
+}
+
 type UsageMetricTotal {
   id: ID!
 
@@ -4935,6 +9173,11 @@ type UsageMetricTotal {
   overageMetrics: [EstimatedOverageAndCost!]!
 
   billingPeriod: BillingPeriod!
+
+  """
+  Services whose estimates could not be computed and are omitted from the other fields.
+  """
+  unavailableServiceUsageMetrics: [UnavailableServiceUsageMetric!]!
 }
 
 type AppUsageMetricTotal {
@@ -4948,6 +9191,11 @@ type AppUsageMetricTotal {
   planMetrics: [EstimatedUsage!]!
 
   billingPeriod: BillingPeriod!
+
+  """
+  Services whose estimates could not be computed and are omitted from the other fields.
+  """
+  unavailableServiceUsageMetrics: [UnavailableServiceUsageMetric!]!
 }
 
 type AccountUsageMetrics {
@@ -4974,7 +9222,7 @@ type UserActorPublicData {
 
   lastName: String
 
-  profilePhoto: String!
+  primaryAccountProfileImageUrl: String!
 
   """
   Snacks associated with this user's personal account
@@ -4996,13 +9244,15 @@ interface UserActor implements Actor {
 
   fullName: String
 
-  profilePhoto: String!
+  profilePhoto: String! @deprecated(reason: "Use primaryAccountProfileImageUrl instead")
 
   created: DateTime!
 
   appCount: Int!
 
   isExpoAdmin: Boolean!
+
+  isStaffModeEnabled: Boolean!
 
   bestContactEmail: String
 
@@ -5023,7 +9273,7 @@ interface UserActor implements Actor {
 
   accounts: [Account!]!
 
-  primaryAccountProfileImageUrl: String
+  primaryAccountProfileImageUrl: String!
 
   """
   Access Tokens belonging to this user actor
@@ -5034,11 +9284,6 @@ interface UserActor implements Actor {
   Snacks associated with this user's personal account
   """
   snacks(offset: Int!, limit: Int!): [Snack!]!
-
-  """
-  Apps this user has published
-  """
-  apps(offset: Int!, limit: Int!, includeUnpublished: Boolean): [App!]! @deprecated(reason: "Use Account.appsPaginated instead")
 
   """
   Coalesced project activity for all apps belonging to all accounts this user actor belongs to.
@@ -5069,17 +9314,7 @@ interface UserActor implements Actor {
 
   websiteNotificationsPaginated(first: Int, after: String, last: Int, before: String): WebsiteNotificationsConnection!
 
-  industry: String @deprecated(reason: "No longer supported")
-
-  location: String @deprecated(reason: "No longer supported")
-
-  githubUsername: String @deprecated(reason: "No longer supported")
-
-  twitterUsername: String @deprecated(reason: "No longer supported")
-
-  appetizeCode: String @deprecated(reason: "No longer supported")
-
-  preferences: UserPreferences!
+  preferences: UserPreferences! @deprecated(reason: "No longer stored. Use userPreference instead.")
 }
 
 type UserDashboardViewPinMutation {
@@ -5137,11 +9372,6 @@ type UserInvitation {
   isForOrganization: Boolean!
 
   """
-  If the invite is for a personal team, the profile photo of account owner
-  """
-  accountProfilePhoto: String @deprecated(reason: "Use accountProfileImageUrl")
-
-  """
   The profile image URL of the account owner
   """
   accountProfileImageUrl: String!
@@ -5160,6 +9390,27 @@ type UserInvitation {
   Role to be granted upon acceptance of this invitation
   """
   role: Role!
+}
+
+"""
+A passkey credential belonging to a User
+"""
+type UserPasskeyCredential {
+  id: ID!
+
+  name: String!
+
+  credentialDeviceType: String!
+
+  """
+  Authenticator Attestation Globally Unique Identifier — identifies the authenticator model
+  (e.g., 1Password, iCloud Keychain). See https://passkeydeveloper.github.io/passkey-authenticator-aaguids/explorer/
+  """
+  aaguid: ID
+
+  lastUsedAt: DateTime
+
+  createdAt: DateTime!
 }
 
 enum Permission {
@@ -5189,11 +9440,14 @@ enum Role {
 }
 
 type UserPermission {
+  """
+  Composite identifier for this account membership (accountId:actorId)
+  """
+  id: ID!
+
   permissions: [Permission!]!
 
   role: Role!
-
-  user: User @deprecated(reason: "User type is deprecated")
 
   actor: Actor!
 
@@ -5244,37 +9498,19 @@ install dependencies etc.
 type UserPreferencesOnboarding {
   appId: ID!
 
-  """
-  The last time when this object was updated.
-  """
   lastUsed: String!
 
-  """
-  Can be null if the user has not selected one yet.
-  """
   deviceType: OnboardingDeviceType
 
-  """
-  Can be null if the user has not selected one yet.
-  """
   environment: OnboardingEnvironment
 
-  """
-  User selects a platform for which they want to build the app. CLI uses this information to start the build.
-  """
   platform: AppPlatform
 
-  """
-  Set by CLI when the user has completed that phase. Used by the website to determine when
-  the next step can be shown.
-  """
   isCLIDone: Boolean
 }
 
 type UserPreferences {
-  selectedAccountName: String
-
-  onboarding: UserPreferencesOnboarding
+  onboarding: UserPreferencesOnboarding @deprecated(reason: "No longer stored; always null.")
 }
 
 """
@@ -5301,7 +9537,7 @@ enum SecondFactorMethod {
   """
   SMS
   """
-  SMS
+  SMS @deprecated(reason: "No longer supported")
 }
 
 """
@@ -5337,21 +9573,25 @@ type User implements Actor & UserActor {
 
   email: String!
 
+  emailVerified: Boolean!
+
+  newEmailPendingVerification: String
+
   firstName: String
 
   lastName: String
 
   fullName: String
 
-  profilePhoto: String!
+  profilePhoto: String! @deprecated(reason: "Use primaryAccountProfileImageUrl instead")
 
   created: DateTime!
 
   appCount: Int!
 
-  emailVerified: Boolean!
-
   isExpoAdmin: Boolean!
+
+  isStaffModeEnabled: Boolean!
 
   displayName: String!
 
@@ -5367,13 +9607,24 @@ type User implements Actor & UserActor {
   secondFactorDevices: [UserSecondFactorDevice!]!
 
   """
+  Registered passkey credentials
+  """
+  passkeyCredentials: [UserPasskeyCredential!]!
+
+  """
   Associated accounts
   """
   primaryAccount: Account!
 
   accounts: [Account!]!
 
-  primaryAccountProfileImageUrl: String
+  """
+  The organization created during signup onboarding: the most recently
+  created organization this user owns. Only resolves for the viewer.
+  """
+  onboardingOrganization: Account
+
+  primaryAccountProfileImageUrl: String!
 
   """
   Access Tokens belonging to this actor
@@ -5384,11 +9635,6 @@ type User implements Actor & UserActor {
   Snacks associated with this account
   """
   snacks(offset: Int!, limit: Int!): [Snack!]!
-
-  """
-  Apps this user has published
-  """
-  apps(offset: Int!, limit: Int!, includeUnpublished: Boolean): [App!]! @deprecated(reason: "Use Account.appsPaginated instead")
 
   """
   Whether this user has any pending user invitations. Only resolves for the viewer.
@@ -5432,19 +9678,11 @@ type User implements Actor & UserActor {
 
   websiteNotificationsPaginated(first: Int, after: String, last: Int, before: String): WebsiteNotificationsConnection!
 
-  isLegacy: Boolean! @deprecated(reason: "No longer supported")
+  preferences: UserPreferences! @deprecated(reason: "No longer stored. Use userPreference instead.")
 
-  industry: String @deprecated(reason: "No longer supported")
+  oAuthIdentities: [OAuthIdentity!]!
 
-  location: String @deprecated(reason: "No longer supported")
-
-  githubUsername: String @deprecated(reason: "No longer supported")
-
-  twitterUsername: String @deprecated(reason: "No longer supported")
-
-  appetizeCode: String @deprecated(reason: "No longer supported")
-
-  preferences: UserPreferences!
+  hasPassword: Boolean!
 }
 
 type WebsiteNotificationsConnection {
@@ -6294,6 +10532,381 @@ type WorkflowArtifact {
 
   storageType: WorkflowArtifactStorageType!
 
+  """
+  Opaque JSON attached by the worker at upload time (e.g. the Maestro test screenshot
+  flow/attempt mapping). Interpretation is owned by the client.
+  """
+  metadata: JSONObject
+
+  createdAt: DateTime!
+
+  updatedAt: DateTime!
+}
+
+type WorkflowCache {
+  id: ID!
+
+  """
+  Cache key used to identify the cache entry.
+  """
+  key: String!
+
+  """
+  Git branch name the cache was created from. Null for user-scoped caches.
+  """
+  gitBranchName: String
+
+  """
+  Build that created this cache. Null if the cache was created by a job run
+  or the build no longer exists.
+  """
+  hydratingBuild: Build
+
+  """
+  Job run that created this cache. Null if the cache was created by a build
+  or the job run no longer exists.
+  """
+  hydratingJobRun: JobRun
+
+  """
+  Size of the cache archive in bytes. Null if the cache has not been hydrated yet.
+  """
+  sizeBytes: Float
+
+  """
+  Time the cache was last used to restore, or the creation time if it has
+  never been restored.
+  """
+  lastAccessedAt: DateTime!
+
+  createdAt: DateTime!
+
+  """
+  Actor who created this cache. Null if the creating user no longer exists.
+  """
+  creatingActor: Actor
+}
+
+type WorkflowCachingConfig {
+  """
+  Whether the ccache compiler cache is enabled. Null if not explicitly
+  configured, in which case the account-level default applies.
+  """
+  ccacheEnabled: Boolean
+
+  """
+  Whether the Gradle build cache is enabled. Null if not explicitly
+  configured, in which case it is disabled.
+  """
+  gradleCacheEnabled: Boolean
+}
+
+type AppWorkflowCachesConnection {
+  pageInfo: PageInfo!
+
+  edges: [AppWorkflowCacheEdge!]!
+}
+
+type AppWorkflowCacheEdge {
+  cursor: String!
+
+  node: WorkflowCache!
+}
+
+input WorkflowDeviceTestCaseInsightsTimespanInput {
+  start: DateTime!
+
+  end: DateTime!
+}
+
+"""
+Mutually exclusive — matches the chart bucket semantics (passedClean / flaky / failed).
+PASSED_CLEAN  = is_final_attempt=1 AND status=passed AND is_flaky=0
+FLAKY         = is_final_attempt=1 AND is_flaky=1 (still a pass, just with retries)
+FAILED        = is_final_attempt=1 AND status=failed
+"""
+enum WorkflowDeviceTestCaseStatusFilter {
+  PASSED_CLEAN
+
+  FLAKY
+
+  FAILED
+}
+
+enum WorkflowDeviceTestCaseStatSortField {
+  RUNS
+
+  FAILS
+
+  FLAKES
+
+  PASS_RATE
+
+  FLAKE_RATE
+
+  P90_DURATION
+
+  LAST_RUN
+}
+
+enum WorkflowDeviceTestCaseSortDirection {
+  ASC
+
+  DESC
+}
+
+enum WorkflowDeviceTestCaseInsightsTimeSeriesGranularity {
+  MINUTE
+
+  HOUR
+
+  DAY
+}
+
+type WorkflowDeviceTestCaseWorkflowFacet {
+  id: ID!
+
+  name: String!
+}
+
+type WorkflowDeviceTestCaseInsightsFacets {
+  gitRefs: [String!]!
+
+  workflows: [WorkflowDeviceTestCaseWorkflowFacet!]!
+
+  tags: [String!]!
+}
+
+"""
+A count metric returned for the current window AND the equivalent prior window
+(start − duration → start). The frontend uses (current, previous) to compute
+trend deltas. Trend ratios are NOT pre-computed server-side — see
+WorkflowsInsightsMetric for the equivalent convention.
+
+Float (not Int) to match WorkflowsInsightsMetric and avoid the GraphQL Int32
+ceiling: year-long uniqExact counts on a high-volume project can plausibly
+exceed 2.1B. Values are integer-valued; the frontend reads them as JS numbers.
+"""
+type WorkflowDeviceTestCaseInsightsMetric {
+  currentValue: Float!
+
+  previousValue: Float!
+}
+
+"""
+Same shape as WorkflowDeviceTestCaseInsightsMetric but nullable on both sides —
+used for metrics like avgDurationMs / p90DurationMs where "no data in the
+window" is meaningful and must not collapse to 0.
+"""
+type WorkflowDeviceTestCaseInsightsNullableMetric {
+  currentValue: Float
+
+  previousValue: Float
+}
+
+"""
+Raw counts only (paired with previous-window values). Pass rate, flake rate,
+and trends are computed in the frontend from the (currentValue, previousValue)
+pair on each metric.
+
+totalRuns = passedCleanCount + flakyCount + failedCount (over is_final_attempt=1 rows).
+distinctFlakyTestCount cannot be derived in the frontend from per-test rows
+because pagination means the frontend doesn't see all test paths.
+"""
+type WorkflowDeviceTestCaseInsightsTotals {
+  totalRuns: WorkflowDeviceTestCaseInsightsMetric!
+
+  passedCleanCount: WorkflowDeviceTestCaseInsightsMetric!
+
+  flakyCount: WorkflowDeviceTestCaseInsightsMetric!
+
+  failedCount: WorkflowDeviceTestCaseInsightsMetric!
+
+  distinctFlakyTestCount: WorkflowDeviceTestCaseInsightsMetric!
+
+  avgDurationMs: WorkflowDeviceTestCaseInsightsNullableMetric!
+
+  p90DurationMs: WorkflowDeviceTestCaseInsightsNullableMetric!
+}
+
+"""
+Mutually exclusive bucket counts (passedClean + flaky + failed = totalRuns for the bucket).
+Buckets are aligned to the UTC start of the requested granularity interval
+(minute / hour / day).
+"""
+type WorkflowDeviceTestCaseInsightsBucket {
+  bucketStartAt: DateTime!
+
+  passedClean: Int!
+
+  flaky: Int!
+
+  failed: Int!
+}
+
+type WorkflowDeviceTestCaseStat {
+  path: String!
+
+  name: String!
+
+  totalRuns: Int!
+
+  passedCleanCount: Int!
+
+  failedCount: Int!
+
+  flakyCount: Int!
+
+  avgDurationMs: Int
+
+  p90DurationMs: Int
+
+  lastRunAt: DateTime!
+
+  lastRunStatus: WorkflowDeviceTestCaseStatus!
+
+  lastRunIsFlaky: Boolean!
+}
+
+type WorkflowDeviceTestCaseStatEdge {
+  cursor: String!
+
+  node: WorkflowDeviceTestCaseStat!
+}
+
+type WorkflowDeviceTestCaseStatConnection {
+  edges: [WorkflowDeviceTestCaseStatEdge!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+}
+
+input WorkflowDeviceTestCaseInsightsFiltersInput {
+  workflowIds: [ID!]
+
+  gitRefs: [String!]
+
+  tags: [String!]
+
+  statuses: [WorkflowDeviceTestCaseStatusFilter!]
+}
+
+input WorkflowDeviceTestCaseHistoryFiltersInput {
+  workflowIds: [ID!]
+
+  gitRefs: [String!]
+}
+
+type WorkflowDeviceTestCaseInsights {
+  totals: WorkflowDeviceTestCaseInsightsTotals!
+
+  timeSeries(granularity: WorkflowDeviceTestCaseInsightsTimeSeriesGranularity!): [WorkflowDeviceTestCaseInsightsBucket!]!
+
+  tests(sortField: WorkflowDeviceTestCaseStatSortField = FAILS, sortDirection: WorkflowDeviceTestCaseSortDirection = DESC, search: String, first: Int!, after: String): WorkflowDeviceTestCaseStatConnection!
+
+  facets: WorkflowDeviceTestCaseInsightsFacets!
+}
+
+"""
+Grouping key from the [shard N] prefix-stripped error_message. `count` is
+computed with uniqExact(test_case_result_id) so RMT pre-merge duplicates do
+not inflate it. Scope: scans ALL status='failed' rows (NOT just
+is_final_attempt=1) so failures from runs that ultimately passed on retry
+still surface.
+"""
+type WorkflowDeviceTestCaseErrorPattern {
+  patternKey: String!
+
+  sampleMessage: String!
+
+  count: Int!
+
+  lastSeenAt: DateTime!
+}
+
+"""
+One row per execution (is_final_attempt=1). The is_flaky boolean drives the
+FLAKY pill — no per-attempt timeline is exposed in v1.
+"""
+type WorkflowDeviceTestCaseRecentRun {
+  id: ID!
+
+  status: WorkflowDeviceTestCaseStatus!
+
+  durationMs: Int
+
+  isFlaky: Boolean!
+
+  createdAt: DateTime!
+
+  workflowRunId: ID!
+
+  workflowRunName: String!
+
+  gitRef: String
+
+  commitSha: String
+}
+
+type WorkflowDeviceTestCaseRecentRunEdge {
+  cursor: String!
+
+  node: WorkflowDeviceTestCaseRecentRun!
+}
+
+type WorkflowDeviceTestCaseRecentRunConnection {
+  edges: [WorkflowDeviceTestCaseRecentRunEdge!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+}
+
+type WorkflowDeviceTestCaseHistory {
+  totals: WorkflowDeviceTestCaseInsightsTotals!
+
+  timeSeries(granularity: WorkflowDeviceTestCaseInsightsTimeSeriesGranularity!): [WorkflowDeviceTestCaseInsightsBucket!]!
+
+  errorPatterns(first: Int!): [WorkflowDeviceTestCaseErrorPattern!]!
+
+  recentRuns(first: Int!, after: String): WorkflowDeviceTestCaseRecentRunConnection!
+}
+
+"""
+Status of a device test case execution.
+"""
+enum WorkflowDeviceTestCaseStatus {
+  PASSED
+
+  FAILED
+}
+
+"""
+A device test case result from a Maestro test execution.
+"""
+type WorkflowDeviceTestCaseResult {
+  id: ID!
+
+  name: String!
+
+  path: String!
+
+  status: WorkflowDeviceTestCaseStatus!
+
+  errorMessage: String
+
+  duration: Int
+
+  """
+  0-indexed attempt number. 0 = first attempt, 1 = first retry, etc.
+  """
+  retryCount: Int
+
+  tags: [String!]
+
+  properties: JSONObject
+
   createdAt: DateTime!
 
   updatedAt: DateTime!
@@ -6310,7 +10923,7 @@ type WorkflowJobApproval {
 
   workflowJob: WorkflowJob!
 
-  userActor: UserActor
+  reviewingActor: Actor
 
   decision: WorkflowJobReviewDecision!
 
@@ -6369,6 +10982,10 @@ enum WorkflowJobType {
   REPACK
 
   GITHUB_COMMENT
+
+  BRANCH_DELETE
+
+  UPDATE_ROLLOUT
 }
 
 type WorkflowJob {
@@ -6405,12 +11022,80 @@ type WorkflowJob {
   approvals: [WorkflowJobApproval!]!
 
   environment: String
+
+  """
+  Why the server skipped this job without running it. Null for jobs that
+  were not skipped and for jobs created before the reason was recorded.
+  """
+  skipReason: WorkflowJobSkipReason
+
+  allDeviceTestCaseResults: [WorkflowDeviceTestCaseResult!]!
+
+  """
+  All test case attempt rows produced by this job's own execution (turtle job
+  run), ordered by path then retryCount. Unlike allDeviceTestCaseResults,
+  this never includes rows from other jobs in the workflow retry chain.
+  """
+  deviceTestCaseResultAttempts: [WorkflowDeviceTestCaseResult!]!
+
+  """
+  Updates in the group being rolled out by an UPDATE_ROLLOUT job, resolved from the job's
+  update_group_id output. Empty for other job types or when the group has no updates.
+  """
+  rolloutUpdateGroup: [Update!]!
 }
 
 type WorkflowJobError {
   title: String!
 
   message: String!
+}
+
+union WorkflowJobSkipReason = WorkflowJobSkipReasonUnsuccessfulDependencies|WorkflowJobSkipReasonIfConditionNotMet
+
+type WorkflowJobSkipReasonUnsuccessfulDependencies {
+  dependencies: [WorkflowJobSkipReasonDependency!]!
+}
+
+type WorkflowJobSkipReasonDependency {
+  key: String!
+
+  name: String!
+
+  status: WorkflowJobStatus!
+}
+
+type WorkflowJobSkipReasonIfConditionNotMet {
+  """
+  The job's if expression as written in the workflow YAML.
+  """
+  condition: String!
+}
+
+enum WorkflowDispatchInputType {
+  STRING
+
+  BOOLEAN
+
+  NUMBER
+
+  CHOICE
+
+  ENVIRONMENT
+}
+
+type WorkflowDispatchInput {
+  name: String!
+
+  type: WorkflowDispatchInputType!
+
+  description: String
+
+  required: Boolean!
+
+  default: JSON
+
+  options: [String!]
 }
 
 type WorkflowRevision {
@@ -6425,10 +11110,14 @@ type WorkflowRevision {
   yamlConfig: String!
 
   createdAt: DateTime!
+
+  inputs: [WorkflowDispatchInput!]!
 }
 
 enum WorkflowRunStatus {
   NEW
+
+  WAITING
 
   IN_PROGRESS
 
@@ -6444,6 +11133,20 @@ enum WorkflowRunStatus {
 enum WorkflowRunTriggerEventType {
   MANUAL
 
+  EXPO_LAUNCH
+
+  REPACK_EXPO_GO
+
+  EAS_SUBMIT
+
+  APP_STORE_CONNECT_APP_VERSION_STATE_CHANGED
+
+  APP_STORE_CONNECT_BUILD_UPLOAD_STATE_CHANGED
+
+  APP_STORE_CONNECT_EXTERNAL_BETA_STATE_CHANGED
+
+  APP_STORE_CONNECT_BETA_FEEDBACK_SUBMITTED
+
   GITHUB_PULL_REQUEST_OPENED
 
   GITHUB_PULL_REQUEST_SYNCHRONIZE
@@ -6452,9 +11155,27 @@ enum WorkflowRunTriggerEventType {
 
   GITHUB_PULL_REQUEST_LABELED
 
+  GITHUB_PULL_REQUEST_READY_FOR_REVIEW
+
+  GITHUB_PULL_REQUEST_EDITED
+
+  GITHUB_PULL_REQUEST_BASE_REF_CHANGED
+
+  GITHUB_PULL_REQUEST_COMMENT_CREATED
+
+  GITHUB_PULL_REQUEST_COMMENT_EDITED
+
+  GITHUB_PULL_REQUEST_COMMENT_DELETED
+
   GITHUB_PUSH
 
+  GITHUB_REF_DELETE
+
   SCHEDULE
+}
+
+type WorkflowRunSshSettings {
+  idleTimeoutSeconds: Int!
 }
 
 type WorkflowRun implements ActivityTimelineProjectActivity {
@@ -6464,7 +11185,15 @@ type WorkflowRun implements ActivityTimelineProjectActivity {
 
   workflowRevision: WorkflowRevision
 
+  """
+  Snapshot of the workflow's name at run creation.
+  """
   name: String!
+
+  """
+  Rendered run_name template. Null falls back to name.
+  """
+  displayTitle: String
 
   status: WorkflowRunStatus!
 
@@ -6506,6 +11235,14 @@ type WorkflowRun implements ActivityTimelineProjectActivity {
 
   retriedWorkflowRun: WorkflowRun
 
+  sshSettings: WorkflowRunSshSettings
+
+  """
+  Why the server canceled this run. Null for manually canceled runs and for
+  runs canceled before the reason was recorded.
+  """
+  cancelReason: WorkflowRunCancelReason
+
   jobs: [WorkflowJob!]!
 }
 
@@ -6513,6 +11250,16 @@ type WorkflowRunError {
   title: String
 
   message: String!
+}
+
+union WorkflowRunCancelReason = WorkflowRunCancelReasonConcurrencyGroup
+
+type WorkflowRunCancelReasonConcurrencyGroup {
+  """
+  The newer run in the same concurrency group whose creation canceled this run.
+  Null if that run no longer exists.
+  """
+  cancelingWorkflowRun: WorkflowRun
 }
 
 enum WorkflowsInsightsRunsOverTimeGranularity {
@@ -6552,6 +11299,8 @@ type WorkflowsInsightsOverviewMetrics {
 
   failedRuns: WorkflowsInsightsMetric!
 
+  canceledRuns: WorkflowsInsightsMetric!
+
   activeWorkflows: WorkflowsInsightsMetric!
 }
 
@@ -6569,6 +11318,8 @@ type WorkflowsInsightsWorkflowNode {
   successfulRuns: Int!
 
   failedRuns: Int!
+
+  canceledRuns: Int!
 
   lastRunAt: DateTime!
 }
@@ -6619,6 +11370,8 @@ type WorkflowsInsightsWorkflowMetrics {
   successfulRuns: WorkflowsInsightsMetric!
 
   failedRuns: WorkflowsInsightsMetric!
+
+  canceledRuns: WorkflowsInsightsMetric!
 
   lastRunAt: DateTime
 }
@@ -6700,11 +11453,11 @@ type AccountSSOConfigurationPublicDataQuery {
   publicDataByAccountName("Account name to use to look up account SSO configuration" accountName: String!): AccountSSOConfigurationPublicData!
 }
 
-type ActorQuery {
+type AppleDeviceRegistrationRequestPublicDataQuery {
   """
-  Query an Actor by ID
+  Get AppleDeviceRegistrationRequest public data by ID
   """
-  byId(id: ID!): Actor! @deprecated(reason: "Public actor queries are no longer supported")
+  byId(id: ID!): AppleDeviceRegistrationRequestPublicData
 }
 
 type AppleDeviceRegistrationRequestQuery {
@@ -6723,30 +11476,6 @@ type AppleTeamQuery {
   byAppleTeamIdentifier(accountId: ID!, identifier: String!): AppleTeam
 }
 
-enum AppsFilter {
-  """
-  Featured Projects
-  """
-  FEATURED
-
-  """
-  New Projects
-  """
-  NEW
-}
-
-enum AppSort {
-  """
-  Sort by recently published
-  """
-  RECENTLY_PUBLISHED
-
-  """
-  Sort by highest trendScore
-  """
-  VIEWED
-}
-
 type AppQuery {
   """
   Look up app by app id
@@ -6759,11 +11488,6 @@ type AppQuery {
   Look up app by dev domain name, if one has been created
   """
   byDevDomainName(name: DevDomainName!): App!
-
-  """
-  Public apps in the app directory
-  """
-  all("Filter to use to filter public app list" filter: AppsFilter!, "Method to sort by" sort: AppSort!, offset: Int, limit: Int): [App!]! @deprecated(reason: "App directory no longer supported")
 }
 
 type AppStoreConnectApiKeyQuery {
@@ -6914,11 +11638,89 @@ type ChannelQuery {
   byId("Channel ID to use to look up channel" channelId: ID!): UpdateChannel!
 }
 
+type ConvexIntegrationQuery {
+  clientIdentifier: String!
+}
+
+type DashboardChatQuery {
+  """
+  Get dashboard chat by ID - entry point to the graph
+  """
+  byId(id: ID!): DashboardChat
+}
+
 type DeploymentQuery {
   """
   Query a Deployment by ID
   """
   byId("Deployment ID to use to look up deployment" deploymentId: ID!): Deployment!
+}
+
+type DeviceRunSessionArtifactQuery {
+  byId(deviceRunSessionArtifactId: ID!): DeviceRunSessionArtifact!
+}
+
+type DeviceRunSessionQuery {
+  byId(deviceRunSessionId: ID!): DeviceRunSession!
+}
+
+type EchoChatQuery {
+  """
+  Get chat by ID - entry point to the graph
+  """
+  byId(id: ID!): EchoChat
+}
+
+type EchoMessagePartQuery {
+  """
+  Get part by ID - entry point to the graph
+  """
+  byId(id: ID!): EchoMessagePart
+
+  """
+  Get all parts for a message (sorted by index ascending)
+  """
+  byEchoMessageId(echoMessageId: ID!): [EchoMessagePart!]!
+}
+
+type EchoMessageQuery {
+  """
+  Get message by ID - entry point to the graph
+  """
+  byId(id: ID!): EchoMessage
+}
+
+type EchoProjectQuery {
+  """
+  Get an Echo project by ID
+  """
+  byId(id: ID!): EchoProject
+
+  """
+  Get an Echo project by slug (globally unique)
+  """
+  bySlug(slug: String!): EchoProject
+
+  """
+  Get PUBLIC Echo projects for an account by account name (username).
+  """
+  publicByAccountName(accountName: String!, first: Int, after: String): EchoProjectConnection!
+}
+
+type EchoVersionQuery {
+  """
+  Get version by ID - entry point to the graph
+  """
+  byId(id: ID!): EchoVersion
+}
+
+type EmbeddedUpdateQuery {
+  """
+  Look up an embedded update by its id and the owning app's id.
+  Throws EMBEDDED_UPDATE_NOT_FOUND when no embedded update with this id exists on
+  the given app within the caller's account.
+  """
+  byId(embeddedUpdateId: ID!, appId: ID!): EmbeddedUpdate!
 }
 
 type ExperimentationQuery {
@@ -6936,6 +11738,56 @@ type ExperimentationQuery {
   Get experimentation unit to use for device experiments. In this case, it is the IP address.
   """
   deviceExperimentationUnit: ID!
+
+  """
+  Get account experimentation config for account-level A/B testing.
+  All users in the same account will be bucketed together.
+  """
+  accountConfig: JSONObject!
+}
+
+input ExpoGoRepackInput {
+  appId: ID!
+
+  ascAppId: String!
+
+  bundleId: String!
+
+  appName: String
+
+  sdkVersion: String
+}
+
+type ExpoGoProjectFile {
+  fileName: String!
+
+  fileContents: String!
+}
+
+type ExpoGoProjectConfiguration {
+  files: [ExpoGoProjectFile!]!
+
+  sdkVersion: String!
+}
+
+type ExpoGoSdkVersion {
+  sdkVersion: String!
+
+  isLatest: Boolean!
+
+  isBeta: Boolean!
+
+  isDeprecated: Boolean!
+
+  sourceIpaUrl: String!
+}
+
+type ExpoGoBuildQuery {
+  repackConfiguration(input: ExpoGoRepackInput!): ExpoGoProjectConfiguration!
+
+  supportedSdkVersions: [ExpoGoSdkVersion!]!
+
+  supportedSdkVersionKeys: [String!]!
 }
 
 type GitHubRepositoryOwner {
@@ -7010,6 +11862,11 @@ type InvoiceQuery {
   two add-on concurrencies and wishes to purchase one more.
   """
   previewInvoiceForAdditionalConcurrenciesCountUpdate(accountID: ID!, additionalConcurrenciesCount: Int!): Invoice
+
+  """
+  Previews the invoice for the specified number of additional agent credit units.
+  """
+  previewInvoiceForAdditionalAgentCreditsCountUpdate(accountID: ID!, additionalAgentCreditsCount: Int!): Invoice
 }
 
 type JobRunQuery {
@@ -7019,8 +11876,8 @@ type JobRunQuery {
   byId(jobRunId: ID!): JobRun!
 }
 
-type ProjectQuery {
-  byUsernameAndSlug(username: String!, slug: String!, platform: String, sdkVersions: [String]): Project! @deprecated(reason: "See byAccountNameAndSlug")
+type PostHogIntegrationQuery {
+  clientIdentifier: String!
 }
 
 type RuntimeQuery {
@@ -7031,11 +11888,6 @@ type RuntimeQuery {
 }
 
 type SnackQuery {
-  """
-  Get snack by hashId
-  """
-  byId(id: ID!): Snack! @deprecated(reason: "Use byHashId")
-
   """
   Get snack by hashId
   """
@@ -7056,6 +11908,12 @@ type SubmissionQuery {
   byId(submissionId: ID!): Submission!
 }
 
+type TurtleBrownfieldArtifactQuery {
+  byId(turtleBrownfieldArtifactId: ID!): BrownfieldArtifact!
+
+  latestForApp(appId: ID!, platform: AppPlatform!, bundleName: String!): BrownfieldArtifact
+}
+
 type UpdateQuery {
   """
   Query an Update by ID
@@ -7070,35 +11928,11 @@ type UserActorPublicDataQuery {
   byUsername(username: String!): UserActorPublicData!
 }
 
-type UserActorQuery {
-  """
-  Query a UserActor by ID
-  """
-  byId(id: ID!): UserActor! @deprecated(reason: "Public user actor queries are no longer supported")
-
-  """
-  Query a UserActor by username
-  """
-  byUsername(username: String!): UserActor! @deprecated(reason: "Public user actor queries are no longer supported")
-}
-
 type UserInvitationPublicDataQuery {
   """
   Get UserInvitationPublicData by token
   """
   byToken(token: ID!): UserInvitationPublicData!
-}
-
-type UserQuery {
-  """
-  Query a User by ID
-  """
-  byId(userId: ID!): User! @deprecated(reason: "Public user queries are no longer supported")
-
-  """
-  Query a User by username
-  """
-  byUsername(username: String!): User! @deprecated(reason: "Public user queries are no longer supported")
 }
 
 type VexoIntegrationQuery {
@@ -7223,14 +12057,19 @@ type AccountMutation {
   changeAdditionalConcurrenciesCount(accountID: ID!, newAdditionalConcurrenciesCount: Int!): Account!
 
   """
+  Buys or revokes account's additional agent credits, charging the account the appropriate amount if needed.
+  """
+  changeAdditionalAgentCreditsCount(accountID: ID!, newAdditionalAgentCreditsCount: Int!): Account!
+
+  """
   Remove profile image for the account. Do nothing if there's no profile image associated.
   """
   removeProfileImage(accountID: ID!): Account!
 
   """
-  Set the display name for the account.
+  Set the display name for the account. Pass null to clear it and fall back to the account identifier.
   """
-  setDisplayName(accountID: ID!, displayName: String!): Account!
+  setDisplayName(accountID: ID!, displayName: String): Account!
 
   """
   Set the user specified account usage for the account.
@@ -7244,6 +12083,16 @@ type AccountMutation {
     - Existing members without 2FA are not affected
   """
   setRequireTwoFactor(accountID: ID!, requireTwoFactor: Boolean!): Account!
+
+  """
+  Set whether the AI chat is enabled for this account.
+  """
+  setAiChatEnabled(accountID: ID!, aiChatEnabled: Boolean!): Account!
+
+  """
+  Set whether EAS Observe ingestion is paused for this account.
+  """
+  setObserveIngestionPaused(accountID: ID!, paused: Boolean!): Account!
 }
 
 input AccountSSOConfigurationData {
@@ -7289,6 +12138,68 @@ type ActorExperimentMutation {
   Create or update the value of a User Experiment
   """
   createOrUpdateActorExperiment(experiment: Experiment!, enabled: Boolean!): ActorExperiment!
+}
+
+type CodexDeviceAuthorization {
+  requestId: ID!
+
+  userCode: String!
+
+  verificationUrl: String!
+
+  expiresAt: DateTime!
+
+  pollingIntervalSeconds: Int!
+}
+
+enum AgentProviderConnectionAuthorizationStatus {
+  PENDING
+
+  SUCCEEDED
+
+  EXPIRED
+}
+
+type CodexConnectionPollResult {
+  status: AgentProviderConnectionAuthorizationStatus!
+
+  connection: AgentProviderConnection
+}
+
+input StartClaudeConnectionInput {
+  accountId: ID!
+}
+
+type ClaudeAuthorization {
+  requestId: ID!
+
+  authorizationUrl: String!
+
+  expiresAt: DateTime!
+}
+
+input CompleteClaudeConnectionInput {
+  requestId: ID!
+
+  authorizationCode: String!
+}
+
+input UpdateAgentProviderConnectionInput {
+  name: String
+}
+
+type AgentProviderConnectionMutation {
+  startCodexConnection(accountId: ID!): CodexDeviceAuthorization!
+
+  pollCodexConnection(requestId: ID!): CodexConnectionPollResult!
+
+  startClaudeConnection(input: StartClaudeConnectionInput!): ClaudeAuthorization!
+
+  completeClaudeConnection(input: CompleteClaudeConnectionInput!): AgentProviderConnection!
+
+  updateAgentProviderConnection(id: ID!, input: UpdateAgentProviderConnectionInput!): AgentProviderConnection!
+
+  deleteAgentProviderConnection(id: ID!): AgentProviderConnection!
 }
 
 """
@@ -7355,7 +12266,7 @@ type AndroidAppCredentialsMutation {
   Create a GoogleServiceAccountKeyEntity to store credential and
   connect it with an edge from AndroidAppCredential
   """
-  createFcmV1Credential(accountId: ID!, androidAppCredentialsId: String!, credential: String!): AndroidAppCredentials!
+  createFcmV1Credential(accountId: ID @deprecated(reason: "Derived from androidAppCredentialsId"), androidAppCredentialsId: String!, credential: String!): AndroidAppCredentials!
 
   """
   Set the FCM push key to be used in an Android app
@@ -7395,11 +12306,6 @@ type BuildMutation {
   cancelBuild(buildId: ID!): Build!
 
   """
-  Retry an EAS Build build
-  """
-  retryBuild(buildId: ID!): Build! @deprecated(reason: "Use retryAndroidBuild and retryIosBuild instead")
-
-  """
   Delete an EAS Build build
   """
   deleteBuild(buildId: ID!): Build!
@@ -7428,6 +12334,11 @@ type BuildMutation {
   Create a local build
   """
   createLocalBuild(appId: ID!, job: LocalBuildJobInput!, artifactSource: LocalBuildArchiveSourceInput!, metadata: BuildMetadataInput): CreateBuildResult!
+
+  """
+  Generate a token for subscribing to an EAS Build log channel
+  """
+  generateLogsCentrifugoSubscriptionToken(buildId: ID!, thread: String): RealtimeLogsCentrifugoSubscriptionToken! @deprecated(reason: "Use realtimeLogs.generateCentrifugoSubscriptionToken instead.")
 }
 
 input AndroidJobInput {
@@ -7525,7 +12436,7 @@ input AndroidJobOverridesInput {
 input AndroidJobSecretsInput {
   buildCredentials: AndroidJobBuildCredentialsInput
 
-  robotAccessToken: String
+  robotAccessToken: String @deprecated(reason: "Robot access token is no longer needed as it's generated server-side and injected into the builder environment automatically.")
 }
 
 input AndroidJobBuildCredentialsInput {
@@ -7697,9 +12608,10 @@ type AppleDeviceMutation {
 
 type AppleDeviceRegistrationRequestMutation {
   """
-  Create an Apple Device registration request
+  Create an Apple Device registration request.
+  Pass singleUse to create a fresh request that closes after the first device is registered.
   """
-  createAppleDeviceRegistrationRequest(appleTeamId: ID!, accountId: ID!): AppleDeviceRegistrationRequest!
+  createAppleDeviceRegistrationRequest(appleTeamId: ID!, accountId: ID!, singleUse: Boolean): AppleDeviceRegistrationRequest!
 }
 
 input AppleDistributionCertificateInput {
@@ -7843,18 +12755,36 @@ input AppWithGithubRepositoryInput {
   installationIdentifier: String
 }
 
+input WorkflowCachingConfigInput {
+  """
+  Pass true or false to explicitly enable or disable, null to reset to the account-level
+  default, or omit the field to leave it unchanged.
+  """
+  ccacheEnabled: Boolean
+
+  """
+  Pass true or false to explicitly enable or disable, null to reset to the default
+  (disabled), or omit the field to leave it unchanged.
+  """
+  gradleCacheEnabled: Boolean
+}
+
 type AppMutation {
   """
   Create an app
   """
   createApp(appInput: AppInput!): App!
 
-  grantAccess(toUser: ID!, accessLevel: String): App @deprecated(reason: "No longer supported")
-
   """
   Require api token to send push notifs for experience
   """
   setPushSecurityEnabled(appId: ID!, pushSecurityEnabled: Boolean!): App!
+
+  """
+  Set whether EAS Observe ingestion is paused for this app. Requires the ADMIN permission on
+  the owning account. An account-level pause takes precedence over this setting.
+  """
+  setObserveIngestionPaused(appId: ID!, paused: Boolean!): App!
 
   """
   Set display info for app
@@ -7875,6 +12805,11 @@ type AppMutation {
   Remove profile image (icon) for the app. Do nothing if there's no profile image associated.
   """
   removeProfileImage(appId: ID!): App!
+
+  """
+  Set per-type caching configuration for the app.
+  """
+  setWorkflowCachingConfig(appId: ID!, config: WorkflowCachingConfigInput!): App!
 }
 
 input AppStoreConnectApiKeyInput {
@@ -8133,6 +13068,8 @@ input BuildMetadataInput {
 
   sdkVersion: String
 
+  expoPackageVersion: String
+
   runtimeVersion: String
 
   fingerprintHash: String
@@ -8222,6 +13159,80 @@ enum EASBuildDeprecationInfoType {
   INTERNAL
 }
 
+type SetupConvexProjectResult {
+  convexProject: ConvexProject!
+
+  convexDeploymentName: String!
+
+  convexDeploymentUrl: String!
+
+  deployKey: String!
+}
+
+input SetupConvexProjectInput {
+  appId: ID!
+
+  convexTeamConnectionId: ID!
+
+  projectName: String!
+
+  deploymentRegion: String
+}
+
+type ConvexProjectMutation {
+  setupConvexProject(input: SetupConvexProjectInput!): SetupConvexProjectResult!
+
+  deleteConvexProject(convexProjectId: ID!): ID!
+}
+
+input CreateConvexTeamConnectionInput {
+  accountId: ID!
+
+  deploymentRegion: String!
+
+  convexTeamName: String
+}
+
+input SendConvexTeamInviteToVerifiedEmailInput {
+  convexTeamConnectionId: ID!
+}
+
+type ConvexTeamConnectionMutation {
+  createConvexTeamConnection(convexTeamConnectionData: CreateConvexTeamConnectionInput!): ConvexTeamConnection!
+
+  deleteConvexTeamConnection(convexTeamConnectionId: ID!): ConvexTeamConnection!
+
+  sendConvexTeamInviteToVerifiedEmail(input: SendConvexTeamInviteToVerifiedEmailInput!): Boolean!
+}
+
+type DashboardChatMutation {
+  """
+  Create a new chat owned by the viewer
+  """
+  createChat(accountID: ID!): DashboardChat!
+
+  """
+  Persist a user message. Idempotent on clientMessageId.
+  """
+  addUserMessage(accountID: ID!, chatID: ID!, clientMessageId: String!, parts: [JSONObject!]!): DashboardChatMessage!
+
+  """
+  Persist an assistant message, replacing parts when a message with the
+  same clientMessageId already exists.
+  """
+  upsertAssistantMessage(accountID: ID!, chatID: ID!, clientMessageId: String!, parts: [JSONObject!]!, status: DashboardChatMessageStatus!): DashboardChatMessage!
+
+  """
+  Rename a chat
+  """
+  renameChat(chatID: ID!, title: String!): DashboardChat!
+
+  """
+  Delete a chat and all of its messages
+  """
+  deleteChat(chatID: ID!): DashboardChat!
+}
+
 type DeploymentsMutation {
   """
   Create a signed deployment URL
@@ -8257,6 +13268,191 @@ type DeleteWorkerDeploymentResult {
   deploymentIdentifier: WorkerDeploymentIdentifier!
 }
 
+input CreateAndroidDeviceRunSessionInput {
+  """
+  AVD hardware profile id to use for the emulator (e.g. "pixel_9").
+  """
+  deviceIdentifier: String
+
+  """
+  Android SDK system image package to use for the emulator (e.g.
+  "system-images;android-35-ext15;google_apis_playstore;x86_64").
+  """
+  systemImagePackage: String
+}
+
+input CreateIosDeviceRunSessionInput {
+  """
+  Simulator device name or UDID to use for the session (e.g. "iPhone 16 Pro").
+  """
+  deviceIdentifier: String
+}
+
+input CreateDeviceRunSessionInput {
+  appId: ID!
+
+  """
+  Human-readable label for the session, at most 255 characters. If omitted, the
+  session is unnamed and clients fall back to identifying it by id.
+  """
+  name: String
+
+  """
+  Free-form labels for grouping sessions, for example one per app variant.
+  """
+  tags: [String!]
+
+  type: DeviceRunSessionType!
+
+  """
+  The version of the package backing the device run session (e.g. "0.1.3-alpha.3").
+  If omitted, consumers treat the session as pinned to "latest".
+  """
+  packageVersion: String
+
+  """
+  EAS Build to install and launch before the simulator session becomes available.
+  Mutually exclusive with buildFingerprint, applicationArchiveUrl, and expoGo.
+  """
+  buildId: ID
+
+  """
+  Fingerprint hash of an EAS Build to install and launch before the simulator session becomes
+  available; the server resolves it to the most recent installable build with this fingerprint.
+  Mutually exclusive with buildId, applicationArchiveUrl, and expoGo.
+  """
+  buildFingerprint: String
+
+  """
+  Application archive URL to download, install, and launch before the simulator session
+  becomes available. Mutually exclusive with buildId, buildFingerprint, and expoGo.
+  """
+  applicationArchiveUrl: String
+
+  """
+  Install and launch Expo Go before the simulator session becomes available. The server resolves
+  the platform-specific application archive. Mutually exclusive with buildId, buildFingerprint,
+  and applicationArchiveUrl.
+  """
+  expoGo: Boolean
+
+  """
+  Expo SDK version used to select an Expo Go application archive. Only supported when expoGo is
+  true. If omitted, the current Expo Go archive for the platform is used.
+  """
+  sdkVersion: String
+
+  """
+  Arguments passed to the installed application when it is launched. Requires buildId,
+  applicationArchiveUrl, or expoGo.
+  """
+  launchArgs: [String!]
+
+  """
+  Expo or development-client URL to open after launching the installed application. Requires
+  buildId, applicationArchiveUrl, or expoGo.
+  """
+  openUrl: String
+
+  platform: AppPlatform!
+
+  """
+  Android emulator options. Only supported when platform is ANDROID.
+  """
+  android: CreateAndroidDeviceRunSessionInput
+
+  """
+  iOS Simulator options. Only supported when platform is IOS.
+  """
+  ios: CreateIosDeviceRunSessionInput
+
+  """
+  Identifier of the virtual device to start for the session.
+  """
+  deviceIdentifier: String @deprecated(reason: "Use android.deviceIdentifier or ios.deviceIdentifier instead.")
+
+  """
+  Maximum usable session duration, in minutes, starting when the remote session
+  is ready. Must be non-negative and no greater than 40 for normal-priority
+  accounts or 115 for high-priority accounts. The backing job receives an
+  additional five minutes for cleanup.
+  """
+  maxRunTimeMinutes: Int
+
+  """
+  Stop the session automatically after this many minutes without observed
+  session activity. Must be positive and smaller than the session's maximum
+  duration (maxRunTimeMinutes when set). Only supported for
+  agent-device, argent, and Appium sessions. If omitted, the session has no idle
+  timeout.
+  """
+  maxIdleTimeMinutes: Int
+
+  resourceClass: DeviceRunSessionResourceClass
+}
+
+input CreateDeviceRunSessionArtifactUploadSessionInput {
+  name: String!
+
+  filename: String!
+
+  kind: String
+
+  size: ByteSize!
+
+  metadata: JSONObject
+}
+
+type DeviceRunSessionArtifactUploadSession {
+  url: String!
+
+  headers: JSONObject!
+}
+
+type CreateDeviceRunSessionArtifactUploadSessionResult {
+  uploadSession: DeviceRunSessionArtifactUploadSession!
+}
+
+type DeviceRunSessionEventLogUploadSession {
+  url: String!
+
+  headers: JSONObject!
+}
+
+type CreateDeviceRunSessionEventLogUploadSessionResult {
+  uploadSession: DeviceRunSessionEventLogUploadSession!
+}
+
+type DeviceRunSessionMutation {
+  """
+  Create a device run session
+  """
+  createDeviceRunSession(deviceRunSessionInput: CreateDeviceRunSessionInput!): DeviceRunSession!
+
+  """
+  Mark a device run session as started and persist remote connection details
+  """
+  startDeviceRunSession(deviceRunSessionId: ID!, remoteConfig: JSONObject!): DeviceRunSession!
+
+  """
+  Ensure a device run session is stopped. Idempotent: if the session has already
+  finished, the existing session is returned unchanged (an ERRORED session stays
+  ERRORED).
+  """
+  ensureDeviceRunSessionStopped(deviceRunSessionId: ID!): DeviceRunSession!
+
+  """
+  Create an upload session for an artifact while the backing job run is not in a final state
+  """
+  createArtifactUploadSession(deviceRunSessionId: ID!, input: CreateDeviceRunSessionArtifactUploadSessionInput!): CreateDeviceRunSessionArtifactUploadSessionResult!
+
+  """
+  Create a standard artifact and a two-hour upload URL for repeatedly
+  overwriting its structured event log while the backing job run is running.
+  """
+  createEventLogUploadSession(deviceRunSessionId: ID!): CreateDeviceRunSessionEventLogUploadSessionResult!
+}
+
 type DeleteDiscordUserResult {
   id: ID!
 }
@@ -8268,56 +13464,540 @@ type DiscordUserMutation {
   deleteDiscordUser(id: ID!): DeleteDiscordUserResult!
 }
 
-enum MailchimpAudience {
-  EXPO_DEVELOPERS
+input CreateEchoChatInput {
+  echoProjectId: ID!
 
-  EXPO_DEVELOPER_ONBOARDING
+  title: String
 
-  NONPROD_EXPO_DEVELOPERS
+  agentType: EchoAgentType
 
-  LAUNCH_PARTY_2024
+  state: EchoChatState
+
+  agentMetadata: JSONObject
 }
 
-enum MailchimpTag {
-  EAS_MASTER_LIST
+input UpdateEchoChatInput {
+  title: String
 
-  DEV_CLIENT_USERS
+  agentType: EchoAgentType
 
-  NEWSLETTER_SIGNUP_LIST
+  state: EchoChatState
 
-  DID_SUBSCRIBE_TO_EAS_AT_LEAST_ONCE
+  stats: JSONObject
+
+  agentMetadata: JSONObject
 }
 
-type MailchimpTagPayload {
-  id: Int
+type EchoChatMutation {
+  """
+  Create a new chat
+  """
+  createChat(input: CreateEchoChatInput!): EchoChat!
 
-  name: String
+  """
+  Update a chat
+  """
+  updateChat(id: ID!, input: UpdateEchoChatInput!): EchoChat!
+
+  """
+  Delete a chat and all its messages/parts
+  """
+  deleteChat(id: ID!): EchoChat!
 }
 
-input AddUserInput {
-  email: String!
+input CreateEchoMessageInput {
+  id: ID
 
-  tags: [MailchimpTag!]
+  echoChatId: ID!
 
-  audience: MailchimpAudience = EXPO_DEVELOPERS
+  userId: ID
+
+  echoTurnId: ID
+
+  """
+  Legacy alias for echoTurnId. Must be a valid UUIDv7. Provide exactly one of echoTurnId or turnId.
+  """
+  turnId: ID
+
+  role: EchoMessageRole!
+
+  parentEchoMessageId: ID
+
+  metadata: JSONObject
 }
 
-type AddUserPayload {
-  id: String
+type EchoMessageMutation {
+  """
+  Create a new message
+  """
+  createMessage(input: CreateEchoMessageInput!): EchoMessage!
 
-  email_address: String
-
-  status: String
-
-  timestamp_signup: String
-
-  tags: [MailchimpTagPayload!]
-
-  list_id: String
+  """
+  Mark a message as completed (sets completedAt).
+  metadata is accepted for backward compatibility but ignored — use echoTurn.completeTurn instead.
+  """
+  completeMessage(id: ID!, metadata: JSONObject): EchoMessage!
 }
 
-type EmailSubscriptionMutation {
-  addUser(addUserInput: AddUserInput!): AddUserPayload!
+input CreateEchoMessagePartInput {
+  id: ID
+
+  echoMessageId: ID!
+
+  type: EchoMessagePartType!
+
+  index: Int
+
+  data: JSONObject!
+}
+
+input UpdateEchoMessagePartInput {
+  data: JSONObject!
+}
+
+type EchoMessagePartMutation {
+  """
+  Create a new message part
+  """
+  createPart(input: CreateEchoMessagePartInput!): EchoMessagePart!
+
+  """
+  Create multiple message parts in batch
+  """
+  createParts(inputs: [CreateEchoMessagePartInput!]!): [EchoMessagePart!]!
+
+  """
+  Update a message part (for streaming updates)
+  """
+  updatePart(id: ID!, input: UpdateEchoMessagePartInput!): EchoMessagePart!
+}
+
+input EchoProjectThumbnailInput {
+  url: String!
+
+  visualHash: String
+
+  accentColor: String
+
+  width: Int
+
+  height: Int
+}
+
+input EchoProjectIconInput {
+  url: String!
+
+  accentColor: String
+}
+
+input EchoProjectGitHubInfoInput {
+  installationId: Int!
+
+  repoOwner: String!
+
+  repoName: String!
+
+  repoUrl: String!
+
+  branch: String!
+
+  accountType: String
+}
+
+input CreateEchoProjectInput {
+  accountId: ID!
+
+  displayName: String
+
+  slug: String
+
+  description: String
+
+  visibility: EchoProjectVisibility
+
+  thumbnail: EchoProjectThumbnailInput
+
+  icon: EchoProjectIconInput
+
+  githubInfo: EchoProjectGitHubInfoInput
+
+  initFromEchoProjectId: ID
+
+  initFromGitHubUrl: String
+
+  currentPreviewEchoVersionId: ID
+}
+
+input UpdateEchoProjectInput {
+  displayName: String
+
+  slug: String
+
+  description: String
+
+  visibility: EchoProjectVisibility
+
+  thumbnail: EchoProjectThumbnailInput
+
+  icon: EchoProjectIconInput
+
+  githubInfo: EchoProjectGitHubInfoInput
+
+  initFromEchoProjectId: ID
+
+  initFromGitHubUrl: String
+
+  currentPreviewEchoVersionId: ID
+}
+
+input CreateEchoProjectIconInput {
+  url: String!
+
+  source: EchoProjectIconSource!
+
+  prompt: String
+
+  model: String
+
+  accentColor: String
+}
+
+type EchoProjectMutation {
+  """
+  Create a new Echo project
+  """
+  createEchoProject(input: CreateEchoProjectInput!): EchoProject!
+
+  """
+  Update an Echo project
+  """
+  updateEchoProject(id: ID!, input: UpdateEchoProjectInput!): EchoProject!
+
+  """
+  Delete an Echo project by ID
+  """
+  deleteEchoProject(id: ID!): EchoProject!
+
+  """
+  Add one or more icons to the project's icon gallery.
+  Used for both AI-generated batches and user uploads.
+  """
+  createEchoProjectIcons(echoProjectId: ID!, icons: [CreateEchoProjectIconInput!]!): [EchoProjectIconGalleryItem!]!
+
+  """
+  Select an icon from the gallery as the project's active icon.
+  """
+  selectEchoProjectIcon(echoProjectId: ID!, echoProjectIconId: ID!): EchoProject!
+
+  """
+  Delete an icon from the gallery. If it is the active icon, clears the project's icon.
+  """
+  deleteEchoProjectIcon(echoProjectId: ID!, echoProjectIconId: ID!): EchoProjectIconGalleryItem!
+}
+
+input CreateEchoRepositoryInput {
+  provider: String!
+
+  echoProjectId: ID!
+
+  orgName: String!
+
+  repoName: String!
+
+  description: String
+
+  """
+  Whether the repository should be private. Defaults to true.
+  Must be true (or unset) for shared organization repositories.
+  """
+  isPrivate: Boolean
+
+  """
+  When true, allows creating a new repository even if the Echo project already has a linked repository.
+  The existing link will be replaced.
+  """
+  force: Boolean
+}
+
+type EchoRepositoryResult {
+  status: String!
+
+  owner: String!
+
+  name: String!
+
+  url: String!
+
+  githubRepositoryIdentifier: Int!
+
+  nodeIdentifier: String!
+
+  defaultBranch: String!
+}
+
+input GenerateEchoRepositoryAccessTokenInput {
+  provider: String!
+
+  echoProjectId: ID!
+}
+
+type EchoRepositoryAccessTokenResult {
+  token: String!
+
+  expiresAt: DateTime!
+
+  gitUrl: String!
+
+  gitCommitterName: String!
+
+  gitCommitterEmail: String!
+}
+
+type EchoRepositoryMutation {
+  """
+  Create a repository under a given org using the Expo GitHub App installation for Echo.
+  Links the created repository to the specified Echo project.
+  """
+  createEchoRepository(input: CreateEchoRepositoryInput!): EchoRepositoryResult!
+
+  """
+  Generate a scoped installation access token for the repository linked to the specified Echo project.
+  """
+  generateEchoRepositoryAccessToken(input: GenerateEchoRepositoryAccessTokenInput!): EchoRepositoryAccessTokenResult!
+}
+
+"""
+Breakdown of cache write input tokens by cache TTL.
+"""
+input EchoTurnCacheWriteInput {
+  ttl24h: Int
+
+  ttl1h: Int
+
+  ttl5m: Int
+}
+
+"""
+Token usage for billing. Tracks input/output tokens and cache usage.
+"""
+input EchoTurnTokenUsageInput {
+  input: Int!
+
+  output: Int!
+
+  reasoning: Int
+
+  cacheRead: Int
+
+  cacheWrite: Int
+
+  cacheWriteBreakdown: EchoTurnCacheWriteInput
+}
+
+"""
+Cumulative usage data for a completed turn.
+"""
+input EchoTurnUsageInput {
+  tokens: EchoTurnTokenUsageInput
+
+  cost: Float
+
+  sdkCost: Float
+
+  finishReason: String
+
+  model: String
+
+  provider: String
+
+  agent: String
+}
+
+type EchoTurnMutation {
+  """
+  Mark a turn as completed and create a billing ledger entry.
+
+  completionStatus defaults to COMPLETED for backward compatibility with
+  clients that do not yet send a status. error may be set when
+  completionStatus is ERROR to record the failure reason.
+  """
+  completeTurn(id: ID!, usage: EchoTurnUsageInput!, completionStatus: EchoTurnCompletionStatus, error: String): EchoTurn!
+}
+
+input EchoVersionThumbnailInput {
+  url: String!
+
+  visualHash: String
+
+  accentColor: String
+
+  width: Int
+
+  height: Int
+}
+
+input CreateEchoVersionInput {
+  echoProjectId: ID!
+
+  echoChatId: ID
+
+  source: EchoVersionSource!
+
+  echoTurnId: ID
+
+  """
+  Legacy alias for echoTurnId. Must be a valid UUIDv7. Provide exactly one of echoTurnId or turnId.
+  """
+  turnId: ID
+
+  gitCommitHash: String
+
+  gitCommitMessage: String
+
+  gitBranch: String
+
+  revertedFromEchoVersionId: ID
+
+  buildStatus: EchoBuildStatus!
+
+  buildError: String
+
+  diffs: JSON!
+
+  thumbnail: EchoVersionThumbnailInput
+
+  previewDeployment: JSONObject
+}
+
+input UpdateEchoVersionInput {
+  gitCommitHash: String
+
+  gitCommitMessage: String
+
+  gitBranch: String
+
+  buildStatus: EchoBuildStatus
+
+  buildError: String
+
+  thumbnail: EchoVersionThumbnailInput
+
+  previewDeployment: JSONObject
+}
+
+type EchoVersionMutation {
+  """
+  Create a new version
+  """
+  createVersion(input: CreateEchoVersionInput!): EchoVersion!
+
+  """
+  Update a version
+  """
+  updateVersion(id: ID!, input: UpdateEchoVersionInput!): EchoVersion!
+}
+
+type EmbeddedUpdateAssetUploadSpec {
+  """
+  Storage key (`{appId}/{embeddedUpdateId}`). Same key in both upload and destination buckets.
+  """
+  storageKey: String!
+
+  """
+  Presigned POST URL targeting the upload bucket. Valid for one hour.
+  """
+  presignedUrl: String!
+
+  """
+  Form fields that must be included with the POST request alongside the file.
+  """
+  fields: JSONObject!
+}
+
+type EmbeddedUpdateAssetMutation {
+  """
+  Returns a presigned POST URL for uploading an embedded update bundle.
+  Requires PUBLISH permission on the app.
+  """
+  getSignedEmbeddedUpdateAssetUploadSpecifications(appId: ID!, embeddedUpdateId: ID!, contentType: String!): EmbeddedUpdateAssetUploadSpec!
+}
+
+type EmbeddedUpdateAsset {
+  id: ID!
+
+  storageKey: String!
+
+  fileSHA256: String!
+
+  contentType: String!
+
+  fileSize: Int!
+
+  finalFileSize: Int
+}
+
+input UploadEmbeddedUpdateInput {
+  appId: ID!
+
+  platform: AppPlatform!
+
+  runtimeVersion: String!
+
+  channel: String!
+
+  """
+  UUID baked into the binary by expo-updates at build time (from app.manifest id field).
+  """
+  embeddedUpdateId: ID!
+
+  turtleBuildId: ID
+}
+
+type DeleteEmbeddedUpdateResult {
+  id: ID!
+}
+
+type EmbeddedUpdateMutation {
+  """
+  Register an embedded bundle as the launch asset for a given app/platform/channel.
+  Returns EMBEDDED_UPDATE_ASSET_NOT_AVAILABLE if the asset has not been finalized yet,
+  or EMBEDDED_UPDATE_ALREADY_EXISTS if an embedded update with this id is already registered.
+  """
+  uploadEmbeddedUpdate(input: UploadEmbeddedUpdateInput!): EmbeddedUpdate!
+
+  """
+  Delete an embedded update by id. Best-effort: deleting an unknown id succeeds
+  (mirrors background deletion jobs). The linked asset row and underlying GCS
+  object are cleaned up via the entity's afterDelete trigger chain.
+  """
+  deleteEmbeddedUpdate(id: ID!): DeleteEmbeddedUpdateResult!
+}
+
+type EmbeddedUpdate {
+  """
+  The manifest UUID baked into the binary by expo-updates at build time.
+  """
+  id: ID!
+
+  platform: AppPlatform!
+
+  runtimeVersion: String!
+
+  runtime: Runtime
+
+  channel: String!
+
+  launchAsset: EmbeddedUpdateAsset!
+
+  build: Build
+
+  """
+  A short-lived signed URL for downloading this bundle's launch asset. Minted on access,
+  so only select it when the user is actually downloading.
+  """
+  signedAssetUrl: String!
+
+  createdAt: DateTime!
 }
 
 input CreateEnvironmentSecretInput {
@@ -8445,6 +14125,134 @@ type EnvironmentVariableMutation {
   Create bulk env variables for an Account
   """
   createBulkEnvironmentVariablesForAccount(environmentVariablesData: [CreateSharedEnvironmentVariableInput!]!, accountId: ID!): [EnvironmentVariable!]!
+
+  """
+  Create an environment variable for an Echo project
+  """
+  createEnvironmentVariableForEchoProject(environmentVariableData: CreateEnvironmentVariableInput!, echoProjectId: ID!): EnvironmentVariable!
+
+  """
+  Create bulk env variables for an Echo project
+  """
+  createBulkEnvironmentVariablesForEchoProject(environmentVariablesData: [CreateEnvironmentVariableInput!]!, echoProjectId: ID!): [EnvironmentVariable!]!
+}
+
+enum ExitInterviewMessageRole {
+  USER
+
+  ASSISTANT
+}
+
+input ExitInterviewMessageInput {
+  role: ExitInterviewMessageRole!
+
+  content: String!
+}
+
+enum ExitInterviewOutcome {
+  CONTINUED_TO_STRIPE
+
+  CANCELLED_IMMEDIATELY
+
+  KEPT_PLAN
+
+  DISMISSED
+}
+
+"""
+Tags produced by the website's churn-classification step. The website runs
+this synchronously before calling complete, then forwards the structured
+result. Allowed category / sentiment values are enforced by the resolver.
+"""
+input ExitInterviewTagsInput {
+  category: String!
+
+  sentiment: String!
+
+  summary: String
+
+  confidence: String
+
+  productArea: String
+
+  competitorMention: String
+
+  actionableInsight: Boolean!
+}
+
+input ExitInterviewCompleteInput {
+  accountId: ID!
+
+  conversationId: ID!
+
+  outcome: ExitInterviewOutcome!
+
+  messages: [ExitInterviewMessageInput!]!
+
+  """
+  Optional classification tags. Present when the website's tagging call
+  succeeded; omitted when it failed or when the user dismissed without
+  engaging. When present, drives the conversation-tagged event and the
+  tagged Slack notification.
+  """
+  tags: ExitInterviewTagsInput
+}
+
+type ExitInterviewCompleteResult {
+  success: Boolean!
+}
+
+input ExitInterviewFeedbackInput {
+  accountId: ID!
+
+  conversationId: ID!
+
+  outcome: ExitInterviewOutcome!
+
+  feedback: String!
+}
+
+type ExitInterviewFeedbackResult {
+  success: Boolean!
+}
+
+input ExitInterviewBeginChatTurnInput {
+  accountId: ID!
+}
+
+type ExitInterviewBeginChatTurnResult {
+  ok: Boolean!
+}
+
+type ExitInterviewMutation {
+  """
+  Gate a chat turn before the website route calls OpenAI. Enforces
+  authorization (account admin), eligibility (active paid subscription,
+  not cancelling), and a per-user rate limit (30 turns/hour). The
+  website's /api/exit-interview/chat route calls this server-to-server
+  on every turn; failures map to HTTP 4xx and abort the stream before
+  any OpenAI tokens are spent.
+  """
+  beginChatTurn(input: ExitInterviewBeginChatTurnInput!): ExitInterviewBeginChatTurnResult!
+
+  """
+  Mark a treatment-variant exit-interview chat conversation complete. Emits
+  the conversation-completed event to RudderStack with the full transcript.
+  If the transcript carries at least one server-signed assistant turn (i.e.
+  the user actually engaged the bot), fans out the raw transcript to Slack.
+  If the client also provides tags, emits a separate conversation-tagged
+  event and a tagged Slack notification. Control-variant one-shot feedback
+  goes through submitFeedback.
+  """
+  complete(input: ExitInterviewCompleteInput!): ExitInterviewCompleteResult!
+
+  """
+  Record a control-variant one-shot feedback submission. Emits the
+  feedback-submitted event to RudderStack. No Slack notification, no
+  tagging — those pipelines are scoped to the treatment chat flow via
+  complete.
+  """
+  submitFeedback(input: ExitInterviewFeedbackInput!): ExitInterviewFeedbackResult!
 }
 
 input CreateFingerprintInput {
@@ -8501,6 +14309,58 @@ type GitHubAppMutation {
   Create a GitHub build for an app. Returns the ID of the background job receipt. Use BackgroundJobReceiptQuery to get the status of the job.
   """
   createGitHubBuild(buildInput: GitHubBuildInput!): BackgroundJobReceipt!
+}
+
+input StartGitHubAppRegistrationInput {
+  accountId: ID!
+
+  """
+  URL of the GitHub Enterprise instance, e.g. https://github.example.com or https://example.ghe.com.
+  """
+  origin: String!
+
+  """
+  Organization to register the app under; omit to register under the signed-in user's account.
+  """
+  org: String
+}
+
+"""
+Registration data for the GitHub App manifest flow.
+"""
+type GitHubAppRegistrationManifest {
+  manifestJson: String!
+
+  state: String!
+
+  githubManifestCreateUrl: String!
+}
+
+input FinalizeGitHubAppRegistrationInput {
+  state: String!
+
+  code: String!
+}
+
+type GitHubAppRegistrationMutation {
+  """
+  Starts a GitHub App registration on a GHE instance via the app manifest flow. Returns the
+  manifest for the browser to submit.
+  """
+  startGitHubAppRegistration(input: StartGitHubAppRegistrationInput!): GitHubAppRegistrationManifest!
+
+  """
+  Finalizes a GitHub App registration after the GHE instance redirects back with a temporary
+  code. Exchanges the code for the app's credentials and stores the registration.
+  """
+  finalizeGitHubAppRegistration(input: FinalizeGitHubAppRegistrationInput!): GitHubAppRegistration!
+
+  """
+  Deletes a GitHub Enterprise app registration. Installations of the app and repository links
+  made through it are removed as well. The app itself remains on the GitHub Enterprise instance
+  and must be deleted there separately.
+  """
+  deleteGitHubAppRegistration(githubAppRegistrationId: ID!): GitHubAppRegistration!
 }
 
 input CreateGitHubBuildTriggerInput {
@@ -8625,9 +14485,9 @@ type GitHubRepositoryMutation {
   createGitHubRepository(githubRepositoryData: CreateGitHubRepositoryInput!): GitHubRepository!
 
   """
-  Delete a GitHub repository by ID
+  Delete a GitHub repository by ID in the background
   """
-  deleteGitHubRepository(githubRepositoryId: ID!): GitHubRepository!
+  scheduleGitHubRepositoryDeletion(githubRepositoryId: ID!): BackgroundJobReceipt!
 
   """
   Configure EAS by pushing a commit to the default branch which updates or creates app.json, eas.json, and installs necessary dependencies.
@@ -8901,7 +14761,7 @@ input IosJobOverridesInput {
 input IosJobSecretsInput {
   buildCredentials: [IosJobTargetCredentialsInput]
 
-  robotAccessToken: String
+  robotAccessToken: String @deprecated(reason: "Robot access token is no longer needed as it's generated server-side and injected into the builder environment automatically.")
 }
 
 input IosJobTargetCredentialsInput {
@@ -8975,6 +14835,11 @@ type JobRunMutation {
   Cancel an EAS Job Run
   """
   cancelJobRun(jobRunId: ID!): JobRun!
+
+  """
+  Generate a token for subscribing to an EAS Job Run log channel
+  """
+  generateLogsCentrifugoSubscriptionToken(jobRunId: ID!, thread: String): RealtimeLogsCentrifugoSubscriptionToken! @deprecated(reason: "Use realtimeLogs.generateCentrifugoSubscriptionToken instead.")
 }
 
 type KeystoreGenerationUrlMutation {
@@ -9100,6 +14965,144 @@ input AppNotificationPreferenceInput {
   appId: ID!
 }
 
+input CreatePostHogAccountRequestInput {
+  accountId: ID!
+
+  region: PostHogRegion!
+}
+
+input CompletePostHogConnectionInput {
+  state: ID!
+
+  code: String!
+}
+
+"""
+Which EAS surface a deep link was opened from; PostHog records it as an analytics label.
+"""
+enum PostHogDeepLinkPurpose {
+  DASHBOARD
+
+  PROJECT
+
+  OBSERVABILITY
+}
+
+input CreatePostHogDeepLinkInput {
+  posthogOrganizationConnectionId: ID!
+
+  """
+  When set, deep-links to this app's linked PostHog project; otherwise lands on the organization home.
+  """
+  appId: ID
+
+  """
+  Which EAS surface opened the link; omitted lets PostHog apply its own default.
+  """
+  purpose: PostHogDeepLinkPurpose
+}
+
+"""
+A one-time, signed-in PostHog link. Expires in 10 minutes and opens once.
+"""
+type PostHogDeepLink {
+  url: String!
+
+  expiresAt: DateTime!
+}
+
+"""
+Returned when the account's email already belongs to a PostHog account. The user
+must approve the connection in their browser at `url`; the CLI then polls for
+completion with `state`.
+"""
+type PostHogPendingConnection {
+  state: ID!
+
+  url: String!
+}
+
+union StartPostHogConnectionResult = PostHogOrganizationConnection|PostHogPendingConnection
+
+type PostHogOrganizationConnectionMutation {
+  createPostHogAccountRequest(input: CreatePostHogAccountRequestInput!): PostHogOrganizationConnection!
+
+  """
+  Starts a PostHog connection. Returns the connection directly for a new PostHog
+  user, or a pending browser-auth handoff for an existing PostHog user.
+  """
+  startPostHogConnection(input: CreatePostHogAccountRequestInput!): StartPostHogConnectionResult!
+
+  """
+  Completes an existing-user connection from the browser callback: exchanges the
+  authorization code with the stored PKCE verifier and persists the connection.
+  """
+  completePostHogConnection(input: CompletePostHogConnectionInput!): PostHogOrganizationConnection!
+
+  """
+  Removes the Expo-side connection only; the PostHog organization is preserved.
+  """
+  deletePostHogOrganizationConnection(id: ID!): ID!
+
+  """
+  Mints a one-time, signed-in PostHog link. The URL expires in 10 minutes and can be
+  opened once, so request it at click time rather than pre-rendering it.
+  """
+  createPostHogDeepLink(input: CreatePostHogDeepLinkInput!): PostHogDeepLink!
+}
+
+input SetupPostHogProjectInput {
+  appId: ID!
+
+  posthogOrganizationConnectionId: ID!
+}
+
+type PostHogProjectMutation {
+  """
+  Provisions a PostHog project for the app; the project name is derived from the app.
+  """
+  setupPostHogProject(input: SetupPostHogProjectInput!): PostHogProject!
+
+  """
+  Removes the Expo-side project link only; the PostHog project is preserved.
+  """
+  deletePostHogProject(id: ID!): ID!
+}
+
+type RealtimeLogsCentrifugoConnectionToken {
+  token: String!
+}
+
+type RealtimeLogsCentrifugoSubscriptionToken {
+  channel: String!
+
+  token: String!
+}
+
+enum RealtimeLogsTargetType {
+  BUILD
+
+  JOB_RUN
+}
+
+input RealtimeLogsTargetInput {
+  type: RealtimeLogsTargetType!
+
+  id: ID!
+}
+
+type RealtimeLogsMutation {
+  """
+  Generate a token for connecting to EAS Logs Centrifugo
+  """
+  generateCentrifugoConnectionToken: RealtimeLogsCentrifugoConnectionToken!
+
+  """
+  Generate a token for subscribing to an EAS Logs channel
+  """
+  generateCentrifugoSubscriptionToken(target: RealtimeLogsTargetInput!, thread: String): RealtimeLogsCentrifugoSubscriptionToken!
+}
+
 input RobotDataInput {
   name: String
 }
@@ -9158,6 +15161,15 @@ type SentryInstallationMutation {
   Generate a Sentry token for an installation
   """
   generateSentryToken(accountId: ID!): GenerateSentryTokenResult!
+
+  """
+  Force delete a Sentry installation from Expo's side
+  """
+  deleteSentryInstallation(accountId: ID!): DeleteSentryInstallationResult!
+}
+
+type DeleteSentryInstallationResult {
+  id: ID!
 }
 
 type DeleteSentryProjectResult {
@@ -9303,6 +15315,208 @@ type CreateSubmissionResult {
   Created submission
   """
   submission: Submission!
+}
+
+input BeginSupabaseOAuthInput {
+  accountId: ID!
+}
+
+input CompleteSupabaseOAuthInput {
+  state: ID!
+
+  code: String!
+}
+
+input SetSupabaseConnectionOrganizationInput {
+  supabaseConnectionId: ID!
+
+  organizationSlug: String!
+}
+
+"""
+Handoff for the browser OAuth step. The CLI opens `url`, and once the user authorizes,
+the website callback completes the connection; the CLI polls for it with `state`.
+"""
+type SupabaseOAuthStart {
+  state: ID!
+
+  url: String!
+}
+
+type SupabaseConnectionMutation {
+  """
+  Begins a Supabase connection: creates the PKCE handoff and returns the authorize URL.
+  """
+  beginSupabaseOAuth(input: BeginSupabaseOAuthInput!): SupabaseOAuthStart!
+
+  """
+  Completes a connection from the browser callback: exchanges the authorization code with the
+  stored PKCE verifier and persists the connection.
+  """
+  completeSupabaseOAuth(input: CompleteSupabaseOAuthInput!): SupabaseConnection!
+
+  """
+  Sets which Supabase organization new projects are provisioned under (the connect-time picker).
+  """
+  setSupabaseConnectionOrganization(input: SetSupabaseConnectionOrganizationInput!): SupabaseConnection!
+
+  """
+  Live list of Supabase organizations this connection can access (Management API). Used once at
+  connect-time for the org picker — not a type field, so casual connection reads stay cheap.
+  """
+  listSupabaseOrganizations(accountId: ID!): [SupabaseOrganization!]!
+
+  """
+  Removes the Expo-side connection only; the Supabase organization and its projects are preserved.
+  """
+  disconnectSupabase(id: ID!): ID!
+}
+
+input ProvisionSupabaseProjectInput {
+  appId: ID!
+
+  """
+  A Supabase region code (e.g. us-east-1) or smart-group (americas, emea, apac).
+  """
+  region: String!
+}
+
+input ProvisionAdditionalSupabaseProjectInput {
+  appId: ID!
+
+  """
+  A Supabase region code (e.g. us-east-1) or smart-group (americas, emea, apac).
+  """
+  region: String!
+
+  """
+  Suffix appended to the app name for the new Supabase project (e.g. preview).
+  """
+  projectNameSuffix: String!
+}
+
+input LinkSupabaseProjectInput {
+  appId: ID!
+
+  supabaseProjectRef: String!
+}
+
+type SupabaseProjectMutation {
+  """
+  Schedules provisioning of a new Supabase project for the app. Poll the returned receipt until success, then read app.supabaseProject.
+  """
+  provisionSupabaseProject(input: ProvisionSupabaseProjectInput!): BackgroundJobReceipt!
+
+  """
+  Schedules an additional hosted Supabase project for selected EAS environments. Does not replace
+  the app's primary linked project — poll the receipt for ref/url/publishableKey in resultData.
+  """
+  provisionAdditionalSupabaseProject(input: ProvisionAdditionalSupabaseProjectInput!): BackgroundJobReceipt!
+
+  """
+  Links an existing Supabase project (by ref) to the app.
+  """
+  linkSupabaseProject(input: LinkSupabaseProjectInput!): SupabaseProject!
+
+  """
+  Live publishable (anon) key for the app's linked Supabase project (Management API). Never
+  stored — null while the project is still provisioning. Used by the CLI to write EAS env vars.
+  """
+  fetchSupabasePublishableKey(appId: ID!): String
+
+  """
+  Removes the Expo-side project link only; the Supabase project is preserved.
+  """
+  deleteSupabaseProject(id: ID!): ID!
+}
+
+type TunnelsMutation {
+  """
+  Create a signed tunnel URL for an account
+  """
+  createSignedTunnelUrl(accountId: ID!): TunnelSignedUrlResult!
+}
+
+type TunnelSignedUrlResult {
+  label: ID!
+
+  url: String!
+}
+
+input CreateBrownfieldArtifactInput {
+  appId: ID!
+
+  platform: AppPlatform!
+
+  bundleName: String!
+
+  """
+  Filename for the artifact (e.g. "MyFramework.xcframework.tar.gz").
+  """
+  filename: String!
+
+  """
+  Size of the artifact in bytes. Required for generating the signed upload URL.
+  """
+  size: Int!
+
+  """
+  Optional. If omitted, the version is auto-incremented from the latest artifact for the same platform and bundle name.
+  """
+  version: String
+
+  """
+  The ID of the turtle job run that is producing this artifact.
+  """
+  producingTurtleJobRunId: ID!
+}
+
+type CreateBrownfieldArtifactResult {
+  artifact: BrownfieldArtifact!
+
+  """
+  Signed URL to upload the artifact to.
+  """
+  uploadUrl: String!
+
+  """
+  Headers to include with the upload request.
+  """
+  uploadHeaders: JSONObject!
+}
+
+type TurtleBrownfieldArtifactMutation {
+  createTurtleBrownfieldArtifact(input: CreateBrownfieldArtifactInput!): CreateBrownfieldArtifactResult!
+}
+
+input TurtleSshConnectionConfigInput {
+  type: TurtleSshTransportType!
+
+  host: String!
+
+  secret: String!
+
+  reconnecting: Boolean
+}
+
+input TurtleSshSessionSettingsInput {
+  idleTimeoutSeconds: Int!
+}
+
+enum TurtleSshTargetType {
+  BUILD
+
+  JOB_RUN
+}
+
+input TurtleSshTargetInput {
+  type: TurtleSshTargetType!
+
+  id: ID!
+}
+
+type TurtleSshSessionMutation {
+  createOrUpdateTurtleSshSession(target: TurtleSshTargetInput!, connectionConfig: TurtleSshConnectionConfigInput!, sessionSettings: TurtleSshSessionSettingsInput!): TurtleSshSession!
 }
 
 type DeleteUpdateBranchResult {
@@ -9489,7 +15703,12 @@ type UpdateChannelMutation {
   """
   delete an EAS channel that doesn't point to any branches
   """
-  deleteUpdateChannel(channelId: ID!): DeleteUpdateChannelResult!
+  deleteUpdateChannel(channelId: ID!): DeleteUpdateChannelResult! @deprecated(reason: "Use scheduleUpdateChannelDeletion instead")
+
+  """
+  Delete an EAS channel and all of its builds in the background
+  """
+  scheduleUpdateChannelDeletion(channelId: ID!): BackgroundJobReceipt!
 
   """
   Pause updates for an EAS channel.
@@ -9500,10 +15719,16 @@ type UpdateChannelMutation {
   Resume updates for an EAS channel.
   """
   resumeUpdateChannel(channelId: ID!): UpdateChannel!
-}
 
-type DeleteUpdateGroupResult {
-  group: ID!
+  """
+  Protect an EAS channel, so only account admins may release to it.
+  """
+  protectUpdateChannel(channelId: ID!): UpdateChannel!
+
+  """
+  Remove protection from an EAS channel.
+  """
+  unprotectUpdateChannel(channelId: ID!): UpdateChannel!
 }
 
 input CodeSigningInfoInput {
@@ -9515,11 +15740,6 @@ input CodeSigningInfoInput {
 }
 
 type UpdateMutation {
-  """
-  Delete an EAS update group
-  """
-  deleteUpdateGroup(group: ID!): DeleteUpdateGroupResult! @deprecated(reason: "Use scheduleUpdateGroupDeletion instead")
-
   """
   Delete an EAS update group in the background
   """
@@ -9564,6 +15784,10 @@ enum AppUploadSessionType {
   PROFILE_IMAGE_UPLOAD
 }
 
+enum EchoProjectUploadSessionType {
+  IMAGE_UPLOAD
+}
+
 type UploadSession {
   """
   Create an Upload Session
@@ -9579,6 +15803,11 @@ type UploadSession {
   Create an Upload Session for a specific app
   """
   createAppScopedUploadSession(type: AppUploadSessionType!, appID: ID!): JSONObject!
+
+  """
+  Create an Upload Session for a specific Echo project
+  """
+  createEchoProjectScopedUploadSession(type: EchoProjectUploadSessionType!, echoProjectID: ID!): JSONObject!
 }
 
 type UserAppPinMutation {
@@ -9707,7 +15936,7 @@ type DeleteSSOUserResult {
 input SecondFactorDeviceConfiguration {
   method: SecondFactorMethod!
 
-  smsPhoneNumber: String
+  smsPhoneNumber: String @deprecated(reason: "No longer supported")
 
   name: String!
 
@@ -9734,26 +15963,6 @@ type SecondFactorRegenerateBackupCodesResult {
 
 type SecondFactorBooleanResult {
   success: Boolean!
-}
-
-input UserPreferencesOnboardingInput {
-  appId: ID!
-
-  lastUsed: String!
-
-  deviceType: OnboardingDeviceType
-
-  environment: OnboardingEnvironment
-
-  platform: AppPlatform
-
-  isCLIDone: Boolean
-}
-
-input UserPreferencesInput {
-  selectedAccountName: String
-
-  onboarding: UserPreferencesOnboardingInput
 }
 
 type MeMutation {
@@ -9823,11 +16032,6 @@ type MeMutation {
   regenerateSecondFactorBackupCodes(otp: String): SecondFactorRegenerateBackupCodesResult!
 
   """
-  Send SMS OTP to a second factor device for use during device setup or during change confirmation
-  """
-  sendSMSOTPToSecondFactorDevice(userSecondFactorDeviceId: ID!): SecondFactorBooleanResult! @deprecated(reason: "This method is no longer supported.")
-
-  """
   Certify an initiated second factor authentication method for the current user
   """
   certifySecondFactorDevice(otp: String!): SecondFactorBooleanResult!
@@ -9853,10 +16057,9 @@ type MeMutation {
   disableSecondFactorAuthentication(otp: String): SecondFactorBooleanResult!
 
   """
-  Sets user preferences. This is a key-value store for user-specific settings. Provided values are
-  key-level merged with existing values.
+  Record chat token usage for the current user.
   """
-  setPreferences(preferences: UserPreferencesInput!): UserPreferences!
+  recordChatTokenUsage(inputTokens: Int!, outputTokens: Int!): ChatTokenUsage!
 }
 
 input CreateVexoAccountConnectionInput {
@@ -9979,6 +16182,85 @@ type DeleteCustomDomainResult {
   hostname: String!
 }
 
+type WorkflowCacheMutation {
+  deleteWorkflowCache(cacheId: ID!): WorkflowCache!
+}
+
+input WorkflowDeviceTestCaseResultInput {
+  """
+  Test case name (e.g., "login", "checkout"). Max 255 characters.
+  """
+  name: String!
+
+  """
+  Path to the test file (e.g., "flows/login.yaml"). Max 1024 characters.
+  Used as natural key for deduplication.
+  """
+  path: String!
+
+  """
+  Execution result.
+  """
+  status: WorkflowDeviceTestCaseStatus!
+
+  """
+  Error message if failed. Truncated to 4096 characters.
+  """
+  errorMessage: String
+
+  """
+  Execution time in milliseconds. Must be non-negative.
+  """
+  duration: Int
+
+  """
+  0-indexed attempt number for this test case. 0 = first attempt, 1 = first retry, etc.
+  """
+  retryCount: Int
+
+  """
+  Tags defined in the test config. Each tag max 255 characters.
+  """
+  tags: [String!]
+
+  """
+  Custom properties from test configuration. Stored as key-value pairs.
+  """
+  properties: JSONObject
+}
+
+input CreateWorkflowDeviceTestCaseResultsInput {
+  """
+  ID of the workflow job to associate results with.
+  """
+  workflowJobId: ID!
+
+  """
+  Test case results to create. (path, retryCount) pairs must be unique.
+  """
+  testCaseResults: [WorkflowDeviceTestCaseResultInput!]!
+}
+
+type WorkflowDeviceTestCaseResultMutation {
+  """
+  Create device test case results for a workflow job.
+  Results are immutable - once created, subsequent calls are no-ops.
+  """
+  createWorkflowDeviceTestCaseResults(input: CreateWorkflowDeviceTestCaseResultsInput!): [WorkflowDeviceTestCaseResult!]!
+}
+
+type WorkflowJobAppleDeviceRegistrationRequestMutation {
+  """
+  Mark the workflow apple-device-registration-request job successful after reviewing the registered device.
+  """
+  approveAppleDeviceRegistration(workflowJobId: ID!, appleDeviceId: ID!): WorkflowJob!
+
+  """
+  Fail the workflow apple-device-registration-request job after reviewing the registered device.
+  """
+  rejectAppleDeviceRegistration(workflowJobId: ID!, appleDeviceId: ID!): WorkflowJob!
+}
+
 type WorkflowJobApprovalMutation {
   setWorkflowJobApprovalDecision(workflowJobId: ID!, decision: WorkflowJobReviewDecision!): WorkflowJobApproval!
 }
@@ -10013,18 +16295,30 @@ input WorkflowProjectSourceInput {
   projectRootDirectory: String
 }
 
+"""
+Enables ssh on the run's VM jobs. Presence turns ssh on; idleTimeoutSeconds is optional,
+defaults server-side, and is validated against a supported range.
+"""
+input WorkflowRunSshInput {
+  idleTimeoutSeconds: Int
+}
+
 input WorkflowRunInput {
   projectSource: WorkflowProjectSourceInput!
 
   inputs: JSONObject
+
+  ssh: WorkflowRunSshInput
 }
 
 type WorkflowRunMutation {
   createWorkflowRun(appId: ID!, workflowRevisionInput: WorkflowRevisionInput!, workflowRunInput: WorkflowRunInput!): WorkflowRun!
 
-  createWorkflowRunFromGitRef(workflowRevisionId: ID!, gitRef: String!, inputs: JSONObject): WorkflowRun!
+  createExpoGoRepackWorkflowRun(appId: ID!, projectSource: WorkflowProjectSourceInput!, sdkVersion: String): WorkflowRun!
 
-  retryWorkflowRun(workflowRunId: ID!, fromFailedJobs: Boolean): WorkflowRun!
+  createWorkflowRunFromGitRef(workflowRevisionId: ID!, gitRef: String!, inputs: JSONObject, ssh: WorkflowRunSshInput): WorkflowRun!
+
+  retryWorkflowRun(workflowRunId: ID!, fromFailedJobs: Boolean, ssh: WorkflowRunSshInput): WorkflowRun!
 
   cancelWorkflowRun(workflowRunId: ID!): WorkflowRun!
 }

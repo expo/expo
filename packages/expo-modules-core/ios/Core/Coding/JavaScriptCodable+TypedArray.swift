@@ -8,6 +8,11 @@ import ExpoModulesJSI
 // `TypedArray.swift` / `ConcreteTypedArrays.swift`.
 
 extension TypedArray: JavaScriptDecodable, JavaScriptEncodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: TypedArray, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {

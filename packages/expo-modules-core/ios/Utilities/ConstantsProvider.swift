@@ -130,3 +130,29 @@ private func getManifest() -> [String: Any]? {
     return nil
   }
 }
+
+public struct EmbeddedFingerprint {
+  public let hash: String
+  /** Nil when the build embedded no version. Two hashes then cannot be compared. */
+  public let fingerprintVersion: String?
+  /** The sources the hash was computed from. Empty when the build embedded none. */
+  public let sources: [[String: Any]]
+
+  public static func read() -> EmbeddedFingerprint? {
+    // Absent in a release build, or with `EXPO_SKIP_FINGERPRINT_EMBED` set. Not an error.
+    guard let bundle = findEXConstantsBundle(),
+          let url = bundle.url(forResource: "app", withExtension: "fingerprint"),
+          let contents = try? String(contentsOf: url, encoding: .utf8),
+          let data = contents.data(using: .utf8),
+          let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+          let hash = parsed["hash"] as? String,
+          !hash.isEmpty else {
+      return nil
+    }
+    return EmbeddedFingerprint(
+      hash: hash,
+      fingerprintVersion: parsed["fingerprintVersion"] as? String,
+      sources: parsed["sources"] as? [[String: Any]] ?? []
+    )
+  }
+}

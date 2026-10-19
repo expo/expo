@@ -11,13 +11,20 @@ export {
 } from './js';
 
 export {
+  AlbumType,
+  type AlbumMetadata,
   AssetField,
+  AssetUriVersion,
   MediaSubtype,
   MediaType,
   type Shape,
   type Location,
   type AssetFieldValueMap,
+  type CollectionAssetField,
+  type SortableAssetField,
   type AssetInfo,
+  type AssetMetadata,
+  type AssetUriOptions,
   type GranularPermission,
   type MediaLibraryAssetsChangeEvent,
   type MediaTypeFilter,

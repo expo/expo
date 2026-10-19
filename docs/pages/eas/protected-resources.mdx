@@ -1,0 +1,40 @@
+---
+title: Protected resources
+description: Learn how to restrict who can interact with sensitive EAS resources, such as the update channel your production app uses.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+You can mark some EAS resources as protected. Only members with the Release Manager, Admin, or Owner [role](/accounts/account-types/#manage-access) can take protected actions on these resources. This is similar to the concept of protected branches on Git hosting services like GitHub, where only members with elevated permissions can push to them.
+
+## Protected channels
+
+When you protect an [EAS Update](/eas-update/how-it-works/) channel, only Release Managers, Admins, and Owners can:
+
+- Publish updates to a branch the channel points to. This includes `eas update`, republishing, and rollbacks.
+- Rename or delete a branch the channel points to.
+- Edit the channel. This includes changing which branch it points to, starting or ending a rollout, and pausing or resuming updates.
+- Delete the channel.
+- Remove protection from the channel.
+
+Members with other roles can still view a protected channel and its branches. Developers can publish to branches that no protected channel points to.
+
+### Protect or unprotect a channel
+
+<Terminal
+  cmd={[
+    '# Protect a channel',
+    '$ eas channel:protect production',
+    '',
+    '# Remove protection from a channel',
+    '$ eas channel:unprotect production',
+  ]}
+/>
+
+Only Release Managers, Admins, and Owners can run these commands. Run either command without a channel name to pick one from a list. Both commands require EAS CLI 24.0.0 or later.
+
+> **info** When you [transfer a project](/accounts/account-types/#transfer-projects-between-accounts) to another account, EAS removes protection from all of its channels. Protect them again in the new account if needed.
+
+## Coming soon
+
+Protection for other resource types is in progress.

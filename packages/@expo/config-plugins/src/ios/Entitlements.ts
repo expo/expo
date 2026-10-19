@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import type { XCBuildConfiguration } from 'xcode';
 
+import { createEntitlementsPlugin } from '../plugins/ios-plugins';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import {
   getBuildConfigurationsForListId,
@@ -12,7 +13,6 @@ import {
   getProjectName,
 } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { createEntitlementsPlugin } from '../plugins/ios-plugins';
 
 export const withAssociatedDomains = createEntitlementsPlugin(
   setAssociatedDomains,

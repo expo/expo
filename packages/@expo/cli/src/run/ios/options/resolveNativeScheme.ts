@@ -6,9 +6,8 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
+import { debugEvent } from '../../events';
 import type { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
-
-const debug = require('debug')('expo:run:ios:options:resolveNativeScheme') as typeof console.log;
 
 type NativeSchemeProps = {
   name: string;
@@ -85,7 +84,7 @@ export function getDefaultNativeScheme(
     const scheme =
       resolvedSchemes.find(({ type }) => type === IOSConfig.Target.TargetType.APPLICATION) ??
       resolvedSchemes[0]!;
-    debug(`Using default scheme: ${scheme.name}`);
+    debugEvent('ios:default_scheme', { name: scheme.name });
     return scheme;
   }
 

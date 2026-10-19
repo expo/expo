@@ -1,8 +1,6 @@
-/* eslint-env jest */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -21,16 +20,14 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
     serve: {
       env: {
+        EXPO_USE_STATIC: 'server',
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
         TEST_THROW_ERROR: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     },
   })
@@ -50,6 +47,7 @@ describe.each(
     expect(files).not.toContain('request.html');
     expect(files).not.toContain('response.html');
     expect(files).not.toContain('second.html');
+    expect(files).not.toContain('slow.html');
     expect(files).not.toContain('nested/index.html');
     expect(files).not.toContain('nullish/[value].html');
     expect(files).not.toContain('nullish/null.html');
@@ -57,6 +55,7 @@ describe.each(
     expect(files).not.toContain('posts/[postId].html');
     expect(files).not.toContain('posts/static-post-1.html');
     expect(files).not.toContain('posts/static-post-2.html');
+    expect(files).not.toContain('platform/alpha/beta.html');
 
     // Loader bundles should exist
     expect(files).toContain('_expo/loaders/index.js');
@@ -67,9 +66,11 @@ describe.each(
     expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
     expect(files).toContain('_expo/loaders/second.js');
+    expect(files).toContain('_expo/loaders/slow.js');
     expect(files).toContain('_expo/loaders/nullish/[value].js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/(group)/index.js');
+    expect(files).toContain('_expo/loaders/(group)/platform/[...slug].js');
     expect(files).toContain('_expo/loaders/static-helper.js');
     expect(files).toContain('_expo/loaders/server-helper.js');
   });
@@ -127,6 +128,17 @@ describe.each(
 
       const data = await getData(response);
       expect(data).toEqual({ data: 'grouped-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)/platform/alpha/beta'))(
+    'can access platform-specific catch-all data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-catch-all' });
     }
   );
 
@@ -258,6 +270,13 @@ describe.each(
 
     const data = await response.json();
     expect(data).toEqual({ foo: 'bar' });
+  });
+
+  it('defaults a headerless server loader to no-store', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/index');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('sets custom headers on response using `setResponseHeaders()`', async () => {

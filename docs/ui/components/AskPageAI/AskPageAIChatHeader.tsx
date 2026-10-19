@@ -53,7 +53,7 @@ export function AskPageAIChatHeader({
             <Star06Icon aria-hidden="true" className="icon-sm text-palette-white" />
           </span>
           <span className="text-sm leading-tight font-medium text-palette-white">
-            Expo AI Assistant
+            Expo AI assistant
           </span>
         </div>
         <div className="flex items-center gap-1">

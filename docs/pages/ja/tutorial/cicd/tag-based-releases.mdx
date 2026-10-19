@@ -1,0 +1,194 @@
+---
+title: 'Git タグで本番デプロイをトリガーする'
+sidebar_title: タグベースのリリース
+description: EAS Workflows で Git タグから本番デプロイをトリガーする方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BranchVsTagTrigger } from '~/ui/components/FlowDiagram/Diagrams/BranchVsTagTrigger';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+リリースブランチへプッシュする方式では、リリースのつもりがなかったコミットも含め、コミットのたびに本番ワークフローが実行されてしまいます。
+
+## この章で学べること
+
+- 本番ワークフローのトリガーを `release/*` ブランチから `v*.*.*` に一致する Git タグへ切り替える
+- `main` からタグをプッシュしてリリースを切り、EAS ダッシュボードでワークフローの実行を確認する
+- `v1.0.0-rc.1` のようなプレリリースタグを本番から除外し、リリース候補は別のワークフローで実行する
+
+## リリースイベントとしてのタグ
+
+EAS Workflows は、[`on.push`](/eas/workflows/syntax/#onpush) に `tags` のリストを指定することで、タグベースのトリガーに対応しています。ワークフローは、glob パターンに一致するタグがリモートへプッシュされたときにだけ実行されます。Git のタグは、あとから更新できるブランチとは違い、特定のコミットとバージョンに紐づいた一度きりのイベントです。そのため、タグはリリースの目印として適しています。
+
+タグベースのリリースワークフローは、次のようなチームに向いています。
+
+- Git 上のバージョン番号と、アプリのユーザーに届けるバージョンを一致させたい
+- 長期間維持するリリースブランチを持たず、`main` から直接リリースしたい
+- すべてのリリースコミットをバージョンごとに追跡できる、明確な記録を残したい
+
+<BranchVsTagTrigger />
+
+## production.yml をタグトリガーに切り替える
+
+[前の章](/ja/tutorial/cicd/production/)の **.eas/workflows/production.yml** ワークフローを開き、`on.push.branches` トリガーを `on.push.tags` に置き換えます。ワークフローの中身はそれ以外まったく同じです。
+
+<Step label="1">
+
+### トリガーを変更する
+
+`branches` トリガーを `tags` トリガーに置き換えます。この `tags` の glob は、`v1.0.0`、`v2.3.7`、`v10.0.0-beta.1` といったタグに一致します。
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+# @info #
+on:
+  push:
+    tags: ['v*.*.*']
+# @end #
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: production
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: production
+  update_android:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  update_ios:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
+```
+
+タグでワークフローをトリガーするには、チームの進め方に合ったパターンを選ぶ必要があります。よく使われるパターンは次のとおりです。
+
+- `['v*']` は `v` で始まるすべてのタグに一致します
+- `['v*.*.*']` は 3 つの数値からなる厳密なセマンティックバージョンに一致します（推奨）
+
+他のジョブを変更する必要はありません。`fingerprint`、`get-build`、`build`、`update` の各ジョブはコミットを対象に動作するため、まったく同じように機能します。
+
+</Step>
+
+<Step label="2">
+
+### ワークフローの変更をコミットしてプッシュする
+
+**production.yml** の変更をコミットして `main` にプッシュします。ブランチトリガーからタグトリガーに切り替えたため、これではワークフローはトリガーされません。
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/production.yml',
+    '',
+    '$ git commit -m "Switch production workflow to tag trigger"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/production.yml && git commit -m 'Switch production workflow to tag trigger' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### タグを作成してワークフローをテストする
+
+ワークフローを実行するには、**production.yml** に定義した glob パターンに一致するタグをプッシュする必要があります。
+
+サンプルプロジェクトに TypeScript/JavaScript の変更を加えてコミットし、新しいタグをプッシュします。
+
+<Terminal
+  cmd={[
+    '$ git add .',
+    '',
+    '$ git commit -m "Fix welcome copy"',
+    '',
+    '$ git tag v0.1.0',
+    '',
+    '$ git push origin main --tags',
+  ]}
+  cmdCopy="git add . && git commit -m 'Fix welcome copy' && git tag v0.1.0 && git push origin main --tags"
+/>
+
+`v0.1.0` タグによってワークフローがトリガーされます。EAS ダッシュボードを開いて **Workflows** の下を見ると、"Deploy to production" がブランチとして `refs/tags/v0.1.0` を伴って実行されているのが分かります。
+
+<ContentSpotlight
+  alt="タグによってトリガーされた本番ワークフローの実行で、fingerprint、get-build、そして Android と iOS の update ジョブを表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-production-run.webp"
+  className="max-w-160"
+/>
+
+タグベースのリリースとして生成されたフィンガープリントでの本番実行はこれが初めてなので、Android と iOS の両方で `build` ジョブが実行されます。以降のタグが TypeScript/JavaScript の変更を指している場合は、ビルドジョブがスキップされて `update` ジョブに直行します。
+
+<ContentSpotlight
+  alt="v0.1.0 タグのリリースに対する Android と iOS の本番ビルドジョブを並列に表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-build-android-ios.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## リリース候補向けのプレリリースタグ
+
+`v*.*.*` の glob は `v1.0.0-rc.1` のようなプレリリースタグにも一致するため、そのままではリリース候補がアプリのユーザーに届いてしまいます。リリース候補を本番から締め出すには、本番ワークフローのトリガーからそれらを除外します。
+
+```yaml .eas/workflows/production.yml
+on:
+  push:
+    tags: ['v*.*.*', '!v*.*.*-rc.*']
+```
+
+本番リリースの前にリリース候補を試すには、プレリリースタグだけに一致する別のワークフロー（`tags: ['v*.*.*-rc.*']`）を作成し、`update` と `submit` のジョブを除いた `fingerprint`、`get-build`、`build` のジョブを再利用します。これで同じパイプラインが動きつつ、アプリのユーザーには何も届きません。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/tag-based-releases"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 6 章：タグベースのリリース"
+  summary="本番ワークフローのトリガーをリリースブランチから Git タグへ切り替え、main からバージョンタグをプッシュして変更をテストし、プレリリースタグの glob でリリース候補を締め出す方法を学びました。"
+  nextChapterDescription="次の章では、ワークフローから EAS Hosting へ web ビルドをデプロイする方法を学びます。"
+  nextChapterTitle="web デプロイ"
+  nextChapterLink="/ja/tutorial/cicd/web-deployments"
+/>

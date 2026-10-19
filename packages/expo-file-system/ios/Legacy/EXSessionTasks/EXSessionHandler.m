@@ -31,7 +31,7 @@ EX_REGISTER_SINGLETON_MODULE(SessionHandler);
  
   void (^completionHandler)(void) = _completionHandlers[identifier];
   if (completionHandler) {
-    // We need to run completionHandler explicite on the main thread because is's part of UIKit
+    // We need to run completionHandler explicitly on the main thread because it's part of UIKit
     dispatch_async(dispatch_get_main_queue(), ^{
       completionHandler();
     });

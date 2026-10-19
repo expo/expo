@@ -1,4 +1,4 @@
-import { parseUrlUsingCustomBase } from '../url';
+import { parseUrlUsingCustomBase, safeDecodeURIComponent } from '../url';
 
 describe(parseUrlUsingCustomBase, () => {
   it('should parse relative path', () => {
@@ -44,5 +44,17 @@ describe(parseUrlUsingCustomBase, () => {
   it('should handle special characters in query parameters', () => {
     const url = parseUrlUsingCustomBase('/path?param=value%20with%20spaces');
     expect(url.searchParams.get('param')).toBe('value with spaces');
+  });
+});
+
+describe(safeDecodeURIComponent, () => {
+  it(`decodes a well-formed URI component`, () => {
+    expect(safeDecodeURIComponent('%20%2B%2F')).toEqual(' +/');
+  });
+  it(`returns the original string when the URI component is malformed`, () => {
+    expect(safeDecodeURIComponent('%GG')).toEqual('%GG');
+  });
+  it(`does not throw on malformed percent-encoding`, () => {
+    expect(() => safeDecodeURIComponent('%GG')).not.toThrow();
   });
 });

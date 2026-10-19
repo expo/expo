@@ -4,8 +4,8 @@ import type { Metadata } from 'expo-router/server';
 import { Suspense } from 'react';
 
 import { Loading } from '../components/Loading';
-import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Table, TableRow } from '../components/Table';
 
 // Tests metadata when using streaming SSR
 export function generateMetadata() {

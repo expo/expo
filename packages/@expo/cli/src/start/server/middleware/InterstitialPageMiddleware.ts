@@ -19,10 +19,6 @@ type ProjectVersion = {
   version: string | null;
 };
 
-const debug = require('debug')(
-  'expo:start:server:middleware:interstitialPage'
-) as typeof console.log;
-
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -108,9 +104,6 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
 
     const { appName, projectVersion } = await this._getProjectOptionsAsync(platform);
-    debug(
-      `Create loading page. (platform: ${platform}, appName: ${appName}, projectVersion: ${projectVersion.version}, type: ${projectVersion.type})`
-    );
     const content = await this._getPageAsync({ appName, projectVersion });
     res.end(content);
   }

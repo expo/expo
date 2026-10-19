@@ -1,6 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
-import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
@@ -39,23 +38,23 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
     return (
       <Tooltip.Root open={tooltipVisible}>
         <Tooltip.Trigger asChild>
-          <Link
+          <a
             ref={ref}
             onMouseOver={isCode ? onMouseOver : undefined}
             onMouseOut={isCode ? onMouseOut : undefined}
             href={'#' + slug}
             onClick={onClick}
             className={mergeClasses(
-              'mb-1.5 flex items-center justify-between truncate text-pretty!',
+              'mb-1 flex min-h-6 items-center justify-between truncate text-pretty!',
               convertToIndentClass(level - BASE_HEADING_LEVEL),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
               className={mergeClasses(
-                'w-full text-secondary! hocus:text-link!',
+                'w-full text-default! hocus:text-link!',
                 isCodeOrFilePath && 'truncate text-xs!',
                 isActive && 'text-link!',
-                isDeprecated && 'line-through opacity-80'
+                isDeprecated && 'line-through opacity-70'
               )}>
               {displayTitle}
               {hasOverloads && (
@@ -69,7 +68,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
               )}
               {isDeprecated && <span className="sr-only">Deprecated section</span>}
             </TitleElement>
-          </Link>
+          </a>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"

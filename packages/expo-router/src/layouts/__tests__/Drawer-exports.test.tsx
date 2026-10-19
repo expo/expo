@@ -6,11 +6,11 @@ import * as DrawerEntry from '../Drawer';
 // custom `drawerContent` without depending on `@react-navigation/drawer` directly.
 // See https://github.com/expo/expo/issues/46161
 describe('expo-router/drawer re-exports', () => {
-  // `createDrawerNavigator` (apps use the `Drawer` layout) and the raw contexts
+  // `createStandardDrawerNavigator` (apps use the `Drawer` layout) and the raw contexts
   // (`DrawerStatusContext`/`DrawerProgressContext`, superseded by the `useDrawerStatus`/
   // `useDrawerProgress` hooks) are intentionally not re-exported.
   const INTENTIONALLY_OMITTED = [
-    'createDrawerNavigator',
+    'createStandardDrawerNavigator',
     'DrawerStatusContext',
     'DrawerProgressContext',
   ];
@@ -23,7 +23,7 @@ describe('expo-router/drawer re-exports', () => {
     expect(missing).toEqual([]);
   });
 
-  it('does not export createDrawerNavigator or the raw contexts', () => {
+  it('does not export createStandardDrawerNavigator or the raw contexts', () => {
     for (const key of INTENTIONALLY_OMITTED) {
       expect(key in DrawerEntry).toBe(false);
     }

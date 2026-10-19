@@ -1,32 +1,31 @@
 import chalk from 'chalk';
 import connect from 'connect';
 import { createRequestHandler } from 'expo-server/adapter/http';
-import http from 'http';
-import path from 'path';
+import fs from 'node:fs/promises';
+import http from 'node:http';
+import path from 'node:path';
 import send from 'send';
 
 import * as Log from '../log';
 import { directoryExistsAsync, fileExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
-import { resolvePortAsync } from '../utils/port';
+import { loadEnvFiles } from '../utils/nodeEnv';
+import { resolveMetroPortAsync } from '../utils/port';
+import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
 type Options = {
   port?: number;
   isDefaultDirectory: boolean;
 };
 
-const debug = require('debug')('expo:serve') as typeof console.log;
-
 // Start a basic http server
 export async function serveAsync(inputDir: string, options: Options) {
   const projectRoot = findUpProjectRootOrAssert(inputDir);
 
-  setNodeEnv('production');
-  loadEnvFiles(projectRoot);
+  loadEnvFiles(projectRoot, { mode: 'production' });
 
-  const port = await resolvePortAsync(projectRoot, {
+  const port = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
     fallbackPort: 8081,
   });
@@ -47,6 +46,12 @@ export async function serveAsync(inputDir: string, options: Options) {
 
   const isStatic = await isStaticExportAsync(serverDist);
 
+  if (!isStatic && (await isDevelopmentExportAsync(serverDist))) {
+    throw new CommandError(
+      'This export was built for development with `expo export --dev`, but `expo serve` only runs production exports. Export your app again without `--dev`.'
+    );
+  }
+
   Log.log(chalk.dim(`Starting ${isStatic ? 'static ' : ''}server in ${serverDist}`));
 
   if (isStatic) {
@@ -59,6 +64,8 @@ export async function serveAsync(inputDir: string, options: Options) {
 }
 
 async function startStaticServerAsync(dist: string, options: Options) {
+  const staticManifest = await loadStaticManifestAsync(dist);
+
   const server = http.createServer((req, res) => {
     // Remove query strings and decode URI
     const filePath = decodeURI(req.url?.split('?')[0] ?? '');
@@ -68,6 +75,18 @@ async function startStaticServerAsync(dist: string, options: Options) {
       index: 'index.html',
       extensions: ['html'],
     })
+      .on('headers', (res: http.ServerResponse, resolvedPath: string) => {
+        // If `headers` and `pageHeaders` don't exist in the manifest, do nothing
+        if (!staticManifest?.headers && !staticManifest?.pageHeaders?.length) {
+          return;
+        }
+        // Headers only apply to page responses and loader data files, never to other static assets.
+        if (!resolvedPath.endsWith('.html') && !filePath.startsWith('/_expo/loaders/')) {
+          return;
+        }
+
+        applyStaticHeaders(res, resolveStaticHeaders(staticManifest, filePath));
+      })
       .on('error', (err: any) => {
         if (err.status === 404) {
           res.statusCode = 404;
@@ -123,8 +142,6 @@ async function startDynamicServerAsync(dist: string, options: Options) {
       return next();
     }
 
-    debug(`Maybe serve static:`, pathname);
-
     const stream = send(req, pathname, {
       root: staticDirectory,
       extensions: ['html'],
@@ -164,6 +181,13 @@ function canParseURL(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+async function isDevelopmentExportAsync(dist: string): Promise<boolean> {
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(dist, 'server/_expo/routes.json'), 'utf8')
+  );
+  return manifest.mode === 'development';
 }
 
 async function isStaticExportAsync(dist: string): Promise<boolean> {

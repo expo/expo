@@ -72,7 +72,7 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
   private fun maybeThrowIfExpoGo(permissions: List<GranularPermission>) {
     if (isExpoGo) {
       if (permissions.contains(GranularPermission.PHOTO) || permissions.contains(GranularPermission.VIDEO)) {
-        throw PermissionException("Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
+        throw PermissionException("Due to changes in Android's permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
       }
     }
   }

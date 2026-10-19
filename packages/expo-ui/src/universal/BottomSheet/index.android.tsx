@@ -7,7 +7,9 @@ import {
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useEffect, useRef, useState } from 'react';
 
+import { useIsInsideNativeTree } from '../../NativeTreeContext';
 import type { BottomSheetProps, SnapPoint } from './types';
+import { resolveContentPadding } from './utils';
 
 // M3 `ModalBottomSheet` only has partial/expanded states.
 // Only allow the partial state when the consumer requested a partial-friendly snap point.
@@ -38,7 +40,14 @@ export function BottomSheet({
   snapPoints,
   testID,
   modifiers,
+  shouldDismissOnBackPress = true,
+  shouldDismissOnClickOutside = true,
+  scrimColor,
+  contentPadding,
+  containerColor,
+  contentColor,
 }: BottomSheetProps) {
+  const isInsideHost = useIsInsideNativeTree();
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
 
@@ -60,21 +69,41 @@ export function BottomSheet({
     return null;
   }
 
-  const contentModifiers: ModifierConfig[] = [padding(16, showDragIndicator ? 0 : 16, 16, 0)];
+  // When the drag handle is hidden, the default inset adds top padding so content doesn't crop
+  // against the top edge of the sheet.
+  const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
+    top: showDragIndicator ? 0 : 16,
+    bottom: 0,
+    left: 16,
+    right: 16,
+  });
+  const contentModifiers: ModifierConfig[] = [padding(left, top, right, bottom)];
   if (shouldFillMaxHeight(snapPoints)) contentModifiers.push(fillMaxHeight());
   if (testID) contentModifiers.push(testIDModifier(testID));
 
+  const sheet = (
+    <ModalBottomSheet
+      ref={sheetRef}
+      onDismissRequest={onDismiss}
+      showDragHandle={showDragIndicator}
+      skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
+      properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
+      scrimColor={scrimColor}
+      containerColor={containerColor}
+      contentColor={contentColor}
+      modifiers={modifiers}>
+      <Column modifiers={contentModifiers}>{children}</Column>
+    </ModalBottomSheet>
+  );
+
+  // Already inside a `Host`, for example nested in another sheet's content: a `Host` of its own
+  // would be a `Host` directly inside Compose.
+  if (isInsideHost) {
+    return sheet;
+  }
   return (
     <Host style={{ position: 'absolute' }} pointerEvents="none">
-      <ModalBottomSheet
-        ref={sheetRef}
-        onDismissRequest={onDismiss}
-        showDragHandle={showDragIndicator}
-        skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
-        modifiers={modifiers}>
-        {/* When the drag handle is hidden, add top padding so content doesn't crop against the top edge of the sheet. */}
-        <Column modifiers={contentModifiers}>{children}</Column>
-      </ModalBottomSheet>
+      {sheet}
     </Host>
   );
 }

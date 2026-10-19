@@ -1,23 +1,37 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import type { RoutingIntent } from '../../../global-state/routingQueue';
+import { RoutingQueueApiContext } from '../../../global-state/routingQueueContext';
+import {
+  CommonActions,
+  type NavigationState,
+  type ParamListBase,
+  StackRouter,
+} from '../../routers';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useEventEmitter } from '../useEventEmitter';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useNavigationCache } from '../useNavigationCache';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('preserves reference for navigation objects', () => {
-  expect.assertions(2);
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
-  const state = {
+test('preserves reference for navigation objects', async () => {
+  expect.assertions(4);
+
+  const state: NavigationState = {
     type: 'tab',
     stale: false as const,
+    routeKeySeq: 0,
     index: 1,
     key: 'State',
     routeNames: ['Foo', 'Bar'],
@@ -27,7 +41,6 @@ test('preserves reference for navigation objects', () => {
     ],
   };
 
-  const getState = () => state;
   const navigation = {} as any;
   const setOptions = (() => {}) as any;
   const router = MockRouter({});
@@ -36,18 +49,22 @@ test('preserves reference for navigation objects', () => {
     const previous = React.useRef<any>(undefined);
 
     const emitter = useEventEmitter();
-    const { navigations } = useNavigationCache({
-      state,
-      getState,
+    const getNavigation = useNavigationCache({
+      routes: state.routes,
+      routeNames: state.routeNames,
       navigation,
       setOptions,
       router,
       emitter,
     });
 
-    if (previous.current) {
-      Object.keys(navigations).forEach((key) => {
-        expect(navigations[key]).toBe(previous.current[key]);
+    const navigations = state.routes.flatMap((route) => [
+      getNavigation(route, false),
+      getNavigation(route, true),
+    ]);
+    if (previous.current !== undefined) {
+      navigations.forEach((navigation, index) => {
+        expect(navigation).toBe(previous.current[index]);
       });
     }
 
@@ -58,12 +75,51 @@ test('preserves reference for navigation objects', () => {
     return null;
   };
 
-  const root = render(<Test />);
+  const root = await render(<Test />);
 
-  root.update(<Test />);
+  await root.rerender(<Test />);
 });
 
-test('returns correct value for isFocused', () => {
+test('preserves placeholder navigation after the route is created', async () => {
+  let routeNames = ['Foo', 'Bar'];
+  let routes = [{ key: 'Foo-key', name: 'Foo' }];
+  const navigation = {
+    getId: () => 'State',
+    getParent: jest.fn(),
+  } as any;
+  const setOptions = (() => {}) as any;
+  const router = MockRouter({});
+  let getNavigation: ReturnType<typeof useNavigationCache>;
+
+  const Test = () => {
+    const emitter = useEventEmitter();
+    getNavigation = useNavigationCache({
+      routes,
+      routeNames,
+      navigation,
+      setOptions,
+      router,
+      emitter,
+    });
+    return null;
+  };
+
+  const root = await render(<Test />);
+  const placeholderNavigation = getNavigation!({ key: 'Bar', name: 'Bar' }, false);
+
+  routes = [...routes, { key: 'Bar-key', name: 'Bar' }];
+  await root.rerender(<Test />);
+
+  expect(getNavigation!({ key: 'Bar', name: 'Bar' }, false)).toBe(placeholderNavigation);
+
+  routeNames = ['Foo'];
+  routes = routes.filter((route) => route.name !== 'Bar');
+  await root.rerender(<Test />);
+
+  expect(placeholderNavigation.getParent('State')).toBe(placeholderNavigation);
+});
+
+test('returns correct value for isFocused', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -82,8 +138,12 @@ test('returns correct value for isFocused', () => {
     return null;
   };
 
-  render(
-    <BaseNavigationContainer>
+  await render(
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -94,27 +154,32 @@ test('returns correct value for isFocused', () => {
 
   expect(navigation.isFocused()).toBe(false);
 
-  act(() => navigation.navigate('second'));
+  await act(() => navigation.navigate('second'));
 
   expect(navigation.isFocused()).toBe(true);
 
-  act(() => navigation.navigate('third'));
+  await act(() => navigation.navigate('third'));
 
   expect(navigation.isFocused()).toBe(false);
 
-  act(() => navigation.navigate('second'));
+  await act(() => navigation.navigate('second'));
 
   expect(navigation.isFocused()).toBe(true);
 });
 
-test('returns correct value for isFocused after changing screens', () => {
+test('returns correct value for isFocused after changing screens', async () => {
   const TestRouter = (options: Parameters<typeof MockRouter>[0]): ReturnType<typeof MockRouter> => {
     const router = MockRouter(options);
 
     return {
       ...router,
 
-      getStateForRouteNamesChange(state, { routeNames }) {
+      getStateForAction(state, action, options) {
+        if (action.type !== 'ROUTE_NAMES_CHANGED') {
+          return router.getStateForAction(state, action, options);
+        }
+
+        const { routeNames } = action.payload;
         const routes = routeNames.map(
           (name) =>
             state.routes.find((r) => r.name === name) || {
@@ -124,10 +189,13 @@ test('returns correct value for isFocused after changing screens', () => {
         );
 
         return {
-          ...state,
-          routeNames,
-          routes,
-          index: routes.length - 1,
+          state: {
+            ...state,
+            routeNames,
+            routes,
+            index: routes.length - 1,
+          },
+          affectedRouteKey: routes[routes.length - 1]?.key,
         };
       },
     };
@@ -151,8 +219,12 @@ test('returns correct value for isFocused after changing screens', () => {
     return null;
   };
 
-  const root = render(
-    <BaseNavigationContainer>
+  const root = await render(
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -163,7 +235,7 @@ test('returns correct value for isFocused after changing screens', () => {
 
   expect(navigation.isFocused()).toBe(false);
 
-  root.update(
+  await root.rerender(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
@@ -175,7 +247,7 @@ test('returns correct value for isFocused after changing screens', () => {
 
   expect(navigation.isFocused()).toBe(true);
 
-  root.update(
+  await root.rerender(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
@@ -188,7 +260,7 @@ test('returns correct value for isFocused after changing screens', () => {
 
   expect(navigation.isFocused()).toBe(true);
 
-  root.update(
+  await root.rerender(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
@@ -200,4 +272,87 @@ test('returns correct value for isFocused after changing screens', () => {
   );
 
   expect(navigation.isFocused()).toBe(false);
+});
+
+test('uses a no-op navigation object for a preloaded stack screen', async () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  let navigation: any;
+  const TestScreen = (props: any) => {
+    navigation = props.navigation;
+    return null;
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const enqueue = jest.fn<void, [RoutingIntent]>();
+
+  function CaptureEnqueue({ children }: React.PropsWithChildren) {
+    const parentApi = React.use(RoutingQueueApiContext)!;
+    const api = React.useMemo(
+      () => ({
+        ...parentApi,
+        enqueue: (intent: RoutingIntent) => {
+          enqueue(intent);
+          parentApi.enqueue(intent);
+        },
+      }),
+      [parentApi]
+    );
+
+    return (
+      <RoutingQueueApiContext.Provider value={api}>{children}</RoutingQueueApiContext.Provider>
+    );
+  }
+
+  await render(
+    <BaseNavigationContainer ref={ref}>
+      <CaptureEnqueue>
+        <TestNavigator>
+          <Screen name="first">{() => null}</Screen>
+          <Screen name="second" component={TestScreen} />
+        </TestNavigator>
+      </CaptureEnqueue>
+    </BaseNavigationContainer>
+  );
+
+  await act(() => ref.current?.dispatch(CommonActions.preload('second')));
+  const preloadedNavigation = navigation;
+  const preloadedState = ref.current?.getRootState();
+  enqueue.mockClear();
+
+  await act(() => preloadedNavigation.goBack());
+
+  expect(warn).toHaveBeenCalledWith(
+    "Ignored a navigation action dispatched from the preloaded screen 'second'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching."
+  );
+  expect(enqueue).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState()).toEqual(preloadedState);
+
+  await act(() => ref.current?.navigate('second'));
+
+  expect(navigation).not.toBe(preloadedNavigation);
+  const activeNavigation = navigation;
+  enqueue.mockClear();
+
+  await act(() => activeNavigation.dispatch(CommonActions.goBack()));
+
+  expect(enqueue).toHaveBeenCalledTimes(1);
+  expect(enqueue).toHaveBeenCalledWith({
+    type: 'ACTION',
+    payload: {
+      action: expect.objectContaining({
+        source: expect.any(String),
+        type: 'GO_BACK',
+      }),
+      originKey: expect.any(String),
+    },
+  });
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
 });

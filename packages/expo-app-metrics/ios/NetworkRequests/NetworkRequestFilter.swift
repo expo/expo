@@ -9,19 +9,16 @@ import Foundation
 /// Only attributes knowable the moment a request starts are supported (host and method), so the
 /// same predicate yields the same answer at start and at completion. That keeps the
 /// `requestStarted`/`requestCompleted` pair consistent: a request that matches always emits both, a
-/// request that doesn't matches neither.
+/// request that doesn't match emits neither.
 ///
 /// Different fields combine with AND; entries within a field combine with OR. A field that is left
 /// unset places no constraint on its dimension, while a field set to an empty array allows nothing
 /// through it (an empty allow-list matches no value), so any empty field drops every request. A
 /// filter with no fields set matches every request, matching the no-filter default.
-public struct NetworkRequestFilter: Record, Sendable {
-  public init() {}
-
-  @Field
+@Record
+public struct NetworkRequestFilter: Sendable {
   public var hosts: [String]?
 
-  @Field
   public var methods: [String]?
 
   /// Returns whether a request with the given URL and method passes this filter. Host and method

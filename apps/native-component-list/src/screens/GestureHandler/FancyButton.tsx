@@ -1,89 +1,59 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import {
-  LongPressGestureHandler,
-  State,
-  TapGestureHandler,
-  LongPressGestureHandlerStateChangeEvent,
-  TapGestureHandlerStateChangeEvent,
+  GestureDetector,
+  useExclusiveGestures,
+  useLongPressGesture,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 
-interface FBState {
-  singleTap?: State;
-  longPress?: State;
-}
+export default function FancyButton({
+  style,
+  onLongPress,
+  onSingleTap,
+  onDoubleTap,
+  children,
+}: {
+  style?: StyleProp<ViewStyle>;
+  onLongPress?: () => void;
+  onSingleTap?: () => void;
+  onDoubleTap?: () => void;
+  children?: React.ReactNode;
+}) {
+  // Intentionally leave out double tap
+  const [longPressed, setLongPressed] = useState(false);
+  const [singleTapped, setSingleTapped] = useState(false);
 
-export default class FancyButton extends Component<
-  {
-    style?: StyleProp<ViewStyle>;
-    onLongPress?: () => void;
-    onSingleTap?: () => void;
-    onDoubleTap?: () => void;
-    children?: React.ReactNode;
-  },
-  FBState
-> {
-  doubleTapRef = React.createRef<TapGestureHandler>();
+  const longPress = useLongPressGesture({
+    runOnJS: true,
+    minDuration: 800,
+    onBegin: () => setLongPressed(true),
+    onActivate: () => onLongPress?.(),
+    onFinalize: () => setLongPressed(false),
+  });
 
-  readonly state: FBState = {};
+  const doubleTap = useTapGesture({
+    runOnJS: true,
+    numberOfTaps: 2,
+    onActivate: () => onDoubleTap?.(),
+  });
 
-  render() {
-    return (
-      <LongPressGestureHandler minDurationMs={800} onHandlerStateChange={this._onLongPressEvent}>
-        <TapGestureHandler
-          numberOfTaps={1}
-          waitFor={this.doubleTapRef}
-          onHandlerStateChange={this._onSingleTapEvent}>
-          <TapGestureHandler
-            numberOfTaps={2}
-            ref={this.doubleTapRef}
-            onHandlerStateChange={this._onDoubleTapEvent}>
-            <View
-              style={[styles.button, this.props.style, { opacity: this._isPressed() ? 0.5 : 1 }]}>
-              {this.props.children}
-            </View>
-          </TapGestureHandler>
-        </TapGestureHandler>
-      </LongPressGestureHandler>
-    );
-  }
+  const singleTap = useTapGesture({
+    runOnJS: true,
+    onBegin: () => setSingleTapped(true),
+    onActivate: () => onSingleTap?.(),
+    onFinalize: () => setSingleTapped(false),
+  });
 
-  _isPressed = () => {
-    const { longPress, singleTap } = this.state;
+  const gesture = useExclusiveGestures(longPress, doubleTap, singleTap);
 
-    // Intentionally leave out double tap
-    if (longPress === State.BEGAN || singleTap === State.BEGAN) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  _onLongPressEvent = (event: LongPressGestureHandlerStateChangeEvent) => {
-    const { state } = event.nativeEvent;
-    this.setState({ longPress: state });
-
-    if (state === State.ACTIVE) {
-      this.props.onLongPress && this.props.onLongPress();
-    }
-  };
-
-  _onSingleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
-    const { state } = event.nativeEvent;
-    this.setState({ singleTap: state });
-
-    if (state === State.ACTIVE) {
-      this.props.onSingleTap && this.props.onSingleTap();
-    }
-  };
-
-  _onDoubleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
-    const { state } = event.nativeEvent;
-
-    if (state === State.ACTIVE) {
-      this.props.onDoubleTap && this.props.onDoubleTap();
-    }
-  };
+  return (
+    <GestureDetector gesture={gesture}>
+      <View style={[styles.button, style, { opacity: longPressed || singleTapped ? 0.5 : 1 }]}>
+        {children}
+      </View>
+    </GestureDetector>
+  );
 }
 
 const styles = StyleSheet.create({

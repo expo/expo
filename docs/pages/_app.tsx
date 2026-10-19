@@ -15,16 +15,18 @@ import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper'
 import { websiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
+import { CometlyPixel } from '~/providers/CometlyPixel';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
+import { ApiDataProvider } from '~/providers/api-data';
 import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
 import { markdownComponents } from '~/ui/components/Markdown';
 import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
-import '~/common/suppress-trailing-slash-warning';
-import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
+
+import '~/styles/global.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -95,11 +97,14 @@ export default function App({ Component, pageProps }: AppProps) {
         <MotionConfig reducedMotion="user">
           <ThemeProvider>
             <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
+              <CometlyPixel />
               <TutorialChapterCompletionProvider>
                 <CodeBlockSettingsProvider>
                   <MDXProvider components={rootMarkdownComponents}>
                     <Tooltip.Provider>
-                      <Component {...pageProps} />
+                      <ApiDataProvider data={pageProps.apiSectionData}>
+                        <Component {...pageProps} />
+                      </ApiDataProvider>
                       <CodeSelectionCopy />
                     </Tooltip.Provider>
                   </MDXProvider>

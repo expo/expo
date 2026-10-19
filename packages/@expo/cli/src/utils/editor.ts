@@ -5,8 +5,7 @@ import process from 'node:process';
 
 import * as Log from '../log';
 import { env } from './env';
-
-const debug = require('debug')('expo:utils:editor') as typeof console.log;
+import { event } from './events';
 
 interface Editor {
   id: string;
@@ -63,21 +62,21 @@ export function guessEditor(): Editor | null {
   if (env.EXPO_EDITOR) {
     editor = getEditor(env.EXPO_EDITOR);
     if (editor) {
-      debug('Using $EXPO_EDITOR:', editor.name);
+      event('editor_found', { source: '$EXPO_EDITOR', name: editor.name });
     }
   }
 
   if (!editor && process.env.VISUAL) {
     editor = getEditor(process.env.VISUAL);
     if (editor) {
-      debug('Using $VISUAL:', editor.name);
+      event('editor_found', { source: '$VISUAL', name: editor.name });
     }
   }
 
   if (!editor && process.env.EDITOR) {
     editor = getEditor(process.env.EDITOR);
     if (editor) {
-      debug('Using $EDITOR:', editor.name);
+      event('editor_found', { source: '$EDITOR', name: editor.name });
     }
   }
 
@@ -89,7 +88,7 @@ export async function guessFallbackVisualEditor(): Promise<Editor | null> {
   for (const editor of VISUAL_EDITORS) {
     const target = await editorExistsAtPaths(editor);
     if (target) {
-      debug('Found visual editor fallback:', editor.name);
+      event('editor_found', { source: 'paths', name: editor.name });
       return { ...editor, binary: target };
     }
   }
@@ -97,7 +96,7 @@ export async function guessFallbackVisualEditor(): Promise<Editor | null> {
   for (const editor of VISUAL_EDITORS) {
     const target = await editorExistsInPath(editor);
     if (target) {
-      debug('Found visual editor fallback in $PATH:', editor.name);
+      event('editor_found', { source: '$PATH', name: editor.name });
       return { ...editor, binary: target };
     }
   }
@@ -141,9 +140,7 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
 
   if (editor && !editor.isTerminalEditor) {
     const fileReference = lineNumber ? `${path}:${lineNumber}` : path;
-    debug(
-      `Opening ${fileReference} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`
-    );
+    event('editor_opened', { file: fileReference, editor: editor.name });
 
     if (editor) {
       try {
@@ -156,10 +153,11 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
         if (error?.signal === 'SIGTERM') {
           return true;
         }
-        debug(
-          `Failed to open ${fileReference} in editor (path: ${path}, binary: ${editor.binary}):`,
-          error
-        );
+        event('editor_open_failed', {
+          file: fileReference,
+          binary: editor.binary,
+          error: event.error(error as Error),
+        });
       }
     }
   }

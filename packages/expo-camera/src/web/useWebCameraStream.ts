@@ -104,9 +104,8 @@ export function useWebCameraStream(
     }
 
     setStream(nextStream);
-    onCameraReady?.();
     return false;
-  }, [getStreamDeviceAsync, setStream, onCameraReady, stream, activeStreams.current]);
+  }, [getStreamDeviceAsync, setStream, stream, activeStreams.current]);
 
   React.useEffect(() => {
     // Restart the camera and guard concurrent actions.
@@ -159,12 +158,40 @@ export function useWebCameraStream(
     settings.zoom,
   ]);
 
+  const onCameraReadyRef = React.useRef(onCameraReady);
+  onCameraReadyRef.current = onCameraReady;
+
   React.useEffect(() => {
     // set or unset the video source.
-    if (!video.current) {
+    const element = video.current;
+    if (!element) {
       return;
     }
-    Utils.setVideoSource(video.current, stream);
+    Utils.setVideoSource(element, stream);
+    if (!stream) {
+      return;
+    }
+
+    // Only report the camera as ready once the video has a frame to capture,
+    // otherwise `takePictureAsync` would throw `ERR_CAMERA_NOT_READY`.
+    const readyEvents = ['loadeddata', 'canplay', 'canplaythrough', 'playing'] as const;
+    const onVideoReady = () => {
+      if (!Utils.isVideoReadyForCapture(element)) {
+        return;
+      }
+      removeListeners();
+      onCameraReadyRef.current?.();
+    };
+    const removeListeners = () => {
+      for (const event of readyEvents) {
+        element.removeEventListener(event, onVideoReady);
+      }
+    };
+    for (const event of readyEvents) {
+      element.addEventListener(event, onVideoReady);
+    }
+    onVideoReady();
+    return removeListeners;
   }, [video.current, stream]);
 
   React.useEffect(() => {

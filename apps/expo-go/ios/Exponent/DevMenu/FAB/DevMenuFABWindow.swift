@@ -2,6 +2,7 @@
 
 import UIKit
 import SwiftUI
+import ExpoModulesCore
 
 /// A passthrough window that hosts the floating action button.
 class DevMenuFABWindow: UIWindow {
@@ -38,6 +39,9 @@ class DevMenuFABWindow: UIWindow {
       onOpenMenu: { [weak self] in
         self?.manager?.openMenu()
       },
+      onOpenSourceExplorer: { [weak self] in
+        self?.manager?.openSourceExplorer()
+      },
       onFrameChange: { [weak self] frame in
         self?.fabFrame = frame
       }
@@ -50,8 +54,8 @@ class DevMenuFABWindow: UIWindow {
   }
 
   private var edgeTranslation: CGAffineTransform {
-    let screenWidth = windowScene?.screen.bounds.width ?? UIScreen.main.bounds.width
-    let isOnRight = fabFrame == .zero || fabFrame.midX > (screenWidth / 2)
+    let availableWidth = SceneGeometry.bounds(for: self).width
+    let isOnRight = fabFrame == .zero || fabFrame.midX > (availableWidth / 2)
     let dx: CGFloat = isOnRight ? 60 : -60
     return CGAffineTransform(translationX: dx, y: 0)
   }

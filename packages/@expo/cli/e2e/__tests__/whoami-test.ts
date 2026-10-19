@@ -2,8 +2,8 @@
 import fs from 'fs/promises';
 import os from 'os';
 
-import { getLoadedModulesAsync, projectRoot } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { getLoadedModulesAsync, projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {

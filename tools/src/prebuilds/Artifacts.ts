@@ -291,20 +291,19 @@ export const Artifacts = {
 
     postExtract: async (tarballPath: string, outputPath: string) => {
       // ReactNativeDependencies has a nested structure that needs special handling
-      const tmpPath = path.join(os.tmpdir(), 'react-native-dependencies');
-      fs.mkdirSync(tmpPath, { recursive: true });
+      const tmpPath = await fs.mkdtemp(path.join(os.tmpdir(), 'react-native-dependencies-'));
+      try {
+        // Extract to a unique temp directory so concurrent package tasks never share writes.
+        await spawnAsync('tar', ['-xzf', tarballPath, '-C', tmpPath]);
 
-      // Extract to temp directory first
-      await spawnAsync('tar', ['-xzf', tarballPath, '-C', tmpPath]);
+        // The xcframework is nested in the tarball
+        const xcframeworkSource = path.join(tmpPath, ...RN_DEPENDENCIES_XCFRAMEWORK_RELATIVE_PATH);
 
-      // The xcframework is nested in the tarball
-      const xcframeworkSource = path.join(tmpPath, ...RN_DEPENDENCIES_XCFRAMEWORK_RELATIVE_PATH);
-
-      // Copy the xcframework to the output path
-      await spawnAsync('cp', ['-R', xcframeworkSource, outputPath]);
-
-      // Clean up temp directory
-      fs.rmSync(tmpPath, { recursive: true, force: true });
+        // Copy the xcframework to the output path
+        await spawnAsync('cp', ['-R', xcframeworkSource, outputPath]);
+      } finally {
+        await fs.remove(tmpPath);
+      }
     },
   } as ArtifactConfig,
 
@@ -342,7 +341,7 @@ async function getNightlyVersionFromNPMAsync(packageName: string): Promise<strin
     );
   }
 
-  const json = await npmResponse.json();
+  const json = (await npmResponse.json()) as { version: string };
   return json.version;
 }
 

@@ -2,6 +2,7 @@ import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
 
 export const name = 'Brightness (device-only)';
 
@@ -22,7 +23,7 @@ function timeoutWrapper(fn: () => void | Promise<void>, time: number): Promise<v
   });
 }
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;

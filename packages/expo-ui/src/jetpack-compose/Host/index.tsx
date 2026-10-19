@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { useMemo } from 'react';
+import { useMemo, type Ref } from 'react';
 import {
   type ColorSchemeName,
   type ColorValue,
@@ -9,6 +9,9 @@ import {
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
+import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
+import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
+import { useMergeRefs } from '../../utils/useMergeRefs';
 import { getMaterialColors, HostPaletteContext } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
@@ -65,6 +68,8 @@ export interface HostProps extends PrimitiveBaseProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+  /** @hidden */
+  ref?: Ref<any>;
 }
 
 type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
@@ -72,6 +77,7 @@ type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
   matchContentsHorizontal?: boolean;
   colorScheme?: ColorSchemeName;
   seedColor?: ColorValue;
+  ref?: Ref<any>;
 };
 
 const HostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
@@ -87,6 +93,8 @@ export function Host(props: HostProps) {
     layoutDirection,
     colorScheme,
     seedColor,
+    ref,
+    children,
     ...restProps
   } = props;
   const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
@@ -97,25 +105,32 @@ export function Host(props: HostProps) {
     () => getMaterialColors({ scheme: resolvedScheme, seedColor }),
     [resolvedScheme, seedColor]
   );
+  const hostRef = useTextInputHostRef();
+  const mergedRef = useMergeRefs(ref, hostRef);
+  useWarnIfNestedHost('Jetpack Compose');
 
   return (
     <HostPaletteContext.Provider value={palette}>
-      <HostNativeView
-        {...restProps}
-        modifiers={modifiers}
-        matchContentsVertical={
-          typeof matchContents === 'object' ? matchContents.vertical : matchContents
-        }
-        matchContentsHorizontal={
-          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-        }
-        colorScheme={schemeString}
-        seedColor={seedColor}
-        onLayoutContent={onLayoutContent}
-        layoutDirection={
-          layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-        }
-      />
+      <TextInputHostProvider hostRef={hostRef}>
+        <HostNativeView
+          {...restProps}
+          modifiers={modifiers}
+          matchContentsVertical={
+            typeof matchContents === 'object' ? matchContents.vertical : matchContents
+          }
+          matchContentsHorizontal={
+            typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+          }
+          colorScheme={schemeString}
+          seedColor={seedColor}
+          onLayoutContent={onLayoutContent}
+          layoutDirection={
+            layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+          }
+          ref={mergedRef}>
+          <NativeTreeContext.Provider value>{children}</NativeTreeContext.Provider>
+        </HostNativeView>
+      </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );
 }

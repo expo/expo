@@ -129,8 +129,8 @@ class MetricParamsBuilderTest {
     assertNull(params["expo.network.requests.bytesSent"])
     assertNull(params["expo.network.requests.bytesReceived"])
     assertNull(params["expo.network.requests.totalDuration"])
-    assertNull(params["expo.network.requests.slowestDuration"])
-    assertNull(params["expo.network.requests.slowestHost"])
+    assertNull(params["expo.network.requests.slowest.duration"])
+    assertNull(params["expo.network.requests.slowest.host"])
   }
 
   @Test
@@ -141,8 +141,13 @@ class MetricParamsBuilderTest {
       bytesReceived = 1234,
       bytesSent = 567,
       totalDuration = 1.5,
-      slowestDuration = 0.7,
-      slowestHost = "expo.dev"
+      slowest = NetworkRequestSummary.SlowestRequest(
+        host = "expo.dev",
+        duration = 0.7,
+        statusCode = 200,
+        timeToFirstByte = null,
+        bytesReceived = null
+      )
     )
     val params = MetricParamsBuilder.build(networkRequests = summary)
     assertEquals(5, params["expo.network.requests.count"])
@@ -150,8 +155,95 @@ class MetricParamsBuilderTest {
     assertEquals(1234L, params["expo.network.requests.bytesReceived"])
     assertEquals(567L, params["expo.network.requests.bytesSent"])
     assertEquals(1.5, params["expo.network.requests.totalDuration"])
-    assertEquals(0.7, params["expo.network.requests.slowestDuration"])
-    assertEquals("expo.dev", params["expo.network.requests.slowestHost"])
+    assertEquals(0.7, params["expo.network.requests.slowest.duration"])
+    assertEquals("expo.dev", params["expo.network.requests.slowest.host"])
+  }
+
+  @Test
+  fun `emits path cost flags alongside the connection type`() {
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(
+        connected = true,
+        transport = NetworkTransport.CELLULAR,
+        isExpensive = true,
+        dataSaverEnabled = true
+      )
+    )
+    assertEquals(true, params["expo.network.isExpensive"])
+    assertEquals(true, params["expo.network.dataSaverEnabled"])
+  }
+
+  @Test
+  fun `does not report Data Saver under the iOS isConstrained key`() {
+    // Low Data Mode is per-path; Data Saver is process-wide. Same column would mix two questions.
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(
+        connected = true,
+        transport = NetworkTransport.CELLULAR,
+        dataSaverEnabled = true
+      )
+    )
+    assertNull(params["expo.network.isConstrained"])
+  }
+
+  @Test
+  fun `omits path cost flags when the OS did not report them`() {
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(connected = true, transport = NetworkTransport.WIFI)
+    )
+    assertEquals(true, params["expo.network.connected"])
+    assertNull(params["expo.network.isExpensive"])
+    assertNull(params["expo.network.dataSaverEnabled"])
+  }
+
+  @Test
+  fun `emits the derived latency and throughput keys when the summary has them`() {
+    val summary = NetworkRequestSummary(
+      count = 4,
+      failed = 1,
+      bytesReceived = 12000,
+      bytesSent = 800,
+      totalDuration = 1.4,
+      slowest = NetworkRequestSummary.SlowestRequest(
+        host = "api.expo.dev",
+        duration = 0.6,
+        statusCode = 200,
+        timeToFirstByte = 0.35,
+        bytesReceived = 9000
+      ),
+      throughputBytesPerSecond = 8571.4
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(0.6, params["expo.network.requests.slowest.duration"])
+    assertEquals("api.expo.dev", params["expo.network.requests.slowest.host"])
+    assertEquals(200, params["expo.network.requests.slowest.statusCode"])
+    assertEquals(0.35, params["expo.network.requests.slowest.timeToFirstByte"])
+    assertEquals(9000L, params["expo.network.requests.slowest.bytesReceived"])
+    assertEquals(8571.4, params["expo.network.requests.throughputBytesPerSecond"])
+  }
+
+  @Test
+  fun `omits the derived keys rather than emitting zero when they are unavailable`() {
+    // Every connection reused and nothing received: emitting 0 would read as "instant, no data"
+    // instead of "not measured" on a dashboard.
+    val summary = NetworkRequestSummary(
+      count = 2,
+      failed = 0,
+      bytesReceived = 0,
+      bytesSent = 40,
+      totalDuration = 0.2,
+      slowest = NetworkRequestSummary.SlowestRequest(
+        host = "api.expo.dev",
+        duration = 0.1,
+        statusCode = 200,
+        timeToFirstByte = null,
+        bytesReceived = null
+      )
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(2, params["expo.network.requests.count"])
+    assertNull(params["expo.network.requests.slowest.timeToFirstByte"])
+    assertNull(params["expo.network.requests.throughputBytesPerSecond"])
   }
 
   @Test
@@ -162,12 +254,11 @@ class MetricParamsBuilderTest {
       bytesReceived = 0,
       bytesSent = 0,
       totalDuration = 0.1,
-      slowestDuration = null,
-      slowestHost = null
+      slowest = null
     )
     val params = MetricParamsBuilder.build(networkRequests = summary)
     assertEquals(1, params["expo.network.requests.count"])
-    assertNull(params["expo.network.requests.slowestDuration"])
-    assertNull(params["expo.network.requests.slowestHost"])
+    assertNull(params["expo.network.requests.slowest.duration"])
+    assertNull(params["expo.network.requests.slowest.host"])
   }
 }

@@ -1,5 +1,6 @@
 import { ConfigPlugin, StaticPlugin, withPlugins } from 'expo/config-plugins';
 
+import { WidgetConfig } from '../types/WidgetConfig.type';
 import withAppGroupEntitlements from './withAppGroupEntitlements';
 import withAppInfoPlist from './withAppInfoPlist';
 import withEasConfig from './withEasConfig';
@@ -7,7 +8,6 @@ import withIosWarning from './withIosWarning';
 import withPodsLinking from './withPodsLinking';
 import withPushNotifications from './withPushNotifications';
 import withWidgetSourceFiles from './withWidgetSourceFiles';
-import { WidgetConfig } from '../types/WidgetConfig.type';
 import withTargetXcodeProject from './xcode/withTargetXcodeProject';
 
 type IosWidgetsProps = {

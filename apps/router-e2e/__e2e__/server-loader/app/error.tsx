@@ -30,7 +30,7 @@ export default function ErrorRoute() {
     <Suspense fallback={<Loading />}>
       <ErrorScreen />
     </Suspense>
-  )
+  );
 }
 
 const ErrorScreen = () => {
@@ -43,4 +43,4 @@ const ErrorScreen = () => {
       </Table>
     </>
   );
-}
+};

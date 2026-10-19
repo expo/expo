@@ -1,6 +1,7 @@
 import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
+  CodeGenerator,
   WarningAggregator,
   withAndroidManifest,
   withAppBuildGradle,
@@ -39,36 +40,80 @@ function assertLocale(value: unknown): asserts value is string {
   }
 }
 
+// Android looks up resources for these languages under their legacy ISO 639 codes.
+// See `adjustLanguageTag` in `android.content.res.ResourcesImpl`.
+const LEGACY_LANGUAGE_CODES: Record<string, string> = { he: 'iw', id: 'in', yi: 'ji' };
+
+// AndroidX, Material and React Native ship Chinese translations under region qualifiers only.
+const CHINESE_SCRIPT_REGIONS: Record<string, string[]> = { Hans: ['CN'], Hant: ['TW', 'HK'] };
+
 export function convertBcp47ToResourceQualifier(locale: string): string {
-  return `b+${locale.replaceAll('-', '+')}`;
+  const tag = locale.replace(
+    /^[a-z]+/i,
+    (language) => LEGACY_LANGUAGE_CODES[language.toLowerCase()] ?? language
+  );
+  return `b+${tag.replaceAll('-', '+')}`;
+}
+
+export function getResourceQualifiers(locale: string): string[] {
+  const { language, script } = new Intl.Locale(locale);
+  const regions = (language === 'zh' && script && CHINESE_SCRIPT_REGIONS[script]) || [];
+  return [convertBcp47ToResourceQualifier(locale), ...regions.map((region) => `zh-r${region}`)];
+}
+
+export function setResourceConfigurations(
+  appBuildGradle: string,
+  resourceQualifiers: string[]
+): string {
+  const list = resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ');
+
+  return CodeGenerator.mergeContents({
+    src: appBuildGradle,
+    comment: '//',
+    tag: 'expo-localization-supported-locales',
+    offset: 1,
+    anchor: /versionName "[\d.]+"/,
+    newSrc: `        resourceConfigurations += [${list}]`,
+  }).contents;
+}
+
+export function setAndroidSupportsRtl(
+  androidManifest: AndroidConfig.Manifest.AndroidManifest,
+  supportsRTL: boolean
+): AndroidConfig.Manifest.AndroidManifest {
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+  mainApplication.$['android:supportsRtl'] = String(supportsRTL);
+  return androidManifest;
 }
 
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
-  const mergedConfig = { ...config.extra, ...data };
+  const {
+    supportsRTL = true,
+    forcesRTL = false,
+    supportedLocales: supportedLocalesOption,
+  } = {
+    ...config.extra,
+    ...data,
+  };
 
   const supportedLocales =
-    typeof mergedConfig.supportedLocales === 'object' &&
-    !Array.isArray(mergedConfig.supportedLocales)
-      ? mergedConfig.supportedLocales.ios
-      : mergedConfig.supportedLocales;
+    (typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
+      ? supportedLocalesOption.ios
+      : supportedLocalesOption) ?? [];
 
-  if (
-    mergedConfig?.supportsRTL == null &&
-    mergedConfig?.forcesRTL == null &&
-    supportedLocales == null
-  )
-    return config;
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  if (mergedConfig?.supportsRTL != null) {
-    config.ios.infoPlist.ExpoLocalization_supportsRTL = mergedConfig?.supportsRTL;
+  config.ios ??= {};
+  config.ios.infoPlist ??= {};
+
+  if (!supportsRTL) {
+    config.ios.infoPlist.ExpoLocalization_supportsRTL = false;
   }
-  if (mergedConfig?.forcesRTL != null) {
-    config.ios.infoPlist.ExpoLocalization_forcesRTL = mergedConfig?.forcesRTL;
+  if (forcesRTL) {
+    config.ios.infoPlist.ExpoLocalization_forcesRTL = true;
   }
-  if (supportedLocales != null) {
+  if (supportedLocales.length > 0) {
     config.ios.infoPlist.CFBundleLocalizations = supportedLocales;
   }
+
   return config;
 }
 
@@ -76,25 +121,40 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   if (data.allowDynamicLocaleChangesAndroid) {
     config = withAndroidManifest(config, (config) => {
       const mainActivity = AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
+
       if (!mainActivity.$['android:configChanges']?.includes('locale')) {
         mainActivity.$['android:configChanges'] += '|locale';
       }
       if (!mainActivity.$['android:configChanges']?.includes('layoutDirection')) {
         mainActivity.$['android:configChanges'] += '|layoutDirection';
       }
+
       return config;
     });
   }
-  const mergedConfig = { ...config.extra, ...data };
+
+  const {
+    supportsRTL = true,
+    forcesRTL = false,
+    supportedLocales: supportedLocalesOption,
+  } = {
+    ...config.extra,
+    ...data,
+  };
 
   const supportedLocales =
-    typeof mergedConfig.supportedLocales === 'object' &&
-    !Array.isArray(mergedConfig.supportedLocales)
-      ? mergedConfig.supportedLocales.android
-      : mergedConfig.supportedLocales;
+    (typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
+      ? supportedLocalesOption.android
+      : supportedLocalesOption) ?? [];
 
-  if (supportedLocales) {
+  config = withAndroidManifest(config, (config) => {
+    config.modResults = setAndroidSupportsRtl(config.modResults, supportsRTL);
+    return config;
+  });
+
+  if (supportedLocales.length > 0) {
     supportedLocales.forEach(assertLocale);
+
     config = withDangerousMod(config, [
       'android',
       (config) => {
@@ -102,6 +162,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
         const folder = path.join(projectRootPath, 'app/src/main/res/xml');
 
         fs.mkdirSync(folder, { recursive: true });
+
         fs.writeFileSync(
           path.join(folder, 'locales_config.xml'),
           [
@@ -115,6 +176,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
         return config;
       },
     ]);
+
     config = withAndroidManifest(config, (config) => {
       const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
@@ -125,15 +187,14 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
 
       return config;
     });
+
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
-        const resourceQualifiers = supportedLocales.map((locale) =>
-          convertBcp47ToResourceQualifier(locale)
-        );
-        config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
+        const resourceQualifiers = [...new Set(supportedLocales.flatMap(getResourceQualifiers))];
+
+        config.modResults.contents = setResourceConfigurations(
           config.modResults.contents,
-          'defaultConfig',
-          `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `
+          resourceQualifiers
         );
       } else {
         WarningAggregator.addWarningAndroid(
@@ -145,29 +206,21 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       return config;
     });
   }
+
   return withStringsXml(config, (config) => {
-    if (mergedConfig?.supportsRTL != null) {
+    if (!supportsRTL) {
       config.modResults = AndroidConfig.Strings.setStringItem(
-        [
-          {
-            $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-            _: String(mergedConfig?.supportsRTL ?? 'unset'),
-          },
-        ],
+        [{ $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' }, _: String(false) }],
         config.modResults
       );
     }
-    if (mergedConfig?.forcesRTL != null) {
+    if (forcesRTL) {
       config.modResults = AndroidConfig.Strings.setStringItem(
-        [
-          {
-            $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' },
-            _: String(mergedConfig?.forcesRTL ?? 'unset'),
-          },
-        ],
+        [{ $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' }, _: String(true) }],
         config.modResults
       );
     }
+
     return config;
   });
 }
@@ -178,6 +231,17 @@ function withExpoLocalization(config: ExpoConfig, data: ConfigPluginProps = {}) 
     ...data,
     allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
   };
+
+  // Set extra values so Expo Go can read it.
+  config.extra ??= {};
+
+  if (typeof data.supportsRTL === 'boolean') {
+    config.extra.supportsRTL = data.supportsRTL;
+  }
+  if (typeof data.forcesRTL === 'boolean') {
+    config.extra.forcesRTL = data.forcesRTL;
+  }
+
   return withPlugins(config, [
     [withExpoLocalizationIos, normalizedData],
     [withExpoLocalizationAndroid, normalizedData],

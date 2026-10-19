@@ -27,13 +27,21 @@ set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
-XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
+BUILD_ROOT="${EXPO_CUSTOM_BUILD_ROOT:-${PACKAGE_DIR}}"
+XCFRAMEWORK_PATH="${BUILD_ROOT}/Products/${PACKAGE_NAME}.xcframework"
 
 CONFIGURATION="Release"
-DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
-SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
-SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
+DERIVED_DATA_PATH="${BUILD_ROOT}/.DerivedData"
+SPM_BUILD_PATH="${BUILD_ROOT}/.build"
+SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
+
+# Swift compatibility archives linked into this framework (libswiftCompatibilityPacks.a) export
+# their symbols with Xcode 26.4 (Xcode 27 hides them). A precompiled expo-modules-core then binds
+# _swift_allocateMetadataPack to this framework, and crashes at launch when the user's Xcode
+# rebuilds this framework without the export.
+# ld documents wildcards for symbol list files only, hence the list file.
+UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
@@ -77,6 +85,10 @@ SOURCE_FILES=(
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
   "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
   "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+  # Defines the `jsi` module the slices compile against, so its contents change
+  # the build output the same way a source file does.
+  "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+  "${UNEXPORTED_SYMBOLS_LIST}"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
@@ -107,6 +119,12 @@ compute_hash() {
     # source problems. swiftc --version reports the swiftlang/clang tags and the
     # target triple, so any toolchain change forces a clean rebuild.
     echo "TOOLCHAIN_VERSION=$(xcrun swiftc --version 2>/dev/null || true)"
+    # Xcode releases can share a Swift compiler but ship different SDKs (Xcode
+    # 27.0 and 27.1 print the same swiftc --version). A binary module records the
+    # SDK it was built against and Swift won't load it with another SDK, so every
+    # importer would compile ExpoModulesJSI again from its stripped
+    # .swiftinterface. Key the cache on the Xcode build, which pins its SDKs.
+    echo "XCODE_VERSION=$(xcodebuild -version 2>/dev/null || true)"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -196,7 +214,32 @@ build_slice() {
   # SYMROOT/OBJROOT to the paths this script reads from forces products and the
   # generated module maps back into DERIVED_DATA_PATH. On Xcode versions that
   # honor -derivedDataPath these point at the same locations, so it's a no-op.
+  #
+  # Xcode turns coverage mapping on for auto-generated SwiftPM schemes, and that leaks into a
+  # plain `build` of a Release configuration: swiftc gets `-profile-generate
+  # -profile-coverage-mapping` and clang gets `-fprofile-instr-generate`. The result is a counter
+  # increment in every function and branch region of the shipped framework (visible as
+  # `___profc_*` symbols and `__llvm_prf_*` sections) plus ~40% extra binary size. Setting
+  # CLANG_COVERAGE_MAPPING=NO is what removes the flags; CLANG_ENABLE_CODE_COVERAGE=NO alone
+  # does not, and `-enableCodeCoverage NO` is rejected outside of `test`.
+  #
+  # With a dSYM, Xcode's default STRIP_SWIFT_SYMBOLS=YES runs `strip -T`, which removes or renames to
+  # `<redacted>` every Swift symbol that isn't exported. Crash reports symbolicated on the device then
+  # show no function name for any frame in this framework. Keeping the symbols adds about 250 KB of
+  # symbol table to the device slice; the code itself doesn't change.
+  #
+  # The binary .swiftmodule must not embed this checkout's absolute paths: consumers key
+  # the Xcode compilation cache on its content, so any PACKAGE_DIR or PODS_ROOT path inside
+  # it makes every module that imports ExpoModulesJSI a cache miss in another checkout or
+  # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
+  # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
+  # .DerivedData. The .swiftinterface and the dSYM are unaffected.
+  #
+  # DEVELOPER_DIR and TOOLCHAINS are forwarded so the nested build uses the same Xcode and
+  # Swift toolchain as compute_hash and the app build, not the xcode-select Xcode or the
+  # default toolchain.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+    ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
@@ -214,8 +257,14 @@ build_slice() {
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+    STRIP_SWIFT_SYMBOLS=NO \
     COMPILER_INDEX_STORE_ENABLE=NO \
     SWIFT_COMPILATION_MODE=wholemodule \
+    CLANG_ENABLE_CODE_COVERAGE=NO \
+    CLANG_COVERAGE_MAPPING=NO \
+    SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
+    SWIFT_ENABLE_EXPLICIT_MODULES=NO \
+    "OTHER_LDFLAGS=\$(inherited) -Xlinker -unexported_symbols_list -Xlinker \"${UNEXPORTED_SYMBOLS_LIST}\"" \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
@@ -273,11 +322,17 @@ build_slice() {
 
   # Strip declarations from public .swiftinterface that external consumers can't resolve:
   # - C++ type extensions (__ObjC) — entire blocks including their closing braces
-  #   e.g. "extension __ObjC.expo.CppError : Swift.Error { ... }"
+  #   e.g. "extension __ObjC.expo.CppError : Swift.Error { ... }", or with the module
+  #   selectors Swift 6.4 prints: "extension __ObjC::expo.__ObjC::CppError : Swift::Error { ... }"
   # - Package-internal conformances (_ConstraintThatIsNotPartOfTheAPIOfThisLibrary)
   #   e.g. "extension Swift.Optional : where Wrapped : _Constraint... {}"
   # - @usableFromInline attributes preceding the _Constraint protocol definition
   #   e.g. "@usableFromInline\ninternal protocol _ConstraintThatIsNotPartOfTheAPIOfThisLibrary {}"
+  # - @available(*, unavailable) attributes that Swift 6.4 prints on their own line before
+  #   those conformances, which would otherwise attach to the next declaration
+  #   e.g. "@available(*, unavailable)\nextension Swift::Optional : P where Wrapped : _Constraint... {}"
+  #   The JSIRepresentable conformances that produce them are marked @_spi, so Swift doesn't print
+  #   them today. Stripping them is a fallback for conformances added without @_spi.
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
   # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
@@ -286,7 +341,7 @@ build_slice() {
   # filename, failing with "can't read …: No such file or directory".
   while IFS= read -r swiftinterface; do
     local stripped_swiftinterface="${swiftinterface}.stripped"
-    sed '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/^@available\(\*, unavailable\)$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
@@ -400,7 +455,7 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
-  rm -rf "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+  clean_xcframework_state "$PACKAGE_DIR"
   log "Cleaned existing xcframework, DerivedData, and SwiftPM state"
   # Re-stamp stub slices so the post-clean state matches a fresh `pod install`:
   # CocoaPods reads Info.plist before this script runs, and would fail to
@@ -448,7 +503,7 @@ PLATFORMS=("${platforms_to_build[@]}")
 # generated modulemap is left intact — it was already regenerated above for the
 # cache hash, so wiping it here would just force a redundant rebuild.
 log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
-rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+safe_remove_dirs "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 

@@ -70,12 +70,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#base-level-heading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
             data-text="true"
           >
             Base level heading
@@ -87,12 +87,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#level-3-subheading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
             data-text="true"
           >
             Level 3 subheading
@@ -104,12 +104,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-inherit w-full text-secondary! hocus:text-link! truncate text-xs!"
+            class="leading-[1.6154] text-inherit w-full text-default! hocus:text-link! truncate text-xs!"
             data-text="true"
           >
             Code heading depth 1

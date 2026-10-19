@@ -1,5 +1,5 @@
-import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
+import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -38,11 +38,7 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
   return <SimpleActionDemo title={props.title} action={toggle} />;
 }
 
-export default function LocationScreen({
-  navigation,
-}: {
-  navigation: StackNavigationProp<{ BackgroundLocationMap: undefined; Geofencing: undefined }>;
-}) {
+export default function LocationScreen() {
   return (
     <ScrollView style={styles.scrollView}>
       <SimpleActionDemo
@@ -110,7 +106,7 @@ export default function LocationScreen({
       />
 
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={() => navigation.navigate('Geofencing')} title="Geofencing map" />
+        <ListButton onPress={() => router.push('/apis/geofencing')} title="Geofencing map" />
       </View>
     </ScrollView>
   );

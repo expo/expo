@@ -7,7 +7,6 @@ import chalk from 'chalk';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -20,10 +19,10 @@ import {
 } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
+import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { assertNoSwiftPMMarker, isSwiftPMEnabled, setupSwiftPMAsync } from './setupSwiftPM';
 import { updateFromTemplateAsync } from './updateFromTemplate';
-
-const debug = require('debug')('expo:prebuild') as typeof console.log;
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -45,7 +44,7 @@ export type PrebuildResults = {
  * 1. Create native projects (ios, android).
  * 2. Install node modules.
  * 3. Apply config to native projects.
- * 4. Install CocoaPods.
+ * 4. Install CocoaPods, or set up Swift Package Manager for iOS instead.
  */
 export async function prebuildAsync(
   projectRoot: string,
@@ -69,10 +68,8 @@ export async function prebuildAsync(
     skipDependencyUpdate?: string[];
   }
 ): Promise<PrebuildResults | null> {
-  setNodeEnv('development');
-  loadEnvFiles(projectRoot);
-
-  const { platforms } = getConfig(projectRoot).exp;
+  const initialExp = getConfig(projectRoot).exp;
+  const { platforms } = initialExp;
   if (platforms?.length) {
     // Filter out platforms that aren't in the app.json.
     const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
@@ -112,6 +109,14 @@ export async function prebuildAsync(
   // Assert if no platforms are left over after filtering.
   assertPlatforms(options.platforms);
 
+  const useSwiftPM = options.platforms.includes('ios') && isSwiftPMEnabled(initialExp);
+  if (options.platforms.includes('ios') && !useSwiftPM) {
+    // Runs after `--clean`, which already removed the marker with the ios directory.
+    assertNoSwiftPMMarker(projectRoot);
+  }
+
+  const donePrebuild = event.span();
+
   // Get the Expo config, create it if missing.
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
@@ -136,7 +141,7 @@ export async function prebuildAsync(
       Log.log(chalk.gray('  ' + changedDependencies.join(', ')));
 
       // Installing dependencies is a legacy feature from the unversioned
-      // command. We know opt to not change dependencies unless a template
+      // command. We now opt to not change dependencies unless a template
       // indicates a new dependency is required, or if the core dependencies are wrong.
       if (
         await confirmAsync({
@@ -144,12 +149,17 @@ export async function prebuildAsync(
           initial: true,
         })
       ) {
+        const startedAt = Date.now();
         await installAsync([], {
           npm: !!options.packageManager?.npm,
           yarn: !!options.packageManager?.yarn,
           pnpm: !!options.packageManager?.pnpm,
           bun: !!options.packageManager?.bun,
           silent: !(env.EXPO_DEBUG || env.CI),
+        });
+        event('dependencies:installed', {
+          packageManager: resolvePackageManagerName(options.packageManager),
+          ms: Date.now() - startedAt,
         });
       }
     }
@@ -179,15 +189,19 @@ export async function prebuildAsync(
     throw error;
   }
 
-  // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (useSwiftPM) {
+    event('pods:installed', { ms: 0, skipped: true });
+    await setupSwiftPMAsync(projectRoot, { install: !!options.install });
+  } else if (options.platforms.includes('ios') && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
+    const startedAt = Date.now();
     podsInstalled = await installCocoaPodsAsync(projectRoot);
+    event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
-    debug('Skipped pod install');
+    event('pods:installed', { ms: 0, skipped: true });
   }
   const inlineModules = exp.experiments?.inlineModules ?? false;
   if (inlineModules && options.platforms.includes('ios')) {
@@ -198,6 +212,12 @@ export async function prebuildAsync(
     });
   }
 
+  donePrebuild('done', {
+    platforms: options.platforms,
+    clean: !!options.clean,
+    template: options.template,
+  });
+
   return {
     nodeInstall: !!options.install,
     podInstall: !podsInstalled,
@@ -205,4 +225,16 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
+}
+
+function resolvePackageManagerName(packageManager?: {
+  npm?: boolean;
+  yarn?: boolean;
+  pnpm?: boolean;
+  bun?: boolean;
+}): string {
+  if (packageManager?.yarn) return 'yarn';
+  if (packageManager?.pnpm) return 'pnpm';
+  if (packageManager?.bun) return 'bun';
+  return 'npm';
 }

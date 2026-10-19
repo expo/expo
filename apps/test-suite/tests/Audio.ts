@@ -68,7 +68,7 @@ export function test({ describe, expect, it, ...t }: any) {
   });
 
   describe('Player instance', () => {
-    let player: AudioPlayer = null;
+    let player: AudioPlayer = null!;
 
     t.beforeAll(async () => {
       await setIsAudioActiveAsync(true);
@@ -81,7 +81,7 @@ export function test({ describe, expect, it, ...t }: any) {
         } catch (error: any) {
           console.warn('Player release error:', error.message);
         }
-        player = null;
+        player = null!;
       }
     });
 

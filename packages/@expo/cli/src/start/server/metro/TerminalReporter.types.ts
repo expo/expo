@@ -50,14 +50,16 @@ export type BuildPhase = 'in_progress' | 'done' | 'failed';
  *
  * We centralize terminal reporting into a single place because we want the
  * output to be robust and consistent. The most common reporter is
- * TerminalReporter, that should be the only place in the application should
- * access the `terminal` module (nor the `console`).
+ * TerminalReporter, that should be the only place in the application that
+ * should access the `terminal` module (nor the `console`).
  */
 export type Reporter = { update(event: ReportableEvent): void };
 
 export interface SnippetError extends Error {
   code?: string;
   filename?: string;
+  lineNumber?: number;
+  column?: number;
   snippet?: string;
 
   /** Module that failed to load ex 'fs' */

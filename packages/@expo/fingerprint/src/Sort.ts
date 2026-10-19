@@ -8,6 +8,7 @@ const typeOrder = {
   file: 0,
   dir: 1,
   contents: 2,
+  package: 3,
 };
 
 /**
@@ -31,6 +32,10 @@ export function compareSource(a: HashSource, b: HashSource): number {
       return aValue.localeCompare(bValue);
     } else if (a.type === 'contents' && b.type === 'contents') {
       return a.id.localeCompare(b.id);
+    } else if (a.type === 'package' && b.type === 'package') {
+      const aValue = a.overrideHashKey ?? `${a.name}@${a.version}`;
+      const bValue = b.overrideHashKey ?? `${b.name}@${b.version}`;
+      return aValue.localeCompare(bValue);
     }
   }
   return typeResult;

@@ -355,5 +355,5 @@ describe('sync', () => {
 function loadFixture(filename: string) {
   return jest
     .requireActual('node:fs')
-    .readFileSync(path.join(__dirname, 'files', filename), 'utf8');
+    .readFileSync(path.join(__dirname, '..', '__fixtures__', filename), 'utf8');
 }

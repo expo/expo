@@ -26,6 +26,16 @@ enum RNScreensTabCompat {
     return view.value(forKey: screenKeyName) as? String
   }
 
+  /// `screenKey` is a route name; nativeID carries the globally unique Expo Router key.
+  static func routeKey(from view: UIView) -> String? {
+    let selector = NSSelectorFromString("nativeId")
+    guard view.responds(to: selector),
+      let nativeId = view.value(forKey: "nativeId") as? String,
+      nativeId.hasPrefix("expo-router-tab:")
+    else { return nil }
+    return String(nativeId.dropFirst("expo-router-tab:".count))
+  }
+
   /// Calls `reactViewController()` dynamically via `perform(_:)`, then returns `.tabBarController`.
   static func tabBarController(fromTabScreen view: UIView) -> UITabBarController? {
     guard isTabScreen(view),

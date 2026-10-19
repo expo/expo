@@ -33,7 +33,8 @@ internal class UpdatesMonitoring: MetricReporter {
             )
           } catch {
             logger.warn(
-              "[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
+              "[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)"
+            )
           }
         }
       }
@@ -72,6 +73,12 @@ internal class UpdatesMonitoring: MetricReporter {
       let startTime = context.downloadStartTime,
       let finishTime = context.downloadFinishTime
     else {
+      return nil
+    }
+    // expo-updates emits `downloadCompleteWithUpdate` for an update that is already downloaded and
+    // ready on disk too. We don't want to write metrics for those events, so check for
+    // downloadProgress > 0, which only happens on real asset downloads.
+    if context.downloadProgress <= 0 {
       return nil
     }
     let lastDownloadTime = finishTime.timeIntervalSince(startTime)

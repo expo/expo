@@ -21,7 +21,7 @@ describe('allowBackup', () => {
     androidManifestJson = await setAllowBackup({}, { ...androidManifestJson });
 
     const result = getAllowBackupFromManifest(androidManifestJson);
-    // The fixture has `android:allowBackup="false"`, lets test that it did in fact get modified.
+    // The fixture has `android:allowBackup="false"`, let's test that it did in fact get modified.
     expect(getAllowBackupFromManifest(androidManifestJsonUnaltered)).not.toEqual(result);
 
     // Sanity check `getAllowBackupFromManifest` works as expected.

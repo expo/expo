@@ -90,6 +90,15 @@ export default [
     ],
   },
   {
+    name: 'uploadSourceMaps',
+    type: 'boolean',
+    description: [
+      'If set to `true`, the JavaScript source map generated during the build is uploaded to EAS. Stored source maps are used by [EAS Observe](/eas/observe/errors/#symbolicated-stack-traces) to symbolicate reported error stack traces. The source code embedded in the map is removed before upload. Defaults to `false`.',
+      '',
+      '**Note**: only available for builds that run on EAS Build servers. Local builds do not upload source maps.',
+    ],
+  },
+  {
     name: 'node',
     type: 'string',
     description: ['Version of Node.js used for build.'],

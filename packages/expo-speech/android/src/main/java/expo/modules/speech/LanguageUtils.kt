@@ -34,6 +34,10 @@ object LanguageUtils {
   fun getISOCode(locale: Locale): String {
     val language = getLanguageISO(locale)
     val country = getCountryISO(locale)
-    return if (country.isNotEmpty()) "$language-$country" else language
+    return if (country.isNotEmpty()) {
+      "$language-$country"
+    } else {
+      language
+    }
   }
 }

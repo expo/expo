@@ -44,8 +44,6 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
     displayLink = CADisplayLink(target: self, selector: #selector(drawGL))
     displayLink?.add(to: RunLoop.main, forMode: .common)
 
-    contentScaleFactor = EXUtilities.screenScale()
-
     // Initialize properties of our backing CAEAGLLayer
     if let eaglLayer = layer as? CAEAGLLayer {
       eaglLayer.isOpaque = false
@@ -63,6 +61,24 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
   }
 
   // MARK: - UIView
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    updateContentScaleFactor()
+  }
+
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    updateContentScaleFactor()
+  }
+
+  private func updateContentScaleFactor() {
+    let scale = SceneGeometry.displayScale(for: self)
+    if contentScaleFactor != scale {
+      contentScaleFactor = scale
+      setNeedsLayout()
+    }
+  }
 
   override func layoutSubviews() {
     resizeViewBuffersToWidth(width: contentScaleFactor * frame.size.width, height: contentScaleFactor * frame.size.height)
@@ -312,6 +328,10 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
   }
 
   // MARK: - EXGLContextDelegate
+
+  func glContextGetScale() -> CGFloat {
+    return contentScaleFactor
+  }
 
   // [GL thread]
   func glContextFlushed(_ context: EXGLContext) {

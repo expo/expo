@@ -1,12 +1,12 @@
 import nock from 'nock';
 
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 
 describe(openJsInspector, () => {
   it('executes POST /open-debugger with the given app information', async () => {

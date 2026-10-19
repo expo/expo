@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
-import { bigBuckBunnySource } from './videoSources';
+import { starVideoSource } from './videoSources';
 import { styles } from './videoStyles';
 
 function ProblematicOverlap({
@@ -48,10 +48,10 @@ export default function VideoSurfaceTypeScreen() {
     player.loop = true;
     player.play();
   };
-  const player1 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player2 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player3 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player4 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
+  const player1 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player2 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player3 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player4 = useVideoPlayer(starVideoSource, initializePlayer);
   const [nativeControls, setNativeControls] = useState(true);
   const [e2eSetupDone, setE2eSetupDone] = useState(false);
 

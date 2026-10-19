@@ -1,19 +1,14 @@
 import { graphql, query } from '../client';
 
-export type Permission = 'ADMIN' | 'OWN' | 'PUBLISH' | 'VIEW';
-
-type CurrentUserDataUser = {
-  permissions: Permission[];
-  actor: {
-    __typename: 'Robot' | 'SSOUser' | 'User';
-    id: string;
-  };
-};
+export type Permission = 'ADMIN' | 'OWN' | 'PUBLISH' | 'PUBLISH_PROTECTED' | 'RUN' | 'VIEW';
 
 type CurrentUserDataAccount = {
   __typename?: 'Account';
   id: string;
-  users: CurrentUserDataUser[];
+  viewerUserPermission2: {
+    permissions: Permission[];
+    effectivePermissions: Permission[];
+  };
 };
 
 export type Actor =
@@ -30,6 +25,12 @@ export type Actor =
       primaryAccount: {
         id: string;
       };
+      accounts: CurrentUserDataAccount[];
+    }
+  | {
+      __typename: 'PartnerActor';
+      id: string;
+      username: string;
       accounts: CurrentUserDataAccount[];
     };
 
@@ -51,14 +52,14 @@ const CurrentUserDocument = graphql<CurrentUserData>(`
       ... on Robot {
         firstName
       }
+      ... on PartnerActor {
+        username
+      }
       accounts {
         id
-        users {
-          actor {
-            __typename
-            id
-          }
+        viewerUserPermission2 {
           permissions
+          effectivePermissions
         }
       }
     }

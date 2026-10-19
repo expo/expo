@@ -25,4 +25,19 @@ data class NotificationBehaviorRecord(
   val shouldPresentAlert: Boolean get() {
     return shouldShowBanner || shouldShowList || shouldShowAlert
   }
+
+  companion object {
+    /**
+     * Allows a banner, a place in the notification list, a sound, and a badge. This is what the
+     * handler that applies until the app sets one of its own asks for, so the code that presents a
+     * notification whose handler didn't answer in time asks for it too.
+     */
+    @JvmField
+    val ALLOW_ALL = NotificationBehaviorRecord(
+      shouldShowBanner = true,
+      shouldShowList = true,
+      shouldPlaySound = true,
+      shouldSetBadge = true
+    )
+  }
 }

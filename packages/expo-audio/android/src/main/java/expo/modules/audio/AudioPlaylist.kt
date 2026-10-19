@@ -28,6 +28,7 @@ class AudioPlaylist(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setHandleAudioBecomingNoisy(true)
     .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory))
     .build(),
   appContext = appContext,
@@ -42,7 +43,7 @@ class AudioPlaylist(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
   override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
   override val supportsNextTrack = true
   override val supportsPreviousTrack = true
@@ -141,7 +142,9 @@ class AudioPlaylist(
   }
 
   fun skipTo(index: Int) {
-    if (index !in 0..<trackCount) return
+    if (index !in 0..<trackCount) {
+      return
+    }
     ref.seekToDefaultPosition(index)
   }
 
@@ -153,7 +156,9 @@ class AudioPlaylist(
   }
 
   fun insert(source: AudioSource, index: Int) {
-    if (index !in 0..trackCount) return
+    if (index !in 0..trackCount) {
+      return
+    }
     val mediaItem = createMediaItemForSource?.invoke(source) ?: return
     sources.add(index, source)
     ref.addMediaItem(index, mediaItem)
@@ -161,7 +166,9 @@ class AudioPlaylist(
   }
 
   fun remove(index: Int) {
-    if (index !in 0..<trackCount) return
+    if (index !in 0..<trackCount) {
+      return
+    }
 
     sources.removeAt(index)
     ref.removeMediaItem(index)
@@ -191,14 +198,18 @@ class AudioPlaylist(
 
   override fun assignBasicMediaSession() {
     mediaSession.release()
-    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref)
+    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref) { requestPlay() }
   }
 
   override fun currentStatus(): Map<String, Any?> {
     val isMuted = ref.volume == 0f
     val isLoaded = ref.playbackState == Player.STATE_READY
     val isBuffering = ref.playbackState == Player.STATE_BUFFERING
-    val playingStatus = if (isBuffering) intendedPlayingState else ref.isPlaying
+    val playingStatus = if (isBuffering) {
+      intendedPlayingState
+    } else {
+      ref.isPlaying
+    }
 
     return mapOf(
       "id" to id,
@@ -208,8 +219,16 @@ class AudioPlaylist(
       "duration" to duration,
       "playing" to playingStatus,
       "isBuffering" to isBuffering,
-      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) true else isLoaded,
-      "playbackRate" to if (ref.isPlaying) ref.playbackParameters.speed else currentRate,
+      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) {
+        true
+      } else {
+        isLoaded
+      },
+      "playbackRate" to if (ref.isPlaying) {
+        ref.playbackParameters.speed
+      } else {
+        currentRate
+      },
       "muted" to isMuted,
       "volume" to ref.volume,
       "loop" to loopMode.value,

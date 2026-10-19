@@ -1,12 +1,10 @@
+import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import {
-  createInjectedCssAsString,
-  createInjectedScriptsAsString,
-  getHydrationFlagScriptAsString,
-} from '@expo/router-server/build/utils/html';
+import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
+import type { AssetInfo } from 'expo-server/private';
 
-const debug = require('debug')('expo:metro:html') as typeof console.log;
+import { event } from './ssrEvents';
 
 export function serializeHtmlWithAssets({
   resources,
@@ -29,14 +27,13 @@ export function serializeHtmlWithAssets({
   if (!resources) {
     return '';
   }
-  return htmlFromSerialAssets(resources, {
+  const assets = serialAssetsToStaticContentAssets(resources, {
     isExporting,
-    template,
     baseUrl,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
-    hydrate,
   });
+  return injectAssetsIntoHtml(template, { assets, hydrate });
 }
 
 /**
@@ -55,40 +52,54 @@ function combineUrlPath(baseUrl: string, ...segments: string[]) {
     .join('/');
 }
 
-function htmlFromSerialAssets(
+export function serialAssetsToStaticContentAssets(
   assets: SerialAsset[],
   {
     isExporting,
-    template,
     baseUrl,
     bundleUrl,
     route,
-    hydrate,
+    favicon,
   }: {
     isExporting: boolean;
-    template: string;
     baseUrl: string;
-    /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
-    hydrate?: boolean;
+    favicon?: string;
   }
-) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets
-    .filter((asset) => asset.type.startsWith('css'))
-    .map(({ type, metadata, filename, source }) => {
-      if (type === 'css') {
-        if (isExporting) {
-          return createInjectedCssAsString([combineUrlPath(baseUrl, filename)]);
-        } else {
-          return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-        }
+): AssetInfo {
+  const css = assets
+    .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
+    .map((asset) => {
+      // NOTE(@hassankhan): External CSS assets are always injected into the HTML as `<link>`s,
+      // both in development and in production
+      if (asset.type === 'css-external') {
+        return { type: 'external' as const, href: asset.filename, media: asset.metadata.media };
       }
-      // External link tags will be passed through as-is.
-      return source;
-    })
-    .join('');
+      // NOTE(@hassankhan): `isExporting` means export-time rendering (SSG/SPA/DOM components),
+      // where CSS is linked from standalone files. In development, we inline CSS into the HTML
+      // document directly for HMR
+      if (isExporting) {
+        return { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) };
+      }
+      return { type: 'inline' as const, source: asset.source, hmrId: asset.metadata.hmrId };
+    });
+
+  if (bundleUrl) {
+    return { css, js: [bundleUrl], favicon };
+  }
+
+  if (
+    assets.some((asset) => asset.type === 'js' && asset.metadata.chunkingStrategy === 'granular')
+  ) {
+    return {
+      css,
+      js: getGranularAssetsForRoute(assets, route?.entryPoints).map((asset) =>
+        getChunkUrl(baseUrl, asset.filename)
+      ),
+      favicon,
+    };
+  }
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
@@ -103,46 +114,38 @@ function htmlFromSerialAssets(
     orderedJsAssets = [...runtimeAssets, ...sortedAsync, ...entryAssets];
   }
 
-  const scripts = bundleUrl
-    ? `<script src="${bundleUrl}" defer></script>`
-    : orderedJsAssets
-        .map(({ filename, metadata }) => {
-          // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
-          if (metadata.isAsync) {
-            // We have the data required to match async chunks to the route's HTML file.
-            if (
-              route?.entryPoints &&
-              metadata.modulePaths &&
-              Array.isArray(route.entryPoints) &&
-              Array.isArray(metadata.modulePaths)
-            ) {
-              // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
-              const doesAsyncChunkContainRouteEntryPoint = route.entryPoints.some((entryPoint) =>
-                (metadata.modulePaths as string[]).includes(entryPoint)
-              );
-              if (!doesAsyncChunkContainRouteEntryPoint) {
-                return '';
-              }
-              debug('Linking async chunk %s to HTML for route %s', filename, route.contextKey);
-              // Pass through to the next condition.
-            } else {
-              return '';
-            }
-            // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
-          }
+  const js = orderedJsAssets
+    .filter((asset) => {
+      // Sync assets are always linked in the HTML
+      if (!asset.metadata.isAsync) {
+        return true;
+      }
+      // Link async chunks that contain one of the route's entry points in the HTML, so the
+      // route's own code doesn't wait on a dynamic `import()` waterfall; all other async chunks
+      // are left for the runtime to fetch on-demand.
+      // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
+      // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
+      if (
+        route?.entryPoints &&
+        Array.isArray(route.entryPoints) &&
+        Array.isArray(asset.metadata.modulePaths)
+      ) {
+        const matches = route.entryPoints.some((entryPoint) =>
+          (asset.metadata.modulePaths as string[]).includes(entryPoint)
+        );
+        if (matches) {
+          event('html_async_chunk_linked', {
+            filename: asset.filename,
+            contextKey: route.contextKey,
+          });
+        }
+        return matches;
+      }
+      return false;
+    })
+    .map((asset) => combineUrlPath(baseUrl, asset.filename));
 
-          return createInjectedScriptsAsString([combineUrlPath(baseUrl, filename)]);
-        })
-        .join('');
-
-  if (hydrate) {
-    template = template.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
-  }
-
-  return template
-    .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
+  return { css, js, favicon };
 }
 
 /**
@@ -162,10 +165,51 @@ export function sortMatchedAssetsByEntryPoints(
   );
 }
 
+export function getGranularAssetsForRoute(
+  assets: SerialAsset[],
+  entryPoints: readonly string[] = []
+): SerialAsset[] {
+  const jsAssets = assets.filter((asset) => asset.type === 'js');
+  for (const asset of jsAssets) {
+    if (asset.metadata.chunkingStrategy !== 'granular') {
+      throw new Error(
+        `Mixed chunking strategy for ${asset.filename}. Serialize the page with one strategy.`
+      );
+    }
+    if (!Array.isArray(asset.metadata.entryPaths) || !Array.isArray(asset.metadata.requires)) {
+      throw new Error(
+        `Missing entryPaths or requires for Granular asset ${asset.filename}. Regenerate the export with canonical chunk metadata.`
+      );
+    }
+  }
+  const entryAssets = jsAssets.filter((asset) => asset.metadata.entryChunks !== undefined);
+  if (entryAssets.length !== 1) {
+    throw new Error('Expected one Granular entry-to-chunks mapping.');
+  }
+  const entryChunks = entryAssets[0]!.metadata.entryChunks!;
+  const assetsByFilename = new Map(jsAssets.map((asset) => [asset.filename, asset]));
+  const rootAssets = entryPoints.flatMap((entryPath) =>
+    (entryChunks[entryPath] ?? []).map((filename) => {
+      const asset = assetsByFilename.get(filename);
+      if (!asset) {
+        throw new Error(`Asset not found for entry ${entryPath}: ${filename}`);
+      }
+      return asset;
+    })
+  );
+  return assetsRequiresSort(jsAssets, [
+    ...rootAssets,
+    ...jsAssets.filter((asset) => !asset.metadata.isAsync),
+  ]);
+}
+
 /**
  * Sorts assets based on the requires tree. DFS order.
  */
-export function assetsRequiresSort(assets: SerialAsset[]): SerialAsset[] {
+export function assetsRequiresSort(
+  assets: SerialAsset[],
+  roots: SerialAsset[] = assets
+): SerialAsset[] {
   const lookup = new Map<string, SerialAsset>();
   const visited = new Set();
   const visiting = new Set();
@@ -196,7 +240,7 @@ export function assetsRequiresSort(assets: SerialAsset[]): SerialAsset[] {
     result.push(module);
   }
 
-  assets.forEach((a) => {
+  roots.forEach((a) => {
     if (!visited.has(a.filename)) {
       visit(a.filename);
     }

@@ -4,6 +4,7 @@ import type { ModuleDescriptor, ModuleDescriptorIos, SupportedPlatform } from '.
 interface GenerateModulesProviderParams {
   platform: SupportedPlatform;
   targetPath: string;
+  targetName?: string;
   entitlementPath: string | null;
   watchedDirectories: string[];
   inlineModulesTargets: { mainTarget?: string; targets: string[] };

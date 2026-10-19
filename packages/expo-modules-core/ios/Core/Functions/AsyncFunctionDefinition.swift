@@ -23,6 +23,10 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
 public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition, @unchecked Sendable {
+  public var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(kind: .function(self))
+  }
+
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
@@ -86,7 +90,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
   var takesOwner: Bool = false
 
   @JavaScriptActor
-  func call(_ appContext: AppContext, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer, callback: @Sendable @escaping (consuming FunctionCallResult) -> Void) {
+  func call(_ appContext: AppContext, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer, callback: @Sendable @escaping (consuming FunctionCallResult) -> Void) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(value))
     } rejecter: { exception in
@@ -146,7 +150,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
    * Checks if the `AsyncFunction` is a method of a `View`, if it is and the `View` has not yet been registered in the view registry it
    * re-dispatches the block until the view registers. The block can be re-dispatched up to three times before the cast is considered failed.
    * This is a sub-optimal solution, but the only one until we get access to the runtime scheduler. In the vast majority of cases the block
-   * will be dispatched without any retries,
+   * will be dispatched without any retries.
    */
   private func dispatchOnQueueUntilViewRegisters(
     appContext: AppContext,
@@ -190,7 +194,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       let promiseValue = promise.asValue()
 
       self.call(appContext, this: this, arguments: arguments) { [promise] result in
-        switch result {
+        switch consume result {
         case .success(let value):
           promise.resolve(value)
         case .failure(let error as any Error):

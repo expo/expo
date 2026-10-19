@@ -56,10 +56,17 @@
     // due to this fact `_callback = nil;` was crashing on older versions of iOS (below 12.0).
     __strong EXTaskExecutionRequest *strongSelf = self;
 
-    _callback(_results);
+    // Capture the callback and results, then clear the request state before invoking. The callback is a
+    // one-shot completion that unregisters this request and breaks the retain cycle keeping its captured
+    // state alive, so a re-entrant or duplicated evaluation (e.g. a task finishing during a foreground
+    // transition) must not pass the `_callback` guard again and fire against freed memory.
+    void (^callback)(NSArray *) = _callback;
+    NSArray *results = _results;
     _callback = nil;
     _tasks = nil;
     _results = nil;
+
+    callback(results);
     strongSelf = nil;
   }
 }

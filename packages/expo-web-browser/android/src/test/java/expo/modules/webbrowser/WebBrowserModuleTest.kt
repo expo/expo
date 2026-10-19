@@ -30,7 +30,9 @@ private fun assertStringValueNull(bundle: Bundle, key: String) {
 }
 
 private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
-  if (first == second) return
+  if (first == second) {
+    return
+  }
 
   if (first == null || second == null) {
     throw throw ComparisonFailure(message, first.toString(), second.toString())
@@ -138,6 +140,33 @@ internal class WebBrowserModuleTest {
     )
 
     assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun testToolbarColorsCorrectlyPassedToIntent() = withWebBrowserMock {
+    // given
+    val toolbarColor = 0xFF361030.toInt()
+    val secondaryToolbarColor = 0xFF1B5E20.toInt()
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync(
+      "http://expo.io",
+      OpenBrowserOptions(
+        toolbarColor = toolbarColor,
+        secondaryToolbarColor = secondaryToolbarColor
+      )
+    )
+
+    // then
+    val colorSchemeParams = CustomTabsIntent.getColorSchemeParams(
+      intentSlot.captured.intent,
+      CustomTabsIntent.COLOR_SCHEME_LIGHT
+    )
+    assertEquals(toolbarColor, colorSchemeParams.toolbarColor)
+    assertEquals(secondaryToolbarColor, colorSchemeParams.secondaryToolbarColor)
   }
 
   @Test

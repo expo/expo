@@ -12,7 +12,16 @@ const toAndroidResourceName = (name: string): string => {
   return /^[a-z]/.test(resourceName) ? resourceName : `widget_${resourceName}`;
 };
 
+export const assertAndroidWidgetName = (widget: WidgetConfig): void => {
+  if (typeof widget.name !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(widget.name)) {
+    throw new Error(
+      `Invalid widget name ${JSON.stringify(widget.name)}: Android widget names must be Kotlin identifiers.`
+    );
+  }
+};
+
 export const getProviderClassName = (widget: WidgetConfig): string => {
+  assertAndroidWidgetName(widget);
   return `${widget.name}Provider`;
 };
 

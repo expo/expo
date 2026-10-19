@@ -12,12 +12,13 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'router-misc';
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
 
@@ -26,7 +27,7 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -35,7 +36,7 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 
@@ -62,6 +63,27 @@ test.describe(inputDir, () => {
     page.locator('[data-testid="clear-hash"]').click();
     await expect(page.locator('[data-testid="hash"]')).toHaveText('');
     expect(page.url()).toEqual(new URL('/hash-support', expoStart.url).href);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('in-page anchor links create a history entry the router can traverse', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(new URL('/hash-support', expoStart.url).href);
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('');
+
+    await page.locator('[data-testid="anchor-link"]').click();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('anchor');
+    await expect(page).toHaveURL(new URL('/hash-support#anchor', expoStart.url).href);
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('');
+    await expect(page).toHaveURL(new URL('/hash-support', expoStart.url).href);
+
+    await page.goForward();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('anchor');
+    await expect(page).toHaveURL(new URL('/hash-support#anchor', expoStart.url).href);
 
     expect(pageErrors.all).toEqual([]);
   });

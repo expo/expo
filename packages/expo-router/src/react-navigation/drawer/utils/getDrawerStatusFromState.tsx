@@ -1,17 +1,18 @@
 import type { DrawerNavigationState, DrawerStatus, ParamListBase } from '../../native';
 
+/**
+ * Returns the drawer's current status.
+ *
+ * @param defaultStatus Status returned when the state has no drawer history entry.
+ * @deprecated Use `useDrawerStatus` instead.
+ */
 export function getDrawerStatusFromState(
-  state: DrawerNavigationState<ParamListBase>
+  state: DrawerNavigationState<ParamListBase>,
+  defaultStatus: DrawerStatus
 ): DrawerStatus {
-  if (state.history == null) {
-    throw new Error(
-      "Couldn't find the drawer status in the state object. Is it a valid state object of drawer navigator?"
-    );
-  }
-
-  const entry = state.history.findLast((it) => it.type === 'drawer') as
+  const entry = state.history?.findLast((it) => it.type === 'drawer') as
     | { type: 'drawer'; status: DrawerStatus }
     | undefined;
 
-  return entry?.status ?? state.default ?? 'closed';
+  return entry?.status ?? defaultStatus;
 }

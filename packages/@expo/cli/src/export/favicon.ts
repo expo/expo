@@ -5,10 +5,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { Log } from '../log';
+import { debugEvent } from './events';
 import { getUserDefinedFile } from './publicFolder';
 import type { ExportAssetMap } from './saveAssets';
-
-const debug = require('debug')('expo:favicon') as typeof console.log;
 
 /** @returns the file system path for a user-defined favicon.ico file in the public folder. */
 export function getUserDefinedFaviconFile(projectRoot: string): string | null {
@@ -34,7 +33,6 @@ export async function generateFaviconAssetAsync(
 ): Promise<{ href: string } | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
-    debug('Using user-defined favicon.ico file.');
     return null;
   }
 
@@ -48,13 +46,13 @@ export async function generateFaviconAssetAsync(
 
   const assetPath = path.join(outputDir, data.path);
   if (files) {
-    debug('Storing asset for persisting: ' + assetPath);
+    debugEvent('favicon:storing_asset', { assetPath });
     files.set(data.path, {
       contents: data.source,
       targetDomain: 'client',
     });
   } else {
-    debug('Writing asset to disk: ' + assetPath);
+    debugEvent('favicon:writing_asset', { assetPath });
     await fs.promises.writeFile(assetPath, data.source);
   }
 

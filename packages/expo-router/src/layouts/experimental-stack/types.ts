@@ -1,14 +1,14 @@
 import type {
-  DefaultNavigatorOptions,
-  Descriptor,
+  NavigationAction,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
   RouteProp,
   StackActionHelpers,
   StackNavigationState,
-  StackRouterOptions,
 } from '../../react-navigation/native';
+import type { NativeStackViewState } from '../../react-navigation/native-stack';
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 
 /**
  * Options accepted by `ExperimentalStack` screens. Mirrors the narrow option
@@ -33,10 +33,15 @@ export type ExperimentalStackNavigationOptions = {
  * @experimental
  */
 export type ExperimentalStackNavigationEventMap = {
+  removePrevented: { data: { action: NavigationAction } };
   transitionStart: { data: { closing: boolean } };
   transitionEnd: { data: { closing: boolean } };
   gestureCancel: { data: undefined };
 };
+
+export type ExperimentalStackViewEmit = StandardNavigatorEmit<ExperimentalStackNavigationEventMap>;
+
+export type ExperimentalStackViewState = NativeStackViewState;
 
 export type ExperimentalStackNavigationProp<
   ParamList extends ParamListBase,
@@ -65,23 +70,3 @@ export type ExperimentalStackNavigationHelpers = NavigationHelpers<
   ParamListBase,
   ExperimentalStackNavigationEventMap
 >;
-
-export type ExperimentalStackNavigatorProps = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  StackNavigationState<ParamListBase>,
-  ExperimentalStackNavigationOptions,
-  ExperimentalStackNavigationEventMap,
-  ExperimentalStackNavigationProp<ParamListBase>
-> &
-  StackRouterOptions;
-
-export type ExperimentalStackDescriptor = Descriptor<
-  ExperimentalStackNavigationOptions,
-  ExperimentalStackNavigationProp<ParamListBase>,
-  RouteProp<ParamListBase>
->;
-
-export type ExperimentalStackDescriptorMap = {
-  [key: string]: ExperimentalStackDescriptor;
-};

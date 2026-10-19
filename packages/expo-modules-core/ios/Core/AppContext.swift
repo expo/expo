@@ -3,9 +3,10 @@ import ExpoModulesJSI
 
 /**
  The app context is an interface to a single Expo app.
+ Not `final` so that `TestAppContext` from `ExpoModulesTestCore` can subclass it.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
+public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -91,7 +92,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   public typealias UIRuntimeFactory = (
     _ appContext: AppContext,
-    _ pointerValue: JavaScriptValue,
+    _ pointerValue: borrowing JavaScriptValue,
     _ runtime: JavaScriptRuntime
   ) throws -> JavaScriptRuntime
 
@@ -120,17 +121,30 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
-  /**
-   The application identifier that is used to distinguish between different `RCTHost`.
-   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
-   It shouldn't be used on the old architecture.
-   */
+  /// The number of app contexts created so far in this process.
+  private static let appContextsCount = Mutex<Int>(0)
+
+  /// The position of this app context in creation order, starting at 0.
+  internal let appIndex: Int = AppContext.appContextsCount.withLock { count in
+    defer {
+      count += 1
+    }
+    return count
+  }
+
+  /// The application identifier that distinguishes app contexts that are alive at the same time,
+  /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
+  /// app context, so its view names have no suffix.
   @objc
   public var appIdentifier: String? {
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+    return AppContext.appIdentifier(forIndex: appIndex)
+  }
+
+  internal static func appIdentifier(forIndex index: Int) -> String? {
+    if index == 0 {
       return nil
     }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    return String(index)
   }
 
   /**
@@ -216,11 +230,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
   /**
@@ -228,13 +240,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
-    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
+    let runtime = try self.runtime
+    let object = classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+      return runtime.createObject(prototype: prototype)
+    }
+    guard let object else {
       throw JavaScriptClassNotFoundException()
     }
-    return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
-    }
+    return object
   }
 
   // MARK: - Legacy modules
@@ -252,7 +265,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
   /**
-   Provides access to the file system utilities. Can be overridden if the app should use different different directories or file permissions.
+   Provides access to the file system utilities. Can be overridden if the app should use different directories or file permissions.
    For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
    It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
@@ -436,6 +449,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    to a synchronous no-op scheduler — callers can detect this via
    `JavaScriptRuntime.supportsAsyncScheduling`.
 
+   `scheduler` is an opaque handle that `dispatch` understands; the factories pass
+   a handle created by `expo::createReactSchedulerHandle` that references the React
+   runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
+
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
    to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
@@ -476,6 +493,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
+
+    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()
@@ -543,8 +563,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
-    // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
-    // and cannot be a Dictionary value.
+    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
+    // cannot be a Dictionary value.
     let prototypeCache = WorkletPrototypeCache()
 
     // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
@@ -562,8 +582,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let typeId = ObjectIdentifier(type(of: nativeObject))
       let instance: JavaScriptObject
 
-      if let cachedPrototype = prototypeCache.store[typeId] {
-        instance = runtime.createObject(prototype: cachedPrototype.getObject())
+      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+        runtime.createObject(prototype: prototype)
+      }) {
+        instance = cachedInstance
       } else {
         guard let classDefinition = self.findClassDefinition(for: typeId) else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
@@ -573,8 +595,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
           appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        prototypeCache.store[typeId] = built.asValue()
         instance = runtime.createObject(prototype: built)
+        prototypeCache.store[typeId] = built.ref()
       }
 
       instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
@@ -622,9 +644,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func from(runtime: borrowing JavaScriptRuntime) -> AppContext? {
     // Recovery may happen on every conversion, so look the core object up through a cached
     // prop name id to avoid re-interning the "expo" string into JSI on each call.
-    // TODO: drop the `copy` once `JavaScriptPropNameID.cached` borrows its runtime instead of
-    // taking it owned — it only reads the runtime, so the owned convention forces a needless retain.
-    let coreObjectPropName = JavaScriptPropNameID.cached(copy runtime, globalCoreObjectPropertyName)
+    let coreObjectPropName = JavaScriptPropNameID.cached(runtime, globalCoreObjectPropertyName)
     guard let coreObject = try? runtime.global().getPropertyAsObject(coreObjectPropName) else {
       return nil
     }
@@ -670,11 +690,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
         guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
           return
         }
-        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
-        // holds for the intended path, where the native state dies as the runtime finalizes on
-        // its own thread. A future cross-runtime sharing path that could drop this state's last
-        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
-        // hop back to the JS thread here first.
+        // Hermes runs this on its finalizer thread while the JS thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and `destroy()` can release JS objects
+        // here. Don't send that work to another thread: it would run after Hermes frees its
+        // values. A future cross-runtime sharing path that could drop this state's last JSI slot
+        // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
+        // would need to hop to the JS thread here first.
         nativeState.appContext.destroy()
       }
     }
@@ -720,12 +741,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @objc
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
-    // [0] When ExpoModulesCore is built as separated framework/module,
-    // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
-    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
-    // uncommon case where both values are identical valid identifiers.
+    // [0] When ExpoModulesCore is built as a separate framework/module,
+    // explicitly load the main bundle's `ExpoModulesProvider` class.
+    // `ExpoModulesProviderModuleName` is an internal key that allows repack-app to
+    // preserve the original Swift module name. Try `CFBundleExecutable` next because
+    // it usually matches the Swift module name. Keep `CFBundleName` as a final fallback
+    // for cases where it is also a valid module identifier.
     let mainBundleNames = [
+      Bundle.main.infoDictionary?["ExpoModulesProviderModuleName"],
       Bundle.main.infoDictionary?["CFBundleExecutable"],
       Bundle.main.infoDictionary?["CFBundleName"]
     ].compactMap { $0 as? String }
@@ -741,7 +764,27 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       return providerClass.init()
     }
 
-    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    // [2] Fallback to the framework that contains ExpoModulesCore itself (brownfield use case).
+    // Brownfield apps often prelink React Native and Expo into one dynamic framework; the
+    // generated provider is then compiled into that framework, so its Swift module is the
+    // framework's name and the main-bundle lookups above miss. Trying this bundle first avoids
+    // the `Bundle.allFrameworks` scan below, which materializes a bundle for every loaded
+    // framework and runs inside `+load` on every cold launch.
+    let coreBundle = Bundle(for: AppContext.self)
+    if coreBundle.bundlePath != Bundle.main.bundlePath {
+      let coreBundleNames = [
+        coreBundle.infoDictionary?["CFBundleExecutable"],
+        coreBundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: coreBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
+      }
+    }
+
+    // [3] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       let frameworkBundleNames = [
         bundle.infoDictionary?["CFBundleExecutable"],
@@ -755,16 +798,31 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       }
     }
 
-    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [4] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 
   internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
     var seen = Set<String>()
-    return bundleNames.compactMap { bundleName in
+    return bundleNames.flatMap { [$0, c99ExtendedIdentifier($0)] }.compactMap { bundleName in
       let candidate = "\(bundleName).\(providerName)"
       return seen.insert(candidate).inserted ? candidate : nil
     }
+  }
+
+  /**
+   Applies the same substitution as Xcode's `:c99extidentifier` string operator, which derives the
+   default `PRODUCT_MODULE_NAME` (and thus the Swift module name) from `PRODUCT_NAME`. The bundle
+   names above are the raw product name, so the two differ whenever the product name is not a valid
+   C99 identifier — most commonly when the app's `name` starts with a digit, where a product name of
+   `123myapp` compiles into the Swift module `_23myapp`.
+   */
+  internal static func c99ExtendedIdentifier(_ name: String) -> String {
+    var characters = name.map { $0.isLetter || $0.isNumber || $0 == "_" ? $0 : "_" }
+    if let first = characters.first, first.isNumber {
+      characters[0] = "_"
+    }
+    return String(characters)
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
@@ -785,12 +843,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
 /**
  Reference-type store for cached worklet prototypes. Needed because JavaScriptObject
- is ~Copyable and cannot be stored in a Dictionary; we cache via JavaScriptValue
- (a class) and rehydrate a JavaScriptObject on use.
+ is ~Copyable and cannot be stored in a Dictionary; we cache the prototype as a
+ `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
 private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptValue] = [:]
+  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
 
 // MARK: - Public exceptions

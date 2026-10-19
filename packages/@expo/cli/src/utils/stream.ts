@@ -7,7 +7,7 @@ export async function streamToStringAsync(stream: ReadableStream): Promise<strin
     result = await reader.read();
     if (result.value) {
       if (!(result.value instanceof Uint8Array)) {
-        throw new Error('Unexepected buffer type');
+        throw new Error('Unexpected buffer type');
       }
       outs.push(decoder.decode(result.value, { stream: true }));
     }

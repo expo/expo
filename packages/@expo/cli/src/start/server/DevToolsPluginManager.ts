@@ -1,26 +1,30 @@
+import { events } from '2g';
+import type { SerializedError } from '2g';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
-import { events } from '../../events';
 import { Log } from '../../log';
 import { DevToolsPlugin } from './DevToolsPlugin';
 
-const debug = require('debug')('expo:start:server:devtools');
-
 export const DevToolsPluginEndpoint = '/_expo/plugins';
 
-export const event = events('expo', (t) => [
-  t.event<
-    'dev-tools-plugin:load',
-    {
+declare module '2g' {
+  interface EventRegistry {
+    'expo:dev-tools-plugin:load': {
       plugins: {
         packageName: string;
         bannerTitle: string;
         cliBanner: boolean;
         webpageEndpoint: string | undefined;
       }[];
-    }
-  >(),
-]);
+    };
+    'expo:dev-tools-plugin:error': {
+      packageName: string;
+      error: SerializedError;
+    };
+  }
+}
+
+export const event = events('expo');
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
@@ -57,7 +61,6 @@ export default class DevToolsPluginManager {
         Object.values(revisions).map((revision) => resolveModuleAsync(revision.name, revision))
       )
     ).filter((maybePlugin) => maybePlugin != null);
-    debug('Found autolinked plugins', plugins);
     return plugins
       .map((pluginInfo) => {
         try {
@@ -66,7 +69,10 @@ export default class DevToolsPluginManager {
           Log.warn(
             `Skipping plugin "${pluginInfo.packageName}": ${error.message ?? 'invalid configuration'}`
           );
-          debug('Plugin validation error for %s: %O', pluginInfo.packageName, error);
+          event('dev-tools-plugin:error', {
+            packageName: pluginInfo.packageName,
+            error: event.error(error as Error),
+          });
           return null;
         }
       })

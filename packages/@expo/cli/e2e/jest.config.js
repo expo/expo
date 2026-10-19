@@ -6,7 +6,7 @@ const roots = ['../__mocks__', '.'];
 
 /** @type {import('jest').Config} */
 module.exports = {
-  ...require('expo-module-scripts/jest-preset-cli'),
+  ...require('@expo/internal-scripts/jest-preset-cli'),
   testEnvironment: 'node',
   testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
   rootDir: path.resolve(__dirname),

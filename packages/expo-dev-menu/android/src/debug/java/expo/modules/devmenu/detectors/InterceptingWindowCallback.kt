@@ -15,11 +15,11 @@ import androidx.annotation.RequiresApi
  */
 internal class InterceptingWindowCallback(
   private val wrapped: Window.Callback,
-  private var threeFingerLongPressDetector: ThreeFingerLongPressDetector,
+  private var threeFingerLongPressDetector: ThreeFingerLongPressDetector?,
   private var keyEventDispatcher: (KeyEvent) -> Boolean
 ) : Window.Callback by wrapped {
   fun updateDetector(newDetector: ThreeFingerLongPressDetector) {
-    threeFingerLongPressDetector.cancelDetection()
+    threeFingerLongPressDetector?.cancelDetection()
     threeFingerLongPressDetector = newDetector
   }
 
@@ -28,7 +28,7 @@ internal class InterceptingWindowCallback(
   }
 
   override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-    threeFingerLongPressDetector.onTouchEvent(event)
+    threeFingerLongPressDetector?.onTouchEvent(event)
     return wrapped.dispatchTouchEvent(event)
   }
 

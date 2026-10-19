@@ -9,16 +9,19 @@ import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import {
+  getRouteInfoForLocation,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
+import type { AssetInfo } from 'expo-server/private';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { createDebug } from '../utils/debug';
 import {
-  createFaviconAsString,
-  createInjectedCssAsString,
-  createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
+  injectAssetsIntoHtml,
   serializeHelmetToHtml,
 } from '../utils/html';
 import { getRootComponent } from './getRootComponent';
@@ -42,13 +45,8 @@ export type GetStaticContentOptions = {
     key: string;
   };
   request?: Request;
-  /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
-  assets?: {
-    css: string[];
-    js: string[];
-    /** Public href of a favicon generated from `web.favicon` in the app config. */
-    favicon?: string;
-  };
+  hydrate?: boolean;
+  assets?: AssetInfo;
 };
 
 /**
@@ -58,6 +56,7 @@ export type GetStaticContentOptions = {
 function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
+  const { pathname, params } = getRouteInfoForLocation(ctx, location);
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -68,7 +67,7 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
     location,
     context: ctx,
     wrapper: ({ children }: React.ComponentProps<any>) => (
-      <Root>
+      <Root pathname={pathname} params={params}>
         <div id="root">{children}</div>
       </Root>
     ),
@@ -120,26 +119,7 @@ export async function getStaticContent(
       output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 
-    // Inject favicon link tag. Mirrors `assets.favicon` handling in `getStreamingContent`.
-    if (options?.assets?.favicon) {
-      output = output.replace('</head>', `${createFaviconAsString(options.assets.favicon)}</head>`);
-    }
-
-    // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-    if (options?.assets) {
-      if (options.assets.css.length > 0) {
-        const injectedCSS = createInjectedCssAsString(options.assets.css);
-        output = output.replace('</head>', `${injectedCSS}\n</head>`);
-      }
-
-      if (options.assets.js.length > 0) {
-        // In non-streaming mode, use deferred scripts in the body
-        output = output.replace(
-          '</body>',
-          `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
-        );
-      }
-    }
+    output = injectAssetsIntoHtml(output, { assets: options?.assets, hydrate: options?.hydrate });
 
     return '<!DOCTYPE html>' + output;
   });

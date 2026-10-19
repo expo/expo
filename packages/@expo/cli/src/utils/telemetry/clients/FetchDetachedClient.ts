@@ -3,9 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { createTempFilePath } from '../../createTempPath';
+import { debugEvent as event } from '../events';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
-
-const debug = require('debug')('expo:telemetry:client:detached') as typeof console.log;
 
 export class FetchDetachedClient implements TelemetryClient {
   /** This client should be used for short-lived commands */
@@ -29,7 +28,7 @@ export class FetchDetachedClient implements TelemetryClient {
   async flush() {
     try {
       if (!this.records.length) {
-        return debug('No records to flush, skipping...');
+        return;
       }
 
       const file = createTempFilePath('expo-telemetry.json');
@@ -51,9 +50,7 @@ export class FetchDetachedClient implements TelemetryClient {
     } catch (error) {
       // This could fail if any direct or indirect imports change during an upgrade to the `expo` dependency via `npx expo install --fix`,
       // since this file may no longer be present after the upgrade, but before the process under the old Expo CLI version is terminated.
-      debug('Exception while initiating detached flush:', error);
+      event('flush_error', { error: event.error(error as Error) });
     }
-
-    debug('Detached flush started');
   }
 }

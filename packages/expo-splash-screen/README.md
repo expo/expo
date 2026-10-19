@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/379606/120575890-b7437080-c3d6-11eb-9c
 
 > **Android only.**
 
-By using this resize mode your app will will leverage Android's ability to present a static bitmap while the application is starting up.
+By using this resize mode your app will leverage Android's ability to present a static bitmap while the application is starting up.
 Android (unlike iOS) does not support stretching of the provided image during launch, so the application will present the given image centered on the screen at its original dimensions.
 
 <table>
@@ -492,7 +492,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 3. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 4. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 5. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
-6. [(<em>optional</em>) Customzine `resizeMode`](#-optional-customize-resizemode)
+6. [(<em>optional</em>) Customize `resizeMode`](#-optional-customize-resizemode)
 7. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 8. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 

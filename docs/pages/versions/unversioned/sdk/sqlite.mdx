@@ -9,10 +9,11 @@ platforms: ['android', 'ios', 'macos', 'tvos', 'web', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { AgentSkillSection } from '~/components/plugins/AgentSkillSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { DiffBlock } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
@@ -22,6 +23,10 @@ import { Step } from '~/ui/components/Step';
 ## Installation
 
 <APIInstallSection />
+
+### Agent skill
+
+<AgentSkillSection />
 
 ## Configuration in app config
 
@@ -75,12 +80,6 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
       default: 'false',
     },
     {
-      name: 'useLibSQL',
-      description:
-        'Use [libSQL](https://github.com/tursodatabase/libsql) rather than the default SQLite.',
-      default: 'false',
-    },
-    {
       name: 'withSQLiteVecExtension',
       description:
         'Include the [sqlite-vec](https://github.com/asg017/sqlite-vec) extension to [`bundledExtensions`](#sqlitebundledextensions).',
@@ -91,11 +90,9 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 ## Web setup
 
-> **important** Web support is in [alpha](/more/release-statuses/#alpha) and may be unstable. [Create an issue on GitHub](https://github.com/expo/expo/issues) if you encounter any issues.
-
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
-Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
+Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more about customizing Metro](/guides/customizing-metro/).
 
 <DiffBlock source="/static/diffs/sqlite-web-metro-config.diff" />
 
@@ -120,6 +117,32 @@ If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can con
   }
 }
 ```
+
+### Use a custom WebAssembly build
+
+The config plugin properties, such as `enableFTS`, only apply to Android and iOS. On web, `expo-sqlite` uses a prebuilt WebAssembly build of SQLite without full-text search (FTS). To enable FTS or other compile options on web, build your own WebAssembly file from [`expo/wa-sqlite`](https://github.com/expo/wa-sqlite) with [Emscripten](https://emscripten.org/):
+
+<Terminal
+  cmd={[
+    '$ git clone https://github.com/expo/wa-sqlite.git',
+    '$ cd wa-sqlite',
+    '$ make deps',
+    '$ make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"',
+  ]}
+  cmdCopy='git clone https://github.com/expo/wa-sqlite.git && cd wa-sqlite && make deps && make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"'
+/>
+
+Copy **dist/wa-sqlite.wasm** to **assets/wa-sqlite-fts.wasm** in your project. Then pass it to [`configureWeb()`](#sqliteconfigureweboptions) before opening any database, for example, in your root layout:
+
+```tsx app/_layout.tsx
+import * as SQLite from 'expo-sqlite';
+
+if (process.env.EXPO_OS === 'web') {
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
+}
+```
+
+> **warning** Build from the `expo/wa-sqlite` revision that matches your `expo-sqlite` version. A build from another revision may fail to load.
 
 ## Usage
 
@@ -287,7 +310,7 @@ export function Header() {
       const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
         'SELECT sqlite_version()'
       );
-      setVersion(result['sqlite_version()']);
+      setVersion(result?.['sqlite_version()'] ?? '');
     }
     setup();
   }, []);
@@ -328,9 +351,8 @@ export function Content() {
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
-  let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }
@@ -356,7 +378,7 @@ const styles = StyleSheet.create({
 
 ### `useSQLiteContext()` hook with `React.Suspense`
 
-As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
+As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqlitesqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
 
 ```tsx useSQLiteContext() hook with React.Suspense
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
@@ -366,7 +388,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Suspense fallback={<Fallback />}>
+      <Suspense fallback={<Text>Loading...</Text>}>
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded} useSuspense>
           <Header />
           <Content />
@@ -430,7 +452,7 @@ await db.execAsync('PRAGMA foreign_keys = ON');
 
 ### Import an existing database
 
-To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqliteprovider) with [`assetSource`](#assetsource).
+To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqlitesqliteprovider) with [`assetSource`](#assetsource).
 
 ```tsx useSQLiteContext() with existing database
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
@@ -526,7 +548,7 @@ The `expo-sqlite` library includes a built-in DevTools inspector plugin that is 
 
 <ContentSpotlight
   alt="SQLite inspector showing a data browser with table rows, edit/delete actions, and a sidebar listing tables"
-  src="/static/images/sdk/sqlite/inspector.png"
+  src="/static/images/sdk/sqlite/inspector.webp"
 />
 
 Alternatively, you can also use the [`drizzle-studio-expo` dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo) to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration and does not require [Drizzle ORM](#drizzle-orm). [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
@@ -610,13 +632,28 @@ const db = await SQLite.openDatabaseAsync('databaseName');
 await db.execAsync(`PRAGMA key = 'password'`);
 ```
 
+> **warning** If the app binary does not include SQLCipher, `PRAGMA key` has no effect and does not throw an error. SQLite ignores pragmas that it does not recognize, so it stores the database without encryption. This happens in Expo Go, when you change `useSQLCipher` and do not run `npx expo prebuild` and rebuild the app, or when `useSQLCipher` is `false` for the current platform.
+
+To make sure that SQLCipher is available before you set the password, query `PRAGMA cipher_version`. It returns a row only when the app uses SQLCipher.
+
+```ts Check for SQLCipher before you add a password
+const db = await SQLite.openDatabaseAsync('databaseName');
+const cipher = await db.getFirstAsync<{ cipher_version: string }>('PRAGMA cipher_version');
+if (cipher == null) {
+  throw new Error(
+    'SQLCipher is not available in this build, so the database would not be encrypted. Set `useSQLCipher` in the expo-sqlite config plugin and rebuild the app.'
+  );
+}
+await db.execAsync(`PRAGMA key = 'password'`);
+```
+
 ## API
 
 ### Cheatsheet for the common API
 
 The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedatabase) and [`SQLiteStatement`](#sqlitestatement) classes:
 
-| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use Case                                                                                                                                                                                   |
+| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use case                                                                                                                                                                                   |
 | ------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`runAsync()`](#runasyncsource-params)           | [`executeAsync()`](#executeasyncparams)                                       | Executes a SQL query, returning information on the changes made.                                                                                                       | Ideal for SQL write operations such as `INSERT`, `UPDATE`, `DELETE`.                                                                                                                       |
 | [`getFirstAsync()`](#getfirstasyncsource-params) | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getfirstasync) | Retrieves the first row from the query result.                                                                                                                         | Suitable for fetching a single row from the database. For example: `getFirstAsync('SELECT * FROM Users WHERE id = ?', userId)`.                                                            |

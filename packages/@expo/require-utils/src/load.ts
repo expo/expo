@@ -4,11 +4,11 @@ import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
 import vm from 'node:vm';
-import type * as ts from 'typescript';
 
-import { annotateError, formatDiagnostic } from './codeframe';
+import { annotateError, formatDiagnostic, type Diagnostic } from './codeframe';
 import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
+import { transpile } from './typescript';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -27,22 +27,6 @@ declare global {
       isBun?: boolean;
     }
   }
-}
-
-let _ts: typeof import('typescript') | null | undefined;
-function loadTypescript() {
-  if (_ts === undefined) {
-    try {
-      _ts = require('typescript');
-    } catch (error: any) {
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      } else {
-        _ts = null;
-      }
-    }
-  }
-  return _ts;
 }
 
 const parent = module;
@@ -272,6 +256,21 @@ function containsModuleSyntax(code: string): boolean {
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
+function supportsStripTypeScriptTypesTransform(): boolean {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0]! < 26;
+}
+
+function stripTypeScriptTypes(code: string): string {
+  if (!supportsStripTypeScriptTypesTransform()) {
+    return nodeModule.stripTypeScriptTypes(code);
+  }
+  return nodeModule.stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true,
+  });
+}
+
 function evalModule(
   code: string,
   filename: string,
@@ -282,53 +281,25 @@ function evalModule(
 
   let inputCode = code;
   let inputFilename = filename;
-  let diagnostic: ts.Diagnostic | undefined;
+  let diagnostic: Diagnostic | undefined;
   if (
     format.mode === 'typescript' ||
     format.mode === 'module-typescript' ||
     format.mode === 'commonjs-typescript'
   ) {
-    const ts = loadTypescript();
-
-    if (ts) {
-      let module: ts.ModuleKind;
-      if (format.mode === 'commonjs-typescript') {
-        module = ts.ModuleKind.CommonJS;
-      } else if (format.mode === 'module-typescript') {
-        module = ts.ModuleKind.ESNext;
-      } else {
-        // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
-        // and stop TypeScript from either transpiling it to CommonJS or adding an `export {}`
-        // if no exports are used. This allows the user to choose if this file is CJS or ESM
-        // (but not to mix both)
-        module = ts.ModuleKind.Preserve;
-      }
-      const output = ts.transpileModule(code, {
-        fileName: filename,
-        reportDiagnostics: true,
-        compilerOptions: {
-          module,
-          moduleResolution: ts.ModuleResolutionKind.Bundler,
-          // `verbatimModuleSyntax` needs to be off, to erase as many imports as possible
-          verbatimModuleSyntax: false,
-          target: ts.ScriptTarget.ESNext,
-          newLine: ts.NewLineKind.LineFeed,
-          inlineSourceMap: true,
-          esModuleInterop: true,
-        },
-      });
-      inputCode = output?.outputText || inputCode;
-      if (output?.diagnostics?.length) {
-        diagnostic = output.diagnostics[0];
-      }
+    const output = transpile(code, filename, format.mode);
+    if (output) {
+      inputCode = output.outputText;
+      diagnostic = output.diagnostic;
     }
 
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule.stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true,
-      });
+      inputCode = stripTypeScriptTypes(code);
+      if (format.mode === 'commonjs-typescript') {
+        // NOTE(@kitten): Match TypeScript's CommonJS emit with esModuleInterop enabled.
+        inputCode = toCommonJS(filename, inputCode, 'babel');
+      }
     }
 
     if (inputCode !== code) {
@@ -363,7 +334,7 @@ function evalModule(
   } catch (error: any) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    const diagnosticError = formatDiagnostic(diagnostic);
+    const diagnosticError = formatDiagnostic(code, diagnostic);
     if (diagnosticError) {
       throw diagnosticError;
     }

@@ -21,13 +21,12 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../../../log';
+import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
-import type {
-  AutolinkingModuleResolverInput,
-  AutolinkingPlatform,
-} from './createExpoAutolinkingResolver';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
+import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
@@ -36,7 +35,11 @@ import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
@@ -47,8 +50,6 @@ export type StrictResolverFactory = (
   context: ResolutionContext,
   platform: string | null
 ) => StrictResolver;
-
-const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 interface PlatformExtensions {
   sourceExts: string[];
@@ -100,8 +101,6 @@ function resolveWithPlatformExtensions(
   return resolver(platformContext, moduleName, null);
 }
 
-const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
-
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
 }
@@ -150,7 +149,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
+  const getPolyfills: typeof originalGetPolyfills = (ctx) => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -181,23 +180,22 @@ function withWebPolyfills(
 
     if (ctx.platform === 'web') {
       try {
-        const rnGetPolyfills: () => string[] = require('react-native/rn-get-polyfills');
+        // TODO(@kitten): Vendor these polyfills. React Native 0.87 removed the public
+        // `react-native/rn-get-polyfills` API, so we now reach directly into
+        // `@react-native/js-polyfills` (matching `@expo/metro-config`) — the opposite of what we
+        // want long-term.
+        const rnGetPolyfills: () => string[] = require('@react-native/js-polyfills');
         return [
           ...virtualModulesPolyfills,
           // Ensure that the error-guard polyfill is included in the web polyfills to
           // make metro-runtime work correctly.
           // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-          // NOTE(@kitten): This is technically the public API to get polyfills rather than resolving directly into
-          // `@react-native/js-polyfills`. We should really just start vendoring these, but for now, this exclusion works
           ...rnGetPolyfills().filter((x: string) => !x.includes('/console')),
         ];
       } catch (error: any) {
         if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-          // If react-native is not installed, because we're targeting web, we still continue
+          // If the polyfills aren't installed, because we're targeting web, we still continue
           // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
-          debug(
-            'Skipping react-native/rn-get-polyfills from getPolyfills. react-native is not installed.'
-          );
           return virtualModulesPolyfills;
         } else {
           throw error;
@@ -246,8 +244,10 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Redirect legacy AssetRegistry imports to new public RN API (to remove in Expo SDK 59)
+ *   - `react-native/Libraries/Image/AssetRegistry` -> `react-native/asset-registry`
+ *   - `@react-native/assets-registry/registry` -> `react-native/asset-registry`
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -273,14 +273,10 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/asset-registry': 'react-native-web/asset-registry',
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
-
-  const isExpoRouterInstalled = hasExpoRouterModule(
-    config.projectRoot,
-    autolinkingModuleResolverInput
-  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -293,12 +289,10 @@ export function withExtendedResolver(
 
     // This package is currently always installed as it is included in the `expo` package.
     if (resolveFrom(config.projectRoot, '@expo/vector-icons/package.json')) {
-      debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
     if (isReactServerComponentsEnabled) {
       if (resolveFrom(config.projectRoot, 'expo-router/rsc')) {
-        debug('Enabling bridge alias: expo-router -> expo-router/rsc');
         _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
         // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
         _universalAliases.push([/^expo-router\/entry-classic$/, 'expo-router/rsc/entry']);
@@ -343,7 +337,9 @@ export function withExtendedResolver(
         // If the error is directly related to a resolver not being able to resolve a module, then
         // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
         const isResolutionError =
-          isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+          isFailedToResolveNameError(error) ||
+          isFailedToResolvePathError(error) ||
+          isFailedToResolveUnsupportedError(error);
         if (!isResolutionError) {
           throw error;
         }
@@ -372,18 +368,6 @@ export function withExtendedResolver(
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
       : null;
-  };
-
-  const getAssetRegistryModule = () => {
-    const virtualModuleId = `\0polyfill:assets-registry`;
-    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-      virtualModuleId,
-      ASSET_REGISTRY_SRC
-    );
-    return {
-      type: 'sourceFile',
-      filePath: virtualModuleId,
-    } as const;
   };
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
@@ -456,11 +440,7 @@ export function withExtendedResolver(
   ];
 
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
-  const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
-  const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
-  const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
-
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     function requestDevMockProdReact(
@@ -481,7 +461,6 @@ export function withExtendedResolver(
           // Match if the import originated from a react package.
           context.originModulePath.match(/[\\/]node_modules[\\/](react[-\\/]|scheduler[\\/])/))
       ) {
-        debug(`Skipping production module: ${moduleName}`);
         // /Users/path/to/expo/node_modules/react/index.js ./cjs/react.production.min.js
         // /Users/path/to/expo/node_modules/react/jsx-dev-runtime.js ./cjs/react-jsx-dev-runtime.production.min.js
         // /Users/path/to/expo/node_modules/react-is/index.js ./cjs/react-is.production.min.js
@@ -541,7 +520,6 @@ export function withExtendedResolver(
         );
       }
       const contents = `module.exports=$$require_external('node:${moduleId}');`;
-      debug(`Virtualizing Node.js "${moduleId}"`);
       const virtualModuleId = `\0node:${moduleId}`;
       getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
         virtualModuleId,
@@ -571,7 +549,6 @@ export function withExtendedResolver(
       for (const external of externals) {
         if (external.match(context, moduleName, platform)) {
           if (external.replace === 'empty') {
-            debug(`Redirecting external "${moduleName}" to "${external.replace}"`);
             return {
               type: external.replace,
             };
@@ -581,7 +558,10 @@ export function withExtendedResolver(
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
               platform: platform!,
-              environment: context.customResolverOptions?.environment,
+              environment:
+                typeof context.customResolverOptions?.environment === 'string'
+                  ? context.customResolverOptions.environment
+                  : undefined,
             });
             const contents =
               typeof opaqueId === 'number'
@@ -590,7 +570,6 @@ export function withExtendedResolver(
             // const contents = `module.exports=/*${moduleName}*/__r(require.resolveWeak('${moduleName}'))`;
             // const generatedModuleId = fastHashMemoized(contents);
             const virtualModuleId = `\0weak:${opaqueId}`;
-            debug('Virtualizing module:', moduleName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents
@@ -616,7 +595,6 @@ export function withExtendedResolver(
             }
             const contents = `module.exports=$$require_external('${moduleName}')`;
             const virtualModuleId = `\0node:${moduleName}`;
-            debug('Virtualizing Node.js (custom):', moduleName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents
@@ -650,7 +628,6 @@ export function withExtendedResolver(
             (_, index) => match[parseInt(index, 10)] ?? ''
           );
           const doResolve = getStrictResolver(context, platform);
-          debug(`Alias "${moduleName}" to "${aliasedModule}"`);
           return doResolve(aliasedModule);
         }
       }
@@ -668,17 +645,20 @@ export function withExtendedResolver(
         return getAsyncRequireModule();
       }
 
-      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
-      if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
-        return getAssetRegistryModule();
-      }
-
+      // TODO(@bycedric): React Native 0.87+ drops `react-native/Libraries/Image/AssetRegistry.js`,
+      // in favor of the public API alternative `import { AssetRegistry } from 'react-native'`.
+      // Some libraries have not moved over to `@react-native/assets-registry/registry` or the
+      // new public API, causing resolution or registry issues. This forces usage of the new API.
+      // `react-native-web@>=0.21.4` contains the `react-native-web/asset-registry` export too.
+      // TODO(@bycedric): Drop this in Expo SDK 59
       if (
-        platform === 'web' &&
-        context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
-        moduleName.includes('/modules/AssetRegistry')
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
+        /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
-        return getAssetRegistryModule();
+        return getStrictResolver(
+          context,
+          platform
+        )(platform === 'web' ? 'react-native-web/asset-registry' : 'react-native/asset-registry');
       }
 
       return null;
@@ -722,64 +702,6 @@ export function withExtendedResolver(
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
 
-      if (useExpoUnstableWebModule) {
-        const webModalModule = doReplace(
-          'expo-router/build/layouts/_web-modal.js',
-          'expo-router/build/layouts/ExperimentalModalStack.js'
-        );
-        if (webModalModule) {
-          debug('Using `_unstable-web-modal` implementation.');
-          return webModalModule;
-        }
-      }
-
-      if (disableNativeTabsMaterialSymbols && platform === 'android') {
-        const materialIconConverterModule = doReplace(
-          'expo-router/build/native-tabs/utils/materialIconConverter.android.js',
-          'expo-router/build/native-tabs/utils/materialIconConverter-not-implemented.js'
-        );
-        if (materialIconConverterModule) {
-          debug(
-            'Disabling md support in NativeTabs to tree-shake `expo-symbols` from the Android bundle.'
-          );
-          return materialIconConverterModule;
-        }
-      }
-
-      if (!disableReactNavigationCheck) {
-        // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
-        if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
-          const filePath = context.originModulePath;
-          if (!filePath.includes('node_modules')) {
-            if (
-              moduleName === '@react-navigation/native-stack' ||
-              moduleName === '@react-navigation/drawer'
-            ) {
-              throw new Error(
-                [
-                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
-                  '',
-                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
-                  '',
-                  "  import { Stack } from 'expo-router';",
-                  "  import { Drawer } from 'expo-router/drawer';",
-                  '',
-                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
-                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
-                ].join('\n')
-              );
-            }
-            throw new Error(
-              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
-            );
-          }
-          if (moduleName === '@react-navigation/core') {
-            // We already checked if expo-router resolves
-            return doResolve('expo-router/react-navigation');
-          }
-        }
-      }
-
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -811,8 +733,6 @@ export function withExtendedResolver(
             if (!bundler.hasVirtualModule(virtualId)) {
               bundler.setVirtualModule(virtualId, fs.readFileSync(shimFile, 'utf8'));
             }
-            debug(`Redirecting module "${result.filePath}" to shim`);
-
             return {
               ...result,
               filePath: virtualId,
@@ -827,13 +747,16 @@ export function withExtendedResolver(
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          const emptyModule = doReplace(
+          const emptyInitializeCore = doReplace(
             `${hostPackage}/Libraries/Core/InitializeCore.js`,
             undefined
           );
-          if (emptyModule) {
-            debug('Shimming out InitializeCore for React Native in native SSR bundle');
-            return emptyModule;
+          if (emptyInitializeCore) {
+            return emptyInitializeCore;
+          }
+          const emptySetupEnv = doReplace(`${hostPackage}/src/setup-env.js`, undefined);
+          if (emptySetupEnv) {
+            return emptySetupEnv;
           }
         }
 
@@ -968,7 +891,6 @@ function doReplaceHelper(
   try {
     const hmrModule = doResolve(to);
     if (hmrModule.type === 'sourceFile') {
-      debug(`Using \`${to}\` implementation.`);
       return hmrModule;
     }
   } catch (resolutionError) {
@@ -977,8 +899,6 @@ function doReplaceHelper(
         cause: resolutionError,
       });
     }
-
-    debug(`Failed to resolve ${to} when swapping from ${from}: ${resolutionError}`);
   }
   return undefined;
 }
@@ -1006,6 +926,7 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
+    serverRoot,
 
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
@@ -1014,7 +935,7 @@ export async function withMetroMultiPlatformAsync(
 
     getMetroBundler,
   }: {
-    config: ConfigT;
+    config: ExpoMetroConfig;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
@@ -1034,8 +955,12 @@ export async function withMetroMultiPlatformAsync(
   // NOTE(@kitten): If the on-demand filesystem is enabled, we can aggressively cut down the `watchFolders`
   // to a minimum, since the files will be read lazily. This almost always speeds up exports
   if (isExporting && !!config.resolver.unstable_onDemandFilesystem) {
+    // Preserve additional watchFolders the user added outside of serverRoot explicitly
+    // TODO(@kitten): In the future we can instead use the `onDemandFilesystem: 'UNSTABLE_ALLOW_ALL'` mode while issuing a warning
+    const internalRoot = serverRoot ?? projectRoot;
+    const externalWatchFolders = watchFolders.filter((dir) => !isPathInside(dir, internalRoot));
     watchFolders.length = 0;
-    watchFolders.push(projectRoot);
+    watchFolders.push(projectRoot, ...externalWatchFolders);
   }
 
   // Change the default metro-runtime to a custom one that supports bundle splitting.
@@ -1078,19 +1003,4 @@ export async function withMetroMultiPlatformAsync(
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
-}
-
-function hasExpoRouterModule(
-  projectRoot: string,
-  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
-) {
-  if (autolinkingModuleResolverInput) {
-    // If we have autolinking enabled, we can skip resolution
-    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
-    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
-  } else {
-    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
-      skipNodePath: true,
-    });
-  }
 }

@@ -80,22 +80,22 @@ All public-facing functions are async functions because asset validation has to 
 
 #### .validateSchemaAsync(Object data) -> Promise
 
-Returns a promise that resolve to `true` if the data is conforms to the schema. Otherwise, it rejects and throws an array of `ValidationError`s.
+Returns a promise that resolves to `true` if the data conforms to the schema. Otherwise, it rejects and throws an array of `ValidationError`s.
 
 #### .validateAssetsAsync(Object data) -> Promise
 
-Returns a promise that resolve to `true` if the data is conforms to the additional validation steps found in each meta tag. For example, it will download an asset and read the header of the file to see if it is a certain content type.
+Returns a promise that resolves to `true` if the data conforms to the additional validation steps found in each meta tag. For example, it will download an asset and read the header of the file to see if it is a certain content type.
 Otherwise, it rejects and throws an array of `ValidationError`s.
 
 #### .validateAll(Object data) -> Promise
 
 Runs both `.validateSchemaAsync` and `.validateAssetsAsync`.
-Returns a promise that resolve to `true` if the data passes both functions. Otherwise, it rejects and throws an array of `ValidationError`s.
+Returns a promise that resolves to `true` if the data passes both functions. Otherwise, it rejects and throws an array of `ValidationError`s.
 
 #### .validateProperty(String fieldPath, Object data) -> Promise
 
 Extracts the subSchema for the given field path and validates the data against it. Also checks for the meta tag.
-Returns a promise that resolve to `true` if the data conforms to the subschema. Otherwise, it rejects and throws an array of `ValidationError`s.
+Returns a promise that resolves to `true` if the data conforms to the subschema. Otherwise, it rejects and throws an array of `ValidationError`s.
 
 #### .errors
 

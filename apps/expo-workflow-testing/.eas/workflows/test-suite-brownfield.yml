@@ -1,8 +1,13 @@
 name: Test Suite Brownfield Integrated
 
+defaults:
+  tools:
+    pnpm: '12.2.1'
+
 on:
   workflow_dispatch: {}
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield.yml
       - apps/brownfield-tester/**

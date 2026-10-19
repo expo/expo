@@ -3,19 +3,17 @@ import { OpenDiscoveryResult, OpenSinglePlatformResult } from '../OpenMiddleware
 import { createOpen, resolveOpenInfo } from '../openHandlers';
 
 jest.mock('../../../../log');
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 
 const TUNNEL_URL = 'https://abc.ngrok-free.app';
 const LAN_ADDR = '192.168.7.42';
 
-beforeEach(() => {
-  delete process.env.EXPO_PACKAGER_PROXY_URL;
-  delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
-});
-
 function lanCreator(scheme: string | null = 'myapp') {
   return new UrlCreator(
     { scheme: scheme ?? undefined },
-    { port: 8081, getTunnelUrl: () => null },
+    { getPort: () => 8081, getTunnelUrl: () => null },
     { address: LAN_ADDR, iname: null, gateway: null, internal: false }
   );
 }
@@ -23,7 +21,7 @@ function lanCreator(scheme: string | null = 'myapp') {
 function tunnelCreator(scheme: string | null = 'myapp') {
   return new UrlCreator(
     { scheme: scheme ?? undefined, hostType: 'tunnel' },
-    { port: 8081, getTunnelUrl: () => TUNNEL_URL },
+    { getPort: () => 8081, getTunnelUrl: () => TUNNEL_URL },
     { address: LAN_ADDR, iname: null, gateway: null, internal: false }
   );
 }
@@ -61,6 +59,21 @@ describe('resolveOpenInfo — LAN (no tunnel)', () => {
     expect(info.runtime).toBe('web');
     expect(info.url).toBe(`http://${LAN_ADDR}:8081`);
   });
+
+  it('appends the dev menu launch params to the expo go deep link when EXPO_NO_DEV_MENU is set', async () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    try {
+      const info = (await resolveOpenInfo(
+        { platform: 'ios', runtime: 'default' },
+        deps
+      )) as OpenSinglePlatformResult;
+      expect(info.url).toBe(
+        `exp://${LAN_ADDR}:8081?__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1`
+      );
+    } finally {
+      delete process.env.EXPO_NO_DEV_MENU;
+    }
+  });
 });
 
 describe('resolveOpenInfo — tunnel', () => {
@@ -84,7 +97,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: 'android', runtime: 'custom' },
       baseDeps
     )) as OpenSinglePlatformResult;
-    expect(info.url).toBe('myapp://expo-development-client/?url=https%3A%2F%2Fabc.ngrok-free.app');
+    expect(info.url).toBe('myapp://?__expo_url=https%3A%2F%2Fabc.ngrok-free.app');
   });
 
   it('routes the disambiguation URL through the tunnel host and omits the runtime field', async () => {
@@ -133,7 +146,7 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
       }
     )) as OpenSinglePlatformResult;
     expect(info.runtime).toBe('custom');
-    expect(info.url).toMatch(/^myapp:\/\/expo-development-client\//);
+    expect(info.url).toMatch(/^myapp:\/\/\?__expo_url=/);
     expect(info.availableRuntimes).toEqual(['custom']);
   });
 

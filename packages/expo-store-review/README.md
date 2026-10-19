@@ -7,7 +7,7 @@
   </a>
 </p>
 
-`expo-store-review` allows users rate your application inside App Store and Google Play Store.
+`expo-store-review` allows users to rate your application inside App Store and Google Play Store.
 
 # API documentation
 

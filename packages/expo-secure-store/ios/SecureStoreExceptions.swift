@@ -28,10 +28,10 @@ internal final class KeyChainException: GenericException<OSStatus> {
       return "I/O error."
 
     case errSecOpWr:
-      return "File already open with with write permission."
+      return "File already open with write permission."
 
     case errSecParam:
-      return "One or more parameters passed to a function where not valid."
+      return "One or more parameters passed to a function were not valid."
 
     case errSecAllocate:
       return "Failed to allocate memory."

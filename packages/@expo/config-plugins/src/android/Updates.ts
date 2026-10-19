@@ -1,15 +1,5 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
-import type { AndroidManifest } from './Manifest';
-import {
-  addMetaDataItemToMainApplication,
-  findMetaDataItem,
-  getMainApplicationOrThrow,
-  removeMetaDataItemFromMainApplication,
-} from './Manifest';
-import { buildResourceItem, type ResourceXML } from './Resources';
-import { removeStringItem, setStringItem } from './Strings';
 import type { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
@@ -23,12 +13,23 @@ import {
   getUpdatesCodeSigningMetadataStringified,
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
+  getUpdatesMaxUpdatesToKeep,
   getUpdatesTimeout,
   getUpdateUrl,
   getUpdatesBsdiffPatchSupportEnabled,
   getUpdatesUseEmbeddedUpdate,
 } from '../utils/Updates';
 import { addWarningAndroid } from '../utils/warnings';
+import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
+import type { AndroidManifest } from './Manifest';
+import {
+  addMetaDataItemToMainApplication,
+  findMetaDataItem,
+  getMainApplicationOrThrow,
+  removeMetaDataItemFromMainApplication,
+} from './Manifest';
+import { buildResourceItem, type ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
 
 export enum Config {
   ENABLED = 'expo.modules.updates.ENABLED',
@@ -42,6 +43,7 @@ export enum Config {
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
   DISABLE_ANTI_BRICKING_MEASURES = 'expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES',
   BSDIFF_PATCH_SUPPORT = 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT',
+  MAX_UPDATES_TO_KEEP = 'expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP',
 }
 
 // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
@@ -202,6 +204,17 @@ export async function setUpdatesConfigAsync(
     Config.BSDIFF_PATCH_SUPPORT,
     getUpdatesBsdiffPatchSupportEnabled(config) ? 'true' : 'false'
   );
+
+  const maxUpdatesToKeep = getUpdatesMaxUpdatesToKeep(config);
+  if (maxUpdatesToKeep !== undefined) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.MAX_UPDATES_TO_KEEP,
+      String(maxUpdatesToKeep)
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.MAX_UPDATES_TO_KEEP);
+  }
 
   return await setVersionsConfigAsync(projectRoot, config, androidManifest);
 }

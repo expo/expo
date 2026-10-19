@@ -5,8 +5,6 @@ type Props = {
   enabled: boolean;
   active: 0 | 1 | 2 | Animated.AnimatedInterpolation<0 | 1>;
   children: ReactNode;
-  freezeOnBlur?: boolean;
-  shouldFreeze: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -35,7 +33,9 @@ export const MaybeScreenContainer = ({
 
 export function MaybeScreen({ enabled, active, ...rest }: ViewProps & Props) {
   if (Screens?.screensEnabled?.()) {
-    return <Screens.Screen enabled={enabled} activityState={active} {...rest} />;
+    return (
+      <Screens.Screen {...rest} enabled={enabled} activityState={active} freezeOnBlur={false} />
+    );
   }
 
   return <View {...rest} />;

@@ -8,10 +8,11 @@
 import { traverse, template, types as t } from '@babel/core';
 import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
+import type { AsyncDependencyType as MetroAsyncDependencyType } from '@expo/metro/metro/DeltaBundler/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
-const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+import { debugEvent } from './events';
 
 const MAGIC_IMPORT_COMMENTS = [
   '@metro-ignore',
@@ -25,7 +26,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
+export type AsyncDependencyType = MetroAsyncDependencyType | 'worker';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];
@@ -628,9 +629,10 @@ function processImportCall(
   // Check both leading and inner comments
   if (hasMagicImportComment(path)) {
     const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
-    debug(
-      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
-    );
+    debugEvent('collect_deps:magic_comment_ignored', {
+      line: line || '<unknown>',
+      code: generate(path.node).code,
+    });
     return;
   }
 

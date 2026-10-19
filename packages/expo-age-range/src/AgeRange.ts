@@ -5,6 +5,8 @@ import type {
   AgeRangeRequest,
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
+  AgeSignalsStatus,
+  FakeAgeSignals,
 } from './ExpoAgeRange.types';
 
 /**
@@ -13,6 +15,9 @@ import type {
  * The user needs to be signed in on the device to get a valid response.
  * When not supported (earlier than iOS 26 and web), the call returns `lowerBound: 18`, which is equivalent to the response of an adult user.
  *
+ * On Android, call [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) first and
+ * only call this function when it resolves with `'SHARED'`. Play Age Signals reports every field as
+ * `null` otherwise.
  *
  * @platform android
  * @platform ios 26.0+
@@ -100,4 +105,59 @@ export async function getRequiredRegulatoryFeaturesAsync(): Promise<
     return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
   }
   return null;
+}
+
+/**
+ * Asks the user to consent to sharing their age signals, showing the Play Age Signals in-app age sharing consent
+ * screen. Play Age Signals requires this before [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions):
+ * age signals are only reported while the status is `'SHARED'`.
+ *
+ * - Resolves with `'SHARED'` when the user agrees to share their age signals. Only then does
+ *   `requestAgeRangeAsync` report an age range.
+ * - Resolves with `'NOT_SHARED'` when the user does not agree. `requestAgeRangeAsync` reports every
+ *   field as `null` until the user consents.
+ * - Resolves with `'VERIFICATION_REQUIRED'` when the user's age is unknown and they are in a region
+ *   where age verification is mandatory. Ask the user to visit the Play Store to resolve their status.
+ * - Resolves with `null` when Play Age Signals reports no status, and on iOS and web. On iOS the consent prompt
+ *   is part of `requestAgeRangeAsync` itself, so there is nothing separate to call.
+ * - Rejects when the request fails.
+ *
+ * @platform android
+ */
+export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null> {
+  if (Platform.OS === 'android') {
+    return ExpoAgeRange.requestAgeSignalsAccessAsync();
+  }
+  return null;
+}
+
+/**
+ * Fakes the age signals that [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) report, using Play Age Signals
+ * [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
+ * Pass `null` to go back to the real signals.
+ *
+ * Only debuggable builds can fake signals. Passing anything other than `null` in a build that is not debuggable
+ * throws.
+ *
+ * @param fake The signals or an error to report, or `null` to report the real signals.
+ *
+ * @example
+ * ```ts
+ * // A supervised 13 to 15 year old with a change waiting for approval.
+ * setFakeAgeSignals({
+ *   ageSignalsStatus: 'SHARED',
+ *   lowerBound: 13,
+ *   upperBound: 15,
+ *   ageRangeSource: 'TIER_B',
+ *   significantChangeStatus: 'PENDING',
+ * });
+ * ```
+ *
+ * @platform android
+ */
+export function setFakeAgeSignals(fake: FakeAgeSignals | null): void {
+  if (Platform.OS === 'android') {
+    ExpoAgeRange.setFakeAgeSignals(fake);
+  }
 }

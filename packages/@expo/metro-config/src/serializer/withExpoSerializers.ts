@@ -12,13 +12,16 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
 import { env } from '../env';
+import { findUnsupportedWorkerAsyncDependency } from './chunking/findUnsupportedWorkerAsyncDependency';
 import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
+import type { ChunkingStrategy } from './serializerAssets';
 import { sourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
@@ -353,12 +356,33 @@ function getDefaultSerializer(
       ...serializerOptions,
     };
 
+    const customTransformOptions = graph.transformOptions.customTransformOptions;
+    const isLazyBundle = options.includeAsyncPaths;
+    const isGranularEligible =
+      customSerializerOptions?.chunkingStrategy === 'granular' &&
+      customSerializerOptions.exporting &&
+      serializerOptions.splitChunks &&
+      context.platform === 'web' &&
+      context.environment === 'client' &&
+      customTransformOptions?.dom == null &&
+      !options.dev &&
+      !isLazyBundle;
+    // Unsupported async imports inside a worker switch this entire graph, including application
+    // chunks, to legacy. Workers with only synchronous dependencies remain supported.
+    // TODO: Support async imports inside workers, with separate module registries and one URL
+    // per worker entry, before removing this fallback.
+    const chunkingStrategy: ChunkingStrategy =
+      isGranularEligible && !findUnsupportedWorkerAsyncDependency(entryPoint, graph)
+        ? 'granular'
+        : 'legacy';
+
     const assets = await graphToSerialAssetsAsync(
       config,
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
         splitChunks: !!serializerOptions.splitChunks,
         ...configOptions,
+        chunkingStrategy,
       },
       entryPoint,
       preModules,
@@ -389,13 +413,16 @@ export function createSerializerFromSerialProcessors(
   return wrapSerializerWithOriginal(
     originalSerializer,
     async (...props: SerializerParameters): ReturnType<Serializer> => {
+      const done = event.span();
       for (const processor of processors) {
         if (processor) {
           props = await processor(...props);
         }
       }
 
-      return finalSerializer(...props);
+      const result = await finalSerializer(...props);
+      done('serialize', { modules: props[2]?.dependencies?.size ?? 0 });
+      return result;
     }
   );
 }

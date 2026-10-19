@@ -47,7 +47,7 @@ class SessionService(
       val me = graphQLService.fetchMe()
       val data = me.data
       if (me.hasErrors() || data == null) {
-        // TOOD(@lukmccall): Handle errors properly
+        // TODO(@lukmccall): Handle errors properly
         _user.update { UserState.LoggedOut }
         return@onEach
       }

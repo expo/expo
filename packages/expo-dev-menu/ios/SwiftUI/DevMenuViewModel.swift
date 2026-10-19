@@ -132,8 +132,15 @@ class DevMenuViewModel: ObservableObject {
     }
 
     devMenuManager.closeMenu {
-      DevMenuPackagerConnectionHandler.allowRNDevMenuTemporarily()
+// TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
+      rctDevMenu.devMenuEnabled = true
       rctDevMenu.show()
+      rctDevMenu.devMenuEnabled = false
+#else
+      // react-native-macos's RCTDevMenu has no devMenuEnabled property, so show it directly.
+      rctDevMenu.show()
+#endif
     }
   }
 

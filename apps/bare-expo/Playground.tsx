@@ -1,6 +1,4 @@
 import { useTheme } from 'ThemeProvider';
-import { TabBackground } from 'native-component-list/src/components/TabBackground';
-import TabIcon from 'native-component-list/src/components/TabIcon';
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +8,7 @@ export default function Playground() {
   const { theme } = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.background.default }]}>
-      <TabIcon name="flask-outline" size={48} />
+      <Text style={styles.icon}>🧪</Text>
       <Text style={[styles.title, { color: theme.text.default }]}>Playground</Text>
       <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
         Replace the contents of apps/bare-expo/Playground.tsx with your repro code.
@@ -19,15 +17,6 @@ export default function Playground() {
   );
 }
 
-Playground.navigationOptions = {
-  title: 'Playground',
-  tabBarLabel: 'Playground',
-  tabBarIcon: ({ focused }: { focused: boolean }) => {
-    return <TabIcon name="flask-outline" focused={focused} />;
-  },
-  tabBarBackground: () => <TabBackground />,
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -35,6 +24,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     padding: 24,
+  },
+  icon: {
+    fontSize: 48,
   },
   title: {
     fontSize: 20,

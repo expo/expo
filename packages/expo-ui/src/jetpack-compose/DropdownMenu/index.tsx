@@ -2,7 +2,8 @@ import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
 
-import type { ModifierConfig } from '../../types';
+import { PresentedContent } from '../../PresentedContentContext';
+import type { ModifierConfig, PopupProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
@@ -43,6 +44,29 @@ export interface DropdownMenuProps {
   color?: ColorValue;
 
   /**
+   * Corner radius in dp for the dropdown menu container. Defaults to the Material3
+   * `MenuDefaults.shape` corner radius.
+   *
+   * @platform android
+   */
+  cornerRadius?: number;
+
+  /**
+   * Shadow elevation of the dropdown menu popup in dp. Set to `0` to remove the shadow.
+   * Defaults to Material3's `MenuDefaults.ShadowElevation`.
+   *
+   * @platform android
+   */
+  shadowElevation?: number;
+
+  /**
+   * Properties for the popup window of the dropdown menu.
+   *
+   * @platform android
+   */
+  properties?: PopupProperties;
+
+  /**
    * Optional styles to apply to the `DropdownMenu`.
    */
   style?: StyleProp<ViewStyle>;
@@ -57,6 +81,9 @@ type NativeMenuProps = {
   expanded?: boolean;
   onDismissRequest?: () => void;
   color?: ColorValue;
+  cornerRadius?: number;
+  shadowElevation?: number;
+  properties?: PopupProperties;
   style?: StyleProp<ViewStyle>;
   modifiers?: ModifierConfig[];
   children?: ReactNode;
@@ -67,7 +94,12 @@ type NativeMenuProps = {
  * Children should be `DropdownMenuItem` components or other native views.
  */
 export function Items(props: { children: ReactNode }) {
-  return <SlotNativeView slotName="items">{props.children}</SlotNativeView>;
+  // The items are presented in their own popup window; the trigger stays in the React Native surface.
+  return (
+    <SlotNativeView slotName="items">
+      <PresentedContent>{props.children}</PresentedContent>
+    </SlotNativeView>
+  );
 }
 Items.tag = 'Items';
 
@@ -105,3 +137,6 @@ DropdownMenu.Items = Items;
 
 export { DropdownMenu };
 export { DropdownMenuItem } from './DropdownMenuItem';
+
+// Re-exported so the docs generator includes PopupProperties on the DropdownMenu API page.
+export type { PopupProperties };

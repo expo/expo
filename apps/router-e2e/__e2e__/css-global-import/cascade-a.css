@@ -1,0 +1,9 @@
+@import url('https://expo-css.test/a.css');
+
+.cascade-between {
+  color: blue;
+}
+
+.cascade-bundled {
+  color: blue;
+}

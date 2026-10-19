@@ -18,7 +18,7 @@ export function createPendingSpawnAsync<V, T>(
   actionAsync: () => Promise<V>,
   spawnAsync: (result: V) => SpawnPromise<T>
 ): PendingSpawnPromise<T> {
-  // Manually rsolve the child promise whenever the prepending async action is resolved.
+  // Manually resolve the child promise whenever the prepending async action is resolved.
   // Avoid `childReject` to prevent "unhandled promise rejection" for one of the two promises.
   let childResolve: (child: SpawnPromise<T>['child'] | null) => void;
   const child: Promise<SpawnPromise<T>['child'] | null> = new Promise((resolve, reject) => {

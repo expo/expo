@@ -1,6 +1,6 @@
 ## Creating a new rule
 
-To create a new rules, add the rule definition, a test, and documentation:
+To create a new rule, add the rule definition, a test, and documentation:
 
 ```bash
 touch src/rules/newRule.ts

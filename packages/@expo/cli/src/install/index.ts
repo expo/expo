@@ -46,12 +46,18 @@ export const expoInstall: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx expo install -h` shows as fast as possible.
-  const { installAsync } = require('./installAsync') as typeof import('./installAsync');
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { findUpProjectRootOrAssert } =
+    require('../utils/findUp') as typeof import('../utils/findUp');
+  const { loadEnvFiles } = require('../utils/nodeEnv') as typeof import('../utils/nodeEnv');
   const { resolveArgsAsync } = require('./resolveOptions') as typeof import('./resolveOptions');
 
-  const { variadic, options, extras } = await resolveArgsAsync(process.argv.slice(3)).catch(
-    logCmdError
-  );
-  return installAsync(variadic, options, extras).catch(logCmdError);
+  return (async () => {
+    const { variadic, options, extras } = await resolveArgsAsync(process.argv.slice(3));
+    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    loadEnvFiles(projectRoot, { mode: 'development' });
+
+    const { installAsync } = require('./installAsync') as typeof import('./installAsync');
+    return installAsync(variadic, { ...options, projectRoot }, extras);
+  })().catch(logCmdError);
 };

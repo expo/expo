@@ -18,6 +18,12 @@ internal final class AudioPermissionsException: Exception {
   }
 }
 
+internal final class MicrophoneUsageDescriptionException: Exception {
+  override var reason: String {
+    "Cannot record audio because NSMicrophoneUsageDescription is missing from the app's Info.plist"
+  }
+}
+
 internal final class InvalidAudioModeException: GenericException<String> {
   override var reason: String {
     "Impossible audio mode: \(param)"
@@ -45,5 +51,17 @@ internal final class PreferredInputFoundException: GenericException<String> {
 internal final class AudioRecordingException: GenericException<String> {
   override var reason: String {
     "Audio recording error: \(param)"
+  }
+}
+
+internal final class InvalidRecordingFileNameException: GenericException<String> {
+  override var reason: String {
+    "Invalid recording file name '\(param)': must not contain '/', '\\', or '..'"
+  }
+}
+
+internal final class AudioStreamFileException: GenericException<String> {
+  override var reason: String {
+    param
   }
 }

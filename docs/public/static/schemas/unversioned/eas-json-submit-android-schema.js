@@ -3,7 +3,7 @@ export default [
     name: 'serviceAccountKeyPath',
     type: 'string',
     description: [
-      'Path to the JSON file with [Google Service Account Key](https://expo.fyi/creating-google-service-account) used to authenticate with Google Play.',
+      'Path to the JSON file with [Google Service Account Key](https://expo.fyi/creating-google-service-account) used to authenticate with Google Play. The path can include environment variables, such as `$GOOGLE_SERVICE_ACCOUNT_KEY_PATH`, which EAS CLI replaces with values from the environment where it runs. If you omit this field, EAS Submit uses the key that is assigned to your app on EAS servers.',
     ],
   },
   {

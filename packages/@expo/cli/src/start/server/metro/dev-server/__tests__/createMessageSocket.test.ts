@@ -1,10 +1,10 @@
 import { once } from 'node:events';
 import type { WebSocket } from 'ws';
 
-import { waitForExpect, withMetroServer } from './utils';
 import { Log } from '../../../../../log';
 import { createMessagesSocket } from '../createMessageSocket';
 import { serializeMessage } from '../utils/socketMessages';
+import { waitForExpect, withMetroServer } from './utils';
 
 jest.mock('../../../../../log');
 
@@ -134,15 +134,22 @@ describe(createMessagesSocket, () => {
     const client1 = server.connect('/message?test=data');
     const client2 = server.connect('/message?request=sender');
     const client3 = server.connect('/message?other=test');
+    const client4 = server.connect('/message');
 
     // Wait until the sockets are connected
-    await Promise.all([once(client1, 'open'), once(client2, 'open'), once(client3, 'open')]);
+    await Promise.all([
+      once(client1, 'open'),
+      once(client2, 'open'),
+      once(client3, 'open'),
+      once(client4, 'open'),
+    ]);
 
     // Fetch the client IDs of all clients
-    const [client1Id, client2Id, client3Id] = await Promise.all([
+    const [client1Id, client2Id, client3Id, client4Id] = await Promise.all([
       requestClientId(client1, 'getpeers#client1'),
       requestClientId(client2, 'getpeers#client2'),
       requestClientId(client3, 'getpeers#client3'),
+      requestClientId(client4, 'getpeers#client4'),
     ]);
 
     // Add listener to client2 for the getpeers response
@@ -163,6 +170,7 @@ describe(createMessagesSocket, () => {
         result: expect.objectContaining({
           [client1Id]: 'test=data',
           [client3Id]: 'other=test',
+          [client4Id]: null,
         }),
       });
       expect(message.result).not.toHaveProperty(client2Id);

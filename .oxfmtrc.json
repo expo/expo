@@ -11,15 +11,16 @@
     "**/vendor/**",
     "**/vendored/**",
     "**/__generated__/**",
-    "**/__tests__/**",
-    "**/__mocks__/**",
     "**/fixtures/**",
     "**/__fixtures__/**",
     "**/.expo/**",
     "**/.next/**",
     "**/assets/**",
     "**/android/**",
-    "**/ios/**"
+    "**/ios/**",
+    "!**/src/**/android/**",
+    "!**/src/**/ios/**",
+    "react-native-lab/**"
   ],
   "sortImports": {
     "groups": [

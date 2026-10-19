@@ -2,11 +2,13 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { loadEnvFiles } from '../../../utils/nodeEnv';
 import { logProjectLogsLocation } from '../../hints';
+import { startBundlerAsync } from '../../startBundler';
 import { buildAsync } from '../XcodeBuild';
+import type { XcodeConfiguration } from '../XcodeBuild.types';
 import { launchAppAsync } from '../launchApp';
 import { isSimulatorDevice, resolveDeviceAsync } from '../options/resolveDevice';
-import { resolveOptionsAsync } from '../options/resolveOptions';
 import { runIosAsync } from '../runIosAsync';
 
 jest.mock('../../hints', () => ({
@@ -17,6 +19,12 @@ jest.mock('../../hints', () => ({
 jest.mock('../../../log');
 
 jest.mock('../../../utils/port');
+jest.mock('../../../utils/nodeEnv', () => ({
+  loadEnvFiles: jest.fn(),
+}));
+jest.mock('../../../export/embed/exportEager', () => ({
+  exportEagerAsync: jest.fn(async () => ({})),
+}));
 
 jest.mock('../options/resolveDevice', () => ({
   isSimulatorDevice: jest.fn(() => true),
@@ -69,8 +77,52 @@ afterEach(() => {
   mockPlatform(platform);
 });
 
-describe(resolveOptionsAsync, () => {
+describe(runIosAsync, () => {
   afterEach(() => vol.reset());
+
+  it('uses production mode for a release configuration', async () => {
+    mockPlatform('darwin');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runIosAsync('/', { configuration: 'Release' });
+
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode: 'production' });
+    expect(startBundlerAsync).toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({ mode: 'production' })
+    );
+  });
+
+  it.each([
+    { configuration: 'Debug', mode: 'development' },
+    { configuration: 'Staging', mode: 'production' },
+  ])('uses $mode mode for the $configuration configuration', async ({ configuration, mode }) => {
+    mockPlatform('darwin');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runIosAsync('/', { configuration: configuration as XcodeConfiguration });
+
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+    expect(startBundlerAsync).toHaveBeenCalledWith('/', expect.objectContaining({ mode }));
+  });
 
   it(`asserts that the function only runs on darwin machines`, async () => {
     mockPlatform('win32');
