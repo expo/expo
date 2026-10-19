@@ -297,15 +297,18 @@ open class SecureStoreModule : Module() {
         continue
       }
 
-      val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY) ?: continue
-      val requireAuthentication = normalizeAuthenticationRequirement(
-        jsonEntry.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
-      )
+      val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY)
+      if (entryKeychainService != keychainService) {
+        continue
+      }
+      val requireAuthentication = runCatching {
+        normalizeAuthenticationRequirement(jsonEntry.opt(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY))
+      }.getOrNull()
 
       // Each authentication mode uses its own keystore alias, so only entries encrypted with the
       // invalidated alias become unreadable. Entries using other modes (or no authentication)
       // are still decryptable and must be kept.
-      if (requireAuthentication != null && requireAuthentication == invalidatedAuthenticationRequirement && keychainService == entryKeychainService) {
+      if (requireAuthentication != null && requireAuthentication == invalidatedAuthenticationRequirement) {
         sharedPreferences.edit().remove(key).apply()
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }
