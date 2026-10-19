@@ -48,6 +48,11 @@ export default function ExamplesIndex() {
         description="Custom spans (startSpan / withSpan / recordSpan) and network span capture"
         onPress={() => router.push('/examples/traces')}
       />
+      <Button
+        title="Expo Updates"
+        description="Report expo-updates log errors and crashes handled by error recovery"
+        onPress={() => router.push('/examples/expo-updates')}
+      />
     </ScrollView>
   );
 }
