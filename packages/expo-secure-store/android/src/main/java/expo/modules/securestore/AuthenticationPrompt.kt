@@ -37,7 +37,11 @@ class AuthenticationPrompt(
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
             val message = convertErrorCode(errorCode)
-            val detail = if (errString.isNotEmpty()) "$message. $errString" else message
+            val detail = if (errString.isNotEmpty()) {
+              "$message. $errString"
+            } else {
+              message
+            }
             continuation.resumeWithException(AuthenticationException(detail))
           }
 
@@ -76,7 +80,11 @@ internal fun buildAuthenticationPromptInfo(
 ): PromptInfo = PromptInfo.Builder().apply {
   setTitle(title)
   setAllowedAuthenticators(
-    if (isDeviceCredentialsRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
+    if (isDeviceCredentialsRequired) {
+      BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+    } else {
+      BIOMETRIC_STRONG
+    }
   )
   setConfirmationRequired(requireConfirmation)
   // A negative button is not allowed (and throws) when DEVICE_CREDENTIAL is an allowed authenticator.
