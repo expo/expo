@@ -76,6 +76,9 @@ class ActivityResultsManager(
     if (activity is AppCompatActivity) {
       appCompatActivityAwareHelper.dispatchOnActivityAvailable(activity)
     } else {
+      // A retained React instance can move from an AppCompat Activity to another host.
+      // Forget the old one, or a legacy listener added later would still receive it.
+      appCompatActivityAwareHelper.clearActivity()
       warnAboutAppCompatListeners(activity, appCompatActivityAwareHelper.listeners)
     }
   }
@@ -86,6 +89,8 @@ class ActivityResultsManager(
 
   fun onHostDestroy(hostActivity: HostActivity) {
     registry.persistInstanceState(hostActivity.activity)
+    hostActivityAwareHelper.clearHostActivity()
+    appCompatActivityAwareHelper.clearActivity()
   }
 
   fun onHostDestroy(activity: AppCompatActivity) {

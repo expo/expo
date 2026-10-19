@@ -21,6 +21,13 @@ class HostActivityAwareHelper : HostActivityAware {
   val currentHostActivity: HostActivity?
     get() = activityReference.get()?.let { HostActivity.from(it) }
 
+  /**
+   * Forgets the cached host Activity, so a listener added later waits for the next one.
+   */
+  fun clearHostActivity() {
+    this.activityReference = WeakReference(null)
+  }
+
   fun dispatchOnHostActivityAvailable(hostActivity: HostActivity) {
     this.activityReference = WeakReference(hostActivity.activity)
 

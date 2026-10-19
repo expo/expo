@@ -16,6 +16,13 @@ class AppCompatActivityAwareHelper : AppCompatActivityAware {
 
   private var activityReference = WeakReference<AppCompatActivity>(null)
 
+  /**
+   * Forgets the cached Activity, so a listener added later waits for the next one.
+   */
+  fun clearActivity() {
+    this.activityReference = WeakReference(null)
+  }
+
   fun dispatchOnActivityAvailable(activity: AppCompatActivity) {
     this.activityReference = WeakReference(activity)
 

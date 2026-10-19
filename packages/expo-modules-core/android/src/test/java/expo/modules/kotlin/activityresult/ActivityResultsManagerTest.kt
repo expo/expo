@@ -67,6 +67,38 @@ class ActivityResultsManagerTest {
     Truth.assertThat(receivedAppCompat).isSameInstanceAs(activity)
   }
 
+  @Test
+  fun `does not dispatch a stale AppCompatActivity to a legacy listener after the host changes`() {
+    val appCompatActivity = Robolectric.buildActivity(AppCompatActivity::class.java).get()
+    val componentActivity = Robolectric.buildActivity(ComponentActivity::class.java).get()
+    val manager = ActivityResultsManager(activityProvider(componentActivity))
+    manager.onHostResume(appCompatActivity)
+    manager.onHostResume(HostActivity.from(componentActivity))
+    var received: AppCompatActivity? = null
+
+    manager.addOnActivityAvailableListener { received = it }
+
+    Truth.assertThat(received).isNull()
+    // The old Activity stays strongly referenced for the whole test, like an Activity on the back stack.
+    Truth.assertThat(appCompatActivity.isDestroyed).isFalse()
+  }
+
+  @Test
+  fun `does not dispatch a destroyed host to a listener added after the destroy`() {
+    val activity = Robolectric.buildActivity(ComponentActivity::class.java).get()
+    val manager = ActivityResultsManager(activityProvider(activity))
+    manager.onHostResume(HostActivity.from(activity))
+    manager.onHostDestroy(HostActivity.from(activity))
+    var receivedHost: HostActivity? = null
+    var receivedAppCompat: AppCompatActivity? = null
+
+    manager.addOnHostActivityAvailableListener { receivedHost = it }
+    manager.addOnActivityAvailableListener { receivedAppCompat = it }
+
+    Truth.assertThat(receivedHost).isNull()
+    Truth.assertThat(receivedAppCompat).isNull()
+  }
+
   private fun activityProvider(activity: Activity) = object : CurrentActivityProvider {
     override val currentActivity: Activity = activity
   }
