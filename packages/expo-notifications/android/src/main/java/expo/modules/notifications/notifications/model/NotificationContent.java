@@ -45,6 +45,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   private String mCategoryId;
   private boolean mSticky;
   private String mGroup;
+  private Uri mImage;
 
   protected NotificationContent() {
   }
@@ -99,6 +100,12 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   @Nullable
   @Override
   public Object getImage(@NonNull Context context, @NonNull Continuation<? super Bitmap> $completion) {
+    if (mImage != null) {
+      Bitmap image = ExpoNotificationBuilder.largeIconFromUri(context, mImage);
+      if (image != null) {
+        return image;
+      }
+    }
     return ExpoNotificationBuilder.largeIconFromManifest(context);
   }
 
@@ -144,6 +151,11 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     return mSticky;
   }
 
+  @Nullable
+  public Uri getImageUri() {
+    return mImage;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -172,6 +184,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     mCategoryId = in.readString();
     mSticky = in.readByte() == 1;
     mGroup = in.readString();
+    mImage = in.readParcelable(getClass().getClassLoader());
   }
 
   @Override
@@ -191,6 +204,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     dest.writeString(mCategoryId);
     dest.writeByte((byte) (mSticky ? 1 : 0));
     dest.writeString(mGroup);
+    dest.writeParcelable(mImage, 0);
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -219,6 +233,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
     out.writeByte(mSticky ? 1 : 0);
     out.writeObject(mGroup);
+    out.writeObject(mImage == null ? null : mImage.toString());
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -268,6 +283,12 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     mSticky = in.readByte() == 1;
     try {
       mGroup = (String) in.readObject();
+    } catch (java.io.OptionalDataException | java.io.EOFException e) {
+      // Backward compatibility: old serialized data won't have this field
+    }
+    try {
+      String imageUri = (String) in.readObject();
+      mImage = imageUri == null ? null : Uri.parse(imageUri);
     } catch (java.io.OptionalDataException | java.io.EOFException e) {
       // Backward compatibility: old serialized data won't have this field
     }
@@ -371,6 +392,11 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     public Builder setGroup(String group) {
       // An empty group would be nameless. iOS also reports it as null.
       content.mGroup = group == null || group.isEmpty() ? null : group;
+      return this;
+    }
+
+    public Builder setImage(Uri image) {
+      content.mImage = image;
       return this;
     }
 

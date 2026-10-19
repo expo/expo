@@ -30,6 +30,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
   private static final String STICKY_KEY = "sticky";
   private static final String THREAD_IDENTIFIER_KEY = "threadIdentifier";
+  private static final String IMAGE_KEY = "image";
 
   private SoundResolver mSoundResolver;
 
@@ -48,7 +49,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
       .setAutoDismiss(getAutoDismiss(payload))
       .setCategoryId(getCategoryId(payload))
       .setSticky(getSticky(payload))
-      .setGroup(getGroup(payload));
+      .setGroup(getGroup(payload))
+      .setImage(getImage(payload));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
@@ -152,5 +154,11 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   @Nullable
   protected String getGroup(ReadableArguments payload) {
     return payload.getString(THREAD_IDENTIFIER_KEY, null);
+  }
+
+  @Nullable
+  protected Uri getImage(ReadableArguments payload) {
+    String image = payload.getString(IMAGE_KEY, null);
+    return image == null || image.isEmpty() ? null : Uri.parse(image);
   }
 }
