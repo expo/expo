@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import isEqual from 'react-fast-compare';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
@@ -46,6 +45,7 @@ import { useEventEmitter } from './useEventEmitter';
 import { useFocusEvents } from './useFocusEvents';
 import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
 import { FocusedRouteKeyContext } from './useIsFocused';
+import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigatorStateContext } from './useNavigationState';
 import { useRegisterNavigator } from './useRegisterNavigator';
@@ -270,9 +270,7 @@ export function useNavigationBuilder<
 
   const routeConfigs = getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children);
 
-  const backBehavior = 'backBehavior' in rest ? rest.backBehavior : undefined;
-  const defaultStatus = 'defaultStatus' in rest ? rest.defaultStatus : undefined;
-  const router = React.useMemo<Router<State, any>>(() => {
+  const router = useLazyValue<Router<State, any>>(() => {
     if (
       rest.initialRouteName != null &&
       routeConfigs.every((config) => config.props.name !== rest.initialRouteName)
@@ -295,7 +293,7 @@ export function useNavigationBuilder<
     }
 
     return original;
-  }, [rest.initialRouteName, backBehavior, defaultStatus]);
+  });
 
   const screens = routeConfigs.reduce<
     Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>
@@ -457,9 +455,6 @@ export function useNavigationBuilder<
   });
 
   const pendingRouteNamesRef = React.useRef<string[] | undefined>(undefined);
-  // Reconcile policy changes once, even when histories match; doing so on every commit
-  // would restore policy history that a replace action intentionally cleared.
-  const committedRouterRef = React.useRef(router);
 
   useClientLayoutEffect(() => {
     // Wait for the type reset to commit so route-name changes use the mounting router's registry entry.
@@ -467,16 +462,10 @@ export function useNavigationBuilder<
       return;
     }
     const committed = committedState;
-    const routerChanged = committedRouterRef.current !== router;
-    committedRouterRef.current = router;
 
-    if (
-      !routerChanged &&
-      isArrayEqual(committed.routeNames, routeNames) &&
-      isEqual(committed.history, state.history)
-    ) {
+    if (isArrayEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
-    } else if (routerChanged || !isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
+    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
       enqueue({
         type: 'ACTION',

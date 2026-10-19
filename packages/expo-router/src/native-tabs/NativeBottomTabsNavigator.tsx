@@ -19,7 +19,7 @@ import type {
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
-import { useTabBackBehaviorWarning } from '../standard-navigation/useTabBackBehaviorWarning';
+import { useTabNavigator } from '../standard-navigation/useTabNavigator';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -107,6 +107,7 @@ function NativeTabsContent({
   Omit<InternalNativeTabsProps, 'screenListeners'>
 > &
   NativeTabsNavigatorCreateProps) {
+  useTabNavigator(rest.backBehavior);
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -309,8 +310,6 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     tintColor,
     disableTransparentOnScrollEdge,
   ]);
-
-  useTabBackBehaviorWarning(backBehavior);
 
   return (
     <IsWithinNativeNavigator value>

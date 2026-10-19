@@ -957,7 +957,7 @@ it('can still use <Screen /> while prefetching in tabs', async () => {
 
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
     'index',
-    // Tabs adds its back history to root state after mount, which re-renders the header.
+    // Re-render after the tab navigator dispatches `ROUTE_NAMES_CHANGED` to add its back history.
     'index',
     'index',
     'custom-title',

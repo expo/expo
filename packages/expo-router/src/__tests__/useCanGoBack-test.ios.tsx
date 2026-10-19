@@ -8,9 +8,11 @@ import { router } from '../imperative-api';
 import { Drawer } from '../layouts/Drawer';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { TopTabs } from '../layouts/TopTabs';
 import { NativeTabs } from '../native-tabs/NativeTabs';
 import { DrawerActions } from '../react-navigation/routers/DrawerRouter';
 import { renderRouter } from '../testing-library';
+import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 import { useNavigation } from '../useNavigation';
 
 jest.mock('react-native-drawer-layout', () => {
@@ -45,6 +47,22 @@ const navigators = {
       <NativeTabs.Trigger name="second" />
     </NativeTabs>
   ),
+  TopTabs: (backBehavior: 'none' | 'initialRoute') => (
+    <TopTabs backBehavior={backBehavior}>
+      {/* Lazy screens are not preloaded, and a preload would also add the back history. */}
+      <TopTabs.Screen name="index" options={{ lazy: true }} />
+      <TopTabs.Screen name="second" />
+    </TopTabs>
+  ),
+  HeadlessTabs: (backBehavior: 'none' | 'initialRoute') => (
+    <HeadlessTabs options={{ backBehavior }}>
+      <TabSlot />
+      <TabList>
+        <TabTrigger name="index" href="/" />
+        <TabTrigger name="second" href="/second" />
+      </TabList>
+    </HeadlessTabs>
+  ),
 };
 
 describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (navigator) => {
@@ -76,6 +94,23 @@ describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (nav
       expect(warnings).toHaveLength(warns ? 1 : 0);
     }
   );
+
+  it('adds back history after an initial deep link', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <>
+            <Capability />
+            {navigators[navigator]('initialRoute')}
+          </>
+        ),
+        index: () => <Text>Index</Text>,
+        second: () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expectCapability(true);
+  });
 });
 
 it('reads the current stack during render', async () => {
@@ -274,32 +309,6 @@ it.each([false, true])(
   }
 );
 
-it('reconciles changes to tab back behavior', async () => {
-  let update!: () => void;
-  function Layout() {
-    const [changed, setChanged] = useState(false);
-    update = () => setChanged((value) => !value);
-    return (
-      <>
-        <Capability />
-        <Tabs backBehavior={changed ? 'none' : 'firstRoute'}>
-          <Tabs.Screen name="index" />
-          <Tabs.Screen name="second" />
-        </Tabs>
-      </>
-    );
-  }
-  await renderRouter(
-    { _layout: Layout, index: () => <Text>Index</Text>, second: () => <Text>Second</Text> },
-    { initialUrl: '/second' }
-  );
-  expectCapability(true);
-  await act(update);
-  expectCapability(false);
-  await act(update);
-  expectCapability(true);
-});
-
 it('reconciles reordered tab declarations', async () => {
   let reorder!: () => void;
   function Layout() {
@@ -354,51 +363,6 @@ it('returns to an explicitly configured initial tab', async () => {
   expect(screen).toHavePathname('/third');
   expectCapability(false);
 });
-
-it.each([
-  ['history', false],
-  ['fullHistory', false],
-  ['history', true],
-  ['fullHistory', true],
-] as const)(
-  'drops unvisited policy targets when switching to %s (preloaded: %s)',
-  async (nextBehavior, preload) => {
-    let update!: () => void;
-    function Layout() {
-      const [changed, setChanged] = useState(false);
-      update = () => setChanged((value) => !value);
-      return (
-        <>
-          <Capability />
-          <Tabs backBehavior={changed ? nextBehavior : 'firstRoute'}>
-            <Tabs.Screen name="index" />
-            <Tabs.Screen name="second" />
-          </Tabs>
-        </>
-      );
-    }
-    await renderRouter(
-      { _layout: Layout, index: () => <Text>Index</Text>, second: () => <Text>Second</Text> },
-      { initialUrl: '/second' }
-    );
-    expectCapability(true);
-    if (preload) {
-      await act(() => router.prefetch('/'));
-    }
-    await act(update);
-    expectCapability(false);
-    await act(() => router.navigate('/'));
-    await act(() => router.navigate('/second'));
-    await act(update);
-    if (preload) {
-      await act(() => router.prefetch('/'));
-    }
-    await act(update);
-    expectCapability(true);
-    await act(() => router.back());
-    expect(screen).toHavePathname('/');
-  }
-);
 
 it('does not re-render when root state changes without changing the value', async () => {
   let renders = 0;

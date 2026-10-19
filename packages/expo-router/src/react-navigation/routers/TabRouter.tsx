@@ -335,14 +335,7 @@ function tabRouterExtension({
 >) {
   const normalizeHistory = (state: TabNavigationState<ParamListBase>) => {
     if (backBehavior === 'history' || backBehavior === 'fullHistory') {
-      const normalized = ensureStateHistory(state, backBehavior, initialRouteName);
-      // Policy targets for unvisited routes are not visits.
-      const history = normalized.history.filter(
-        (item) =>
-          item.type !== 'route' ||
-          state.routes.some((route) => route.key === item.key && !route.isPreloaded)
-      );
-      return isEqual(history, normalized.history) ? normalized : { ...normalized, history };
+      return ensureStateHistory(state, backBehavior, initialRouteName);
     }
     const normalized = ensureStateHistory(
       { ...state, history: undefined },
