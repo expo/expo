@@ -739,3 +739,53 @@ test('ignores a late completion after another tab transition starts', async () =
   expect(getActivityState('Screen third')).toBe(STATE_ON_TOP);
   expect(transitionEnd).toHaveBeenCalledTimes(1);
 });
+
+test('preserves transition completion and stack reset when tab options change', async () => {
+  const completions: ((result: { finished: boolean }) => void)[] = [];
+  jest.spyOn(Animated, 'parallel').mockImplementation(() => ({
+    start: (callback) => {
+      if (callback) completions.push(callback);
+    },
+    stop: jest.fn(),
+    reset: jest.fn(),
+  }));
+  const transitionEnd = jest.fn();
+
+  function Second() {
+    const navigation = useNavigation<BottomTabNavigationProp<ParamListBase>>();
+    return (
+      <Text onPress={() => navigation.setOptions({ title: 'Updated tab' })}>
+        Update tab options
+      </Text>
+    );
+  }
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs screenOptions={{ animation: 'fade' }} screenListeners={{ transitionEnd }}>
+          <Tabs.Screen name="one" options={{ popToTopOnBlur: true }} />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      'one/_layout': () => <Stack screenOptions={{ headerShown: false }} />,
+      'one/index': () => <Text>One index</Text>,
+      'one/details': () => <Text>One details</Text>,
+      two: Second,
+    },
+    { initialUrl: '/one' }
+  );
+
+  await act(() => router.push('/one/details'));
+  await fireEvent.press(screen.getByRole('button', { name: 'two, tab, 2 of 2' }));
+  await fireEvent.press(screen.getByText('Update tab options'));
+  expect(transitionEnd).not.toHaveBeenCalled();
+
+  await act(() => completions.at(-1)?.({ finished: true }));
+  await act(() => jest.advanceTimersByTime(32));
+  expect(transitionEnd).toHaveBeenCalledTimes(1);
+
+  await fireEvent.press(screen.getByRole('button', { name: 'one, tab, 1 of 2' }));
+  expect(screen.getByText('One index')).toBeVisible();
+  expect(screen.queryByText('One details')).toBeNull();
+});

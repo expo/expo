@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Keep outgoing tabs attached until their animation finishes, including when tab transitions overlap.
+Keep outgoing tabs attached and complete transitions correctly when tabs or options change.

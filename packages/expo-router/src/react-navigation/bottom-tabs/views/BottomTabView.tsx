@@ -76,7 +76,11 @@ export function BottomTabView(props: Props) {
 
   const focusedRouteKey = state.routes[state.index]!.key;
 
-  const previousRouteKeyRef = React.useRef(focusedRouteKey);
+  const transitionRef = React.useRef({
+    current: focusedRouteKey,
+    previous: focusedRouteKey,
+    pending: false,
+  });
   const tabAnims = useAnimatedHashMap(state);
 
   const [lastUpdate, setLastUpdate] = React.useState<{
@@ -97,7 +101,19 @@ export function BottomTabView(props: Props) {
   }
 
   React.useEffect(() => {
-    const previousRouteKey = previousRouteKeyRef.current;
+    let transition = transitionRef.current;
+    const isNewTransition = transition.current !== focusedRouteKey;
+
+    if (isNewTransition) {
+      transition = {
+        current: focusedRouteKey,
+        previous: transition.current,
+        pending: true,
+      };
+      transitionRef.current = transition;
+    }
+
+    const previousRouteKey = transition.pending ? transition.previous : focusedRouteKey;
 
     const shouldPopPreviousToTop =
       previousRouteKey !== focusedRouteKey &&
@@ -107,7 +123,7 @@ export function BottomTabView(props: Props) {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     const animateToIndex = () => {
-      if (previousRouteKey !== focusedRouteKey) {
+      if (isNewTransition) {
         emitter.emit({
           type: 'transitionStart',
           target: focusedRouteKey,
@@ -147,16 +163,8 @@ export function BottomTabView(props: Props) {
           return;
         }
 
-        if (finished && shouldPopPreviousToTop) {
-          popNestedStackToTop(previousRouteKey);
-        }
-
-        if (previousRouteKey !== focusedRouteKey) {
-          emitter.emit({
-            type: 'transitionEnd',
-            target: focusedRouteKey,
-          });
-        }
+        const shouldCompleteTransition = transition.pending;
+        transition.pending = false;
 
         if (finished) {
           // Delay clearing so the previous screen stays attached
@@ -167,12 +175,21 @@ export function BottomTabView(props: Props) {
             );
           }, 32);
         }
+
+        if (finished && shouldCompleteTransition && shouldPopPreviousToTop) {
+          popNestedStackToTop(previousRouteKey);
+        }
+
+        if (shouldCompleteTransition) {
+          emitter.emit({
+            type: 'transitionEnd',
+            target: focusedRouteKey,
+          });
+        }
       });
     };
 
     animateToIndex();
-
-    previousRouteKeyRef.current = focusedRouteKey;
 
     return () => {
       disposed = true;
