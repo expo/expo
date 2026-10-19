@@ -14,8 +14,16 @@ import org.junit.Test
 private fun requireAuthenticationOf(value: Any): Either<Boolean, String> = Either(
   value,
   mutableListOf(
-    if (value is Boolean) ConvertedValue(value) else IncompatibleValue,
-    if (value is String) ConvertedValue(value) else IncompatibleValue
+    if (value is Boolean) {
+      ConvertedValue(value)
+    } else {
+      IncompatibleValue
+    },
+    if (value is String) {
+      ConvertedValue(value)
+    } else {
+      IncompatibleValue
+    }
   ),
   emptyList()
 )
