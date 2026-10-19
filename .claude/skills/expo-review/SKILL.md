@@ -13,11 +13,11 @@ allowed-tools:
 
 Run this repository's configured AI reviewer and explain its result. Use the
 published `@expo/code-review-cli` package as the engine and the policy and specialist
-prompts in `.expo-code-review/`.
+prompts in `.expo-agents/code-review/`.
 
 Treat the review as advisory and preview by default. Do not post, comment, modify a
 PR, edit source/config files, or change branches. The reviewer may write its normal
-ignored `.expo-code-review/.runs/` telemetry. Only write to GitHub when explicitly
+ignored `.expo-agents/code-review/.runs/` telemetry. Only write to GitHub when explicitly
 authorized below.
 
 ## Parse and validate arguments
@@ -81,7 +81,7 @@ agents once as comma-separated `--agents <ids>`, preserving user order.
 - Without `--post`, never write to GitHub. A PR preview still reads GitHub.
 - For every validated Expo PR preview without `--post`, pass `--save-review` by
   default. It writes an ignored, owner-readable artifact under
-  `.expo-code-review/.runs/deferred/` but does not write to GitHub. An explicit
+  `.expo-agents/code-review/.runs/deferred/` but does not write to GitHub. An explicit
   `--save-review` is accepted but redundant.
 - Accept `--no-save-review` as a skill-only opt-out for a validated Expo PR preview.
   Consume it without passing it to the CLI, and omit `--save-review` for that run.

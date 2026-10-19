@@ -1,3 +1,8 @@
+---
+name: updating-expo-config
+description: Add a new property to the Expo config (app.json / app.config.js) schema. Covers the universe JSON schema, `@expo/config-types`, the docs schema sync, an optional config plugin in `@expo/config-plugins` and `@expo/prebuild-config`, and their tests. Use when adding or changing an Expo config field.
+---
+
 # Updating Expo Config (app.json / app.config.js)
 
 This skill documents the process of adding new properties to the Expo config schema.
@@ -86,6 +91,6 @@ cd packages/@expo/prebuild-config && pnpm build && pnpm typecheck
 
 - [ ] JSON schema in universe (`UNVERSIONED-schema.json`)
 - [ ] TypeScript types in `@expo/config-types`
-- [ ] Docs schema (run `cd docs && yarn run schema-sync unversioned` after universe deploy, or manually update for local dev)
+- [ ] Docs schema (run `cd docs && pnpm run schema-sync unversioned` after universe deploy, or manually update for local dev)
 - [ ] Config plugin (if needed)
 - [ ] Tests for plugin
