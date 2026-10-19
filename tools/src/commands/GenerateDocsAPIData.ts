@@ -164,6 +164,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/topappbar': ['jetpack-compose/TopAppBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': [
     ['State/useNativeState.ts', 'State/useWorkletCallback.ts'],
     'expo-ui',
