@@ -1,5 +1,6 @@
 import ExpoModulesCore
 
+private let authenticationMethodNone = "none"
 private let authenticationMethodBiometry = "biometry"
 private let authenticationMethodDeviceCredentials = "deviceCredentials"
 
@@ -14,6 +15,8 @@ private func normalizeAuthenticationRequirement(_ value: Either<Bool, String>?) 
 
   if let stringValue = value.get() as String? {
     switch stringValue {
+    case authenticationMethodNone:
+      return nil
     case authenticationMethodBiometry, authenticationMethodDeviceCredentials:
       return stringValue
     default:
