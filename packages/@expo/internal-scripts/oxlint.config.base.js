@@ -1,8 +1,10 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'oxlint';
 import native from 'oxlint-config-universe/native';
 
 export default defineConfig({
   extends: [native],
+  jsPlugins: [fileURLToPath(new URL('./oxlint-plugin.js', import.meta.url))],
   // NOTE: oxlint does not inherit `ignorePatterns` through `extends` (see https://github.com/oxc-project/oxc/issues/10223),
   // so configs that extend this base must re-apply them via `ignorePatterns: base.ignorePatterns`.
   ignorePatterns: [
@@ -127,6 +129,9 @@ export default defineConfig({
     'unicorn/prefer-string-starts-ends-with': 'off',
     'unicorn/no-useless-fallback-in-spread': 'off',
     'unicorn/no-useless-spread': 'off',
+    'unicorn/prefer-ternary': ['warn', 'only-single-line'],
+    'no-nested-ternary': 'warn',
+    'expo/ternary-limits': 'warn',
 
     // React props that pass JSX should always be wrapped by curly braces.
     'react/jsx-curly-brace-presence': [
