@@ -12,6 +12,13 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
+  func `expoUpdatesLogCursor defaults to nil and keeps the stored value`() {
+    #expect(ObserveUserDefaults.expoUpdatesLogCursor == nil)
+    ObserveUserDefaults.expoUpdatesLogCursor = "{\"timestamp\":1,\"keys\":[]}"
+    #expect(ObserveUserDefaults.expoUpdatesLogCursor == "{\"timestamp\":1,\"keys\":[]}")
+  }
+
+  @Test
   func `config defaults to nil`() {
     #expect(ObserveUserDefaults.config == nil)
   }

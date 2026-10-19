@@ -93,6 +93,14 @@ class ObserveModule : Module() {
         lastIntegrations
       }
 
+      AsyncFunction("getExpoUpdatesLogCursor") {
+        ObservePreferences.getExpoUpdatesLogCursor(context)
+      }
+
+      AsyncFunction("setExpoUpdatesLogCursor") { cursor: String ->
+        ObservePreferences.setExpoUpdatesLogCursor(context, cursor)
+      }
+
       Function("setBundleDefaults") { defaults: BundleDefaults ->
         // Empty environment means JS bypassed both `process.env.NODE_ENV` and the
         // `?? 'production'` fallback. Refuse rather than persist an empty string,

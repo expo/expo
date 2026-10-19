@@ -167,6 +167,26 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
+  /**
+   * Enables the `expo-updates` integration, which reports the errors that `expo-updates` logs to
+   * Observe as errors named `expo-updates.<code>`, for example `expo-updates.UpdateFailedToLoad`.
+   * A JS error that `expo-updates` error recovery handled is reported as
+   * `expo-updates.error_recovery`.
+   * To also report warnings as events named `expo-updates.warning`, set `reportWarnings`.
+   *
+   * The integration reads the `expo-updates` log when `configure` is called, and reports the
+   * entries written since the last report, up to one day back. So errors from an earlier launch,
+   * such as a crash that error recovery handled, are reported on the next launch. A reported error
+   * gets the current session and time. The time of the log entry is not kept.
+   *
+   * The integration reports each distinct message at most once every 15 minutes. It reports at most
+   * 20 distinct errors and 20 distinct warnings in any 15-minute period.
+   *
+   * Requires `expo-updates` to be installed.
+   *
+   * @default false
+   */
+  'expo-updates'?: boolean | ObserveExpoUpdatesIntegrationConfig;
 }
 
 export type ObserveReanimatedIntegrationConfig = {
@@ -191,6 +211,66 @@ export type ObserveReanimatedIntegrationConfig = {
    * @default false
    */
   reportWarnings?: boolean;
+};
+
+/**
+ * The code of an `expo-updates` log entry. The same values as `UpdatesLogEntryCode` in
+ * `expo-updates`.
+ */
+export type ObserveExpoUpdatesLogEntryCode =
+  | 'None'
+  | 'NoUpdatesAvailable'
+  | 'UpdateAssetsNotAvailable'
+  | 'UpdateServerUnreachable'
+  | 'UpdateHasInvalidSignature'
+  | 'UpdateCodeSigningError'
+  | 'UpdateFailedToLoad'
+  | 'AssetsFailedToLoad'
+  | 'JSRuntimeError'
+  | 'InitializationError'
+  | 'Unknown';
+
+/**
+ * An `expo-updates` log entry, as `readLogEntriesAsync` in `expo-updates` returns it.
+ */
+export type ObserveExpoUpdatesLogEntry = {
+  /**
+   * The time the entry was written, in milliseconds since Jan 1 1970 UTC.
+   */
+  timestamp: number;
+  message: string;
+  code: ObserveExpoUpdatesLogEntryCode;
+  level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+  updateId?: string;
+  assetId?: string;
+  /**
+   * A native Android or iOS stack trace.
+   */
+  stacktrace?: string[];
+};
+
+export type ObserveExpoUpdatesIntegrationConfig = {
+  /**
+   * Whether the integration also reports `expo-updates` warnings to Observe, as events named
+   * `expo-updates.warning`.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
+  /**
+   * Log entry codes that the integration does not report. For example, a network error during an
+   * update check is logged with the `Unknown` code on iOS. Errors that error recovery handled are
+   * always reported.
+   *
+   * @default []
+   */
+  ignoredCodes?: ObserveExpoUpdatesLogEntryCode[];
+  /**
+   * A function that decides whether the integration reports a log entry. Return `false` to skip
+   * the entry, for example by its message. It runs after `ignoredCodes`, and errors that error
+   * recovery handled are always reported. If the function throws, the entry is reported.
+   */
+  shouldReport?: (entry: ObserveExpoUpdatesLogEntry) => boolean;
 };
 
 /**
