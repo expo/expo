@@ -1,5 +1,6 @@
 import type { ColorValue } from 'react-native';
 import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { TabDescriptor } from 'react-native-tab-view';
 
 import { alpha } from '../../../utils/color';
@@ -103,56 +104,66 @@ export function MaterialTopTabBar({
     })
   );
 
-  return (
-    <TabBar
-      {...rest}
-      navigationState={state}
-      options={tabBarOptions}
-      direction={direction}
-      scrollEnabled={focusedOptions.tabBarScrollEnabled}
-      bounces={focusedOptions.tabBarBounces}
-      // TabBar declares strings, but Expo callbacks, style color, and android_ripple accept OpaqueColorValue at runtime, so PlatformColor works.
-      activeColor={activeColor as string}
-      inactiveColor={inactiveColor as string}
-      pressColor={focusedOptions.tabBarPressColor as string | undefined}
-      pressOpacity={focusedOptions.tabBarPressOpacity}
-      tabStyle={focusedOptions.tabBarItemStyle}
-      indicatorStyle={[{ backgroundColor: colors.primary }, focusedOptions.tabBarIndicatorStyle]}
-      gap={focusedOptions.tabBarGap}
-      android_ripple={focusedOptions.tabBarAndroidRipple}
-      indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle}
-      contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
-      style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]}
-      onTabPress={({ route, preventDefault }) => {
-        const event = emitter.emit({
-          type: 'tabPress',
-          target: route.key,
-          canPreventDefault: true,
-        });
+  const tabBarStyle = [{ backgroundColor: colors.card }, focusedOptions.tabBarStyle];
 
-        if (event.defaultPrevented) {
-          preventDefault();
-        }
-      }}
-      onTabLongPress={({ route }) =>
-        emitter.emit({
-          type: 'tabLongPress',
-          target: route.key,
-        })
-      }
-      renderIndicator={({ navigationState: state, ...rest }) => {
-        return focusedOptions.tabBarIndicator ? (
-          focusedOptions.tabBarIndicator({
-            state,
-            ...rest,
+  return (
+    // The tabs lay out inside the horizontal safe area, such as beside the iPhone Duo rail, while
+    // the bar's background extends to the screen edges.
+    <SafeAreaView
+      edges={horizontalEdges}
+      style={{ backgroundColor: StyleSheet.flatten(tabBarStyle).backgroundColor }}>
+      <TabBar
+        {...rest}
+        navigationState={state}
+        options={tabBarOptions}
+        direction={direction}
+        scrollEnabled={focusedOptions.tabBarScrollEnabled}
+        bounces={focusedOptions.tabBarBounces}
+        // TabBar declares strings, but Expo callbacks, style color, and android_ripple accept OpaqueColorValue at runtime, so PlatformColor works.
+        activeColor={activeColor as string}
+        inactiveColor={inactiveColor as string}
+        pressColor={focusedOptions.tabBarPressColor as string | undefined}
+        pressOpacity={focusedOptions.tabBarPressOpacity}
+        tabStyle={focusedOptions.tabBarItemStyle}
+        indicatorStyle={[{ backgroundColor: colors.primary }, focusedOptions.tabBarIndicatorStyle]}
+        gap={focusedOptions.tabBarGap}
+        android_ripple={focusedOptions.tabBarAndroidRipple}
+        indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle}
+        contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
+        style={tabBarStyle}
+        onTabPress={({ route, preventDefault }) => {
+          const event = emitter.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (event.defaultPrevented) {
+            preventDefault();
+          }
+        }}
+        onTabLongPress={({ route }) =>
+          emitter.emit({
+            type: 'tabLongPress',
+            target: route.key,
           })
-        ) : (
-          <TabBarIndicator navigationState={state} {...rest} />
-        );
-      }}
-    />
+        }
+        renderIndicator={({ navigationState: state, ...rest }) => {
+          return focusedOptions.tabBarIndicator ? (
+            focusedOptions.tabBarIndicator({
+              state,
+              ...rest,
+            })
+          ) : (
+            <TabBarIndicator navigationState={state} {...rest} />
+          );
+        }}
+      />
+    </SafeAreaView>
   );
 }
+
+const horizontalEdges = { left: 'additive', right: 'additive' } as const;
 
 const styles = StyleSheet.create({
   label: {
