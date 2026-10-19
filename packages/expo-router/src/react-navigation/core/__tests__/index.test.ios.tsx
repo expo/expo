@@ -37,7 +37,7 @@ test.each([
   ['TabRouter', TabRouter],
   ['DrawerRouter', DrawerRouter],
   ['typeless custom router', MockRouter],
-])('%s receives the shared sparse fresh state', async (_name, createRouter) => {
+])('%s initializes the shared sparse fresh state', async (_name, createRouter) => {
   let state: NavigationState | undefined;
 
   const TestNavigator = (props: any): any => {
@@ -58,6 +58,12 @@ test.each([
     stale: false,
     routeKeySeq: 0,
     key: 'navigator-2',
+    ...(createRouter === TabRouter || createRouter === DrawerRouter
+      ? {
+          type: createRouter === TabRouter ? 'tab' : 'drawer',
+          history: [{ type: 'route', key: 'first-1' }],
+        }
+      : {}),
     index: 0,
     routeNames: ['first', 'second'],
     routes: [{ key: 'first-1', name: 'first' }],
