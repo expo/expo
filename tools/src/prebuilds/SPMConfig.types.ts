@@ -297,11 +297,6 @@ export interface SPMConfig {
   $schema?: string;
   /** Whether this package publishes its precompiled XCFrameworks in its npm package. */
   publishPrebuilds?: boolean;
-  /**
-   * Whether the Expo SwiftPM plugin builds this package from its checked-in Package.swift
-   * instead of a generated manifest.
-   */
-  directManifest?: boolean;
   /** List of SPM products to generate with their targets */
   products: SPMProduct[];
 }

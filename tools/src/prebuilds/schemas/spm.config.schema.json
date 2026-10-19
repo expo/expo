@@ -13,10 +13,6 @@
             "type": "boolean",
             "description": "Whether this package publishes its precompiled XCFrameworks in its npm package"
         },
-        "directManifest": {
-            "type": "boolean",
-            "description": "Whether the Expo SwiftPM plugin builds this package from its checked-in Package.swift instead of a generated manifest"
-        },
         "products": {
             "type": "array",
             "description": "List of SPM products to generate with their targets",
