@@ -75,6 +75,7 @@ class SharingModule : Module() {
 
     Function("clearSharedPayloads") {
       SharingSingleton.intent = null
+      ShareIntoFileStore(context.cacheDir).removeAll()
     }
 
     OnActivityResult { _, (requestCode) ->
