@@ -2,6 +2,15 @@ import ExpoSecureStore from './ExpoSecureStore';
 
 export type KeychainAccessibilityConstant = number;
 
+/**
+ * The authentication method that protects an entry.
+ * - `'none'`: no authentication.
+ * - `'biometry'`: biometric authentication only.
+ * - `'deviceCredentials'`: biometric authentication with fallback to the device PIN, pattern, or password.
+ *   On Android, this method requires API 30 or higher.
+ */
+export type AuthenticationMethod = 'none' | 'biometry' | 'deviceCredentials';
+
 // @needsAudit
 /**
  * The data in the keychain item cannot be accessed after a restart until the device has been
@@ -71,7 +80,8 @@ export type SecureStoreOptions = {
    * or `'deviceCredentials'` for biometric with fallback to device credentials (PIN, pattern, or password).
    * Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
    *
-   * Boolean values are deprecated and will be removed in the future: `true` is treated as `'biometry'` and `false` as `'none'`.
+   * > **warning** Boolean values are deprecated and will be removed in a future release. `true` is treated as `'biometry'`
+   * > and `false` as `'none'`. Passing a boolean logs a deprecation warning once per app session.
    *
    * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
    *   (requires API 23). `'deviceCredentials'` requires API 30+.
@@ -87,7 +97,7 @@ export type SecureStoreOptions = {
    *
    * @default 'none'
    */
-  requireAuthentication?: boolean | 'none' | 'biometry' | 'deviceCredentials';
+  requireAuthentication?: AuthenticationMethod | boolean;
   /**
    * Sets a hint to the system for whether to require user confirmation after authentication.
    * This may be ignored by the system if the user has disabled implicit authentication in Settings
