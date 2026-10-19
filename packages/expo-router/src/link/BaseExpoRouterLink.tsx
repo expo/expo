@@ -7,6 +7,9 @@ import type { GestureResponderEvent } from 'react-native';
 import { Text, Platform } from 'react-native';
 
 import { Prefetch } from '../Prefetch';
+import { useWarnIfCardRouteShowsAsModal } from '../global-state/implicitModalWarningContext';
+import type { LinkToOptions } from '../global-state/types';
+import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
 import { Slot } from '../ui/Slot';
 import { resolveHref } from './href';
 import type { LinkProps } from './useLinkHooks';
@@ -42,10 +45,21 @@ export function BaseExpoRouterLink({
     return resolveHref(href);
   }, [href]);
 
-  let event;
+  let event: LinkToOptions['event'];
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
   if (dismissTo) event = 'POP_TO';
+
+  const navigationState = React.use(RootNavigationStateContext);
+  const warnIfImplicitModal = useWarnIfCardRouteShowsAsModal(navigationState);
+  React.useEffect(() => {
+    warnIfImplicitModal(resolvedHref, {
+      event,
+      relativeToDirectory,
+      withAnchor,
+      dangerouslySingular: singular,
+    });
+  }, [event, relativeToDirectory, resolvedHref, singular, warnIfImplicitModal, withAnchor]);
 
   const props = useLinkToPathProps({
     href: resolvedHref,

@@ -16,6 +16,7 @@ export {
 } from './hooks';
 
 export { router, type ImperativeRouter, type NavigationTransitionMode } from './imperative-api';
+export { disableImplicitModalWarning } from './global-state/implicitModalWarning';
 export { useIsNavigating as unstable_useIsNavigating } from './global-state/useIsNavigating';
 
 export { withLayoutContext } from './layouts/withLayoutContext';

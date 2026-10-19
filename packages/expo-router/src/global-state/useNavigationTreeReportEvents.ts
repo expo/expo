@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { mark } from '../performance';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
-import type { NavigationAction } from '../react-navigation/routers';
+import type { NavigationAction, NavigationState } from '../react-navigation/routers';
 import type { BrowserHistoryAdapter } from './browserHistory.types';
 import { internalNavigationEvents } from './internalNavigationEvents';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
@@ -55,7 +55,8 @@ function warnUnhandledAction(action: NavigationAction) {
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
   consumeReportEvents: (eventIds: readonly number[]) => void,
-  browserHistory: BrowserHistoryAdapter
+  browserHistory: BrowserHistoryAdapter,
+  warnIfImplicitModal?: (state: NavigationState, routeKey: string) => void
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -115,6 +116,9 @@ export function useNavigationTreeReportEvents(
               state: event.state,
             });
             break;
+          case 'implicit-modal-warning':
+            warnIfImplicitModal?.(event.state, event.routeKey);
+            break;
         }
       } catch (error) {
         const message =
@@ -127,5 +131,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [browserHistory, consumeReportEvents, emitterRegistry, report]);
+  }, [browserHistory, consumeReportEvents, emitterRegistry, report, warnIfImplicitModal]);
 }

@@ -11,6 +11,15 @@ import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
+import {
+  warnIfAffectedCardRouteShowsAsModal,
+  warnIfCardRouteShowsAsModal,
+} from '../../global-state/implicitModalWarning';
+import {
+  ImplicitModalWarningContext,
+  ImplicitModalWarningRegistryContext,
+  type ImplicitModalWarning,
+} from '../../global-state/implicitModalWarningContext';
 import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
@@ -31,6 +40,7 @@ import {
   CommonActions,
   type InitialState,
   type NavigationAction,
+  type NavigationState,
   type ParamListBase,
   type Route,
 } from '../routers';
@@ -113,7 +123,37 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     redirects: routerConfig?.redirects,
   });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
-  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
+  const warnIfImplicitModal = useLatestCallback<ImplicitModalWarning>(
+    (href, options, localStacks, navigationState, currentRegistry = registry) => {
+      warnIfCardRouteShowsAsModal(
+        href,
+        options,
+        navigationState ?? state,
+        {
+          registry: currentRegistry,
+          routeNode: UNSTABLE_routeNode,
+          linking: routerConfig?.linking,
+          redirects: routerConfig?.redirects,
+        },
+        localStacks
+      );
+    }
+  );
+  const warnIfAffectedRouteIsImplicitModal = useLatestCallback(
+    (warningState: NavigationState, routeKey: string) =>
+      warnIfAffectedCardRouteShowsAsModal(warningState, routeKey, {
+        registry,
+        routeNode: UNSTABLE_routeNode,
+        linking: routerConfig?.linking,
+        redirects: routerConfig?.redirects,
+      })
+  );
+  useNavigationTreeReportEvents(
+    report,
+    consumeReportEvents,
+    browserHistory,
+    warnIfAffectedRouteIsImplicitModal
+  );
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -318,11 +358,15 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
           <RouteInfoContext.Provider value={routeInfo}>
             <RootNavigationStateContext.Provider value={state}>
               <RouterRegistrySettersContext.Provider value={registrySetters}>
-                <EnsureSingleNavigator>
-                  <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                    <ThemeProvider value={theme}>{children}</ThemeProvider>
-                  </NavigationPendingContext>
-                </EnsureSingleNavigator>
+                <ImplicitModalWarningRegistryContext value={registry}>
+                  <ImplicitModalWarningContext value={warnIfImplicitModal}>
+                    <EnsureSingleNavigator>
+                      <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                        <ThemeProvider value={theme}>{children}</ThemeProvider>
+                      </NavigationPendingContext>
+                    </EnsureSingleNavigator>
+                  </ImplicitModalWarningContext>
+                </ImplicitModalWarningRegistryContext>
               </RouterRegistrySettersContext.Provider>
               <ImperativeRoutingQueueBridge
                 enqueue={routingQueue.enqueue}

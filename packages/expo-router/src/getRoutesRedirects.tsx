@@ -9,7 +9,8 @@ import { shouldLinkExternally } from './utils/url';
 
 export function applyRedirects(
   url: string | null | undefined,
-  redirects: StoreRedirects[] | undefined
+  redirects: StoreRedirects[] | undefined,
+  openExternal: boolean = true
 ): string | undefined | null {
   if (typeof url !== 'string' || !redirects) {
     return url;
@@ -31,11 +32,13 @@ export function applyRedirects(
     }
 
     // TODO: Revisit whether redirect resolution should open external URLs or only return them.
-    Linking.openURL(href);
+    if (openExternal) {
+      Linking.openURL(href);
+    }
     return href;
   }
 
-  return applyRedirects(convertRedirect(url, redirect[1]), redirects);
+  return applyRedirects(convertRedirect(url, redirect[1]), redirects, openExternal);
 }
 
 export function getRedirectModule(redirectConfig: RedirectConfig) {

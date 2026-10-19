@@ -9,6 +9,7 @@ import {
 import type { NavigationAction } from '../react-navigation/native';
 import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
+import { shouldLinkExternally } from '../utils/url';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
@@ -16,6 +17,7 @@ import type { LinkToOptions, StoreRedirects } from './types';
 
 export type NavigationResolution =
   | { status: 'action'; action: NavigationAction }
+  | { status: 'external'; href: string }
   | { status: 'invalid'; href: string };
 
 export type NavigateActionConfig = {
@@ -33,7 +35,8 @@ export function getNavigateAction(
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
   previewKey: string | undefined,
-  navigationState: NavigationState
+  navigationState: NavigationState,
+  openExternalRedirects: boolean = true
 ): NavigationResolution {
   if (!config.linking || !config.routeNode) {
     throw new Error('Attempted to link to route when no routes are present');
@@ -42,8 +45,13 @@ export function getNavigateAction(
   const routeInfo = getRouteInfoFromState(navigationState);
   const href = applyRedirects(
     resolveHrefStringWithSegments(baseHref, routeInfo, options),
-    config.redirects
+    config.redirects,
+    openExternalRedirects
   )!;
+
+  if (shouldLinkExternally(href)) {
+    return { status: 'external', href };
+  }
 
   const state = config.linking.getStateFromPath!(href, config.linking.config, routeInfo.segments);
   if (!state || state.routes.length === 0) {

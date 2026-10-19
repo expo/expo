@@ -58,6 +58,7 @@ type QueuedOperation = (
 ) & {
   // Queued operations wait for missing layouts. Direct actions apply at once.
   deferrable?: { inTransition: boolean };
+  warnIfImplicitModal?: boolean;
 };
 
 type TreeOperation =
@@ -115,6 +116,11 @@ type NavigationTreeReportEventData =
     }
   | {
       type: 'route-preloaded';
+      routeKey: string;
+      state: NavigationState;
+    }
+  | {
+      type: 'implicit-modal-warning';
       routeKey: string;
       state: NavigationState;
     }
@@ -300,12 +306,16 @@ function reduceTree(
         );
         return result;
       }
+      if (resolution.status === 'external') {
+        return result;
+      }
       return reduceTree(
         result,
         {
           type: 'ACTION',
           payload: { action: resolution.action },
           actionId: operation.actionId,
+          warnIfImplicitModal: options.event === 'PUSH',
         },
         config
       );
@@ -392,6 +402,15 @@ function reduceTree(
                 ? ([
                     {
                       type: 'route-preloaded',
+                      routeKey: reduction.affectedRouteKey,
+                      state: committedState,
+                    },
+                  ] satisfies NavigationTreeReportEventData[])
+                : []),
+              ...(operation.warnIfImplicitModal && reduction.affectedRouteKey !== undefined
+                ? ([
+                    {
+                      type: 'implicit-modal-warning',
                       routeKey: reduction.affectedRouteKey,
                       state: committedState,
                     },

@@ -1,3 +1,4 @@
+import { isModalPresentation } from '../../../utils/stackPresentation';
 import type { Route } from '../../native';
 import type { NativeStackDescriptorMap } from '../types';
 
@@ -5,16 +6,7 @@ export const getModalRouteKeys = (routes: Route<string>[], descriptors: NativeSt
   routes.reduce<string[]>((acc, route) => {
     const { presentation } = descriptors[route.key]?.options ?? {};
 
-    if (
-      (acc.length && !presentation) ||
-      presentation === 'modal' ||
-      presentation === 'transparentModal' ||
-      presentation === 'containedModal' ||
-      presentation === 'containedTransparentModal' ||
-      presentation === 'fullScreenModal' ||
-      presentation === 'formSheet' ||
-      presentation === 'pageSheet'
-    ) {
+    if ((acc.length && !presentation) || isModalPresentation(descriptors[route.key]?.options)) {
       acc.push(route.key);
     }
 

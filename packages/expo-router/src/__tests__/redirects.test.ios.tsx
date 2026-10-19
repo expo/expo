@@ -9,6 +9,7 @@ import { RouterConfigContext } from '../global-state/routerConfigContext';
 import type { StoreRedirects } from '../global-state/types';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
+import { Link } from '../link';
 import { renderRouter } from '../testing-library';
 import { expectCompleteStateToMatch } from './assertCompleteState';
 
@@ -489,6 +490,32 @@ it('tabs can still work for external redirects', async () => {
   await fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
 
   expect(mockOpenURL.mock.calls).toEqual([['https://example.com']]);
+});
+
+it('does not open an external redirect while rendering a Link', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  mockRedirects.mockReturnValue([
+    {
+      source: '/away',
+      destination: '//example.com',
+      destinationContextKey: './away.tsx',
+    } satisfies RedirectConfig,
+  ]);
+
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="sheet" options={{ presentation: 'formSheet' }} />
+      </Stack>
+    ),
+    index: () => null,
+    sheet: () => <Link href="/away">Away</Link>,
+  });
+
+  await act(() => router.push('/sheet'));
+
+  expect(mockOpenURL).not.toHaveBeenCalled();
+  expect(warn).not.toHaveBeenCalled();
 });
 
 it('not existing nested route redirects correctly', async () => {

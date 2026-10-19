@@ -99,7 +99,7 @@ describe(getNavigateAction, () => {
       navigationState
     );
 
-    expect(mockApplyRedirects).toHaveBeenCalledWith('/from', redirects);
+    expect(mockApplyRedirects).toHaveBeenCalledWith('/from', redirects, true);
   });
 
   it('parses the href returned by applyRedirects', () => {
@@ -117,6 +117,26 @@ describe(getNavigateAction, () => {
     );
 
     expect(getStateFromPath).toHaveBeenCalledWith('/redirected', { screens: {} }, []);
+  });
+
+  it('stops when a redirect resolves externally', () => {
+    mockApplyRedirects.mockReturnValueOnce('//example.com');
+
+    expect(
+      getNavigateAction(
+        '/away',
+        {},
+        config,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState,
+        false
+      )
+    ).toEqual({ status: 'external', href: '//example.com' });
+    expect(getStateFromPath).not.toHaveBeenCalled();
+    expect(mockResolveNavigationDestination).not.toHaveBeenCalled();
   });
 
   it.each([undefined, { routes: [] }])('returns invalid for an unparseable path', (state) => {

@@ -29,6 +29,7 @@ export function createNativeStackProps(
 ): NativeStackNavigatorCreateProps {
   return {
     ...createBaseStackProps(args),
+    stateKey: args.state.key,
     removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
   };
 }

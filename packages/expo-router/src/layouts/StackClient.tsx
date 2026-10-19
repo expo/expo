@@ -7,6 +7,7 @@ import {
   type NativeStackNavigatorCreateProps,
   type StandardNativeStackEventMap,
 } from '../fork/native-stack/createNativeStackNavigator';
+import { captureNativeStackDescribe } from '../global-state/implicitModalWarning';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import {
   getInternalExpoRouterParams,
@@ -47,6 +48,7 @@ const RNStack = integrateWithRouter<
 >(createStandardNativeStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
   createProps: createNativeStackProps,
+  processDescriptors: captureNativeStackDescribe,
 });
 
 /**

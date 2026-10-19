@@ -13,6 +13,7 @@ import type {
 import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
+import { withOptionsOverrides } from './descriptorOptions';
 import { ThemeContext } from './theming/ThemeContext';
 import type {
   Descriptor,
@@ -278,16 +279,19 @@ export function useDescriptors<
     const customOptions = getOptions(route, navigation, options[route.key]!);
     const element = render(route, navigation, customOptions, routes[i]!.state);
 
-    acc[route.key] = {
-      route,
-      // @ts-expect-error: it's missing action helpers, fix later
-      navigation,
-      render() {
-        return element;
+    // @ts-expect-error: `useNavigationCache` adds action helpers at runtime.
+    acc[route.key] = withOptionsOverrides(
+      {
+        route,
+        navigation,
+        render() {
+          return element;
+        },
+        options: customOptions as ScreenOptions,
+        routeSource: screens[route.name]?.props.routeSource,
       },
-      options: customOptions as ScreenOptions,
-      routeSource: screens[route.name]?.props.routeSource,
-    };
+      options[route.key]
+    );
 
     return acc;
   }, {});

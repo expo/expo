@@ -4,6 +4,8 @@ import { Children } from './router/host';
 
 export { Link } from './router/client';
 
+export function disableImplicitModalWarning() {}
+
 export function usePathname() {
   const router = useRouter_UNSTABLE();
   return router.path;

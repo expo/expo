@@ -2,11 +2,20 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
+import { useRouteNode } from '../../Route';
+import {
+  getNativeStackDescribe,
+  registerNativeStack,
+  type NativeStackRegistration,
+} from '../../global-state/implicitModalWarning';
+import { NativeStackRegistrationContext } from '../../global-state/implicitModalWarningContext';
 import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
 } from '../../navigationParams';
+import { getOptionsOverrides } from '../../react-navigation/core/descriptorOptions';
+import { useClientLayoutEffect } from '../../react-navigation/core/useClientLayoutEffect';
 import {
   NativeStackView,
   type NativeStackDescriptorMap,
@@ -25,6 +34,7 @@ type NativeStackNavigationOptionsWithInternal = NativeStackNavigationOptions &
   InternalNavigationOptions;
 
 export interface NativeStackNavigatorCreateProps {
+  stateKey: string;
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
@@ -49,6 +59,7 @@ type ContentArgs = NavigatorContentProps<
 function NativeStackNavigatorContent({
   state,
   descriptors,
+  stateKey,
   emitter,
   isPreloaded,
   isRemovalPrevented,
@@ -58,6 +69,8 @@ function NativeStackNavigatorContent({
   unstable_nativeProps,
 }: ContentArgs) {
   const fullDescriptors = descriptors as unknown as NativeStackDescriptorMap;
+  const describe = getNativeStackDescribe(descriptors);
+  const routeNode = useRouteNode();
 
   const {
     computedState,
@@ -125,20 +138,58 @@ function NativeStackNavigatorContent({
     return result;
   }, [mergedDescriptors, computedState, isComputedRoutePreloaded]);
 
+  const parentStacks = React.use(NativeStackRegistrationContext);
+  const routeKeys = React.useMemo(
+    () => computedState.routes.map((route) => route.key),
+    [computedState.routes]
+  );
+  const registration = React.useMemo<NativeStackRegistration | undefined>(
+    () =>
+      describe
+        ? {
+            stateKey,
+            contextKey: routeNode?.contextKey,
+            routeKeys,
+            descriptors: stackDescriptors,
+            describe,
+            getOptionsOverrides: (routeKey) => {
+              const descriptor = fullDescriptors[routeKey];
+              return descriptor
+                ? getOptionsOverrides<NativeStackNavigationOptions>(descriptor)
+                : undefined;
+            },
+            getRouteContextKey: (routeName) =>
+              routeNode?.children.find((child) => child.route === routeName)?.contextKey,
+          }
+        : undefined,
+    [describe, fullDescriptors, routeKeys, routeNode, stackDescriptors, stateKey]
+  );
+  const registrations = React.useMemo(
+    () => (registration ? [registration, ...parentStacks] : parentStacks),
+    [parentStacks, registration]
+  );
+
+  useClientLayoutEffect(
+    () => (registration ? registerNativeStack(registration) : undefined),
+    [registration]
+  );
+
   return (
-    <DescriptorsContext value={fullDescriptors}>
-      <CompositionContext value={contextValue}>
-        <NativeStackView
-          state={computedState}
-          descriptors={stackDescriptors}
-          emit={emit}
-          isPreloaded={isComputedRoutePreloaded}
-          isRemovalPrevented={isRemovalPrevented}
-          pop={pop}
-          unstable_nativeProps={unstable_nativeProps}
-        />
-      </CompositionContext>
-    </DescriptorsContext>
+    <NativeStackRegistrationContext value={registrations}>
+      <DescriptorsContext value={fullDescriptors}>
+        <CompositionContext value={contextValue}>
+          <NativeStackView
+            state={computedState}
+            descriptors={stackDescriptors}
+            emit={emit}
+            isPreloaded={isComputedRoutePreloaded}
+            isRemovalPrevented={isRemovalPrevented}
+            pop={pop}
+            unstable_nativeProps={unstable_nativeProps}
+          />
+        </CompositionContext>
+      </DescriptorsContext>
+    </NativeStackRegistrationContext>
   );
 }
 
