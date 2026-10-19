@@ -46,6 +46,59 @@ extension JSIBenchmarks {
   }
 
   @Test
+  func `suspend and resume on the JavaScript thread`() async throws {
+    // One `Task.yield()` inside a task that the runtime started. `Task.yield()` resumes through the
+    // global executor, so each one is a hop from the cooperative pool back to the JavaScript thread.
+    try await withRunLoopThreadRuntime { runtime in
+      try await printSamples("JavaScriptActor: Task.yield() in a runtime task") { iterations in
+        return try await runtime.execute { @JavaScriptActor () async in
+          let wallStart = DispatchTime.now().uptimeNanoseconds
+          for _ in 0..<iterations {
+            await Task.yield()
+          }
+          return (Double(DispatchTime.now().uptimeNanoseconds - wallStart), nil)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `resume a continuation on the JavaScript thread in a runtime task`() async throws {
+    // A continuation resumed on the JavaScript thread itself, so the task is enqueued on the thread
+    // it already runs on. `Task.yield()` doesn't do that: it resumes through the global executor.
+    try await withRunLoopThreadRuntime { runtime in
+      try await printSamples("JavaScriptActor: same-thread continuation resume in a runtime task") { iterations in
+        return try await runtime.execute { @JavaScriptActor () async in
+          let wallStart = DispatchTime.now().uptimeNanoseconds
+          for _ in 0..<iterations {
+            await withUnsafeContinuation { (continuation: UnsafeContinuation<Void, Never>) in
+              continuation.resume()
+            }
+          }
+          return (Double(DispatchTime.now().uptimeNanoseconds - wallStart), nil)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `hop off the actor and back in a runtime task`() async throws {
+    // One call to a `@concurrent` function, which leaves the actor, and the hop back to it.
+    try await withRunLoopThreadRuntime { runtime in
+      try await printSamples("JavaScriptActor: hop to a @concurrent function that yields, and back") { iterations in
+        return try await runtime.execute { @JavaScriptActor () async in
+          let wallStart = DispatchTime.now().uptimeNanoseconds
+          for _ in 0..<iterations {
+            await leaveTheActor()
+            _ = runtime.global().hasProperty("Math")
+          }
+          return (Double(DispatchTime.now().uptimeNanoseconds - wallStart), nil)
+        }
+      }
+    }
+  }
+
+  @Test
   func `await settled promises once from another task`() async throws {
     // Each promise is awaited once, which is the common case. The promises are created and settled
     // on the JavaScript thread before the clock starts, so only the `await()` calls are measured.
@@ -135,6 +188,13 @@ private func blockingExecuteBenchmark(
   }
 }
 
+/// Leaves the actor for real: not inlined, and it suspends, so Swift can't drop the hops.
+@concurrent
+@inline(never)
+private func leaveTheActor() async {
+  await Task.yield()
+}
+
 /// Calls `call` repeatedly from a detached task and prints the wall time per call. The task may move
 /// between threads at each `await`, so there is no caller CPU time.
 private func asyncExecuteBenchmark(
@@ -169,6 +229,13 @@ private func withRunLoopThreadRuntime(_ body: (JavaScriptRuntime) async throws -
         dispatch: unsafeBitCast(scheduleOnRunLoopThread, to: UnsafeRawPointer.self)
       )
     }
+  }
+  // `JavaScriptActor` runs its jobs on the bound runtime's thread, so bind this one for the async
+  // closures to run on its thread, as the main runtime is in an app. The suite is serialized, so no
+  // other benchmark runs meanwhile.
+  JavaScriptActor.bind(to: runtimes.runtime)
+  defer {
+    JavaScriptActor.bind(to: nil)
   }
   try await body(runtimes.runtime!)
   // Releases the runtimes on the JavaScript thread, before the thread they schedule onto stops.

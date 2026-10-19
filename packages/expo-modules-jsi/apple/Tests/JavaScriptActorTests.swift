@@ -131,7 +131,7 @@ struct JavaScriptActorTests {
 
   // MARK: - Execute tests
 
-  @Test
+  @Test(.enabled(if: canCheckCustomExecutorIsolation))
   func `execute runs async operation in isolation`() async throws {
     // async outside, async inside
     try await runtime.execute {
@@ -141,7 +141,7 @@ struct JavaScriptActorTests {
     }
   }
 
-  @Test
+  @Test(.enabled(if: canCheckCustomExecutorIsolation))
   func `execute runs async operation in isolation (blocking)`() throws {
     // sync outside, async inside
     try runtime.execute {
@@ -151,7 +151,7 @@ struct JavaScriptActorTests {
     }
   }
 
-  @Test
+  @Test(.enabled(if: canCheckCustomExecutorIsolation))
   func `execute runs non-async operation in isolation`() throws {
     // sync outside, sync inside
     try runtime.execute {
@@ -159,3 +159,14 @@ struct JavaScriptActorTests {
     }
   }
 }
+
+/// Whether Swift's `assertIsolated()` can confirm `JavaScriptActor` isolation entered through
+/// `JavaScriptActor.assumeIsolated`. It asks the executor's `checkIsolated()`, which the Swift
+/// runtime only calls as of iOS 18, macOS 15, tvOS 18 and watchOS 11. Before that, the assertion
+/// traps even when the code runs on the JavaScript thread.
+private let canCheckCustomExecutorIsolation: Bool = {
+  if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
+    return true
+  }
+  return false
+}()

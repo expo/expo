@@ -14,6 +14,7 @@
 #include "CppError.h"
 #include "IRuntimeCompat.h"
 #include "MemoryBuffer.h"
+#include "RuntimeScheduler.h"
 #include "Public/NativeState.h"
 #include "TypedArray.h"
 
@@ -179,6 +180,61 @@ inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_p
 // `jsi::Instrumentation` is not imported into Swift, so reach it from here.
 inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
   runtime.instrumentation().collectGarbage(cause);
+}
+
+// How many blocking waits run the run loop on the current thread now. A `@JavaScriptActor` job that
+// runs inside such a wait runs inside a host call, with JavaScript on the stack, so it leaves the
+// microtasks to the call that waits. Per thread: a wait is about the thread, not about a runtime.
+inline unsigned &nestedRunLoopWaits() noexcept {
+  static thread_local unsigned count = 0;
+  return count;
+}
+
+inline void beginNestedRunLoopWait() noexcept {
+  nestedRunLoopWaits()++;
+}
+
+inline void endNestedRunLoopWait() noexcept {
+  nestedRunLoopWaits()--;
+}
+
+inline bool isInNestedRunLoopWait() noexcept {
+  return nestedRunLoopWaits() > 0;
+}
+
+// Reports an error thrown by a microtask that `drainMicrotasks` runs, through the host scheduler: a
+// task that throws it, which React's scheduler passes to its task error handler, as it does for the
+// errors of the microtasks it drains itself. The task holds the message and the stack rather than the
+// error value: the host drops the task when the React instance is gone, and a JavaScript value must
+// not outlive its runtime. Without a host scheduler, there is nowhere to report it.
+inline void reportMicrotaskError(jsi::IRuntime &runtime, RuntimeScheduler *scheduler, std::string message, std::string stack) noexcept {
+  if (scheduler == nullptr || !scheduler->supportsAsyncScheduling()) {
+    return;
+  }
+  jsi::IRuntime *runtimePointer = &runtime;
+  scheduler->scheduleTask(RuntimeScheduler::Priority::ImmediatePriority, ^{
+    throw jsi::JSError(*runtimePointer, message, stack);
+  });
+}
+
+// Runs the microtasks queued by a `@JavaScriptActor` job, like React's `RuntimeScheduler` does after
+// each task: an error thrown by a microtask is reported (see `reportMicrotaskError`) and draining goes
+// on, up to the same bound of passes. Returns `false` when it stopped at the bound.
+inline bool drainMicrotasks(jsi::IRuntime &runtime, RuntimeScheduler *scheduler) noexcept {
+  // React's bound, a guard against microtasks that keep throwing.
+  constexpr unsigned retriesBound = 255;
+  for (unsigned retries = 0; retries < retriesBound; retries++) {
+    try {
+      if (runtime.drainMicrotasks()) {
+        return true;
+      }
+    } catch (jsi::JSError &error) {
+      reportMicrotaskError(runtime, scheduler, error.getMessage(), error.getStack());
+    } catch (std::exception &exception) {
+      reportMicrotaskError(runtime, scheduler, std::string("Non-JS exception: ") + exception.what(), "");
+    }
+  }
+  return false;
 }
 
 // MARK: - Result slots

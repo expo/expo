@@ -127,7 +127,7 @@ private final class MacroCallbacks: Module {
   }
 }
 
-@Suite("Macro module")
+@Suite("Macro module", .bindsJavaScriptActor)
 @JavaScriptActor
 private struct MacroModuleTests {
   let appContext: AppContext

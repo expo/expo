@@ -6,6 +6,9 @@ import ExpoModulesJSI
 /// An app context for tests whose runtime has its own JavaScript thread. Use it in place of
 /// `AppContext.create()` in tests that call async functions, which otherwise may settle their
 /// promises concurrently with the test's JavaScript.
+///
+/// It binds `JavaScriptActor` to its runtime, so mark the suites that create it with
+/// `.bindsJavaScriptActor` (see ``BoundJavaScriptActorTrait``).
 public final class TestAppContext: AppContext {
   private let scheduler = TestRuntimeScheduler()
 

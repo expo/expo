@@ -148,6 +148,14 @@ let package = Package(
       path: "Tests",
     ),
 
+    // Tests that bind `JavaScriptActor` to a runtime. Binding is process-wide, so they're a test
+    // target of their own, which runs in a process of its own: the other tests run with nothing bound.
+    .testTarget(
+      name: "BindingTests",
+      dependencies: testFrameworks.dependencies,
+      path: "BindingTests",
+    ),
+
     // Benchmarks are opt-in: their suites are gated on the `EXPO_BENCHMARK` environment
     // variable, so regular test runs build them but skip every suite. Run `pnpm benchmark`
     // to execute them in the Release configuration.

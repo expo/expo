@@ -24,6 +24,12 @@ Pod::Spec.new do |s|
   s.source_files   = '{Benchmarks,Runtime}/**/*.swift'
   s.dependency 'ExpoModulesCore'
 
+  # `Runtime` has a Swift Testing trait for the suites that use `TestAppContext`, so the pod imports
+  # the `Testing` framework, which is found only through the testing search paths.
+  s.pod_target_xcconfig = {
+    'ENABLE_TESTING_SEARCH_PATHS' => 'YES'
+  }
+
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.
   if ENV['USE_HERMES'] == '0'

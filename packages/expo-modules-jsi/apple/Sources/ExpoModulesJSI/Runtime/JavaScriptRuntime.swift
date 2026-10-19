@@ -13,6 +13,10 @@ internal import jsi
 /// thread. Use `schedule()` or `execute()` methods to safely run code on the correct thread.
 /// The runtime uses `@JavaScriptActor` to enforce thread safety at compile time.
 ///
+/// Asynchronous `@JavaScriptActor` work stays on the JavaScript thread of the runtime bound with
+/// `JavaScriptActor.bind(to:)` across suspension points, also after a hop to another actor such as
+/// the main actor. Only the bound runtime can run asynchronous work, see ``JavaScriptActor``.
+///
 /// ## Lifecycle
 ///
 /// The runtime maintains a weak reference pattern for values, objects, and arrays to prevent
@@ -48,9 +52,6 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
   /// freed here, matching the immortal (no-op) release semantics of the imported reference type.
   private let ownsRuntime: Bool
-
-  /// Actor for running runtime work.
-  lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
   /// Creates a runtime from the JSI runtime. The scheduler runs tasks synchronously
   /// on the caller's thread — for the React-backed runtime, use
@@ -653,9 +654,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
-    // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
-    // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
-    // scheduler and thus no other thread to go to.
+    // `@JavaScriptActor` runs this on the bound runtime's thread, which need not be this runtime's,
+    // so go through `execute` to evaluate on this runtime's thread. It runs the closure in place when
+    // already there, or when the runtime has no scheduler and thus no other thread to go to.
     return try await execute { () async throws -> JavaScriptValue in
       let value = try self.eval(label: label, source)
       return value.is("Promise") ? try await value.getPromise().await() : value

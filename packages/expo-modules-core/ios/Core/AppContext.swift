@@ -65,6 +65,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   private var _runtime: ExpoRuntime? {
     didSet {
+      if let oldValue, oldValue !== _runtime {
+        // Sends `JavaScriptActor` back to its own thread if the old runtime is still the bound one,
+        // so its jobs don't go to a JavaScript thread that is about to stop.
+        JavaScriptActor.unbind(from: oldValue)
+      }
       if _runtime == nil && oldValue != nil {
         destroy()
         return
@@ -467,11 +472,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     dispatch: UnsafeRawPointer?
   ) {
     if let scheduler, let dispatch {
-      _runtime = ExpoRuntime(
+      let runtime = ExpoRuntime(
         unsafePointer: runtimePointer,
         scheduler: scheduler,
         dispatch: dispatch
       )
+      // `JavaScriptActor` runs its jobs on this runtime's JavaScript thread. Called again for the new
+      // runtime after a reload. Bound before the runtime is set, so that the actor's jobs go to this
+      // thread as soon as the runtime gets prepared, and so that the old runtime, which unbinds when
+      // it's replaced, no longer is the bound one.
+      JavaScriptActor.bind(to: runtime)
+      _runtime = runtime
     } else {
       _runtime = ExpoRuntime(unsafePointer: runtimePointer)
     }
