@@ -14,9 +14,10 @@ internal import jsi
 /// The runtime owns its handle and marks it dead in `deinit`, so values that outlive the runtime still
 /// detect it through ``runtime`` or ``pointee`` returning `nil`.
 ///
-/// ``runtime`` and ``pointee`` are not atomic, so they are for the JavaScript thread only, where the
-/// runtime's `deinit` runs too as long as the last reference is released there (as
-/// `AppContext.destroy()` does). Other threads go through ``JavaScriptRuntime/Scheduler``.
+/// ``runtime`` and ``pointee`` are not atomic, so they are only for the thread that uses the runtime:
+/// the JavaScript thread, or Hermes's finalizer thread while the runtime is destroyed. The runtime's
+/// `deinit` runs there too as long as the last reference is released there (as `AppContext.destroy()`
+/// does). Other threads go through ``JavaScriptRuntime/Scheduler``.
 ///
 /// Not to be confused with the engine's handles to JavaScript values (`jsi::PointerValue`).
 internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
