@@ -38,7 +38,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "commander": "^14.0.3"
+    "arg": "^5.0.2"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",

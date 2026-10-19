@@ -1,4 +1,3 @@
-import type { Command } from 'commander';
 import type { ScanStats } from 'expo-modules-macros';
 import path from 'path';
 
@@ -8,100 +7,109 @@ import type {
   RenderWarning,
   RenderedDeclaration,
 } from '../typegen/renderSurface';
+import { parseArgs } from './args';
 import { styleFileName, styleKind, styleTypeName, styleWarningHeading } from './styles';
 
 const DEFAULT_OUTPUT_PATH = path.join('src', 'native.types.ts');
 
-type GenerateTypesCommandOptions = {
-  out?: string;
-  scanner?: string;
-  check?: boolean;
-};
+const HELP = `Usage: expo-modules generate-types [options] [packageDir]
 
-export function generateTypesCommand(cli: Command) {
-  cli
-    .command('generate-types [packageDir]')
-    .description(
-      'Generates TypeScript types for the native API an Expo module exports to JavaScript: ' +
-        'its @ExpoModule, @SharedObject, @Record, and @Union types and Enumerable enums. Scans the ' +
-        'package directory (default: the current directory) for Swift sources and writes them to a ' +
-        'single TypeScript file.'
-    )
-    .option(
-      '-o, --out <path>',
-      'The TypeScript file to write, relative to the package directory.',
-      DEFAULT_OUTPUT_PATH
-    )
-    .option(
-      '--scanner <path>',
-      'Path to the Expo Modules scanner executable. Defaults to the scanner of the expo-modules-macros ' +
-        'version that expo-modules-core depends on.'
-    )
-    .option(
-      '--check',
-      'Verify that the file is up to date without writing it. Exits with code 1 when it is not.'
-    )
-    .action(async (packageDirArg: string | undefined, options: GenerateTypesCommandOptions) => {
-      const packageDir = path.resolve(packageDirArg ?? '.');
-      const outputPath = path.resolve(packageDir, options.out ?? DEFAULT_OUTPUT_PATH);
-      const scannerPath = options.scanner ? path.resolve(options.scanner) : undefined;
+Generates TypeScript types for the native API an Expo module exports to
+JavaScript: its @ExpoModule, @SharedObject, @Record, and @Union types and
+Enumerable enums. Scans the package directory (default: the current directory)
+for Swift sources and writes them to a single TypeScript file.
 
-      const result = await generateTypes({
-        packageDir,
-        outputPath,
-        scannerPath,
-        check: options.check ?? false,
-      });
+Options:
+  -o, --out <path>  The TypeScript file to write, relative to the package
+                    directory. Defaults to ${DEFAULT_OUTPUT_PATH}.
+  --scanner <path>  Path to the Expo Modules scanner executable. Defaults to the
+                    scanner of the expo-modules-macros version that
+                    expo-modules-core depends on.
+  --check           Verify that the file is up to date without writing it. Exits
+                    with code 1 when it is not.
+  -h, --help        Display this message.`;
 
-      const { outcome } = result;
-      const nothingFound = describeEmptyScan(result.stats, packageDir);
-      const summary = `${describeCounts(result.counts)} from ${count(result.stats.filesParsed, 'Swift file')}.`;
-      switch (outcome.kind) {
-        case 'written':
-          console.log(`Generated ${styleFileName(displayPath(outcome.outputPath))}: ${summary}`);
-          console.log(listDeclarations(result.declarations, packageDir));
-          break;
-        case 'unchanged':
-          console.log(
-            `${styleFileName(displayPath(outcome.outputPath))} is up to date: ${summary}`
-          );
-          console.log(listDeclarations(result.declarations, packageDir));
-          break;
-        case 'removed':
-          console.log(
-            `${nothingFound} Removed the previously generated ` +
-              `${styleFileName(displayPath(outcome.outputPath))}.`
-          );
-          break;
-        case 'empty':
-          console.log(`${nothingFound} Nothing was written.`);
-          break;
-        case 'stale': {
-          const file = styleFileName(displayPath(outcome.outputPath), process.stderr);
-          console.error(
-            outcome.expected === 'written'
-              ? `${file} is out of date. Run \`expo-modules generate-types\` to update it.`
-              : `${file} is no longer needed: the package exports no native types. ` +
-                  `Run \`expo-modules generate-types\` to remove it.`
-          );
-          process.exitCode = 1;
-          break;
-        }
-      }
-      // Warnings come last, under their own heading, so the actionable part of the output is what
-      // stays on screen after the summary and the listing.
-      const heading = describeWarnings(result.warnings);
-      if (heading) {
-        console.warn(`\n${styleWarningHeading(heading, process.stderr)}`);
-        for (const warning of result.warnings) {
-          const file = path.relative(packageDir, warning.file);
-          console.warn(
-            `  ${styleFileName(file, process.stderr)}: ${styleTypeName(warning.location, process.stderr)}: ` +
-              warning.message
-          );
-        }
-      }
-    });
+export async function generateTypesCommand(argv: string[]) {
+  const args = parseArgs(
+    {
+      '--out': String,
+      '--scanner': String,
+      '--check': Boolean,
+      '--help': Boolean,
+      '-o': '--out',
+      '-h': '--help',
+    },
+    argv,
+    'expo-modules generate-types'
+  );
+  if (args['--help']) {
+    console.log(HELP);
+    return;
+  }
+  if (args._.length > 1) {
+    throw new Error(
+      `\`expo-modules generate-types\` takes at most one package directory, but got ${args._.length}: ` +
+        `${args._.join(', ')}. Run \`expo-modules generate-types --help\` to see the usage.`
+    );
+  }
+
+  const packageDir = path.resolve(args._[0] ?? '.');
+  const outputPath = path.resolve(packageDir, args['--out'] ?? DEFAULT_OUTPUT_PATH);
+  const scannerPath = args['--scanner'] ? path.resolve(args['--scanner']) : undefined;
+
+  const result = await generateTypes({
+    packageDir,
+    outputPath,
+    scannerPath,
+    check: args['--check'] ?? false,
+  });
+
+  const { outcome } = result;
+  const nothingFound = describeEmptyScan(result.stats, packageDir);
+  const summary = `${describeCounts(result.counts)} from ${count(result.stats.filesParsed, 'Swift file')}.`;
+  switch (outcome.kind) {
+    case 'written':
+      console.log(`Generated ${styleFileName(displayPath(outcome.outputPath))}: ${summary}`);
+      console.log(listDeclarations(result.declarations, packageDir));
+      break;
+    case 'unchanged':
+      console.log(`${styleFileName(displayPath(outcome.outputPath))} is up to date: ${summary}`);
+      console.log(listDeclarations(result.declarations, packageDir));
+      break;
+    case 'removed':
+      console.log(
+        `${nothingFound} Removed the previously generated ` +
+          `${styleFileName(displayPath(outcome.outputPath))}.`
+      );
+      break;
+    case 'empty':
+      console.log(`${nothingFound} Nothing was written.`);
+      break;
+    case 'stale': {
+      const file = styleFileName(displayPath(outcome.outputPath), process.stderr);
+      console.error(
+        outcome.expected === 'written'
+          ? `${file} is out of date. Run \`expo-modules generate-types\` to update it.`
+          : `${file} is no longer needed: the package exports no native types. ` +
+              `Run \`expo-modules generate-types\` to remove it.`
+      );
+      process.exitCode = 1;
+      break;
+    }
+  }
+  // Warnings come last, under their own heading, so the actionable part of the output is what
+  // stays on screen after the summary and the listing.
+  const heading = describeWarnings(result.warnings);
+  if (heading) {
+    console.warn(`\n${styleWarningHeading(heading, process.stderr)}`);
+    for (const warning of result.warnings) {
+      const file = path.relative(packageDir, warning.file);
+      console.warn(
+        `  ${styleFileName(file, process.stderr)}: ${styleTypeName(warning.location, process.stderr)}: ` +
+          warning.message
+      );
+    }
+  }
 }
 
 /** `1 module`, `2 modules`. */
