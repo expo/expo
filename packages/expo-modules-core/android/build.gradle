@@ -307,6 +307,7 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
   api "androidx.core:core-ktx:1.17.0"
+  implementation "androidx.activity:activity:1.7.0"
 
   if (shouldIncludeCompose) {
     implementation 'androidx.compose.foundation:foundation-android:1.7.6'
