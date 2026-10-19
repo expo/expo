@@ -1,10 +1,11 @@
-import type { ColorValue } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet } from 'react-native';
+import type { EdgeInsets } from 'react-native-safe-area-context';
 import type { TabDescriptor } from 'react-native-tab-view';
 
 import { alpha } from '../../../utils/color';
 import { Text } from '../../elements';
-import { useLinkBuilder, useLocale, useTheme } from '../../native';
+import { type LocaleDirection, useLinkBuilder, useLocale, useTheme } from '../../native';
 import type { MaterialTopTabBarProps, MaterialTopTabViewRoute } from '../types';
 
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
@@ -40,6 +41,7 @@ export function MaterialTopTabBar({
   emitter,
   // The built-in bar switches through `jumpTo`; only strip the custom callback from forwarded props.
   navigateToTab: _navigateToTab,
+  insets,
   ...rest
 }: MaterialTopTabBarProps) {
   const { colors } = useTheme();
@@ -121,7 +123,11 @@ export function MaterialTopTabBar({
       gap={focusedOptions.tabBarGap}
       android_ripple={focusedOptions.tabBarAndroidRipple}
       indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle}
-      contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
+      contentContainerStyle={getContentContainerStyle(
+        focusedOptions.tabBarContentContainerStyle,
+        insets,
+        direction
+      )}
       style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]}
       onTabPress={({ route, preventDefault }) => {
         const event = emitter.emit({
@@ -152,6 +158,37 @@ export function MaterialTopTabBar({
       }}
     />
   );
+}
+
+// Pads the tabs by the left and right insets, such as beside the iPhone Duo rail, while the bar's
+// own style spans the screen edges. TabBar reads this padding to size the tabs and place the
+// indicator, so it takes the inset added to any padding set in `tabBarContentContainerStyle`.
+function getContentContainerStyle(
+  style: StyleProp<ViewStyle>,
+  insets: EdgeInsets,
+  direction: LocaleDirection
+): StyleProp<ViewStyle> {
+  if (!insets.left && !insets.right) {
+    return style;
+  }
+
+  const { paddingLeft, paddingRight, paddingStart, paddingEnd, paddingHorizontal, ...rest } =
+    StyleSheet.flatten(style) ?? {};
+  const isRTL = direction === 'rtl';
+  const userPaddingStart =
+    paddingStart ?? (isRTL ? paddingRight : paddingLeft) ?? paddingHorizontal ?? rest.padding;
+  const userPaddingEnd =
+    paddingEnd ?? (isRTL ? paddingLeft : paddingRight) ?? paddingHorizontal ?? rest.padding;
+
+  return {
+    ...rest,
+    paddingStart: toNumber(userPaddingStart) + (isRTL ? insets.right : insets.left),
+    paddingEnd: toNumber(userPaddingEnd) + (isRTL ? insets.left : insets.right),
+  };
+}
+
+function toNumber(value: ViewStyle['padding']) {
+  return typeof value === 'number' ? value : 0;
 }
 
 const styles = StyleSheet.create({

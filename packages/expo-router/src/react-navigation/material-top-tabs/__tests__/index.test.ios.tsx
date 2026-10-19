@@ -2,7 +2,7 @@ import { userEvent } from '@testing-library/react-native';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import type { PagerViewProps } from 'react-native-pager-view';
-import { TabView, type TabBarProps, type TabViewProps } from 'react-native-tab-view';
+import { TabBar, TabView, type TabBarProps, type TabViewProps } from 'react-native-tab-view';
 
 import { router } from '../../../imperative-api';
 import { TopTabs } from '../../../layouts/TopTabs';
@@ -73,37 +73,34 @@ jest.mock('react-native-tab-view', () => {
         </View>
       );
     }),
-    TabBar: ({
-      navigationState,
-      onTabPress,
-      options,
-      jumpTo,
-    }: TabBarProps<MaterialTopTabViewRoute>) => {
-      return (
-        <View>
-          {navigationState.routes.map((route) => (
-            <Pressable
-              key={route.key}
-              accessibilityRole="tab"
-              onPress={() => {
-                let defaultPrevented = false;
-                onTabPress?.({
-                  route,
-                  defaultPrevented,
-                  preventDefault: () => {
-                    defaultPrevented = true;
-                  },
-                });
-                if (!defaultPrevented) {
-                  jumpTo(route.key);
-                }
-              }}>
-              <Text>{options?.[route.key]?.labelText ?? route.name}</Text>
-            </Pressable>
-          ))}
-        </View>
-      );
-    },
+    TabBar: jest.fn(
+      ({ navigationState, onTabPress, options, jumpTo }: TabBarProps<MaterialTopTabViewRoute>) => {
+        return (
+          <View>
+            {navigationState.routes.map((route) => (
+              <Pressable
+                key={route.key}
+                accessibilityRole="tab"
+                onPress={() => {
+                  let defaultPrevented = false;
+                  onTabPress?.({
+                    route,
+                    defaultPrevented,
+                    preventDefault: () => {
+                      defaultPrevented = true;
+                    },
+                  });
+                  if (!defaultPrevented) {
+                    jumpTo(route.key);
+                  }
+                }}>
+                <Text>{options?.[route.key]?.labelText ?? route.name}</Text>
+              </Pressable>
+            ))}
+          </View>
+        );
+      }
+    ),
     TabBarIndicator: () => null,
   };
 });
@@ -243,6 +240,42 @@ test('renders a custom tabBar with standard navigation props', async () => {
   await userEvent.press(screen.getByTestId('second-tab'));
 
   expect(screen).toHavePathname('/second');
+});
+
+test('pads the tab bar content by the horizontal safe area insets', async () => {
+  await renderRouter({
+    _layout: () => (
+      <TopTabs
+        safeAreaInsets={{ left: 0, right: 84 }}
+        screenOptions={{ tabBarContentContainerStyle: { paddingHorizontal: 8 } }}>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  const { contentContainerStyle } = jest.mocked(TabBar).mock.calls.at(-1)![0];
+  expect(contentContainerStyle).toEqual({ paddingStart: 8, paddingEnd: 92 });
+});
+
+test('passes safeAreaInsets overrides to a custom tabBar', async () => {
+  let tabBarProps: MaterialTopTabBarProps | undefined;
+
+  await renderRouter({
+    _layout: () => (
+      <TopTabs
+        safeAreaInsets={{ left: 0, right: 0 }}
+        tabBar={(props: MaterialTopTabBarProps) => {
+          tabBarProps = props;
+          return null;
+        }}>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(tabBarProps?.insets).toEqual(expect.objectContaining({ left: 0, right: 0 }));
 });
 
 test('lets a tabPress listener prevent navigation from a custom tabBar', async () => {
