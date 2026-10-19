@@ -334,21 +334,32 @@ class AppContext(
   }
 
   /**
-   * Logs one actionable error for each module whose `RequiresHostActivity` the host does not satisfy.
+   * Reports once, per module and Activity class, each `RequiresHostActivity` the host does not satisfy.
    * It does not throw: a throw here would destroy the React instance over one module's feature.
    * The module's functions still reject through [requireHostActivity].
    */
   private fun reportUnsupportedHostActivityRequirements(hostActivity: HostActivity) {
     val activity = hostActivity.activity
     registry.forEach { holder ->
-      val requiredClass = holder.definition.requiredHostActivityClass ?: return@forEach
-      if (requiredClass.isInstance(activity) || !reportedHostActivityRequirements.add(holder.name to activity.javaClass)) {
+      val requirement = holder.definition.hostActivityRequirement ?: return@forEach
+      if (requirement.activityClass.isInstance(activity) || !reportedHostActivityRequirements.add(holder.name to activity.javaClass)) {
         return@forEach
       }
-      val exception = Exceptions.UnsupportedHostActivity(activity, requiredClass, "The ${holder.name} module")
+      val exception = Exceptions.UnsupportedHostActivity(
+        activity,
+        requirement.activityClass,
+        "The ${holder.name} module",
+        requirement.feature
+      )
       val message = exception.message ?: exception.code
-      logger.error(message)
-      jsLogger?.error(message)
+      // A feature-scoped requirement leaves the rest of the module usable, so it is a warning.
+      if (requirement.feature != null) {
+        logger.warn(message)
+        jsLogger?.warn(message)
+      } else {
+        logger.error(message)
+        jsLogger?.error(message)
+      }
     }
   }
 
@@ -412,11 +423,11 @@ class AppContext(
    * Returns the current Activity as [T], for example `FragmentActivity`.
    * Throws [Exceptions.MissingActivity] when no Activity is attached,
    * and [Exceptions.UnsupportedHostActivity] when the Activity does not extend [T].
-   * [requester] names who needs the Activity in that error.
+   * [requester] names who needs the Activity in that error, and [feature] names the part of it that needs [T].
    */
-  inline fun <reified T : Activity> requireHostActivity(requester: String = "Expo Modules Core"): T {
+  inline fun <reified T : Activity> requireHostActivity(requester: String = "Expo Modules Core", feature: String? = null): T {
     val activity = throwingActivity
-    return activity as? T ?: throw Exceptions.UnsupportedHostActivity(activity, T::class.java, requester)
+    return activity as? T ?: throw Exceptions.UnsupportedHostActivity(activity, T::class.java, requester, feature)
   }
 
 // endregion

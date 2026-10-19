@@ -14,6 +14,7 @@ import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.hostactivity.HostActivityRequirement
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.TypeConverterProvider
@@ -52,7 +53,7 @@ open class InternalModuleDefinitionBuilder(
   internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
 
   @PublishedApi
-  internal var requiredHostActivityClass: Class<out Activity>? = null
+  internal var hostActivityRequirement: HostActivityRequirement? = null
 
   @PublishedApi
   internal var classData = mutableListOf<ClassDefinitionData>()
@@ -67,7 +68,7 @@ open class InternalModuleDefinitionBuilder(
       eventListeners,
       registerContracts,
       classData,
-      requiredHostActivityClass
+      hostActivityRequirement
     )
   }
 
@@ -122,12 +123,14 @@ open class InternalModuleDefinitionBuilder(
 
   /**
    * Declares that the module needs the host Activity to extend [T], for example `FragmentActivity`.
-   * Core logs an actionable error when the host does not: at module creation when the Activity
-   * already exists, otherwise at the first resume.
+   * Core reports it when the host does not: at module creation when the Activity already exists,
+   * otherwise at the first resume.
+   * Pass [feature] when only a part of the module needs it, such as "authentication prompts".
+   * Core then logs a warning that names the feature instead of an error, because the rest of the module works.
    * Functions that need the host still get it with [Module.requireHostActivity].
    */
-  inline fun <reified T : Activity> RequiresHostActivity() {
-    requiredHostActivityClass = T::class.java
+  inline fun <reified T : Activity> RequiresHostActivity(feature: String? = null) {
+    hostActivityRequirement = HostActivityRequirement(T::class.java, feature)
   }
 
   /**

@@ -69,8 +69,9 @@ abstract class Module : AppContextProvider {
    * Pair it with `RequiresHostActivity<T>()` in the definition, so the host learns about the need early.
    */
   inline fun <reified T : Activity> requireHostActivity(): T {
-    val moduleName = appContext.registry.getModuleHolder(this)?.name ?: javaClass.simpleName
-    return appContext.requireHostActivity("The $moduleName module")
+    val holder = appContext.registry.getModuleHolder(this)
+    val requirement = holder?.definition?.hostActivityRequirement?.takeIf { it.activityClass == T::class.java }
+    return appContext.requireHostActivity("The ${holder?.name ?: javaClass.simpleName} module", requirement?.feature)
   }
 
   abstract fun definition(): ModuleDefinitionData

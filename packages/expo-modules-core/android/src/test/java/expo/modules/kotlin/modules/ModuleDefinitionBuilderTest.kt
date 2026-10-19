@@ -130,7 +130,19 @@ class ModuleDefinitionBuilderTest {
       RequiresHostActivity<FragmentActivity>()
     }
 
-    Truth.assertThat(moduleDefinition.requiredHostActivityClass).isEqualTo(FragmentActivity::class.java)
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.activityClass).isEqualTo(FragmentActivity::class.java)
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.feature).isNull()
+  }
+
+  @Test
+  fun `builder should record the feature that needs the host activity class`() {
+    val moduleDefinition = unboundModuleDefinition {
+      Name("Module")
+      RequiresHostActivity<FragmentActivity>(feature = "authentication prompts")
+    }
+
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.activityClass).isEqualTo(FragmentActivity::class.java)
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.feature).isEqualTo("authentication prompts")
   }
 
   @Test
@@ -139,6 +151,6 @@ class ModuleDefinitionBuilderTest {
       Name("Module")
     }
 
-    Truth.assertThat(moduleDefinition.requiredHostActivityClass).isNull()
+    Truth.assertThat(moduleDefinition.hostActivityRequirement).isNull()
   }
 }
