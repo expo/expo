@@ -251,6 +251,7 @@ function isDefaultConfig({ filename, options, plugins = [] }: BabelTransformerAr
     configFile: false,
     cloneInputAst: false,
     caller: getBabelCaller({ filename, options }),
+    envName: options.dev ? 'development' : 'production',
     plugins,
   };
   try {
@@ -367,6 +368,7 @@ const transform: BabelTransformer['transform'] = ({
       // Additionally, by moving everything Babel-related to the Babel preset, it makes it easier for users to reason
       // about the requirements of an Expo project, making it easier to migrate to other transpilers in the future.
       caller: getBabelCaller({ filename, options }),
+      envName: options.dev ? 'development' : 'production',
     };
 
     const result = transformSync(src, babelConfig, options);
