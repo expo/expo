@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.1.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/router-server@58.0.15
+
 ## 58.1.12
 
 ### Patch Changes

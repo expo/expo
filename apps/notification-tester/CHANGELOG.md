@@ -1,5 +1,15 @@
 # notification-tester
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-font@58.0.9
+  - expo@58.0.16
+  - native-component-list@0.0.10
+  - test-suite@1.0.10
+
 ## 1.0.9
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # test-suite
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-camera@58.0.11
+  - expo-contacts@58.0.8
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - expo-image-manipulator@58.0.15
+  - expo-location@58.0.18
+  - expo-media-library@58.0.11
+  - expo-video@58.0.12
+  - expo@58.0.16
+
 ## 1.0.9
 
 ### Patch Changes

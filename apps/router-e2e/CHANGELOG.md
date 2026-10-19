@@ -1,5 +1,12 @@
 # @expo/router-e2e
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51805](https://github.com/expo/expo/pull/51805))
+  - expo@58.0.16
+
 ## 0.0.9
 
 ### Patch Changes
