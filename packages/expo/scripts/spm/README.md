@@ -40,7 +40,8 @@ Lookup runs for **every** resolved pod except ExpoModulesJSI (see below), not
 just the core frameworks. Any module with a `spm.config.json` product is
 consumed as a precompiled framework the moment its artifact exists — no
 `Package.swift` is generated for it, and none is needed. The exception is a
-module built from its checked-in `Package.swift` (see below). Path 3 is the
+module the app lists in its `buildFromSource` autolinking option (see below).
+Path 3 is the
 published-package case: a module shipping
 `prebuilds/output/<flavor>/xcframeworks` is picked up with no local build.
 
@@ -84,13 +85,21 @@ from the installed `expo-modules-jsi` or from the copy the phase builds.
 
 ## Modules built from their checked-in Package.swift
 
-A module opts in with `"directManifest": true` at the top level of its
-`spm.config.json`. When it also ships a `Package.swift`, the plugin builds it
-from that manifest, even when a precompiled artifact exists. The manifest
-compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
-xcframeworks. Without the flag, the module is linked precompiled when an
-artifact exists; otherwise its `Package.swift` is mirrored into a generated
-package, as for every other module.
+The plugin decides each module in this order:
+
+1. When a precompiled artifact exists, the module is linked precompiled, unless
+   the app lists it in `buildFromSource`.
+2. Otherwise, when its `Package.swift` depends on the `ExpoModulesCoreHeaders`
+   product, the plugin builds it from that manifest as it stands. The manifest
+   compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
+   xcframeworks.
+3. Otherwise its `Package.swift` is mirrored into a generated package, or a
+   pure-Swift module gets a generated package over its sources.
+
+`buildFromSource` is the option CocoaPods reads, from
+`"expo": { "autolinking": { "buildFromSource": [...] } }` or its `"ios"`
+section in the app's package.json. Each entry is a regular expression that must
+match the whole pod name or npm package name.
 
 ## Unsupported modules
 

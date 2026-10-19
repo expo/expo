@@ -59,9 +59,9 @@ function documentedPackageRoot(entry) {
  * Absolute paths RN should watch for autolinking staleness (the `watchPaths`
  * plugin contract): each module's checked-in Package.swift, expo-module.config.json
  * and spm.config.json. Editing any of them must trip the in-build re-sync —
- * the manifest drives the generated wrapper packages, expo-module.config.json drives
- * module resolution, and spm.config.json's "directManifest" flag decides whether the
- * module is built from its own manifest. Only existing paths are returned (RN
+ * the manifest decides how the module is built from source, expo-module.config.json drives
+ * module resolution, and spm.config.json declares the products the plugin links
+ * precompiled. Only existing paths are returned (RN
  * warn-and-drops the rest, but a vanished path is its own staleness signal handled
  * RN-side).
  */
