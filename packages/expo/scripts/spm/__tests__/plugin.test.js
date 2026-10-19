@@ -1113,6 +1113,19 @@ describe('a module with a checked-in manifest', () => {
     builtDirect(sync({ onCoreHeaders: true, precompiled: false }));
   });
 
+  it('is built from a generated package, though it has an artifact, when buildFromSource lists it and its manifest does not depend on the ExpoModulesCore headers', () => {
+    const { thrown, frameworks, generatedManifest } = sync({
+      onCoreHeaders: false,
+      precompiled: true,
+      buildFromSource: ['expo-haptics'],
+    });
+    expect(thrown).toBeNull();
+    expect(frameworks).toEqual(['ExpoModulesCore']);
+    expect(emitDirectPackage).not.toHaveBeenCalled();
+    expect(fs.existsSync(generatedManifest)).toBe(true);
+    expect(printed(logs.log)).toContain('source via checked-in manifest (1): expo-haptics');
+  });
+
   it('is built from a generated package when its manifest does not depend on the ExpoModulesCore headers', () => {
     const { thrown, generatedManifest } = sync({ onCoreHeaders: false, precompiled: false });
     expect(thrown).toBeNull();
@@ -1194,35 +1207,68 @@ describe('a module with a checked-in manifest', () => {
   });
 });
 
-describe('a module buildFromSource names that has no way to be built from source', () => {
+/**
+ * Syncs ExpoMixed (pod) with `sources` of 'mixed', 'pure-swift' or 'pure-swift with podspec
+ * linkage' and no checked-in manifest, listed by each of `packageNames` (default
+ * expo-mixed) at one module root; an artifact when `precompiled`; and `buildFromSource`.
+ */
+function syncWithoutManifest(
+  tmp,
+  { sources, precompiled, buildFromSource, packageNames = ['expo-mixed'] }
+) {
+  const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+  const moduleRoot = path.join(tmp, 'expo-mixed');
+  const podspecs = {
+    mixed: () => mixedModule(moduleRoot, 'ExpoMixed'),
+    'pure-swift': () => pureSwiftModule(moduleRoot, 'ExpoMixed', spec()),
+    'pure-swift with podspec linkage': () =>
+      pureSwiftModule(moduleRoot, 'ExpoMixed', spec("  s.frameworks = 'Photos'")),
+  };
+  const podspecDir = podspecs[sources]();
+  resolveExpoModules.mockReturnValue({
+    ...modulesOf([
+      coreAt(core),
+      ...packageNames.map((packageName) => [packageName, [['ExpoMixed', podspecDir]]]),
+    ]),
+    buildFromSource,
+  });
+  prebuiltMetadata.mockReturnValue({ ExpoMixed: metadataEntry(moduleRoot, 'ExpoMixed') });
+  const hasArtifact = (frameworkName) =>
+    frameworkName === 'ExpoModulesCore' || (precompiled && frameworkName === 'ExpoMixed');
+  hasPrecompiledArtifact.mockImplementation(({ frameworkName }) => hasArtifact(frameworkName));
+  resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+    hasArtifact(frameworkName) ? { id: frameworkName, frameworkName } : null
+  );
+  resolveFlavoredFramework.mockClear();
+  providerWrittenTo(path.join(tmp, 'out'));
+  let result = null;
+  const thrown = thrownBy(() => {
+    result = runPlugin(tmp);
+  });
+  return {
+    thrown,
+    moduleRoot,
+    frameworks: result?.flavoredFrameworks.map((f) => f.frameworkName).sort(),
+  };
+}
+
+describe('a module without a checked-in manifest that buildFromSource names', () => {
   const logs = captureConsole({ each: true });
 
   afterEach(restoreModuleMocks);
 
-  /**
-   * Syncs ExpoMixed (expo-mixed): `sources` of 'mixed' or 'pure-swift with podspec linkage',
-   * no checked-in manifest, an artifact when `precompiled`, and `buildFromSource`.
-   */
-  function sync({ sources, precompiled, buildFromSource }) {
-    const tmp = makeTempDir('expo-spm-forced-source-');
-    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
-    const moduleRoot = path.join(tmp, 'expo-mixed');
-    const podspecDir =
-      sources === 'mixed'
-        ? mixedModule(moduleRoot, 'ExpoMixed')
-        : pureSwiftModule(moduleRoot, 'ExpoMixed', spec("  s.frameworks = 'Photos'"));
-    resolveExpoModules.mockReturnValue({
-      ...modulesOf([coreAt(core), ['expo-mixed', [['ExpoMixed', podspecDir]]]]),
-      buildFromSource,
+  const sync = (options) => syncWithoutManifest(makeTempDir('expo-spm-forced-source-'), options);
+
+  it('is built from a generated pure-Swift package, though it has an artifact', () => {
+    const { thrown, frameworks } = sync({
+      sources: 'pure-swift',
+      precompiled: true,
+      buildFromSource: ['ExpoMixed'],
     });
-    prebuiltMetadata.mockReturnValue({ ExpoMixed: metadataEntry(moduleRoot, 'ExpoMixed') });
-    hasPrecompiledArtifact.mockImplementation(
-      ({ frameworkName }) => precompiled && frameworkName === 'ExpoMixed'
-    );
-    resolveFlavoredFramework.mockClear();
-    providerWrittenTo(path.join(tmp, 'out'));
-    return { thrown: thrownBy(() => runPlugin(tmp)), moduleRoot };
-  }
+    expect(thrown).toBeNull();
+    expect(frameworks).toEqual(['ExpoModulesCore']);
+    expect(printed(logs.log)).toContain('source pure-Swift (1): ExpoMixed');
+  });
 
   it('fails the sync naming buildFromSource, not the missing prebuild', () => {
     const { thrown, moduleRoot } = sync({
@@ -1275,6 +1321,46 @@ describe('a module buildFromSource names that has no way to be built from source
     });
     expect(thrown?.unsupported).toEqual([
       expect.objectContaining({ reason: 'prebuild-available', podName: 'ExpoMixed' }),
+    ]);
+  });
+});
+
+// A pod is one pod whichever package lists it: buildFromSource naming any of them decides.
+describe.each([
+  ['the named package first', ['alias-one', 'alias-two']],
+  ['the named package second', ['alias-two', 'alias-one']],
+])('a pod two packages list, buildFromSource naming one of them, %s', (_, packageNames) => {
+  const logs = captureConsole({ each: true });
+
+  afterEach(restoreModuleMocks);
+
+  const sync = (sources) =>
+    syncWithoutManifest(makeTempDir('expo-spm-forced-alias-'), {
+      sources,
+      precompiled: true,
+      buildFromSource: ['alias-one'],
+      packageNames,
+    });
+
+  it('is built from source, not linked precompiled through the other package', () => {
+    const { thrown, frameworks } = sync('pure-swift');
+    expect(thrown).toBeNull();
+    expect(frameworks).toEqual(['ExpoModulesCore']);
+    expect(resolveFlavoredFramework).not.toHaveBeenCalledWith(
+      expect.objectContaining({ frameworkName: 'ExpoMixed' })
+    );
+    expect(printed(logs.log)).toContain('source pure-Swift (1): ExpoMixed');
+  });
+
+  it('is refused for buildFromSource when it cannot be built from source', () => {
+    const { thrown } = sync('mixed');
+    expect(thrown?.unsupported).toEqual([
+      expect.objectContaining({
+        reason: 'build-from-source-unsupported',
+        podName: 'ExpoMixed',
+        buildFromSourceEntry: 'alias-one',
+        cause: expect.objectContaining({ reason: 'mixed-no-manifest' }),
+      }),
     ]);
   });
 });

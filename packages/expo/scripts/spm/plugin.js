@@ -418,14 +418,21 @@ function buildFromSourceMatcher(patterns) {
  * once one flavor exists, the resolver requires and prepares both before RN
  * receives the plugin result. No runtime binary enters the SwiftPM graph.
  * A pod name several packages list is looked up from each of them, in order,
- * until one has an artifact. A pod the app builds from source is never linked
- * precompiled; when it has an artifact, its record keeps the `buildFromSourceEntry`
- * naming it, for the report should no source route take it. Returns the records it
- * linked, in that order.
+ * until one has an artifact. A pod the app builds from source — buildFromSource names
+ * the pod or any package that lists it — is never linked precompiled; when it has an
+ * artifact, its record keeps the `buildFromSourceEntry` naming it, for the report should
+ * no source route take it. Returns the records it linked, in that order.
  *
  * @param buildFromSourceEntry `buildFromSourceMatcher`'s result.
  */
 function linkPrecompiledPods(identities, records, cacheDir, buildFromSourceEntry) {
+  const entriesByPod = new Map();
+  for (const identity of identities.values()) {
+    const entry = buildFromSourceEntry(identity);
+    if (entry != null && !entriesByPod.has(identity.podName)) {
+      entriesByPod.set(identity.podName, entry);
+    }
+  }
   const linked = [];
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
@@ -435,7 +442,7 @@ function linkPrecompiledPods(identities, records, cacheDir, buildFromSourceEntry
       moduleRoot: identity.moduleRoot,
       frameworkName: identity.productName,
     };
-    const entry = buildFromSourceEntry(identity);
+    const entry = entriesByPod.get(identity.podName);
     if (entry != null) {
       if (record.buildFromSourceEntry == null && hasPrecompiledArtifact(lookup)) {
         record.buildFromSourceEntry = entry;
