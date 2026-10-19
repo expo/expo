@@ -133,6 +133,7 @@ it('does not warn again after pushing a screen and going back', async () => {
       _layout: () => (
         <Stack>
           <Stack.Screen name="warning-modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="second" options={{ presentation: 'card' }} />
         </Stack>
       ),
       'warning-modal': () => <Text testID="warning-modal">Modal</Text>,

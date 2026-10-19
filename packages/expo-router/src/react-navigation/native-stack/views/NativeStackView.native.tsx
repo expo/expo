@@ -137,6 +137,11 @@ const SceneView = ({
     __DEV__ && index === 0 && isPresentationModal && options.presentation != null,
     routeNode ? `${routeNode.contextKey}:${route.name}` : route.name
   );
+  useWarnOnce(
+    `Route "${route.name}" has no presentation option, so it is shown as a modal because a modal screen is below it. This may change in a future version. Set presentation from route params with options={({ route }) => ...}, or use separate card and formSheet screens that render the same component.`,
+    __DEV__ && isPresentationModal && options.presentation == null,
+    routeNode ? `${routeNode.contextKey}:${route.name}:above-modal` : `${route.name}:above-modal`
+  );
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
