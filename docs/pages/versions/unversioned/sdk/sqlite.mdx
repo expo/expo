@@ -632,6 +632,21 @@ const db = await SQLite.openDatabaseAsync('databaseName');
 await db.execAsync(`PRAGMA key = 'password'`);
 ```
 
+> **warning** If the app binary does not include SQLCipher, `PRAGMA key` has no effect and does not throw an error. SQLite ignores pragmas that it does not recognize, so it stores the database without encryption. This happens in Expo Go, when you change `useSQLCipher` and do not run `npx expo prebuild` and rebuild the app, or when `useSQLCipher` is `false` for the current platform.
+
+To make sure that SQLCipher is available before you set the password, query `PRAGMA cipher_version`. It returns a row only when the app uses SQLCipher.
+
+```ts Check for SQLCipher before you add a password
+const db = await SQLite.openDatabaseAsync('databaseName');
+const cipher = await db.getFirstAsync<{ cipher_version: string }>('PRAGMA cipher_version');
+if (cipher == null) {
+  throw new Error(
+    'SQLCipher is not available in this build, so the database would not be encrypted. Set `useSQLCipher` in the expo-sqlite config plugin and rebuild the app.'
+  );
+}
+await db.execAsync(`PRAGMA key = 'password'`);
+```
+
 ## API
 
 ### Cheatsheet for the common API
