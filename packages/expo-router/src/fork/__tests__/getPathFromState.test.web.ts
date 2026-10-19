@@ -208,6 +208,19 @@ it(`handles url search params params`, () => {
   expect(getPathFromState(state, config)).toBe('/?test=true&hello=world&array=1&array=2');
 });
 
+it.each([['a?b c', '50%', 'd#e'], 'a?b c/50%/d#e'])(
+  'encodes each catch-all segment (%j)',
+  (slug) => {
+    const config = { screens: { '[...slug]': '*slug' } };
+    const path = getPathFromState({ routes: [{ name: '[...slug]', params: { slug } }] }, config);
+
+    expect(path).toBe('/a%3Fb%20c/50%25/d%23e');
+    expect(getStateFromPath(path, config)?.routes[0]!.params).toEqual({
+      slug: ['a?b c', '50%', 'd#e'],
+    });
+  }
+);
+
 describe('state mutation safety', () => {
   it('does not mutate input state params when focusedParams falls back to focusedRoute.params', () => {
     const originalParams = {

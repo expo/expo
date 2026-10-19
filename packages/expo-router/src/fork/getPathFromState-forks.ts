@@ -107,10 +107,12 @@ export function getPathWithConventionsCollapsed({
 
           return `[...${name}]`;
         } else if (params[name]) {
-          if (Array.isArray(params[name])) {
-            return params[name].join('/');
-          }
-          return params[name];
+          const segments: string[] = Array.isArray(params[name])
+            ? params[name]
+            : String(params[name]).split('/');
+          return segments
+            .map((segment) => (shouldEncodeURISegment ? encodeURISegment(segment) : segment))
+            .join('/');
         } else if (route.name.startsWith('[') && route.name.endsWith(']')) {
           return '';
         } else if (p === '*not-found') {
