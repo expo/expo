@@ -41,7 +41,7 @@ function relativeFiles(files: string[]) {
 
 export function setNodeEnv(mode: EnvironmentMode) {
   env.setNodeEnv(mode);
-  process.env.BABEL_ENV = process.env.BABEL_ENV || mode;
+  process.env.BABEL_ENV = mode;
   globalThis.__DEV__ = mode === 'development';
 
   event('mode', {
