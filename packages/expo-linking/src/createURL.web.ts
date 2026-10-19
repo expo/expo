@@ -5,7 +5,7 @@ export function createURL(path: string, { queryParams = {} }: CreateURLOptions =
   const url = new URL(path, window.location.origin);
   Object.entries(queryParams).forEach(([key, value]) => {
     if (typeof value === 'string') {
-      url.searchParams.set(key, encodeURIComponent(value));
+      url.searchParams.set(key, value);
     } else if (value != null) {
       url.searchParams.set(
         key,
