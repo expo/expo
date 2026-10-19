@@ -61,6 +61,38 @@ struct UpdatesLogReaderTests {
 
   @Test
   @MainActor
+  func `timestamps have millisecond precision`() async throws {
+    let before = UInt(Date().timeIntervalSince1970 * 1000)
+    logger.warn(message: "Precision message", code: .none)
+    try await Task.sleep(for: .seconds(0.1))
+    let after = UInt(Date().timeIntervalSince1970 * 1000)
+
+    let entry = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+      .compactMap { UpdatesLogEntry.create(from: $0) }
+      .first { $0.message == "Precision message" }
+
+    let timestamp = try #require(entry?.timestamp)
+    #expect(timestamp >= before)
+    #expect(timestamp <= after)
+  }
+
+  @Test
+  @MainActor
+  func `reads entries newer than a subsecond date`() async throws {
+    logger.warn(message: "Older message", code: .none)
+    try await Task.sleep(for: .seconds(0.3))
+    let date = Date()
+    logger.warn(message: "Newer message", code: .none)
+    try await Task.sleep(for: .seconds(0.1))
+
+    let messages = logReader.getLogEntries(newerThan: date)
+      .compactMap { UpdatesLogEntry.create(from: $0)?.message }
+
+    #expect(messages == ["Newer message"])
+  }
+
+  @Test
+  @MainActor
   func `BasicLoggingWorks`() async throws {
     try await Task.sleep(for: .seconds(1.1))
 
