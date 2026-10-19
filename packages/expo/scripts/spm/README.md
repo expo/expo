@@ -99,7 +99,11 @@ The plugin decides each module in this order:
 `buildFromSource` is the option CocoaPods reads, from
 `"expo": { "autolinking": { "buildFromSource": [...] } }` or its `"ios"`
 section in the app's package.json. Each entry is a regular expression that must
-match the whole pod name or npm package name.
+match the whole pod name or npm package name. An entry that matches
+ExpoModulesCore fails the sync, because every module built from source compiles
+against the precompiled ExpoModulesCore. A listed module that has an artifact but
+no way to be built from source is reported with the reason, and the report asks
+to remove the entry so the artifact is used.
 
 ## Unsupported modules
 
