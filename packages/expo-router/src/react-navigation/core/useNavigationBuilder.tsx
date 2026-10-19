@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
+import isEqual from 'react-fast-compare';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
@@ -9,6 +10,7 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { getValidInitialRouteName } from '../../routeNode';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -45,7 +47,6 @@ import { useEventEmitter } from './useEventEmitter';
 import { useFocusEvents } from './useFocusEvents';
 import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
 import { FocusedRouteKeyContext } from './useIsFocused';
-import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigatorStateContext } from './useNavigationState';
 import { useRegisterNavigator } from './useRegisterNavigator';
@@ -270,7 +271,9 @@ export function useNavigationBuilder<
 
   const routeConfigs = getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children);
 
-  const router = useLazyValue<Router<State, any>>(() => {
+  const backBehavior = 'backBehavior' in rest ? rest.backBehavior : undefined;
+  const defaultStatus = 'defaultStatus' in rest ? rest.defaultStatus : undefined;
+  const router = React.useMemo<Router<State, any>>(() => {
     if (
       rest.initialRouteName != null &&
       routeConfigs.every((config) => config.props.name !== rest.initialRouteName)
@@ -293,7 +296,21 @@ export function useNavigationBuilder<
     }
 
     return original;
-  });
+  }, [rest.initialRouteName, backBehavior, defaultStatus]);
+
+  React.useEffect(() => {
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      (router.type === 'tab' || router.type === 'drawer') &&
+      backBehavior === 'none' &&
+      getValidInitialRouteName(routeNode) !== undefined
+    ) {
+      console.warn(
+        `An anchor with backBehavior="none" in layout "${routeNode?.contextKey}" intentionally disables back navigation between routes. ` +
+          'useCanGoBack() can report the anchor as a back target on the initial render, before history is reconciled.'
+      );
+    }
+  }, [backBehavior, routeNode, router.type]);
 
   const screens = routeConfigs.reduce<
     Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>
@@ -455,6 +472,9 @@ export function useNavigationBuilder<
   });
 
   const pendingRouteNamesRef = React.useRef<string[] | undefined>(undefined);
+  // Reconcile policy changes once, even when histories match; doing so on every commit
+  // would restore policy history that a replace action intentionally cleared.
+  const committedRouterRef = React.useRef(router);
 
   useClientLayoutEffect(() => {
     // Wait for the type reset to commit so route-name changes use the mounting router's registry entry.
@@ -462,10 +482,16 @@ export function useNavigationBuilder<
       return;
     }
     const committed = committedState;
+    const routerChanged = committedRouterRef.current !== router;
+    committedRouterRef.current = router;
 
-    if (isArrayEqual(committed.routeNames, routeNames)) {
+    if (
+      !routerChanged &&
+      isArrayEqual(committed.routeNames, routeNames) &&
+      isEqual(committed.history, state.history)
+    ) {
       pendingRouteNamesRef.current = undefined;
-    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
+    } else if (routerChanged || !isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
       pendingRouteNamesRef.current = routeNames;
       enqueue({
         type: 'ACTION',

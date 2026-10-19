@@ -648,6 +648,7 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
   ).state as TabNavigationState<ParamListBase>;
 
   expect(state.history).toEqual([
+    ...(backBehavior === 'order' ? [{ type: 'route', key: 'bar' }] : []),
     { type: 'route', key: `${name}:0` },
     { type: 'route', key: 'qux-key' },
   ]);
@@ -655,7 +656,10 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
   const result = expectHandled(router.getStateForAction(state, CommonActions.goBack(), options));
 
   expect(result.state.routes[result.state.index!]!.name).toBe(name);
-  expect(result.state.history).toEqual([{ type: 'route', key: `${name}:0` }]);
+  expect(result.state.history).toEqual([
+    ...(backBehavior === 'order' ? [{ type: 'route', key: 'bar' }] : []),
+    { type: 'route', key: `${name}:0` },
+  ]);
 });
 
 test('gets state on route names change', () => {
@@ -876,7 +880,7 @@ test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
   ['order', ['qux-test', 'baz-test']],
   ['history', ['bar-test', 'baz-test']],
   ['fullHistory', ['bar-test', 'baz-test']],
-  ['none', ['bar-test', 'baz-test']],
+  ['none', ['baz-test']],
 ])(
   'keeps route order and focus on an order-only change with backBehavior: %s',
   (backBehavior, expectedHistory) => {

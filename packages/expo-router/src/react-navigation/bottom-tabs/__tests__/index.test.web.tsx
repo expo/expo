@@ -33,5 +33,5 @@ test('tab bars render appropriate hrefs', () => {
   });
   render(<ExpoRoot context={context} location="/" />);
 
-  expect(hrefs).toEqual(['/', '/nested/second']);
+  expect(new Set(hrefs)).toEqual(new Set(['/', '/nested/second']));
 });

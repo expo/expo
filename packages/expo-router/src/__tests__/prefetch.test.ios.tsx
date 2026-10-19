@@ -958,6 +958,7 @@ it('can still use <Screen /> while prefetching in tabs', async () => {
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
     'index',
     'index',
+    'index',
     'custom-title',
     'index',
     'Should only change after focus',
