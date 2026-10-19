@@ -41,8 +41,6 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
-      _ = try options.resolvedAuthenticationRequirement()
-
       // Delete every alias before reporting a failure, so that a failing alias
       // cannot leave the remaining entries behind.
       var statuses = [SecItemDelete(query(with: key, options: options) as CFDictionary)]
@@ -73,8 +71,6 @@ public final class SecureStoreModule: Module {
     guard let key = validate(for: key) else {
       throw InvalidKeyException()
     }
-
-    _ = try options.resolvedAuthenticationRequirement()
 
     for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
       if let item = try searchKeyChain(with: key, options: options, serviceSuffix: suffix) {

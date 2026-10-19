@@ -22,12 +22,6 @@ class SecureStoreOptions(
         normalizeAuthenticationRequirement(value.get(String::class))
       }
     }
-
-  val isAuthenticationRequired: Boolean
-    get() = authenticationRequirement != null
-
-  val isDeviceCredentialsRequired: Boolean
-    get() = authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
 }
 
 internal data class AuthenticationPromptOptions(

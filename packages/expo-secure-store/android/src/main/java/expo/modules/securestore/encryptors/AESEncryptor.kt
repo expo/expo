@@ -4,6 +4,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import expo.modules.securestore.AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
 import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
@@ -39,9 +40,8 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
   /**
    * Separate key store entries exist per keychainService and auth type: unauthenticated,
-   * biometric-only, or user presence (device credential). Biometric and user-presence keys use
-   * different KeyGenParameterSpec (AUTH_BIOMETRIC_STRONG vs AUTH_DEVICE_CREDENTIAL) and are not
-   * interchangeable.
+   * biometric-only (AUTH_BIOMETRIC_STRONG), or biometric with device credential fallback
+   * (AUTH_BIOMETRIC_STRONG or AUTH_DEVICE_CREDENTIAL). The keys are not interchangeable.
    */
   override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String {
     val suffix = when {
@@ -54,18 +54,21 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
-    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
+    val authenticationRequirement = options.authenticationRequirement
+    val isAuthenticationRequired = authenticationRequirement != null
+    val isDeviceCredentialsRequired = authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
+    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, isAuthenticationRequired, isDeviceCredentialsRequired)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
     val builder = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
       .setKeySize(AES_KEY_SIZE_BITS)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-      .setUserAuthenticationRequired(options.isAuthenticationRequired)
+      .setUserAuthenticationRequired(isAuthenticationRequired)
 
-    if (options.isAuthenticationRequired && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    if (isAuthenticationRequired && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val authType =
-        if (options.isDeviceCredentialsRequired) {
+        if (isDeviceCredentialsRequired) {
           KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
         } else {
           KeyProperties.AUTH_BIOMETRIC_STRONG
