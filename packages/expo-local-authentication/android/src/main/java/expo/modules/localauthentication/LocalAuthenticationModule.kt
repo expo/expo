@@ -35,7 +35,7 @@ class LocalAuthenticationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalAuthentication")
 
-    RequiresHostActivity<FragmentActivity>()
+    RequiresHostActivity<FragmentActivity>(feature = "authentication prompts")
 
     AsyncFunction<Set<Int>>("supportedAuthenticationTypesAsync") {
       val results = mutableSetOf<Int>()
