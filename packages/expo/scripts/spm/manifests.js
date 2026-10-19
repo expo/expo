@@ -11,7 +11,6 @@ const fs = require('fs');
 const path = require('path');
 const { appleSourceDir, scanAppleSources } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
-const { runDumpPackage } = require('./cli');
 const { pluginError } = require('./diagnostics');
 
 // ---------------------------------------------------------------------------
@@ -975,13 +974,9 @@ let package = Package(
  * declare, or a target's sources cannot be located — the module is then skipped and
  * diagnosed rather than emitted broken.
  *
- * @param dumpedJson the manifest's `swift package dump-package` output, when already read.
+ * @param dumpedJson the manifest's `swift package dump-package` output.
  */
-function emitSourceManifestPackage(
-  moduleRoot,
-  emitContext,
-  dumpedJson = runDumpPackage(moduleRoot)
-) {
+function emitSourceManifestPackage(moduleRoot, emitContext, dumpedJson) {
   const { unsupportedTargetDeps, unsupportedPackageDeps, ...dumped } = parseDumpedManifest(
     dumpedJson,
     injectedPackageNames(emitContext.react)
