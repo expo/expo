@@ -72,24 +72,6 @@ describe('NativeTabs Protected', () => {
     expect(TabsHost.mock.calls.at(-1)?.[0].navStateRequest?.selectedScreenKey).toBe('settings');
   });
 
-  it('shows a trigger wrapped in NativeTabs.Protected when guard is true', async () => {
-    await renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Protected guard>
-            <NativeTabs.Trigger name="settings" />
-          </NativeTabs.Protected>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-      settings: () => <View testID="settings" />,
-    });
-
-    expect(renderedScreenKeys()).toContain('settings');
-    expect(screen.getByTestId('settings')).toBeVisible();
-  });
-
   it('hides a guarded trigger and redirects to redirectTo', async () => {
     await renderRouter(
       {

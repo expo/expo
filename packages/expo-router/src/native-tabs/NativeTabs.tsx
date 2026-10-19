@@ -1,6 +1,5 @@
 // We need this file to re-export the navigator
 // Otherwise rsc would fail
-import { Protected } from '../views/Protected';
 import { NativeTabsNavigatorWrapper } from './NativeBottomTabsNavigator';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsBottomAccessory } from './common/elements';
@@ -32,5 +31,5 @@ export const NativeTabs = Object.assign(
   (props: NativeTabsProps) => {
     return <NativeTabsNavigatorWrapper {...props} />;
   },
-  { Trigger: NativeTabTrigger, BottomAccessory, Protected }
+  { Trigger: NativeTabTrigger, BottomAccessory }
 );
