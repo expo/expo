@@ -102,6 +102,55 @@ it(`checks for invalid keys`, async () => {
   expect(ExpoSecureStore.getValueWithKeyAsync).not.toHaveBeenCalled();
 });
 
+describe('requireAuthentication normalization', () => {
+  it(`maps 'none' to no authentication`, async () => {
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: 'none' });
+
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: undefined,
+    });
+  });
+
+  it(`forwards string authentication modes`, async () => {
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: 'biometry' });
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: 'biometry',
+    });
+
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: 'deviceCredentials' });
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: 'deviceCredentials',
+    });
+  });
+
+  it(`accepts deprecated boolean values and warns once`, async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: true });
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: 'biometry',
+    });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenLastCalledWith(expect.stringContaining('deprecated'));
+
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: false });
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: undefined,
+    });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+
+    warnSpy.mockRestore();
+  });
+
+  it(`rejects invalid values`, async () => {
+    await expect(
+      SecureStore.setItemAsync('key', 'value', { requireAuthentication: 'invalid' as any })
+    ).rejects.toThrow('Invalid value for requireAuthentication');
+
+    expect(ExpoSecureStore.setValueWithKeyAsync).not.toHaveBeenCalled();
+  });
+});
+
 it(`checks for invalid values`, async () => {
   await expect(SecureStore.setItemAsync('key', null as any)).rejects.toMatchSnapshot();
   await expect(SecureStore.setItemAsync('key', true as any)).rejects.toMatchSnapshot();
