@@ -45,6 +45,7 @@ const HomeIndex = () => {
         <Section title="JavaScript navigators">
           <CaseLink href="/js-stack" text="JS Stack" />
           <CaseLink href="/js-tabs" text="JS Tabs" />
+          <CaseLink href="/custom-tabs" text="Custom Tabs" />
           <CaseLink href="/top-tabs" text="JS Top Tabs" />
         </Section>
         <Section title="Stack behavior">
