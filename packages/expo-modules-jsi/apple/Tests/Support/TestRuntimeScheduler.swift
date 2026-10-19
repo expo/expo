@@ -239,3 +239,79 @@ final class ReleasableTestRuntime: @unchecked Sendable {
     }
   }
 }
+
+/// Emulates the mutex of React Native's `RuntimeScheduler`, which `scheduleTask` takes and which is not
+/// reentrant. `RuntimeScheduler_Modern::clearQueues()` destroys the queued tasks while it holds that
+/// mutex, so work that the destruction of a task schedules from the same thread would deadlock the
+/// JavaScript thread. A dispatch from another thread only waits for the mutex. A test holds the lock
+/// around such a destruction, and ``scheduleOnTestRuntimeUnlessHostLocked`` counts the dispatches
+/// that would deadlock instead of blocking.
+final class TestHostSchedulerLock: @unchecked Sendable {
+  private let lock = NSLock()
+  private var holderThread: Thread?
+  private var blockedDispatches = 0
+
+  /// Number of dispatches that arrived on the holding thread while the lock was held.
+  var blockedDispatchCount: Int {
+    lock.withLock { blockedDispatches }
+  }
+
+  func acquire() {
+    lock.withLock { holderThread = Thread.current }
+  }
+
+  func release() {
+    lock.withLock { holderThread = nil }
+  }
+
+  /// Returns `true` and counts the dispatch when the calling thread holds the lock.
+  fileprivate func blocksDispatch() -> Bool {
+    lock.withLock {
+      let isReentrant = holderThread === Thread.current
+      if isReentrant {
+        blockedDispatches += 1
+      }
+      return isReentrant
+    }
+  }
+}
+
+let testHostSchedulerLock = TestHostSchedulerLock()
+
+/// A host dispatch function like ``scheduleOnTestRuntime`` that drops, and counts, the tasks that the
+/// thread holding ``testHostSchedulerLock`` dispatches, where React Native's scheduler would deadlock.
+let scheduleOnTestRuntimeUnlessHostLocked:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, priority, callback in
+    if testHostSchedulerLock.blocksDispatch() {
+      return
+    }
+    scheduleOnTestRuntime(schedulerPointer, priority, callback)
+  }
+
+/// Counts the tasks that a runtime dispatches through ``scheduleOnTestRuntimeCounting``.
+final class TestDispatchCounter: @unchecked Sendable {
+  private let lock = NSLock()
+  private var dispatches = 0
+
+  var count: Int {
+    lock.withLock { dispatches }
+  }
+
+  fileprivate func increment() {
+    lock.withLock { dispatches += 1 }
+  }
+}
+
+let testDispatchCounter = TestDispatchCounter()
+
+/// A host dispatch function like ``scheduleOnTestRuntime`` that counts each task in
+/// ``testDispatchCounter``.
+let scheduleOnTestRuntimeCounting:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, priority, callback in
+    testDispatchCounter.increment()
+    scheduleOnTestRuntime(schedulerPointer, priority, callback)
+  }
