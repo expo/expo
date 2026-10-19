@@ -52,6 +52,9 @@ open class InternalModuleDefinitionBuilder(
   internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
 
   @PublishedApi
+  internal var requiredHostActivityClass: Class<out Activity>? = null
+
+  @PublishedApi
   internal var classData = mutableListOf<ClassDefinitionData>()
 
   fun buildModule(): ModuleDefinitionData {
@@ -63,7 +66,8 @@ open class InternalModuleDefinitionBuilder(
       viewManagerDefinitions,
       eventListeners,
       registerContracts,
-      classData
+      classData,
+      requiredHostActivityClass
     )
   }
 
@@ -114,6 +118,16 @@ open class InternalModuleDefinitionBuilder(
    */
   fun RegisterActivityContracts(body: suspend AppContextActivityResultCaller.() -> Unit) {
     registerContracts = body
+  }
+
+  /**
+   * Declares that the module needs the host Activity to extend [T], for example `FragmentActivity`.
+   * Core logs an actionable error when the host does not: at module creation when the Activity
+   * already exists, otherwise at the first resume.
+   * Functions that need the host still get it with [Module.requireHostActivity].
+   */
+  inline fun <reified T : Activity> RequiresHostActivity() {
+    requiredHostActivityClass = T::class.java
   }
 
   /**

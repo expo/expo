@@ -1,5 +1,6 @@
 package expo.modules.kotlin.modules
 
+import android.app.Activity
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.events.EventListener
@@ -13,7 +14,8 @@ class ModuleDefinitionData(
   val viewManagerDefinitions: Map<String, ViewManagerDefinition> = emptyMap(),
   val eventListeners: Map<EventName, EventListener> = emptyMap(),
   val registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null,
-  val classData: List<ClassDefinitionData> = emptyList()
+  val classData: List<ClassDefinitionData> = emptyList(),
+  val requiredHostActivityClass: Class<out Activity>? = null
 ) {
   val constantsProvider = objectDefinition.legacyConstantsProvider
   val syncFunctions = objectDefinition.syncFunctions

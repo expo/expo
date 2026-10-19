@@ -67,6 +67,8 @@ class AppContext(
 
   private var hostWasDestroyed = false
 
+  private val reportedHostActivityRequirements = mutableSetOf<Pair<String, Class<*>>>()
+
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }
     .looper.let { Handler(it) }
@@ -137,6 +139,7 @@ class AppContext(
 
   fun onCreate() = trace("AppContext.onCreate") {
     registry.postOnCreate()
+    currentActivity?.let { HostActivity.fromOrNull(it) }?.let { reportUnsupportedHostActivityRequirements(it) }
   }
 
   private fun registerInlineModulesList() {
@@ -300,6 +303,7 @@ class AppContext(
     // If the current activity is null, it means that the current React context was destroyed.
     // We can just return here.
     val hostActivity = hostActivity ?: return
+    reportUnsupportedHostActivityRequirements(hostActivity)
 
     // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
     if (hostWasDestroyed) {
@@ -327,6 +331,25 @@ class AppContext(
     // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
     // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
     hostWasDestroyed = true
+  }
+
+  /**
+   * Logs one actionable error for each module whose `RequiresHostActivity` the host does not satisfy.
+   * It does not throw: a throw here would destroy the React instance over one module's feature.
+   * The module's functions still reject through [requireHostActivity].
+   */
+  private fun reportUnsupportedHostActivityRequirements(hostActivity: HostActivity) {
+    val activity = hostActivity.activity
+    registry.forEach { holder ->
+      val requiredClass = holder.definition.requiredHostActivityClass ?: return@forEach
+      if (requiredClass.isInstance(activity) || !reportedHostActivityRequirements.add(holder.name to activity.javaClass)) {
+        return@forEach
+      }
+      val exception = Exceptions.UnsupportedHostActivity(activity, requiredClass, "The ${holder.name} module")
+      val message = exception.message ?: exception.code
+      logger.error(message)
+      jsLogger?.error(message)
+    }
   }
 
   internal fun onActivityResult(
@@ -384,6 +407,17 @@ class AppContext(
    */
   val hostActivity: HostActivity?
     get() = currentActivity?.let { HostActivity.from(it) }
+
+  /**
+   * Returns the current Activity as [T], for example `FragmentActivity`.
+   * Throws [Exceptions.MissingActivity] when no Activity is attached,
+   * and [Exceptions.UnsupportedHostActivity] when the Activity does not extend [T].
+   * [requester] names who needs the Activity in that error.
+   */
+  inline fun <reified T : Activity> requireHostActivity(requester: String = "Expo Modules Core"): T {
+    val activity = throwingActivity
+    return activity as? T ?: throw Exceptions.UnsupportedHostActivity(activity, T::class.java, requester)
+  }
 
 // endregion
 }
