@@ -82,6 +82,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
     code: false,
     configFile: true,
     cwd: '/',
+    envName: 'development',
     extends: undefined,
     filename: 'foo.js',
     highlightCode: true,
@@ -149,6 +150,7 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
     code: false,
     configFile: true,
     cwd: '/',
+    envName: 'development',
     extends: undefined,
     filename: 'foo.js',
     highlightCode: true,
@@ -157,6 +159,50 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
     plugins: [],
     sourceType: 'unambiguous',
   });
+});
+
+it(`transforms a production bundle with the production Babel env`, () => {
+  vol.fromJSON({}, '/');
+  const originalBabelEnv = process.env.BABEL_ENV;
+  process.env.BABEL_ENV = 'development';
+  let babelEnv: string | undefined;
+
+  try {
+    transformer.transform({
+      filename: 'foo.js',
+      options: {
+        globalPrefix: '',
+        enableBabelRuntime: true,
+        enableBabelRCLookup: true,
+        dev: false,
+        projectRoot: '/',
+        inlineRequires: false as any,
+        minify: false,
+        platform: 'ios',
+        publicPath: '/',
+        customTransformOptions: Object.create({}),
+      },
+      src: 'export default 1;',
+      plugins: [
+        () => {
+          babelEnv = process.env.BABEL_ENV;
+          return { visitor: {} };
+        },
+      ],
+    });
+  } finally {
+    if (originalBabelEnv === undefined) {
+      delete process.env.BABEL_ENV;
+    } else {
+      process.env.BABEL_ENV = originalBabelEnv;
+    }
+  }
+
+  expect(babel.transformSync).toHaveBeenLastCalledWith(
+    'export default 1;',
+    expect.objectContaining({ envName: 'production' })
+  );
+  expect(babelEnv).toBe('production');
 });
 
 describe('getCacheKey', () => {
@@ -292,5 +338,13 @@ describe('isDefaultConfig', () => {
   it('rejects a resolved config with a different preset descriptor', () => {
     const { resolved } = setupConfigComparison(false);
     expect(resolved.isDefaultConfig(args)).toBe(false);
+  });
+
+  it('resolves the config for a production bundle with the production env', () => {
+    const { resolved, loadPartialConfigSync } = setupConfigComparison(true);
+    resolved.isDefaultConfig({ ...args, options: { ...args.options, dev: false } });
+    expect(loadPartialConfigSync).toHaveBeenCalledWith(
+      expect.objectContaining({ envName: 'production' })
+    );
   });
 });

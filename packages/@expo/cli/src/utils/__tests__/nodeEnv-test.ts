@@ -80,4 +80,12 @@ describe('Node environment', () => {
     expect(process.env.NODE_ENV).toBe('production');
     expect(process.env.EXPO_PUBLIC_VALUE).toBe('production-v2');
   });
+
+  it('sets BABEL_ENV to the mode when one is inherited', () => {
+    process.env.BABEL_ENV = 'development';
+
+    loadEnvFiles('/app', { mode: 'production', silent: true });
+
+    expect(process.env.BABEL_ENV).toBe('production');
+  });
 });
