@@ -648,6 +648,7 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
   ).state as TabNavigationState<ParamListBase>;
 
   expect(state.history).toEqual([
+    // `order` also keeps the unvisited `bar` tab as a back target, under its placeholder key.
     ...(backBehavior === 'order' ? [{ type: 'route', key: 'bar' }] : []),
     { type: 'route', key: `${name}:0` },
     { type: 'route', key: 'qux-key' },

@@ -4,7 +4,9 @@ import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useTabBackBehaviorWarning } from '../../../standard-navigation/useTabBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -41,8 +43,10 @@ function BottomTabNavigatorContent({
   routeNames,
   popNestedStackToTop,
   preload,
+  backBehavior,
   ...rest
-}: ContentArgs) {
+}: ContentArgs & Pick<TabRouterOptions, 'backBehavior'>) {
+  useTabBackBehaviorWarning(backBehavior);
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
