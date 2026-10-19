@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useCallback, useMemo, useRef } from 'react';
+import React, { Children, use, useCallback, useMemo, useRef, type ReactNode } from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -20,7 +20,8 @@ import type {
 } from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { isChildOfType } from '../utils/children';
+import { isProtectedReactElement } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -234,17 +235,55 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   createProps: createNativeTabsProps,
 });
 
+// `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
+function partitionNativeTabsChildren(children: ReactNode) {
+  const navigatorChildren: ReactNode[] = [];
+  const nonTriggerChildren: ReactNode[] = [];
+  const visibleTriggerNames: string[] = [];
+
+  Children.forEach(children, (child) => {
+    if (isChildOfType(child, NativeTabTrigger)) {
+      if (!child.props.hidden) {
+        navigatorChildren.push(child);
+        visibleTriggerNames.push(child.props.name ?? '');
+      }
+      return;
+    }
+
+    if (isProtectedReactElement(child)) {
+      navigatorChildren.push(child);
+      appendVisibleTriggerNames(child.props.children, !child.props.guard, visibleTriggerNames);
+      return;
+    }
+
+    nonTriggerChildren.push(child);
+  });
+
+  return {
+    navigatorChildren,
+    nonTriggerChildren,
+    tabConfigurationKey: visibleTriggerNames.join(';'),
+  };
+}
+
+function appendVisibleTriggerNames(children: ReactNode, excluded: boolean, names: string[]) {
+  Children.forEach(children, (child) => {
+    if (isProtectedReactElement(child)) {
+      appendVisibleTriggerNames(child.props.children, excluded || !child.props.guard, names);
+      return;
+    }
+
+    if (isChildOfType(child, NativeTabTrigger) && !excluded && !child.props.hidden) {
+      names.push(child.props.name ?? '');
+    }
+  });
+}
+
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
-  const triggerChildren = useMemo(
-    () =>
-      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
+  const { navigatorChildren, nonTriggerChildren, tabConfigurationKey } = useMemo(
+    () => partitionNativeTabsChildren(props.children),
     [props.children]
   );
-  const nonTriggerChildren = useMemo(
-    () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
-    [props.children]
-  );
-  const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
 
   const {
     backBehavior = defaultBackBehavior,
@@ -313,7 +352,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     <IsWithinNativeNavigator value>
       <NativeTabsNavigatorWithContext
         {...props}
-        children={triggerChildren}
+        children={navigatorChildren}
         nonTriggerChildren={nonTriggerChildren}
         tabConfigurationKey={tabConfigurationKey}
         screenOptions={screenOptions}
