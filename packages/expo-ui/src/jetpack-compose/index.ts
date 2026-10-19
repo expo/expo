@@ -59,6 +59,7 @@ export * from './SearchBar';
 export * from './Snackbar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
+export * from './TopAppBar';
 export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
