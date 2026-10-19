@@ -115,6 +115,7 @@ export type {
 export type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  ExtendedRouter,
   NavigationAction,
   NavigationState,
   Router,
@@ -125,6 +126,7 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionMembers,
   RouterExtensionOptions,
   RouterFactory,
   StackActionType,
