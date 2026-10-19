@@ -333,11 +333,8 @@ extension JavaScriptRuntime {
         """
       ).getFunction()
     }
-    return try withCached(deferredPromiseFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+    return try withCached(CacheKeys.deferredPromiseFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
       return try factory.call().getArray()
     }
   }
 }
-
-/// Key of the deferred promise factory in each runtime's cache.
-private let deferredPromiseFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
