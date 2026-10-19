@@ -23,9 +23,9 @@ In apps with nested navigators, you'll often have **multiple pages mounted** at 
 - **useLocalSearchParams**: Returns the URL parameters for the current component. It only updates when the global URL conforms to the route.
 - **useGlobalSearchParams**: Returns the global URL regardless of the component. It updates on every URL param change and might cause components to update extraneously in the background.
 
-The hooks `useGlobalSearchParams` and `useLocalSearchParams` allow you to access these parameters within your components, enabling you to retrieve and utilize both types of URL parameters.
+In a layout, `useLocalSearchParams` returns the layout's own route parameters from the path, but not search parameters from the child route it renders. When the layout renders the current route, `useGlobalSearchParams` returns the current URL's parameters, including the child's search parameters. It still follows the current URL if the layout remains mounted in the background. For example, when **app/play/flag/[region]/\_layout.tsx** renders **index.tsx** for `/play/flag/150?onboarding=1`, `useLocalSearchParams()` returns `{ region: '150' }`, while `useGlobalSearchParams()` returns `{ region: '150', onboarding: '1' }`.
 
-Both hooks are typed and accessed the same way. However, the only difference is how frequently they update.
+Both hooks are typed and accessed the same way.
 
 The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 

@@ -197,6 +197,10 @@ See [Navigate to a screen in a nested navigator](/router/advanced/nesting-naviga
 
 Ancestor route params are also no longer copied into descendant routes during imperative navigation. If your app relies on a descendant receiving a parameter from its parent route, include the value in the destination href. This makes imperative navigation consistent with opening the same href from a deep link or cold start.
 
+### Read child search parameters in layouts
+
+In SDK 57, a layout could read a rendered child route's search parameters with `useLocalSearchParams`. In SDK 58, `useLocalSearchParams` in a layout returns the layout's own route parameters, but not the child's search parameters. When the layout renders the current route, use `useGlobalSearchParams` to read the current URL's search parameters, including those of its child route. The hook still follows the current URL if the layout remains mounted in the background. For example, when navigating to `/play/flag/150?onboarding=1`, the **app/play/flag/[region]/\_layout.tsx** layout reads `region` with `useLocalSearchParams` and `onboarding` with `useGlobalSearchParams`. See [URL parameters](/router/reference/url-parameters/) for more details.
+
 ### Move `initialRouteName` to `unstable_settings`
 
 The `initialRouteName` navigator prop is removed. To add a back destination when deep linking into a stack, export `unstable_settings.anchor` from that stack's layout:
