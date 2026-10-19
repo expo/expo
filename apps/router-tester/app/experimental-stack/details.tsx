@@ -1,12 +1,15 @@
 import { Link, usePathname, useRouter } from 'expo-router';
-import { Text, View, Pressable } from 'react-native';
+import { Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Details() {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
       <Text testID="e2e-screen">Details</Text>
       <Text testID="e2e-pathname">{pathname}</Text>
       <Pressable
@@ -20,6 +23,6 @@ export default function Details() {
           <Text style={{ color: '#fff' }}>Open Modal</Text>
         </Pressable>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }

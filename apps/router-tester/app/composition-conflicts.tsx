@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Switch, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompositionConflictsScreen() {
   // Competing Titles
@@ -89,150 +90,150 @@ export default function CompositionConflictsScreen() {
         {rapidTitle && <Stack.Screen.Title>Rapid!</Stack.Screen.Title>}
       </Stack.Screen>
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        contentInsetAdjustmentBehavior="automatic">
-        <Text style={styles.title}>Composition Conflicts</Text>
-        <Text style={styles.subtitle}>
-          Tests competing components, replacement, and rapid toggling.
-        </Text>
+      <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
+        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+          <Text style={styles.title}>Composition Conflicts</Text>
+          <Text style={styles.subtitle}>
+            Tests competing components, replacement, and rapid toggling.
+          </Text>
 
-        {/* Competing Titles */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Competing Titles</Text>
-          <Text style={styles.note}>
-            Last in tree wins. When both mounted, Title B should show. Removing B should promote A.
-          </Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Title A ("Title A")</Text>
-            <Switch testID="toggle-title-a" value={showTitleA} onValueChange={setShowTitleA} />
-          </View>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Title B ("Title B")</Text>
-            <Switch testID="toggle-title-b" value={showTitleB} onValueChange={setShowTitleB} />
-          </View>
-        </View>
-
-        {/* Competing Headers */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Competing Headers</Text>
-          <Text style={styles.note}>
-            Header A: blue background. Header B: red background + blur. Last in tree wins.
-          </Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Header A (blue)</Text>
-            <Switch testID="toggle-header-a" value={showHeaderA} onValueChange={setShowHeaderA} />
-          </View>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Header B (red + blur)</Text>
-            <Switch testID="toggle-header-b" value={showHeaderB} onValueChange={setShowHeaderB} />
-          </View>
-        </View>
-
-        {/* Competing Toolbars */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Competing Right Toolbars</Text>
-          <Text style={styles.note}>
-            Toolbar A: star icon. Toolbar B: heart icon. Last in tree wins.
-          </Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Toolbar A (star)</Text>
-            <Switch
-              testID="toggle-toolbar-a"
-              value={showToolbarA}
-              onValueChange={setShowToolbarA}
-            />
-          </View>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Toolbar B (heart)</Text>
-            <Switch
-              testID="toggle-toolbar-b"
-              value={showToolbarB}
-              onValueChange={setShowToolbarB}
-            />
-          </View>
-        </View>
-
-        {/* Variant Swap */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Variant Swap (BackButton)</Text>
-          <Text style={styles.note}>
-            Atomic replacement: single state update unmounts one BackButton and mounts another.
-          </Text>
-          <View style={styles.segmentedRow}>
-            <Pressable
-              testID="variant-a-button"
-              style={[styles.segmentButton, variant === 'A' && styles.segmentButtonActive]}
-              onPress={() => setVariant('A')}>
-              <Text style={[styles.segmentText, variant === 'A' && styles.segmentTextActive]}>
-                Variant A
-              </Text>
-            </Pressable>
-            <Pressable
-              testID="variant-b-button"
-              style={[styles.segmentButton, variant === 'B' && styles.segmentButtonActive]}
-              onPress={() => setVariant('B')}>
-              <Text style={[styles.segmentText, variant === 'B' && styles.segmentTextActive]}>
-                Variant B
-              </Text>
-            </Pressable>
-          </View>
-          <Text testID="current-variant" style={styles.stateText}>
-            Current variant: {variant}
-          </Text>
-        </View>
-
-        {/* Rapid Toggle */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Rapid Toggle Stress Test</Text>
-          <Text style={styles.note}>
-            Toggles a Title component every 100ms for 2 seconds. Should not crash or leave stale
-            options.
-          </Text>
-          <Pressable
-            testID="start-rapid-toggle"
-            style={[styles.button, rapidToggleRunning && styles.buttonDisabled]}
-            onPress={() => {
-              if (!rapidToggleRunning) {
-                setRapidToggleRunning(true);
-              }
-            }}
-            disabled={rapidToggleRunning}>
-            <Text style={styles.buttonText}>
-              {rapidToggleRunning ? 'Running...' : 'Start Rapid Toggle'}
+          {/* Competing Titles */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Competing Titles</Text>
+            <Text style={styles.note}>
+              Last in tree wins. When both mounted, Title B should show. Removing B should promote
+              A.
             </Text>
-          </Pressable>
-          <Text testID="rapid-toggle-count" style={styles.stateText}>
-            Toggle count: {rapidToggleCount}
-          </Text>
-          <Text testID="rapid-title-mounted" style={styles.stateText}>
-            Title mounted: {rapidTitle ? 'Yes' : 'No'}
-          </Text>
-        </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Title A ("Title A")</Text>
+              <Switch testID="toggle-title-a" value={showTitleA} onValueChange={setShowTitleA} />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Title B ("Title B")</Text>
+              <Switch testID="toggle-title-b" value={showTitleB} onValueChange={setShowTitleB} />
+            </View>
+          </View>
 
-        {/* Instructions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Instructions</Text>
-          <Text style={styles.instruction}>
-            1. Competing Titles: Enable both, verify "Title B" shows. Disable B, verify "Title A"
-            shows. Disable both, verify route default.
-          </Text>
-          <Text style={styles.instruction}>
-            2. Competing Headers: Enable both, verify red+blur. Disable B, verify blue. Disable
-            both, verify default.
-          </Text>
-          <Text style={styles.instruction}>
-            3. Competing Toolbars: Enable both, verify heart icon. Disable B, verify star. Disable
-            both, verify no toolbar items.
-          </Text>
-          <Text style={styles.instruction}>
-            4. Variant Swap: Toggle between A and B, verify clean back button label transition.
-          </Text>
-          <Text style={styles.instruction}>
-            5. Rapid Toggle: Tap start, wait 2s. Verify no crash, final state is consistent.
-          </Text>
-        </View>
+          {/* Competing Headers */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Competing Headers</Text>
+            <Text style={styles.note}>
+              Header A: blue background. Header B: red background + blur. Last in tree wins.
+            </Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Header A (blue)</Text>
+              <Switch testID="toggle-header-a" value={showHeaderA} onValueChange={setShowHeaderA} />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Header B (red + blur)</Text>
+              <Switch testID="toggle-header-b" value={showHeaderB} onValueChange={setShowHeaderB} />
+            </View>
+          </View>
+
+          {/* Competing Toolbars */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Competing Right Toolbars</Text>
+            <Text style={styles.note}>
+              Toolbar A: star icon. Toolbar B: heart icon. Last in tree wins.
+            </Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Toolbar A (star)</Text>
+              <Switch
+                testID="toggle-toolbar-a"
+                value={showToolbarA}
+                onValueChange={setShowToolbarA}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Toolbar B (heart)</Text>
+              <Switch
+                testID="toggle-toolbar-b"
+                value={showToolbarB}
+                onValueChange={setShowToolbarB}
+              />
+            </View>
+          </View>
+
+          {/* Variant Swap */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Variant Swap (BackButton)</Text>
+            <Text style={styles.note}>
+              Atomic replacement: single state update unmounts one BackButton and mounts another.
+            </Text>
+            <View style={styles.segmentedRow}>
+              <Pressable
+                testID="variant-a-button"
+                style={[styles.segmentButton, variant === 'A' && styles.segmentButtonActive]}
+                onPress={() => setVariant('A')}>
+                <Text style={[styles.segmentText, variant === 'A' && styles.segmentTextActive]}>
+                  Variant A
+                </Text>
+              </Pressable>
+              <Pressable
+                testID="variant-b-button"
+                style={[styles.segmentButton, variant === 'B' && styles.segmentButtonActive]}
+                onPress={() => setVariant('B')}>
+                <Text style={[styles.segmentText, variant === 'B' && styles.segmentTextActive]}>
+                  Variant B
+                </Text>
+              </Pressable>
+            </View>
+            <Text testID="current-variant" style={styles.stateText}>
+              Current variant: {variant}
+            </Text>
+          </View>
+
+          {/* Rapid Toggle */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Rapid Toggle Stress Test</Text>
+            <Text style={styles.note}>
+              Toggles a Title component every 100ms for 2 seconds. Should not crash or leave stale
+              options.
+            </Text>
+            <Pressable
+              testID="start-rapid-toggle"
+              style={[styles.button, rapidToggleRunning && styles.buttonDisabled]}
+              onPress={() => {
+                if (!rapidToggleRunning) {
+                  setRapidToggleRunning(true);
+                }
+              }}
+              disabled={rapidToggleRunning}>
+              <Text style={styles.buttonText}>
+                {rapidToggleRunning ? 'Running...' : 'Start Rapid Toggle'}
+              </Text>
+            </Pressable>
+            <Text testID="rapid-toggle-count" style={styles.stateText}>
+              Toggle count: {rapidToggleCount}
+            </Text>
+            <Text testID="rapid-title-mounted" style={styles.stateText}>
+              Title mounted: {rapidTitle ? 'Yes' : 'No'}
+            </Text>
+          </View>
+
+          {/* Instructions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Instructions</Text>
+            <Text style={styles.instruction}>
+              1. Competing Titles: Enable both, verify "Title B" shows. Disable B, verify "Title A"
+              shows. Disable both, verify route default.
+            </Text>
+            <Text style={styles.instruction}>
+              2. Competing Headers: Enable both, verify red+blur. Disable B, verify blue. Disable
+              both, verify default.
+            </Text>
+            <Text style={styles.instruction}>
+              3. Competing Toolbars: Enable both, verify heart icon. Disable B, verify star. Disable
+              both, verify no toolbar items.
+            </Text>
+            <Text style={styles.instruction}>
+              4. Variant Swap: Toggle between A and B, verify clean back button label transition.
+            </Text>
+            <Text style={styles.instruction}>
+              5. Rapid Toggle: Tap start, wait 2s. Verify no crash, final state is consistent.
+            </Text>
+          </View>
+        </SafeAreaView>
       </ScrollView>
     </>
   );
