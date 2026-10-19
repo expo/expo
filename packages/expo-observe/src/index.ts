@@ -51,5 +51,8 @@ export type {
   ObserveNavigationIntegrationConfig,
   ObserveNetworkTracesConfig,
   ObserveReanimatedIntegrationConfig,
+  ObserveExpoUpdatesIntegrationConfig,
+  ObserveExpoUpdatesLogEntry,
+  ObserveExpoUpdatesLogEntryCode,
 } from './types';
 export { useObserve } from './useObserve';
