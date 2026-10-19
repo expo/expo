@@ -17,6 +17,7 @@ export default function ExamplesLayout() {
       <Stack.Screen name="modals" options={{ headerShown: false }} />
       <Stack.Screen name="event-flood" options={{ title: 'Event flood' }} />
       <Stack.Screen name="reanimated" options={{ title: 'Reanimated' }} />
+      <Stack.Screen name="expo-updates" options={{ title: 'Expo Updates' }} />
     </Stack>
   );
 }

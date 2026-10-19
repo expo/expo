@@ -43,6 +43,11 @@ export default function ExamplesIndex() {
         description="Report Reanimated warnings and errors from both runtimes"
         onPress={() => router.push('/examples/reanimated')}
       />
+      <Button
+        title="Expo Updates"
+        description="Report expo-updates log errors and crashes handled by error recovery"
+        onPress={() => router.push('/examples/expo-updates')}
+      />
     </ScrollView>
   );
 }
