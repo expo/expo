@@ -132,6 +132,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     });
 
     const state = processedContentSpy.mock.calls.at(-1)![0].state;
+    // The second call follows the tab back history that the navigator adds to root state after mount.
     expect(processStateSpy).toHaveBeenCalledTimes(2);
     expect(state.routes).toEqual([
       expect.objectContaining({ name: 'index', href: '/' }),

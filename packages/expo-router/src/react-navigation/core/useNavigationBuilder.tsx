@@ -10,7 +10,6 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
-import { getValidInitialRouteName } from '../../routeNode';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -297,20 +296,6 @@ export function useNavigationBuilder<
 
     return original;
   }, [rest.initialRouteName, backBehavior, defaultStatus]);
-
-  React.useEffect(() => {
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      (router.type === 'tab' || router.type === 'drawer') &&
-      backBehavior === 'none' &&
-      getValidInitialRouteName(routeNode) !== undefined
-    ) {
-      console.warn(
-        `An anchor with backBehavior="none" in layout "${routeNode?.contextKey}" intentionally disables back navigation between routes. ` +
-          'useCanGoBack() can report the anchor as a back target on the initial render, before history is reconciled.'
-      );
-    }
-  }, [backBehavior, routeNode, router.type]);
 
   const screens = routeConfigs.reduce<
     Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>

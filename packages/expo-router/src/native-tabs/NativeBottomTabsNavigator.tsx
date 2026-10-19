@@ -19,6 +19,7 @@ import type {
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useTabBackBehaviorWarning } from '../standard-navigation/useTabBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -308,6 +309,8 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     tintColor,
     disableTransparentOnScrollEdge,
   ]);
+
+  useTabBackBehaviorWarning(backBehavior);
 
   return (
     <IsWithinNativeNavigator value>

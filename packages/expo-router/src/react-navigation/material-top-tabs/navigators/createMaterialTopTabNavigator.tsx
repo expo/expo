@@ -4,7 +4,9 @@ import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useTabBackBehaviorWarning } from '../../../standard-navigation/useTabBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -41,8 +43,10 @@ function MaterialTopTabNavigatorContent({
   routeNames,
   preload,
   navigateToTabSync,
+  backBehavior,
   ...rest
-}: ContentArgs) {
+}: ContentArgs & Pick<TabRouterOptions, 'backBehavior'>) {
+  useTabBackBehaviorWarning(backBehavior);
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,

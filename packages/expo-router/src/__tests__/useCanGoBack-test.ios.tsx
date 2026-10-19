@@ -8,6 +8,7 @@ import { router } from '../imperative-api';
 import { Drawer } from '../layouts/Drawer';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { NativeTabs } from '../native-tabs/NativeTabs';
 import { DrawerActions } from '../react-navigation/routers/DrawerRouter';
 import { renderRouter } from '../testing-library';
 import { useNavigation } from '../useNavigation';
@@ -25,40 +26,57 @@ jest.mock('react-native-drawer-layout', () => {
 
 afterEach(() => jest.restoreAllMocks());
 
-it.each([
-  { anchor: 'index', backBehavior: 'none', warns: true },
-  { anchor: undefined, backBehavior: 'none', warns: false },
-  { anchor: 'index', backBehavior: 'firstRoute', warns: false },
-] as const)(
-  'warns only for anchor=$anchor and backBehavior=$backBehavior',
-  async ({ anchor, backBehavior, warns }) => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    await renderRouter(
-      {
-        _layout: {
-          unstable_settings: { anchor },
-          default: () => (
-            <Tabs backBehavior={backBehavior}>
-              <Tabs.Screen name="index" />
-              <Tabs.Screen name="second" />
-            </Tabs>
-          ),
-        },
-        index: () => <Text>Index</Text>,
-        second: () => <Text>Second</Text>,
-      },
-      { initialUrl: '/second' }
-    );
+const navigators = {
+  Tabs: (backBehavior: 'none' | 'initialRoute') => (
+    <Tabs backBehavior={backBehavior}>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="second" />
+    </Tabs>
+  ),
+  Drawer: (backBehavior: 'none' | 'initialRoute') => (
+    <Drawer backBehavior={backBehavior}>
+      <Drawer.Screen name="index" />
+      <Drawer.Screen name="second" />
+    </Drawer>
+  ),
+  NativeTabs: (backBehavior: 'none' | 'initialRoute') => (
+    <NativeTabs backBehavior={backBehavior}>
+      <NativeTabs.Trigger name="index" />
+      <NativeTabs.Trigger name="second" />
+    </NativeTabs>
+  ),
+};
 
-    const warning = expect.stringContaining('useCanGoBack() can report the anchor');
-    if (warns) {
-      expect(warn).toHaveBeenCalledWith(warning);
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('layout "./_layout.js"'));
-    } else {
-      expect(warn).not.toHaveBeenCalledWith(warning);
+describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (navigator) => {
+  it.each([
+    { anchor: 'index', backBehavior: 'none', warns: true },
+    { anchor: undefined, backBehavior: 'none', warns: false },
+    { anchor: 'index', backBehavior: 'initialRoute', warns: false },
+  ] as const)(
+    'warns only for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior, warns }) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => navigators[navigator](backBehavior),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+
+      const warnings = warn.mock.calls.filter(([message]) =>
+        String(message).startsWith(
+          'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, so `useCanGoBack()` can return `true` on the first render.'
+        )
+      );
+      expect(warnings).toHaveLength(warns ? 1 : 0);
     }
-  }
-);
+  );
+});
 
 it('reads the current stack during render', async () => {
   const values: boolean[] = [];
@@ -381,3 +399,24 @@ it.each([
     expect(screen).toHavePathname('/');
   }
 );
+
+it('does not re-render when root state changes without changing the value', async () => {
+  let renders = 0;
+  function Counter() {
+    renders++;
+    useCanGoBack();
+    return null;
+  }
+  await renderRouter({
+    _layout: () => (
+      <>
+        <Counter />
+        <Stack />
+      </>
+    ),
+    index: () => <Text>Index</Text>,
+  });
+  const initialRenders = renders;
+  await act(() => router.setParams({ value: '1' }));
+  expect(renders).toBe(initialRenders);
+});

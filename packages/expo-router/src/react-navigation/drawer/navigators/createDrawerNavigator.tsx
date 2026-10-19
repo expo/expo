@@ -4,8 +4,9 @@ import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useTabBackBehaviorWarning } from '../../../standard-navigation/useTabBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { DrawerNavigationState, ParamListBase } from '../../native';
+import type { DrawerNavigationState, DrawerRouterOptions, ParamListBase } from '../../native';
 import type {
   DrawerDescriptorMap,
   DrawerNavigationConfig,
@@ -51,7 +52,9 @@ function DrawerNavigatorContent({
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
-}: ContentArgs) {
+  backBehavior,
+}: ContentArgs & Pick<DrawerRouterOptions, 'backBehavior'>) {
+  useTabBackBehaviorWarning(backBehavior);
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,

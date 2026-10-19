@@ -22,6 +22,7 @@ import {
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { useTabBackBehaviorWarning } from '../standard-navigation/useTabBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -170,6 +171,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   }
 
   const initialRouteName = getValidInitialRouteName(routeNode);
+  useTabBackBehaviorWarning(rest.backBehavior);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
