@@ -75,7 +75,7 @@ export type SecureStoreOptions = {
    *
    * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
    *   (requires API 23). `'deviceCredentials'` requires API 30+.
-   * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags).
+   * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/userpresence).
    *
    * This option works slightly differently across platforms: On Android, user authentication is required for all operations.
    * On iOS, the user is prompted to authenticate only when reading or updating an existing value (not when creating a new one).
@@ -265,7 +265,7 @@ export function canUseBiometricAuthentication(): boolean {
  * > API 23-29 this method returns `false` because device credential authentication is not
  * > supported there.
  *
- * @return `true` if the device has a secure lock screen configured. Otherwise, returns `false`.
+ * @return `true` if the device has a secure lock screen configured. Otherwise, returns `false`. Always returns `false` on tvOS.
  * @platform android
  * @platform ios
  */

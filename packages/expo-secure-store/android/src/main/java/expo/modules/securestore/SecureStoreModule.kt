@@ -203,11 +203,15 @@ open class SecureStoreModule : Module() {
     }
 
     try {
+      val authenticationRequirement = options.authenticationRequirement
+      val isAuthenticationRequired = authenticationRequirement != null
+      val isDeviceCredentialsRequired = authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
+
       if (keyIsInvalidated) {
         // Invalidated keys will block writing even though it's not possible to re-validate them
         // so we remove them before saving.
-        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
-        removeKeyFromKeystore(alias, options.keychainService, options.authenticationRequirement)
+        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, isAuthenticationRequired, isDeviceCredentialsRequired)
+        removeKeyFromKeystore(alias, options.keychainService, authenticationRequirement)
       }
 
       /* Android API 23+ supports storing symmetric keys in the keystore and on older Android
@@ -215,7 +219,7 @@ open class SecureStoreModule : Module() {
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
        */
-      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
+      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, isAuthenticationRequired, isDeviceCredentialsRequired)
       val encryptedItem = mAESEncryptor.createEncryptedItem(
         value,
         secretKeyEntry,
@@ -223,7 +227,7 @@ open class SecureStoreModule : Module() {
         authenticationHelper
       )
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.authenticationRequirement, options.keychainService)
+      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, authenticationRequirement, options.keychainService)
 
       // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
       if (prefs.contains(key)) {
@@ -385,13 +389,12 @@ open class SecureStoreModule : Module() {
     usesKeystoreSuffix: Boolean
   ): E? {
     return if (usesKeystoreSuffix) {
-      val authenticationRequirement = normalizeAuthenticationRequirement(requireAuthentication)
       getKeyEntry(
         keyStoreEntryClass,
         encryptor,
         options,
-        authenticationRequirement != null,
-        authenticationRequirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
+        requireAuthentication != null,
+        requireAuthentication == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS
       )
     } else {
       getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
