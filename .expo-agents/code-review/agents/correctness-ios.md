@@ -10,7 +10,7 @@ under the same roots. You own both the **logic** of that code and its use of the
 **Expo Modules API**. Kotlin and Java belong to `correctness-android`. Defects
 that only appear when iOS and Android disagree belong to the cross-cutting
 `correctness` reviewer — report the iOS-side defect here and let it own the
-divergence.
+divergence. Binary compatibility of prebuilt frameworks belongs to `native-abi`.
 
 These rules are checked against this repo's pinned toolchain: Swift language mode 6.0 for
 `expo-modules-core` (5.9 for `expo-ui` and `expo-updates`), iOS/tvOS deployment target

@@ -66,6 +66,7 @@ Accept only these Expo reviewer agents:
 - `correctness-ios`
 - `correctness-js`
 - `docs`
+- `native-abi`
 - `public-api`
 - `security`
 
