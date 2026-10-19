@@ -28,11 +28,14 @@ const LEGACY_STUBS_DIR = '.stubs';
 
 /**
  * Whether a dumped manifest compiles against ExpoModulesCoreHeaders, which only a manifest
- * written to be built as it stands can name.
+ * written to be built as it stands can name. A `byName` dependency counts: SwiftPM resolves
+ * it to that product when no target of the package has the name.
  */
 function dependsOnCoreHeaders(manifest) {
   return (manifest.targets ?? []).some((target) =>
-    (target.dependencies ?? []).some((dependency) => dependency.product?.[0] === CORE_HEADERS)
+    (target.dependencies ?? []).some(
+      (dependency) => (dependency.product ?? dependency.byName)?.[0] === CORE_HEADERS
+    )
   );
 }
 

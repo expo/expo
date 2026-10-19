@@ -50,8 +50,18 @@ describe('dependsOnCoreHeaders', () => {
     ).toBe(true);
   });
 
+  // `.byName(name:)` and a bare string both dump as `byName`; SwiftPM resolves the name to
+  // a product of a package dependency when no target has it.
+  it.each([
+    ['without a condition', { byName: ['ExpoModulesCoreHeaders', null] }],
+    ['with a condition', { byName: ['ExpoModulesCoreHeaders', { platformNames: ['ios'] }] }],
+  ])('is true for a dependency by name %s', (_, dependency) => {
+    expect(dependsOnCoreHeaders(manifestDependingOn(dependency))).toBe(true);
+  });
+
   it.each([
     ['no target dependencies', manifestDependingOn()],
+    ['a dependency on another name', manifestDependingOn({ byName: ['ExpoModulesCore', null] })],
     [
       'another product',
       manifestDependingOn({ product: ['ExpoModulesCore', 'ExpoModulesCore', null, null] }),

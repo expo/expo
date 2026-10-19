@@ -275,6 +275,21 @@ describe('a pod buildFromSource names that cannot be built from source', () => {
     expect(report(refusal, hasSources)).toContain(why);
   });
 
+  it('gives a cause it has no description for a generic line, naming the reason', () => {
+    const text = renderUnsupportedReport([
+      {
+        ...subject,
+        reason: 'build-from-source-unsupported',
+        buildFromSourceEntry: 'ExpoBad',
+        cause: { reason: 'some-future-reason' },
+      },
+    ]);
+    expect(text).toContain(
+      'The plugin found no way to build it from source with Swift Package Manager (reason: some-future-reason).'
+    );
+    expect(text).toContain('Remove "ExpoBad" from');
+  });
+
   it('counts the pod once', () => {
     expect(new UnsupportedModulesError(classify(forced(null))).message).toMatch(
       /^1 Expo native module /

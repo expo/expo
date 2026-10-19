@@ -292,7 +292,8 @@ function renderBuildFromSourceUnsupported({
   return renderBlock(
     `error: Expo module "${packageName}" (pod ${podName}) is listed in buildFromSource, but Swift Package Manager cannot build it from source.`,
     [
-      SOURCE_BUILD_BLOCKERS[cause.reason](cause),
+      SOURCE_BUILD_BLOCKERS[cause.reason]?.(cause) ??
+        `The plugin found no way to build it from source with Swift Package Manager (reason: ${cause.reason}).`,
       `Remove "${buildFromSourceEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${podName} or ${packageName}. The module's precompiled XCFramework is then used. ${RERUN_SPM_UPDATE}`,
     ],
     moduleRoot

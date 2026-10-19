@@ -1305,7 +1305,10 @@ describe('a buildFromSource entry matching ExpoModulesCore', () => {
 });
 
 // A refused manifest links no pod, so the second package listing its root reaches it again.
-describe('a refused checked-in manifest two packages list', () => {
+describe.each([
+  ['through one path', false],
+  ['through two symlinks', true],
+])('a refused checked-in manifest two packages list %s', (_, symlinked) => {
   captureConsole();
   let thrown;
 
@@ -1313,8 +1316,16 @@ describe('a refused checked-in manifest two packages list', () => {
     const tmp = makeTempDir('expo-spm-dump-once-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const shared = path.join(tmp, 'shared');
-    const podspecDir = pureSwiftModule(shared, 'ExpoVendored', spec());
+    pureSwiftModule(shared, 'ExpoVendored', spec());
     fs.writeFileSync(path.join(shared, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    const listedRoot = (name) => {
+      if (!symlinked) return shared;
+      const link = path.join(tmp, name);
+      fs.symlinkSync(shared, link);
+      return link;
+    };
+    const podspecDirOne = path.join(listedRoot('link-one'), 'ios');
+    const podspecDirTwo = path.join(listedRoot('link-two'), 'ios');
     runDumpPackage.mockReset();
     runDumpPackage.mockReturnValue(
       JSON.stringify({
@@ -1336,8 +1347,8 @@ describe('a refused checked-in manifest two packages list', () => {
     resolveExpoModules.mockReturnValue(
       modulesOf([
         coreAt(core),
-        ['alias-one', [['ExpoVendored', podspecDir]]],
-        ['alias-two', [['ExpoVendored', podspecDir]]],
+        ['alias-one', [['ExpoVendored', podspecDirOne]]],
+        ['alias-two', [['ExpoVendored', podspecDirTwo]]],
       ])
     );
     providerWrittenTo(path.join(tmp, 'out'));

@@ -155,8 +155,8 @@ function podIdentity(record, pod, packageName, autolinkedRoot, readModuleRoot) {
 /** `read`, run at most once per module root: several pods can share one. */
 function oncePerModuleRoot(read) {
   const results = new Map();
-  return (moduleRoot, ...rest) => {
-    if (!results.has(moduleRoot)) results.set(moduleRoot, read(moduleRoot, ...rest));
+  return (moduleRoot) => {
+    if (!results.has(moduleRoot)) results.set(moduleRoot, read(moduleRoot));
     return results.get(moduleRoot);
   };
 }
@@ -531,7 +531,7 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
  * emitted package would link less than the podspec does. Returns null for a module
  * with no sources: the pod's own `no-apple-sources` report covers it.
  *
- * @param dumpManifest `dumpModuleManifest`, run at most once per module root.
+ * @param dumpManifest `dumpModuleManifest`, run at most once per real module root.
  */
 function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
   const { moduleRoot, packageName, podName, iosDeploymentTarget, spmPackages, sources, podspec } =
@@ -583,7 +583,15 @@ function linkSourceModules(modules, identities, records, emitContext) {
     refusals.set(root, (refusals.get(root) ?? new Map()).set(reason, refusalFor));
   const linkedAs = (identity) => records.get(identity.podName).linkedAs;
   const manifestProductsByRoot = new Map();
-  const dumpManifest = oncePerModuleRoot(dumpModuleManifest);
+  // By real path: listings can reach one manifest through different symlinks.
+  const dumpsByRealRoot = new Map();
+  const dumpManifest = (moduleRoot, packageName) => {
+    const realRoot = fs.realpathSync(moduleRoot);
+    if (!dumpsByRealRoot.has(realRoot)) {
+      dumpsByRealRoot.set(realRoot, dumpModuleManifest(moduleRoot, packageName));
+    }
+    return dumpsByRealRoot.get(realRoot);
+  };
   for (const mod of modules) {
     const pods = (mod.pods ?? []).map((pod) => identities.get(pod));
     if (!pods.length || pods.every(linkedAs)) continue;
