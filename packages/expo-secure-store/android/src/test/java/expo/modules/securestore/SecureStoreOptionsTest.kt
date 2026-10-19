@@ -4,6 +4,7 @@ import expo.modules.kotlin.types.ConvertedValue
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.IncompatibleValue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -23,6 +24,13 @@ class SecureStoreOptionsTest {
   @Test
   fun `confirmation is required by default`() {
     assertTrue(SecureStoreOptions().requireConfirmation)
+  }
+
+  @Test
+  fun `none disables authentication`() {
+    val options = SecureStoreOptions(requireAuthentication = requireAuthenticationOf("none"))
+
+    assertNull(options.authenticationRequirement)
   }
 
   @Test
