@@ -16,6 +16,7 @@ export interface HStackProps extends CommonViewModifierProps {
   /**
    * When `true`, a child percentage is a fraction of this stack.
    * Universal `Row` sets this. Leave it unset to keep the SwiftUI `HStack`.
+   * @hidden
    */
   resolvesChildPercentages?: boolean;
 }

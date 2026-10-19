@@ -16,6 +16,7 @@ export interface VStackProps extends CommonViewModifierProps {
   /**
    * When `true`, a child percentage is a fraction of this stack.
    * Universal `Column` sets this. Leave it unset to keep the SwiftUI `VStack`.
+   * @hidden
    */
   resolvesChildPercentages?: boolean;
 }
