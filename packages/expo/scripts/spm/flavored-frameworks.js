@@ -289,6 +289,16 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
   return null;
 }
 
+/**
+ * Whether `resolveFlavoredFramework` would find an artifact, without validating or
+ * extracting it: for a pod that is not linked precompiled.
+ */
+function hasPrecompiledArtifact({ packageName, moduleRoot, frameworkName }) {
+  return artifactBases(packageName, moduleRoot).some((base) =>
+    FLAVORS.some((flavor) => existingArtifactSource(base.dir, flavor, frameworkName) != null)
+  );
+}
+
 /** The `{ kind, dir }` base a `resolveFlavoredFramework` declaration came from. */
 function frameworkSource(framework) {
   return frameworkSources.get(framework) ?? null;
@@ -620,6 +630,7 @@ module.exports = {
   assertHeadersMatchSources,
   byteOrder,
   frameworkSource,
+  hasPrecompiledArtifact,
   headersXCFrameworkDirs,
   headersXCFrameworkSearchPaths,
   prepareCompileInterfaces,

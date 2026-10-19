@@ -69,6 +69,7 @@ const {
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
   reportUnsupported,
+  BUILD_FROM_SOURCE_OPTION,
   RERUN_SPM_UPDATE,
   unmappedPodDependencies,
 } = require('./diagnostics');
@@ -79,6 +80,7 @@ const {
   assertHeadersMatchSources,
   byteOrder,
   frameworkSource,
+  hasPrecompiledArtifact,
   headersXCFrameworkDirs,
   headersXCFrameworkSearchPaths,
   prepareCompileInterfaces,
@@ -103,6 +105,7 @@ const { readPodspecFacts } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
 const CORE_POD = 'ExpoModulesCore';
+const CORE_PACKAGE = 'expo-modules-core';
 const JSI_POD = 'ExpoModulesJSI';
 
 /** npm name → autolinked root, only for roots still on disk. */
@@ -316,7 +319,7 @@ function uncoveredPod(identity, ...refusals) {
  * What the passes decided for each pod, keyed by pod name: CocoaPods pod names are
  * unique, so a name two packages list is one pod. `linkedAs` is `'build-phase'`,
  * `'precompiled'`, `'manifest'`, `'pure-swift'` or null. A precompiled record carries its
- * `framework`.
+ * `framework`; `linkPrecompiledPods` documents `buildFromSourceEntry`.
  */
 function podRecords(identities) {
   const records = new Map();
@@ -375,27 +378,39 @@ function buildPhaseJsiRoot(appRoot) {
 }
 
 /**
- * Whether the app's `buildFromSource` autolinking option names a pod, matched as CocoaPods
- * matches it in `precompiled_modules.rb#build_from_source?`: each entry is a regular
- * expression that must match the whole pod name or npm package name.
+ * The entry of the app's `buildFromSource` autolinking option that names a pod, or
+ * undefined, matched as CocoaPods matches it in `precompiled_modules.rb#build_from_source?`:
+ * each entry is a regular expression that must match the whole pod name or npm package name.
+ * An entry naming ExpoModulesCore fails the sync, because every source package compiles
+ * against the precompiled one.
  */
 function buildFromSourceMatcher(patterns) {
-  const expressions = patterns.map((pattern) => {
+  const entries = patterns.map((pattern) => {
     try {
-      return new RegExp(`^${pattern}$`);
+      return { pattern, expression: new RegExp(`^${pattern}$`) };
     } catch (error) {
       throw pluginError(
         {
           what: `The buildFromSource entry "${pattern}" in your app's Expo autolinking options is not a valid regular expression: ${error.message}.`,
           why: 'Each entry is matched as a regular expression against the pod name and the npm package name of every module, to choose the modules built from source instead of linked precompiled.',
-          how: `Fix the entry in \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json. ${RERUN_SPM_UPDATE}`,
+          how: `Fix the entry in ${BUILD_FROM_SOURCE_OPTION}. ${RERUN_SPM_UPDATE}`,
         },
         { cause: error }
       );
     }
   });
-  return ({ podName, packageName }) =>
-    expressions.some((expression) => expression.test(podName) || expression.test(packageName));
+  const entryFor = ({ podName, packageName }) =>
+    entries.find(({ expression }) => expression.test(podName) || expression.test(packageName))
+      ?.pattern;
+  const coreEntry = entryFor({ podName: CORE_POD, packageName: CORE_PACKAGE });
+  if (coreEntry != null) {
+    throw pluginError({
+      what: `The buildFromSource entry "${coreEntry}" in your app's Expo autolinking options matches ${CORE_POD} (${CORE_PACKAGE}), which Swift Package Manager cannot build from source.`,
+      why: `Under Swift Package Manager, ${CORE_POD} is always linked precompiled: every Expo module built from source compiles against its precompiled interface.`,
+      how: `Remove "${coreEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${CORE_POD} or ${CORE_PACKAGE}. ${RERUN_SPM_UPDATE}`,
+    });
+  }
+  return entryFor;
 }
 
 /**
@@ -404,22 +419,30 @@ function buildFromSourceMatcher(patterns) {
  * receives the plugin result. No runtime binary enters the SwiftPM graph.
  * A pod name several packages list is looked up from each of them, in order,
  * until one has an artifact. A pod the app builds from source is never linked
- * precompiled. Returns the records it linked, in that order.
+ * precompiled; when it has an artifact, its record keeps the `buildFromSourceEntry`
+ * naming it, for the report should no source route take it. Returns the records it
+ * linked, in that order.
  *
- * @param buildsFromSource `buildFromSourceMatcher`'s result.
+ * @param buildFromSourceEntry `buildFromSourceMatcher`'s result.
  */
-function linkPrecompiledPods(identities, records, cacheDir, buildsFromSource) {
+function linkPrecompiledPods(identities, records, cacheDir, buildFromSourceEntry) {
   const linked = [];
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
     if (record.linkedAs != null) continue;
-    if (buildsFromSource(identity)) continue;
-    const framework = resolveFlavoredFramework({
+    const lookup = {
       packageName: identity.packageName,
       moduleRoot: identity.moduleRoot,
       frameworkName: identity.productName,
-      cacheDir,
-    });
+    };
+    const entry = buildFromSourceEntry(identity);
+    if (entry != null) {
+      if (record.buildFromSourceEntry == null && hasPrecompiledArtifact(lookup)) {
+        record.buildFromSourceEntry = entry;
+      }
+      continue;
+    }
+    const framework = resolveFlavoredFramework({ ...lookup, cacheDir });
     if (framework == null) continue;
     Object.assign(record, { identity, linkedAs: 'precompiled', framework });
     linked.push(record);
@@ -687,7 +710,10 @@ function summarizeRecords(
     );
   const pending = [...records.values()]
     .filter((r) => r.linkedAs == null)
-    .map(({ identity }) => uncoveredPod(identity, ...refusalsFor(identity)));
+    .map(({ identity, buildFromSourceEntry }) => ({
+      ...uncoveredPod(identity, ...refusalsFor(identity)),
+      buildFromSourceEntry,
+    }));
 
   // What the resolved dependencies already carry is not uncovered, their subspecs
   // included.
@@ -831,7 +857,7 @@ module.exports = function expoSpmPlugin(context) {
   const appRoot = context.projectRoot;
   configureSpmUpdateCommand({ appRoot, reactNativeRoot: appReactNativeRoot(context, appRoot) });
   const { modules, extraDependencies, buildFromSource = [] } = resolveExpoModules(appRoot);
-  const buildsFromSource = buildFromSourceMatcher(buildFromSource);
+  const buildFromSourceEntry = buildFromSourceMatcher(buildFromSource);
   const metadata = readPrebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
   const identities = resolvePodIdentities(modules, metadata, autolinkedRoots);
@@ -870,7 +896,12 @@ module.exports = function expoSpmPlugin(context) {
 
   const records = podRecords(identities);
   const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir, appRoot);
-  const precompiled = linkPrecompiledPods(identities, records, artifactCacheDir, buildsFromSource);
+  const precompiled = linkPrecompiledPods(
+    identities,
+    records,
+    artifactCacheDir,
+    buildFromSourceEntry
+  );
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is
   // built, so source modules compile against their headers too.

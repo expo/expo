@@ -165,6 +165,123 @@ describe('diagnostic priority order', () => {
   });
 });
 
+describe('a pod buildFromSource names that cannot be built from source', () => {
+  const subject = { podName: 'ExpoBad', packageName: 'expo-bad', moduleRoot: '/m/expo-bad' };
+  const forced = (refusal, hasSources = true) => ({
+    ...pendingPod({
+      ...subject,
+      hasSources,
+      prebuildProduct: { name: 'ExpoBad', sourceOnly: false },
+      refusal,
+    }),
+    buildFromSourceEntry: 'expo-b.*',
+  });
+  const classify = (pod) => classifyUnsupported({ pending: [pod], coreAvailable: true });
+  const podspecLinkage = {
+    reason: 'needs-manifest-for-linkage',
+    file: '/m/expo-bad/ios/ExpoBad.podspec',
+    line: 19,
+    snippet: "s.frameworks = 'Photos'",
+  };
+
+  it('is refused for buildFromSource, with what blocks the source build as the cause', () => {
+    expect(classify(forced(null))).toEqual([
+      {
+        ...subject,
+        reason: 'build-from-source-unsupported',
+        buildFromSourceEntry: 'expo-b.*',
+        cause: { reason: 'mixed-no-manifest', productName: 'ExpoBad' },
+      },
+    ]);
+  });
+
+  it('takes the most specific cause', () => {
+    expect(classify(forced(podspecLinkage))[0].cause).toEqual(podspecLinkage);
+  });
+
+  const report = (refusal, hasSources) =>
+    renderUnsupportedReport(classify(forced(refusal, hasSources)));
+
+  it('says what failed, and how to use the precompiled XCFramework instead', () => {
+    const text = report(null);
+    expect(text).toContain(
+      'error: Expo module "expo-bad" (pod ExpoBad) is listed in buildFromSource, but Swift Package Manager cannot build it from source.'
+    );
+    expect(text).toContain(
+      `Remove "expo-b.*" from \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json, or narrow it so it no longer matches ExpoBad or expo-bad. The module's precompiled XCFramework is then used. Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`
+    );
+    expect(text).toContain('Module path: /m/expo-bad');
+    expect(text).not.toContain('prebuild');
+  });
+
+  it.each([
+    [
+      'mixed sources and no manifest',
+      null,
+      true,
+      'It mixes Swift and Objective-C/C++ sources and ships no Package.swift, and Swift Package Manager can build such a module only from a manifest that splits the two languages into separate targets.',
+    ],
+    [
+      'no sources',
+      null,
+      false,
+      'It has no `ios` or `apple` source directory for Swift Package Manager to compile.',
+    ],
+    [
+      'linkage in its podspec',
+      podspecLinkage,
+      true,
+      'Its podspec declares native linkage at /m/expo-bad/ios/ExpoBad.podspec:19, and it ships no Package.swift stating that linkage, so a package built from its sources would link less than CocoaPods does.',
+    ],
+    [
+      'a manifest target dependency',
+      {
+        reason: 'unsupported-target-dependency',
+        dependencies: [{ target: 'ExpoBad', dependsOn: 'VendoredKit', kind: 'binary' }],
+      },
+      true,
+      'Its Package.swift has targets depending on "VendoredKit", which the package generated from it cannot declare.',
+    ],
+    [
+      'a manifest package dependency',
+      { reason: 'unsupported-package-dependency', dependencies: [] },
+      true,
+      'Its Package.swift declares Swift packages the package generated from it cannot declare.',
+    ],
+    [
+      'manifest targets without sources',
+      { reason: 'unresolvable-target-path', targetNames: ['Main', 'Extras'] },
+      true,
+      'Its Package.swift names targets with no sources on disk: "Main", "Extras".',
+    ],
+    [
+      'a manifest that does not export the product',
+      { reason: 'not-exported-by-manifest', productName: 'ExpoBad', exportedProducts: [] },
+      true,
+      'Its Package.swift exports no "ExpoBad" library product.',
+    ],
+    [
+      'precompiled sibling pods',
+      {
+        reason: 'partially-precompiled',
+        precompiledSiblings: ['ExpoGood'],
+        precompiledProducts: ['ExpoGood'],
+        artifactDirs: [],
+      },
+      true,
+      'Other pods of the module are linked precompiled (ExpoGood), and building the module from source would link them a second time.',
+    ],
+  ])('names the cause: %s', (_, refusal, hasSources, why) => {
+    expect(report(refusal, hasSources)).toContain(why);
+  });
+
+  it('counts the pod once', () => {
+    expect(new UnsupportedModulesError(classify(forced(null))).message).toMatch(
+      /^1 Expo native module /
+    );
+  });
+});
+
 describe('linkage declared in a podspec', () => {
   const podspecLinkage = {
     file: '/m/expo-bad/ios/ExpoBad.podspec',

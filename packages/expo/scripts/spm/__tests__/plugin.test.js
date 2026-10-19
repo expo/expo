@@ -27,6 +27,7 @@ jest.mock('../flavored-frameworks', () => ({
     frameworkName === 'ExpoModulesCore' ? { id: 'ExpoModulesCore', name: 'ExpoModulesCore' } : null
   ),
   resolveSpmDependencyFrameworks: jest.fn(() => []),
+  hasPrecompiledArtifact: jest.fn(() => false),
   resolveHeadersXCFramework: jest.fn(() => null),
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
   frameworkSource: jest.fn(() => null),
@@ -73,6 +74,7 @@ const {
   resolveHeadersXCFramework,
   resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
+  hasPrecompiledArtifact,
 } = require('../flavored-frameworks');
 const {
   captureConsole,
@@ -179,6 +181,8 @@ function restoreModuleMocks() {
   );
   resolveSpmDependencyFrameworks.mockReset();
   resolveSpmDependencyFrameworks.mockReturnValue([]);
+  hasPrecompiledArtifact.mockReset();
+  hasPrecompiledArtifact.mockReturnValue(false);
   resolveHeadersXCFramework.mockReset();
   resolveHeadersXCFramework.mockReturnValue(null);
   prepareCompileInterfaces.mockImplementation(() => '/abs/interfaces');
@@ -1187,6 +1191,116 @@ describe('a module with a checked-in manifest', () => {
     });
     expect(thrown).toBeNull();
     expect(emitDirectPackage).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('a module buildFromSource names that has no way to be built from source', () => {
+  const logs = captureConsole({ each: true });
+
+  afterEach(restoreModuleMocks);
+
+  /**
+   * Syncs ExpoMixed (expo-mixed): `sources` of 'mixed' or 'pure-swift with podspec linkage',
+   * no checked-in manifest, an artifact when `precompiled`, and `buildFromSource`.
+   */
+  function sync({ sources, precompiled, buildFromSource }) {
+    const tmp = makeTempDir('expo-spm-forced-source-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-mixed');
+    const podspecDir =
+      sources === 'mixed'
+        ? mixedModule(moduleRoot, 'ExpoMixed')
+        : pureSwiftModule(moduleRoot, 'ExpoMixed', spec("  s.frameworks = 'Photos'"));
+    resolveExpoModules.mockReturnValue({
+      ...modulesOf([coreAt(core), ['expo-mixed', [['ExpoMixed', podspecDir]]]]),
+      buildFromSource,
+    });
+    prebuiltMetadata.mockReturnValue({ ExpoMixed: metadataEntry(moduleRoot, 'ExpoMixed') });
+    hasPrecompiledArtifact.mockImplementation(
+      ({ frameworkName }) => precompiled && frameworkName === 'ExpoMixed'
+    );
+    resolveFlavoredFramework.mockClear();
+    providerWrittenTo(path.join(tmp, 'out'));
+    return { thrown: thrownBy(() => runPlugin(tmp)), moduleRoot };
+  }
+
+  it('fails the sync naming buildFromSource, not the missing prebuild', () => {
+    const { thrown, moduleRoot } = sync({
+      sources: 'mixed',
+      precompiled: true,
+      buildFromSource: ['expo-mix.*'],
+    });
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported).toEqual([
+      {
+        reason: 'build-from-source-unsupported',
+        podName: 'ExpoMixed',
+        packageName: 'expo-mixed',
+        moduleRoot,
+        buildFromSourceEntry: 'expo-mix.*',
+        cause: { reason: 'mixed-no-manifest', productName: 'ExpoMixed' },
+      },
+    ]);
+    expect(printed(logs.error)).toContain(
+      'error: Expo module "expo-mixed" (pod ExpoMixed) is listed in buildFromSource, but Swift Package Manager cannot build it from source.'
+    );
+    expect(hasPrecompiledArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({ packageName: 'expo-mixed', frameworkName: 'ExpoMixed' })
+    );
+    expect(resolveFlavoredFramework).not.toHaveBeenCalledWith(
+      expect.objectContaining({ frameworkName: 'ExpoMixed' })
+    );
+  });
+
+  it('names the podspec linkage of a pure-Swift module as the cause', () => {
+    const { thrown } = sync({
+      sources: 'pure-swift with podspec linkage',
+      precompiled: true,
+      buildFromSource: ['ExpoMixed'],
+    });
+    expect(thrown?.unsupported).toEqual([
+      expect.objectContaining({
+        reason: 'build-from-source-unsupported',
+        cause: expect.objectContaining({ reason: 'needs-manifest-for-linkage' }),
+      }),
+    ]);
+  });
+
+  // Taking the entry out would not help: there is no XCFramework to fall back to.
+  it('reports what it would report without buildFromSource when there is no artifact', () => {
+    const { thrown } = sync({
+      sources: 'mixed',
+      precompiled: false,
+      buildFromSource: ['ExpoMixed'],
+    });
+    expect(thrown?.unsupported).toEqual([
+      expect.objectContaining({ reason: 'prebuild-available', podName: 'ExpoMixed' }),
+    ]);
+  });
+});
+
+describe('a buildFromSource entry matching ExpoModulesCore', () => {
+  captureConsole();
+
+  afterAll(restoreModuleMocks);
+
+  it.each([
+    ['its pod name', 'ExpoModulesCore'],
+    ['its npm package name', 'expo-modules-core'],
+    ['a pattern', 'Expo.*'],
+  ])('fails the sync up front when it matches %s', (_, entry) => {
+    const tmp = makeTempDir('expo-spm-forced-core-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    resolveExpoModules.mockReturnValue({ ...modulesOf([coreAt(core)]), buildFromSource: [entry] });
+    resolveFlavoredFramework.mockClear();
+    const thrown = thrownBy(() => runPlugin(tmp));
+    expect(thrown).not.toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown?.message).toBe(
+      `[expo-spm-plugin] The buildFromSource entry "${entry}" in your app's Expo autolinking options matches ExpoModulesCore (expo-modules-core), which Swift Package Manager cannot build from source. ` +
+        'Under Swift Package Manager, ExpoModulesCore is always linked precompiled: every Expo module built from source compiles against its precompiled interface. ' +
+        `Remove "${entry}" from \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json, or narrow it so it no longer matches ExpoModulesCore or expo-modules-core. ${rerunSpmUpdate}`
+    );
+    expect(resolveFlavoredFramework).not.toHaveBeenCalled();
   });
 });
 
