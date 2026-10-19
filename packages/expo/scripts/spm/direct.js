@@ -1,6 +1,6 @@
 /**
- * Links a module that opts in with `"directManifest": true` through its own checked-in
- * Package.swift instead of a generated one. That manifest names its Expo dependencies by
+ * Links a module whose checked-in Package.swift depends on the ExpoModulesCoreHeaders
+ * product through that manifest instead of a generated one. It names its Expo dependencies by
  * paths relative to `<outDir>/direct/<package>`, so this writes those neighbours:
  *
  *   direct/<package>                 → relative symlink to the module root
@@ -27,27 +27,13 @@ const CORE_HEADERS_DEPENDENCIES = 'ExpoModulesCoreHeadersDependencies';
 const LEGACY_STUBS_DIR = '.stubs';
 
 /**
- * Whether the module at `moduleRoot` is built from its checked-in Package.swift: it has
- * one, and its spm.config.json sets `"directManifest": true`. Without a Package.swift the
- * config is not read, so a malformed one cannot fail a sync it would not affect.
+ * Whether a dumped manifest compiles against ExpoModulesCoreHeaders, which only a manifest
+ * written to be built as it stands can name.
  */
-function readDirectManifestFlag(moduleRoot) {
-  const configPath = path.join(moduleRoot, 'spm.config.json');
-  if (!fs.existsSync(path.join(moduleRoot, 'Package.swift')) || !fs.existsSync(configPath)) {
-    return false;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(configPath, 'utf8'))?.directManifest === true;
-  } catch (error) {
-    throw pluginError(
-      {
-        what: `${configPath} is not valid JSON: ${error.message}.`,
-        why: 'The plugin reads its "directManifest" flag to decide whether to build the module from its checked-in Package.swift.',
-        how: `Fix the JSON in ${configPath}, or reinstall the package if it came from npm. ${RERUN_SPM_UPDATE}`,
-      },
-      { cause: error }
-    );
-  }
+function dependsOnCoreHeaders(manifest) {
+  return (manifest.targets ?? []).some((target) =>
+    (target.dependencies ?? []).some((dependency) => dependency.product?.[0] === CORE_HEADERS)
+  );
 }
 
 /**
@@ -119,6 +105,7 @@ function emitCoreHeadersPackage(directDir, coreHeadersXCFramework, jsiHeadersPkg
  *
  * @param jsiHeadersPkgPath the ExpoModulesJSI headers package the plugin emits, or null when
  *   expo-modules-jsi is not autolinked.
+ * @param manifest the module's manifest, as `dumpModuleManifest` parsed it.
  */
 function emitDirectPackage({
   moduleRoot,
@@ -127,6 +114,7 @@ function emitDirectPackage({
   coreHeadersXCFramework,
   jsiHeadersPkgPath,
   macroTool,
+  manifest,
 }) {
   if (jsiHeadersPkgPath == null) {
     throw pluginError({
@@ -148,7 +136,6 @@ function emitDirectPackage({
   relativeSymlink(moduleRoot, link);
   fs.rmSync(path.join(outDir, 'expo-source', packageName), { recursive: true, force: true });
 
-  const manifest = dumpManifest(link, { moduleRoot, packageName });
   return {
     ok: {
       packageDep: { name: manifest.name, path: link },
@@ -159,14 +146,19 @@ function emitDirectPackage({
   };
 }
 
-function dumpManifest(link, { moduleRoot, packageName }) {
+/**
+ * `swift package dump-package` of the checked-in manifest at `moduleRoot`: the JSON the
+ * tool printed, and its parse.
+ */
+function dumpModuleManifest(moduleRoot, packageName) {
   try {
-    return JSON.parse(runDumpPackage(link));
+    const json = runDumpPackage(moduleRoot);
+    return { json, manifest: JSON.parse(json) };
   } catch (error) {
     throw pluginError(
       {
         what: `${packageName}'s Package.swift could not be evaluated: ${dumpFailureDetail(error)}.`,
-        why: `${packageName} is built from its own Package.swift, so the plugin reads the manifest with \`swift package dump-package\` to find its products.`,
+        why: `${packageName} is built from source, so the plugin reads its manifest with \`swift package dump-package\` to decide how to build it and to find the products it exports.`,
         how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. ${RERUN_SPM_UPDATE}`,
       },
       { cause: error }
@@ -212,4 +204,9 @@ function prepareDirectWatchPaths(directPackages, outDir) {
   return [marker];
 }
 
-module.exports = { emitDirectPackage, prepareDirectWatchPaths, readDirectManifestFlag };
+module.exports = {
+  dependsOnCoreHeaders,
+  dumpModuleManifest,
+  emitDirectPackage,
+  prepareDirectWatchPaths,
+};

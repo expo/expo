@@ -87,7 +87,12 @@ const {
   resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const { emitDirectPackage, prepareDirectWatchPaths, readDirectManifestFlag } = require('./direct');
+const {
+  dependsOnCoreHeaders,
+  dumpModuleManifest,
+  emitDirectPackage,
+  prepareDirectWatchPaths,
+} = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -140,7 +145,6 @@ function podIdentity(record, pod, packageName, autolinkedRoot, readModuleRoot) {
     spmPackages: record?.spmPackages ?? [],
     autolinkWhen: record?.autolinkWhen ?? null,
     sources: readModuleRoot.sources(moduleRoot),
-    directManifest: readModuleRoot.directManifest(moduleRoot),
     podspec: readPodspecFacts({ podName: pod.podName, podspecDir: pod.podspecDir, moduleRoot }),
   };
 }
@@ -148,8 +152,8 @@ function podIdentity(record, pod, packageName, autolinkedRoot, readModuleRoot) {
 /** `read`, run at most once per module root: several pods can share one. */
 function oncePerModuleRoot(read) {
   const results = new Map();
-  return (moduleRoot) => {
-    if (!results.has(moduleRoot)) results.set(moduleRoot, read(moduleRoot));
+  return (moduleRoot, ...rest) => {
+    if (!results.has(moduleRoot)) results.set(moduleRoot, read(moduleRoot, ...rest));
     return results.get(moduleRoot);
   };
 }
@@ -160,10 +164,7 @@ function oncePerModuleRoot(read) {
  * @param metadata `readPrebuiltMetadata()`: records by pod name.
  */
 function resolvePodIdentities(modules, metadata, autolinkedRoots) {
-  const readModuleRoot = {
-    sources: oncePerModuleRoot(scanAppleSources),
-    directManifest: oncePerModuleRoot(readDirectManifestFlag),
-  };
+  const readModuleRoot = { sources: oncePerModuleRoot(scanAppleSources) };
   const identities = new Map();
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
@@ -374,19 +375,45 @@ function buildPhaseJsiRoot(appRoot) {
 }
 
 /**
+ * Whether the app's `buildFromSource` autolinking option names a pod, matched as CocoaPods
+ * matches it in `precompiled_modules.rb#build_from_source?`: each entry is a regular
+ * expression that must match the whole pod name or npm package name.
+ */
+function buildFromSourceMatcher(patterns) {
+  const expressions = patterns.map((pattern) => {
+    try {
+      return new RegExp(`^${pattern}$`);
+    } catch (error) {
+      throw pluginError(
+        {
+          what: `The buildFromSource entry "${pattern}" in your app's Expo autolinking options is not a valid regular expression: ${error.message}.`,
+          why: 'Each entry is matched as a regular expression against the pod name and the npm package name of every module, to choose the modules built from source instead of linked precompiled.',
+          how: `Fix the entry in \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json. ${RERUN_SPM_UPDATE}`,
+        },
+        { cause: error }
+      );
+    }
+  });
+  return ({ podName, packageName }) =>
+    expressions.some((expression) => expression.test(podName) || expression.test(packageName));
+}
+
+/**
  * Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
  * once one flavor exists, the resolver requires and prepares both before RN
  * receives the plugin result. No runtime binary enters the SwiftPM graph.
  * A pod name several packages list is looked up from each of them, in order,
- * until one has an artifact. A direct module's checked-in manifest outranks its
- * artifact. Returns the records it linked, in that order.
+ * until one has an artifact. A pod the app builds from source is never linked
+ * precompiled. Returns the records it linked, in that order.
+ *
+ * @param buildsFromSource `buildFromSourceMatcher`'s result.
  */
-function linkPrecompiledPods(identities, records, cacheDir) {
+function linkPrecompiledPods(identities, records, cacheDir, buildsFromSource) {
   const linked = [];
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
     if (record.linkedAs != null) continue;
-    if (identity.directManifest) continue;
+    if (buildsFromSource(identity)) continue;
     const framework = resolveFlavoredFramework({
       packageName: identity.packageName,
       moduleRoot: identity.moduleRoot,
@@ -474,34 +501,34 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
 }
 
 /**
- * Emits the source package of the module whose first pod is `identity`: its
- * checked-in manifest mirrored, or else one Swift target over its sources. A
+ * Emits the source package of the module whose first pod is `identity`: its checked-in
+ * manifest as it stands when that depends on ExpoModulesCoreHeaders (`direct` is then
+ * set), else that manifest mirrored, or else one Swift target over its sources. A
  * pure-Swift module is refused when its podspec declares linkage, because the
  * emitted package would link less than the podspec does. Returns null for a module
  * with no sources: the pod's own `no-apple-sources` report covers it.
+ *
+ * @param dumpManifest `dumpModuleManifest`, run at most once per module root.
  */
-function emitSourceModule(identity, hasManifest, emitContext) {
-  const {
-    moduleRoot,
-    packageName,
-    podName,
-    iosDeploymentTarget,
-    spmPackages,
-    sources,
-    podspec,
-    directManifest,
-  } = identity;
-  if (hasManifest && directManifest) {
-    return emitDirectPackage({
+function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
+  const { moduleRoot, packageName, podName, iosDeploymentTarget, spmPackages, sources, podspec } =
+    identity;
+  if (hasManifest) {
+    const { json, manifest } = dumpManifest(moduleRoot, packageName);
+    if (!dependsOnCoreHeaders(manifest)) {
+      return emitSourceManifestPackage(moduleRoot, emitContext, json);
+    }
+    const emission = emitDirectPackage({
       moduleRoot,
       packageName,
       outDir: emitContext.outDir,
       coreHeadersXCFramework: emitContext.coreHeadersXCFramework,
       jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
       macroTool: emitContext.macroTool,
+      manifest,
     });
+    return { ...emission, direct: true };
   }
-  if (hasManifest) return emitSourceManifestPackage(moduleRoot, emitContext);
   if (podspec.linkage != null) {
     return { refusal: { reason: 'needs-manifest-for-linkage', ...podspec.linkage } };
   }
@@ -517,8 +544,9 @@ function emitSourceModule(identity, hasManifest, emitContext) {
  * headers/module-interface tree and leave runtime linking entirely to RN.
  *
  * @param emitContext what every emitted package is generated against.
- * @returns `emitted`, one `{ identity, linkedAs, emission }` per package it emitted, in
- *   emission order, `identity` being the pod it was emitted for; and `refusals`, by
+ * @returns `emitted`, one `{ identity, linkedAs, direct, emission }` per package it emitted,
+ *   in emission order, `identity` being the pod it was emitted for and `direct` whether a
+ *   checked-in manifest is built as it stands; and `refusals`, by
  *   module root and then reason, each a function from an uncovered pod's identity to
  *   its refusal.
  */
@@ -532,6 +560,7 @@ function linkSourceModules(modules, identities, records, emitContext) {
     refusals.set(root, (refusals.get(root) ?? new Map()).set(reason, refusalFor));
   const linkedAs = (identity) => records.get(identity.podName).linkedAs;
   const manifestProductsByRoot = new Map();
+  const dumpManifest = oncePerModuleRoot(dumpModuleManifest);
   for (const mod of modules) {
     const pods = (mod.pods ?? []).map((pod) => identities.get(pod));
     if (!pods.length || pods.every(linkedAs)) continue;
@@ -569,15 +598,15 @@ function linkSourceModules(modules, identities, records, emitContext) {
       // emitSourceModule for the podspec linkage check that outranks it.
       if (!hasManifest && !sources.pureSwift) continue;
 
-      const emission = emitSourceModule(first, hasManifest, emitContext);
+      const emission = emitSourceModule(first, hasManifest, emitContext, dumpManifest);
       if (emission == null) continue;
-      const { refusal, ok } = emission;
+      const { refusal, ok, direct = false } = emission;
       if (refusal != null) {
         refuse(moduleRoot, refusal.reason, () => refusal);
         continue;
       }
       const kind = hasManifest ? 'manifest' : 'pure-swift';
-      emitted.push({ identity: first, linkedAs: kind, emission: ok });
+      emitted.push({ identity: first, linkedAs: kind, direct, emission: ok });
       if (!hasManifest) {
         Object.assign(records.get(first.podName), { identity: first, linkedAs: kind });
         continue;
@@ -715,7 +744,7 @@ function summarizeRecords(
     xcconfigLinkage,
     precompiledPods: podNames(precompiled),
     manifestPackages: packageNames(fromManifests),
-    directManifestPackages: packageNames(fromManifests.filter((r) => r.identity.directManifest)),
+    directPackages: packageNames(fromManifests.filter((r) => r.direct)),
     pureSwiftPods: podNames(pureSwift),
     reactWiredPods: podNames(reactWired),
   };
@@ -801,7 +830,8 @@ module.exports = function expoSpmPlugin(context) {
   // us that root directly.
   const appRoot = context.projectRoot;
   configureSpmUpdateCommand({ appRoot, reactNativeRoot: appReactNativeRoot(context, appRoot) });
-  const { modules, extraDependencies } = resolveExpoModules(appRoot);
+  const { modules, extraDependencies, buildFromSource = [] } = resolveExpoModules(appRoot);
+  const buildsFromSource = buildFromSourceMatcher(buildFromSource);
   const metadata = readPrebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
   const identities = resolvePodIdentities(modules, metadata, autolinkedRoots);
@@ -840,7 +870,7 @@ module.exports = function expoSpmPlugin(context) {
 
   const records = podRecords(identities);
   const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir, appRoot);
-  const precompiled = linkPrecompiledPods(identities, records, artifactCacheDir);
+  const precompiled = linkPrecompiledPods(identities, records, artifactCacheDir, buildsFromSource);
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is
   // built, so source modules compile against their headers too.
@@ -929,7 +959,7 @@ module.exports = function expoSpmPlugin(context) {
   logListed('built by an app build phase', jsiHeadersPkgPath != null ? [JSI_POD] : []);
   logListed('paired runtime frameworks', summary.precompiledPods);
   logListed('source via checked-in manifest', summary.manifestPackages);
-  logListed('source via direct checked-in manifest', summary.directManifestPackages);
+  logListed('source via direct checked-in manifest', summary.directPackages);
   logListed('source pure-Swift', summary.pureSwiftPods);
   logListed('React wired into', summary.reactWiredPods);
   logListed('gated off', summary.gatedOffProducts);
@@ -1029,7 +1059,7 @@ module.exports = function expoSpmPlugin(context) {
     );
   }
 
-  const directWatchPaths = prepareDirectWatchPaths(summary.directManifestPackages, outDir);
+  const directWatchPaths = prepareDirectWatchPaths(summary.directPackages, outDir);
   return {
     packageDependencies: summary.packageDependencies,
     productDependencies: summary.productDependencies,

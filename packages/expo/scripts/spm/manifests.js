@@ -974,10 +974,16 @@ let package = Package(
  * depends on a target or declares a Swift package the generated package cannot
  * declare, or a target's sources cannot be located — the module is then skipped and
  * diagnosed rather than emitted broken.
+ *
+ * @param dumpedJson the manifest's `swift package dump-package` output, when already read.
  */
-function emitSourceManifestPackage(moduleRoot, emitContext) {
+function emitSourceManifestPackage(
+  moduleRoot,
+  emitContext,
+  dumpedJson = runDumpPackage(moduleRoot)
+) {
   const { unsupportedTargetDeps, unsupportedPackageDeps, ...dumped } = parseDumpedManifest(
-    runDumpPackage(moduleRoot),
+    dumpedJson,
     injectedPackageNames(emitContext.react)
   );
   if (unsupportedTargetDeps.length) {

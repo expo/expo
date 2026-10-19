@@ -11,8 +11,114 @@ jest.mock('../cli', () => ({
 }));
 
 const { runDumpPackage } = require('../cli');
-const { emitDirectPackage, prepareDirectWatchPaths } = require('../direct');
+const {
+  dependsOnCoreHeaders,
+  dumpModuleManifest,
+  emitDirectPackage,
+  prepareDirectWatchPaths,
+} = require('../direct');
 const { rerunSpmUpdate, thrownBy } = require('./helpers');
+
+const hapticsManifest = {
+  name: 'expo-haptics',
+  products: [{ name: 'ExpoHaptics' }, { name: 'ExpoHapticsExtras' }],
+};
+
+/** A dumped manifest whose one target depends on `dependencies`. */
+const manifestDependingOn = (...dependencies) => ({
+  name: 'expo-haptics',
+  products: [{ name: 'ExpoHaptics' }],
+  targets: [{ name: 'ExpoHaptics', type: 'regular', dependencies }],
+});
+
+describe('dependsOnCoreHeaders', () => {
+  // Verbatim shape from `swift package dump-package` (Swift 6.4) of a manifest with
+  // `.product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")`.
+  const coreHeadersProduct = {
+    product: ['ExpoModulesCoreHeaders', 'ExpoModulesCoreHeaders', null, null],
+  };
+
+  it('is true when a target depends on the ExpoModulesCoreHeaders product', () => {
+    expect(
+      dependsOnCoreHeaders({
+        ...manifestDependingOn(),
+        targets: [
+          { name: 'ExpoHapticsObjC', type: 'regular', dependencies: [] },
+          { name: 'ExpoHaptics', type: 'regular', dependencies: [coreHeadersProduct] },
+        ],
+      })
+    ).toBe(true);
+  });
+
+  it.each([
+    ['no target dependencies', manifestDependingOn()],
+    [
+      'another product',
+      manifestDependingOn({ product: ['ExpoModulesCore', 'ExpoModulesCore', null, null] }),
+    ],
+    ['a target of that name', manifestDependingOn({ target: ['ExpoModulesCoreHeaders', null] })],
+    [
+      'only a package dependency',
+      {
+        ...manifestDependingOn(),
+        dependencies: [{ fileSystem: [{ identity: 'expomodulescoreheaders' }] }],
+      },
+    ],
+    ['no targets', { name: 'expo-haptics', products: [] }],
+  ])('is false for a manifest with %s', (_, manifest) => {
+    expect(dependsOnCoreHeaders(manifest)).toBe(false);
+  });
+});
+
+describe('dumpModuleManifest', () => {
+  const moduleRoot = path.join(os.tmpdir(), 'expo-haptics');
+  const dump = () => dumpModuleManifest(moduleRoot, 'expo-haptics');
+
+  it('returns the JSON the tool printed and its parse', () => {
+    const json = JSON.stringify(hapticsManifest);
+    runDumpPackage.mockReturnValueOnce(json);
+    expect(dump()).toEqual({ json, manifest: hapticsManifest });
+    expect(runDumpPackage).toHaveBeenLastCalledWith(moduleRoot);
+  });
+
+  describe('when the Package.swift cannot be evaluated', () => {
+    const failWith = (error) =>
+      runDumpPackage.mockImplementationOnce(() => {
+        throw error;
+      });
+
+    it('names the package, the first line the tool printed, and how to fix it', () => {
+      const error = Object.assign(new Error('Command failed: swift package dump-package'), {
+        status: 1,
+        stderr: '\nerror: Invalid manifest\nPackage.swift:3:1: error: expected expression\n',
+      });
+      failWith(error);
+      const thrown = thrownBy(dump);
+      expect(thrown.message).toContain(
+        "expo-haptics's Package.swift could not be evaluated: error: Invalid manifest."
+      );
+      expect(thrown.message).toContain('`swift package dump-package`');
+      expect(thrown.message).toContain(moduleRoot);
+      expect(thrown.message).toContain('xcode-select');
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(thrown.cause).toBe(error);
+    });
+
+    it('says the swift command was not found when it is missing', () => {
+      failWith(Object.assign(new Error('spawnSync swift ENOENT'), { code: 'ENOENT' }));
+      expect(thrownBy(dump).message).toContain(
+        "expo-haptics's Package.swift could not be evaluated: the swift command was not found."
+      );
+    });
+
+    it('says what the tool printed is not a manifest', () => {
+      runDumpPackage.mockReturnValueOnce('warning: not JSON');
+      const thrown = thrownBy(dump);
+      expect(thrown.message).toContain("expo-haptics's Package.swift could not be evaluated:");
+      expect(thrown.cause).toBeInstanceOf(SyntaxError);
+    });
+  });
+});
 
 describe('emitDirectPackage', () => {
   const savedBuildDir = process.env.BUILD_DIR;
@@ -30,6 +136,7 @@ describe('emitDirectPackage', () => {
       coreHeadersXCFramework,
       jsiHeadersPkgPath,
       macroTool: path.join(root, 'ExpoModulesMacros'),
+      manifest: hapticsManifest,
     });
   const manifest = () => fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8');
 
@@ -136,48 +243,25 @@ describe('emitDirectPackage', () => {
       coreHeadersXCFramework,
       jsiHeadersPkgPath,
       macroTool: path.join(root, 'ExpoModulesMacros'),
+      manifest: hapticsManifest,
     });
     const link = path.join(outDir, 'direct', '@acme', 'widgets');
     expect(ok.packageDep.path).toBe(link);
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
   });
 
-  describe('when its Package.swift cannot be evaluated', () => {
-    const failWith = (error) =>
-      runDumpPackage.mockImplementationOnce(() => {
-        throw error;
-      });
-
-    it('names the package, the first line the tool printed, and how to fix it', () => {
-      const error = Object.assign(new Error('Command failed: swift package dump-package'), {
-        status: 1,
-        stderr: '\nerror: Invalid manifest\nPackage.swift:3:1: error: expected expression\n',
-      });
-      failWith(error);
-      const thrown = thrownBy(emit);
-      expect(thrown.message).toContain(
-        "expo-haptics's Package.swift could not be evaluated: error: Invalid manifest."
-      );
-      expect(thrown.message).toContain('`swift package dump-package`');
-      expect(thrown.message).toContain(path.join(root, 'expo-haptics'));
-      expect(thrown.message).toContain('xcode-select');
-      expect(thrown.message).toContain(rerunSpmUpdate);
-      expect(thrown.cause).toBe(error);
+  it('links the products of the manifest it is given, without dumping it again', () => {
+    runDumpPackage.mockClear();
+    const { ok } = emit();
+    expect(runDumpPackage).not.toHaveBeenCalled();
+    expect(ok.packageDep).toEqual({
+      name: 'expo-haptics',
+      path: path.join(outDir, 'direct', 'expo-haptics'),
     });
-
-    it('says the swift command was not found when it is missing', () => {
-      failWith(Object.assign(new Error('spawnSync swift ENOENT'), { code: 'ENOENT' }));
-      expect(thrownBy(emit).message).toContain(
-        "expo-haptics's Package.swift could not be evaluated: the swift command was not found."
-      );
-    });
-
-    it('says what the tool printed is not a manifest', () => {
-      runDumpPackage.mockReturnValueOnce('warning: not JSON');
-      const thrown = thrownBy(emit);
-      expect(thrown.message).toContain("expo-haptics's Package.swift could not be evaluated:");
-      expect(thrown.cause).toBeInstanceOf(SyntaxError);
-    });
+    expect(ok.productDeps).toEqual([
+      { name: 'ExpoHaptics', package: 'expo-haptics' },
+      { name: 'ExpoHapticsExtras', package: 'expo-haptics' },
+    ]);
   });
 
   it('changes no file in the package when emitted again with the same inputs', () => {
