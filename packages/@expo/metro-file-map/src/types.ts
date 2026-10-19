@@ -361,6 +361,13 @@ export interface FileSystem {
    */
   lookup(mixedPath: Path): LookupResult;
 
+  /**
+   * Optional optimization for repeated lookups of direct children. Resolve
+   * `mixedPath` following symlinks; return null if it is missing or not a directory.
+   * The handle must not be reused after filesystem mutations.
+   */
+  openDir?: (mixedPath: Path) => OpenedDir | null;
+
   matchFiles(opts: {
     /* Filter relative paths against a pattern. */
     filter?: RegExp | null | undefined;
@@ -378,6 +385,15 @@ export interface FileSystem {
 }
 
 export type JsonData = string | number | boolean | null | JsonData[] | { [key: string]: JsonData };
+
+/**
+ * A resolved directory, valid only while the filesystem is unchanged.
+ * Child results include the links traversed to reach this directory.
+ */
+export interface OpenedDir {
+  realPath: string;
+  lookup(basename: string): LookupResult;
+}
 
 export type LookupResult =
   | {

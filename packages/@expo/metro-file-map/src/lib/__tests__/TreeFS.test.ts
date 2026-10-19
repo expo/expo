@@ -135,6 +135,83 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     });
   });
 
+  describe('openDir', () => {
+    test.each([
+      p('/project/bar.js'),
+      p('/project/foo/another.js'),
+      p('/project/foo/link-to-bar.js'),
+      p('/project/foo/link-to-another.js'),
+      p('/project/link-to-foo/another.js'),
+      p('/project/link-to-foo/link-to-another.js'),
+      p('/project/link-to-foo/missing.js'),
+      p('/project/foo/missing.js'),
+      p('/outside/external.js'),
+      p('/project'),
+      p('/project/root/project'),
+    ])('lookup(%s) matches openDir(dirname).lookup(basename)', (fullPath) => {
+      const opened = tfs.openDir(mockPathModule.dirname(fullPath));
+      expect(opened).not.toBeNull();
+      expect(opened!.lookup(mockPathModule.basename(fullPath))).toEqual(tfs.lookup(fullPath));
+    });
+
+    test.each(['', '.', '..', p('foo/another.js')])(
+      'an empty directory path preserves lookup(%s)',
+      (basename) => {
+        expect(tfs.openDir('')?.lookup(basename)).toEqual(tfs.lookup(basename));
+      }
+    );
+
+    test('a symlink directory opens the target and keeps its links', () => {
+      const opened = tfs.openDir(p('/project/link-to-foo'));
+      expect(opened?.realPath).toBe(p('/project/foo'));
+      expect(opened?.lookup('another.js')).toEqual(
+        tfs.lookup(p('/project/link-to-foo/another.js'))
+      );
+      expect(opened?.lookup('..')).toEqual(tfs.lookup(p('/project/link-to-foo/..')));
+    });
+
+    test('openDir is null for a file, a broken symlink, or a missing path', () => {
+      expect(tfs.openDir(p('/project/bar.js'))).toBeNull();
+      expect(tfs.openDir(p('/project/link-to-nowhere'))).toBeNull();
+      expect(tfs.openDir(p('/project/not/exists'))).toBeNull();
+    });
+
+    test('an opened symlink retains filesystem fallback outside the boundary', () => {
+      const mockFallback = {
+        lookup: jest.fn(() => [0, 0, 0, null, 0, null] as FileMetadata),
+        readdir: jest.fn(
+          () => new Map<string, FileMetadata>([['new.js', [0, 0, 0, null, 0, null]]])
+        ),
+      };
+      const tree = new TreeFS({
+        rootDir: p('/project'),
+        serverRoot: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('linked'), [0, 0, 0, null, '../outside', null]],
+          [p('../outside/keep.js'), [0, 0, 0, null, 0, null]],
+        ]),
+        fallbackFilesystem: mockFallback,
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      const opened = tree.openDir(p('/project/linked'));
+      expect(opened?.lookup('new.js')).toMatchObject({
+        exists: true,
+        realPath: p('/outside/new.js'),
+        type: 'f',
+      });
+      expect(mockFallback.readdir).toHaveBeenCalled();
+      expect(opened?.lookup('new.js')).toEqual(tree.lookup(p('/project/linked/new.js')));
+    });
+
+    test('the project root checks basenames without another walk', () => {
+      const opened = tfs.openDir(p('/project'));
+      expect(opened?.lookup('bar.js')).toEqual(tfs.lookup(p('/project/bar.js')));
+      expect(opened?.lookup('nope.js')).toEqual(tfs.lookup(p('/project/nope.js')));
+    });
+  });
+
   describe('lookup', () => {
     test.each([
       [
