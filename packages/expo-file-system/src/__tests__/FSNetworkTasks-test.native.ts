@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 
+import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import ExpoFileSystem from '../ExpoFileSystem';
 import {
   File,
@@ -848,11 +849,19 @@ describe('DownloadTask background completion acknowledgment', () => {
 describe('DownloadTask response metadata with the supplied fake', () => {
   const url = 'https://example.com/download';
 
+  beforeEach(() => {
+    __resetMockFileSystem();
+  });
+
   it('retains a successful response after downloading through the public API', async () => {
-    const task = new DownloadTask(url, new File(Paths.cache, 'response.bin'));
+    const destination = new File(Paths.cache, 'response.bin');
+    const task = new DownloadTask(url, destination);
     try {
       expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
-      await task.downloadAsync();
+      const result = await task.downloadAsync();
+      expect(result?.uri).toBe(destination.uri);
+      expect(destination.exists).toBe(true);
+      expect(destination.textSync()).toBe(`mock:${url}`);
       expect(task.state).toBe('completed');
       expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
     } finally {
@@ -869,11 +878,44 @@ describe('DownloadTask response metadata with the supplied fake', () => {
     });
     try {
       expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
-      await task.resumeAsync();
+      const result = await task.resumeAsync();
+      const destination = new File(Paths.cache, 'resumed-response.bin');
+      expect(result?.uri).toBe(destination.uri);
+      expect(destination.exists).toBe(true);
+      expect(destination.textSync()).toBe(`mock:${url}`);
       expect(task.state).toBe('completed');
       expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
     } finally {
       task.release();
+    }
+  });
+
+  it.each([
+    ['https://example.com/files/bundle.sqlite?version=1#section', 'bundle.sqlite'],
+    ['https://example.com/', 'download'],
+  ])('uses the URL filename within a directory for %s', async (sourceUrl, filename) => {
+    const directory = new Directory(Paths.cache, 'downloads');
+    const destination = new File(directory, filename);
+    const task = new DownloadTask(sourceUrl, directory);
+    const resumed = DownloadTask.fromSavable({
+      url: sourceUrl,
+      fileUri: directory.uri,
+      isDirectory: true,
+      resumeData: 'mock-resume-data',
+    });
+    try {
+      const result = await task.downloadAsync();
+      expect(result?.uri).toBe(destination.uri);
+      expect(directory.exists).toBe(true);
+      expect(destination.textSync()).toBe(`mock:${sourceUrl}`);
+      destination.delete();
+      const resumedResult = await resumed.resumeAsync();
+      expect(resumedResult?.uri).toBe(destination.uri);
+      expect(directory.list().map((file) => file.uri)).toEqual([destination.uri]);
+      expect(destination.textSync()).toBe(`mock:${sourceUrl}`);
+    } finally {
+      task.release();
+      resumed.release();
     }
   });
 
