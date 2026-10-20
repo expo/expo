@@ -29,6 +29,10 @@ jest.mock('react-native-drawer-layout', () => {
 
 afterEach(() => jest.restoreAllMocks());
 
+function Capability() {
+  return <Text testID="can-go-back">{String(useCanGoBack())}</Text>;
+}
+
 describe('Tabs', () => {
   it.each([
     { anchor: undefined, backBehavior: 'none' },
@@ -428,10 +432,6 @@ describe('HeadlessTabs', () => {
     expect(router.canGoBack()).toBe(true);
   });
 });
-
-function Capability() {
-  return <Text testID="can-go-back">{String(useCanGoBack())}</Text>;
-}
 
 it('reads the current stack during render', async () => {
   const { result } = await renderHook(() => useCanGoBack(), ['index', 'second']);
