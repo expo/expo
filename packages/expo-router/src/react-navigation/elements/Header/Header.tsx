@@ -375,6 +375,9 @@ export function Header(props: Props) {
               {rightButton}
               {headerSearchBarOptions ? (
                 <HeaderButton
+                  accessibilityLabel={
+                    headerSearchBarOptions.openButtonAccessibilityLabel ?? 'Search'
+                  }
                   tintColor={iconTintColor}
                   pressColor={headerPressColor}
                   pressOpacity={headerPressOpacity}
