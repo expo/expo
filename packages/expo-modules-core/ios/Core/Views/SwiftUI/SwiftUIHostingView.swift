@@ -269,11 +269,7 @@ extension ExpoSwiftUI {
     }
 
     #if os(iOS) || os(tvOS)
-    /**
-     UIKit forwards appearance to a child added while its parent appears. If the parent already appeared and a
-     transition still runs, which react-native-screens does in a modal's nested stack, the child never appears,
-     and UIKit never gives it a safe area. https://github.com/expo/expo/issues/51288
-     */
+    // A child added during a transition after its parent appeared never appears, so it gets no safe area (#51288).
     private func forwardAppearanceIfMissed(parentController: UIViewController) {
       guard
         parentController.transitionCoordinator != nil,
