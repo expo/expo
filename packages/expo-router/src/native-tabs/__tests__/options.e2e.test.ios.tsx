@@ -167,6 +167,102 @@ describe('disabled', () => {
   });
 });
 
+describe('search role', () => {
+  it('forwards role="search" as an iOS search tab and activates search by default', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: true,
+    });
+  });
+
+  it('forwards a non-search role only as systemItem', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="favorites" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    const ios = TabsScreen.mock.calls.at(-1)![0].ios;
+    expect(ios?.systemItem).toBe('favorites');
+    expect(ios?.role).toBeUndefined();
+    expect(ios?.automaticallyActivatesSearch).toBeUndefined();
+  });
+
+  it('forwards automaticallyActivatesSearch={false} for a search tab', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" automaticallyActivatesSearch={false} />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+
+  it('lets unstable_nativeProps.ios override search activation', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger
+            name="index"
+            role="search"
+            unstable_nativeProps={{ ios: { automaticallyActivatesSearch: false } }}
+          />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+
+  it('updates automaticallyActivatesSearch from a screen trigger', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger automaticallyActivatesSearch={false} />
+        </View>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios?.automaticallyActivatesSearch).toBe(false);
+    expect(TabsScreen.mock.calls.at(-1)![0].ios?.role).toBe('search');
+  });
+});
+
 describe('testID and accessibilityLabel', () => {
   it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', async () => {
     await renderRouter({

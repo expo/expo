@@ -93,6 +93,7 @@ export function convertTabPropsToOptions(
     hidden,
     children,
     role,
+    automaticallyActivatesSearch,
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
@@ -122,6 +123,7 @@ export function convertTabPropsToOptions(
         ...(accessibilityLabel !== undefined
           ? { tabBarItemAccessibilityLabel: accessibilityLabel }
           : {}),
+        ...(automaticallyActivatesSearch !== undefined ? { automaticallyActivatesSearch } : {}),
       }
     : {
         hidden: !!hidden,
@@ -133,6 +135,7 @@ export function convertTabPropsToOptions(
         },
         contentStyle,
         role,
+        ...(automaticallyActivatesSearch !== undefined ? { automaticallyActivatesSearch } : {}),
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),

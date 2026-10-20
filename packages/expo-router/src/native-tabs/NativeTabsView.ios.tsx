@@ -152,6 +152,19 @@ function Screen(props: InternalTabScreenProps) {
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
+  // `ios.role` accepts only `search`. Other roles stay on `systemItem`, which supplies the
+  // system icon and title. iOS 27 detaches a search tab only while search activation is enabled,
+  // so `role="search"` defaults that flag on and keeps the separate search tab.
+  const searchRoleProps =
+    options.role === 'search'
+      ? {
+          role: options.role,
+          automaticallyActivatesSearch: options.automaticallyActivatesSearch ?? true,
+        }
+      : options.automaticallyActivatesSearch !== undefined
+        ? { automaticallyActivatesSearch: options.automaticallyActivatesSearch }
+        : undefined;
+
   return (
     <TabsScreen
       {...shared.options}
@@ -162,6 +175,7 @@ function Screen(props: InternalTabScreenProps) {
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
+        ...searchRoleProps,
         overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
         ...shared.nativeIosOverrides,
       }}

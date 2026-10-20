@@ -86,6 +86,10 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   role?: NativeTabsTabBarItemRole;
   /**
+   * @platform iOS
+   */
+  automaticallyActivatesSearch?: boolean;
+  /**
    * @platform android
    * @platform iOS
    */
@@ -691,10 +695,27 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
+   * The `"search"` role is also the system search tab.
+   * On iOS 26 and later it is shown separately from the other tabs.
+   * On iOS 27, that separate placement is shown while `automaticallyActivatesSearch` is enabled.
+   *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * Controls whether selecting this tab activates its search field.
+   *
+   * This prop applies when `role` is `"search"` and the screen has a header search bar.
+   * Selecting the tab focuses the search field.
+   * Dismissing the search returns to the previously selected tab.
+   *
+   * When `role` is `"search"` and this prop is omitted, search activation is enabled.
+   * On iOS 27, the separate search tab is shown only while search activation is enabled.
+   *
+   * @platform ios
+   */
+  automaticallyActivatesSearch?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *
