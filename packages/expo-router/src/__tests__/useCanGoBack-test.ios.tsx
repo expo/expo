@@ -41,10 +41,9 @@ describe('Tabs', () => {
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // A layout warns once per test file, so each case uses its own layout.
       await renderRouter(
         {
-          [`(tabs-${backBehavior})/_layout`]: {
+          _layout: {
             unstable_settings: { anchor },
             default: () => (
               <Tabs backBehavior={backBehavior}>
@@ -53,13 +52,13 @@ describe('Tabs', () => {
               </Tabs>
             ),
           },
-          [`(tabs-${backBehavior})/index`]: () => <Text>Index</Text>,
-          [`(tabs-${backBehavior})/second`]: () => <Text>Second</Text>,
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
       expect(warn).not.toHaveBeenCalledWith(
-        `Layout "./(tabs-${backBehavior})/_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+        'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, ' +
           'so `useCanGoBack()` can return `true` on the first render. ' +
           'Remove the anchor or use a different `backBehavior`.'
       );
@@ -122,10 +121,9 @@ describe('Drawer', () => {
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // A layout warns once per test file, so each case uses its own layout.
       await renderRouter(
         {
-          [`(drawer-${backBehavior})/_layout`]: {
+          _layout: {
             unstable_settings: { anchor },
             default: () => (
               <Drawer backBehavior={backBehavior}>
@@ -134,13 +132,13 @@ describe('Drawer', () => {
               </Drawer>
             ),
           },
-          [`(drawer-${backBehavior})/index`]: () => <Text>Index</Text>,
-          [`(drawer-${backBehavior})/second`]: () => <Text>Second</Text>,
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
       expect(warn).not.toHaveBeenCalledWith(
-        `Layout "./(drawer-${backBehavior})/_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+        'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, ' +
           'so `useCanGoBack()` can return `true` on the first render. ' +
           'Remove the anchor or use a different `backBehavior`.'
       );
@@ -203,10 +201,9 @@ describe('NativeTabs', () => {
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // A layout warns once per test file, so each case uses its own layout.
       await renderRouter(
         {
-          [`(native-tabs-${backBehavior})/_layout`]: {
+          _layout: {
             unstable_settings: { anchor },
             default: () => (
               <NativeTabs backBehavior={backBehavior}>
@@ -215,13 +212,13 @@ describe('NativeTabs', () => {
               </NativeTabs>
             ),
           },
-          [`(native-tabs-${backBehavior})/index`]: () => <Text>Index</Text>,
-          [`(native-tabs-${backBehavior})/second`]: () => <Text>Second</Text>,
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
       expect(warn).not.toHaveBeenCalledWith(
-        `Layout "./(native-tabs-${backBehavior})/_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+        'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, ' +
           'so `useCanGoBack()` can return `true` on the first render. ' +
           'Remove the anchor or use a different `backBehavior`.'
       );
@@ -285,10 +282,9 @@ describe('TopTabs', () => {
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // A layout warns once per test file, so each case uses its own layout.
       await renderRouter(
         {
-          [`(top-tabs-${backBehavior})/_layout`]: {
+          _layout: {
             unstable_settings: { anchor },
             default: () => (
               <TopTabs backBehavior={backBehavior}>
@@ -297,13 +293,13 @@ describe('TopTabs', () => {
               </TopTabs>
             ),
           },
-          [`(top-tabs-${backBehavior})/index`]: () => <Text>Index</Text>,
-          [`(top-tabs-${backBehavior})/second`]: () => <Text>Second</Text>,
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
       expect(warn).not.toHaveBeenCalledWith(
-        `Layout "./(top-tabs-${backBehavior})/_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+        'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, ' +
           'so `useCanGoBack()` can return `true` on the first render. ' +
           'Remove the anchor or use a different `backBehavior`.'
       );
@@ -366,10 +362,9 @@ describe('HeadlessTabs', () => {
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // A layout warns once per test file, so each case uses its own layout.
       await renderRouter(
         {
-          [`(headless-tabs-${backBehavior})/_layout`]: {
+          _layout: {
             unstable_settings: { anchor },
             default: () => (
               <HeadlessTabs options={{ backBehavior }}>
@@ -381,13 +376,13 @@ describe('HeadlessTabs', () => {
               </HeadlessTabs>
             ),
           },
-          [`(headless-tabs-${backBehavior})/index`]: () => <Text>Index</Text>,
-          [`(headless-tabs-${backBehavior})/second`]: () => <Text>Second</Text>,
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
       expect(warn).not.toHaveBeenCalledWith(
-        `Layout "./(headless-tabs-${backBehavior})/_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+        'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, ' +
           'so `useCanGoBack()` can return `true` on the first render. ' +
           'Remove the anchor or use a different `backBehavior`.'
       );
