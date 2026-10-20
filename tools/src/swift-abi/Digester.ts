@@ -24,6 +24,18 @@ export function isBreakingFinding(finding: DigesterFinding): boolean {
   return !finding.message.endsWith("is a new API without '@available'");
 }
 
+const REMOVAL_PATTERNS = [
+  / has been removed$/,
+  / has been renamed to /,
+  / has been moved to /,
+  / has mangled name changing from /,
+  / has removed conformance to /,
+];
+
+export function isRemovalFinding(finding: DigesterFinding): boolean {
+  return REMOVAL_PATTERNS.some((pattern) => pattern.test(finding.message));
+}
+
 export async function runDigesterAsync(baselinePath: string, currentPath: string): Promise<string> {
   const outputDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'swift-abi-'));
   const output = path.join(outputDir, 'report.txt');
