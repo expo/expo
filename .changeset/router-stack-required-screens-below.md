@@ -1,5 +1,5 @@
 ---
-"expo-router": patch
+"expo-router": minor
 ---
 
 Add the `unstable_requiredScreensBelow` prop to `Stack.Screen` to add screens below a screen when it is focused.

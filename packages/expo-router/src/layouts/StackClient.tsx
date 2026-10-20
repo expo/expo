@@ -1,6 +1,6 @@
 'use client';
 import type { ComponentProps } from 'react';
-import { Children, useMemo } from 'react';
+import { Children, useEffect, useMemo } from 'react';
 
 import {
   createStandardNativeStackNavigator,
@@ -39,6 +39,7 @@ import {
 import {
   processRequiredScreensDescriptors,
   processRequiredScreensState,
+  warnIfRequiredScreensCycle,
 } from './stack-utils/requiredScreensBelow';
 
 const RNStack = integrateWithRouter<
@@ -102,6 +103,7 @@ const Stack = Object.assign(
       () => mapProtectedScreen({ guard: true, children: props.children }).children,
       [props.children]
     );
+    useEffect(() => warnIfRequiredScreensCycle(props.children), [props.children]);
 
     return (
       <IsWithinNativeNavigator value>

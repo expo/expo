@@ -49,6 +49,7 @@ export type PlaceholderDescriptorMap<NavigatorOptions extends object = object> =
 
 export type DescribePlaceholderRoute<NavigatorOptions extends object = object> = (
   route: DescriptorRouteProp<ParamListBase, string>,
+  // `create` describes a keyed route that is not in the state yet. See `useDescriptors`.
   options?: { create?: boolean }
 ) => NonNullable<PlaceholderDescriptorMap<NavigatorOptions>[string]>;
 

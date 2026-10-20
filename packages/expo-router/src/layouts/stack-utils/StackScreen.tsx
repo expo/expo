@@ -1,7 +1,10 @@
 'use client';
 import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
-import { INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME } from '../../navigationParams';
+import {
+  INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME,
+  type InternalNavigationOptions,
+} from '../../navigationParams';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import type {
   NativeStackNavigationOptions,
@@ -68,6 +71,9 @@ export interface StackScreenProps extends PropsWithChildren {
   /**
    * Screens that must be below this screen in the stack. Missing screens are added directly below
    * it when it is focused.
+   *
+   * Each entry is a screen name from this navigator, such as `'[id]'`. It is not an href, such as
+   * `'/42'`.
    *
    * Only supported when used inside a Layout component.
    *
@@ -176,9 +182,7 @@ export function appendScreenStackPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackScreenProps
 ): NativeStackNavigationOptions {
-  let updatedOptions: NativeStackNavigationOptions & {
-    [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: StackScreenProps['unstable_requiredScreensBelow'];
-  } = {
+  let updatedOptions: NativeStackNavigationOptions & InternalNavigationOptions = {
     ...options,
     ...props.options,
   };

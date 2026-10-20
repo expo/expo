@@ -47,24 +47,31 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="[id]" />
       <Stack.Screen
         name="[id]/comments"
-        unstable_requiredScreensBelow={[{ name: 'index', params: { tab: 'all' } }, '[id]']}
+        unstable_requiredScreensBelow={[
+          'index',
+          { name: '[id]', params: { id: '1' } },
+        ]}
       />
     </Stack>
   );
 }
 ```
 
-When the user opens **/42/comments**, the stack contains `index`, `[id]` with `id` set to `42`, and `[id]/comments`.
+Each entry is a screen name from the same `Stack`, such as `'[id]'`. It is not an href, such as `'/1'`.
 
-- The stack adds a listed screen only when no lower route has the same name and the same path params.
+When the user opens **/42/comments**, the stack contains `index`, `[id]` with `id` set to `1`, and `[id]/comments` with `id` set to `42`.
+
+- The stack adds a listed screen only when no route at or below the focused screen has the same name and the same path params.
 - The stack adds the screens directly below the focused screen, in the listed order.
-- A screen listed by name gets the matching path params of the focused screen. A screen listed as an object uses its own `params`.
+- A screen listed by name gets the matching path params of the focused screen. A screen listed as an object uses only its own `params`. It does not get the path params of the focused screen.
 - The stack skips names that are not routes of the stack.
 - Screens that the stack already added stay when the prop changes or is removed.
-- Until the stack updates its state, `router.canGoBack()` returns the previous result.
-- On web, the added screens do not get browser history entries, so browser back from the focused screen skips them.
+- Right after the screen renders, before the stack adds the screens to the navigation state, `router.canGoBack()` returns the previous result.
+- On web, the stack adds the screens without new browser history entries. The header back button goes to the added screens. The browser back button skips them and goes to the page before the focused screen, which can be outside your app.
 
 The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.
 

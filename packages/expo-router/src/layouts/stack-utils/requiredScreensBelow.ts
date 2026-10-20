@@ -1,9 +1,12 @@
 'use client';
-import { use, useEffectEvent, useLayoutEffect } from 'react';
+import { Children, type ReactNode, use, useEffectEvent, useLayoutEffect } from 'react';
 
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { matchDynamicName } from '../../matchers';
-import { INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME } from '../../navigationParams';
+import {
+  INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME,
+  type InternalNavigationOptions,
+} from '../../navigationParams';
 import { NavigatorStateContext } from '../../react-navigation/core/useNavigationState';
 import type { NavigationState } from '../../react-navigation/routers';
 import { createRouteKeyMinter } from '../../react-navigation/routers/stateKeys';
@@ -12,8 +15,10 @@ import type {
   PlaceholderDescriptorMap,
 } from '../../standard-navigation/types';
 import type { UnknownInputParams } from '../../types';
+import { isChildOfType } from '../../utils/children';
 import { getSingularId } from '../../utils/getSingularId';
-import type { StackScreenProps } from './StackScreen';
+import { Protected } from '../../views/Protected';
+import { StackScreen, type StackScreenProps } from './StackScreen';
 
 type RequiredScreenBelow = NonNullable<StackScreenProps['unstable_requiredScreensBelow']>[number];
 
@@ -32,31 +37,14 @@ export function insertRequiredScreensBelow<State extends NavigationState>(
   state: State,
   screens: readonly RequiredScreenBelow[] | undefined
 ): State {
-  const focused = state.routes[state.index];
-  if (!focused || !screens?.length) {
+  if (!state.routes[state.index] || !screens?.length) {
     return state;
   }
-  const activeRoutes = state.routes.slice(0, state.index + 1);
   const minter = createRouteKeyMinter(state);
-  const added: State['routes'][number][] = [];
-  for (const screen of screens) {
-    const { name, params } =
-      typeof screen === 'string'
-        ? { name: screen, params: getPathParams(screen, focused.params) }
-        : screen;
-    const id = getSingularId(name, { params });
-    const isPresent = [...activeRoutes, ...added].some(
-      (route) => route.name === name && getSingularId(name, { params: route.params }) === id
-    );
-    if (!isPresent && state.routeNames.includes(name)) {
-      // A new route has the base route shape that every navigator state accepts.
-      added.push({
-        key: minter.mint(name),
-        name,
-        ...(params && { params }),
-      } as (typeof added)[number]);
-    }
-  }
+  const added = screens.reduce<State['routes'][number][]>((routes, screen) => {
+    const route = createMissingRoute(state, screen, routes, minter);
+    return route ? [...routes, route] : routes;
+  }, []);
   if (added.length === 0) {
     return state;
   }
@@ -66,6 +54,31 @@ export function insertRequiredScreensBelow<State extends NavigationState>(
     routeKeySeq: minter.routeKeySeq,
     routes: state.routes.toSpliced(state.index, 0, ...added),
   };
+}
+
+/**
+ * Returns a new route for `screen`. Returns `undefined` when the stack has no such screen, or when
+ * it already has a matching route at or below the focused one.
+ */
+function createMissingRoute<State extends NavigationState>(
+  state: State,
+  screen: RequiredScreenBelow,
+  added: readonly State['routes'][number][],
+  minter: ReturnType<typeof createRouteKeyMinter>
+): State['routes'][number] | undefined {
+  const { name, params } =
+    typeof screen === 'string'
+      ? { name: screen, params: getPathParams(screen, state.routes[state.index]?.params) }
+      : screen;
+  const id = getSingularId(name, { params });
+  const isPresent = [...state.routes.slice(0, state.index + 1), ...added].some(
+    (route) => route.name === name && getSingularId(name, { params: route.params }) === id
+  );
+  if (isPresent || !state.routeNames.includes(name)) {
+    return undefined;
+  }
+  // A new route has the base route shape that every navigator state accepts.
+  return { key: minter.mint(name), name, ...(params && { params }) } as State['routes'][number];
 }
 
 /** Copies the focused route params that fill the dynamic segments of `name`. */
@@ -87,9 +100,7 @@ function getFocusedRequiredScreens(
   const focusedKey = state.routes[state.index]?.key;
   // The stack screen props add this internal option; it is not in the public option types.
   const options = focusedKey
-    ? (descriptors[focusedKey]?.options as
-        | { [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: RequiredScreenBelow[] }
-        | undefined)
+    ? (descriptors[focusedKey]?.options as InternalNavigationOptions | undefined)
     : undefined;
   return options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
 }
@@ -155,4 +166,60 @@ export function useSyncRequiredScreensBelow(descriptors: PlaceholderDescriptorMa
       sync();
     }
   }, [nextRouteKeys]);
+}
+
+// Warn once per cycle, so layout re-renders do not repeat the warning.
+const warnedCycles = new Set<string>();
+
+/** Warns in development when the `unstable_requiredScreensBelow` props of `children` form a cycle. */
+export function warnIfRequiredScreensCycle(children: ReactNode) {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+  const required = new Map<string, string[]>();
+  const collect = (nodes: ReactNode) =>
+    Children.forEach(nodes, (child) => {
+      if (isChildOfType(child, StackScreen) && child.props.name) {
+        required.set(
+          child.props.name,
+          (child.props.unstable_requiredScreensBelow ?? []).map((screen) =>
+            typeof screen === 'string' ? screen : screen.name
+          )
+        );
+      } else if (isChildOfType(child, Protected)) {
+        collect(child.props.children);
+      }
+    });
+  collect(children);
+
+  const checked = new Set<string>();
+  const findCycle = (name: string, path: string[]): string[] | undefined => {
+    if (path.includes(name)) {
+      return [...path.slice(path.indexOf(name)), name];
+    }
+    if (checked.has(name)) {
+      return undefined;
+    }
+    checked.add(name);
+    // A screen that lists itself cannot make a back loop, so it is not a cycle.
+    for (const below of required.get(name)?.filter((screen) => screen !== name) ?? []) {
+      const cycle = findCycle(below, [...path, name]);
+      if (cycle) {
+        return cycle;
+      }
+    }
+    return undefined;
+  };
+  for (const name of required.keys()) {
+    const cycle = findCycle(name, []);
+    // The sorted names identify a cycle, whichever screen it starts from.
+    const key = cycle && [...new Set(cycle)].sort().join('\0');
+    if (cycle && key && !warnedCycles.has(key)) {
+      warnedCycles.add(key);
+      console.warn(
+        `The \`unstable_requiredScreensBelow\` props of Stack.Screen form a cycle: ${cycle.join(' -> ')}. Each screen in the cycle adds the next one below it when it is focused, so the back action never leaves these screens. Remove a screen from one of these props to break the cycle.`
+      );
+      return;
+    }
+  }
 }
