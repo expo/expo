@@ -72,6 +72,20 @@ describe('task execution', () => {
     });
   });
 
+  it('reports the message of a thrown object that is not an Error', async () => {
+    TaskManager.defineTask('throws-object', async () => {
+      throw { message: 'Quota exceeded.' };
+    });
+
+    await executeTask('throws-object');
+
+    expect(ExpoTaskManager.notifyTaskFinishedAsync).toHaveBeenCalledWith('throws-object', {
+      eventId: 'event-1',
+      result: null,
+      error: { code: 'ERR_TASK_EXECUTION_FAILED', message: 'Quota exceeded.' },
+    });
+  });
+
   it('reports a thrown value that cannot be converted to a string', async () => {
     TaskManager.defineTask('throws-null-prototype', async () => {
       throw Object.create(null);

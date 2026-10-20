@@ -265,14 +265,16 @@ export async function unregisterAllTasksAsync(): Promise<void> {
   await ExpoTaskManager.unregisterAllTasksAsync();
 }
 
-// A task can throw any value, and `String()` itself throws for some of them, such as an object
-// without a prototype. Failing here would report the run as a success with no result.
+// A task can throw any value, and reading it can throw too: a `message` getter can throw, and so can
+// `String()` for an object without a prototype. Failing here would report the run as a success with
+// no result.
 function describeThrownValue(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
   try {
-    return String(error);
+    const message = (error as { message?: unknown } | null | undefined)?.message;
+    return typeof message === 'string' ? message : String(error);
   } catch {
     return 'Unknown error';
   }
