@@ -247,6 +247,123 @@ describe('the ExpoModulesJSI build phase', () => {
           'ReactNativeDependenciesHeaders.xcframework/ios-arm64_x86_64-simulator/Headers/folly is missing'
         );
       });
+
+      // plutil, which reads React Native's version, exists only on macOS.
+      (process.platform === 'darwin' ? describe : describe.skip)(
+        'with a stub build-xcframework.sh',
+        () => {
+          const SLICE = 'ios-arm64_x86_64-simulator';
+          let script;
+          let dsymFolder;
+
+          beforeEach(() => {
+            const scriptsDir = path.join(tmp, 'pkg', 'apple', 'scripts');
+            fs.mkdirSync(scriptsDir, { recursive: true });
+            script = path.join(scriptsDir, 'build-swiftpm-app-phase.sh');
+            fs.copyFileSync(PACKAGE_SCRIPT_PATH, script);
+            fs.writeFileSync(
+              path.join(scriptsDir, 'build-xcframework.sh'),
+              [
+                '#!/bin/bash',
+                'set -euo pipefail',
+                ': "${PODS_ROOT:?}" "${EXPO_CUSTOM_BUILD_ROOT:?}"',
+                `SLICE_DIR="$EXPO_CUSTOM_BUILD_ROOT/Products/ExpoModulesJSI.xcframework/${SLICE}"`,
+                'mkdir -p "$SLICE_DIR/ExpoModulesJSI.framework"',
+                'touch "$SLICE_DIR/ExpoModulesJSI.framework/ExpoModulesJSI" "$SLICE_DIR/ExpoModulesJSI.framework/Info.plist"',
+                'if [ -n "${STUB_WITH_DSYM:-}" ]; then',
+                '  mkdir -p "$SLICE_DIR/ExpoModulesJSI.framework.dSYM/Contents"',
+                '  touch "$SLICE_DIR/ExpoModulesJSI.framework.dSYM/Contents/Info.plist"',
+                'fi',
+                '',
+              ].join('\n'),
+              { mode: 0o755 }
+            );
+            const xcframeworks = path.join(tmp, 'build', 'xcframeworks');
+            const reactHeaders = path.join(
+              xcframeworks,
+              'ReactNativeHeaders.xcframework',
+              SLICE,
+              'Headers'
+            );
+            fs.mkdirSync(path.join(reactHeaders, 'hermes'), { recursive: true });
+            fs.writeFileSync(path.join(reactHeaders, 'hermes', 'hermes.h'), '');
+            fs.mkdirSync(
+              path.join(
+                xcframeworks,
+                'ReactNativeDependenciesHeaders.xcframework',
+                SLICE,
+                'Headers',
+                'folly'
+              ),
+              { recursive: true }
+            );
+            fs.writeFileSync(
+              path.join(tmp, 'package.json'),
+              JSON.stringify({ name: 'react-native', version: '0.88.0' })
+            );
+            dsymFolder = path.join(tmp, 'dsyms');
+          });
+
+          const runStubbedScript = (env) =>
+            spawnSync('bash', [script], {
+              encoding: 'utf8',
+              env: {
+                PATH: process.env.PATH,
+                RN_DIR: tmp,
+                PLATFORM_NAME: 'iphonesimulator',
+                SRCROOT: tmp,
+                OBJROOT: path.join(tmp, 'obj'),
+                BUILT_PRODUCTS_DIR: path.join(tmp, 'products'),
+                TARGET_BUILD_DIR: path.join(tmp, 'target'),
+                FRAMEWORKS_FOLDER_PATH: 'Frameworks',
+                CODE_SIGNING_ALLOWED: 'NO',
+                DWARF_DSYM_FOLDER_PATH: dsymFolder,
+                ...env,
+              },
+            });
+
+          const expectFrameworkCopied = () => {
+            for (const dir of [
+              path.join(tmp, 'products'),
+              path.join(tmp, 'target', 'Frameworks'),
+            ]) {
+              expect(
+                fs.existsSync(path.join(dir, 'ExpoModulesJSI.framework', 'ExpoModulesJSI'))
+              ).toBe(true);
+            }
+          };
+
+          it("copies the framework's dSYM into the app's dSYM folder", () => {
+            const result = runStubbedScript({ STUB_WITH_DSYM: '1' });
+            expect(result.stderr).toBe('');
+            expect(result.status).toBe(0);
+            expectFrameworkCopied();
+            expect(
+              fs.existsSync(
+                path.join(dsymFolder, 'ExpoModulesJSI.framework.dSYM', 'Contents', 'Info.plist')
+              )
+            ).toBe(true);
+          });
+
+          it('copies no dSYM when the build produced none', () => {
+            const result = runStubbedScript();
+            expect(result.stderr).toBe('');
+            expect(result.status).toBe(0);
+            expectFrameworkCopied();
+            expect(fs.existsSync(path.join(dsymFolder, 'ExpoModulesJSI.framework.dSYM'))).toBe(
+              false
+            );
+          });
+
+          it('copies no dSYM when DWARF_DSYM_FOLDER_PATH is empty', () => {
+            const result = runStubbedScript({ STUB_WITH_DSYM: '1', DWARF_DSYM_FOLDER_PATH: '' });
+            expect(result.stderr).not.toContain('unbound variable');
+            expect(result.status).toBe(0);
+            expectFrameworkCopied();
+            expect(fs.existsSync(dsymFolder)).toBe(false);
+          });
+        }
+      );
     });
 
     it('builds, copies, embeds and signs the framework', () => {
@@ -257,6 +374,7 @@ describe('the ExpoModulesJSI build phase', () => {
         'EMBEDDED="$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/ExpoModulesJSI.framework"'
       );
       expect(body).toContain('/usr/bin/codesign');
+      expect(body).toContain('DWARF_DSYM_FOLDER_PATH');
     });
 
     // Inside node_modules the package directory may be read-only and is shared by every

@@ -83,4 +83,11 @@ if [ "${CODE_SIGNING_ALLOWED:-YES}" != "NO" ]; then
   /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY:--}" --timestamp=none \
     --preserve-metadata=identifier,entitlements,flags "$EMBEDDED"
 fi
+
+# Archives collect dSYMs from DWARF_DSYM_FOLDER_PATH; without this one, JSI crashes are not
+# symbolicated.
+if [ -d "$FRAMEWORK.dSYM" ] && [ -n "${DWARF_DSYM_FOLDER_PATH:-}" ]; then
+  mkdir -p "$DWARF_DSYM_FOLDER_PATH"
+  /usr/bin/rsync -a --delete "$FRAMEWORK.dSYM/" "$DWARF_DSYM_FOLDER_PATH/ExpoModulesJSI.framework.dSYM/"
+fi
 echo "Build ExpoModulesJSI phase finished in ${SECONDS}s"
