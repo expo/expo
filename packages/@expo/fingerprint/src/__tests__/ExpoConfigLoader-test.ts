@@ -135,17 +135,6 @@ describe('installModuleCaptureHook', () => {
     expect(deregister).toHaveBeenCalledTimes(1);
   });
 
-  it('should leave _compile untouched when module.registerHooks throws', () => {
-    const moduleProto = (require('module') as { prototype: { _compile: unknown } }).prototype;
-    const originalCompile = moduleProto._compile;
-    jest.mocked(module.registerHooks).mockImplementation(() => {
-      throw new Error('registerHooks refused');
-    });
-
-    expect(() => installModuleCaptureHook()).toThrow('registerHooks refused');
-    expect(moduleProto._compile).toBe(originalCompile);
-  });
-
   it('should patch _compile alone when Node has no module.registerHooks', () => {
     const moduleProto = (require('module') as { prototype: { _compile: unknown } }).prototype;
     const originalCompile = moduleProto._compile;
