@@ -524,81 +524,135 @@ describe('Stack nested in Tabs render counts', () => {
 });
 
 describe('useLocalSearchParams render counts', () => {
-  // noop = no hook
-  it.each([
-    {
-      usedIn: 'layouts only',
-      layoutHook: useLocalSearchParams,
-      pageHook: noop,
-      layoutRerenders: 1,
-    },
-    { usedIn: 'pages only', layoutHook: noop, pageHook: useLocalSearchParams, layoutRerenders: 0 },
-    {
-      usedIn: 'layouts and pages',
-      layoutHook: useLocalSearchParams,
-      pageHook: useLocalSearchParams,
-      layoutRerenders: 1,
-    },
-  ])(
-    'when the hook is used in $usedIn, layouts rerender $layoutRerenders time(s) on push and setParams',
-    async ({ layoutHook, pageHook, layoutRerenders }) => {
-      const layoutRender = jest.fn();
-      const idLayoutRender = jest.fn();
-      const indexRender = jest.fn();
-      const detailsRender = jest.fn();
+  let layoutRender: jest.Mock;
+  let idLayoutRender: jest.Mock;
+  let indexRender: jest.Mock;
+  let detailsRender: jest.Mock;
 
-      await renderRouter(
-        {
-          _layout: function Layout() {
-            layoutRender();
-            layoutHook();
-            return <TestStack />;
-          },
-          '[id]/_layout': function IdLayout() {
-            idLayoutRender();
-            layoutHook();
-            return <TestStack />;
-          },
-          '[id]/index': function Index() {
-            indexRender();
-            pageHook();
-            return <Text testID="index">Index</Text>;
-          },
-          '[id]/details': function Details() {
-            detailsRender();
-            pageHook();
-            return <Text testID="details">Details</Text>;
-          },
+  beforeEach(() => {
+    layoutRender = jest.fn();
+    idLayoutRender = jest.fn();
+    indexRender = jest.fn();
+    detailsRender = jest.fn();
+  });
+
+  const renderApp = (layoutHook: () => unknown, pageHook: () => unknown) =>
+    renderRouter(
+      {
+        _layout: function Layout() {
+          layoutRender();
+          layoutHook();
+          return <TestStack />;
         },
-        { initialUrl: '/1' }
-      );
+        '[id]/_layout': function IdLayout() {
+          idLayoutRender();
+          layoutHook();
+          return <TestStack />;
+        },
+        '[id]/index': function Index() {
+          indexRender();
+          pageHook();
+          return <Text testID="index">Index</Text>;
+        },
+        '[id]/details': function Details() {
+          detailsRender();
+          pageHook();
+          return <Text testID="details">Details</Text>;
+        },
+      },
+      { initialUrl: '/1' }
+    );
 
-      expect(screen.getByTestId('index')).toBeVisible();
+  it('rerenders layouts on push and setParams when used in layouts only', async () => {
+    await renderApp(useLocalSearchParams, noop);
 
-      expect(layoutRender).toHaveBeenCalledTimes(1);
-      expect(idLayoutRender).toHaveBeenCalledTimes(1);
-      expect(indexRender).toHaveBeenCalledTimes(1);
-      expect(detailsRender).not.toHaveBeenCalled();
+    expect(screen.getByTestId('index')).toBeVisible();
 
-      jest.clearAllMocks();
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+    expect(detailsRender).not.toHaveBeenCalled();
 
-      await act(() => router.push('/1/details?tab=info'));
+    jest.clearAllMocks();
 
-      expect(screen.getByTestId('details')).toBeVisible();
+    await act(() => router.push('/1/details?tab=info'));
 
-      expect(layoutRender).toHaveBeenCalledTimes(layoutRerenders);
-      expect(idLayoutRender).toHaveBeenCalledTimes(layoutRerenders);
-      expect(indexRender).not.toHaveBeenCalled();
-      expect(detailsRender).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('details')).toBeVisible();
 
-      jest.clearAllMocks();
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
 
-      await act(() => router.setParams({ tab: 'more' }));
+    jest.clearAllMocks();
 
-      expect(layoutRender).toHaveBeenCalledTimes(layoutRerenders);
-      expect(idLayoutRender).toHaveBeenCalledTimes(layoutRerenders);
-      expect(indexRender).not.toHaveBeenCalled();
-      expect(detailsRender).toHaveBeenCalledTimes(1);
-    }
-  );
+    await act(() => router.setParams({ tab: 'more' }));
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not rerender layouts on push and setParams when used in pages only', async () => {
+    await renderApp(noop, useLocalSearchParams);
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+    expect(detailsRender).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+
+    await act(() => router.push('/1/details?tab=info'));
+
+    expect(screen.getByTestId('details')).toBeVisible();
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(idLayoutRender).not.toHaveBeenCalled();
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
+
+    jest.clearAllMocks();
+
+    await act(() => router.setParams({ tab: 'more' }));
+
+    expect(layoutRender).not.toHaveBeenCalled();
+    expect(idLayoutRender).not.toHaveBeenCalled();
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
+  });
+
+  it('rerenders layouts on push and setParams when used in layouts and pages', async () => {
+    await renderApp(useLocalSearchParams, useLocalSearchParams);
+
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).toHaveBeenCalledTimes(1);
+    expect(detailsRender).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+
+    await act(() => router.push('/1/details?tab=info'));
+
+    expect(screen.getByTestId('details')).toBeVisible();
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
+
+    jest.clearAllMocks();
+
+    await act(() => router.setParams({ tab: 'more' }));
+
+    expect(layoutRender).toHaveBeenCalledTimes(1);
+    expect(idLayoutRender).toHaveBeenCalledTimes(1);
+    expect(indexRender).not.toHaveBeenCalled();
+    expect(detailsRender).toHaveBeenCalledTimes(1);
+  });
 });
