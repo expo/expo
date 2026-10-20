@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 57.0.13 — 2026-10-15
