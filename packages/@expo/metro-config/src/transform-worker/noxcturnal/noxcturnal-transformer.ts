@@ -53,6 +53,11 @@ import { createReactServerModuleActionsPlugin } from './plugins/react-server-mod
 
 export type Noxcturnal = typeof import('noxcturnal');
 
+// Published Noxcturnal types predate the projectRoot diagnostic option.
+type NoxcturnalTransformOptions = NonNullable<Parameters<Noxcturnal['transform']>[3]> & {
+  projectRoot: string;
+};
+
 export interface MetroDependencyShared {
   state?: MetroDependencyState;
   sawImportSyntax?: boolean;
@@ -1116,12 +1121,14 @@ export function transformFileFullyWithNoxcturnalSync(
     String(input.options.customTransformOptions?.optimize) === 'true'
   );
   const pipeline = createFullMetroPipeline(nox, input, pluginData);
-  const result = nox.transform(input.source, input.filename, pipeline, {
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
     parser: parserMode(input, sourceFacts),
     sourceMapMode: 'boundary',
     functionMap: true,
     pluginData,
-  });
+  };
+  const result = nox.transform(input.source, input.filename, pipeline, transformOptions);
   if (result.status !== 'complete') {
     return { status: 'fallback', reason: fallbackReason(result.reason) };
   }
@@ -1133,12 +1140,14 @@ export function transformAssetWithNoxcturnalSync(
 ): Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }> {
   const nox = loadNoxcturnal();
   const pipeline = createMetroOutputPipeline(nox, input, [getMetroModulePhase(nox, input)]);
-  const result = nox.transform(input.source, input.filename, pipeline, {
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
     parser: 'jsx',
     sourceMapMode: 'boundary',
     functionMap: false,
     pluginData: createMetroTransformPluginData(input),
-  });
+  };
+  const result = nox.transform(input.source, input.filename, pipeline, transformOptions);
   if (result.status !== 'complete') {
     throw new Error(
       `Noxcturnal could not transform asset ${input.filename} because its generated module is unsupported (${result.reason}). Disable unstable_noxcturnalTransformWorker and report this error to Expo.`
@@ -1204,16 +1213,18 @@ export function transformNodeModuleWithNoxcturnalSync(
 
   const nox = loadNoxcturnal();
   const pluginData = createExpoTransformPluginData(input, sourceFacts);
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
+    parser: parserMode(input, sourceFacts),
+    sourceMapMode: 'boundary',
+    functionMap: true,
+    pluginData,
+  };
   const result: TransformResult = nox.transform(
     input.source,
     input.filename,
     createPipeline(nox, input, pluginData),
-    {
-      parser: parserMode(input, sourceFacts),
-      sourceMapMode: 'boundary',
-      functionMap: true,
-      pluginData,
-    }
+    transformOptions
   );
   return result.status === 'complete'
     ? { status: 'complete', result }
