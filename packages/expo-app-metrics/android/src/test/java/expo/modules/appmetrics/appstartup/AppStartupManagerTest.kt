@@ -137,34 +137,56 @@ class AppStartupManagerTest {
   // Simulates a launch that finished `durationInMs` ago and is still in progress.
   private fun startLaunch(durationInMs: Long, hasRendered: Boolean = false) {
     AppStartupManager.takeUnsavedLogs()
+    AppStartupManager.markResumed()
     setField("launchTimeInMillis", getCurrentTimeInMillis() - durationInMs)
     setField("hasRecordedFirstRender", hasRendered)
     AppStartupManager.startupState = StartupState.LAUNCHING
   }
 
   @Test
-  fun `markEnteredBackground records the backgrounded event during startup`() {
+  fun `records the backgrounded event when the app enters the background after a pause`() {
     startLaunch(durationInMs = 5_000, hasRendered = true)
+    var recordedLogs = 0
+    AppStartupManager.onLogRecorded = { recordedLogs++ }
+
+    AppStartupManager.markPaused()
+    assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)
+    assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
 
     AppStartupManager.markEnteredBackground(context)
+    AppStartupManager.onLogRecorded = null
 
-    assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)
+    assertEquals(1, recordedLogs)
     val log = AppStartupManager.takeUnsavedLogs().single()
     assertEquals("expo.app_startup.backgrounded", log.name)
     val attributes = JsonAny.decodeJsonStringToMap(log.attributes!!)!!
     assertEquals(5.0, attributes["expo.app_startup.duration"] as Double, 1.0)
     assertEquals(true, attributes["expo.app_startup.hasRendered"])
     assertEquals(false, attributes["expo.app_startup.hasMarkedInteractive"])
-    // Called again from the other `onPause` listener.
+    // The app can enter the background again later.
     AppStartupManager.markEnteredBackground(context)
     assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
   }
 
   @Test
-  fun `markEnteredBackground skips the event when the startup is no longer in progress`() {
+  fun `skips the backgrounded event when the activity resumes after a pause`() {
+    // For example after a permission dialog.
+    startLaunch(durationInMs = 5_000)
+
+    AppStartupManager.markPaused()
+    AppStartupManager.markResumed()
+    AppStartupManager.markEnteredBackground(context)
+
+    assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)
+    assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
+  }
+
+  @Test
+  fun `skips the backgrounded event when the startup is no longer in progress`() {
     startLaunch(durationInMs = 5_000)
     AppStartupManager.startupState = StartupState.LAUNCHED
 
+    AppStartupManager.markPaused()
     AppStartupManager.markEnteredBackground(context)
 
     assertEquals(StartupState.LAUNCHED, AppStartupManager.startupState)
@@ -172,9 +194,10 @@ class AppStartupManagerTest {
   }
 
   @Test
-  fun `markEnteredBackground skips the event after the max startup duration`() {
+  fun `skips the backgrounded event after the max startup duration`() {
     startLaunch(durationInMs = 10 * 60 * 1000)
 
+    AppStartupManager.markPaused()
     AppStartupManager.markEnteredBackground(context)
 
     assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)

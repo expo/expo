@@ -56,6 +56,15 @@ object AppStartupManager {
   // Log events not yet handed out for saving. Guarded by `this`.
   private val unsavedLogs = mutableListOf<LogRecord>()
 
+  private data class PausedStartup(val durationInMs: Long, val hasRendered: Boolean)
+
+  // Set when the startup was paused, until the app enters the background or resumes. Guarded by `this`.
+  private var pausedStartup: PausedStartup? = null
+
+  // Called after a log event is recorded outside of the module's own saves, so the module can save it.
+  @Volatile
+  internal var onLogRecorded: (() -> Unit)? = null
+
   // How many of `_metrics` were already handed out for saving. Guarded by `this`.
   private var savedCount = 0
 
@@ -291,12 +300,12 @@ object AppStartupManager {
   }
 
   /**
-   * Interrupts the startup if it is still in progress when the app enters the background.
-   * Records the `expo.app_startup.backgrounded` event for a launch that the user left before TTI,
-   * for example because the app was stuck on the splash screen.
+   * Interrupts the startup if it is still in progress when the activity pauses. The pause doesn't mean
+   * that the user left the app (a permission dialog pauses it too), so the duration is kept until
+   * the app enters the background or the activity resumes.
    */
   @Synchronized
-  fun markEnteredBackground(context: Context) {
+  fun markPaused() {
     if (startupState != StartupState.LAUNCHING) {
       return
     }
@@ -304,16 +313,33 @@ object AppStartupManager {
 
     val launch = launchTimeInMillis ?: return
     val durationInMs = getCurrentTimeInMillis() - launch
-    if (durationInMs > MAX_STARTUP_DURATION_MS) {
-      return
+    if (durationInMs <= MAX_STARTUP_DURATION_MS) {
+      pausedStartup = PausedStartup(durationInMs, hasRendered = hasRecordedFirstRender)
     }
-    unsavedLogs.add(
-      makeStartupBackgroundedLogRecord(
-        durationInMs = durationInMs,
-        hasRendered = hasRecordedFirstRender,
-        hasMarkedInteractive = AppMetricsPreferences.getHasMarkedInteractive(context)
+  }
+
+  @Synchronized
+  fun markResumed() {
+    pausedStartup = null
+  }
+
+  /**
+   * Records the `expo.app_startup.backgrounded` event when the app enters the background
+   * after the startup was paused, for example when the user left the app stuck on the splash screen.
+   */
+  fun markEnteredBackground(context: Context) {
+    synchronized(this) {
+      val paused = pausedStartup ?: return
+      pausedStartup = null
+      unsavedLogs.add(
+        makeStartupBackgroundedLogRecord(
+          durationInMs = paused.durationInMs,
+          hasRendered = paused.hasRendered,
+          hasMarkedInteractive = AppMetricsPreferences.getHasMarkedInteractive(context)
+        )
       )
-    )
+    }
+    onLogRecorded?.invoke()
   }
 
   private fun buildInteractiveParams(
