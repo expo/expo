@@ -36,3 +36,14 @@ export async function findMissingBumps(
   );
   return required.filter((name) => !bumped.has(name));
 }
+
+export function packagesToBump(options: {
+  abiBreak: boolean;
+  affected: string[];
+  all: string[];
+}): string[] {
+  if (options.abiBreak) {
+    return options.all;
+  }
+  return [...new Set(options.affected)].sort();
+}

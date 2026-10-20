@@ -3,7 +3,7 @@ import { DigesterFinding } from './Digester';
 export function formatAbiFindings(findings: Map<string, DigesterFinding[]>): string {
   const lines: string[] = [];
   for (const [module, moduleFindings] of findings) {
-    lines.push(`Broken declarations in ${module}:`);
+    lines.push(`${module}:`);
     lines.push(...moduleFindings.map((finding) => `  - ${finding.message}`));
     lines.push('');
   }
@@ -14,9 +14,8 @@ export function formatAbiFailure(
   findings: Map<string, DigesterFinding[]>,
   missing: string[]
 ): string {
-  const modules = [...findings.keys()].join(' and ');
   const lines = [
-    `Swift ABI check failed: this PR removes or changes public declarations in ${modules} that precompiled modules may link against.`,
+    'Swift ABI check failed: this PR removes or changes declarations in ExpoModulesCore or ExpoModulesJSI that precompiled modules link against.',
     'Apps that use an older precompiled module with this version will crash at launch with "Symbol not found".',
     '',
     formatAbiFindings(findings),
@@ -24,7 +23,7 @@ export function formatAbiFailure(
   lines.push(
     'To fix it, do one of these:',
     '  1. Keep the old declaration (forward it to the new one), so the change is additive.',
-    '  2. If the break is necessary, add a changeset with a patch bump for every precompiled package that is missing one:',
+    '  2. If the break is necessary, add a changeset with a patch bump for these packages:',
     ...missing.map((name) => `       "${name}": patch`),
     '',
     'If this is a false positive, remove the "check: ABI" label. This check is not required.'

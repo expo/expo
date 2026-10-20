@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { findMissingBumps, parsePrecompiledPackages } from './ChangesetCoverage';
+import { findMissingBumps, parsePrecompiledPackages, packagesToBump } from './ChangesetCoverage';
 
 function changesetsDir(files: Record<string, string>): string {
   const directory = path.join(
@@ -73,5 +73,29 @@ describe('parsePrecompiledPackages', () => {
       }),
     ].join('\n');
     assert.deepEqual(parsePrecompiledPackages(stdout), ['expo-camera', 'expo-font']);
+  });
+});
+
+describe('packagesToBump', () => {
+  it('requires every precompiled package when the ABI check found a break', () => {
+    assert.deepEqual(
+      packagesToBump({
+        abiBreak: true,
+        affected: ['expo-font'],
+        all: ['expo-camera', 'expo-font'],
+      }),
+      ['expo-camera', 'expo-font']
+    );
+  });
+
+  it('requires only the affected packages when only symbols are missing', () => {
+    assert.deepEqual(
+      packagesToBump({
+        abiBreak: false,
+        affected: ['expo-font', 'expo-camera', 'expo-font'],
+        all: ['expo-camera', 'expo-file-system', 'expo-font'],
+      }),
+      ['expo-camera', 'expo-font']
+    );
   });
 });

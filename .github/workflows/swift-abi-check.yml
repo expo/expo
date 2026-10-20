@@ -109,7 +109,7 @@ jobs:
             }
 
             const body = `<!-- swift-abi-check comment -->
-            This PR breaks the Swift ABI of ExpoModulesCore or ExpoModulesJSI. Apps that use an older precompiled module with this version will crash at launch.
+            This PR removes or changes declarations or symbols in ExpoModulesCore or ExpoModulesJSI that precompiled modules use. Apps that use those precompiled modules with this version can crash at launch.
 
             \`\`\`
             ${report}
