@@ -75,6 +75,21 @@ class ErrorReportTest {
   }
 
   @Test
+  fun `tags an unhandled promise rejection with the unhandledRejection source at error severity`() {
+    val report = ErrorReport(
+      source = ErrorSource.UNHANDLED_REJECTION,
+      type = "TypeError",
+      message = "boom",
+      stacktrace = "at f (app.js:1:1)",
+      isFatal = false
+    )
+    val record = report.toLogRecord(sessionId = "s")
+    val attributes = record.attributes ?: ""
+    assertTrue(attributes.contains("\"expo.error.source\":\"unhandledRejection\""))
+    assertEquals("error", record.severity)
+  }
+
+  @Test
   fun `builds a js exception log from a pending fatal error`() {
     val record = PendingErrorStore.PendingError(
       source = "global",

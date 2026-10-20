@@ -69,7 +69,11 @@ export type ObserveConfig = {
   /**
    * Whether to record unhandled JavaScript errors and unhandled promise rejections as `exception`
    * log events. Unhandled promise rejections are recorded only in production builds, where
-   * `__DEV__` is `false`.
+   * `__DEV__` is `false`. Each distinct rejection is recorded at most once every 15 minutes, and
+   * at most 20 distinct rejections are recorded in any 15-minute period. A rejection is recorded
+   * when it still has no handler 2 seconds after it was rejected, or 100 milliseconds for a
+   * `TypeError`, `ReferenceError`, or `RangeError`. A handler attached later does not remove the
+   * record.
    *
    * When `false`, unhandled errors and unhandled promise rejections are no longer recorded. React
    * Native's own handling is unaffected either way: the red box in development and fatal termination
