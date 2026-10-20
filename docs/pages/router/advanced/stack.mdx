@@ -489,6 +489,25 @@ export default function Settings() {
 }
 ```
 
+To read the same value during render, use the `useCanDismiss` hook. The component re-renders when the value changes.
+
+{/* prettier-ignore */}
+```tsx src/app/settings.tsx
+import { Button } from 'react-native';
+/* @info Import `useCanDismiss` from Expo Router. */
+import { useCanDismiss, useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  const router = useRouter();
+  const canDismiss = useCanDismiss();
+
+  return <Button title="Dismiss" disabled={!canDismiss} onPress={() => router.dismiss()} />;
+}
+```
+
+> **Note**: A stack is detected after it mounts. On the first render of a new stack, `useCanDismiss` can return `false` and then update to `true`.
+
 ## iOS 26 Liquid Glass headers
 
 Starting from iOS 26, navigation headers adopt the system's "Liquid Glass" effect by default. It cannot be disabled per screen, so you need to opt out using a global configuration.
