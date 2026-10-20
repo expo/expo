@@ -107,7 +107,8 @@ Return **only** a single fenced ```json code block:
 }
 ```
 
-**Emit only `critical` and `warning` findings — drop every `suggestion`.** Use
+**Emit only `critical` and `warning` findings, plus the `suggestion` findings from
+the `general` reviewer (keep their `Nit:` titles). Drop every other `suggestion`.** Use
 `null` for `line` when not line-specific. **Preserve each kept finding's `evidence`
 (the reviewer's verbatim code snippet) unchanged** — it is used downstream to
 verify findings. Never emit the `__overall_pr_risk__` handoff. Emit no prose
