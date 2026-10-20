@@ -1,101 +1,711 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+const BAG_BOX = {
+  width: 44,
+  height: 56,
+  borderRadius: 6,
+  backgroundColor: '#f1f5f9',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+const BAG_TXT = { color: '#0f172a', fontWeight: 'bold', fontSize: 12 };
+const BAG_KEYS = [0, 0.3, 0.62, 1];
+const BAG_X = [-50, CX - 22, CX - 22, SW + 10];
+const BAG_POS = { left: 0, top: 112 };
 
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+function ScenePack() {
+  return (
+    <>
+      <View style={{ position: 'absolute', left: CX - 34, top: 20, width: 68, height: 30, borderRadius: 6, backgroundColor: '#64748b' }} />
+      <Box w={16} h={24} c="#64748b" style={{ position: 'absolute', left: CX - 8, top: 50 }} />
+      <Blink dur={6000} keys={[0, 0.3, 0.34, 0.62, 0.66, 1]} vals={[0, 0, 1, 1, 0, 0]} style={{ left: 0, top: 0, width: SW, height: SH }}>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <Fly key={i} dur={700} phase={i / 5} y={[74, 128]} style={{ left: CX - 3, top: 0 }}>
+            <Dot s={5} c="#fefce8" />
+          </Fly>
+        ))}
+      </Blink>
+      <Fly dur={6000} keys={BAG_KEYS} x={BAG_X} fade={false} style={BAG_POS}>
+        <View style={BAG_BOX}>
+          <Text style={BAG_TXT}>{'شکر'}</Text>
+        </View>
+      </Fly>
+      <Box w={SW} h={10} c="#334155" style={{ position: 'absolute', left: 0, top: 168 }} />
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+        <Fly key={i} dur={2500} phase={i / 10} x={[0, SW]} fade={false} style={{ left: 0, top: 171 }}>
+          <Box w={14} h={4} c="#475569" r={2} />
+        </Fly>
+      ))}
+      <Label t="بسته‌بندی کیسه‌های ۵۰ کیلوگرمی" style={{ left: 12, top: 192 }} color="#d9f99d" />
+    </>
+  );
+}
 
-Expo is a React Native framework that makes developing Android and iOS apps easier. Our framework provides file-based routing, a standard library of native modules, and much more. Expo is open source with an active community on [GitHub](https://github.com/expo/expo) and [Discord](https://chat.expo.dev).
+function SceneBy() {
+  const targets = [
+    { x: 34 - CX, y: 52 - 100, c: '#a16207' },
+    { x: SW - 38 - CX, y: 52 - 100, c: '#78350f' },
+    { x: 0, y: 178 - 100, c: '#e2e8f0' },
+  ];
+  return (
+    <>
+      <Fly dur={2400} keys={[0, 0.5, 1]} s={[1, 1.12, 1]} fade={false} style={{ left: CX - 28, top: 76 }}>
+        <Text style={{ fontSize: 56 }}>🏭</Text>
+      </Fly>
+      <Text style={{ position: 'absolute', left: 14, top: 26, fontSize: 38 }}>🐄</Text>
+      <Text style={{ position: 'absolute', left: SW - 56, top: 26, fontSize: 38 }}>🍯</Text>
+      <Text style={{ position: 'absolute', left: CX - 20, top: 156, fontSize: 38 }}>🌾</Text>
+      <Label t="تفاله (خوراک دام)" style={{ left: 8, top: 74 }} color="#fde68a" />
+      <Label t="ملاس" style={{ left: SW - 46, top: 74 }} color="#fdba74" />
+      <Label t="گل آهک (کود)" style={{ left: CX - 36, top: 202 }} color="#e2e8f0" />
+      {targets.map((t, k) =>
+        [0, 1, 2, 3].map((j) => (
+          <Fly key={k + '-' + j} dur={2200} phase={j / 4} x={[0, t.x]} y={[0, t.y]} style={{ left: CX - 3, top: 100 }}>
+            <Dot s={7} c={t.c} />
+          </Fly>
+        ))
+      )}
+    </>
+  );
+}
 
-We also make [Expo Application Services (EAS)](https://expo.dev/services), a set of services that complement the Expo framework in each step of the development process.
+const SCENES = {
+  1: SceneWeigh,
+  2: SceneWash,
+  3: SceneSlicer,
+  4: SceneDiffusion,
+  5: ScenePurify,
+  6: SceneFilter,
+  7: SceneEvaporator,
+  8: ScenePan,
+  9: SceneCentrifuge,
+  10: SceneDryer,
+  11: ScenePack,
+  12: SceneBy,
+};
 
-> **info** **New to programming?** You can build your first Expo app by prompting an AI coding agent instead of writing code. Follow the [Build with AI tutorial](/tutorial/build-with-ai/introduction/). It covers setup from scratch.
+function Scene({ id, color }) {
+  const C = SCENES[id];
+  return (
+    <View
+      style={{
+        width: SW,
+        height: SH,
+        alignSelf: 'center',
+        borderRadius: 22,
+        overflow: 'hidden',
+        backgroundColor: 'rgba(0,0,0,0.30)',
+        borderWidth: 1.5,
+        borderColor: color,
+      }}
+    >
+      {C ? <C /> : null}
+    </View>
+  );
+}
 
-## System requirements
+/* ---------- انیمیشن‌های صفحه‌های اصلی ---------- */
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+function Bubbles({ count = 14, color = 'rgba(255,255,255,0.16)' }) {
+  const items = useMemo(
+    () =>
+      Array.from({ length: count }, () => ({
+        left: Math.random() * W,
+        size: 8 + Math.random() * 30,
+        dur: 6000 + Math.random() * 7000,
+        delay: Math.random() * 4000,
+        v: new Animated.Value(0),
+      })),
+    [count]
+  );
+  useEffect(() => {
+    const loops = items.map((it) => {
+      const l = Animated.loop(
+        Animated.timing(it.v, {
+          toValue: 1,
+          duration: it.dur,
+          delay: it.delay,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      );
+      l.start();
+      return l;
+    });
+    return () => loops.forEach((l) => l.stop());
+  }, [items]);
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {items.map((it, i) => (
+        <Animated.View
+          key={i}
+          style={{
+            position: 'absolute',
+            left: it.left,
+            bottom: -50,
+            width: it.size,
+            height: it.size,
+            borderRadius: it.size / 2,
+            backgroundColor: color,
+            opacity: it.v.interpolate({ inputRange: [0, 0.15, 0.85, 1], outputRange: [0, 1, 1, 0] }),
+            transform: [{ translateY: it.v.interpolate({ inputRange: [0, 1], outputRange: [0, -(H + 100)] }) }],
+          }}
+        />
+      ))}
+    </View>
+  );
+}
 
-## Start with a default project
+function Floating({ children, delay = 0, amp = 12, style }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const l = Animated.loop(
+      Animated.sequence([
+        Animated.timing(v, { toValue: 1, duration: 1800, delay, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(v, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    );
+    l.start();
+    return () => l.stop();
+  }, [v, delay]);
+  return (
+    <Animated.View
+      style={[
+        style,
+        {
+          transform: [
+            { translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, -amp] }) },
+            { rotate: v.interpolate({ inputRange: [0, 1], outputRange: ['-5deg', '5deg'] }) },
+          ],
+        },
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
-We recommend starting with the default project created by [`create-expo-app`](/more/create-expo/). The default project includes example code to help you get started.
+function Reveal({ delay = 0, children, style, from = 26 }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(v, {
+      toValue: 1,
+      duration: 650,
+      delay,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [v, delay]);
+  return (
+    <Animated.View
+      style={[
+        style,
+        {
+          opacity: v,
+          transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) }],
+        },
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
-To create a new project, run the following command:
+function Pulse({ size, color }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const l = Animated.loop(
+      Animated.timing(v, { toValue: 1, duration: 2200, easing: Easing.out(Easing.quad), useNativeDriver: true })
+    );
+    l.start();
+    return () => l.stop();
+  }, [v]);
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        borderWidth: 2,
+        borderColor: color,
+        opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.7, 0] }),
+        transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.9] }) }],
+      }}
+    />
+  );
+}/* ---------- صفحه شروع ---------- */
 
-<Terminal
-  cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-58'],
-    yarn: ['$ yarn create expo-app --template default@sdk-58'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-58'],
-    bun: ['$ bun create expo --template default@sdk-58'],
-  }}
-/>
+function Splash({ onEnter }) {
+  const logo = useRef(new Animated.Value(0)).current;
+  const line = useRef(new Animated.Value(0)).current;
 
-> **info** During the SDK 58 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 57 project. If you plan to use Expo Go on a physical device, use an SDK 57 project. Otherwise, use `--template default@sdk-58` to create an SDK 58 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+  useEffect(() => {
+    Animated.spring(logo, { toValue: 1, friction: 4, tension: 40, useNativeDriver: true }).start();
+    Animated.timing(line, { toValue: 1, duration: 1400, delay: 1500, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+    const t = setTimeout(onEnter, 9000);
+    return () => clearTimeout(t);
+  }, [logo, line, onEnter]);
 
-## Start from an example
+  return (
+    <LinearGradient colors={['#0b2a44', '#14532d']} style={styles.fill}>
+      <Bubbles count={18} color="rgba(251,191,36,0.20)" />
+      <View style={styles.center}>
+        <View style={styles.logoWrap}>
+          <Pulse size={130} color={GOLD} />
+          <Animated.View
+            style={[
+              styles.logo,
+              {
+                transform: [
+                  { scale: logo },
+                  { rotate: logo.interpolate({ inputRange: [0, 1], outputRange: ['-180deg', '0deg'] }) },
+                ],
+              },
+            ]}
+          >
+            <Text style={{ fontSize: 62 }}>🍬</Text>
+          </Animated.View>
+        </View>
 
-Instead of the default project, you can start from one of the [Expo examples](https://github.com/expo/examples). These are small apps that each demonstrate a specific feature or integration, such as Expo Router, Expo Widgets, or a camera screen.
+        <Reveal delay={700}>
+          <Text style={styles.factory}>{FACTORY}</Text>
+        </Reveal>
+        <Reveal delay={1100}>
+          <Text style={styles.tagline}>تولید شکر از چغندر قند</Text>
+        </Reveal>
 
-To browse the full list and pick one interactively, run `create-expo-app` with the [`--example`](/more/create-expo/#--example) option and no name:
+        <Animated.View
+          style={{
+            height: 3,
+            marginVertical: 22,
+            borderRadius: 2,
+            backgroundColor: GOLD,
+            width: line.interpolate({ inputRange: [0, 1], outputRange: [0, W * 0.6] }),
+          }}
+        />
 
-<Terminal
-  cmd={{
-    npm: ['$ npx create-expo-app@latest --example'],
-    yarn: ['$ yarn create expo-app --example'],
-    pnpm: ['$ pnpm create expo-app --example'],
-    bun: ['$ bun create expo --example'],
-  }}
-/>
+        <Reveal delay={2100}>
+          <Text style={styles.by}>طراحی و ساخت برنامه</Text>
+        </Reveal>
+        <Reveal delay={2700}>
+          <Floating amp={5}>
+            <Text style={styles.builder}>{BUILDER}</Text>
+          </Floating>
+        </Reveal>
+        <Reveal delay={3300}>
+          <Text style={styles.phone}>📞 {PHONE}</Text>
+        </Reveal>
 
-To create a known example directly, pass its name:
+        <Reveal delay={4200} style={{ marginTop: 36 }}>
+          <TouchableOpacity activeOpacity={0.8} onPress={onEnter} style={styles.enterBtn}>
+            <Text style={styles.enterTxt}>ورود به برنامه  ›</Text>
+          </TouchableOpacity>
+        </Reveal>
+      </View>
+    </LinearGradient>
+  );
+}
 
-<Terminal
-  cmd={{
-    npm: ['$ npx create-expo-app@latest --example with-widgets'],
-    yarn: ['$ yarn create expo-app --example with-widgets'],
-    pnpm: ['$ pnpm create expo-app --example with-widgets'],
-    bun: ['$ bun create expo --example with-widgets'],
-  }}
-/>
+/* ---------- فهرست مراحل ---------- */
 
-> **info** The rest of the guides in this **"Get started"** section follows the default project. An example app may be organized differently but the concepts are the same.
+function Home({ onOpen, onAbout }) {
+  return (
+    <LinearGradient colors={['#06121f', '#0b2a44']} style={styles.fill}>
+      <Bubbles count={10} />
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <LinearGradient colors={['#14532d', '#0b2a44']} style={styles.homeHeader}>
+          <Floating amp={8}>
+            <Text style={{ fontSize: 54 }}>🍬</Text>
+          </Floating>
+          <Text style={styles.homeTitle}>{FACTORY}</Text>
+          <Text style={styles.homeSub}>مراحل تولید شکر از چغندر قند</Text>
+          <Text style={styles.homeHint}>برای دیدن توضیحات و انیمیشن هر مرحله روی آن بزنید</Text>
+        </LinearGradient>
 
-## Set up an AI agent
+        {STAGES.map((s, i) => (
+          <Reveal key={s.id} delay={i * 80} from={40} style={{ marginHorizontal: 16, marginTop: 14 }}>
+            <TouchableOpacity activeOpacity={0.85} onPress={() => onOpen(i)}>
+              <LinearGradient colors={s.colors} style={styles.card}>
+                <View style={styles.cardIcon}>
+                  <Text style={{ fontSize: 32 }}>{s.icons[0]}</Text>
+                </View>
+                <View style={{ flex: 1, marginRight: 14 }}>
+                  <Text style={styles.cardNum}>مرحله {toFa(s.id)}</Text>
+                  <Text style={styles.cardTitle}>{s.title}</Text>
+                  <Text style={styles.cardShort}>{s.short}</Text>
+                </View>
+                <Text style={styles.cardArrow}>‹</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Reveal>
+        ))}
 
-A new project includes **AGENTS.md** with project context for AI agents. When Claude Code is installed, it also includes **.claude/settings.json** to enable the Expo plugin. Claude Code and Codex have an official Expo plugin. Using one command, you can install [Expo Skills](/skills/) and register the [Expo Model Context Protocol (MCP) Server](/mcp/):
+        <TouchableOpacity activeOpacity={0.85} onPress={onAbout} style={styles.aboutBtn}>
+          <Text style={styles.aboutBtnTxt}>👤 درباره سازنده برنامه</Text>
+        </TouchableOpacity>
+        <Text style={styles.footer}>ساخته‌شده توسط {BUILDER}</Text>
+      </ScrollView>
+    </LinearGradient>
+  );
+}
 
-<Tabs>
+/* ---------- صفحه جدا برای هر مرحله ---------- */
 
-<Tab label="Claude Code">
+function Detail({ index, onBack, onGo }) {
+  const s = STAGES[index];
+  const total = STAGES.length;
+  const handlers = useRef({});
+  handlers.current = {
+    next: () => index < total - 1 && onGo(index + 1),
+    prev: () => index > 0 && onGo(index - 1),
+  };
 
-<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+  const pan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 25 && Math.abs(g.dx) > Math.abs(g.dy) * 2,
+      onPanResponderRelease: (_, g) => {
+        if (g.dx < -70) handlers.current.next();
+        else if (g.dx > 70) handlers.current.prev();
+      },
+    })
+  ).current;
 
-Then run `/mcp` inside your Claude Code session to sign in to your Expo account.
+  return (
+    <LinearGradient colors={['#0b1d2e']} style={styles.fill} {...pan.panHandlers}>
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+          <Text style={styles.backTxt}>فهرست مراحل ›</Text>
+        </TouchableOpacity>
+        <Text style={styles.counter}>
+          {toFa(index + 1)} از {toFa(total)}
+        </Text>
+      </View>
 
-</Tab>
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { width: `${((index + 1) / total) * 100}%`, backgroundColor: s.colors[1] }]} />
+      </View>
 
-<Tab label="Codex">
+      <ScrollView contentContainerStyle={{ padding: 18, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
+        {s.image ? (
+          <Image source={s.image} style={styles.heroImg} resizeMode="cover" />
+        ) : (
+          <Scene id={s.id} color={s.colors[1]} />
+        )}
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+        <Reveal delay={100} style={{ marginTop: 16 }}>
+          <Text style={[styles.stageNum, { color: s.colors[1] }]}>مرحله {toFa(s.id)}</Text>
+          <Text style={styles.stageTitle}>{s.title}</Text>
+          <Text style={styles.stageShort}>{s.short}</Text>
+        </Reveal>
 
-Then sign in to your Expo account:
+        <Reveal delay={250}>
+          <View style={styles.statsRow}>
+            {s.stats.map(([k, v]) => (
+              <View key={k} style={[styles.stat, { borderColor: s.colors[1] }]}>
+                <Text style={styles.statK}>{k}</Text>
+                <Text style={styles.statV}>{v}</Text>
+              </View>
+            ))}
+          </View>
+        </Reveal>
 
-<Terminal cmd={['$ codex mcp login expo']} />
+        <Reveal delay={400}>
+          <View style={styles.textCard}>
+            {s.paras.map((p, i) => (
+              <Text key={i} style={[styles.stageText, i > 0 && { marginTop: 12 }]}>
+                {p}
+              </Text>
+            ))}
+          </View>
+        </Reveal>
 
-</Tab>
+        <Reveal delay={550}>
+          <Text style={styles.sectionHead}>مراحل انجام کار</Text>
+          {s.steps.map((p, i) => (
+            <View key={i} style={styles.pointRow}>
+              <View style={[styles.numBadge, { backgroundColor: s.colors[1] }]}>
+                <Text style={styles.numTxt}>{toFa(i + 1)}</Text>
+              </View>
+              <Text style={styles.pointTxt}>{p}</Text>
+            </View>
+          ))}
+        </Reveal>
 
-</Tabs>
+        <Reveal delay={650}>
+          <Text style={styles.sectionHead}>تجهیزات اصلی</Text>
+          <View style={styles.chips}>
+            {s.equip.map((e) => (
+              <View key={e} style={[styles.chip, { borderColor: s.colors[1] }]}>
+                <Text style={styles.chipTxt}>{e}</Text>
+              </View>
+            ))}
+          </View>
+        </Reveal>
 
-The plugin also installs the skill that teaches an agent where files live in a new Expo project:
+        <Reveal delay={750}>
+          <View style={styles.factBox}>
+            <Text style={styles.factHead}>💡 آیا می‌دانستید؟</Text>
+            <Text style={styles.factTxt}>{s.fact}</Text>
+          </View>
+        </Reveal>
 
-<RelatedSkills names={['expo-project-structure']} />
+        <Text style={styles.swipeHint}>برای رفتن به مرحله بعد، صفحه را بکشید</Text>
+      </ScrollView>
 
-For Cursor and other agents, install [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/) separately. The [AI agents and Expo](/agents/) overview covers setup for each agent.
+      <View style={styles.navBar}>
+        <TouchableOpacity
+          disabled={index === 0}
+          onPress={handlers.current.prev}
+          style={[styles.navBtn, { opacity: index === 0 ? 0.3 : 1 }]}
+        >
+          <Text style={styles.navTxt}>› قبلی</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={index === total - 1 ? onBack : handlers.current.next}
+          style={[styles.navBtn, { backgroundColor: s.colors[1] }]}
+        >
+          <Text style={[styles.navTxt, { color: '#06121f' }]}>
+            {index === total - 1 ? 'پایان ✓' : 'بعدی ‹'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
+  );
+}
 
-## Next step
+/* ---------- درباره سازنده ---------- */
 
-You have a project. Now it's time to set up your development environment so that you can start developing.
+function About({ onBack }) {
+  return (
+    <LinearGradient colors={['#0b2a44', '#14532d']} style={styles.fill}>
+      <Bubbles count={14} color="rgba(251,191,36,0.18)" />
+      <View style={styles.topBar}>
+        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+          <Text style={styles.backTxt}>بازگشت ›</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.center}>
+        <Reveal>
+          <View style={styles.logoWrap}>
+            <Pulse size={130} color={GOLD} />
+            <View style={styles.logo}>
+              <Text style={{ fontSize: 56 }}>👨‍🔧</Text>
+            </View>
+          </View>
+        </Reveal>
+        <Reveal delay={300}>
+          <Text style={styles.by}>سازنده برنامه</Text>
+          <Text style={styles.builder}>{BUILDER}</Text>
+        </Reveal>
+        <Reveal delay={500}>
+          <Text style={styles.tagline}>کارخانه {FACTORY}</Text>
+        </Reveal>
+        <Reveal delay={700} style={{ marginTop: 28, alignItems: 'center' }}>
+          <Text style={styles.phone}>📞 {PHONE}</Text>
+          <TouchableOpacity activeOpacity={0.85} onPress={() => Linking.openURL(`tel:${PHONE}`)} style={styles.enterBtn}>
+            <Text style={styles.enterTxt}>تماس با سازنده</Text>
+          </TouchableOpacity>
+        </Reveal>
+      </View>
+    </LinearGradient>
+  );
+}/* ---------- برنامه اصلی ---------- */
+
+export default function App() {
+  const [screen, setScreen] = useState('splash');
+  const [index, setIndex] = useState(0);
+  const screenRef = useRef(screen);
+  screenRef.current = screen;
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (screenRef.current === 'detail' || screenRef.current === 'about') {
+        setScreen('home');
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, []);
+
+  const enter = useRef(() => setScreen((p) => (p === 'splash' ? 'home' : p))).current;
+
+  return (
+    <View style={styles.fill}>
+      <StatusBar />
+      {screen === 'splash' && <Splash onEnter={enter} />}
+      {screen === 'home' && (
+        <Home
+          onOpen={(i) => {
+            setIndex(i);
+            setScreen('detail');
+          }}
+          onAbout={() => setScreen('about')}
+        />
+      )}
+      {screen === 'detail' && <Detail key={index} index={index} onBack={() => setScreen('home')} onGo={setIndex} />}
+      {screen === 'about' && <About onBack={() => setScreen('home')} />}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  fill: { flex: 1, backgroundColor: '#06121f' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  logoWrap: { width: 130, height: 130, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    borderWidth: 2,
+    borderColor: GOLD,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  factory: { color: '#fff', fontSize: 40, fontWeight: 'bold', textAlign: 'center' },
+  tagline: { color: '#cbd5e1', fontSize: 17, textAlign: 'center', marginTop: 6 },
+  by: { color: '#94a3b8', fontSize: 14, textAlign: 'center' },
+  builder: { color: GOLD, fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginTop: 4 },
+  phone: { color: '#e2e8f0', fontSize: 20, textAlign: 'center', marginTop: 10, letterSpacing: 1 },
+  enterBtn: {
+    backgroundColor: GOLD,
+    paddingVertical: 13,
+    paddingHorizontal: 34,
+    borderRadius: 30,
+    marginTop: 18,
+  },
+  enterTxt: { color: '#06121f', fontSize: 17, fontWeight: 'bold', textAlign: 'center' },
+
+  homeHeader: {
+    paddingTop: 56,
+    paddingBottom: 26,
+    alignItems: 'center',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+  },
+  homeTitle: { color: '#fff', fontSize: 30, fontWeight: 'bold', marginTop: 6 },
+  homeSub: { color: GOLD, fontSize: 16, marginTop: 4 },
+  homeHint: { color: '#cbd5e1', fontSize: 12, marginTop: 8 },
+  card: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    borderRadius: 20,
+    padding: 14,
+  },
+  cardIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardNum: { color: 'rgba(255,255,255,0.75)', fontSize: 12, ...rtl },
+  cardTitle: { color: '#fff', fontSize: 17, fontWeight: 'bold', ...rtl },
+  cardShort: { color: 'rgba(255,255,255,0.85)', fontSize: 13, marginTop: 2, ...rtl },
+  cardArrow: { color: '#fff', fontSize: 34, marginLeft: 4 },
+  aboutBtn: {
+    marginHorizontal: 16,
+    marginTop: 22,
+    padding: 15,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: GOLD,
+    alignItems: 'center',
+  },
+  aboutBtnTxt: { color: GOLD, fontSize: 16, fontWeight: 'bold' },
+  footer: { color: '#64748b', fontSize: 12, textAlign: 'center', marginTop: 16 },
+
+  topBar: {
+    paddingTop: 46,
+    paddingHorizontal: 16,
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  backBtn: { paddingVertical: 8, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 16 },
+  backTxt: { color: '#fff', fontSize: 14 },
+  counter: { color: '#fff', fontSize: 14 },
+  progressTrack: {
+    height: 4,
+    marginHorizontal: 16,
+    marginTop: 12,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    flexDirection: 'row-reverse',
+  },
+  progressFill: { height: 4, borderRadius: 2 },
+  heroImg: { width: '100%', height: 200, borderRadius: 22 },
+  stageNum: { fontSize: 14, fontWeight: 'bold', ...rtl },
+  stageTitle: { color: '#fff', fontSize: 25, fontWeight: 'bold', marginTop: 2, ...rtl },
+  stageShort: { color: '#cbd5e1', fontSize: 14, marginTop: 4, ...rtl },
+  statsRow: { flexDirection: 'row-reverse', gap: 10, marginTop: 16 },
+  stat: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  statK: { color: '#94a3b8', fontSize: 11, ...rtl },
+  statV: { color: '#fff', fontSize: 13, fontWeight: 'bold', marginTop: 3, ...rtl },
+  textCard: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.09)',
+  },
+  stageText: { color: '#f1f5f9', fontSize: 16, lineHeight: 29, ...rtl },
+  sectionHead: { color: GOLD, fontSize: 17, fontWeight: 'bold', marginTop: 22, marginBottom: 8, ...rtl },
+  pointRow: { flexDirection: 'row-reverse', alignItems: 'flex-start', marginBottom: 10 },
+  numBadge: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    marginTop: 2,
+  },
+  numTxt: { color: '#06121f', fontWeight: 'bold', fontSize: 13 },
+  pointTxt: { flex: 1, color: '#e2e8f0', fontSize: 15, lineHeight: 25, ...rtl },
+  chips: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  chipTxt: { color: '#e2e8f0', fontSize: 13 },
+  factBox: {
+    marginTop: 22,
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: GOLD,
+    backgroundColor: 'rgba(251,191,36,0.08)',
+  },
+  factHead: { color: GOLD, fontWeight: 'bold', fontSize: 15, ...rtl },
+  factTxt: { color: '#fef3c7', fontSize: 15, lineHeight: 25, marginTop: 6, ...rtl },
+  swipeHint: { color: '#64748b', fontSize: 12, textAlign: 'center', marginTop: 20 },
+  navBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    padding: 16,
+    paddingBottom: 26,
+    backgroundColor: 'rgba(6,18,31,0.92)',
+  },
+  navBtn: {
+    paddingVertical: 13,
+    paddingHorizontal: 32,
+    borderRadius: 26,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+  },
+  navTxt: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+});
