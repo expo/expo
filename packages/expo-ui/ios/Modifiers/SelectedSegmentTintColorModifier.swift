@@ -8,7 +8,7 @@ internal struct SelectedSegmentTintColorModifier: ViewModifier, Record {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
-#if os(iOS) || os(tvOS)
+#if os(iOS)
     content.background(SegmentedControlTintSetter(color: color.map { UIColor($0) }))
 #else
     content
@@ -16,7 +16,7 @@ internal struct SelectedSegmentTintColorModifier: ViewModifier, Record {
   }
 }
 
-#if os(iOS) || os(tvOS)
+#if os(iOS)
 private struct SegmentedControlTintSetter: UIViewRepresentable {
   let color: UIColor?
 
