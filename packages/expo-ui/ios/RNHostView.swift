@@ -79,8 +79,9 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
+      // Top leading, where Yoga places a child that is smaller than this view.
       Children()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
           if props.layoutRoot, let view = firstChildUIView {
