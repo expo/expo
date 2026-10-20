@@ -24,9 +24,12 @@ Run focused package scripts from `packages/expo-router` as needed:
 
 ## Testing
 
-- Name tests for the behavior they check and keep them as minimal as possible. Write the specific tests strictly needed to prove a change.
+- Name tests for the behavior they check. Keep each test minimal: few behaviors per test, not few lines. Write the specific tests strictly needed to prove a change.
 - Prefer `renderRouter` from [`src/testing-library`](src/testing-library/index.tsx) for route behavior
-- The `renderHook` re-exported by `src/testing-library` is the plain React Native Testing Library helper. For hooks that need Router context, use the route-aware [`src/hooks/__tests__/renderHook.tsx`](src/hooks/__tests__/renderHook.tsx) helper.
+- The `renderHook` re-exported by `src/testing-library` is the plain React Native Testing Library helper. When a test only needs a hook value inside Router context, use the route-aware [`src/hooks/__tests__/renderHook.tsx`](src/hooks/__tests__/renderHook.tsx) helper instead of `renderRouter`.
+- Write each test out in full. Put the layout, the route map, and the render call inline in the test. Do not hide setup in local helper functions, config maps, or `describe.each`. A longer, explicit suite is better than a short, indirect one.
+- Do not compute expected values. Do not use `includes()`, ternaries, or `if` in a test body. Split the cases into separate tests and assert literal values, for example `toBe(true)` and `toBe(false)`.
+- Assert whole messages with `toHaveBeenCalledWith('<full message>')`, not `expect.stringContaining(...)`.
 - Restore spies and mocks after tests. Explain non-obvious mock call indices close to their assertions.
 - For Swift changes, tests in `ios/Tests/` use Swift Testing (`@Test`/`@Suite`, `#expect`/`#require`). Run `et native-unit-tests --packages expo-router -p ios` when relevant. See [native test tooling](../../tools/src/commands/IosNativeUnitTests.ts).
 
