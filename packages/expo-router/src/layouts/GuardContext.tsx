@@ -11,8 +11,10 @@ import type { Href } from '../types';
 export type GuardedRedirects = Map<string, Href | undefined>;
 // `Href` = guarded with a redirect, `null` = guarded with no available destination.
 export type GuardRedirect = Href | null;
+// `isRedirectExplicit` is true when the guard sets `redirectTo`, false for the navigator fallback.
+export type ResolvedGuard = { redirect: GuardRedirect; isRedirectExplicit: boolean };
 // Per route name; a missing entry means the route is unguarded.
-export type ResolvedGuards = Map<string, GuardRedirect>;
+export type ResolvedGuards = Map<string, ResolvedGuard>;
 
 export const GuardContext = createContext<ResolvedGuards | null>(null);
 const GuardRedirectFallbackContext = createContext<GuardRedirectFallback[]>([]);
@@ -59,18 +61,13 @@ function computeGuardState(
   };
 }
 
-export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
+export function useResolvedGuard(routeName: string): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  if (!guards) {
-    return undefined;
-  }
+  return guards?.get(routeName) ?? guards?.get(normalizeRouteName(routeName));
+}
 
-  if (guards.has(routeName)) {
-    return guards.get(routeName) ?? null;
-  }
-
-  const normalizedRouteName = normalizeRouteName(routeName);
-  return guards.has(normalizedRouteName) ? (guards.get(normalizedRouteName) ?? null) : undefined;
+export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
+  return useResolvedGuard(routeName)?.redirect;
 }
 
 export function normalizeRouteName(routeName: string): string {
@@ -133,11 +130,14 @@ function resolveGuardRedirects(
   guardedRedirects: GuardedRedirects,
   fallbackHref: Href | undefined
 ): ResolvedGuards {
-  return new Map<string, GuardRedirect>(
-    Array.from(
-      guardedRedirects,
-      ([name, redirectTo]) => [name, redirectTo ?? fallbackHref ?? null] as const
-    )
+  return new Map(
+    Array.from(guardedRedirects, ([name, redirectTo]): [string, ResolvedGuard] => [
+      name,
+      {
+        redirect: redirectTo ?? fallbackHref ?? null,
+        isRedirectExplicit: redirectTo !== undefined,
+      },
+    ])
   );
 }
 

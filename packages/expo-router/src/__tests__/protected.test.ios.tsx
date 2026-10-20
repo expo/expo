@@ -370,6 +370,111 @@ it('should move away from a focused route when its guard flips false', async () 
   expect(screen).toHavePathname('/');
 });
 
+it('should not add a second copy of the route below when the focused route becomes guarded', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [signedIn, setState] = useState(false);
+      setSignedIn = setState;
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={!signedIn}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
+    '(tabs)/index': () => <Text testID="home">home</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/login'));
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['(tabs)', 'login']);
+
+  await act(() => {
+    setSignedIn(true);
+  });
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['(tabs)']);
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('should return to the screen below, not the fallback, when the focused route becomes guarded', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [signedIn, setState] = useState(false);
+      setSignedIn = setState;
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={!signedIn}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/settings'));
+  await act(() => router.push('/login'));
+  expect(screen.getByTestId('login')).toBeVisible();
+
+  await act(() => {
+    setSignedIn(true);
+  });
+
+  expect(screen.getByTestId('settings')).toBeVisible();
+  expect(screen).toHavePathname('/settings');
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['index', 'settings']);
+});
+
+it('should not add a second copy of the anchor when a deep link opens a guarded route', async () => {
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'index' },
+        default: function Layout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['index']);
+});
+
 it('should remove guarded routes from history when a guard flips false', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
