@@ -699,9 +699,7 @@ function createReactCompilerPreflight(input: NoxcturnalTransformInput): Prefligh
   return {
     reactCompiler: {
       compilationMode: 'infer',
-      // babel-plugin-react-compiler defaults to critical errors in development;
-      // Babel preset Expo explicitly selects NONE in production.
-      panicThreshold: input.options.dev ? 'critical_errors' : 'none',
+      panicThreshold: 'none',
       target: '19',
       enableResetCacheOnSourceFileChanges: input.options.dev,
       // Noxcturnal adds the compiler's `use no memo` and `use no forget`
