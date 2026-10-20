@@ -14,6 +14,7 @@ import { DEFAULT_IGNORE_PATHS } from './Options';
 import {
   buildPathMatchObjects,
   isIgnoredPathWithMatchObjects,
+  isNodeModulesPath,
   isProjectLocalPath,
   toPosixPath,
 } from './utils/Path';
