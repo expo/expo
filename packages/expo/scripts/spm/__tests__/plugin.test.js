@@ -398,6 +398,27 @@ describe('the module registry', () => {
     );
   });
 
+  it('resolves a hoisted react-native from the app root when the context names none', () => {
+    generateModulesProvider.mockImplementation(() => {
+      throw new Error('expo-modules-autolinking exited with code 1');
+    });
+    // Node resolves to the real path, and the macOS temporary folder is behind a symlink.
+    const root = fs.realpathSync(tmp);
+    const reactNativeRoot = path.join(root, 'node_modules', 'react-native');
+    fs.mkdirSync(reactNativeRoot, { recursive: true });
+    fs.writeFileSync(path.join(reactNativeRoot, 'package.json'), '{"name":"react-native"}');
+    const hoistedApp = () =>
+      runPlugin(tmp, {
+        projectRoot: path.join(root, 'apps', 'mobile'),
+        appRoot: path.join(root, 'apps', 'mobile', 'ios'),
+        reactNativeRoot: undefined,
+      });
+
+    expect(hoistedApp).toThrow(
+      '`node ../../node_modules/react-native/scripts/setup-apple-spm.js update`'
+    );
+  });
+
   it('fails the sync when generation writes no provider although modules resolved', () => {
     generateModulesProvider.mockReturnValue(null);
 
