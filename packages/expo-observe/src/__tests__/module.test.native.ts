@@ -294,6 +294,19 @@ describe('module Proxy', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  it('warns when errorSampleRate is lower than sampleRate', () => {
+    const Observe = loadModule();
+    Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('warns when errorSampleRate is set without sampleRate', () => {
+    // An unset `sampleRate` sends every installation, so errors are sent from all of them.
+    const Observe = loadModule();
+    Observe.configure({ errorSampleRate: 0.5 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('passes the config through to the native module unchanged', () => {
     const Observe = loadModule();
     Observe.configure({ environment: 'test', errorHandlingEnabled: false });

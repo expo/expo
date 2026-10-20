@@ -187,7 +187,7 @@ internal struct ObservabilityManager {
       rowId: { $0.id },
       // Filtering inside `send` keeps the cursor and chunk halving on the whole fetched chunk.
       send: { fetchedLogs in
-        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors)
+        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch)
         guard !logs.isEmpty else {
           return nil
         }
@@ -390,12 +390,9 @@ internal struct ObservabilityManager {
     return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
-  internal nonisolated static func sampledLogs(
-    _ logs: [LogRow],
-    shouldDispatch: Bool,
-    shouldDispatchErrors: Bool
-  ) -> [LogRow] {
-    return logs.filter { errorLogNames.contains($0.name) ? shouldDispatchErrors : shouldDispatch }
+  // In-sample for `sampleRate` sends every log, so errors use max(`errorSampleRate`, `sampleRate`).
+  internal nonisolated static func sampledLogs(_ logs: [LogRow], shouldDispatch: Bool) -> [LogRow] {
+    return shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
   }
 
   private static func isInSample(rate: Double?) -> Bool {
