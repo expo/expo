@@ -115,11 +115,11 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
  * A module observed while `installModuleCaptureHook()` was active.
  */
 export interface CapturedModule {
-  /** The module id (cache key). May diverge from `filename` for virtual modules. */
+  /** The CommonJS cache key, or an ES module's filename. May diverge from `filename` if virtual. */
   id: string;
   /** The filename Node compiled the module under. Authoritative even for transpiled sources. */
   filename: string;
-  /** The source content Node executed for the module. */
+  /** The source content Node received for the module, before Node strips any types. */
   content: string;
 }
 
