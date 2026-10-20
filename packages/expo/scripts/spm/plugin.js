@@ -38,6 +38,7 @@
 'use strict';
 
 const fs = require('fs');
+const { createRequire } = require('module');
 const path = require('path');
 
 const { readPodfileProperties, resolveAppTarget } = require('./app-target');
@@ -73,6 +74,7 @@ const {
 const {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
+  assertHeadersMatchSources,
   byteOrder,
   headersXCFrameworkDirs,
   prepareCompileInterfaces,
@@ -316,7 +318,7 @@ function podRecords(identities) {
  * instead. Returns that package's directory, or null when expo-modules-jsi is not
  * autolinked.
  */
-function linkExpoModulesJSI(records, outDir, cacheDir) {
+function linkExpoModulesJSI(records, outDir, cacheDir, appRoot) {
   const record = records.get(JSI_POD);
   if (record == null) return null;
   record.linkedAs = 'build-phase';
@@ -330,7 +332,29 @@ function linkExpoModulesJSI(records, outDir, cacheDir) {
       how: `Reinstall ${packageName} with your package manager. In the Expo repository, build the headers with \`et prebuild ${packageName}\`.`,
     });
   }
+  const builtRoot = buildPhaseJsiRoot(appRoot);
+  assertHeadersMatchSources(headers, {
+    packageName,
+    productName,
+    sourceRoots: builtRoot == null ? [moduleRoot] : [moduleRoot, builtRoot],
+  });
   return emitExpoModulesJSIHeadersPackage(headers, outDir);
+}
+
+/**
+ * The expo-modules-jsi the app's "Build ExpoModulesJSI" phase builds, resolved through expo and
+ * expo-modules-core as its launcher in script-phases.js does. Null when that chain does not resolve.
+ */
+function buildPhaseJsiRoot(appRoot) {
+  // Not `require.resolve(..., { paths })`: from inside the expo package, Node resolves `expo` to
+  // this package itself, whatever the paths.
+  const dir = (name, from) =>
+    path.dirname(createRequire(path.join(from, 'package.json')).resolve(`${name}/package.json`));
+  try {
+    return dir('expo-modules-jsi', dir('expo-modules-core', dir('expo', appRoot)));
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -688,7 +712,7 @@ module.exports = function expoSpmPlugin(context) {
     : null;
 
   const records = podRecords(identities);
-  const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir);
+  const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir, appRoot);
   const precompiled = linkPrecompiledPods(identities, records, artifactCacheDir);
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is

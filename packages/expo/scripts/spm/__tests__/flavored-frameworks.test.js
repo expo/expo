@@ -7,6 +7,7 @@ const path = require('path');
 
 const {
   FLAVORS,
+  assertHeadersMatchSources,
   byteOrder,
   headersXCFrameworkDirs,
   prepareCompileInterfaces,
@@ -15,6 +16,7 @@ const {
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
+const { thrownBy } = require('./helpers');
 
 // GNU tar reads the `C:` in a Windows path as a remote hostname and fails to connect.
 const itNotWindows = process.platform === 'win32' ? it.skip : it;
@@ -445,5 +447,89 @@ describe('resolveHeadersXCFramework', () => {
     const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
     fs.rmSync(path.join(shipped, 'Info.plist'));
     expect(resolve).toThrow(`${shipped} has no Info.plist`);
+  });
+});
+
+describe('assertHeadersMatchSources', () => {
+  let root;
+  let headers;
+
+  const writeJson = (file, value) => {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(value));
+  };
+  const stampHeaders = (version) =>
+    writeJson(path.join(headers, 'expo-package.json'), { name: 'test-package', version });
+  const installed = (name, version) => {
+    const dir = path.join(root, name);
+    writeJson(path.join(dir, 'package.json'), { name: 'test-package', version });
+    return dir;
+  };
+  const check = (sourceRoots) =>
+    assertHeadersMatchSources(headers, {
+      packageName: 'test-package',
+      productName: 'ExpoPair',
+      sourceRoots,
+    });
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-headers-version-'));
+    headers = path.join(root, 'ExpoPairHeaders.xcframework');
+    fs.mkdirSync(headers);
+  });
+
+  afterEach(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  // Headers published before the stamp existed carry none.
+  it('accepts headers without a version stamp', () => {
+    expect(() => check([installed('module', '1.0.0')])).not.toThrow();
+  });
+
+  it('accepts headers of the same version as every source', () => {
+    stampHeaders('1.0.0');
+    expect(() => check([installed('module', '1.0.0'), installed('built', '1.0.0')])).not.toThrow();
+  });
+
+  it('rejects headers of another version, naming both versions, both paths, why and how', () => {
+    stampHeaders('2.0.0');
+    const moduleRoot = installed('module', '1.0.0');
+    const { message } = thrownBy(() => check([moduleRoot]));
+    for (const part of [headers, '2.0.0', moduleRoot, '1.0.0']) {
+      expect(message).toContain(part);
+    }
+    expect(message).toContain('"Build ExpoPair" phase builds the framework from the installed');
+    expect(message).toContain('et prebuild test-package');
+    expect(message).toContain('EXPO_PRECOMPILED_MODULES_PATH');
+  });
+
+  it('rejects headers that differ from any one source', () => {
+    stampHeaders('1.0.0');
+    const built = installed('built', '1.1.0');
+    expect(() => check([installed('module', '1.0.0'), built])).toThrow(built);
+  });
+
+  it('names a stamp it cannot parse instead of surfacing the JSON error', () => {
+    const stampPath = path.join(headers, 'expo-package.json');
+    fs.writeFileSync(stampPath, '{ not json');
+    const { message } = thrownBy(() => check([installed('module', '1.0.0')]));
+    expect(message).toContain(`[expo-spm-plugin] ${stampPath}`);
+    expect(message).toContain('et prebuild test-package');
+    expect(message).not.toMatch(/SyntaxError|Unexpected token/);
+  });
+
+  it('names a stamp without a version', () => {
+    const stampPath = path.join(headers, 'expo-package.json');
+    writeJson(stampPath, { name: 'test-package' });
+    expect(() => check([installed('module', '1.0.0')])).toThrow(`[expo-spm-plugin] ${stampPath}`);
+  });
+
+  it('names an installed package.json without a version', () => {
+    stampHeaders('1.0.0');
+    const moduleRoot = installed('module', undefined);
+    const { message } = thrownBy(() => check([moduleRoot]));
+    expect(message).toContain(`[expo-spm-plugin] ${path.join(moduleRoot, 'package.json')}`);
+    expect(message).not.toContain('undefined');
   });
 });

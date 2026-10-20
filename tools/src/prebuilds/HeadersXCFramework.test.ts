@@ -10,6 +10,7 @@ import path from 'path';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import {
+  composeHeadersXCFrameworkAsync,
   getHeadersXCFrameworkPath,
   shouldWriteHeadersXCFramework,
   writeHeadersXCFrameworkAsync,
@@ -379,6 +380,31 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
       message: `${infoPlist} has no AvailableLibraries array; it is not a valid xcframework.`,
     });
     assert.equal(await fs.pathExists(path.dirname(destination)), false);
+  });
+});
+
+describe('composeHeadersXCFrameworkAsync', appleToolsOnly, () => {
+  it('stamps the output with the npm package name and version it was built from', async () => {
+    const root = await makeTempRootAsync();
+    const pkg: SPMPackageSource = {
+      path: path.join(root, 'package'),
+      buildPath: path.join(root, 'build'),
+      packageName: 'fixture-package',
+      packageVersion: '1.2.3',
+      getSwiftPMConfiguration: () => ({ products: [] }),
+    };
+    await createSourceXCFrameworkAsync(Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'), [
+      DEVICE,
+    ]);
+
+    await composeHeadersXCFrameworkAsync(pkg, product(), 'Debug');
+
+    assert.deepEqual(
+      await fs.readJson(
+        path.join(getHeadersXCFrameworkPath(pkg.buildPath, NAME), 'expo-package.json')
+      ),
+      { name: 'fixture-package', version: '1.2.3' }
+    );
   });
 });
 

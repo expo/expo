@@ -279,6 +279,46 @@ function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cache
   return null;
 }
 
+/**
+ * Throws when the headers XCFramework of `productName` was generated from another version of
+ * `packageName` than any of `sourceRoots`, the installed copies the app's build phase may build
+ * the framework from. Headers without the `expo-package.json` stamp predate it and pass.
+ */
+function assertHeadersMatchSources(headers, { packageName, productName, sourceRoots }) {
+  const stampPath = path.join(headers, 'expo-package.json');
+  if (!fs.existsSync(stampPath)) return;
+  const readVersion = (file) => readPackageVersion(file, { packageName, productName });
+  const headersVersion = readVersion(stampPath);
+  for (const root of sourceRoots) {
+    const version = readVersion(path.join(root, 'package.json'));
+    if (version === headersVersion) continue;
+    throw pluginError({
+      what: `${headers} was generated from ${packageName} ${headersVersion}, but ${packageName} at ${root} is ${version}.`,
+      why: `The app's "Build ${productName}" phase builds the framework from the installed sources, and Swift packages compile against the headers. Headers from another version make the link fail with an error that does not name this cause.`,
+      how: `Make the versions match: in the Expo repository, rebuild the headers with \`et prebuild ${packageName}\`; otherwise unset EXPO_PRECOMPILED_MODULES_PATH, or reinstall ${packageName}.`,
+    });
+  }
+}
+
+function readPackageVersion(file, { packageName, productName }) {
+  let version;
+  let cause;
+  try {
+    version = JSON.parse(fs.readFileSync(file, 'utf8')).version;
+  } catch (error) {
+    cause = error;
+  }
+  if (typeof version === 'string') return version;
+  throw pluginError(
+    {
+      what: `${file} could not be read as JSON with a string "version".`,
+      why: `The plugin compares that version to check that the ${productName} headers match the installed ${packageName} sources; this file is damaged or incomplete.`,
+      how: `Reinstall ${packageName}. In the Expo repository, rebuild the headers with \`et prebuild ${packageName}\`.`,
+    },
+    { cause }
+  );
+}
+
 /** The directories `resolveHeadersXCFramework` searches, in lookup order. */
 function headersXCFrameworkDirs(packageName, moduleRoot) {
   return artifactBaseDirs(packageName, moduleRoot).map((baseDir) =>
@@ -506,6 +546,7 @@ module.exports = {
   FLAVORS,
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
+  assertHeadersMatchSources,
   byteOrder,
   headersXCFrameworkDirs,
   prepareCompileInterfaces,

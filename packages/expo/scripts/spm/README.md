@@ -75,7 +75,9 @@ in `headers/xcframeworks`. The plugin wraps them in a generated
 adds the app target build phase "Build ExpoModulesJSI". Before the app's sources
 compile, the phase finds the installed `expo-modules-jsi` and runs its
 `apple/scripts/build-swiftpm-app-phase.sh`, which builds the framework into the
-build folder, then copies it to where the app links and embeds it.
+build folder, then copies it to where the app links and embeds it. When the
+headers carry an `expo-package.json` version stamp, sync fails if that version differs
+from the installed `expo-modules-jsi` or from the copy the phase builds.
 
 ## Unsupported modules
 

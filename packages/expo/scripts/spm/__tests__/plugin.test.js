@@ -3581,8 +3581,40 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
 describe('ExpoModulesJSI', () => {
   captureConsole();
 
-  /** Runs the plugin for core, expo-asset and, with `withJsi`, expo-modules-jsi. */
-  function syncApp({ withJsi = true, headers = 'resolved' } = {}) {
+  /**
+   * Writes the expo-modules-jsi `versions`: `headers` into the headers' stamp, `autolinked`
+   * into the autolinked package, and `built` into the copy the build phase's launcher reaches
+   * through expo and expo-modules-core. Returns that copy's directory.
+   */
+  function writeJsiVersions(tmp, headersXCFramework, { headers, autolinked, built }) {
+    const writePackage = (dir, name, version) => {
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name, version }));
+      return dir;
+    };
+    fs.writeFileSync(
+      path.join(headersXCFramework, 'expo-package.json'),
+      JSON.stringify({ name: 'expo-modules-jsi', version: headers })
+    );
+    writePackage(path.join(tmp, 'expo-modules-jsi'), 'expo-modules-jsi', autolinked);
+    const expo = writePackage(path.join(tmp, 'app', 'node_modules', 'expo'), 'expo', '1.0.0');
+    const core = writePackage(
+      path.join(expo, 'node_modules', 'expo-modules-core'),
+      'expo-modules-core',
+      '1.0.0'
+    );
+    return writePackage(
+      path.join(core, 'node_modules', 'expo-modules-jsi'),
+      'expo-modules-jsi',
+      built
+    );
+  }
+
+  /**
+   * Runs the plugin for core, expo-asset and, with `withJsi`, expo-modules-jsi. `versions`
+   * stamps the headers and installs versions as `writeJsiVersions` describes.
+   */
+  function syncApp({ withJsi = true, headers = 'resolved', versions } = {}) {
     const tmp = makeTempDir('expo-spm-jsi-');
     const outDir = path.join(tmp, 'out');
     const headersXCFramework = path.join(tmp, 'npm', 'ExpoModulesJSIHeaders.xcframework');
@@ -3591,6 +3623,8 @@ describe('ExpoModulesJSI', () => {
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const jsi = pureSwiftModule(path.join(tmp, 'expo-modules-jsi'), 'ExpoModulesJSI', spec());
     const asset = pureSwiftModule(path.join(tmp, 'expo-asset'), 'ExpoAsset', spec());
+    const builtJsiRoot =
+      versions == null ? null : writeJsiVersions(tmp, headersXCFramework, versions);
     resolveExpoModules.mockReturnValue(
       modulesOf([
         coreAt(core),
@@ -3616,7 +3650,7 @@ describe('ExpoModulesJSI', () => {
         path.join(outDir, 'expo', 'expo-source', 'ExpoAsset', 'Package.swift'),
         'utf8'
       );
-    return { tmp, outDir, headersXCFramework, result, thrown, assetManifest };
+    return { tmp, outDir, headersXCFramework, builtJsiRoot, result, thrown, assetManifest };
   }
 
   afterAll(restoreModuleMocks);
@@ -3678,6 +3712,32 @@ describe('ExpoModulesJSI', () => {
       expect(thrown.message).toMatch(/only the headers/);
       expect(thrown.message).toMatch(/reinstall/i);
       expect(thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+    });
+  });
+
+  // The build phase compiles the framework from the installed sources, so headers of another
+  // version leave a source package referencing a symbol the framework lacks.
+  describe('when its headers are stamped with a version', () => {
+    it('fails the sync when the autolinked expo-modules-jsi is another version', () => {
+      const app = syncApp({ versions: { headers: '2.0.0', autolinked: '1.0.0', built: '2.0.0' } });
+      expect(app.thrown).toBeInstanceOf(Error);
+      for (const part of [app.headersXCFramework, '2.0.0', '1.0.0']) {
+        expect(app.thrown.message).toContain(part);
+      }
+      expect(app.thrown.message).toContain(path.join(app.tmp, 'expo-modules-jsi'));
+      expect(app.thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+    });
+
+    it('fails the sync when the copy the build phase builds is another version', () => {
+      const app = syncApp({ versions: { headers: '1.0.0', autolinked: '1.0.0', built: '1.1.0' } });
+      expect(app.thrown).toBeInstanceOf(Error);
+      expect(app.thrown.message).toContain(app.builtJsiRoot);
+      expect(app.thrown.message).toContain('1.1.0');
+    });
+
+    it('syncs when every copy is that version', () => {
+      const app = syncApp({ versions: { headers: '1.0.0', autolinked: '1.0.0', built: '1.0.0' } });
+      expect(app.thrown).toBeNull();
     });
   });
 
