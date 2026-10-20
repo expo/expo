@@ -45,9 +45,10 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val context: Context
@@ -82,7 +83,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         AppStartupManager.markInteractive(context, attributes?.routeName, attributes?.params)
 
         scope.launch {
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
         }
       }
 
@@ -103,7 +104,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // alongside whatever's being logged. The session row itself is
           // already persisted eagerly in `OnCreate`, so this is purely about
           // ordering startup-metric writes ahead of caller-driven log events.
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
           // Globals merge happens inside `sessionManager.addLogs` so every
           // persistence path picks them up. The session waits for its row
           // before inserting.
@@ -206,8 +207,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnActivityEntersBackground {
+        // A pause skews startup timings, so stop recording and save what was recorded before.
+        AppStartupManager.stopRecording()
         scope.launch {
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
         }
       }
 
@@ -339,25 +342,25 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // Attach any pending startup metrics first so the download-time
           // metric lands alongside them. The session waits for its row before
           // inserting.
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
           mainSession.addMetrics(listOf(metric))
         }
       }
     }
   }
 
-  // Persists the collected startup metrics once, then suspends until that write
-  // completes. The session waits for its row before inserting.
-  internal suspend fun saveStartupMetricsIfNotSaved() = saveStartupMetricsJob.join()
-
-  // Startup metrics are persisted on first access and exactly once: `by lazy`
-  // runs the initializer a single time even across threads, so concurrent callers
-  // don't each insert them.
-  private val saveStartupMetricsJob: Job by lazy {
-    scope.launch {
-      mainSession.addMetrics(AppStartupManager.metrics)
+  // Persists the startup metrics recorded since the last save. The lock makes a concurrent
+  // caller wait for an in-flight save, so its own write still lands after the startup metrics.
+  // The session waits for its row before inserting.
+  private suspend fun saveStartupMetrics() =
+    saveStartupMetricsMutex.withLock {
+      val metrics = AppStartupManager.takeUnsavedMetrics()
+      if (metrics.isNotEmpty()) {
+        mainSession.addMetrics(metrics)
+      }
     }
-  }
+
+  private val saveStartupMetricsMutex = Mutex()
 }
 
 @OptimizedRecord
