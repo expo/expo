@@ -47,7 +47,6 @@ const ScreenFallback_1 = require("./ScreenFallback");
 const BottomTabBarHeightCallbackContext_1 = require("../utils/BottomTabBarHeightCallbackContext");
 const BottomTabBarHeightContext_1 = require("../utils/BottomTabBarHeightContext");
 const useAnimatedHashMap_1 = require("../utils/useAnimatedHashMap");
-const EPSILON = 1e-5;
 const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
@@ -86,6 +85,17 @@ function BottomTabView(props) {
     }
     const previousRouteKeyRef = React.useRef(focusedRouteKey);
     const tabAnims = (0, useAnimatedHashMap_1.useAnimatedHashMap)(state);
+    const [lastUpdate, setLastUpdate] = React.useState({
+        current: focusedRouteKey,
+        animating: false,
+    });
+    if (lastUpdate.current !== focusedRouteKey) {
+        setLastUpdate({
+            current: focusedRouteKey,
+            previous: lastUpdate.current,
+            animating: true,
+        });
+    }
     React.useEffect(() => {
         const previousRouteKey = previousRouteKeyRef.current;
         let popToTopAction;
@@ -99,6 +109,7 @@ function BottomTabView(props) {
                 };
             }
         }
+        let timer;
         const animateToIndex = () => {
             if (previousRouteKey !== focusedRouteKey) {
                 navigation.emit({
@@ -134,10 +145,22 @@ function BottomTabView(props) {
                         target: focusedRouteKey,
                     });
                 }
+                if (finished) {
+                    // Delay clearing so the previous screen stays attached
+                    // This will give time for any native logic to run
+                    timer = setTimeout(() => {
+                        setLastUpdate((update) => update.animating ? { ...update, animating: false } : update);
+                    }, 32);
+                }
             });
         };
         animateToIndex();
         previousRouteKeyRef.current = focusedRouteKey;
+        return () => {
+            if (timer !== undefined) {
+                clearTimeout(timer);
+            }
+        };
     }, [descriptors, focusedRouteKey, navigation, state.index, state.routes, tabAnims]);
     const dimensions = elements_1.SafeAreaProviderCompat.initialMetrics.frame;
     const [tabBarHeight, setTabBarHeight] = React.useState(() => (0, BottomTabBar_1.getTabBarHeight)({
@@ -186,18 +209,12 @@ function BottomTabView(props) {
                         },
                     }) ?? {};
                     const animationEnabled = hasAnimation(descriptor.options);
+                    const isAnimatingRoute = lastUpdate.animating &&
+                        (lastUpdate.previous === route.key || lastUpdate.current === route.key);
                     const activityState = isFocused
                         ? STATE_ON_TOP // the screen is on top after the transition
-                        : animationEnabled // is animation is not enabled, immediately move to inactive state
-                            ? tabAnims[route.key].interpolate({
-                                inputRange: [0, 1 - EPSILON, 1],
-                                outputRange: [
-                                    STATE_TRANSITIONING_OR_BELOW_TOP, // screen visible during transition
-                                    STATE_TRANSITIONING_OR_BELOW_TOP,
-                                    STATE_INACTIVE, // the screen is detached after transition
-                                ],
-                                extrapolate: 'extend',
-                            })
+                        : animationEnabled && isAnimatingRoute // if animation is not enabled, immediately move to inactive state
+                            ? STATE_TRANSITIONING_OR_BELOW_TOP // screen visible during transition
                             : STATE_INACTIVE;
                     return ((0, jsx_runtime_1.jsx)(ScreenFallback_1.MaybeScreen, { style: [react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }], active: activityState, enabled: detachInactiveScreens, freezeOnBlur: freezeOnBlur, shouldFreeze: activityState === STATE_INACTIVE && !isPreloaded, children: (0, jsx_runtime_1.jsx)(BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider, { value: tabBarPosition === 'bottom' ? tabBarHeight : 0, children: (0, jsx_runtime_1.jsx)(elements_1.Screen, { focused: isFocused, route: descriptor.route, navigation: descriptor.navigation, headerShown: headerShown, headerStatusBarHeight: headerStatusBarHeight, headerTransparent: headerTransparent, header: header({
                                     layout: dimensions,
