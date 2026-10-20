@@ -343,6 +343,7 @@ test('strips source, target and first-level options from deeper actions', () => 
     [
       'child-stack',
       {
+        type: 'stack',
         reduce(state, action) {
           childActions.push(action);
           return entry(childRouter, child.routeNames).reduce(state, action);

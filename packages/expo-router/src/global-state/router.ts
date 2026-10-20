@@ -11,7 +11,6 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
-import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
@@ -128,31 +127,13 @@ export function canGoBack(): boolean {
   return navigationRef.current.canGoBack();
 }
 
-export function canDismiss(): boolean {
+function canDismissImpl(read: () => boolean) {
   if (IS_DOM) {
     throw new Error(
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  if (navigationRef.current == null) {
-    return false;
-  }
-  // TODO(@ubax): check whether this is still needed
-  let state = navigationRef.getRootState();
-
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    // TODO(ENG-22019): Detect typeless stacks, including anchor/initialRouteName states that start
-    // with multiple routes.
-    if (state.type === 'stack' && getHistoryLength(state) > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
-
-    state = state.routes?.[state.index]?.state as any;
-  }
-
-  return false;
+  return read();
 }
 
 export function setParams(
@@ -298,7 +279,8 @@ type InternalRouter = ImperativeRouter & {
 
 export function createImperativeRouter(
   enqueue: (intent: RoutingIntent) => void,
-  setTransitionMode: (mode: NavigationTransitionMode) => void
+  setTransitionMode: (mode: NavigationTransitionMode) => void,
+  canDismiss: () => boolean
 ): InternalRouter {
   return {
     navigate: (href, options) => navigateImpl(enqueue, href, options),
@@ -306,7 +288,7 @@ export function createImperativeRouter(
     dismiss: (count, options) => dismissImpl(enqueue, count, options),
     dismissAll: (options) => dismissAllImpl(enqueue, options),
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
-    canDismiss,
+    canDismiss: () => canDismissImpl(canDismiss),
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
     goBack: (options) => goBackImpl(enqueue, options),

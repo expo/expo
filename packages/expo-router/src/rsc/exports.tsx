@@ -78,6 +78,9 @@ export function useRootNavigationState() {
 export function useCanGoBack() {
   throw new Error('useCanGoBack is not implemented in React Server Components yet');
 }
+export function useCanDismiss() {
+  throw new Error('useCanDismiss is not implemented in React Server Components yet');
+}
 export function useUnstableGlobalHref() {
   throw new Error('useUnstableGlobalHref is not implemented in React Server Components yet');
 }

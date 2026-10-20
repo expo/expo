@@ -3,7 +3,6 @@ import * as Linking from 'expo-linking';
 import { emitDomDismiss, emitDomDismissAll, emitDomGoBack } from '../../domComponents/emitDomEvent';
 import { navigationRef } from '../navigationRef';
 import {
-  canDismiss,
   canGoBack,
   createImperativeRouter,
   dismiss,
@@ -68,116 +67,10 @@ beforeEach(() => {
 it('throws before the module-level router is installed', () => {
   expect(() => navigate('/first')).toThrow('first render');
 
-  Object.assign(router, createImperativeRouter(mockAdd, mockSetTransitionMode));
-});
-
-describe('canDismiss', () => {
-  it('returns false when the container is not mounted', () => {
-    navigationRef.current = null;
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false when state is undefined', () => {
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false for single-route stack', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'stack',
-      routes: [{ name: 'home' }],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns true for stack with >1 routes', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'stack',
-      routes: [{ name: 'home' }, { name: 'detail' }],
-      index: 1,
-    });
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('traverses nested navigators (tab → stack with 2 routes → true)', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'page1' }, { name: 'page2' }],
-            index: 1,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(true);
-  });
-
-  it('returns false when index is undefined in state', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [{ name: 'tab1' }],
-    });
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('returns false for non-stack navigator with single route', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [{ name: 'only-page' }],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(false);
-  });
-
-  it('traverses deeply nested navigators (tab → stack → tab → stack with 2 routes)', () => {
-    (navigationRef.getRootState as jest.Mock).mockReturnValue({
-      type: 'tab',
-      routes: [
-        {
-          name: 'tab1',
-          state: {
-            type: 'stack',
-            routes: [
-              {
-                name: 'nested-tab',
-                state: {
-                  type: 'tab',
-                  routes: [
-                    {
-                      name: 'inner-tab',
-                      state: {
-                        type: 'stack',
-                        routes: [{ name: 'page1' }, { name: 'page2' }],
-                        index: 1,
-                      },
-                    },
-                  ],
-                  index: 0,
-                },
-              },
-            ],
-            index: 0,
-          },
-        },
-      ],
-      index: 0,
-    });
-    expect(canDismiss()).toBe(true);
-  });
+  Object.assign(
+    router,
+    createImperativeRouter(mockAdd, mockSetTransitionMode, () => false)
+  );
 });
 
 describe('linkTo', () => {

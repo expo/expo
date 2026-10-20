@@ -93,7 +93,8 @@ export function useSetRoutingTransitionMode() {
 export function ImperativeRoutingQueueBridge({
   enqueue,
   setTransitionMode,
-}: Pick<RoutingQueueApi, 'enqueue' | 'setTransitionMode'>) {
+  canDismiss,
+}: Pick<RoutingQueueApi, 'enqueue' | 'setTransitionMode'> & { canDismiss: () => boolean }) {
   useClientLayoutEffect(() => {
     if (__DEV__ && boundBridges > 0) {
       console.error(
@@ -107,13 +108,13 @@ export function ImperativeRoutingQueueBridge({
 
     boundBridges++;
     // The exported router identity must stay stable, so the bridge mutates it in place.
-    Object.assign(router, createImperativeRouter(enqueue, setTransitionMode));
+    Object.assign(router, createImperativeRouter(enqueue, setTransitionMode, canDismiss));
 
     return () => {
       boundBridges--;
       Object.assign(router, unboundRouter);
     };
-  }, [enqueue, setTransitionMode]);
+  }, [canDismiss, enqueue, setTransitionMode]);
 
   return null;
 }

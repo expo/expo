@@ -24,10 +24,16 @@ function queued(intent: RoutingIntent) {
 
 afterEach(() => router.setTransitionMode('preload-only'));
 
+const canDismiss = () => false;
+
 function RouterBridge() {
   const api = use(RoutingQueueApiContext)!;
   return (
-    <ImperativeRoutingQueueBridge enqueue={api.enqueue} setTransitionMode={api.setTransitionMode} />
+    <ImperativeRoutingQueueBridge
+      enqueue={api.enqueue}
+      setTransitionMode={api.setTransitionMode}
+      canDismiss={canDismiss}
+    />
   );
 }
 

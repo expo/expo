@@ -25,6 +25,7 @@ export type RouterRegistryEntry = {
     childAction?: RouterBrowserHistoryAction
   ) => RouterBrowserHistoryAction | undefined;
   routeNode?: RouteNode;
+  type: string | undefined;
 };
 
 // Entries appear after the first commit and state keys can change when navigation state is reset.

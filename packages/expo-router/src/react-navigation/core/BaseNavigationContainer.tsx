@@ -36,6 +36,7 @@ import {
   type PartialState,
   type Route,
 } from '../routers';
+import { CanDismissContext, getCanDismiss, ReadCanDismissContext } from './CanDismissContext';
 import { CanGoBackContext, hasBackTarget } from './CanGoBackContext';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
@@ -175,6 +176,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const getRootState = useLatestCallback(() => state);
   // TODO(@ubax): Back router.canGoBack() with this value (ENG-28350).
   const focusedCanGoBack = getFocusedCanGoBack(state);
+  const canDismiss = getCanDismiss(state, registry);
+  const readCanDismiss = useLatestCallback(() => canDismiss);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -323,17 +326,23 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
           <RouteInfoContext.Provider value={routeInfo}>
             <RootNavigationStateContext.Provider value={state}>
               <CanGoBackContext value={focusedCanGoBack}>
-                <RouterRegistrySettersContext.Provider value={registrySetters}>
-                  <EnsureSingleNavigator>
-                    <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                      <ThemeProvider value={theme}>{children}</ThemeProvider>
-                    </NavigationPendingContext>
-                  </EnsureSingleNavigator>
-                </RouterRegistrySettersContext.Provider>
+                <CanDismissContext value={canDismiss}>
+                  <ReadCanDismissContext value={readCanDismiss}>
+                    <RouterRegistrySettersContext.Provider value={registrySetters}>
+                      <EnsureSingleNavigator>
+                        <NavigationPendingContext
+                          value={isNavigationPending || isWaitingForLayouts}>
+                          <ThemeProvider value={theme}>{children}</ThemeProvider>
+                        </NavigationPendingContext>
+                      </EnsureSingleNavigator>
+                    </RouterRegistrySettersContext.Provider>
+                  </ReadCanDismissContext>
+                </CanDismissContext>
               </CanGoBackContext>
               <ImperativeRoutingQueueBridge
                 enqueue={routingQueue.enqueue}
                 setTransitionMode={routingQueue.setTransitionMode}
+                canDismiss={readCanDismiss}
               />
               <RoutingQueueDrainer processIntent={processIntent} />
               <BrowserHistorySync adapter={browserHistory} />

@@ -10,7 +10,6 @@ export {
   dismissAll,
   goBack,
   canGoBack,
-  canDismiss,
   setParams,
   linkTo,
   reload,

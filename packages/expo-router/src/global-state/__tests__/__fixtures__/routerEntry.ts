@@ -26,6 +26,7 @@ export function entry<State extends NavigationState, Action extends NavigationAc
 
   return {
     reduce,
+    type: typeof reduceOrRouter === 'function' ? undefined : reduceOrRouter.type,
     getBrowserHistoryForRouteFocus: typeof reduceOrRouter === 'function' ? undefined :
       (previous, next, childAction) => reduceOrRouter.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
     shouldActionChangeFocus: () => false,

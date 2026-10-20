@@ -442,6 +442,7 @@ export function useNavigationBuilder<
       getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
         router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
+      type: router.type,
     }),
     [reduce, routeNode, router]
   );

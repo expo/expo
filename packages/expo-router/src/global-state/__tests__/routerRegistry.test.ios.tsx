@@ -29,7 +29,7 @@ import {
 } from '../routerRegistry';
 import { node } from './__fixtures__/routeNode';
 
-const firstEntry: RouterRegistryEntry = { reduce: () => null };
+const firstEntry: RouterRegistryEntry = { reduce: () => null, type: undefined };
 
 function Registrant({ entry }: { entry: RouterRegistryEntry }) {
   useRegisterRouter('root', entry);
@@ -55,8 +55,8 @@ it('replaces entries and ignores stale-owner cleanup', async () => {
     affectedRouteKey: state.routes[state.index]?.key,
   }));
   const routeNode = node('root', [node('index')]);
-  const first = { reduce: firstReduce, routeNode };
-  const second = { reduce: secondReduce, routeNode };
+  const first = { reduce: firstReduce, routeNode, type: undefined };
+  const second = { reduce: secondReduce, routeNode, type: undefined };
   let setters = undefined as ContextType<typeof RouterRegistrySettersContext>;
 
   function CaptureSetters() {
