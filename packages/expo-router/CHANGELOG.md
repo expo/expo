@@ -13,6 +13,7 @@
 - [ios][native-tabs] Resolve Native Tabs `xcasset` icon names through the iOS asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 - [ios] Fix header title not adapting its color to content scrolling underneath a transparent header on iOS 26 Liquid Glass. ([#49639](https://github.com/expo/expo/pull/49639) by [@Jonas-C](https://github.com/Jonas-C))
 - Fix Tabs and Drawer routes with `dangerouslySingular` keeping the nested navigator state of the previous ID after navigating to a new ID. ([#51270](https://github.com/expo/expo/pull/51270) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ### 💡 Others
 
