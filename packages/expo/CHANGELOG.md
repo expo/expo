@@ -1,5 +1,28 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Fix web `ViewStyle` and `TextStyle` types disagreeing on `cursor`, `transitionDuration`, and `userSelect`. ([#51805](https://github.com/expo/expo/pull/51805) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823))
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - @expo/cli@58.1.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Add the `expo-modules` command, which runs `expo-modules-cli`. Modules that declare `expo` as a dependency can run it without depending on `expo-modules-cli`. ([#51755](https://github.com/expo/expo/pull/51755) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51797](https://github.com/expo/expo/pull/51797), [#51712](https://github.com/expo/expo/pull/51712), [#51728](https://github.com/expo/expo/pull/51728), [#51780](https://github.com/expo/expo/pull/51780), [#51716](https://github.com/expo/expo/pull/51716), [#51743](https://github.com/expo/expo/pull/51743), [#51663](https://github.com/expo/expo/pull/51663), [#51771](https://github.com/expo/expo/pull/51771), [#51687](https://github.com/expo/expo/pull/51687))
+  - expo-asset@58.0.17
+  - @expo/metro-config@58.0.15
+  - expo-modules-core@58.0.23
+  - expo-modules-cli@0.3.1
+  - babel-preset-expo@58.0.18
+  - @expo/cli@58.1.12
+
 ## 58.0.14
 
 ### Patch Changes

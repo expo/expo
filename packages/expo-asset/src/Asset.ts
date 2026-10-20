@@ -24,8 +24,11 @@ type DownloadPromiseCallbacks = {
   reject: (error: Error) => void;
 };
 
-// @docsMissing
-interface VirtualAssetModule {
+/**
+ * The value of `require('path/to/file')` for an image on web and in server environments, when
+ * Metro can read the image dimensions.
+ */
+export interface VirtualAssetModule {
   uri: string;
   width: number;
   height: number;

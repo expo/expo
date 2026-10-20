@@ -10,6 +10,8 @@ import {
   ScreenStackItem,
 } from 'react-native-screens';
 
+import { useRouteNode } from '../../../Route';
+import { useWarnOnce } from '../../../useDeprecated';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -128,6 +130,13 @@ const SceneView = ({
     unstable_nativeProps,
   } = options;
   const screenNativeProps = unstable_nativeProps;
+  const routeNode = useRouteNode();
+
+  useWarnOnce(
+    `Route "${route.name}" uses presentation "${options.presentation}" but is the first screen in its native stack, so it is rendered as a card. Add unstable_settings.anchor to the stack layout to place a non-modal screen before this route.`,
+    __DEV__ && index === 0 && isPresentationModal && options.presentation != null,
+    routeNode ? `${routeNode.contextKey}:${route.name}` : route.name
+  );
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`

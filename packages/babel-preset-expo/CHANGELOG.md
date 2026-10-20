@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
 ## 58.0.17
 
 No changes in this release.

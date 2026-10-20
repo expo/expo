@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- Export the `ExtendedRouter` and `RouterExtensionMembers` types. The public `extendRouter`, `extendRouterActions`, and `RouterExtension` APIs reference them, so custom routers can now type the routers and extension members they create. ([#51797](https://github.com/expo/expo/pull/51797) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [Web] Stop the "Bundling..." toast from logging the `useNativeDriver` warning in development. ([#51774](https://github.com/expo/expo/pull/51774) by [@miniware9](https://github.com/miniware9))
+
 ## 58.0.23
 
 ### Patch Changes

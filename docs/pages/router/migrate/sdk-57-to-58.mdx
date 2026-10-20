@@ -412,7 +412,7 @@ export default function Home() {
 }
 ```
 
-For a screen without a scroll view, use `SafeAreaView`. To keep an opaque header on one screen, set `headerTransparent: false` in its options.
+For a screen without a scroll view, set `headerTransparent: false` in its options. The header is then opaque, and the screen content starts below it. Do not use `SafeAreaView` from `react-native-safe-area-context` to move content below the header. It applies only the status bar inset. With a transparent header, content stays under the header. With an opaque header, `SafeAreaView` adds a second top inset.
 
 On iOS 26 and later, headers now use the system fonts instead of the theme fonts. To keep a custom font, set `fontFamily` in `headerTitleStyle`, `headerBackTitleStyle`, or `headerLargeTitleStyle`.
 

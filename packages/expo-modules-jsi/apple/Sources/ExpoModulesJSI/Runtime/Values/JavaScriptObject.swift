@@ -774,7 +774,7 @@ extension JavaScriptObject {
 
 /// Holds the runtime's `Object.defineProperty` and the property names of a descriptor, created once per
 /// runtime instead of on every `defineProperty` call.
-private final class DefinePropertyFunction {
+internal final class DefinePropertyFunction {
   let function: JavaScriptFunction
   let configurableKey: JavaScriptPropNameID
   let enumerableKey: JavaScriptPropNameID
@@ -790,13 +790,11 @@ private final class DefinePropertyFunction {
   }
 }
 
-private let definePropertyFunctionKey = JavaScriptRuntime.Cache.Key<DefinePropertyFunction>()
-
 /// Returns the runtime's `Object.defineProperty`, cached in the runtime. Property definitions run on the
 /// JavaScript thread like every other JSI call, which is where the runtime's cache is isolated.
 private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
   return JavaScriptActor.assumeIsolated {
-    runtime.cached(definePropertyFunctionKey) {
+    runtime.cached(JavaScriptRuntime.CacheKeys.objectDefineProperty) {
       do {
         let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
         return DefinePropertyFunction(function, in: runtime)

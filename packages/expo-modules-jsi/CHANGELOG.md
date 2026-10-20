@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of converting `Date` and `Data` values between JavaScript and native code, and of `JavaScriptRuntime.createObject(prototype:)`. The global functions that these conversions call are now looked up once per runtime and cached. ([#51728](https://github.com/expo/expo/pull/51728) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] The `dealloc` closure of `JavaScriptRuntime.createHostObject` is now `@Sendable` instead of `@JavaScriptActor`, because the engine can call it on any thread. `JavaScriptActor.assumeIsolated` no longer checks the thread name in debug builds. The check failed on reload, because Hermes runs the runtime's teardown on its finalizer thread. ([#51739](https://github.com/expo/expo/pull/51739) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove all `weak` references to `JavaScriptRuntime`, which makes every retain and release of the runtime faster. `JavaScriptRuntime.schedule`, `runOrSchedule` and `execute` now drop the work when the runtime is gone by the time it runs, and `execute` throws `RuntimeLostError` then. ([#51577](https://github.com/expo/expo/pull/51577) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.15
 
 ### Patch Changes

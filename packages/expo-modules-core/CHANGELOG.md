@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of returning `Data` and shared objects to JavaScript. ([#51728](https://github.com/expo/expo/pull/51728) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix a Jetpack Compose `Host` that stays blank when it mounts in a visible list row with `removeClippedSubviews` enabled, for example in a `FlatList`. The `Host` now measures its content when it is attached for the first time. ([#51780](https://github.com/expo/expo/pull/51780) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Update `expo-modules-macros` to 0.21.0. `@Record` types now convert between JavaScript and native code with less overhead and no longer need an app context. `@ExpoModule` and `@SharedObject` now report a build error when two `@JS` members of one object have the same JavaScript name, because JavaScript could reach only one of them. ([#51716](https://github.com/expo/expo/pull/51716) by [@tsapeta](https://github.com/tsapeta))
+- Shared objects now report their class name from `Object.prototype.toString`, for example `[object VideoPlayer]`. React in development builds no longer deep-compares shared objects in props, which threw `ERR_NATIVE_SHARED_OBJECT_NOT_FOUND` when the previous props held a released shared object. `Blob` from `expo-blob` and `File` from `expo-file-system` now report `[object Blob]` and `[object File]`, as on the web. Libraries that detect these types by this tag now treat them as a `Blob` and a `File`. ([#51743](https://github.com/expo/expo/pull/51743) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51728](https://github.com/expo/expo/pull/51728), [#51739](https://github.com/expo/expo/pull/51739), [#51577](https://github.com/expo/expo/pull/51577))
+  - expo-modules-jsi@58.0.16
+
 ## 58.0.22
 
 ### Patch Changes

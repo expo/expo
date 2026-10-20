@@ -6,7 +6,14 @@ import {
   type ColorSchemeName,
 } from 'react-native';
 
-import type { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
+import ExpoStatusBar from './ExpoStatusBar';
+import type {
+  StatusBarProps,
+  StatusBarStyle,
+  StatusBarAnimation,
+  VerticalBarBehaviorIOS,
+  VerticalBarEdgeIOS,
+} from './types';
 
 /**
  * A component that allows you to configure your status bar declaratively.
@@ -17,7 +24,13 @@ import type { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types
  * This component is built on top of the [StatusBar](https://reactnative.dev/docs/statusbar)
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
-export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: StatusBarProps) {
+export function StatusBar({
+  style,
+  hideTransitionAnimation,
+  animated,
+  hidden,
+  verticalBarBehaviorIOS,
+}: StatusBarProps) {
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
@@ -25,6 +38,14 @@ export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: 
     () => styleToBarStyle(style, colorScheme ?? undefined),
     [style, colorScheme]
   );
+
+  React.useEffect(() => {
+    if (!verticalBarBehaviorIOS) {
+      return;
+    }
+    StatusBar.setVerticalBarBehaviorIOS(verticalBarBehaviorIOS);
+    return () => StatusBar.setVerticalBarBehaviorIOS('automatic');
+  }, [verticalBarBehaviorIOS]);
 
   return (
     <NativeStatusBar
@@ -75,6 +96,59 @@ StatusBar.setHidden = (hidden: boolean, animation?: StatusBarAnimation): void =>
  * @deprecated Use `StatusBar.setHidden` instead. This will be removed in a future release.
  */
 export const setStatusBarHidden = StatusBar.setHidden;
+
+/**
+ * Get the edge where the system places the vertical bar, such as the side rail on iPhone Duo.
+ * The edge stays the same while `verticalBarBehaviorIOS` is `'disabled'`.
+ *
+ * @return The edge of the vertical bar, or `null` when the system places no vertical bar, such as
+ * on other devices, in orientations that keep the status bar at the top, or before iOS 27.1.
+ * @platform ios
+ *
+ * @example
+ * ```ts
+ * StatusBar.getVerticalBarEdgeIOS(); // 'trailing' on iPhone Duo
+ * ```
+ */
+StatusBar.getVerticalBarEdgeIOS = (): VerticalBarEdgeIOS | null =>
+  ExpoStatusBar?.getVerticalBarEdge() ?? null;
+
+/**
+ * Set whether the system may move the status bar into a vertical bar beside the content, as on
+ * iPhone Duo. Requires iOS 27.1 or later.
+ *
+ * @param behavior `'disabled'` keeps the status bar and system bars horizontal.
+ * @platform ios
+ *
+ * @example
+ * ```ts
+ * StatusBar.setVerticalBarBehaviorIOS('disabled');
+ * ```
+ */
+StatusBar.setVerticalBarBehaviorIOS = (behavior: VerticalBarBehaviorIOS): void =>
+  ExpoStatusBar?.setVerticalBarBehavior(behavior);
+
+/**
+ * A hook that returns the edge where the system places the vertical bar, and updates when it
+ * changes, such as when the device rotates. See `StatusBar.getVerticalBarEdgeIOS()`.
+ * @platform ios
+ */
+export function useVerticalBarEdgeIOS(): VerticalBarEdgeIOS | null {
+  const [edge, setEdge] = React.useState(StatusBar.getVerticalBarEdgeIOS);
+
+  React.useEffect(() => {
+    if (!ExpoStatusBar) {
+      return;
+    }
+    const subscription = ExpoStatusBar.addListener('onVerticalBarEdgeChange', (event) =>
+      setEdge(event.edge)
+    );
+    setEdge(ExpoStatusBar.getVerticalBarEdge());
+    return () => subscription.remove();
+  }, []);
+
+  return edge;
+}
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

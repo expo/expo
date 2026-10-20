@@ -1,5 +1,25 @@
 # minimal-tester
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-brownfield@58.0.15
+  - expo-camera@58.0.11
+  - expo-video@58.0.12
+  - expo@58.0.16
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51659](https://github.com/expo/expo/pull/51659), [#51755](https://github.com/expo/expo/pull/51755), [#51742](https://github.com/expo/expo/pull/51742))
+  - expo-blur@58.0.5
+  - expo@58.0.15
+  - expo-image@58.0.16
+  - expo-updates@58.0.17
+
 ## 1.0.8
 
 ### Patch Changes

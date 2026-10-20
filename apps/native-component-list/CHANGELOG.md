@@ -1,5 +1,40 @@
 # native-component-list
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-camera@58.0.11
+  - expo-contacts@58.0.8
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - expo-image-manipulator@58.0.15
+  - expo-live-photo@58.0.6
+  - expo-location@58.0.18
+  - expo-maps@58.0.10
+  - expo-media-library@58.0.11
+  - expo-print@58.0.7
+  - expo-video@58.0.12
+  - expo@58.0.16
+  - test-suite@1.0.10
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51797](https://github.com/expo/expo/pull/51797), [#51659](https://github.com/expo/expo/pull/51659), [#51755](https://github.com/expo/expo/pull/51755), [#51704](https://github.com/expo/expo/pull/51704), [#51742](https://github.com/expo/expo/pull/51742), [#51800](https://github.com/expo/expo/pull/51800), [#51774](https://github.com/expo/expo/pull/51774), [#51775](https://github.com/expo/expo/pull/51775))
+  - expo-asset@58.0.17
+  - expo-blur@58.0.5
+  - expo@58.0.15
+  - @expo/ui@58.0.21
+  - expo-image@58.0.16
+  - expo-localization@58.0.5
+  - expo-router@58.0.24
+  - test-suite@1.0.9
+  - expo-updates@58.0.17
+  - expo-app-intents@0.5.10
+
 ## 0.0.8
 
 ### Patch Changes

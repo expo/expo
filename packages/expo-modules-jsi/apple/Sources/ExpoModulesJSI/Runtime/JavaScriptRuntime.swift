@@ -167,13 +167,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Creates a new JavaScript object, using the provided object as the prototype.
-  /// Calls `Object.create(prototype)` under the hood.
+  /// Same as `Object.create(prototype)` in JS.
   public func createObject(prototype: borrowing JavaScriptObject) -> JavaScriptObject {
-    return try! global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("create")
-      .call(argument: prototype.asValue())
-      .getObject()
+    return JavaScriptObject(self, expo.createObjectWithPrototype(pointee, prototype.pointee))
   }
 
   /// Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
@@ -184,11 +180,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
   /// then throws an `Error` whose message names the property and explains how to make it
   /// writable. `getPropertyNames` and `dealloc` default to no-ops.
+  ///
+  /// `dealloc` runs when the engine collects the host object. It can run on any thread, also while
+  /// JavaScript runs, so it must not use the runtime.
   public func createHostObject(
     get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
     set: (@JavaScriptActor (_ propertyName: String, _ value: borrowing JavaScriptValue) throws -> Void)? = nil,
     getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
-    dealloc: @escaping @JavaScriptActor () -> Void = {}
+    dealloc: @escaping @Sendable () -> Void = {}
   ) -> JavaScriptObject {
     func getter(
       context: UnsafeMutableRawPointer,
@@ -258,9 +257,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     func deallocate(context: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
-      JavaScriptActor.assumeIsolated {
-        context.dealloc()
-      }
+      context.dealloc()
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc))
@@ -343,7 +340,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         """
       ).getFunction()
     }
-    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+    let klassValue = try withCached(CacheKeys.classFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
       return try factory.call(arguments: name)
     }
     let klassObject = klassValue.getObject()
@@ -767,8 +764,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   // MARK: - Long-lived objects
 
   /// Registry of JSI objects (such as in-flight promises) that must outlive the native call that
-  /// created them. Cleared when the runtime is torn down so their JSI state is released on the
-  /// JavaScript thread while the runtime is still valid.
+  /// created them. Cleared when the runtime is torn down so their JSI state is released while the
+  /// runtime is still valid.
   @JavaScriptActor
   public let longLivedObjects = LongLivedObjectCollection()
 
@@ -776,8 +773,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// when the runtime is torn down. The object is pinned by storing it as a property on `global`, so
   /// it stays reachable within the JavaScript heap for the runtime's whole life (no Swift-side strong
   /// reference) and its native state drops only when the runtime's object graph is destroyed. That
-  /// fires the deallocator on the JavaScript thread while the runtime is still valid, the point at
-  /// which any surviving long-lived objects can safely release their JSI state.
+  /// fires the deallocator while the runtime is destroyed and its values are still valid, the point
+  /// at which any surviving long-lived objects can safely release their JSI state.
   private func installLongLivedObjectsTeardown() {
     // Runtime initializers run on the JavaScript thread but aren't actor-isolated, so reach the
     // isolated object/native-state/`clear()` APIs through the actor.
@@ -788,10 +785,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
       nativeState.setDeallocator { [handle] nativeState in
-        // Fires as the teardown object is released on the JavaScript thread with the runtime still
-        // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
-        // a future cross-runtime path that could drop this state from another thread would have to
-        // hop back to the JavaScript thread first.
+        // Hermes runs this on its finalizer thread while the JavaScript thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and releasing JSI state here is safe. Release
+        // it here and not in work sent to another thread, which would run after Hermes frees its
+        // values. A path that could drop this state while the runtime still runs JavaScript would
+        // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
@@ -942,9 +940,6 @@ private func createFunctionClosure(
 
   return expo.HostFunctionClosure(context, call, deallocate)
 }
-
-/// Key of the class factory in each runtime's cache.
-private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
 
 // MARK: - Errors
 
