@@ -1928,4 +1928,12 @@ describe('project-relative filenames', () => {
     expect(result.metadata.loaderReference).toBe(path.resolve(projectRoot, filename));
     expect(result.code).not.toMatch(/\bloader\b/);
   });
+
+  it('computes EXPO_ROUTER_APP_ROOT relative to the app file, independently of cwd', () => {
+    const result = transform(
+      'src/entry.js',
+      'export const root = process.env.EXPO_ROUTER_APP_ROOT;'
+    );
+    expect(result.code).toContain('"../app"');
+  });
 });

@@ -2,4 +2,4 @@
 '@expo/metro-config': patch
 ---
 
-Resolve project-relative filenames against the app root for React Server references, server actions, DOM components, and Router export detection. Preserve project-relative module IDs.
+Resolve project-relative filenames against the app root in Noxcturnal plugins for React Server references, server actions, DOM components, Router export detection, and Router environment values. Preserve project-relative module IDs.
