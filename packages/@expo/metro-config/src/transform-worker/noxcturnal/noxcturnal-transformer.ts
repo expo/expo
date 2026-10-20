@@ -408,6 +408,12 @@ export function usesPublicEnvPlugin(input: NoxcturnalTransformInput): boolean {
   return !isNodeModule(input.filename) && environment !== 'node' && environment !== 'react-server';
 }
 
+export function resolveInputFilename(
+  input: Pick<NoxcturnalTransformInput, 'projectRoot' | 'filename'>
+): string {
+  return path.resolve(input.projectRoot, input.filename);
+}
+
 export function isPathInsideRoot(
   root: string,
   candidate: string,

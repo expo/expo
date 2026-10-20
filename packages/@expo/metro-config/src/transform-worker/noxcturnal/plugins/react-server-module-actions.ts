@@ -4,6 +4,7 @@ import type { Code, DefinedNativePlugin } from 'noxcturnal';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   serverBoundary,
   sortedUniqueCaptureNames,
   type Noxcturnal,
@@ -43,7 +44,9 @@ export function createReactServerModuleActionsPlugin(
         input,
         boundary: serverBoundary(context),
         enabled: false,
-        moduleId: './' + path.relative(input.projectRoot, input.filename).split(path.sep).join('/'),
+        moduleId:
+          './' +
+          path.relative(input.projectRoot, resolveInputFilename(input)).split(path.sep).join('/'),
         registerBinding: '',
         wrapperBinding: '',
         usesCapturedArgs: false,
@@ -469,7 +472,10 @@ export { ${name} as default };`);
         }${state.hoists.length > 0 ? `${state.hoists.join('\n')}\n` : ''}`
       );
       context.metadata.set('reactServerActions', payload);
-      context.metadata.set('reactServerReference', pathToFileURL(state.input.filename).href);
+      context.metadata.set(
+        'reactServerReference',
+        pathToFileURL(resolveInputFilename(state.input)).href
+      );
     },
   });
 }

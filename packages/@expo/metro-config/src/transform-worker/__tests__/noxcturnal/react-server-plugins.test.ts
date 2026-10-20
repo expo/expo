@@ -3,6 +3,7 @@ import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -847,3 +848,63 @@ it.each(['one', '"one"', '["one"]'])(
     });
   }
 );
+
+describe('project-relative filenames', () => {
+  const projectRoot = '/workspace/apps/mobile';
+
+  function transform(
+    filename: string,
+    source: string,
+    customTransformOptions: JsTransformOptions['customTransformOptions'] = {},
+    dev = false
+  ) {
+    const result = transformFileFullyWithNoxcturnalSync({
+      filename,
+      source,
+      projectRoot,
+      isDefaultExpoTransformer: true,
+      options: options({
+        dev,
+        inlinePlatform: false,
+        customTransformOptions: { engine: 'hermes', ...customTransformOptions },
+      }),
+      config: fullConfig(),
+    });
+    if (result.status !== 'complete') throw new Error(result.reason);
+    return result.result;
+  }
+
+  it.each([
+    {
+      name: 'client reference',
+      filename: 'components/Card.tsx',
+      source: '"use client"; export const value = 1;',
+      environment: 'react-server',
+      metadata: 'reactClientReference',
+      moduleId: './components/Card.tsx',
+    },
+    {
+      name: 'server reference',
+      filename: 'actions/save.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: undefined,
+      metadata: 'reactServerReference',
+      moduleId: './actions/save.ts#save',
+    },
+    {
+      name: 'server action registration',
+      filename: '../shared/actions.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: 'react-server',
+      metadata: 'reactServerReference',
+      moduleId: './../shared/actions.ts',
+    },
+  ])('resolves the $name against the app root while keeping its module ID relative', (testCase) => {
+    const result = transform(testCase.filename, testCase.source, {
+      environment: testCase.environment,
+    });
+    const absoluteFilename = path.resolve(projectRoot, testCase.filename);
+    expect(result.metadata[testCase.metadata]).toBe(pathToFileURL(absoluteFilename).href);
+    expect(result.code).toContain(JSON.stringify(testCase.moduleId));
+  });
+});
