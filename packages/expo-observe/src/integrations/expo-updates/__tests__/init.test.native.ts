@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import type { ExpoUpdatesLogCursorStore } from '../init';
+import type { ExpoUpdatesNativeModule } from '../init';
 import type { LoadedUpdates, UpdatesLogEntry } from '../updates';
 
 const mockAppMetrics = {
@@ -24,8 +24,19 @@ const ONE_DAY_MS = 86_400_000;
 const WINDOW_MS = 15 * 60_000;
 
 let storedCursor: string | null;
-let cursorStore: ExpoUpdatesLogCursorStore;
+let cursorStore: ExpoUpdatesNativeModule;
+let liveListeners: ((entry: UpdatesLogEntry) => void)[];
 let warnSpy: jest.SpyInstance;
+
+function emitLiveEntry(liveEntry: UpdatesLogEntry) {
+  liveListeners.forEach((listener) => listener(liveEntry));
+}
+
+async function flushPromises() {
+  for (let i = 0; i < 10; i++) {
+    await Promise.resolve();
+  }
+}
 
 function loadInit() {
   return require('../init') as typeof import('../init');
@@ -60,11 +71,23 @@ beforeEach(() => {
   jest.useFakeTimers({ now: NOW });
   mockLoaded = { readLogEntriesAsync: mockReadLogEntriesAsync };
   storedCursor = null;
+  liveListeners = [];
   cursorStore = {
     getExpoUpdatesLogCursor: jest.fn(async () => storedCursor),
     setExpoUpdatesLogCursor: jest.fn(async (cursor: string) => {
       storedCursor = cursor;
     }),
+    setExpoUpdatesLogListenerEnabled: jest.fn(),
+    addListener: jest.fn(
+      (_event: 'expoUpdatesLogEntry', listener: (e: UpdatesLogEntry) => void) => {
+        liveListeners.push(listener);
+        return {
+          remove: jest.fn(() => {
+            liveListeners = liveListeners.filter((item) => item !== listener);
+          }),
+        };
+      }
+    ),
   };
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
@@ -285,6 +308,120 @@ describe('initExpoUpdatesIntegration', () => {
       expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('storage failed'));
     }
   );
+
+  describe('live entries', () => {
+    it('turns on the native listener before it reads the log', async () => {
+      await runIntegration([]);
+
+      expect(cursorStore.addListener).toHaveBeenCalledWith(
+        'expoUpdatesLogEntry',
+        expect.any(Function)
+      );
+      expect(cursorStore.setExpoUpdatesLogListenerEnabled).toHaveBeenCalledWith(true);
+      const enabledOrder = jest.mocked(cursorStore.setExpoUpdatesLogListenerEnabled).mock
+        .invocationCallOrder[0];
+      expect(enabledOrder).toBeLessThan(mockReadLogEntriesAsync.mock.invocationCallOrder[0]!);
+    });
+
+    it('reports an entry logged after the read', async () => {
+      await runIntegration([]);
+
+      emitLiveEntry(entry({ timestamp: NOW + 1000, message: 'live error' }));
+
+      expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
+        'live error',
+      ]);
+    });
+
+    it('reports an entry once when it arrives live and in the read', async () => {
+      let resolveRead: (entries: UpdatesLogEntry[]) => void = () => {};
+      mockReadLogEntriesAsync.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveRead = resolve;
+        })
+      );
+      const both = entry({ timestamp: NOW - 500, message: 'both' });
+
+      const running = loadInit().initExpoUpdatesIntegration(true, cursorStore);
+      await flushPromises();
+      emitLiveEntry(both);
+      // Past the reporting window, so only the entry's key can stop the second report.
+      jest.advanceTimersByTime(WINDOW_MS);
+      resolveRead([both]);
+      await running;
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports an entry once when it arrives in the read and then live', async () => {
+      const both = entry({ timestamp: NOW - 500, message: 'both' });
+      await runIntegration([both]);
+
+      // Past the reporting window, so only the entry's key can stop the second report.
+      jest.advanceTimersByTime(WINDOW_MS);
+      emitLiveEntry(both);
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+    });
+
+    it('moves the stored cursor forward with live entries', async () => {
+      await runIntegration([entry({ timestamp: NOW - 5000, message: 'read' })]);
+
+      emitLiveEntry(entry({ timestamp: NOW + 2000, message: 'live' }));
+      await flushPromises();
+
+      expect(JSON.parse(storedCursor!)).toEqual({
+        timestamp: NOW + 2000,
+        keys: [`${NOW + 2000}|UpdateFailedToLoad|live`],
+      });
+    });
+
+    it('does not move the cursor back when the read ends after a newer live entry', async () => {
+      let resolveRead: (entries: UpdatesLogEntry[]) => void = () => {};
+      mockReadLogEntriesAsync.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveRead = resolve;
+        })
+      );
+
+      const running = loadInit().initExpoUpdatesIntegration(true, cursorStore);
+      await flushPromises();
+      emitLiveEntry(entry({ timestamp: NOW + 2000, message: 'live' }));
+      resolveRead([entry({ timestamp: NOW - 5000, message: 'read' })]);
+      await running;
+      await flushPromises();
+
+      expect(JSON.parse(storedCursor!).timestamp).toBe(NOW + 2000);
+    });
+
+    it('subscribes once across repeated configure calls', async () => {
+      await runIntegration([]);
+      await runIntegration([]);
+
+      expect(cursorStore.addListener).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops live reports and turns off the native listener when disabled', async () => {
+      await runIntegration([]);
+
+      loadInit().disableExpoUpdatesIntegration();
+      emitLiveEntry(entry({ timestamp: NOW + 1000, message: 'after disable' }));
+
+      expect(mockAppMetrics.reportError).not.toHaveBeenCalled();
+      expect(cursorStore.setExpoUpdatesLogListenerEnabled).toHaveBeenLastCalledWith(false);
+      expect(liveListeners).toHaveLength(0);
+    });
+
+    it('subscribes again after being disabled and enabled', async () => {
+      await runIntegration([]);
+      loadInit().disableExpoUpdatesIntegration();
+      await runIntegration([]);
+
+      emitLiveEntry(entry({ timestamp: NOW + 1000, message: 'after enable' }));
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+    });
+  });
 
   describe('filters', () => {
     it('drops entries with an ignored code but still moves the cursor past them', async () => {

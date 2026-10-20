@@ -19,13 +19,19 @@ internal struct BundleDefaults: Record {
   @Field var isJsDev: Bool = false
 }
 
+private let expoUpdatesLogEntryEvent = "expoUpdatesLogEntry"
+
 public final class ObserveModule: Module {
   private var lastIntegrations: [String: Any] = [:]
+
+  private lazy var updatesLogForwarder = ExpoUpdatesLogForwarder { [weak self] entry in
+    self?.sendEvent(expoUpdatesLogEntryEvent, entry)
+  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoObserve")
 
-    Events("configure")
+    Events("configure", expoUpdatesLogEntryEvent)
 
     OnCreate {
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
@@ -67,6 +73,14 @@ public final class ObserveModule: Module {
 
     Function("getIntegrations") {
       return self.lastIntegrations
+    }
+
+    Function("setExpoUpdatesLogListenerEnabled") { (enabled: Bool) in
+      self.updatesLogForwarder.setEnabled(enabled)
+    }
+
+    OnDestroy {
+      self.updatesLogForwarder.setEnabled(false)
     }
 
     AsyncFunction("getExpoUpdatesLogCursor") { () async throws -> String? in

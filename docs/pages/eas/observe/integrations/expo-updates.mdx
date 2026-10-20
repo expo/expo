@@ -36,7 +36,7 @@ Observe.configure({
 
 ## How it works
 
-When `Observe.configure()` runs, the integration reads the `expo-updates` log entries that were written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the log is read at the next launch, the integration also reports errors from an earlier launch, such as a crash that error recovery handled before the app could start again.
+When `Observe.configure()` runs, the integration reads the `expo-updates` log entries that were written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. So the integration also reports errors from an earlier launch, such as a crash that error recovery handled before the app could start again. After that, the integration reports each new entry when `expo-updates` logs it.
 
 The integration reports the entries as follows:
 

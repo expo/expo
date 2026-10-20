@@ -57,7 +57,8 @@
   },
   "dependencies": {
     "expo-app-metrics": "workspace:~",
-    "expo-eas-client": "workspace:~"
+    "expo-eas-client": "workspace:~",
+    "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
