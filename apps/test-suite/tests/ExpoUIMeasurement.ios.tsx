@@ -1,4 +1,4 @@
-import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { BottomSheet, Host, HStack, RNHostView, Spacer, VStack } from '@expo/ui/swift-ui';
 import { onGeometryChange, padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 import { Modal, ScrollView, View } from 'react-native';
@@ -500,6 +500,78 @@ export async function test(
       expect(sibling.pageY - host.pageY).toBe(PADDING + SHORT);
       expect(nested.pageX - host.pageX).toBe(PADDING * 2);
       expect(nested.pageY - host.pageY).toBe(PADDING * 2 + SHORT + BOX);
+    });
+
+    it('places a view after a nested matchContents Host in a row at the end of its content', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const afterRef = React.createRef<ViewRef>();
+
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host style={{ width: WIDE + BOX * 2, height: BOX }}>
+            <HStack spacing={0} alignment="top">
+              <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                <RNHostView matchContents>
+                  <View style={{ width: SHORT, height: SHORT }} />
+                </RNHostView>
+              </Host>
+              <RNHostView matchContents>
+                <View ref={afterRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+              <Spacer />
+            </HStack>
+          </Host>
+        </View>
+      );
+
+      await nestedLaidOut;
+
+      const host = await measureAsync(hostWrapperRef);
+      const after = await measureSettled(afterRef, 'the view after the nested Host');
+
+      expect(after.pageX - host.pageX).toBeCloseTo(SHORT, 0);
+      expect(after.pageY - host.pageY).toBeCloseTo(0, 0);
+    });
+
+    it('places a view after a nested matchContents Host in a column at the end of its content', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const afterRef = React.createRef<ViewRef>();
+
+      let onNestedLaidOut: () => void;
+      const nestedLaidOut = new Promise<void>((resolve) => {
+        onNestedLaidOut = resolve;
+      });
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host style={{ width: WIDE, height: WIDE }}>
+            <VStack spacing={0} alignment="leading">
+              <Host matchContents onLayoutContent={() => onNestedLaidOut()}>
+                <RNHostView matchContents>
+                  <View style={{ width: SHORT, height: SHORT }} />
+                </RNHostView>
+              </Host>
+              <RNHostView matchContents>
+                <View ref={afterRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+              <Spacer />
+            </VStack>
+          </Host>
+        </View>
+      );
+
+      await nestedLaidOut;
+
+      const host = await measureAsync(hostWrapperRef);
+      const after = await measureSettled(afterRef, 'the view after the nested Host');
+
+      expect(after.pageX - host.pageX).toBeCloseTo(0, 0);
+      expect(after.pageY - host.pageY).toBeCloseTo(SHORT, 0);
     });
 
     it('measures a hosted view when the Host is inside a React Native ScrollView', async () => {
