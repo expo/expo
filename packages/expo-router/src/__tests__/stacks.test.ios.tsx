@@ -1143,8 +1143,7 @@ describe('unstable_requiredScreensBelow', () => {
 
     expect(routeNamesAtRender).toEqual([['details'], ['index', 'details']]);
     expect(navigationRef.getRootState()).toMatchObject(stackState('index', 'details'));
-    // An added screen renders before the sync and again after it.
-    expect(Index).toHaveBeenCalledTimes(2);
+    expect(Index).toHaveBeenCalledTimes(1);
     expect(Details).toHaveBeenCalledTimes(1);
   });
 
@@ -1178,8 +1177,7 @@ describe('unstable_requiredScreensBelow', () => {
     ]);
     expect(navigationRef.getRootState()).toMatchObject(stackState('index', 'list', 'details'));
     expect(Index).toHaveBeenCalledTimes(1);
-    // An added screen renders before the sync and again after it.
-    expect(List).toHaveBeenCalledTimes(2);
+    expect(List).toHaveBeenCalledTimes(1);
     expect(Details).toHaveBeenCalledTimes(1);
   });
 
@@ -1187,9 +1185,7 @@ describe('unstable_requiredScreensBelow', () => {
     { required: '[id]', id: '42' },
     { required: { name: '[id]', params: { id: '1' } }, id: '1' },
   ])('gives the [id] screen id $id when it is listed as $required', async ({ required, id }) => {
-    function IdScreen() {
-      return <Text testID="id">{useLocalSearchParams().id}</Text>;
-    }
+    const IdScreen = jest.fn(() => <Text testID="id">{useLocalSearchParams().id}</Text>);
 
     await renderRouter(
       {
@@ -1209,6 +1205,7 @@ describe('unstable_requiredScreensBelow', () => {
     );
 
     expect(screen.getByTestId('id', { includeHiddenElements: true })).toHaveTextContent(id);
+    expect(IdScreen).toHaveBeenCalledTimes(1);
   });
 
   it('adds required screens when the prop changes and keeps them when it is removed', async () => {
@@ -1234,11 +1231,11 @@ describe('unstable_requiredScreensBelow', () => {
     await act(() => setRequired(['index']));
     expect(screen.getByTestId('details')).toBeVisible();
     expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
-    expect(Index).toHaveBeenCalledTimes(2);
+    expect(Index).toHaveBeenCalledTimes(1);
 
     await act(() => setRequired(undefined));
     expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
-    expect(Index).toHaveBeenCalledTimes(2);
+    expect(Index).toHaveBeenCalledTimes(1);
   });
 
   it('renders a required screen that contains a nested stack once', async () => {

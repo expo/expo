@@ -135,7 +135,7 @@ export function useDescriptors<
     emitter: emitter as unknown as NavigationEventEmitter<EventMap>,
   });
 
-  const cachedRoutes = useRouteCache(routes);
+  const { cachedRoutes, getMissingRoute } = useRouteCache(routes);
   const emitRemovalEvent = React.useCallback(
     (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
       emitter.emit({ type, target: routeKey, data: { action } }),
@@ -327,7 +327,7 @@ export function useDescriptors<
       const descriptor =
         descriptors[route.key] ??
         (create && screens[route.name]
-          ? createMissingDescriptor({ ...route, key: route.key })
+          ? createMissingDescriptor(getMissingRoute({ ...route, key: route.key }))
           : undefined);
       if (!descriptor) {
         throw new Error(`Couldn't find a route with the key ${route.key}.`);
