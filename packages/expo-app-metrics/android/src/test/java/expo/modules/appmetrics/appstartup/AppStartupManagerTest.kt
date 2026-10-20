@@ -1,7 +1,11 @@
 package expo.modules.appmetrics.appstartup
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.utils.JsonAny
+import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -120,5 +124,60 @@ class AppStartupManagerTest {
       "Expected no exceptions, got ${errors.size}; first: ${errors.firstOrNull()?.let { "${it.javaClass.simpleName}: ${it.message}" }}",
       errors.isEmpty()
     )
+  }
+
+  private val context: Context = ApplicationProvider.getApplicationContext()
+
+  private fun setField(name: String, value: Any?) {
+    AppStartupManager::class.java.getDeclaredField(name).apply {
+      isAccessible = true
+    }.set(AppStartupManager, value)
+  }
+
+  // Simulates a launch that finished `durationInMs` ago and is still in progress.
+  private fun startLaunch(durationInMs: Long, hasRendered: Boolean = false) {
+    AppStartupManager.takeUnsavedLogs()
+    setField("launchTimeInMillis", getCurrentTimeInMillis() - durationInMs)
+    setField("hasRecordedFirstRender", hasRendered)
+    AppStartupManager.startupState = StartupState.LAUNCHING
+  }
+
+  @Test
+  fun `markEnteredBackground records the backgrounded event during startup`() {
+    startLaunch(durationInMs = 5_000, hasRendered = true)
+
+    AppStartupManager.markEnteredBackground(context)
+
+    assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)
+    val log = AppStartupManager.takeUnsavedLogs().single()
+    assertEquals("expo.app_startup.backgrounded", log.name)
+    val attributes = JsonAny.decodeJsonStringToMap(log.attributes!!)!!
+    assertEquals(5.0, attributes["expo.app_startup.duration"] as Double, 1.0)
+    assertEquals(true, attributes["expo.app_startup.hasRendered"])
+    assertEquals(false, attributes["expo.app_startup.hasMarkedInteractive"])
+    // Called again from the other `onPause` listener.
+    AppStartupManager.markEnteredBackground(context)
+    assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
+  }
+
+  @Test
+  fun `markEnteredBackground skips the event when the startup is no longer in progress`() {
+    startLaunch(durationInMs = 5_000)
+    AppStartupManager.startupState = StartupState.LAUNCHED
+
+    AppStartupManager.markEnteredBackground(context)
+
+    assertEquals(StartupState.LAUNCHED, AppStartupManager.startupState)
+    assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
+  }
+
+  @Test
+  fun `markEnteredBackground skips the event after the max startup duration`() {
+    startLaunch(durationInMs = 10 * 60 * 1000)
+
+    AppStartupManager.markEnteredBackground(context)
+
+    assertEquals(StartupState.INTERRUPTED, AppStartupManager.startupState)
+    assertEquals(emptyList<Any>(), AppStartupManager.takeUnsavedLogs())
   }
 }

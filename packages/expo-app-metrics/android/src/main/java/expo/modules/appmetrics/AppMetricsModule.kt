@@ -248,6 +248,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       OnActivityEntersBackground {
         // A pause skews startup timings, so stop recording and save what was recorded before.
+        // The activity listener also marks the background, but its `onPause` may run after this one.
+        AppStartupManager.markEnteredBackground(context)
         AppStartupManager.stopRecording()
         scope.launch {
           saveStartupMetrics()
@@ -401,6 +403,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       val metrics = AppStartupManager.takeUnsavedMetrics()
       if (metrics.isNotEmpty()) {
         mainSession.addMetrics(metrics)
+      }
+      val logs = AppStartupManager.takeUnsavedLogs()
+      if (logs.isNotEmpty()) {
+        mainSession.addLogs(logs)
       }
     }
 

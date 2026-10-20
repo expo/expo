@@ -145,9 +145,35 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
           params: mergedParams.isEmpty ? nil : mergedParams
         )
         reportMetric(metric)
+        AppMetricsUserDefaults.hasMarkedInteractive = true
       }
       startupState = .launched
     }
+  }
+
+  /// Interrupts the startup if it is still in progress when the app enters the background.
+  /// Returns the `expo.app_startup.backgrounded` event for a foreground launch that the user left before TTI,
+  /// for example because the app was stuck on the splash screen.
+  @AppMetricsActor
+  func markEnteredBackground(at currentTime: TimeInterval = CACurrentMediaTime()) -> LogRecord? {
+    if startupState != .launching {
+      return nil
+    }
+    startupState = .interrupted
+
+    // Prewarmed launches have no `finishedLaunching` marker.
+    guard let finishedLaunching = markers.finishedLaunching else {
+      return nil
+    }
+    let duration = currentTime - finishedLaunching
+    if duration > Self.maxStartupDuration {
+      return nil
+    }
+    return makeStartupBackgroundedLogRecord(
+      duration: duration,
+      hasRendered: markers.timeToFirstRender != nil,
+      hasMarkedInteractive: AppMetricsUserDefaults.hasMarkedInteractive
+    )
   }
 
   @AppMetricsActor
@@ -231,4 +257,23 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   private static func isRunningInBackground() -> Bool {
     return UIApplication.shared.backgroundTimeRemaining < backgroundTimeRemainingThreshold
   }
+}
+
+/// Builds the internal `expo.app_startup.backgrounded` log event emitted when the user leaves the app before TTI.
+/// - `expo.app_startup.duration`: seconds from the end of the native launch until the app entered the background.
+/// - `expo.app_startup.hasRendered`: whether the first render happened. When `false`, the user probably saw only the splash screen.
+/// - `expo.app_startup.hasMarkedInteractive`: whether the app reached TTI in an earlier launch. When `false`, the app
+///   probably doesn't call `markInteractive`, so the event doesn't tell that the startup didn't finish.
+///
+/// Emitted via `receiveLog` directly rather than the JS `logEvent` path, so the SDK-reserved `expo.`
+/// event name and attribute keys bypass the validation that would otherwise drop them.
+func makeStartupBackgroundedLogRecord(duration: TimeInterval, hasRendered: Bool, hasMarkedInteractive: Bool) -> LogRecord {
+  return LogRecord(
+    name: "expo.app_startup.backgrounded",
+    attributes: [
+      "expo.app_startup.duration": duration,
+      "expo.app_startup.hasRendered": hasRendered,
+      "expo.app_startup.hasMarkedInteractive": hasMarkedInteractive,
+    ]
+  )
 }
