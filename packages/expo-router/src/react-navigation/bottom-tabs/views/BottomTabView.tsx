@@ -222,6 +222,13 @@ export function BottomTabView(props: Props) {
             return null;
           }
 
+          // `safeAreaInsets.top` sets the header's top offset unless the screen sets its own.
+          const options =
+            safeAreaInsets?.top !== undefined &&
+            descriptor.options.headerStatusBarHeight === undefined
+              ? { ...descriptor.options, headerStatusBarHeight: safeAreaInsets.top }
+              : descriptor.options;
+
           const {
             header = ({ layout, options }: BottomTabHeaderProps) => (
               <Header {...options} layout={layout} title={getHeaderTitle(options, route.name)} />
@@ -230,7 +237,7 @@ export function BottomTabView(props: Props) {
             headerStatusBarHeight,
             headerTransparent,
             sceneStyle: customSceneStyle,
-          } = descriptor.options;
+          } = options;
 
           const { sceneStyle } =
             sceneStyleInterpolator?.({
@@ -273,7 +280,7 @@ export function BottomTabView(props: Props) {
                     layout: dimensions,
                     route,
                     navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
-                    options: descriptor.options,
+                    options,
                   })}
                   style={[customSceneStyle, animationEnabled && sceneStyle]}>
                   {descriptor.render()}
