@@ -1,7 +1,9 @@
 package expo.modules.image
 
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.BaseRequestOptions
 import com.bumptech.glide.request.RequestOptions
+import com.github.penfeizhou.animation.glide.AnimationDecoderOption
 
 /**
  * Conditionally applies the block to the RequestBuilder if the condition is true.
@@ -64,4 +66,15 @@ fun <T> RequestBuilder<T>.apply(options: RequestOptions?): RequestBuilder<T> {
   }
 
   return apply(options)
+}
+
+/**
+ * APNG4Android's animated WebP, APNG and AVIF checks can read the whole input stream. Glide can't
+ * rewind a stream after 5 MB, so larger images that aren't cached on disk fail to load.
+ * `AnimatedImageModule` finds these images with bounded reads and still decodes them with APNG4Android.
+ */
+fun <T : BaseRequestOptions<T>> T.disableUnboundedAnimationChecks(): T {
+  return set(AnimationDecoderOption.DISABLE_ANIMATION_WEBP_DECODER, true)
+    .set(AnimationDecoderOption.DISABLE_ANIMATION_APNG_DECODER, true)
+    .set(AnimationDecoderOption.DISABLE_ANIMATION_AVIF_DECODER, true)
 }
