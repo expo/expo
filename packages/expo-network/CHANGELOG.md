@@ -18,6 +18,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 
+- [iOS] Fix a crash in `getNetworkStateAsync` caused by a data race on the network path captured from `NWPathMonitor`. ([#48557](https://github.com/expo/expo/pull/48557) by [@Ignigena](https://github.com/Ignigena))
+
 ### 💡 Others
 
 - [Android] Remove legacy `fetchNetworkState` path. ([#47007](https://github.com/expo/expo/pull/47007) by [@Wenszel](https://github.com/Wenszel))
