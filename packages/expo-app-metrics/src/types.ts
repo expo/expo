@@ -581,12 +581,13 @@ export interface ExpoAppMetricsModuleType {
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
    * which path captured the error. An integration that reports errors for a library uses the
-   * `integration` source.
+   * `integration` source. A promise rejection that no handler caught uses the `unhandledRejection`
+   * source.
    *
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration';
+    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration' | 'unhandledRejection';
     type?: string;
     message: string;
     stacktrace?: string;

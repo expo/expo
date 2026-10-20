@@ -24,6 +24,7 @@ const mockAppMetrics = {
 };
 
 const mockSetErrorHandlerEnabled = jest.fn();
+const mockSetRejectionTrackerEnabled = jest.fn();
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
@@ -33,6 +34,10 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+}));
+
+jest.mock('../installRejectionTracker', () => ({
+  setRejectionTrackerEnabled: mockSetRejectionTrackerEnabled,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -74,6 +79,9 @@ beforeEach(() => {
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  }));
+  jest.doMock('../installRejectionTracker', () => ({
+    setRejectionTrackerEnabled: mockSetRejectionTrackerEnabled,
   }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -283,6 +291,7 @@ describe('module Proxy', () => {
     const Observe = loadModule();
     Observe.configure({ environment: 'test' });
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(true);
+    expect(mockSetRejectionTrackerEnabled).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -292,6 +301,13 @@ describe('module Proxy', () => {
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])('applies errorHandlingEnabled: %s to the rejection tracker', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: enabled });
+    expect(mockSetRejectionTrackerEnabled).toHaveBeenCalledTimes(1);
+    expect(mockSetRejectionTrackerEnabled).toHaveBeenCalledWith(enabled);
   });
 
   it('passes the config through to the native module unchanged', () => {

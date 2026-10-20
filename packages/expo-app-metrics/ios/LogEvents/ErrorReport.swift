@@ -19,6 +19,7 @@ struct ErrorReport {
     case errorBoundary
     case reportedByUser
     case integration
+    case unhandledRejection
   }
 
   /// Builds the `js.exception` log event for the live path.
