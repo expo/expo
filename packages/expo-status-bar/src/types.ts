@@ -21,7 +21,8 @@ export type StatusBarProps = {
   animated?: boolean;
 
   /**
-   * If the status bar is hidden.
+   * If the status bar is hidden. Has no effect on iPhone Duo, where the status bar is in a
+   * vertical bar. Use `verticalBarBehaviorIOS` to move it back to the top.
    */
   hidden?: boolean;
 

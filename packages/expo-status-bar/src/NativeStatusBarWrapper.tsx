@@ -79,7 +79,8 @@ export const setStatusBarStyle = StatusBar.setStyle;
 
 // @needsAudit
 /**
- * Toggle visibility of the status bar.
+ * Toggle visibility of the status bar. Has no effect on iPhone Duo, where the status bar is in a
+ * vertical bar. Use `verticalBarBehaviorIOS` to move it back to the top.
  *
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
