@@ -2635,3 +2635,40 @@ test('handles screen preloading', () => {
     history: [{ type: 'route', key: 'qux-test' }],
   });
 });
+
+test.each([
+  CommonActions.navigate('baz', { id: 'two' }),
+  CommonActions.preload('baz', { id: 'two' }),
+])('$type drops the nested state of a route re-keyed for a new ID', (action) => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: { baz: ({ params }) => params?.id as string | undefined },
+  };
+
+  const result = router.getStateForAction(
+    {
+      stale: false,
+      type: 'tab',
+      preloadedRouteKeys: [],
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-key', name: 'bar' },
+        {
+          key: 'baz-one',
+          name: 'baz',
+          params: { id: 'one' },
+          state: { routes: [{ name: 'child', params: { id: 'one' } }] },
+        },
+      ],
+      history: [{ type: 'route', key: 'bar-key' }],
+    },
+    action,
+    options
+  ) as TabNavigationState<ParamListBase>; // `getStateForAction` returns a partial state type
+
+  expect(result.routes[1]).toEqual({ key: 'baz-test', name: 'baz', params: { id: 'two' } });
+});

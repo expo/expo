@@ -138,6 +138,17 @@ const getRouteHistory = (
   return history;
 };
 
+// A route that `getId` re-keys is a new route instance, so it must not keep the nested navigator
+// state of the previous ID.
+function withoutStaleState<T extends Route<string> & { state?: unknown }>(route: T, key: string) {
+  if (key === route.key) {
+    return route;
+  }
+
+  const { state, ...routeWithoutState } = route;
+  return routeWithoutState;
+}
+
 const changeIndex = (
   state: TabNavigationState<ParamListBase>,
   index: number,
@@ -370,7 +381,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
                     : route.path;
 
                 return params !== route.params || path !== route.path
-                  ? { ...route, key, path, params }
+                  ? { ...withoutStaleState(route, key), key, path, params }
                   : route;
               }),
             },
@@ -474,7 +485,8 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
 
           const params = createParamsFromAction({ action, routeParamList });
-          const newRoute = params !== route.params ? { ...route, key, params } : route;
+          const newRoute =
+            params !== route.params ? { ...withoutStaleState(route, key), key, params } : route;
 
           return {
             ...state,
