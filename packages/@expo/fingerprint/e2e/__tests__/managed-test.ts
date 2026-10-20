@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
@@ -17,6 +18,14 @@ import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;
 type HashSource = HashSources[number];
 type FingerprintDiff = Awaited<ReturnType<typeof diffFingerprintChangesAsync>>;
+
+// The config loader runs in the `node` on PATH, so that Node decides whether the hook exists.
+const itWithHooks =
+  execFileSync('node', ['-p', "typeof require('module').registerHooks"], {
+    encoding: 'utf8',
+  }).trim() === 'function'
+    ? it
+    : it.skip;
 
 function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | FingerprintSource>(
   source: T
@@ -330,7 +339,7 @@ describe('managed project test', () => {
     expect(hash).toBe(hash2);
   });
 
-  it('should hash a config plugin that a linked workspace package exports', async () => {
+  itWithHooks('should hash a config plugin that a linked workspace package exports', async () => {
     const packageName = 'fingerprint-e2e-workspace-plugin';
     const workspacePackageRoot = path.join(tmpDir, `${projectName}-workspace-plugin`);
     const linkedPackagePath = path.join(projectRoot, 'node_modules', packageName);

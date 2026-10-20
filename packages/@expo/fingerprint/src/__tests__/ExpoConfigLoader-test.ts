@@ -216,17 +216,52 @@ describe('createImportGraphResolveHook', () => {
 });
 
 describe('installImportGraphHook', () => {
-  it('should register a resolve hook and deregister it on uninstall', () => {
-    const deregister = jest.fn();
-    const registerHooks = jest.spyOn(module, 'registerHooks').mockReturnValue({ deregister });
-    try {
-      const hook = installImportGraphHook();
-      expect(registerHooks).toHaveBeenCalledWith({ resolve: expect.any(Function) });
-      hook.uninstall();
-      expect(deregister).toHaveBeenCalledTimes(1);
-    } finally {
-      registerHooks.mockRestore();
+  const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
+
+  // Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
+  function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
+    Object.defineProperty(module, 'registerHooks', {
+      configurable: true,
+      writable: true,
+      value: registerHooks,
+    });
+  }
+
+  afterEach(() => {
+    if (registerHooksDescriptor) {
+      Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
+    } else {
+      delete (module as { registerHooks?: unknown }).registerHooks;
     }
+  });
+
+  it('should register a resolve hook that records imports and deregister it on uninstall', () => {
+    const deregister = jest.fn();
+    stubRegisterHooks(jest.fn(() => ({ deregister })));
+
+    const hook = installImportGraphHook();
+    expect(module.registerHooks).toHaveBeenCalledWith({ resolve: expect.any(Function) });
+    const resolve = jest.mocked(module.registerHooks).mock.lastCall?.[0].resolve;
+    const parent = path.join(os.tmpdir(), 'app', 'app.config.js');
+    const child = path.join(os.tmpdir(), 'packages', 'plugin', 'index.js');
+    resolve?.(
+      'plugin',
+      { conditions: [], importAttributes: {}, parentURL: pathToFileURL(parent).href },
+      () => ({ url: pathToFileURL(child).href })
+    );
+    expect(hook.getImports()).toEqual([{ parent, child }]);
+
+    hook.uninstall();
+    expect(deregister).toHaveBeenCalledTimes(1);
+  });
+
+  it('should record no import when Node has no module.registerHooks', () => {
+    stubRegisterHooks(undefined);
+
+    const hook = installImportGraphHook();
+
+    expect(hook.getImports()).toEqual([]);
+    expect(() => hook.uninstall()).not.toThrow();
   });
 });
 
