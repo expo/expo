@@ -7,9 +7,9 @@ import { CanGoBackContext } from '../react-navigation/core/CanGoBackContext';
 /**
  * Returns whether a navigator on the focused route can go back.
  *
- * On the first render, a tab or drawer's back policy and screen order may not yet
- * be reflected in root state. The navigator reconciles its history after mounting,
- * which re-renders consumers with the corrected value.
+ * On the first render, a tab or drawer's back policy may not yet be reflected in
+ * root state. The navigator reconciles its history after mounting, which
+ * re-renders consumers with the corrected value.
  *
  * @example
  * ```tsx

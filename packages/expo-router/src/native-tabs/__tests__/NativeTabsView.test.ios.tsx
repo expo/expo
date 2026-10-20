@@ -65,7 +65,7 @@ it.each([
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(TabsHost).toHaveBeenCalledTimes(2);
+  expect(TabsHost).toHaveBeenCalledTimes(1);
   expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe(expected);
 });
 
@@ -80,7 +80,7 @@ it('uses shadowColor when it is passed to NativeTabs', async () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
   expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe(
     'transparent'
@@ -98,7 +98,7 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance!.tabBarShadowColor).toBe('red');
   expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });
@@ -115,7 +115,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].colorScheme).toBe('dark');
     expect(TabsHost.mock.calls[0]![0].direction).toBe('rtl');
   });
@@ -132,7 +132,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].ios).toMatchObject({
       tabBarTintColor: 'red',
       onMoreTabSelected,
@@ -150,7 +150,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].ios?.tabBarTintColor).toBe('blue');
   });
 
@@ -165,7 +165,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(false);
   });
 
@@ -188,7 +188,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     // navStateRequest should be the router-managed one (initial baseProvenance is 0, screenKey is the route key, not "foo")
     expect(TabsHost.mock.calls[0]![0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
@@ -211,7 +211,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     // Android-only raw props should not be forwarded to the iOS host.
     expect(TabsHost.mock.calls[0]![0].android).toBeUndefined();
     expect(TabsHost.mock.calls[0]![0].direction).toBe('ltr');
@@ -284,7 +284,7 @@ describe('selectedIcon fallback', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
     expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
       type: 'sfSymbol',
@@ -306,7 +306,7 @@ describe('selectedIcon fallback', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     const ios = TabsScreen.mock.calls[0]![0].ios;
     expect(ios?.icon).toEqual({ type: 'imageSource', imageSource: src });
     expect(ios?.selectedIcon).toEqual({ type: 'imageSource', imageSource: src });
@@ -325,7 +325,7 @@ describe('selectedIcon fallback', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({ type: 'sfSymbol', name: 'house' });
     expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
       type: 'sfSymbol',

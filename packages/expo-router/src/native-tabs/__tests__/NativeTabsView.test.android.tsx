@@ -99,7 +99,7 @@ it.each([
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(TabsHost).toHaveBeenCalledTimes(2);
+  expect(TabsHost).toHaveBeenCalledTimes(1);
   expect(TabsHost.mock.calls[0]![0].android?.tabBarRespectsIMEInsets).toBe(expected);
 });
 
@@ -115,7 +115,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].colorScheme).toBe('dark');
     expect(TabsHost.mock.calls[0]![0].direction).toBe('rtl');
   });
@@ -131,7 +131,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].android).toMatchObject({
       tabBarRespectsIMEInsets: true,
     });
@@ -148,7 +148,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(false);
   });
 
@@ -168,7 +168,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
       baseProvenance: 0,
@@ -188,7 +188,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].onTabSelectionPrevented).toBeInstanceOf(Function);
   });
 
@@ -203,7 +203,7 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     // iOS-only raw props should not be forwarded to the Android host.
     expect(TabsHost.mock.calls[0]![0].ios).toBeUndefined();
     expect(TabsHost.mock.calls[0]![0].direction).toBe('ltr');
@@ -253,7 +253,7 @@ describe('selectedIcon fallback', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
@@ -279,7 +279,7 @@ describe('selectedIcon fallback', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',

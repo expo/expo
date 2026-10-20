@@ -41,7 +41,7 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].android?.icon?.type).toBe('drawableResource');
     if (TabsScreen.mock.calls[0]![0].android?.icon?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
@@ -63,7 +63,7 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].android?.icon?.type).toBe('drawableResource');
     if (TabsScreen.mock.calls[0]![0].android?.icon?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
@@ -81,7 +81,7 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].android?.icon).toBeUndefined();
   });
 
@@ -115,7 +115,7 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     // selectedIcon mirrors icon — sf-selected does not leak in, and the drawable default
     // is reused (temporary fallback for the react-native-screens upstream bug).
     expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
@@ -144,7 +144,7 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     // sf-selected does not leak into the Android selectedIcon; the drawable default is
     // mirrored instead (temporary fallback for the react-native-screens upstream bug).
     expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({

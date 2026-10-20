@@ -36,7 +36,7 @@ import {
   type PartialState,
   type Route,
 } from '../routers';
-import { CanGoBackContext } from './CanGoBackContext';
+import { CanGoBackContext, hasBackTarget } from './CanGoBackContext';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
@@ -348,7 +348,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
 function getFocusedCanGoBack(rootState: NavigationState) {
   let state: NavigationState | PartialState<NavigationState> | undefined = rootState;
   while (state) {
-    if (state.history != null ? state.history.length > 1 : (state.index ?? 0) > 0) {
+    if (hasBackTarget(state)) {
       return true;
     }
     state = state.routes[state.index ?? 0]?.state;

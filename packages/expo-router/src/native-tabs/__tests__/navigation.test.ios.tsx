@@ -195,7 +195,7 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('hidden')).toBeNull();
     expect(screen.queryByTestId('not-specified')).toBeNull();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
   });
 

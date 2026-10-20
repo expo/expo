@@ -74,21 +74,23 @@ describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (nav
     'warns only for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior, warns }) => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      // The warning fires once per layout, so each navigator gets its own layout.
       await renderRouter(
         {
-          _layout: {
+          [`(${navigator})/_layout`]: {
             unstable_settings: { anchor },
             default: () => navigators[navigator](backBehavior),
           },
-          index: () => <Text>Index</Text>,
-          second: () => <Text>Second</Text>,
+          [`(${navigator})/index`]: () => <Text>Index</Text>,
+          [`(${navigator})/second`]: () => <Text>Second</Text>,
         },
         { initialUrl: '/second' }
       );
 
       const warnings = warn.mock.calls.filter(([message]) =>
         String(message).startsWith(
-          'Layout "./_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`, so `useCanGoBack()` can return `true` on the first render.'
+          `Layout "./(${navigator})/_layout.js" sets both ` +
+            '`unstable_settings.anchor` and `backBehavior="none"`, so `useCanGoBack()` can return `true` on the first render.'
         )
       );
       expect(warnings).toHaveLength(warns ? 1 : 0);

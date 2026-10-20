@@ -224,7 +224,7 @@ describe('Tabs visibility', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('second')).toBeNull();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith(
       '[Layout children]: Too many screens defined. Route "second" is extraneous.'
@@ -901,7 +901,7 @@ describe('Native props validation', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
     expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
   });
@@ -917,11 +917,11 @@ describe('Native props validation', () => {
         ),
         index: () => <View testID="index" />,
       });
-      expect(warn).toHaveBeenCalledTimes(2);
+      expect(warn).toHaveBeenCalledTimes(1);
       expect(warn).toHaveBeenCalledWith(
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
       expect(TabsScreen.mock.calls[0]![0].ios?.standardAppearance?.tabBarBlurEffect).toBe(
         undefined
       );
@@ -941,7 +941,7 @@ describe('Native props validation', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsHost).toHaveBeenCalledTimes(2);
+      expect(TabsHost).toHaveBeenCalledTimes(1);
       expect(TabsHost.mock.calls[0]![0].ios?.tabBarMinimizeBehavior).toBe(minimizeBehavior);
     }
   );
@@ -959,11 +959,11 @@ describe('Native props validation', () => {
       ),
       index: () => <View testID="index" />,
     });
-    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledTimes(1);
     expect(warn).toHaveBeenCalledWith(
       `Unsupported minimizeBehavior: ${minimizeBehavior}. Supported values are: ${SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((effect) => `"${effect}"`).join(', ')}`
     );
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].ios?.tabBarMinimizeBehavior).toBe(undefined);
   });
 });
@@ -1005,7 +1005,7 @@ describe('Misc', () => {
       index: () => <View testID="index" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0]![0].ios?.bottomAccessory).toBeDefined();
 
     const bottomAccessoryFn = TabsHost.mock.calls[0]![0].ios!.bottomAccessory!;

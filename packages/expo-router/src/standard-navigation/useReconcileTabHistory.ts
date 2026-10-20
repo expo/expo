@@ -1,10 +1,10 @@
 'use client';
 
-import { use, useEffect } from 'react';
-import isEqual from 'react-fast-compare';
+import { use } from 'react';
 
 import { useRouteNode } from '../Route';
 import { findStateByKey } from '../global-state/stateUtils';
+import { hasBackTarget } from '../react-navigation/core/CanGoBackContext';
 import { NavigationHelpersContext } from '../react-navigation/core/NavigationHelpersContext';
 import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
@@ -13,8 +13,9 @@ import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutE
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import type { NavigationState, ParamListBase, TabRouterOptions } from '../react-navigation/native';
 import { getValidInitialRouteName } from '../routeNode';
+import { useWarnOnce } from '../useDeprecated';
 
-export function useTabNavigator(
+export function useReconcileTabHistory(
   backBehavior: TabRouterOptions['backBehavior'],
   navigator?: { state: NavigationState; navigation: NavigationHelpers<ParamListBase> }
 ) {
@@ -25,20 +26,17 @@ export function useTabNavigator(
   const navigation = navigator?.navigation ?? use(NavigationHelpersContext);
   const rootState = use(RootNavigationStateContext);
   if (!state || !navigation) {
-    throw new Error('useTabNavigator must be called inside a tab navigator.');
+    throw new Error('useReconcileTabHistory must be called inside a tab navigator.');
   }
 
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && backBehavior === 'none' && anchor !== undefined) {
-      console.warn(
-        `Layout "${contextKey}" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
-          'so `useCanGoBack()` can return `true` on the first render. ' +
-          'Remove the anchor or use a different `backBehavior`.'
-      );
-    }
-  }, [anchor, backBehavior, contextKey]);
+  useWarnOnce(
+    `Layout "${contextKey}" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\`, ` +
+      'so `useCanGoBack()` can return `true` on the first render. ' +
+      'Remove the anchor or use a different `backBehavior`.',
+    backBehavior === 'none' && anchor !== undefined
+  );
 
-  // Writes the router's declared back history into root state, which lacks it on the first commit.
+  // Writes the router's back history into root state when root state reports a different `canGoBack`.
   useClientLayoutEffect(() => {
     // Compare with the root-state slice that `useNavigationBuilder` derives `state` from.
     const committed = rootState && findStateByKey(rootState, state.key);
@@ -51,7 +49,7 @@ export function useTabNavigator(
     ) {
       return;
     }
-    if (isEqual(committed.history, state.history)) {
+    if (hasBackTarget(committed) === hasBackTarget(state)) {
       return;
     }
     navigation.dispatch({
