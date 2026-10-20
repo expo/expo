@@ -79,8 +79,6 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
   };
 
   _fetch[polyfillSymbol] = true;
-  // Code detects `expo/fetch` by the marker that `installGlobal` sets. React Native's fetch has no
-  // marker, so the wrapper gets the marker only when the wrapped fetch has it.
   if ((fetch as any)[builtinSymbol] === true) {
     Object.defineProperty(_fetch, builtinSymbol, {
       value: true,
