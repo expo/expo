@@ -42,6 +42,23 @@ data class UpdatesLogEntry(
     }.toString()
   }
 
+  /**
+   * The entry as a map with the same keys as the JSON string.
+   */
+  fun asMap(): Map<String, Any> =
+    buildMap {
+      put("timestamp", timestamp)
+      put("message", message)
+      put("code", code)
+      put("level", level)
+      duration?.let { put("duration", it) }
+      updateId?.let { put("updateId", it) }
+      assetId?.let { put("assetId", it) }
+      if (!stacktrace.isNullOrEmpty()) {
+        put("stacktrace", stacktrace)
+      }
+    }
+
   companion object {
     fun create(json: String): UpdatesLogEntry? {
       return try {
