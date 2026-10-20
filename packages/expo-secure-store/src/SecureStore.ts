@@ -171,6 +171,7 @@ export async function deleteItemAsync(
  * for the given key or if the key has been invalidated. It rejects if an error occurs while retrieving the value.
  *
  * > Keys stored with `requireAuthentication: 'biometry'` are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
+ * > Keys stored with `requireAuthentication: 'deviceCredentials'` are not affected by biometric changes. On Android, keys stored with either method are invalidated when the user removes the device's lock screen.
  * > After a key has been invalidated, it becomes impossible to read its value.
  *
  * > **Note:** When `requireAuthentication` is set to `'biometry'` or `'deviceCredentials'`, the authentication prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
