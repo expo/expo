@@ -6151,6 +6151,9 @@ importers:
 
   packages/expo-status-bar:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.3.0
@@ -6182,9 +6185,6 @@ importers:
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-store-review:
     dependencies:
