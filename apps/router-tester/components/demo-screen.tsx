@@ -1,4 +1,5 @@
-import { Link, usePathname, type Href } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link, router, usePathname, type Href } from 'expo-router';
 import { useTheme } from 'expo-router/react-navigation';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -47,6 +48,21 @@ export function JSHeaderTitle({ children }: { children: string }) {
   );
 }
 
+export function JSHeaderBackButton({ canGoBack }: { canGoBack?: boolean }) {
+  if (!canGoBack) {
+    return null;
+  }
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Back"
+      onPress={() => router.back()}
+      style={styles.backButton}>
+      <Ionicons name="chevron-back" size={20} color="#3a3a3c" />
+    </Pressable>
+  );
+}
+
 type DemoButtonProps = {
   title: string;
   testID?: string;
@@ -81,6 +97,15 @@ const styles = StyleSheet.create({
   headerTitleText: {
     fontSize: 17,
     fontWeight: '600',
+  },
+  backButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#e5e5ea',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginStart: 8,
   },
   badge: {
     backgroundColor: '#e5e5ea',

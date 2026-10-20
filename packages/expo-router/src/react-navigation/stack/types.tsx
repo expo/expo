@@ -437,6 +437,17 @@ export type StackNavigationConfig = {
    * Defaults to `true`.
    */
   detachInactiveScreens?: boolean;
+  /**
+   * Safe area insets for the headers. By default, the device's safe area insets are automatically
+   * detected, and the header is offset below the status bar, including beside the vertical bar on
+   * iPhone Duo. `top` overrides that offset, unless a screen sets `headerStatusBarHeight`.
+   */
+  safeAreaInsets?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
 };
 
 export type TransitionSpec =
