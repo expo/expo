@@ -52,7 +52,7 @@ export function isUnpublishedError(output: string): boolean {
   return /\b(E404|ETARGET)\b/.test(output);
 }
 
-const npmPackAsync: NpmPack = async (spec, destination) => {
+export const npmPackAsync: NpmPack = async (spec, destination) => {
   try {
     const { stdout } = await spawnAsync('npm', [
       'pack',
