@@ -48,8 +48,8 @@ export default function ExpoUpdatesExample() {
       <Text style={[styles.description, { color: theme.text.secondary }]}>
         The expo-updates integration reports the errors in the expo-updates log as `updates.error`
         errors, and its warnings as `updates.warning` events. It reads the log when the app starts,
-        so the entries from these buttons are reported on the next launch. A crash that error
-        recovery handled is reported as `updates.error_recovery`.
+        and then reports each new entry when it is logged. A crash that error recovery handled is
+        reported as `updates.error_recovery`.
       </Text>
       <Button
         title="Check for update"

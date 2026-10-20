@@ -30,12 +30,23 @@ const CURSOR_OVERLAP_MS = 1000;
 // because an entry at a lower level that is read again is never reported.
 const REPORTABLE_LEVELS: ReadonlySet<string> = new Set(['warn', 'error', 'fatal']);
 
+// Keys of the entries handled in this JS session, so an entry that arrives both live and in the
+// read is reported once. Only the newest keys are kept.
+const MAX_HANDLED_KEYS = 1000;
+
 /**
- * Native storage for the log cursor, so that a log entry is not reported again on a later start.
+ * The parts of the native `ExpoObserve` module that the integration uses: storage for the log
+ * cursor, so that a log entry is not reported again on a later start, and the live listener for
+ * entries that expo-updates logs while the app runs.
  */
-export interface ExpoUpdatesLogCursorStore {
+export interface ExpoUpdatesNativeModule {
   getExpoUpdatesLogCursor(): Promise<string | null>;
   setExpoUpdatesLogCursor(cursor: string): Promise<void>;
+  setExpoUpdatesLogListenerEnabled(enabled: boolean): void;
+  addListener(
+    eventName: 'expoUpdatesLogEntry',
+    listener: (entry: UpdatesLogEntry) => void
+  ): { remove(): void };
 }
 
 /**
@@ -60,6 +71,12 @@ let isEnabled = false;
 let settings: Settings = { reportWarnings: false, ignoredCodes: [], shouldReport: undefined };
 let hasWarnedAboutShouldReport = false;
 let readInProgress: Promise<void> | null = null;
+
+let nativeModule: ExpoUpdatesNativeModule | null = null;
+let liveSubscription: { remove(): void } | null = null;
+let cursor: LogCursor | null = null;
+let cursorWrite: Promise<void> = Promise.resolve();
+const handledKeys = new Set<string>();
 
 /**
  * An expo-updates log entry reported to Observe. The stack is removed, because a stack from this
@@ -180,28 +197,87 @@ function keyTimestamp(key: string): number {
 }
 
 /**
- * Moves the cursor to the newest entry, and keeps the keys of the entries in the second before it,
- * including the keys from the previous cursor.
+ * Combines two cursors: the newer timestamp, and the keys of both that are in the second before it.
+ * So the cursor never moves back, for example when a read ends after a newer live entry.
  */
-function nextCursor(previous: LogCursor | null, sortedEntries: UpdatesLogEntry[]): LogCursor {
-  const newest = sortedEntries[sortedEntries.length - 1]!;
-  const keyThreshold = newest.timestamp - CURSOR_OVERLAP_MS;
-  const newKeys = sortedEntries.filter((entry) => REPORTABLE_LEVELS.has(entry.level)).map(entryKey);
-  const keys = [...(previous?.keys ?? []), ...newKeys].filter(
-    (key) => keyTimestamp(key) >= keyThreshold
+function mergeCursors(a: LogCursor | null, b: LogCursor | null): LogCursor | null {
+  if (!a || !b) {
+    return a ?? b;
+  }
+  const timestamp = Math.max(a.timestamp, b.timestamp);
+  const keys = [...a.keys, ...b.keys].filter(
+    (key) => keyTimestamp(key) >= timestamp - CURSOR_OVERLAP_MS
   );
-  return { timestamp: newest.timestamp, keys: [...new Set(keys)] };
+  return { timestamp, keys: [...new Set(keys)] };
+}
+
+function cursorFor(entries: UpdatesLogEntry[]): LogCursor {
+  const timestamp = Math.max(...entries.map((entry) => entry.timestamp));
+  const keys = entries
+    .filter((entry) => REPORTABLE_LEVELS.has(entry.level))
+    .filter((entry) => entry.timestamp >= timestamp - CURSOR_OVERLAP_MS)
+    .map(entryKey);
+  return { timestamp, keys };
+}
+
+function rememberHandled(key: string): void {
+  handledKeys.add(key);
+  if (handledKeys.size > MAX_HANDLED_KEYS) {
+    handledKeys.delete(handledKeys.values().next().value!);
+  }
+}
+
+/**
+ * Stores the cursor. The writes run one after another, so an older cursor cannot overwrite a newer
+ * one.
+ */
+function storeCursor(native: ExpoUpdatesNativeModule, value: LogCursor): void {
+  const serialized = JSON.stringify(value);
+  cursorWrite = cursorWrite
+    .then(() => native.setExpoUpdatesLogCursor(serialized))
+    .catch((error) => {
+      console.warn(
+        "[expo-observe] The 'expo-updates' integration could not store its log cursor, so some " +
+          'log entries may be reported again on the next launch. ' +
+          `Error: ${String(error)}`
+      );
+    });
+}
+
+/**
+ * Reports the entries, in timestamp order, that were not handled yet in this JS session, and moves
+ * the cursor past them.
+ */
+function handleEntries(native: ExpoUpdatesNativeModule, entries: UpdatesLogEntry[]): void {
+  const newEntries = entries
+    .filter((entry) => !handledKeys.has(entryKey(entry)))
+    .sort((a, b) => a.timestamp - b.timestamp);
+  if (newEntries.length === 0) {
+    return;
+  }
+  for (const entry of newEntries) {
+    if (!isEnabled) {
+      return;
+    }
+    rememberHandled(entryKey(entry));
+    reportEntry(entry);
+  }
+  const updatedCursor = mergeCursors(cursor, cursorFor(newEntries))!;
+  cursor = updatedCursor;
+  storeCursor(native, updatedCursor);
 }
 
 async function readAndReport(
   updates: LoadedUpdates,
-  cursorStore: ExpoUpdatesLogCursorStore
+  native: ExpoUpdatesNativeModule
 ): Promise<void> {
   const now = Date.now();
-  const cursor = parseCursor(await cursorStore.getExpoUpdatesLogCursor(), now);
+  const storedCursor = parseCursor(await native.getExpoUpdatesLogCursor(), now);
+  storedCursor?.keys.forEach(rememberHandled);
+  cursor = mergeCursors(cursor, storedCursor);
   let entries: UpdatesLogEntry[];
   try {
-    entries = await updates.readLogEntriesAsync(lookbackFrom(cursor, now));
+    entries = await updates.readLogEntriesAsync(lookbackFrom(storedCursor, now));
   } catch (error) {
     console.warn(
       "[expo-observe] The 'expo-updates' integration could not read the expo-updates log, so its " +
@@ -210,34 +286,33 @@ async function readAndReport(
     return;
   }
 
-  const seenKeys = new Set(cursor?.keys);
-  const newEntries = entries
-    .filter((entry) => !cursor || entry.timestamp >= cursor.timestamp)
-    .filter((entry) => !seenKeys.has(entryKey(entry)))
-    .sort((a, b) => a.timestamp - b.timestamp);
+  handleEntries(
+    native,
+    entries.filter((entry) => !storedCursor || entry.timestamp >= storedCursor.timestamp)
+  );
+  await cursorWrite;
+}
 
-  for (const entry of newEntries) {
-    if (!isEnabled) {
-      return;
-    }
-    reportEntry(entry);
+function subscribeToLiveEntries(native: ExpoUpdatesNativeModule): void {
+  if (liveSubscription) {
+    return;
   }
-
-  if (newEntries.length > 0) {
-    await cursorStore.setExpoUpdatesLogCursor(JSON.stringify(nextCursor(cursor, newEntries)));
-  }
+  liveSubscription = native.addListener('expoUpdatesLogEntry', (entry) => {
+    handleEntries(native, [entry]);
+  });
+  native.setExpoUpdatesLogListenerEnabled(true);
 }
 
 /**
- * Reports the expo-updates log entries written since the last report: errors as Observe errors
- * named `updates.error`, with the entry's code at the start of the message (or
- * `updates.error_recovery` for a JS error that expo-updates error recovery handled), and, when
- * `reportWarnings` is set, warnings as `updates.warning` events. Returns when the entries are read
- * and reported.
+ * Reports the expo-updates log entries written since the last report, and then each entry as
+ * expo-updates logs it: errors as Observe errors named `updates.error`, with the entry's code at
+ * the start of the message (or `updates.error_recovery` for a JS error that expo-updates error
+ * recovery handled), and, when `reportWarnings` is set, warnings as `updates.warning` events.
+ * Returns when the entries written since the last report are read and reported.
  */
 export function initExpoUpdatesIntegration(
   config: NonNullable<ObserveIntegrationsConfig['expo-updates']>,
-  cursorStore: ExpoUpdatesLogCursorStore
+  native: ExpoUpdatesNativeModule
 ): Promise<void> {
   const updates = loadUpdates();
   if (!updates) {
@@ -256,8 +331,12 @@ export function initExpoUpdatesIntegration(
   };
   hasWarnedAboutShouldReport = false;
   isEnabled = true;
+  nativeModule = native;
 
-  readInProgress ??= readAndReport(updates, cursorStore)
+  // Subscribe before the read, so no entry falls between the two. `handleEntries` reports an entry
+  // that arrives from both once.
+  subscribeToLiveEntries(native);
+  readInProgress ??= readAndReport(updates, native)
     .catch((error) => {
       console.warn(
         "[expo-observe] The 'expo-updates' integration could not read or store its log cursor, " +
@@ -272,8 +351,13 @@ export function initExpoUpdatesIntegration(
 }
 
 /**
- * Stops reporting expo-updates log entries to Observe.
+ * Stops reporting expo-updates log entries to Observe, and turns off the native live listener.
  */
 export function disableExpoUpdatesIntegration(): void {
   isEnabled = false;
+  if (liveSubscription) {
+    liveSubscription.remove();
+    liveSubscription = null;
+    nativeModule?.setExpoUpdatesLogListenerEnabled(false);
+  }
 }

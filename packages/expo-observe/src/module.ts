@@ -6,7 +6,7 @@ import { isRouterInstalled } from './integrations/expo-router/router';
 import {
   disableExpoUpdatesIntegration,
   initExpoUpdatesIntegration,
-  type ExpoUpdatesLogCursorStore,
+  type ExpoUpdatesNativeModule,
 } from './integrations/expo-updates/init';
 import {
   disableReanimatedIntegration,
@@ -114,8 +114,9 @@ const Observe: ObserveModule = new Proxy(native, {
         }
         const updatesConfig = config.integrations?.['expo-updates'];
         if (updatesConfig) {
-          // The native module implements the cursor store functions, which are not public API.
-          initExpoUpdatesIntegration(updatesConfig, target as unknown as ExpoUpdatesLogCursorStore);
+          // The native module implements the integration's functions and event, which are not
+          // public API.
+          initExpoUpdatesIntegration(updatesConfig, target as unknown as ExpoUpdatesNativeModule);
         } else {
           disableExpoUpdatesIntegration();
         }
