@@ -346,35 +346,35 @@ describe('managed project test', () => {
     const configPath = path.join(projectRoot, 'app.config.js');
     const labelPath = path.join(workspacePackageRoot, 'label.js');
     const sourcePrefix = path.relative(projectRoot, workspacePackageRoot).split(path.sep).join('/');
-    await fs.mkdir(workspacePackageRoot, { recursive: true });
-    await fs.writeFile(
-      path.join(workspacePackageRoot, 'package.json'),
-      JSON.stringify({ name: packageName, version: '1.0.0', main: 'index.js' })
-    );
-    await fs.writeFile(labelPath, `module.exports = 'first';\n`);
-    await fs.writeFile(
-      path.join(workspacePackageRoot, 'index.js'),
-      [
-        `const label = require('./label');`,
-        ``,
-        `module.exports = function withLabel(config) {`,
-        `  return config;`,
-        `};`,
-        `module.exports.describeLabel = () => label;`,
-        ``,
-      ].join('\n')
-    );
-    await fs.symlink(workspacePackageRoot, linkedPackagePath, 'junction');
-    await fs.writeFile(
-      configPath,
-      [
-        `const withLabel = require('${packageName}');`,
-        ``,
-        `module.exports = ({ config }) => ({ ...config, plugins: [...(config.plugins ?? []), withLabel] });`,
-        ``,
-      ].join('\n')
-    );
     try {
+      await fs.mkdir(workspacePackageRoot, { recursive: true });
+      await fs.writeFile(
+        path.join(workspacePackageRoot, 'package.json'),
+        JSON.stringify({ name: packageName, version: '1.0.0', main: 'index.js' })
+      );
+      await fs.writeFile(labelPath, `module.exports = 'first';\n`);
+      await fs.writeFile(
+        path.join(workspacePackageRoot, 'index.js'),
+        [
+          `const label = require('./label');`,
+          ``,
+          `module.exports = function withLabel(config) {`,
+          `  return config;`,
+          `};`,
+          `module.exports.describeLabel = () => label;`,
+          ``,
+        ].join('\n')
+      );
+      await fs.symlink(workspacePackageRoot, linkedPackagePath, 'junction');
+      await fs.writeFile(
+        configPath,
+        [
+          `const withLabel = require('${packageName}');`,
+          ``,
+          `module.exports = ({ config }) => ({ ...config, plugins: [...(config.plugins ?? []), withLabel] });`,
+          ``,
+        ].join('\n')
+      );
       const sources = await getHashSourcesAsync(
         projectRoot,
         await normalizeOptionsAsync(projectRoot)

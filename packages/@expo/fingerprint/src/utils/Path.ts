@@ -136,11 +136,18 @@ export function toPosixPath(filePath: string): string {
 }
 
 /**
+ * Whether a project-relative POSIX path lies inside a `node_modules` folder.
+ */
+export function isNodeModulesPath(relativePosixPath: string): boolean {
+  return relativePosixPath.includes('node_modules');
+}
+
+/**
  * Whether a project-relative POSIX path names a file inside the project root and outside
  * `node_modules`. `..` means the path escaped the project root (e.g. a hoisted or linked dependency).
  */
 export function isProjectLocalPath(relativePosixPath: string): boolean {
-  return !relativePosixPath.startsWith('..') && !relativePosixPath.includes('node_modules');
+  return !relativePosixPath.startsWith('..') && !isNodeModulesPath(relativePosixPath);
 }
 
 /**

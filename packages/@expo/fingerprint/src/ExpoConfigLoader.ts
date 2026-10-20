@@ -45,7 +45,7 @@ async function runAsync(programName: string, args: string[] = []) {
   loadProjectEnv(projectRoot, { mode });
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
-  const importGraph = installImportGraphHook();
+  const importGraph = skipPlugins ? null : installImportGraphHook();
   let config;
   try {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
@@ -55,7 +55,7 @@ async function runAsync(programName: string, args: string[] = []) {
     });
   } finally {
     uninstall();
-    importGraph.uninstall();
+    importGraph?.uninstall();
   }
 
   const ignoredPaths = [
@@ -73,9 +73,9 @@ async function runAsync(programName: string, args: string[] = []) {
     // The plugins-skipped pass only contributes its module list to the diff; its config is unused.
     config: skipPlugins ? null : config,
     loadedModules,
-    projectModules: skipPlugins
-      ? null
-      : collectProjectModulePaths(capturedModules, importGraph.getImports(), projectRoot),
+    projectModules: importGraph
+      ? collectProjectModulePaths(capturedModules, importGraph.getImports(), projectRoot)
+      : null,
   });
 
   if (process.send) {
@@ -198,7 +198,7 @@ export async function resolveLoadedModuleSourcesAsync(
   const ignoredPathMatchObjects = buildPathMatchObjects(ignoredPaths);
   const candidates = capturedModules
     .map(({ filename, content }) => ({
-      relativePath: toPosixPath(path.relative(projectRoot, filename)),
+      relativePath: toProjectRelativePath(projectRoot, filename),
       filename,
       content,
     }))
@@ -265,9 +265,10 @@ export function installImportGraphHook(): {
 }
 
 /**
- * A `module.registerHooks` resolve hook that records, for each file, the import that first resolves
- * it. That import is the one that loads the file, so a module the config-loading framework loads
- * before the project's own code runs stays the framework's when project code imports it later.
+ * A `module.registerHooks` resolve hook that records, for each file, the first import that resolves
+ * it, or the first call that only resolves it, such as `import.meta.resolve`. So a module the
+ * config-loading framework resolves before the project's own code runs stays the framework's when
+ * project code imports it later.
  */
 export function createImportGraphResolveHook(imports: ResolvedImport[]): module.ResolveHookSync {
   const resolvedUrls = new Set<string>();
@@ -291,18 +292,23 @@ export function createImportGraphResolveHook(imports: ResolvedImport[]): module.
  * A module inside the project root belongs to the project, and so does every module it loads,
  * directly or through another such module, unless the module is in `node_modules`.
  * A config plugin a monorepo workspace package exports sits outside the project root and is
- * reached this way. The modules the config-loading framework loads are not, even when the
- * framework is itself a linked workspace package.
+ * reached this way. The modules the config-loading framework resolves before the project's own code
+ * runs are not, even when the framework is itself a linked workspace package.
  */
 export function collectProjectModulePaths(
   capturedModules: CapturedModule[],
   imports: ResolvedImport[],
   projectRoot: string
 ): string[] {
-  const toRelativePath = (filename: string) => toPosixPath(path.relative(projectRoot, filename));
+  const toRelativePath = (filename: string) => toProjectRelativePath(projectRoot, filename);
   const importsByParent = new Map<string, string[]>();
   for (const { parent, child } of imports) {
-    importsByParent.set(parent, [...(importsByParent.get(parent) ?? []), child]);
+    const children = importsByParent.get(parent);
+    if (children) {
+      children.push(child);
+    } else {
+      importsByParent.set(parent, [child]);
+    }
   }
   const capturedFilenames = new Set(capturedModules.map(({ filename }) => filename));
   const pending = [...capturedFilenames].filter((filename) =>
@@ -311,7 +317,7 @@ export function collectProjectModulePaths(
   const reached = new Set(pending);
   for (let parent = pending.pop(); parent !== undefined; parent = pending.pop()) {
     for (const child of importsByParent.get(parent) ?? []) {
-      if (!reached.has(child) && !toRelativePath(child).includes('node_modules')) {
+      if (!reached.has(child) && !isNodeModulesPath(toRelativePath(child))) {
         reached.add(child);
         pending.push(child);
       }
@@ -321,6 +327,13 @@ export function collectProjectModulePaths(
     .filter((filename) => capturedFilenames.has(filename))
     .map(toRelativePath)
     .sort();
+}
+
+/**
+ * The project-relative POSIX path of a captured module: the key of its loaded module source.
+ */
+function toProjectRelativePath(projectRoot: string, filename: string): string {
+  return toPosixPath(path.relative(projectRoot, filename));
 }
 
 /**

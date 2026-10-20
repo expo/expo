@@ -93,8 +93,9 @@ async function spawnConfigLoaderAsync(
  *
  * Anything that also loads when plugins are skipped is the config-loading framework and is dropped.
  * In-repo files and the modules the project's own code imports (`projectModules`) are always kept
- * regardless of the diff, so a plugin imported at the top of `app.config` (which loads during config
- * evaluation, not plugin application) is never lost, even from a monorepo workspace package.
+ * regardless of the diff, so a local plugin imported at the top of `app.config` (which loads during
+ * config evaluation, not plugin application) is never lost, and neither is a workspace plugin that
+ * `projectModules` names.
  */
 export function diffLoadedModules(
   withPlugins: LoadedModuleSource[],
