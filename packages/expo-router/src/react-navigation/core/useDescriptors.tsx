@@ -317,7 +317,8 @@ export function useDescriptors<
   // TODO: Fix the `useNavigationCache` return type and remove these casts.
   // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
   // With `create`, a keyed route that is not in the state yet gets the descriptor it will have
-  // once the route is added.
+  // once the route is added. A navigator uses it for routes that it adds before the global state
+  // has them. It is opt-in, so an unknown key from any other caller still throws.
   const describe = (
     route: DescriptorRouteProp<ParamListBase, string>,
     { create = false }: { create?: boolean } = {}

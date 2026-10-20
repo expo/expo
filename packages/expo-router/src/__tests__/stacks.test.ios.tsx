@@ -1,14 +1,15 @@
 import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Text } from 'react-native';
 
 import { navigationRef } from '../global-state/navigationRef';
+import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import type { StackScreenProps } from '../layouts/stack-utils';
-import { useNavigationState, useRoute } from '../react-navigation/core';
+import { useNavigationState } from '../react-navigation/core';
 import { renderRouter, testRouter } from '../testing-library';
 import type { ScreenProps } from '../useScreens';
 import { expectCompleteStateToMatch } from './assertCompleteState';
@@ -1091,20 +1092,26 @@ describe('Screen options with /index suffix normalization', () => {
 });
 
 describe('unstable_requiredScreensBelow', () => {
-  function getStackRoutes() {
-    return navigationRef.getRootState().routes[0]!.state!.routes;
+  // Matches a root state whose first route holds a stack with routes of these names.
+  function stackState(...names: string[]) {
+    return { routes: [{ state: { routes: names.map((name) => ({ name })) } }] };
   }
 
-  it('renders required screens before the sync and keeps their keys after it', async () => {
-    const mounts: { key: string; stackRouteCount: number }[] = [];
-    function Index() {
-      const { key } = useRoute();
-      const stackRouteCount = useNavigationState((state) => state.routes.length);
-      useEffect(() => {
-        mounts.push({ key, stackRouteCount });
-      }, [key]);
-      return null;
-    }
+  // Records the stack route names on each render. Screens render it as a child, so the screen
+  // itself does not re-render when the stack state changes.
+  const routeNamesAtRender: string[][] = [];
+  function StackRouteNames() {
+    routeNamesAtRender.push(useNavigationState((state) => state.routes.map(({ name }) => name)));
+    return null;
+  }
+
+  beforeEach(() => {
+    routeNamesAtRender.length = 0;
+  });
+
+  it('renders required screens before the global state has them', async () => {
+    const Index = jest.fn(() => null);
+    const Details = jest.fn(() => <StackRouteNames />);
 
     await renderRouter(
       {
@@ -1114,18 +1121,23 @@ describe('unstable_requiredScreensBelow', () => {
           </Stack>
         ),
         index: Index,
-        details: () => null,
+        details: Details,
       },
       { initialUrl: '/details' }
     );
 
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
-    // The screen mounted while the global state had only `details`.
-    expect(mounts).toEqual([{ key: getStackRoutes()[0]!.key, stackRouteCount: 1 }]);
-    expect(router.canGoBack()).toBe(true);
+    expect(routeNamesAtRender).toEqual([['details'], ['index', 'details']]);
+    expect(navigationRef.getRootState()).toMatchObject(stackState('index', 'details'));
+    // An added screen renders before the sync and again after it.
+    expect(Index).toHaveBeenCalledTimes(2);
+    expect(Details).toHaveBeenCalledTimes(1);
   });
 
   it('adds missing required screens on push and skips screens already below', async () => {
+    const Index = jest.fn(() => null);
+    const List = jest.fn(() => null);
+    const Details = jest.fn(() => <StackRouteNames />);
+
     await renderRouter(
       {
         _layout: () => (
@@ -1133,41 +1145,55 @@ describe('unstable_requiredScreensBelow', () => {
             <Stack.Screen name="details" unstable_requiredScreensBelow={['index', 'list']} />
           </Stack>
         ),
-        index: () => null,
-        list: () => null,
-        details: () => null,
+        index: Index,
+        list: List,
+        details: Details,
       },
       { initialUrl: '/' }
     );
+    expect(navigationRef.getRootState()).toMatchObject(stackState('index'));
+    expect(Index).toHaveBeenCalledTimes(1);
+    expect(List).toHaveBeenCalledTimes(0);
 
     await act(() => router.push('/details'));
 
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'list', 'details']);
+    expect(routeNamesAtRender).toEqual([
+      ['index', 'details'],
+      ['index', 'list', 'details'],
+    ]);
+    expect(navigationRef.getRootState()).toMatchObject(stackState('index', 'list', 'details'));
+    expect(Index).toHaveBeenCalledTimes(1);
+    // An added screen renders before the sync and again after it.
+    expect(List).toHaveBeenCalledTimes(2);
+    expect(Details).toHaveBeenCalledTimes(1);
   });
 
-  it('copies path params for a name and uses the params of an object', async () => {
+  it.each([
+    { required: '[id]', id: '42' },
+    { required: { name: '[id]', params: { id: '1' } }, id: '1' },
+  ])('gives the [id] screen id $id when it is listed as $required', async ({ required, id }) => {
+    function IdScreen() {
+      return <Text testID="id">{useLocalSearchParams().id}</Text>;
+    }
+
     await renderRouter(
       {
         _layout: () => (
           <Stack>
             <Stack.Screen
               name="[id]/comments"
-              unstable_requiredScreensBelow={[{ name: 'index', params: { tab: 'all' } }, '[id]']}
+              unstable_requiredScreensBelow={['index', required]}
             />
           </Stack>
         ),
         index: () => null,
-        '[id]': () => null,
+        '[id]': IdScreen,
         '[id]/comments': () => null,
       },
       { initialUrl: '/42/comments' }
     );
 
-    expect(getStackRoutes().map(({ name, params }) => ({ name, params }))).toEqual([
-      { name: 'index', params: { tab: 'all' } },
-      { name: '[id]', params: { id: '42' } },
-      { name: '[id]/comments', params: { id: '42' } },
-    ]);
+    expect(screen.getByTestId('id', { includeHiddenElements: true })).toHaveTextContent(id);
   });
 
   it('adds required screens when the prop changes and keeps them when it is removed', async () => {
@@ -1181,29 +1207,27 @@ describe('unstable_requiredScreensBelow', () => {
         </Stack>
       );
     }
+    const Index = jest.fn(() => <Text testID="index" />);
 
     await renderRouter(
-      { _layout: Layout, index: () => null, details: () => null },
+      { _layout: Layout, index: Index, details: () => <Text testID="details" /> },
       { initialUrl: '/details' }
     );
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['details']);
+    expect(screen.getByTestId('details')).toBeVisible();
+    expect(screen.queryByTestId('index', { includeHiddenElements: true })).toBeNull();
 
     await act(() => setRequired(['index']));
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
+    expect(screen.getByTestId('details')).toBeVisible();
+    expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
+    expect(Index).toHaveBeenCalledTimes(2);
 
     await act(() => setRequired(undefined));
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['index', 'details']);
+    expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
+    expect(Index).toHaveBeenCalledTimes(2);
   });
 
-  it('mounts a required screen that contains a nested stack once', async () => {
-    const mounts: string[] = [];
-    function NestedIndex() {
-      const { key } = useRoute();
-      useEffect(() => {
-        mounts.push(key);
-      }, [key]);
-      return null;
-    }
+  it('renders a required screen that contains a nested stack once', async () => {
+    const NestedIndex = jest.fn(() => null);
 
     await renderRouter(
       {
@@ -1219,26 +1243,32 @@ describe('unstable_requiredScreensBelow', () => {
       { initialUrl: '/details' }
     );
 
-    const [nested] = getStackRoutes();
-    expect(nested!.name).toBe('nested');
-    expect(mounts).toEqual([nested!.state!.routes[0]!.key]);
+    expect(navigationRef.getRootState()).toMatchObject(stackState('nested', 'details'));
+    expect(NestedIndex).toHaveBeenCalledTimes(1);
   });
 
-  it('does not loop when two screens require each other', async () => {
-    await renderRouter(
-      {
-        _layout: () => (
-          <Stack>
-            <Stack.Screen name="a" unstable_requiredScreensBelow={['b']} />
-            <Stack.Screen name="b" unstable_requiredScreensBelow={['a']} />
-          </Stack>
-        ),
-        a: () => null,
-        b: () => null,
-      },
-      { initialUrl: '/a' }
-    );
+  it('warns and does not loop when two screens require each other', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter(
+        {
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="a" unstable_requiredScreensBelow={['b']} />
+              <Stack.Screen name="b" unstable_requiredScreensBelow={['a']} />
+            </Stack>
+          ),
+          a: () => null,
+          b: () => null,
+        },
+        { initialUrl: '/a' }
+      );
 
-    expect(getStackRoutes().map((route) => route.name)).toEqual(['b', 'a']);
+      expect(navigationRef.getRootState()).toMatchObject(stackState('b', 'a'));
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('a -> b -> a'));
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
