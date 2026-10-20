@@ -263,16 +263,21 @@ describe('installImportGraphHook', () => {
     const originalCompile = moduleProto._compile;
     const parent = path.join(os.tmpdir(), 'app', 'app.config.js');
     const child = path.join(os.tmpdir(), 'packages', 'plugin', 'index.js');
+    const sibling = path.join(os.tmpdir(), 'packages', 'constants', 'index.js');
     const compile = jest.fn((_content: unknown, filename: unknown) => {
       if (filename === parent) {
         moduleProto._compile.call({}, 'module.exports = 1;', child);
+        moduleProto._compile.call({}, 'module.exports = 2;', sibling);
       }
     });
     moduleProto._compile = compile;
     try {
       const hook = installImportGraphHook();
       moduleProto._compile.call({}, "module.exports = require('plugin');", parent);
-      expect(hook.getImports()).toEqual([{ parent, child, via: 'compile' }]);
+      expect(hook.getImports()).toEqual([
+        { parent, child, via: 'compile' },
+        { parent, child: sibling, via: 'compile' },
+      ]);
 
       hook.uninstall();
       expect(moduleProto._compile).toBe(compile);
