@@ -154,7 +154,7 @@ debug('hello');
 ```
 
 **New debugging system:**
-Newer modules use the `events` helper from `src/events` as documented in `./docs/events.md` to define structured events in JSON format.
+Newer modules use the `events` helper from the `2g` package (`import { events } from '2g'`) as documented in `./docs/events.md` to define structured events in JSON format. Each area declares its events in its own `events.ts`, for example `src/run/events.ts`.
 
 ## Production
 
