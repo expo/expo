@@ -61,7 +61,7 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
-   * Errors follow `errorSampleRate` when it is set.
+   * Errors follow `errorSampleRate` when it is set and higher.
    *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
@@ -77,8 +77,7 @@ export type ObserveConfig = {
    * JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash
    * reports. All other events follow `sampleRate`.
    *
-   * Uses the same per-installation value as `sampleRate`, so devices in-sample for `sampleRate` also
-   * send errors when `errorSampleRate` is at least `sampleRate`.
+   * A value lower than `sampleRate` has no effect beyond `sampleRate`, and a warning is printed.
    *
    * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
    *

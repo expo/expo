@@ -297,7 +297,7 @@ class BaseObservabilityManagerTest {
   }
 
   @Test
-  fun `when errors are out-of-sample, only non-exception logs are dispatched`() = runTest {
+  fun `when in-sample for sampleRate, all logs are dispatched`() = runTest {
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
     stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
 
@@ -305,7 +305,9 @@ class BaseObservabilityManagerTest {
 
     assertEquals(3, logCursor)
     coVerify(exactly = 1) {
-      eventDispatcher.dispatchLogs(match { events -> events.single().logs.map { it.name } == listOf("info") })
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("info", "js.exception", "native.exception") }
+      )
     }
   }
 

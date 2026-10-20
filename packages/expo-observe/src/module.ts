@@ -39,6 +39,23 @@ function networkTracesConfigFromOption(networkTraces: ObserveConfig['networkTrac
   return option.filter != null ? { enabled, filter: option.filter } : { enabled };
 }
 
+function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveConfig) {
+  if (errorSampleRate == null) {
+    return;
+  }
+  // Native code clamps both rates and treats an unset `sampleRate` as 1.
+  const clamp = (rate: number) => Math.min(Math.max(rate, 0), 1);
+  const errorRate = clamp(errorSampleRate);
+  const overallRate = clamp(sampleRate ?? 1);
+  if (errorRate < overallRate) {
+    console.warn(
+      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}). ` +
+        'Installations in-sample for `sampleRate` always send errors, so errors use `sampleRate`. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  }
+}
+
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
 const Observe: ObserveModule = new Proxy(native, {
@@ -90,6 +107,7 @@ const Observe: ObserveModule = new Proxy(native, {
         } else {
           disableReanimatedIntegration();
         }
+        warnIfErrorSampleRateIsLower(config);
         return target.configure(config);
       };
     }
