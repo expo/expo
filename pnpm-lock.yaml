@@ -5714,6 +5714,9 @@ importers:
       expo-server:
         specifier: workspace:^
         version: link:../expo-server
+      expo-status-bar:
+        specifier: workspace:^
+        version: link:../expo-status-bar
       nanoid:
         specifier: ^3.3.18
         version: 3.3.18

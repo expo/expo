@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router/js-stack';
 
-import { JSHeaderTitle } from '../../components/demo-screen';
+import { JSHeaderBackButton, JSHeaderTitle } from '../../components/demo-screen';
 
 export default function Layout() {
   return (
@@ -8,6 +8,7 @@ export default function Layout() {
       screenOptions={{
         headerShown: true,
         headerTitle: JSHeaderTitle,
+        headerLeft: JSHeaderBackButton,
       }}>
       <Stack.Screen name="index" options={{ title: 'Home' }} />
       <Stack.Screen name="details" options={{ title: 'Details' }} />
