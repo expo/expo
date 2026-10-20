@@ -1,6 +1,14 @@
 ---
 model: anthropic/claude-opus-5-5
 description: Binary compatibility of prebuilt iOS frameworks. Changes to public, `@usableFromInline` and header-declared symbols in expo-modules-jsi, expo-modules-core and other prebuilt packages that break frameworks compiled against an older version, and the dependents that must be released together with the change.
+# The Swift sources and headers of the packages in "Scope" below. When a prebuilt package starts
+# to depend on another package, add that package here.
+paths:
+  - "packages/expo-modules-jsi/**/*.swift"
+  - "packages/expo-modules-jsi/**/*.h"
+  - "packages/expo-modules-core/**/*.swift"
+  - "packages/expo-modules-core/ios/**/*.h"
+  - "packages/expo-modules-core/common/**/*.h"
 ---
 
 # Native ABI compatibility
