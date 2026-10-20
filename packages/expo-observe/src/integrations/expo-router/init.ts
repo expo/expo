@@ -95,9 +95,9 @@ export function initListeners(
     // sees the pre-focus state of this screen. A pending interactive means
     // `markInteractive` ran before this focus landed.
     const existingFocusedScreenTimes = storage.screenTimes[e.screenId];
+    const isFirstFocus = existingFocusedScreenTimes?.dispatchTime == null;
     const hasPendingInteractive =
-      existingFocusedScreenTimes?.lastInteractiveCall != null &&
-      existingFocusedScreenTimes?.dispatchTime == null;
+      isFirstFocus && existingFocusedScreenTimes?.lastInteractiveCall != null;
 
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
@@ -153,7 +153,7 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
-    if (!isAppLaunch) {
+    if (!isAppLaunch && isFirstFocus) {
       blockingTime?.setMetric({
         timestamp,
         category: 'navigation',
