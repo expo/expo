@@ -15,6 +15,20 @@ class SimpleViewManagerWrapper(
   override fun createViewInstance(reactContext: ThemedReactContext): View =
     viewWrapperDelegate.createView(reactContext)
 
+  override fun createViewInstance(
+    reactTag: Int,
+    reactContext: ThemedReactContext,
+    initialProps: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): View {
+    viewWrapperDelegate.isCreatingView = true
+    try {
+      return super.createViewInstance(reactTag, reactContext, initialProps, stateWrapper)
+    } finally {
+      viewWrapperDelegate.isCreatingView = false
+    }
+  }
+
   override fun updateProperties(viewToUpdate: View, props: ReactStylesDiffMap) {
     val propsMap = props.getBackingMap()
     // Updates expo related properties.

@@ -17,6 +17,20 @@ class GroupViewManagerWrapper(
   override fun createViewInstance(reactContext: ThemedReactContext): ViewGroup =
     viewWrapperDelegate.createView(reactContext) as ViewGroup
 
+  override fun createViewInstance(
+    reactTag: Int,
+    reactContext: ThemedReactContext,
+    initialProps: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): ViewGroup {
+    viewWrapperDelegate.isCreatingView = true
+    try {
+      return super.createViewInstance(reactTag, reactContext, initialProps, stateWrapper)
+    } finally {
+      viewWrapperDelegate.isCreatingView = false
+    }
+  }
+
   override fun updateProperties(viewToUpdate: ViewGroup, props: ReactStylesDiffMap) {
     val propsMap = props.getBackingMap()
     // Updates expo related properties.

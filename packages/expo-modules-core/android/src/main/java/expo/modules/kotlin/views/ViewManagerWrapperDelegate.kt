@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
+import expo.modules.kotlin.exception.UsingReleasedSharedObjectException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
@@ -73,6 +74,9 @@ class ViewManagerWrapperDelegate(
    *
    * @return A List of property names that were successfully updated.
    */
+  // Whether React Native is creating a view with its initial props.
+  internal var isCreatingView = false
+
   fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
     val expoProps = props
     val handledProps = mutableListOf<String>()
@@ -89,6 +93,12 @@ class ViewManagerWrapperDelegate(
             // The view wasn't constructed correctly, so errors are expected.
             // We can ignore them.
             if (view.isErrorView()) {
+              return@let
+            }
+
+            // Fabric can create a view from props queued before its owner unmounted; it's deleted unshown.
+            if (isCreatingView && exception.isCausedByReleasedSharedObject()) {
+              logger.warn("⚠️ Skipped the '$key' prop on '$view', because its shared object was already released")
               return@let
             }
 
@@ -186,3 +196,6 @@ class ViewManagerWrapperDelegate(
 interface ComposeHostingView {
   fun disposeHostedComposition()
 }
+
+private fun Throwable.isCausedByReleasedSharedObject(): Boolean =
+  generateSequence(this) { it.cause }.any { it is UsingReleasedSharedObjectException }
