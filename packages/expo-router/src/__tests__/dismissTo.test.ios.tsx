@@ -456,3 +456,67 @@ it('collapses a nested history down to a sibling when the target was never visit
     type: 'stack',
   });
 });
+
+it('should go back to a previous route in a nested stack when a screen above that stack is focused', async () => {
+  await renderRouter({
+    _layout: () => <Stack />,
+    '(group)/_layout': () => <Stack />,
+    '(group)/index': () => null,
+    '(group)/details': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/details'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveRouterState({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['(group)', 'modal'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '(group)',
+              params: {},
+              path: undefined,
+              state: {
+                index: 0,
+                key: expect.any(String),
+                routeNames: ['index', 'details'],
+                routes: [
+                  {
+                    key: expect.any(String),
+                    name: 'index',
+                    params: {},
+                    path: '/',
+                  },
+                ],
+                stale: false,
+                routeKeySeq: expect.any(Number),
+                type: 'stack',
+              },
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+    type: 'stack',
+  });
+});
