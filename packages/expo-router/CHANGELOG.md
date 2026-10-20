@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios][native-tabs] Resolve Native Tabs `xcasset` icon names through the iOS asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 - Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
 - Fix a crash when swiping the drawer on React Native 0.88. ([#51590](https://github.com/expo/expo/pull/51590) by [@Ubax](https://github.com/Ubax))
 - [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
