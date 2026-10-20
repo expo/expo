@@ -43,8 +43,8 @@ export type ObserveConfig = {
    *
    * Has no effect on release builds.
    *
-   * If `dispatchingEnabled` is `false` or this device is out-of-sample for `sampleRate`, nothing
-   * is dispatched regardless of `dispatchInDebug`.
+   * If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `dispatchInDebug`.
+   * `sampleRate` and `errorSampleRate` also apply in debug builds.
    *
    * @default false
    */
@@ -61,11 +61,30 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
+   * Errors follow `errorSampleRate` when it is set.
+   *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
    * @default undefined - metrics from all devices are sent
    */
   sampleRate?: number;
+  /**
+   * Fraction of installations that should dispatch errors, in `[0, 1]`. Values outside that range
+   * are clamped. Use it to keep more errors than other events, for example, `sampleRate: 0.03` with
+   * `errorSampleRate: 1`.
+   *
+   * Errors are log events named `js.exception` and `native.exception`. They include unhandled
+   * JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash
+   * reports. All other events follow `sampleRate`.
+   *
+   * Uses the same per-installation value as `sampleRate`, so devices in-sample for `sampleRate` also
+   * send errors when `errorSampleRate` is at least `sampleRate`.
+   *
+   * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
+   *
+   * @default undefined - errors follow `sampleRate`
+   */
+  errorSampleRate?: number;
   /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *
