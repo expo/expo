@@ -411,8 +411,9 @@ open class ExpoNotificationBuilder(
 
     /**
      * Decodes the image at [uri] (`file://` or `content://`) for use as the large icon.
-     * Large icons show at 64dp, so the image is downsampled until its shorter side is
-     * at most 256px (64dp at xxxhdpi), which keeps big photos from using a lot of memory.
+     * Large icons show at 64dp, so the image is downsampled by the largest power of two
+     * that keeps its shorter side at least 256px (64dp at xxxhdpi), which keeps big photos
+     * from using a lot of memory.
      */
     @JvmStatic
     fun largeIconFromUri(context: Context, uri: Uri): Bitmap? {
@@ -424,11 +425,8 @@ open class ExpoNotificationBuilder(
           Log.e("expo-notifications", "Could not decode the notification image at $uri.")
           return null
         }
-        // inSampleSize starts at 0, which would divide by zero below.
-        val options = BitmapFactory.Options().apply { inSampleSize = 1 }
-        while (min(bounds.outWidth, bounds.outHeight) / (options.inSampleSize * 2) >= LARGE_ICON_MAX_SIZE) {
-          options.inSampleSize *= 2
-        }
+        val scale = min(bounds.outWidth, bounds.outHeight) / LARGE_ICON_MIN_SIZE
+        val options = BitmapFactory.Options().apply { inSampleSize = Integer.highestOneBit(max(scale, 1)) }
         resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
       } catch (e: Exception) {
         Log.e("expo-notifications", "Could not read the notification image at $uri.", e)
@@ -436,6 +434,6 @@ open class ExpoNotificationBuilder(
       }
     }
 
-    private const val LARGE_ICON_MAX_SIZE = 256
+    private const val LARGE_ICON_MIN_SIZE = 256
   }
 }

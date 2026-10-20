@@ -478,6 +478,14 @@ export type NotificationContent = {
   categoryIdentifier: string | null;
   // @docsMissing
   sound: 'default' | 'defaultCritical' | 'custom' | 'defaultRingtone' | null;
+  /**
+   * The image the notification was scheduled with, if it had one (see `image` in [`NotificationContentInput`](#notificationcontentinput)).
+   *
+   * On Android: the URI that was passed in.
+   *
+   * On iOS: the file URL of the system's copy of the image. It's not repeated in `attachments`.
+   */
+  image?: string;
 } & (NotificationContentIos | NotificationContentAndroid);
 
 /**
