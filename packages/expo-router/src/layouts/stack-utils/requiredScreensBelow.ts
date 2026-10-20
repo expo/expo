@@ -81,16 +81,30 @@ function createMissingRoute<State extends NavigationState>(
   return { key: minter.mint(name), name, ...(params && { params }) } as State['routes'][number];
 }
 
+// Same params object in render and reducer, so the route cache reuses the route.
+const pathParamsCache = new WeakMap<object, Map<string, UnknownInputParams | undefined>>();
+
 /** Copies the focused route params that fill the dynamic segments of `name`. */
 function getPathParams(name: string, focusedParams: object | undefined) {
-  // Route params are always a plain record.
-  const params = focusedParams as Record<string, unknown> | undefined;
-  const entries = name.split('/').flatMap((segment) => {
-    const param = matchDynamicName(segment)?.name;
-    return param !== undefined && params?.[param] !== undefined ? [[param, params[param]]] : [];
-  });
-  // The values come from the focused route's path params, which have the input param types.
-  return entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined;
+  if (!focusedParams) {
+    return undefined;
+  }
+  const cached = pathParamsCache.get(focusedParams) ?? new Map();
+  pathParamsCache.set(focusedParams, cached);
+  if (!cached.has(name)) {
+    // Route params are always a plain record.
+    const params = focusedParams as Record<string, unknown>;
+    const entries = name.split('/').flatMap((segment) => {
+      const param = matchDynamicName(segment)?.name;
+      return param !== undefined && params[param] !== undefined ? [[param, params[param]]] : [];
+    });
+    // The values come from the focused route's path params, which have the input param types.
+    cached.set(
+      name,
+      entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined
+    );
+  }
+  return cached.get(name);
 }
 
 function getFocusedRequiredScreens(

@@ -28,10 +28,21 @@ export const CHILD_STATE = Symbol('CHILD_STATE');
  */
 export function useRouteCache<State extends NavigationState>(routes: State['routes']) {
   // Cache object which holds route objects for each screen
-  const cache = React.useMemo(() => ({ current: new Map() as RouteCache }), []);
+  const cache = React.useMemo(
+    (): { current: RouteCache; missing: RouteCache } => ({
+      current: new Map(),
+      missing: new Map(),
+    }),
+    []
+  );
+  // Routes that the previous render described before the state had them.
+  const previousMissing = cache.missing;
+  // Like `cache.current`, this is written during render. If React drops the memo or discards a
+  // render, the only effect is one extra screen render, because reuse needs `isRecordEqual`.
+  cache.missing = new Map();
 
   cache.current = routes.reduce((acc, route) => {
-    const previous = cache.current.get(route.key);
+    const previous = cache.current.get(route.key) ?? previousMissing.get(route.key);
     const { state, ...routeWithoutState } = route;
 
     let proxy;
@@ -70,5 +81,14 @@ export function useRouteCache<State extends NavigationState>(routes: State['rout
     return acc;
   }, new Map() as RouteCache);
 
-  return Array.from(cache.current.values());
+  // A navigator can render a route before the state has it. Keep one object for that route, so
+  // the screen does not render again when the state adds it.
+  const getMissingRoute = (route: RouteProp<ParamListBase>) => {
+    const previous = previousMissing.get(route.key);
+    const cached = previous && isRecordEqual(previous, route) ? previous : route;
+    cache.missing.set(route.key, cached);
+    return cached;
+  };
+
+  return { cachedRoutes: Array.from(cache.current.values()), getMissingRoute };
 }
