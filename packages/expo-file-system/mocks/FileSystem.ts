@@ -14,6 +14,7 @@
  */
 
 import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
+import type { DownloadResponse } from '../src/NetworkTasks.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -810,18 +811,28 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
-  getResponseAsync(): Promise<{ status: number | null; headers: Record<string, string> }> {
-    return Promise.resolve({ status: null, headers: {} });
+  private response: DownloadResponse = { status: null, headers: {} };
+
+  getResponseAsync(): Promise<DownloadResponse> {
+    return Promise.resolve({ ...this.response, headers: { ...this.response.headers } });
+  }
+
+  private async completeDownload(): Promise<string> {
+    this.response = { status: null, headers: {} };
+    // Simulate receiving a successful response after starting a new attempt.
+    await Promise.resolve();
+    this.response = { status: 200, headers: {} };
+    return 'file:///mock/downloaded-file';
   }
 
   start(_url: string, _to: any, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
   resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   release(): void {
     super.release();

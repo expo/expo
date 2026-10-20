@@ -843,3 +843,60 @@ describe('DownloadTask background completion acknowledgment', () => {
     expect(acknowledge).not.toHaveBeenCalled();
   });
 });
+
+// Exercise the supplied native fake without replacing its task methods.
+describe('DownloadTask response metadata with the supplied fake', () => {
+  const url = 'https://example.com/download';
+
+  it('retains a successful response after downloading through the public API', async () => {
+    const task = new DownloadTask(url, new File(Paths.cache, 'response.bin'));
+    try {
+      expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+      await task.downloadAsync();
+      expect(task.state).toBe('completed');
+      expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
+    } finally {
+      task.release();
+    }
+  });
+
+  it('retains a successful response after resuming through the public API', async () => {
+    const task = DownloadTask.fromSavable({
+      url,
+      fileUri: new File(Paths.cache, 'resumed-response.bin').uri,
+      isDirectory: false,
+      resumeData: 'mock-resume-data',
+    });
+    try {
+      expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+      await task.resumeAsync();
+      expect(task.state).toBe('completed');
+      expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
+    } finally {
+      task.release();
+    }
+  });
+
+  it('clears the previous response on resume and returns independent snapshots per task', async () => {
+    const native = new ExpoFileSystem.FileSystemDownloadTask();
+    const other = new ExpoFileSystem.FileSystemDownloadTask();
+    const destination = new File(Paths.cache, 'native-response.bin');
+    try {
+      await native.start(url, destination);
+      const response = await native.getResponseAsync();
+      expect(response.status).toBe(200);
+      response.status = 500;
+      response.headers['x-test'] = 'modified';
+      expect(await native.getResponseAsync()).toEqual({ status: 200, headers: {} });
+      expect(await other.getResponseAsync()).toEqual({ status: null, headers: {} });
+
+      const resumed = native.resume(url, destination, 'mock-resume-data');
+      expect(await native.getResponseAsync()).toEqual({ status: null, headers: {} });
+      await resumed;
+      expect(await native.getResponseAsync()).toEqual({ status: 200, headers: {} });
+    } finally {
+      native.release();
+      other.release();
+    }
+  });
+});
