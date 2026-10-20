@@ -29,83 +29,60 @@ jest.mock('react-native-drawer-layout', () => {
 
 afterEach(() => jest.restoreAllMocks());
 
-const navigators = {
-  Tabs: (backBehavior: 'none' | 'initialRoute') => (
-    <Tabs backBehavior={backBehavior}>
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="second" />
-    </Tabs>
-  ),
-  Drawer: (backBehavior: 'none' | 'initialRoute') => (
-    <Drawer backBehavior={backBehavior}>
-      <Drawer.Screen name="index" />
-      <Drawer.Screen name="second" />
-    </Drawer>
-  ),
-  NativeTabs: (backBehavior: 'none' | 'initialRoute') => (
-    <NativeTabs backBehavior={backBehavior}>
-      <NativeTabs.Trigger name="index" />
-      <NativeTabs.Trigger name="second" />
-    </NativeTabs>
-  ),
-  TopTabs: (backBehavior: 'none' | 'initialRoute') => (
-    <TopTabs backBehavior={backBehavior}>
-      {/* Lazy screens are not preloaded, and a preload would also add the back history. */}
-      <TopTabs.Screen name="index" options={{ lazy: true }} />
-      <TopTabs.Screen name="second" />
-    </TopTabs>
-  ),
-  HeadlessTabs: (backBehavior: 'none' | 'initialRoute') => (
-    <HeadlessTabs options={{ backBehavior }}>
-      <TabSlot />
-      <TabList>
-        <TabTrigger name="index" href="/" />
-        <TabTrigger name="second" href="/second" />
-      </TabList>
-    </HeadlessTabs>
-  ),
-};
-
-async function renderAnchoredLayout(
-  navigator: keyof typeof navigators,
-  anchor: string | undefined,
-  backBehavior: 'none' | 'initialRoute',
-  dir = ''
-) {
-  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  await renderRouter(
-    {
-      [`${dir}_layout`]: {
-        unstable_settings: { anchor },
-        default: () => navigators[navigator](backBehavior),
-      },
-      [`${dir}index`]: () => <Text>Index</Text>,
-      [`${dir}second`]: () => <Text>Second</Text>,
-    },
-    { initialUrl: '/second' }
-  );
-  return warn.mock.calls.filter(([message]) =>
-    String(message).startsWith(
-      `Layout "./${dir}_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\``
-    )
-  );
-}
-
-describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (navigator) => {
+describe('Tabs', () => {
   it.each([
     { anchor: undefined, backBehavior: 'none' },
     { anchor: 'index', backBehavior: 'initialRoute' },
   ] as const)(
     'does not warn for anchor=$anchor and backBehavior=$backBehavior',
     async ({ anchor, backBehavior }) => {
-      expect(await renderAnchoredLayout(navigator, anchor, backBehavior)).toHaveLength(0);
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => (
+              <Tabs backBehavior={backBehavior}>
+                <Tabs.Screen name="index" />
+                <Tabs.Screen name="second" />
+              </Tabs>
+            ),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('sets both `unstable_settings.anchor` and `backBehavior="none"`')
+      );
     }
   );
 
   it('warns for an anchor with backBehavior none', async () => {
-    // A layout warns once per test file, so each navigator needs its own layout.
-    const warnings = await renderAnchoredLayout(navigator, 'index', 'none', `(${navigator})/`);
-    expect(warnings).toHaveLength(1);
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A layout warns once per test file, so this test uses its own layout.
+    await renderRouter(
+      {
+        '(tabs)/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => (
+            <Tabs backBehavior="none">
+              <Tabs.Screen name="index" />
+              <Tabs.Screen name="second" />
+            </Tabs>
+          ),
+        },
+        '(tabs)/index': () => <Text>Index</Text>,
+        '(tabs)/second': () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Layout "./(tabs)/_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`'
+      )
+    );
   });
 
   it('adds back history after an initial deep link', async () => {
@@ -114,7 +91,10 @@ describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (nav
         _layout: () => (
           <>
             <Capability />
-            {navigators[navigator]('initialRoute')}
+            <Tabs backBehavior="initialRoute">
+              <Tabs.Screen name="index" />
+              <Tabs.Screen name="second" />
+            </Tabs>
           </>
         ),
         index: () => <Text>Index</Text>,
@@ -122,9 +102,336 @@ describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (nav
       },
       { initialUrl: '/second' }
     );
-    expectCapability(true);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
   });
 });
+
+describe('Drawer', () => {
+  it.each([
+    { anchor: undefined, backBehavior: 'none' },
+    { anchor: 'index', backBehavior: 'initialRoute' },
+  ] as const)(
+    'does not warn for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior }) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => (
+              <Drawer backBehavior={backBehavior}>
+                <Drawer.Screen name="index" />
+                <Drawer.Screen name="second" />
+              </Drawer>
+            ),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('sets both `unstable_settings.anchor` and `backBehavior="none"`')
+      );
+    }
+  );
+
+  it('warns for an anchor with backBehavior none', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A layout warns once per test file, so this test uses its own layout.
+    await renderRouter(
+      {
+        '(drawer)/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => (
+            <Drawer backBehavior="none">
+              <Drawer.Screen name="index" />
+              <Drawer.Screen name="second" />
+            </Drawer>
+          ),
+        },
+        '(drawer)/index': () => <Text>Index</Text>,
+        '(drawer)/second': () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Layout "./(drawer)/_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`'
+      )
+    );
+  });
+
+  it('adds back history after an initial deep link', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <>
+            <Capability />
+            <Drawer backBehavior="initialRoute">
+              <Drawer.Screen name="index" />
+              <Drawer.Screen name="second" />
+            </Drawer>
+          </>
+        ),
+        index: () => <Text>Index</Text>,
+        second: () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
+  });
+});
+
+describe('NativeTabs', () => {
+  it.each([
+    { anchor: undefined, backBehavior: 'none' },
+    { anchor: 'index', backBehavior: 'initialRoute' },
+  ] as const)(
+    'does not warn for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior }) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => (
+              <NativeTabs backBehavior={backBehavior}>
+                <NativeTabs.Trigger name="index" />
+                <NativeTabs.Trigger name="second" />
+              </NativeTabs>
+            ),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('sets both `unstable_settings.anchor` and `backBehavior="none"`')
+      );
+    }
+  );
+
+  it('warns for an anchor with backBehavior none', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A layout warns once per test file, so this test uses its own layout.
+    await renderRouter(
+      {
+        '(native-tabs)/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => (
+            <NativeTabs backBehavior="none">
+              <NativeTabs.Trigger name="index" />
+              <NativeTabs.Trigger name="second" />
+            </NativeTabs>
+          ),
+        },
+        '(native-tabs)/index': () => <Text>Index</Text>,
+        '(native-tabs)/second': () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Layout "./(native-tabs)/_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`'
+      )
+    );
+  });
+
+  it('adds back history after an initial deep link', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <>
+            <Capability />
+            <NativeTabs backBehavior="initialRoute">
+              <NativeTabs.Trigger name="index" />
+              <NativeTabs.Trigger name="second" />
+            </NativeTabs>
+          </>
+        ),
+        index: () => <Text>Index</Text>,
+        second: () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
+  });
+});
+
+// Lazy screens are not preloaded, and a preload would also add the back history.
+describe('TopTabs', () => {
+  it.each([
+    { anchor: undefined, backBehavior: 'none' },
+    { anchor: 'index', backBehavior: 'initialRoute' },
+  ] as const)(
+    'does not warn for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior }) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => (
+              <TopTabs backBehavior={backBehavior}>
+                <TopTabs.Screen name="index" options={{ lazy: true }} />
+                <TopTabs.Screen name="second" />
+              </TopTabs>
+            ),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('sets both `unstable_settings.anchor` and `backBehavior="none"`')
+      );
+    }
+  );
+
+  it('warns for an anchor with backBehavior none', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A layout warns once per test file, so this test uses its own layout.
+    await renderRouter(
+      {
+        '(top-tabs)/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => (
+            <TopTabs backBehavior="none">
+              <TopTabs.Screen name="index" options={{ lazy: true }} />
+              <TopTabs.Screen name="second" />
+            </TopTabs>
+          ),
+        },
+        '(top-tabs)/index': () => <Text>Index</Text>,
+        '(top-tabs)/second': () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Layout "./(top-tabs)/_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`'
+      )
+    );
+  });
+
+  it('adds back history after an initial deep link', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <>
+            <Capability />
+            <TopTabs backBehavior="initialRoute">
+              <TopTabs.Screen name="index" options={{ lazy: true }} />
+              <TopTabs.Screen name="second" />
+            </TopTabs>
+          </>
+        ),
+        index: () => <Text>Index</Text>,
+        second: () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
+  });
+});
+
+describe('HeadlessTabs', () => {
+  it.each([
+    { anchor: undefined, backBehavior: 'none' },
+    { anchor: 'index', backBehavior: 'initialRoute' },
+  ] as const)(
+    'does not warn for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior }) => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      await renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor },
+            default: () => (
+              <HeadlessTabs options={{ backBehavior }}>
+                <TabSlot />
+                <TabList>
+                  <TabTrigger name="index" href="/" />
+                  <TabTrigger name="second" href="/second" />
+                </TabList>
+              </HeadlessTabs>
+            ),
+          },
+          index: () => <Text>Index</Text>,
+          second: () => <Text>Second</Text>,
+        },
+        { initialUrl: '/second' }
+      );
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('sets both `unstable_settings.anchor` and `backBehavior="none"`')
+      );
+    }
+  );
+
+  it('warns for an anchor with backBehavior none', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A layout warns once per test file, so this test uses its own layout.
+    await renderRouter(
+      {
+        '(headless-tabs)/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => (
+            <HeadlessTabs options={{ backBehavior: 'none' }}>
+              <TabSlot />
+              <TabList>
+                <TabTrigger name="index" href="/" />
+                <TabTrigger name="second" href="/second" />
+              </TabList>
+            </HeadlessTabs>
+          ),
+        },
+        '(headless-tabs)/index': () => <Text>Index</Text>,
+        '(headless-tabs)/second': () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Layout "./(headless-tabs)/_layout.js" sets both `unstable_settings.anchor` and `backBehavior="none"`'
+      )
+    );
+  });
+
+  it('adds back history after an initial deep link', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <>
+            <Capability />
+            <HeadlessTabs options={{ backBehavior: 'initialRoute' }}>
+              <TabSlot />
+              <TabList>
+                <TabTrigger name="index" href="/" />
+                <TabTrigger name="second" href="/second" />
+              </TabList>
+            </HeadlessTabs>
+          </>
+        ),
+        index: () => <Text>Index</Text>,
+        second: () => <Text>Second</Text>,
+      },
+      { initialUrl: '/second' }
+    );
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
+  });
+});
+
+function Capability() {
+  return <Text testID="can-go-back">{String(useCanGoBack())}</Text>;
+}
 
 it('reads the current stack during render', async () => {
   const { result } = await renderHook(() => useCanGoBack(), ['index', 'second']);
@@ -164,15 +471,6 @@ it.each(['firstRoute', 'initialRoute', 'order', 'history', 'fullHistory', 'none'
   }
 );
 
-function Capability() {
-  return <Text testID="can-go-back">{String(useCanGoBack())}</Text>;
-}
-
-function expectCapability(expected: boolean) {
-  expect(screen.getByTestId('can-go-back')).toHaveTextContent(String(expected));
-  expect(router.canGoBack()).toBe(expected);
-}
-
 it('ignores inactive tab stacks and preloaded screens', async () => {
   await renderRouter({
     _layout: () => (
@@ -191,15 +489,20 @@ it('ignores inactive tab stacks and preloaded screens', async () => {
     preloaded: () => <Text>Preloaded</Text>,
     'nested/second': () => <Text>Second</Text>,
   });
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
   await act(() => router.prefetch('/preloaded'));
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
   await act(() => router.navigate('/nested'));
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
   await act(() => router.push('/nested/second'));
-  expectCapability(true);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
   await act(() => router.navigate('/'));
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
 });
 
 it('retains repeated fullHistory visits until each has been undone', async () => {
@@ -216,15 +519,26 @@ it('retains repeated fullHistory visits until each has been undone', async () =>
     index: () => <Text>Index</Text>,
     second: () => <Text>Second</Text>,
   });
-  expectCapability(false);
-  for (const href of ['/second', '/', '/second']) {
-    await act(() => router.navigate(href));
-    expectCapability(true);
-  }
-  for (const expected of [true, true, false]) {
-    await act(() => router.back());
-    expectCapability(expected);
-  }
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
+  await act(() => router.navigate('/second'));
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
+  await act(() => router.navigate('/'));
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
+  await act(() => router.navigate('/second'));
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
+  await act(() => router.back());
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
+  await act(() => router.back());
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
+  await act(() => router.back());
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
 });
 
 it.each(['open', 'closed'] as const)(
@@ -247,11 +561,14 @@ it.each(['open', 'closed'] as const)(
       ),
       index: Index,
     });
-    expectCapability(false);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+    expect(router.canGoBack()).toBe(false);
     await act(toggle);
-    expectCapability(true);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
     await act(() => router.back());
-    expectCapability(false);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+    expect(router.canGoBack()).toBe(false);
   }
 );
 
@@ -269,11 +586,14 @@ it('reports the parent stack while a modal contains a root-only nested stack', a
     'modal/_layout': () => <Stack />,
     'modal/index': () => <Text>Modal</Text>,
   });
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
   await act(() => router.push('/modal'));
-  expectCapability(true);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
   await act(() => router.back());
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
 });
 
 it.each([false, true])(
@@ -296,16 +616,20 @@ it.each([false, true])(
       },
       other: () => <Text>Other</Text>,
     });
-    expectCapability(false);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+    expect(router.canGoBack()).toBe(false);
     const transition = reactAct(() => router.push('/slow', { inTransition: true }));
-    expectCapability(false);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+    expect(router.canGoBack()).toBe(false);
     if (interrupt) {
       await act(() => router.replace('/other', { inTransition: false }));
-      expectCapability(false);
+      expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+      expect(router.canGoBack()).toBe(false);
     }
     await act(() => resolve('Slow'));
     await transition;
-    expectCapability(true);
+    expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+    expect(router.canGoBack()).toBe(true);
     expect(screen).toHavePathname(interrupt ? '/other' : '/slow');
   }
 );
@@ -330,11 +654,14 @@ it('reconciles reordered tab declarations', async () => {
     { _layout: Layout, index: () => <Text>Index</Text>, second: () => <Text>Second</Text> },
     { initialUrl: '/second' }
   );
-  expectCapability(true);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
   await act(reorder);
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
   await act(reorder);
-  expectCapability(true);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
 });
 
 it('returns to an explicitly configured initial tab', async () => {
@@ -359,10 +686,12 @@ it('returns to an explicitly configured initial tab', async () => {
     },
     { initialUrl: '/second' }
   );
-  expectCapability(true);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('true');
+  expect(router.canGoBack()).toBe(true);
   await act(() => router.back());
   expect(screen).toHavePathname('/third');
-  expectCapability(false);
+  expect(screen.getByTestId('can-go-back')).toHaveTextContent('false');
+  expect(router.canGoBack()).toBe(false);
 });
 
 it('does not re-render when root state changes without changing the value', async () => {
