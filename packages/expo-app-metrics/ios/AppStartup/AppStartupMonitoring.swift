@@ -267,7 +267,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 ///
 /// Emitted via `receiveLog` directly rather than the JS `logEvent` path, so the SDK-reserved `expo.`
 /// event name and attribute keys bypass the validation that would otherwise drop them.
-func makeStartupBackgroundedLogRecord(duration: TimeInterval, hasRendered: Bool, hasMarkedInteractive: Bool) -> LogRecord {
+func makeStartupBackgroundedLogRecord(
+  duration: TimeInterval,
+  hasRendered: Bool,
+  hasMarkedInteractive: Bool
+) -> LogRecord {
   return LogRecord(
     name: "expo.app_startup.backgrounded",
     attributes: [
