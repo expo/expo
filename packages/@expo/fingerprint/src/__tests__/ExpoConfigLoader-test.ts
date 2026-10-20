@@ -34,18 +34,31 @@ describe('installModuleCaptureHook', () => {
   let tmpDir: string;
   let hook: ReturnType<typeof installModuleCaptureHook> | null = null;
   let deregister: jest.Mock;
+  const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
+
+  // Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
+  function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
+    Object.defineProperty(module, 'registerHooks', {
+      configurable: true,
+      writable: true,
+      value: registerHooks,
+    });
+  }
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-fingerprint-hook-'));
-    // Jest refuses `module.registerHooks`; the e2e suite covers the real ES module loader.
     deregister = jest.fn();
-    jest.spyOn(module, 'registerHooks').mockReturnValue({ deregister });
+    stubRegisterHooks(jest.fn(() => ({ deregister })));
   });
 
   afterEach(() => {
     hook?.uninstall();
     hook = null;
-    jest.mocked(module.registerHooks).mockRestore();
+    if (registerHooksDescriptor) {
+      Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
+    } else {
+      delete (module as { registerHooks?: unknown }).registerHooks;
+    }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -103,16 +116,26 @@ describe('installModuleCaptureHook', () => {
     expect(hook.getCapturedModules()).toEqual([]);
   });
 
-  it('should register an ES module load hook and deregister it on uninstall', () => {
+  it('should register a load hook that captures a required ES module and deregister it on uninstall', () => {
     hook = installModuleCaptureHook();
     expect(module.registerHooks).toHaveBeenCalledWith({ load: expect.any(Function) });
+
+    // Node passes the source of an ES module that `require()` loads as a string.
+    const load = jest.mocked(module.registerHooks).mock.lastCall?.[0].load;
+    const filename = path.join(tmpDir, 'with-plugin.mjs');
+    const content = 'export default (config) => config;';
+    load?.(pathToFileURL(filename).href, LOAD_CONTEXT, () => ({
+      format: 'module',
+      source: content,
+    }));
+    expect(hook.getCapturedModules()).toContainEqual({ id: filename, filename, content });
 
     hook.uninstall();
     hook = null;
     expect(deregister).toHaveBeenCalledTimes(1);
   });
 
-  it('should leave _compile untouched when Node refuses the load hook', () => {
+  it('should leave _compile untouched when module.registerHooks throws', () => {
     const moduleProto = (require('module') as { prototype: { _compile: unknown } }).prototype;
     const originalCompile = moduleProto._compile;
     jest.mocked(module.registerHooks).mockImplementation(() => {
@@ -120,6 +143,22 @@ describe('installModuleCaptureHook', () => {
     });
 
     expect(() => installModuleCaptureHook()).toThrow('registerHooks refused');
+    expect(moduleProto._compile).toBe(originalCompile);
+  });
+
+  it('should patch _compile alone when Node has no module.registerHooks', () => {
+    const moduleProto = (require('module') as { prototype: { _compile: unknown } }).prototype;
+    const originalCompile = moduleProto._compile;
+    stubRegisterHooks(undefined);
+
+    hook = installModuleCaptureHook();
+    expect(moduleProto._compile).not.toBe(originalCompile);
+    const filename = path.join(tmpDir, 'plugin.js');
+    requireString('module.exports = 1;', filename);
+    expect(hook.getCapturedModules()).toContainEqual(expect.objectContaining({ filename }));
+
+    hook.uninstall();
+    hook = null;
     expect(moduleProto._compile).toBe(originalCompile);
   });
 });

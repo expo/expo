@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
@@ -17,6 +18,14 @@ import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;
 type HashSource = HashSources[number];
 type FingerprintDiff = Awaited<ReturnType<typeof diffFingerprintChangesAsync>>;
+
+// The config loader runs in the `node` on PATH, so that Node decides whether the load hook exists.
+const itWithHooks =
+  execFileSync('node', ['-p', "typeof require('module').registerHooks"], {
+    encoding: 'utf8',
+  }).trim() === 'function'
+    ? it
+    : it.skip;
 
 function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | FingerprintSource>(
   source: T
@@ -205,7 +214,7 @@ describe('managed project test', () => {
     expect(hash).not.toBe(hash2);
   });
 
-  it('should hash the ES modules a dynamic config loads its plugins from', async () => {
+  itWithHooks('should hash the ES modules a dynamic config loads its plugins from', async () => {
     const configPath = path.join(projectRoot, 'app.config.js');
     const pluginsDir = path.join(projectRoot, 'plugins');
     const labelPath = path.join(pluginsDir, 'label.mjs');
