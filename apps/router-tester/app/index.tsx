@@ -42,6 +42,7 @@ const HomeIndex = () => {
           <CaseLink href="/params" text="Params" />
           <CaseLink href="/suspense" text="Suspense" />
           <CaseLink href="/can-go-back" text="Can Go Back" />
+          <CaseLink href="/can-dismiss" text="Can Dismiss" />
         </Section>
         <Section title="JavaScript navigators">
           <CaseLink href="/js-stack" text="JS Stack" />
