@@ -48,6 +48,7 @@ type SceneViewProps = {
   previousDescriptor?: NativeStackDescriptor;
   nextDescriptor?: NativeStackDescriptor;
   isPresentationModal?: boolean;
+  hasModalBelow: boolean;
   isPreloaded?: boolean;
   isRemovalPrevented: boolean;
   onWillDisappear: () => void;
@@ -71,6 +72,7 @@ const SceneView = ({
   previousDescriptor,
   nextDescriptor,
   isPresentationModal,
+  hasModalBelow,
   isPreloaded,
   isRemovalPrevented,
   onWillDisappear,
@@ -141,6 +143,13 @@ const SceneView = ({
     `Route "${route.name}" has no presentation option, so it is shown as a modal because a modal screen is below it. This may change in a future version. Set presentation from route params with options={({ route }) => ...}, or use separate card and formSheet screens that render the same component.`,
     __DEV__ && isPresentationModal && options.presentation == null,
     routeNode ? `${routeNode.contextKey}:${route.name}:above-modal` : `${route.name}:above-modal`
+  );
+  useWarnOnce(
+    `Route "${route.name}" uses presentation "card" above a modal screen, so it is pushed behind the modal and is not visible until the modal closes. Use a modal presentation for this route, or close the modal before you navigate.`,
+    __DEV__ && Platform.OS === 'ios' && options.presentation === 'card' && hasModalBelow,
+    routeNode
+      ? `${routeNode.contextKey}:${route.name}:card-above-modal`
+      : `${route.name}:card-above-modal`
   );
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
@@ -488,6 +497,10 @@ export function NativeStackView({
   // Preloaded routes are detached and don't participate in back-affordance or modal grouping.
   const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
   const modalRouteKeys = getModalRouteKeys(activeRoutes, descriptors);
+  // The first screen always renders as a card, so a modal there does not count.
+  const firstModalIndex = activeRoutes.findIndex(
+    (route, index) => index > 0 && modalRouteKeys.includes(route.key)
+  );
 
   return (
     <SafeAreaProviderCompat>
@@ -521,6 +534,7 @@ export function NativeStackView({
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}
               isPresentationModal={isModal}
+              hasModalBelow={firstModalIndex !== -1 && activeIndex > firstModalIndex}
               isPreloaded={routeIsPreloaded}
               isRemovalPrevented={isRemovalPrevented(route.key)}
               onWillDisappear={() => {
