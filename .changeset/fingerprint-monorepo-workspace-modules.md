@@ -2,4 +2,4 @@
 '@expo/fingerprint': patch
 ---
 
-Fix a config plugin from a linked workspace package being left out of the fingerprint. The config imports it at the top, so it also loads when plugins are skipped, and the diff kept only files inside the project root. The config loader now records which file first imports each module, through `module.registerHooks` on Node 22.15+, and keeps the modules the project's own files load outside `node_modules`.
+Include config plugins from a linked workspace package, and the modules they import, in the fingerprint on Node.js 22.15 and later. Older Node versions still leave them out. Fingerprints change once on upgrade for projects that use such plugins.
