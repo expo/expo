@@ -32,6 +32,14 @@ internal struct GetStringOptions: Record {
 internal struct SetStringOptions: Record {
   @Field
   var inputFormat: StringFormat = .plainText
+
+  /// Keeps the item off other devices' Universal Clipboard.
+  @Field
+  var localOnly: Bool = false
+
+  /// Unix time in milliseconds when the system removes the item.
+  @Field
+  var expiresAt: Double?
 }
 
 internal struct SetImageOptions: Record {}

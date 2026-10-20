@@ -5,6 +5,8 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.PersistableBundle
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_LEGACY
@@ -26,6 +28,7 @@ private val TAG = ClipboardModule::class.java.simpleName
 // this must match the one from `res/xml/clipboard_provider_paths.xml`
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
+private const val EXPIRY_FOREGROUND_DELAY_MS = 500L
 
 private enum class ContentType(val jsName: String) {
   PLAIN_TEXT("plain-text"),
@@ -56,6 +59,7 @@ class ClipboardModule : Module() {
         }
       }.applyIsSensitive(options.isSensitive)
       clipboardManager.setPrimaryClip(clip)
+      scheduleExpiry(options.expiresAt)
       return@AsyncFunction true
     }
 
@@ -119,6 +123,7 @@ class ClipboardModule : Module() {
 
     OnDestroy {
       clipboardEventEmitter.detachListener()
+      expiryHandler.removeCallbacksAndMessages(null)
     }
 
     OnActivityEntersBackground {
@@ -127,9 +132,60 @@ class ClipboardModule : Module() {
 
     OnActivityEntersForeground {
       clipboardEventEmitter.resumeListening()
+      // Android hides the clipboard from apps without focus, so an expiry
+      // that came due in the background is checked once the window has focus.
+      expiryHandler.postDelayed(::clearIfExpired, EXPIRY_FOREGROUND_DELAY_MS)
     }
     // endregion
   }
+
+  // region Expiry
+  // Android has no clipboard expiry, so the module clears its own copy.
+
+  private class PendingExpiry(val copiedAt: Long, val expiresAt: Long)
+
+  private val expiryHandler = Handler(Looper.getMainLooper())
+
+  /** The last copy with an expiry, until it is cleared or replaced. Main thread only. */
+  private var pendingExpiry: PendingExpiry? = null
+
+  private fun scheduleExpiry(expiresAt: Double?) {
+    expiryHandler.post {
+      expiryHandler.removeCallbacksAndMessages(null)
+      pendingExpiry = null
+      if (expiresAt == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        return@post
+      }
+      // The system stamps each copy, which tells this copy apart from a later one.
+      val copiedAt = clipboardManager.primaryClipDescription?.timestamp ?: return@post
+      pendingExpiry = PendingExpiry(copiedAt, expiresAt.toLong())
+      expiryHandler.postDelayed(::clearIfExpired, maxOf(0L, expiresAt.toLong() - System.currentTimeMillis()))
+    }
+  }
+
+  private fun clearIfExpired() {
+    val pending = pendingExpiry ?: return
+    if (System.currentTimeMillis() < pending.expiresAt || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+    val manager = try {
+      clipboardManager
+    } catch (_: Exception) {
+      return
+    }
+    if (manager.primaryClipDescription?.timestamp == pending.copiedAt) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        manager.clearPrimaryClip()
+      } else {
+        manager.setPrimaryClip(ClipData.newPlainText(null, ""))
+      }
+      pendingExpiry = null
+    } else if (appContext.currentActivity?.hasWindowFocus() == true) {
+      // The clipboard is readable, so the copy was replaced or cleared.
+      pendingExpiry = null
+    }
+  }
+  // endregion
 
   private val context
     get() = requireNotNull(appContext.reactContext) {

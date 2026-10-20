@@ -28,6 +28,10 @@ internal class SetStringOptions : Record {
 
   @Field
   var isSensitive: Boolean = false
+
+  /** Unix time in milliseconds after which the module clears this copy, if it is still on the clipboard. */
+  @Field
+  var expiresAt: Double? = null
 }
 
 internal class SetImageOptions : Record {
