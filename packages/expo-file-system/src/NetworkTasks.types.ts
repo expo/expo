@@ -235,3 +235,16 @@ export type UploadTaskState = Exclude<TaskState, 'paused'>;
  * Represents the current state of a download task.
  */
 export type DownloadTaskState = TaskState;
+
+/**
+ * HTTP response metadata for the current download attempt, after redirects.
+ */
+export type DownloadResponse = {
+  /** The HTTP status code, or `null` if no HTTP response has been received. */
+  status: number | null;
+  /**
+   * Response headers as provided by the platform's networking stack.
+   * Header names are case-insensitive; casing and repeated values may vary by platform.
+   */
+  headers: Record<string, string>;
+};

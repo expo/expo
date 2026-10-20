@@ -810,6 +810,10 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
+  getResponseAsync(): Promise<{ status: number | null; headers: Record<string, string> }> {
+    return Promise.resolve({ status: null, headers: {} });
+  }
+
   start(_url: string, _to: any, _options?: any): Promise<string | null> {
     return Promise.resolve('file:///mock/downloaded-file');
   }

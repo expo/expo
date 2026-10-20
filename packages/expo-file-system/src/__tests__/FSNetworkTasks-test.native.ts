@@ -268,6 +268,53 @@ describe('DownloadTask', () => {
     expect(task.state).toBe('idle');
   });
 
+  it('has no response before the download starts', async () => {
+    const task = new DownloadTask(url, destination);
+    expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+    expect(task.state).toBe('idle');
+    task.release();
+  });
+
+  it('can read response metadata while the download is still active', async () => {
+    let complete!: (uri: string) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve;
+        })
+    );
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'getResponseAsync')
+      .mockResolvedValue({ status: 200, headers: { 'content-type': 'video/mp4' } });
+    const task = new DownloadTask(url, destination);
+    const download = task.downloadAsync();
+    expect(await task.getResponseAsync()).toEqual({
+      status: 200,
+      headers: { 'content-type': 'video/mp4' },
+    });
+    expect(task.state).toBe('active');
+    complete(mockOutputUri);
+    await download;
+    expect((await task.getResponseAsync()).status).toBe(200);
+    task.release();
+  });
+
+  it('exposes an HTTP failure without changing the rejected download result', async () => {
+    const error = new Error('HTTP 429');
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockRejectedValue(error);
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'getResponseAsync')
+      .mockResolvedValue({ status: 429, headers: { 'retry-after': '60' } });
+    const task = new DownloadTask(url, destination);
+    await expect(task.downloadAsync()).rejects.toBe(error);
+    expect(await task.getResponseAsync()).toEqual({
+      status: 429,
+      headers: { 'retry-after': '60' },
+    });
+    expect(task.state).toBe('error');
+    task.release();
+  });
+
   it('is a public facade, not a native download task instance', () => {
     const task = new DownloadTask(url, destination);
 

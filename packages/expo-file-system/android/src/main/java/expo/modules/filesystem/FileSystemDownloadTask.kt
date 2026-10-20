@@ -51,6 +51,15 @@ class FileSystemDownloadTask : SharedObject() {
   }
 
   private var call: Call? = null
+  // Publish status and headers together: OkHttp callbacks and JS calls use different threads.
+  @Volatile private var responseMetadata: Map<String, Any?> = emptyResponse()
+
+  fun getResponse(): Map<String, Any?> = responseMetadata
+
+  private fun emptyResponse(): Map<String, Any?> = mapOf(
+    "status" to null,
+    "headers" to emptyMap<String, String>()
+  )
 
   @Volatile private var isPausing = false
 
@@ -65,6 +74,7 @@ class FileSystemDownloadTask : SharedObject() {
     isPausing = false
     isCancelling = false
     bytesWritten = 0L
+    responseMetadata = emptyResponse()
 
     val destination = resolveDownloadDestination(to, url)
     destinationFile = destination
@@ -97,6 +107,8 @@ class FileSystemDownloadTask : SharedObject() {
   suspend fun resume(url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?): String? {
     isPausing = false
     isCancelling = false
+
+    responseMetadata = emptyResponse()
 
     val offset = try {
       resumeData.toLong()
@@ -166,6 +178,10 @@ class FileSystemDownloadTask : SharedObject() {
 
         override fun onResponse(call: Call, response: Response) {
           response.use { resp ->
+            responseMetadata = mapOf(
+              "status" to resp.code,
+              "headers" to resp.headers.toMultimap().mapValues { it.value.joinToString(", ") }
+            )
             try {
               processDownloadResponse(resp, destination, isResume, offset, ::safeResume)
             } catch (e: IOException) {
