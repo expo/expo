@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useHeaderConfigProps = useHeaderConfigProps;
 const jsx_runtime_1 = require("react/jsx-runtime");
+const expo_glass_effect_1 = require("expo-glass-effect");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const FontProcessor_1 = require("./FontProcessor");
@@ -124,6 +125,13 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     ]) || {};
     const headerStyleFlattened = react_native_1.StyleSheet.flatten(headerStyle) || {};
     const headerLargeStyleFlattened = react_native_1.StyleSheet.flatten(headerLargeStyle) || {};
+    const headerBackgroundColor = headerStyleFlattened.backgroundColor ??
+        (headerBackground != null ||
+            headerTransparent ||
+            // The title becomes invisible if background color is set with large title on iOS 26
+            (react_native_1.Platform.OS === 'ios' && headerLargeTitleEnabled)
+            ? 'transparent'
+            : colors.card);
     const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = (0, FontProcessor_1.processFonts)([
         headerBackTitleStyleFlattened.fontFamily,
         headerLargeTitleStyleFlattened.fontFamily,
@@ -135,7 +143,12 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const titleText = (0, elements_1.getHeaderTitle)({ title, headerTitle }, route.name);
     const titleColor = 'color' in headerTitleStyleFlattened
         ? headerTitleStyleFlattened.color
-        : (headerTintColor ?? colors.text);
+        : (0, expo_glass_effect_1.isLiquidGlassAvailable)() && (headerTransparent || headerBackgroundColor === 'transparent')
+            ? // On iOS 26, we want header title to change color based on content underneath
+                // So we don't set an explicit color when header is transparent
+                // Unless a custom tint color is explicitly provided
+                headerTintColor
+            : (headerTintColor ?? colors.text);
     const titleFontSize = 'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
     const titleFontWeight = headerTitleStyleFlattened.fontWeight;
     const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
@@ -154,13 +167,6 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     if (titleFontWeight != null) {
         headerTitleStyleSupported.fontWeight = titleFontWeight;
     }
-    const headerBackgroundColor = headerStyleFlattened.backgroundColor ??
-        (headerBackground != null ||
-            headerTransparent ||
-            // The title becomes invisible if background color is set with large title on iOS 26
-            (react_native_1.Platform.OS === 'ios' && headerLargeTitleEnabled)
-            ? 'transparent'
-            : colors.card);
     const canGoBack = headerBack != null;
     const headerLeftElement = headerLeft?.({
         tintColor,
