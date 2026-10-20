@@ -135,9 +135,14 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     if let superview, let directChild {
       let triggerView: UIView =
         (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
+      // UIKit draws the lift inside the target's container, so a container that
+      // clips to its bounds (a parent with `overflow: hidden`) cuts the lifted
+      // trigger as it grows. The window is the one ancestor that never clips a
+      // lift; a parent's clip is for the page's layout, not for the platter.
+      let container: UIView = triggerView.window ?? superview
       let target = UIPreviewTarget(
-        container: superview,
-        center: self.convert(triggerView.center, to: superview)
+        container: container,
+        center: self.convert(triggerView.center, to: container)
       )
 
       let parameters = UIPreviewParameters()
