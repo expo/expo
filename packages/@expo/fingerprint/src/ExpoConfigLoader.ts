@@ -134,12 +134,13 @@ export type LoadedModuleSource =
   | { type: 'contents'; id: string; contents: string };
 
 /**
- * Observe every module evaluated while the hook is installed.
+ * Observe the JavaScript and TypeScript modules that `require()` evaluates while the hook is
+ * installed.
  * We hook `Module.prototype._compile` to keep each CommonJS module's authoritative filename and
  * source content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it
  * to strip types from a `.ts` file.
- * The modules an ES module imports never reach `_compile`, so a `module.registerHooks` load hook
- * (Node 22.15+) records each ES module Node's loader evaluates.
+ * The ES modules that an ES module imports never reach `_compile`, so a `module.registerHooks`
+ * load hook (Node 22.15+) records each ES module file that Node's loader evaluates.
  */
 export function installModuleCaptureHook(): {
   getCapturedModules: () => CapturedModule[];
@@ -172,7 +173,8 @@ export function installModuleCaptureHook(): {
 
 /**
  * A `module.registerHooks` load hook that records each ES module loaded from a file.
- * CommonJS is left to the `_compile` hook, which sees the source Node runs after any transform.
+ * CommonJS is left to the `_compile` hook, which also sees a module that a transpiler compiles
+ * from a string.
  */
 export function createESModuleLoadHook(capturedModules: CapturedModule[]): module.LoadHookSync {
   return (url, context, nextLoad) => {
