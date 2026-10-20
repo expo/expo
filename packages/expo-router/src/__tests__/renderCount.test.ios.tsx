@@ -523,6 +523,9 @@ describe('Stack nested in Tabs render counts', () => {
   });
 });
 
+// TODO(@ubax): Add cases where layout params stay the same: a push without query and a navigation
+// in a sibling tab. Both re-render the layout today; the sibling tab case comes from
+// https://github.com/react/react/issues/35397.
 describe('useLocalSearchParams render counts', () => {
   let layoutRender: jest.Mock;
   let idLayoutRender: jest.Mock;
