@@ -1,14 +1,16 @@
 ---
 model: anthropic/claude-opus-5-5
 description: Binary compatibility of prebuilt iOS frameworks. Changes to public, `@usableFromInline` and header-declared symbols in expo-modules-jsi, expo-modules-core and other prebuilt packages that break frameworks compiled against an older version, and the dependents that must be released together with the change.
-# The Swift sources and headers of the packages in "Scope" below. When a prebuilt package starts
-# to depend on another package, add that package here.
+# The Swift sources and headers of the packages in "Scope" below, and the core `package.json`,
+# which pins `expo-modules-macros`. When a prebuilt package starts to depend on another package,
+# add that package here.
 paths:
   - "packages/expo-modules-jsi/**/*.swift"
   - "packages/expo-modules-jsi/**/*.h"
   - "packages/expo-modules-core/**/*.swift"
   - "packages/expo-modules-core/ios/**/*.h"
   - "packages/expo-modules-core/common/**/*.h"
+  - "packages/expo-modules-core/package.json"
 ---
 
 # Native ABI compatibility
@@ -20,7 +22,8 @@ correctness belongs to `correctness-ios`, code that stops compiling belongs to t
 `correctness-ios`, and the TypeScript surface belongs to `public-api`. Android is out of scope.
 
 If the diff changes no Swift source and no Objective-C, C or C++ header in a package that is in
-scope (see "Scope"), return no findings without any tool calls.
+scope (see "Scope"), and does not change the `expo-modules-macros` version, return no findings
+without any tool calls.
 
 ## Terms
 
@@ -29,8 +32,8 @@ scope (see "Scope"), return no findings without any tool calls.
   `"publishPrebuilds": true`. Other packages and app code compile from source.
 - **Dependent** of a package: a prebuilt package that is compiled against it, because its
   `spm.config.json` names the package in `externalDependencies` as `<package>/<Product>`. A
-  prebuilt package that uses the Expo macros (`@ExpoModule`, `@JS`, `@SharedObject`) is also a
-  dependent of `expo-modules-jsi`, because the code the macros generate uses its types.
+  prebuilt package that uses the Expo macros (`@ExpoModule`, `@JS`, `@SharedObject`, `@Record`)
+  is also a dependent of `expo-modules-jsi`, because the code the macros generate uses its types.
 
 ## Scope
 
@@ -73,6 +76,17 @@ Code that is copied into dependents:
   can run in the same app. Flag a changed body or default value when an old copy would now behave
   incorrectly: the new code changes a stored layout, an invariant or a contract that the old copy
   relies on, or removes a `@usableFromInline` declaration that the old copy calls.
+- Code that the Expo macros generate is compiled into each dependent that uses them, like an
+  `@inlinable` body, and an old prebuilt dependent keeps the code from the macros version it was
+  built with. So an `expo-modules-macros` upgrade (its version in
+  `packages/expo-modules-core/package.json`) can break the ABI too. Flag it when the PR also
+  removes or changes a JSI or core declaration that the old generated code calls, or adds a
+  requirement that the old generated code does not meet, such as a protocol requirement without
+  a default implementation. The macros source is in https://github.com/expo/expo-modules-macros,
+  not in this repository. Here, the macro declarations in
+  `packages/expo-modules-core/ios/Core/ExpoModulesMacros.swift` name the members each macro
+  generates, and the tests in `packages/expo-modules-core/ios/Tests/Macros/` use the generated
+  code.
 
 Objective-C, C and C++ headers that dependents import, for example `ExpoModulesCore.h`:
 
