@@ -25,7 +25,9 @@ internal abstract class Monitor<T>(
     synchronized(emitMutex) { emitNewValueEvent(value) }
 
   protected fun update(newValue: T) {
-    if (equalsMonitoredValue(newValue)) return
+    if (equalsMonitoredValue(newValue)) {
+      return
+    }
     setNewValue(newValue)
     emitEvent(newValue)
   }
