@@ -244,6 +244,7 @@ object BackgroundTaskScheduler {
           }
         } catch (e: Exception) {
           Log.e(TAG, "Task failed: ${e.message}")
+          taskCompletion.complete(Unit)
         }
         taskCompletion
       }
