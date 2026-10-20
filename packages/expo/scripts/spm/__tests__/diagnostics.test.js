@@ -208,7 +208,7 @@ describe('a pod buildFromSource names that cannot be built from source', () => {
       'error: Expo module "expo-bad" (pod ExpoBad) is listed in buildFromSource, but Swift Package Manager cannot build it from source.'
     );
     expect(text).toContain(
-      `Remove "expo-b.*" from \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json, or narrow it so it no longer matches ExpoBad or expo-bad. The module's precompiled XCFramework is then used. Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`
+      `Remove "expo-b.*" from \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json, or narrow it so it no longer matches ExpoBad or expo-bad. The module's precompiled XCFramework is then used. Then run \`${spmUpdateCommand()}\` from your app directory again.`
     );
     expect(text).toContain('Module path: /m/expo-bad');
     expect(text).not.toContain('prebuild');

@@ -70,7 +70,7 @@ const {
   renderXcconfigLinkerWarning,
   reportUnsupported,
   BUILD_FROM_SOURCE_OPTION,
-  RERUN_SPM_UPDATE,
+  rerunSpmUpdate,
   unmappedPodDependencies,
 } = require('./diagnostics');
 const {
@@ -393,7 +393,7 @@ function buildFromSourceMatcher(patterns) {
         {
           what: `The buildFromSource entry "${pattern}" in your app's Expo autolinking options is not a valid regular expression: ${error.message}.`,
           why: 'Each entry is matched as a regular expression against the pod name and the npm package name of every module, to choose the modules built from source instead of linked precompiled.',
-          how: `Fix the entry in ${BUILD_FROM_SOURCE_OPTION}. ${RERUN_SPM_UPDATE}`,
+          how: `Fix the entry in ${BUILD_FROM_SOURCE_OPTION}. ${rerunSpmUpdate()}`,
         },
         { cause: error }
       );
@@ -407,7 +407,7 @@ function buildFromSourceMatcher(patterns) {
     throw pluginError({
       what: `The buildFromSource entry "${coreEntry}" in your app's Expo autolinking options matches ${CORE_POD} (${CORE_PACKAGE}), which Swift Package Manager cannot build from source.`,
       why: `Under Swift Package Manager, ${CORE_POD} is always linked precompiled: every Expo module built from source compiles against its precompiled interface.`,
-      how: `Remove "${coreEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${CORE_POD} or ${CORE_PACKAGE}. ${RERUN_SPM_UPDATE}`,
+      how: `Remove "${coreEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${CORE_POD} or ${CORE_PACKAGE}. ${rerunSpmUpdate()}`,
     });
   }
   return entryFor;
@@ -484,7 +484,7 @@ function mixedSourcesReport(coreSource, subjects) {
       )
       .join('; ')}, but ExpoModulesCore comes from ${describeSource(coreSource)}.`,
     why: 'Precompiled Expo modules, and the headers Expo modules compile against, are bound to the exact ExpoModulesCore build they were made with, so mixing builds from different places can crash the app at launch on a missing symbol.',
-    how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; from the Expo repository root, build the packages into the same place as ExpoModulesCore with \`node tools/bin/expotools.js prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. ${RERUN_SPM_UPDATE}`,
+    how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; from the Expo repository root, build the packages into the same place as ExpoModulesCore with \`node tools/bin/expotools.js prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. ${rerunSpmUpdate()}`,
   };
 }
 
@@ -512,15 +512,15 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
       why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
       how:
         coreSource.kind === 'env'
-          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${RERUN_SPM_UPDATE}`
-          : `From the Expo repository root, run ${prebuild}. ${RERUN_SPM_UPDATE}`,
+          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${rerunSpmUpdate()}`
+          : `From the Expo repository root, run ${prebuild}. ${rerunSpmUpdate()}`,
     });
   }
   if (headers == null) {
     throw pluginError({
       what: `Expo modules built from their own Package.swift compile against ${productName}Headers.xcframework, which was not found (searched ${headersXCFrameworkSearchPaths(lookup).join(', ')}).`,
       why: `The installed ${packageName} was published without a headers xcframework, or the local prebuild has not produced it yet.`,
-      how: `From the Expo repository root, run \`node tools/bin/expotools.js prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. ${RERUN_SPM_UPDATE}`,
+      how: `From the Expo repository root, run \`node tools/bin/expotools.js prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. ${rerunSpmUpdate()}`,
     });
   }
   const mixed = mixedSourcesReport(coreSource, [

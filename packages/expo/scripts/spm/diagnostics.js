@@ -53,7 +53,9 @@ const UNMAPPED_POD_ALLOWLIST = new Set(['sqlite3']);
 
 // Expo apps do not depend on @react-native-community/cli, which provides the
 // `react-native spm` command; React Native's own script is always installed.
-const RERUN_SPM_UPDATE = `Then run \`${SPM_UPDATE_COMMAND}\` from your app directory again.`;
+function rerunSpmUpdate() {
+  return `Then run \`${spmUpdateCommand()}\` from your app directory again.`;
+}
 
 /** Where an app sets its `buildFromSource` autolinking option. */
 const BUILD_FROM_SOURCE_OPTION =
@@ -294,7 +296,7 @@ function renderBuildFromSourceUnsupported({
     [
       SOURCE_BUILD_BLOCKERS[cause.reason]?.(cause) ??
         `The plugin found no way to build it from source with Swift Package Manager (reason: ${cause.reason}).`,
-      `Remove "${buildFromSourceEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${podName} or ${packageName}. The module's precompiled XCFramework is then used. ${RERUN_SPM_UPDATE}`,
+      `Remove "${buildFromSourceEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${podName} or ${packageName}. The module's precompiled XCFramework is then used. ${rerunSpmUpdate()}`,
     ],
     moduleRoot
   );
@@ -859,7 +861,7 @@ function reportUnsupported(entries) {
 module.exports = {
   pluginError,
   BUILD_FROM_SOURCE_OPTION,
-  RERUN_SPM_UPDATE,
+  rerunSpmUpdate,
   UnsupportedModulesError,
   COVERED_POD_PREFIXES,
   UNMAPPED_POD_ALLOWLIST,

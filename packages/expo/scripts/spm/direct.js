@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { runDumpPackage } = require('./cli');
-const { pluginError, RERUN_SPM_UPDATE } = require('./diagnostics');
+const { pluginError, rerunSpmUpdate } = require('./diagnostics');
 
 const CORE_HEADERS = 'ExpoModulesCoreHeaders';
 const JSI_HEADERS = 'ExpoModulesJSIHeaders';
@@ -123,7 +123,7 @@ function emitDirectPackage({
     throw pluginError({
       what: `${packageName} is built from its own Package.swift and needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.`,
       why: 'The ExpoModulesCore headers it compiles against re-export ExpoModulesJSI.',
-      how: `expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from \`"expo": { "autolinking": { "exclude": [...] } }\` in your package.json if it is listed there. ${RERUN_SPM_UPDATE}`,
+      how: `expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from \`"expo": { "autolinking": { "exclude": [...] } }\` in your package.json if it is listed there. ${rerunSpmUpdate()}`,
     });
   }
   const directDir = path.join(outDir, 'direct');
@@ -162,7 +162,7 @@ function dumpModuleManifest(moduleRoot, packageName) {
       {
         what: `${packageName}'s Package.swift could not be evaluated: ${dumpFailureDetail(error)}.`,
         why: `${packageName} is built from source, so the plugin reads its manifest with \`swift package dump-package\` to decide how to build it and to find the products it exports.`,
-        how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. ${RERUN_SPM_UPDATE}`,
+        how: `Fix the Package.swift in ${moduleRoot}; run \`swift package dump-package\` in that folder to see the full error. If the swift command is missing, install Xcode and select its command line tools with \`sudo xcode-select --switch /Applications/Xcode.app\`. ${rerunSpmUpdate()}`,
       },
       { cause: error }
     );

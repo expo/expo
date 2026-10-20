@@ -32,3 +32,18 @@ describe('spmUpdateCommand', () => {
     );
   });
 });
+
+describe('rerunSpmUpdate', () => {
+  afterEach(() => configureSpmUpdateCommand());
+
+  it('names the command of the react-native configured after it was loaded', () => {
+    const { rerunSpmUpdate } = require('../diagnostics');
+    configureSpmUpdateCommand({
+      appRoot: '/repo/apps/mobile',
+      reactNativeRoot: '/repo/node_modules/react-native',
+    });
+    expect(rerunSpmUpdate()).toBe(
+      'Then run `node ../../node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.'
+    );
+  });
+});
