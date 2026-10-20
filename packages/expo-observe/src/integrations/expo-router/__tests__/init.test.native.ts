@@ -583,6 +583,24 @@ describe('navigation total blocking time', () => {
     });
   });
 
+  it('sets the tbt metric only on the first focus of a screen', async () => {
+    preload(events, 'b');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+    dispatch(events, 'GO_BACK');
+    focus(events, 'a');
+    await flushAsync();
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ routeName: '/b' })
+    );
+  });
+
   it('does not measure the initial app launch', () => {
     expect(lastBlockingTime().start).not.toHaveBeenCalled();
     expect(lastBlockingTime().setMetric).not.toHaveBeenCalled();
