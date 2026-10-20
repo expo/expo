@@ -284,11 +284,13 @@ describe('collectProjectModulePaths', () => {
       'app.config.js',
       '../../packages/plugin/index.js',
       '../../packages/plugin/label.js',
+      '../../packages/plugin/colors.js',
       '../../packages/@expo/config/build/index.js',
     ]);
     const imports = [
       imported('app.config.js', '../../packages/plugin/index.js'),
       imported('../../packages/plugin/index.js', '../../packages/plugin/label.js'),
+      imported('../../packages/plugin/index.js', '../../packages/plugin/colors.js'),
       imported(
         '../../node_modules/@expo/fingerprint/build/ExpoConfigLoader.js',
         '../../packages/@expo/config/build/index.js'
@@ -296,6 +298,7 @@ describe('collectProjectModulePaths', () => {
     ];
 
     expect(collectProjectModulePaths(modules, imports, projectRoot)).toEqual([
+      '../../packages/plugin/colors.js',
       '../../packages/plugin/index.js',
       '../../packages/plugin/label.js',
       'app.config.js',
