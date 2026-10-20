@@ -7,9 +7,10 @@
  * two forms:
  *
  *   - PRECOMPILED  — modules with built Debug + Release xcframeworks
- *     (ExpoModulesCore, ExpoModulesJSI, ExpoModulesWorklets, …): declared to
+ *     (ExpoModulesCore, ExpoModulesWorklets, …): declared to
  *     RN as paired dynamic frameworks. RN selects, links, embeds, and signs
- *     them outside SwiftPM.
+ *     them outside SwiftPM. ExpoModulesJSI is the exception: an app build
+ *     phase compiles it against the app's React Native.
  *   - SOURCE-BUILT — modules compiled from source (Expo, EXConstants, …):
  *     emitted as a source `Package.swift`. Pure-Swift modules are a single
  *     target; mixed Swift/ObjC modules need a checked-in Package.swift.
@@ -37,6 +38,7 @@
 'use strict';
 
 const fs = require('fs');
+const { createRequire } = require('module');
 const path = require('path');
 
 const { readPodfileProperties, resolveAppTarget } = require('./app-target');
@@ -53,6 +55,7 @@ const {
   moduleNeedsReact,
   scanAppleSources,
 } = require('./classify');
+const { configureSpmUpdateCommand, spmUpdateCommand } = require('./commands');
 const {
   classifyUnsupported,
   collectDuplicatePods,
@@ -71,17 +74,25 @@ const {
 const {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
+  assertHeadersMatchSources,
   byteOrder,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
+const {
+  emitExpoModulesJSIHeadersPackage,
+  emitPureSwiftSourcePackage,
+  emitSourceManifestPackage,
+} = require('./manifests');
 const { readPrebuiltMetadata } = require('./metadata');
 const { readPodspecFacts } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
 const CORE_POD = 'ExpoModulesCore';
+const JSI_POD = 'ExpoModulesJSI';
 
 /** npm name → autolinked root, only for roots still on disk. */
 function collectAutolinkedRoots(autolinking) {
@@ -286,8 +297,8 @@ function uncoveredPod(identity, ...refusals) {
 
 /**
  * What the passes decided for each pod, keyed by pod name: CocoaPods pod names are
- * unique, so a name two packages list is one pod. `linkedAs` is `'precompiled'`,
- * `'manifest'`, `'pure-swift'` or null. A precompiled record carries its
+ * unique, so a name two packages list is one pod. `linkedAs` is `'build-phase'`,
+ * `'precompiled'`, `'manifest'`, `'pure-swift'` or null. A precompiled record carries its
  * `framework`.
  */
 function podRecords(identities) {
@@ -298,6 +309,52 @@ function podRecords(identities) {
     }
   }
   return records;
+}
+
+/**
+ * Before pass 1 — ExpoModulesJSI is never linked precompiled, whatever artifacts exist:
+ * it must be compiled against the app's React Native, which the app's "Build
+ * ExpoModulesJSI" phase does. Source packages compile against its headers package
+ * instead. Returns that package's directory, or null when expo-modules-jsi is not
+ * autolinked.
+ */
+function linkExpoModulesJSI(records, outDir, cacheDir, appRoot) {
+  const record = records.get(JSI_POD);
+  if (record == null) return null;
+  record.linkedAs = 'build-phase';
+  const { packageName, moduleRoot, productName } = record.identity;
+  const headers = resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir });
+  if (headers == null) {
+    const searched = headersXCFrameworkDirs(packageName, moduleRoot);
+    throw pluginError({
+      what: `${productName}Headers.xcframework (or .tar.gz) was not found in ${searched.join(', ')}.`,
+      why: `npm ships only the headers of ${productName}, because the framework must be compiled against the app's React Native: Swift packages compile against those headers, and the app's "Build ${productName}" phase builds the framework.`,
+      how: `Reinstall ${packageName} with your package manager. In the Expo repository, build the headers with \`et prebuild ${packageName}\`.`,
+    });
+  }
+  const builtRoot = buildPhaseJsiRoot(appRoot);
+  assertHeadersMatchSources(headers, {
+    packageName,
+    productName,
+    sourceRoots: builtRoot == null ? [moduleRoot] : [moduleRoot, builtRoot],
+  });
+  return emitExpoModulesJSIHeadersPackage(headers, outDir);
+}
+
+/**
+ * The expo-modules-jsi the app's "Build ExpoModulesJSI" phase builds, resolved through expo and
+ * expo-modules-core as its launcher in script-phases.js does. Null when that chain does not resolve.
+ */
+function buildPhaseJsiRoot(appRoot) {
+  // Not `require.resolve(..., { paths })`: from inside the expo package, Node resolves `expo` to
+  // this package itself, whatever the paths.
+  const dir = (name, from) =>
+    path.dirname(createRequire(path.join(from, 'package.json')).resolve(`${name}/package.json`));
+  try {
+    return dir('expo-modules-jsi', dir('expo-modules-core', dir('expo', appRoot)));
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -608,6 +665,16 @@ function macroPluginFlags(coreModuleRoot) {
   return ['-Xfrontend', '-load-plugin-executable', '-Xfrontend', `${tool}#ExpoModulesMacros`];
 }
 
+/** The app's react-native: the root React Native passes, or else the one the app resolves. */
+function appReactNativeRoot(context, appRoot) {
+  if (typeof context.reactNativeRoot === 'string') return context.reactNativeRoot;
+  try {
+    return path.dirname(require.resolve('react-native/package.json', { paths: [appRoot] }));
+  } catch {
+    return null;
+  }
+}
+
 module.exports = function expoSpmPlugin(context) {
   const { autolinking, react, outputDir } = context;
   // `context.appRoot` is the Xcode project dir (`<app>/ios`); the autolinking
@@ -617,6 +684,7 @@ module.exports = function expoSpmPlugin(context) {
   // provider, with no Expo modules registering at runtime. RN's contract hands
   // us that root directly.
   const appRoot = context.projectRoot;
+  configureSpmUpdateCommand({ appRoot, reactNativeRoot: appReactNativeRoot(context, appRoot) });
   const { modules, extraDependencies } = resolveExpoModules(appRoot);
   const metadata = readPrebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
@@ -655,6 +723,7 @@ module.exports = function expoSpmPlugin(context) {
     : null;
 
   const records = podRecords(identities);
+  const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir, appRoot);
   const precompiled = linkPrecompiledPods(identities, records, artifactCacheDir);
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is
@@ -686,6 +755,7 @@ module.exports = function expoSpmPlugin(context) {
       frameworkSearchPath,
       outDir,
       codegenPkgPath,
+      jsiHeadersPkgPath,
       minimumIosDeploymentTarget: core.iosDeploymentTarget,
       satisfiedDependencies,
       // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
@@ -710,6 +780,7 @@ module.exports = function expoSpmPlugin(context) {
   });
   const logListed = (label, names) =>
     console.log(`[expo-spm-plugin] ${label} (${names.length}): ${names.join(', ') || '—'}`);
+  logListed('built by an app build phase', jsiHeadersPkgPath != null ? [JSI_POD] : []);
   logListed('paired runtime frameworks', summary.precompiledPods);
   logListed('source via checked-in manifest', summary.manifestPackages);
   logListed('source pure-Swift', summary.pureSwiftPods);
@@ -776,7 +847,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `Generating ExpoModulesProvider.swift for ${appRoot} failed: ${error.message}`,
         '  That file is the registry every Expo native module is looked up through, so without it the app builds and then fails at launch with "Cannot find native module".',
-        '  The message above comes from `expo-modules-autolinking generate-modules-provider`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run `npx react-native spm update`.',
+        `  The message above comes from \`expo-modules-autolinking generate-modules-provider\`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run \`${spmUpdateCommand()}\`.`,
       ].join('\n'),
       { cause: error }
     );
@@ -786,7 +857,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `The Expo module registry generator wrote no ExpoModulesProvider.swift to ${outDir}, although ${modules.length} Expo ${modules.length === 1 ? 'module' : 'modules'} resolved.`,
         '  Without that file no Expo native module is registered, and the app fails at launch with "Cannot find native module".',
-        '  Re-run `npx react-native spm update`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of `npx expo-modules-autolinking resolve --platform apple --json` run in your app.',
+        `  Re-run \`${spmUpdateCommand()}\`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of \`npx expo-modules-autolinking resolve --platform apple --json\` run in your app.`,
       ].join('\n')
     );
   }
