@@ -1,7 +1,10 @@
 import { Host } from '../../swift-ui/Host';
 import { Picker } from '../../swift-ui/Picker';
 import { Text } from '../../swift-ui/Text';
-import { disabled as disabledModifier } from '../../swift-ui/modifiers';
+import {
+  accessibilityLabel as accessibilityLabelModifier,
+  disabled as disabledModifier,
+} from '../../swift-ui/modifiers';
 import { environment } from '../../swift-ui/modifiers/environment';
 import { pickerStyle } from '../../swift-ui/modifiers/pickerStyle';
 import { tag } from '../../swift-ui/modifiers/tag';
@@ -18,11 +21,15 @@ export function SegmentedControl(props: SegmentedControlProps) {
     appearance,
     style,
     testID,
+    accessibilityLabel,
   } = props;
 
   const modifiers: ModifierConfig[] = [pickerStyle('segmented')];
   if (!enabled) {
     modifiers.push(disabledModifier());
+  }
+  if (accessibilityLabel) {
+    modifiers.push(accessibilityLabelModifier(accessibilityLabel));
   }
   if (appearance) {
     modifiers.push(environment('colorScheme', appearance));
