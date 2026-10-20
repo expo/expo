@@ -2,6 +2,7 @@
 
 // swiftlint:disable function_parameter_count
 
+import EXUpdatesInterface
 import ExpoModulesCore
 import Foundation
 import os.log
@@ -208,6 +209,9 @@ public final class UpdatesLogger: NSObject {
       stacktrace: symbols,
       duration: duration
     )
+    if level == .warn || level == .error || level == .fatal {
+      UpdatesLogEntryListenerRegistry.shared.notify(logEntry.asDict())
+    }
     return "\(logEntry.asString() ?? logEntry.message)"
   }
 }

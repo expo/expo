@@ -4,6 +4,7 @@ import expo.modules.core.logging.LogHandlers
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.Logger
 import expo.modules.core.logging.LoggerTimer
+import expo.modules.updatesinterface.UpdatesLogEntryListenerRegistry
 import java.io.File
 import java.util.Date
 
@@ -151,7 +152,7 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       assetId,
       stacktrace = exception.stackTrace.take(MAX_FRAMES_IN_STACKTRACE).map { f -> f.toString() }
     )
-
+    notifyListeners(logEntry, level)
     return logEntry.asString()
   }
 
@@ -174,8 +175,14 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       assetId,
       stacktrace = null
     )
-
+    notifyListeners(logEntry, level)
     return logEntry.asString()
+  }
+
+  private fun notifyListeners(logEntry: UpdatesLogEntry, level: LogType) {
+    if (level == LogType.Warn || level == LogType.Error || level == LogType.Fatal) {
+      UpdatesLogEntryListenerRegistry.notify(logEntry.asMap())
+    }
   }
 
   companion object {
