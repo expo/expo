@@ -36,6 +36,16 @@ public enum JSOptions {
   /// The call sends the module or shared object off the JavaScript thread, so in Swift 6 language
   /// mode the enclosing class must be `Sendable`.
   case concurrent
+
+  /// Binds a synchronous function a second time under the given JavaScript name, as a function that
+  /// returns a promise and runs the body on the concurrent thread pool, for example
+  /// `@JS("textSync", .withAsync("text"))`. The body must be safe to run on any thread, since the
+  /// variant isn't isolated to the JavaScript thread. Only valid on a synchronous function that isn't
+  /// isolated to a global actor, and the name must be a string literal.
+  ///
+  /// The variant sends the module or shared object off the JavaScript thread, so in Swift 6 language
+  /// mode the enclosing class must be `Sendable`.
+  case withAsync(String)
 }
 
 /// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
@@ -58,6 +68,9 @@ public enum JSOptions {
 ///
 ///     @JS("doWork", .concurrent)
 ///     func performHeavyWork() async throws { ... }
+///
+///     @JS("textSync", .withAsync("text"))
+///     func text(path: String) throws -> String { ... }
 ///
 /// Also emits a never-called `_assertTypesConformance_<member>` peer that statically asserts every
 /// type crossing the JS boundary conforms to the JS-convertible protocol, so a non-conforming type
