@@ -21,6 +21,9 @@ let reactNative =
   ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
+// Also listed in packages/expo-modules-jsi/apple/scripts/build-swiftpm-app-phase.sh (stage_link) and
+// tools/src/prebuilds/CustomBuild.ts (RN_HEADER_POD_LAYOUT). A header root added to one must be
+// added to the others, or SwiftPM apps fail at build time with a missing header.
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",

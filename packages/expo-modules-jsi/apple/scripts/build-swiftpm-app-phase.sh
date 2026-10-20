@@ -45,6 +45,9 @@ stage_link() {
   mkdir -p "$(dirname "$PUBLIC/$2")"
   ln -sfn "$1" "$PUBLIC/$2"
 }
+# Also listed in tools/src/prebuilds/CustomBuild.ts (RN_HEADER_POD_LAYOUT) and in
+# packages/expo-modules-jsi/apple/Package.swift (headerSearchPaths). A header root added to one must
+# be added to the others, or SwiftPM apps fail at build time with a missing header.
 stage_link "$RN_DIR/ReactCommon/jsi/jsi" React-jsi/jsi
 stage_link "$RN_DIR/ReactCommon/react/renderer/runtimescheduler" React-runtimescheduler/react/renderer/runtimescheduler
 stage_link "$RN_DIR/ReactCommon/react/renderer/consistency" React-rendererconsistency/react/renderer/consistency
