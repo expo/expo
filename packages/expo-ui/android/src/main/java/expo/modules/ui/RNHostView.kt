@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -204,13 +205,16 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         .then(sizingModifier)
         .then(publishContentOriginModifier())
 
-      AndroidView(
-        factory = {
-          detachForReuse(wrapper)
-          wrapper
-        },
-        modifier = modifiers
-      )
+      // `addView` creates a new wrapper for each mounted child, and `AndroidView` only calls `factory` once.
+      key(wrapper) {
+        AndroidView(
+          factory = {
+            detachForReuse(wrapper)
+            wrapper
+          },
+          modifier = modifiers
+        )
+      }
     }
   }
 
