@@ -34,7 +34,34 @@ const fixtures: Record<
       '/(group)/(a,b)/folder/[...slug]': () => null,
     },
   },
+  largeApp: {
+    options: { partialTypedGroups: true },
+    context: getLargeAppContext(),
+  },
 };
+
+// 15 features with 10 screens each
+function getLargeAppContext(): MemoryContext {
+  const context: MemoryContext = {};
+  for (let i = 0; i < 15; i++) {
+    const f = `feature${i}`;
+    for (const route of [
+      `(app)/(tabs)/${f}/index`,
+      `(app)/(tabs)/${f}/[id]`,
+      `(app)/(tabs)/${f}/[id]/edit`,
+      `(app)/(tabs)/${f}/[id]/details/[subId]`,
+      `(app)/(tabs)/${f}/settings`,
+      `(app)/(tabs)/${f}/new`,
+      `(app)/(home,search)/${f}/[slug]`,
+      `(app)/${f}/[...rest]`,
+      `(auth)/${f}-login`,
+      `${f}/about`,
+    ]) {
+      context[`./${route}.tsx`] = () => null;
+    }
+  }
+  return context;
+}
 
 module.exports = function () {
   return Promise.all(

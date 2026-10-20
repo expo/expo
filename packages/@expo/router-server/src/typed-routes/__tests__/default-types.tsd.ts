@@ -44,9 +44,11 @@ describe('Href', () => {
     expectAssignable<Href>('/colors/blue');
     expectAssignable<Href>('/colors/blue?test=1');
     expectAssignable<Href>('/colors/blue?test=1');
+    expectAssignable<Href>('/colors/blue#hash');
 
     expectAssignable<Href>('/animals/cat');
     expectAssignable<Href>('/animals/cat/dog?test=1');
+    expectAssignable<Href>('/animals/cat/dog#hash');
 
     expectAssignable<Href>('/(group)/(a)/folder/slug1');
     expectAssignable<Href>('/(group)/(b)/folder/slug1/slug2');
@@ -259,5 +261,6 @@ describe('set params', () => {
   });
   it('works without a generic', () => {
     expectType<void>(router.setParams({ hello: 'world' }));
+    expectType<void>(router.setParams<'/static'>({ hello: 'world' }));
   });
 });

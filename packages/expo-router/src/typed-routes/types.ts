@@ -79,16 +79,13 @@ export type HrefOutputParams<T extends ExpoRouter.__routes = ExpoRouter.__routes
 /**
  * @hidden
  */
-export type RouteInputParams<T> =
-  Extract<Href, { pathname: T }> extends never
-    ? HrefInputParams extends infer H
-      ? H extends Record<'pathname' | 'params', any>
-        ? T extends H['pathname']
-          ? H['params']
-          : never
-        : never
+export type RouteInputParams<T> = HrefInputParams extends infer U
+  ? U extends { pathname: string; params?: infer Params }
+    ? T extends U['pathname']
+      ? Params
       : never
-    : Extract<HrefInputParams, { pathname: T }>['params'];
+    : never
+  : never;
 
 /**
  * @hidden

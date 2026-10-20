@@ -29,6 +29,7 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
     }
     const groupedNodes = groupRouteNodes(routeNode);
     const staticRoutesStrings = ['Router.RelativePathString', 'Router.ExternalPathString'];
+    const staticPathnames = ['Router.RelativePathString', 'Router.ExternalPathString'];
     const staticRouteInputObjects = [
         '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams }',
         '{ pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
@@ -39,6 +40,7 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
     ];
     for (const type of groupedNodes.static) {
         staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
+        staticPathnames.push(contextKeyToType(type, partialTypedGroups));
         staticRouteInputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`);
         staticRouteOutputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownOutputParams; }`);
     }
@@ -60,15 +62,19 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
             return `${contextKeyToProperty(key)}: ${value};`;
         })
             .join('');
+        // A trailing parameter already accepts a query string or a hash
+        const suffix = dynamicRouteTemplate.endsWith(']') ? '' : urlParams;
         dynamicRouteStrings.push(contextKeyToType(dynamicRouteTemplate
             .replaceAll(CATCH_ALL, '${string}')
-            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams, partialTypedGroups));
+            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + suffix, partialTypedGroups));
         dynamicRouteInputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & { ${inputParams} } }`);
         dynamicRouteOutputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownOutputParams & { ${outputParams} } }`);
     }
+    // One object for all static routes keeps the union small. TypeScript compares every pair of
+    // members when it combines two `Href` values and fails with TS2590 on large unions.
     const href = [
         ...staticRoutesStrings,
-        ...staticRouteInputObjects,
+        `{ pathname: ${staticPathnames.join(' | ')}; params?: Router.UnknownInputParams; }`,
         ...dynamicRouteStrings,
         ...dynamicRouteInputObjects,
     ].join(' | ');

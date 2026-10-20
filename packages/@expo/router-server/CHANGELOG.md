@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
 - Ignore file watch events outside the app directory when generating typed routes on Windows. ([#52518](https://github.com/expo/expo/pull/52518) by [@tedy69](https://github.com/tedy69))
 
 ### 💡 Others
