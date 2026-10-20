@@ -173,7 +173,9 @@ export default function LabeledSwitchExample() {
         <Text modifiers={[weight(1)]}>Wi-Fi</Text>
         <Switch
           value={checked}
-          modifiers={[defaultMinSize({ minWidth: 48, minHeight: 48 })]}
+          modifiers={[
+            defaultMinSize({ minWidth: 48, minHeight: 48 }),
+          ]}
         />
       </Row>
     </Host>
