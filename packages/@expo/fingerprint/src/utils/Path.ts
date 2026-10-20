@@ -136,18 +136,23 @@ export function toPosixPath(filePath: string): string {
 }
 
 /**
- * Whether a project-relative POSIX path lies inside a `node_modules` folder.
+ * Whether one of the folders a project-relative POSIX path passes through is a `node_modules`.
  */
 export function isNodeModulesPath(relativePosixPath: string): boolean {
-  return relativePosixPath.includes('node_modules');
+  return relativePosixPath.split('/').includes('node_modules');
 }
 
 /**
  * Whether a project-relative POSIX path names a file inside the project root and outside
- * `node_modules`. `..` means the path escaped the project root (e.g. a hoisted or linked dependency).
+ * `node_modules`. `..` means the path escaped the project root (e.g. a hoisted or linked dependency),
+ * and so does an absolute path, which Windows gives for a file on another drive.
  */
 export function isProjectLocalPath(relativePosixPath: string): boolean {
-  return !relativePosixPath.startsWith('..') && !isNodeModulesPath(relativePosixPath);
+  return (
+    !relativePosixPath.startsWith('..') &&
+    !path.win32.isAbsolute(relativePosixPath) &&
+    !isNodeModulesPath(relativePosixPath)
+  );
 }
 
 /**

@@ -6,6 +6,7 @@ import {
   buildPathMatchObjects,
   getNodeModulesPackageJsonPath,
   isIgnoredPath,
+  isProjectLocalPath,
   normalizeFilePath,
   pathExistsAsync,
   toPosixPath,
@@ -32,6 +33,19 @@ describe(getNodeModulesPackageJsonPath, () => {
 
   it('should return null when the path is not inside node_modules', () => {
     expect(getNodeModulesPackageJsonPath('modules/my-local-module/android')).toBeNull();
+  });
+});
+
+describe(isProjectLocalPath, () => {
+  it('should keep a path inside the project root, a folder named after node_modules included', () => {
+    expect(isProjectLocalPath('plugins/with-label.js')).toBe(true);
+    expect(isProjectLocalPath('packages/node_modules-cleaner/index.js')).toBe(true);
+  });
+
+  it('should leave out a path outside the project root, on another drive, or in node_modules', () => {
+    expect(isProjectLocalPath('../workspace-plugin/index.js')).toBe(false);
+    expect(isProjectLocalPath('D:/shared/plugin.js')).toBe(false);
+    expect(isProjectLocalPath('node_modules/chalk/index.js')).toBe(false);
   });
 });
 
