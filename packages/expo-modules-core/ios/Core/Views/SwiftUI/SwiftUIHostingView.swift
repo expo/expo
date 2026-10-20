@@ -270,6 +270,7 @@ extension ExpoSwiftUI {
 
     #if os(iOS) || os(tvOS)
     // A child added during a transition after its parent appeared never appears, so it gets no safe area (#51288).
+    // TODO: Workaround for https://github.com/software-mansion/react-native-screens/pull/4997, remove once it ships.
     private func forwardAppearanceIfMissed(parentController: UIViewController) {
       guard
         parentController.transitionCoordinator != nil,
