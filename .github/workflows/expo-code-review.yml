@@ -82,7 +82,7 @@ jobs:
           # to save an empty cache and error).
           package-manager-cache: false
 
-      # The anthropic/… models in .expo-code-review/config.jsonc run through the
+      # The anthropic/… models in .expo-agents/code-review/config.jsonc run through the
       # Claude Code CLI (the claude-code engine). Pinned exactly — an unpinned CLI
       # would silently drift on every CI run; bump it deliberately. Remove this
       # step if you switch every model to an OpenCode-served provider.
@@ -90,7 +90,7 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code@2.1.280
 
       # SECURITY: the TRUSTED BASE checkout above includes every
-      # .expo-code-review/config.jsonc + routing.jsonc, whose auth.tokenEnv names the
+      # .expo-agents/code-review/config.jsonc + routing.jsonc, whose auth.tokenEnv names the
       # env var the CLI forwards as the model credential. The canonical guard ships
       # with the CLI: `ecr verify-config` sweeps every config (root + routing + all
       # scopes, referenced or not) with the engine's real JSONC parser and refuses
@@ -165,7 +165,7 @@ jobs:
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
 
       # Observability: the per-run log (token/cache/cost totals + per-pass timing +
-      # coverage notes) is written under .expo-code-review/.runs/ but git-ignored, so
+      # coverage notes) is written under .expo-agents/code-review/.runs/ but git-ignored, so
       # in CI it is otherwise ephemeral — gone when the runner is torn down. Upload it
       # as an artifact so a reviewer run can be inspected after the fact (why a finding
       # did/didn't surface, cache-reuse, spend). always() so it is captured even when
