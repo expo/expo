@@ -41,14 +41,30 @@ struct RNHostView: ExpoSwiftUI.View {
 
   var body: some View {
     hostedContent
-      // Rebuilds the size observer and touch handler when a new child is mounted.
-      .id(props.children?.first?.childIdentity)
       .modifier(
         PublishContentOriginModifier(
           shadowNodeProxy: props.shadowNodeProxy,
           isEnabled: !props.layoutRoot
         )
       )
+      .onAppear {
+        updateTouchHandler()
+      }
+      .onChange(of: props.children?.first?.childIdentity) { _ in
+        updateTouchHandler()
+      }
+      .onDisappear {
+        touchHandler.detach()
+      }
+  }
+
+  // Follows the current child, which Fabric can replace or remount while this view stays.
+  private func updateTouchHandler() {
+    if props.layoutRoot, let view = firstChildUIView {
+      touchHandler.attach(to: view)
+    } else {
+      touchHandler.detach()
+    }
   }
 
   @ViewBuilder
@@ -62,14 +78,6 @@ struct RNHostView: ExpoSwiftUI.View {
       ) {
         Children()
       }
-      .onAppear {
-        if props.layoutRoot {
-          touchHandler.attach(to: childUIView)
-        }
-      }
-      .onDisappear {
-        touchHandler.detach(from: childUIView)
-      }
     } else if matchesContents {
       // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
       // natural size instead of falling into the fill branch below, which would
@@ -81,20 +89,9 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
-      let childUIView = firstChildUIView
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
-        .onAppear {
-          if props.layoutRoot, let childUIView {
-            touchHandler.attach(to: childUIView)
-          }
-        }
-        .onDisappear {
-          if let childUIView {
-            touchHandler.detach(from: childUIView)
-          }
-        }
     }
   }
 
@@ -160,13 +157,6 @@ private final class RNHostTouchHandler: ObservableObject {
     attachedView = view
   }
 
-  // A new child can appear before the old one disappears.
-  func detach(from view: UIView) {
-    if attachedView === view {
-      detach()
-    }
-  }
-
   func detach() {
     if let touchHandler, let attachedView {
       ExpoUITouchHandlerHelper.detachTouchHandler(touchHandler, from: attachedView)
@@ -185,6 +175,7 @@ private final class RNHostTouchHandler: ObservableObject {
 // An axis that is not matched fills the parent and reports its size to the Yoga node instead
 private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   @StateObject private var observer: Observer
+  let childUIView: UIView
   let horizontal: Bool
   let vertical: Bool
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
@@ -198,6 +189,7 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
     @ViewBuilder content: () -> Content
   ) {
     _observer = StateObject(wrappedValue: Observer(view: childUIView))
+    self.childUIView = childUIView
     self.horizontal = horizontal
     self.vertical = vertical
     self.shadowNodeProxy = shadowNodeProxy
@@ -205,6 +197,14 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   }
 
   var body: some SwiftUI.View {
+    sizedContent
+      .onChange(of: childUIView) { newView in
+        observer.observe(newView)
+      }
+  }
+
+  @ViewBuilder
+  private var sizedContent: some SwiftUI.View {
     if horizontal && vertical {
       content
         .frame(width: observer.size.width, height: observer.size.height)
@@ -235,6 +235,12 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
 
     init(view: UIView) {
       self.size = view.bounds.size
+      observe(view)
+    }
+
+    func observe(_ view: UIView) {
+      kvoToken?.invalidate()
+      size = view.bounds.size
       kvoToken = view.observe(\.bounds) { [weak self] view, _ in
         MainActor.assumeIsolated {
           self?.size = view.bounds.size
