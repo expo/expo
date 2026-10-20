@@ -19,6 +19,16 @@ public final class StatusBarModule: Module {
       return edge
     }
 
+    Function("setVerticalBarBehavior") { (behavior: VerticalBarBehavior) in
+      #if canImport(UIKit, _version: 9127.0.85)
+      if #available(iOS 27.1, tvOS 27.1, *) {
+        DispatchQueue.main.async {
+          VerticalBarBehaviorOverride.set(behavior)
+        }
+      }
+      #endif
+    }
+
     OnStartObserving("onVerticalBarEdgeChange") {
       DispatchQueue.main.async {
         self.observeVerticalBarEdge()
