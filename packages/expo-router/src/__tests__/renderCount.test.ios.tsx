@@ -672,7 +672,6 @@ describe('useLocalSearchParams render counts', () => {
 
     expect(screen.getByTestId('details')).toBeVisible();
 
-    // Should be 0: params do not change, but navigation inside a layout re-renders it.
     expect(layoutRender).toHaveBeenCalledTimes(1);
     expect(idLayoutRender).toHaveBeenCalledTimes(1);
     expect(indexRender).not.toHaveBeenCalled();
@@ -739,7 +738,6 @@ describe('useLocalSearchParams render counts', () => {
     // Should be 0: React 19 re-renders it when an outer provider changes
     // (https://github.com/react/react/issues/35397).
     expect(tab1LayoutRender).toHaveBeenCalledTimes(1);
-    // Should be 0: params do not change, but navigation inside a layout re-renders it.
     expect(tab2LayoutRender).toHaveBeenCalledTimes(1);
   });
 });
