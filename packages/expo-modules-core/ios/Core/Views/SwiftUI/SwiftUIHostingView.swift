@@ -259,9 +259,28 @@ extension ExpoSwiftUI {
       addSubview(hostingController.view)
       #if os(iOS) || os(tvOS)
       hostingController.didMove(toParent: parentController)
+      parentController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
+        self?.reattachHostingViewIfSafeAreaIsStale()
+      }
       #endif
       setupHostingViewConstraints()
     }
+
+    #if os(iOS) || os(tvOS)
+    // UIKit can leave a child added during a presentation transition without a safe area; adding its view again fixes it.
+    private func reattachHostingViewIfSafeAreaIsStale() {
+      guard
+        window != nil,
+        hostingController.view.superview === self,
+        hostingController.view.safeAreaInsets != safeAreaInsets
+      else {
+        return
+      }
+      hostingController.view.removeFromSuperview()
+      addSubview(hostingController.view)
+      setupHostingViewConstraints()
+    }
+    #endif
 
 #if os(macOS)
     public override func reactViewController() -> NSViewController? {
