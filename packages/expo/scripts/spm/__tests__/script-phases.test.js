@@ -246,6 +246,7 @@ describe('the ExpoModulesJSI build phase', () => {
         expect(result.stderr).toContain(
           'ReactNativeDependenciesHeaders.xcframework/ios-arm64_x86_64-simulator/Headers/folly is missing'
         );
+        expect(result.stderr).toContain(`node ${tmp}/scripts/setup-apple-spm.js update`);
       });
 
       // plutil, which reads React Native's version, exists only on macOS.

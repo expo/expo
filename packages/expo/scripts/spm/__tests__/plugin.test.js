@@ -51,7 +51,7 @@ const {
 } = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
-const { SPM_UPDATE_COMMAND } = require('../commands');
+const { spmUpdateCommand } = require('../commands');
 const { UnsupportedModulesError } = require('../diagnostics');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
@@ -324,8 +324,25 @@ describe('the module registry', () => {
 
     expect(run).toThrow(/ExpoModulesProvider\.swift/);
     expect(run).toThrow(/expo-modules-autolinking exited with code 1/);
-    expect(run).toThrow(SPM_UPDATE_COMMAND);
+    expect(run).toThrow(spmUpdateCommand());
     expect(printed(logs.warn)).not.toContain('ExpoModulesProvider');
+  });
+
+  // Workspaces hoist react-native above the app, where node_modules/react-native is missing.
+  it("names the update command through the app's react-native, relative to the app root", () => {
+    generateModulesProvider.mockImplementation(() => {
+      throw new Error('expo-modules-autolinking exited with code 1');
+    });
+    const hoistedApp = () =>
+      runPlugin(tmp, {
+        projectRoot: path.join(tmp, 'apps', 'mobile'),
+        appRoot: path.join(tmp, 'apps', 'mobile', 'ios'),
+        reactNativeRoot: path.join(tmp, 'node_modules', 'react-native'),
+      });
+
+    expect(hoistedApp).toThrow(
+      '`node ../../node_modules/react-native/scripts/setup-apple-spm.js update`'
+    );
   });
 
   it('fails the sync when generation writes no provider although modules resolved', () => {

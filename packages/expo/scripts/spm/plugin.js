@@ -55,7 +55,7 @@ const {
   moduleNeedsReact,
   scanAppleSources,
 } = require('./classify');
-const { SPM_UPDATE_COMMAND } = require('./commands');
+const { configureSpmUpdateCommand, spmUpdateCommand } = require('./commands');
 const {
   classifyUnsupported,
   collectDuplicatePods,
@@ -665,6 +665,16 @@ function macroPluginFlags(coreModuleRoot) {
   return ['-Xfrontend', '-load-plugin-executable', '-Xfrontend', `${tool}#ExpoModulesMacros`];
 }
 
+/** The app's react-native: the root React Native passes, or else the one the app resolves. */
+function appReactNativeRoot(context, appRoot) {
+  if (typeof context.reactNativeRoot === 'string') return context.reactNativeRoot;
+  try {
+    return path.dirname(require.resolve('react-native/package.json', { paths: [appRoot] }));
+  } catch {
+    return null;
+  }
+}
+
 module.exports = function expoSpmPlugin(context) {
   const { autolinking, react, outputDir } = context;
   // `context.appRoot` is the Xcode project dir (`<app>/ios`); the autolinking
@@ -674,6 +684,7 @@ module.exports = function expoSpmPlugin(context) {
   // provider, with no Expo modules registering at runtime. RN's contract hands
   // us that root directly.
   const appRoot = context.projectRoot;
+  configureSpmUpdateCommand({ appRoot, reactNativeRoot: appReactNativeRoot(context, appRoot) });
   const { modules, extraDependencies } = resolveExpoModules(appRoot);
   const metadata = readPrebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
@@ -836,7 +847,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `Generating ExpoModulesProvider.swift for ${appRoot} failed: ${error.message}`,
         '  That file is the registry every Expo native module is looked up through, so without it the app builds and then fails at launch with "Cannot find native module".',
-        `  The message above comes from \`expo-modules-autolinking generate-modules-provider\`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run \`${SPM_UPDATE_COMMAND}\`.`,
+        `  The message above comes from \`expo-modules-autolinking generate-modules-provider\`. Fix what it names — a module with an unreadable expo-module.config.json is the common cause — then re-run \`${spmUpdateCommand()}\`.`,
       ].join('\n'),
       { cause: error }
     );
@@ -846,7 +857,7 @@ module.exports = function expoSpmPlugin(context) {
       [
         `The Expo module registry generator wrote no ExpoModulesProvider.swift to ${outDir}, although ${modules.length} Expo ${modules.length === 1 ? 'module' : 'modules'} resolved.`,
         '  Without that file no Expo native module is registered, and the app fails at launch with "Cannot find native module".',
-        `  Re-run \`${SPM_UPDATE_COMMAND}\`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of \`npx expo-modules-autolinking resolve --platform apple --json\` run in your app.`,
+        `  Re-run \`${spmUpdateCommand()}\`. If the file is still missing, report it at https://github.com/expo/expo/issues with the output of \`npx expo-modules-autolinking resolve --platform apple --json\` run in your app.`,
       ].join('\n')
     );
   }
