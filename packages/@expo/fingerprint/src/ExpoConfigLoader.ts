@@ -55,8 +55,8 @@ async function runAsync(programName: string, args: string[] = []) {
       skipPlugins,
     });
   } finally {
-    uninstall();
     importGraph?.uninstall();
+    uninstall();
   }
 
   const ignoredPaths = [
@@ -234,25 +234,49 @@ export async function resolveLoadedModuleSourcesAsync(
 }
 
 /**
- * The import that first resolved a file while `installImportGraphHook()` was active.
+ * An import recorded while `installImportGraphHook()` was active. `compile` means the module
+ * compiled while the parent's code was running; `resolve` means the parent was the first file to
+ * resolve it.
  */
-export interface ResolvedImport {
-  /** The filename of the module that imported. */
+export interface ModuleImport {
+  /** The filename of the importing module. */
   parent: string;
-  /** The filename the import resolved to. */
+  /** The filename of the imported module. */
   child: string;
+  via: 'compile' | 'resolve';
 }
 
 /**
- * Record which file loads which while the config is evaluated, through a `module.registerHooks`
- * resolve hook (Node 22.15+) that runs for `require`, `import` and `require(esm)` alike.
- * Without `module.registerHooks` no import is recorded.
+ * Record which file loads which while the config is evaluated. The `Module.prototype._compile`
+ * hook records, on every Node version, the module whose code was running when a CommonJS module
+ * compiled. A `module.registerHooks` resolve hook (Node 22.15+) records the first file that
+ * resolves each file, which reaches the files Node's ES module loader loads.
  */
 export function installImportGraphHook(): {
-  getImports: () => ResolvedImport[];
+  getImports: () => ModuleImport[];
   uninstall: () => void;
 } {
-  const imports: ResolvedImport[] = [];
+  const imports: ModuleImport[] = [];
+  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
+  const originalCompile = moduleProto._compile;
+  const compiling: string[] = [];
+  moduleProto._compile = function (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) {
+    const parent = compiling[compiling.length - 1];
+    if (parent !== undefined) {
+      imports.push({ parent, child: filename, via: 'compile' });
+    }
+    compiling.push(filename);
+    try {
+      return originalCompile.call(this, content, filename, ...rest);
+    } finally {
+      compiling.pop();
+    }
+  };
   const resolveHooks =
     typeof module.registerHooks === 'function'
       ? module.registerHooks({ resolve: createImportGraphResolveHook(imports) })
@@ -261,6 +285,7 @@ export function installImportGraphHook(): {
     getImports: () => imports,
     uninstall: () => {
       resolveHooks?.deregister();
+      moduleProto._compile = originalCompile;
     },
   };
 }
@@ -271,7 +296,7 @@ export function installImportGraphHook(): {
  * config-loading framework resolves before the project's own code runs stays the framework's when
  * project code imports it later.
  */
-export function createImportGraphResolveHook(imports: ResolvedImport[]): module.ResolveHookSync {
+export function createImportGraphResolveHook(imports: ModuleImport[]): module.ResolveHookSync {
   const resolvedUrls = new Set<string>();
   return (specifier, context, nextResolve) => {
     const result = nextResolve(specifier, context);
@@ -281,6 +306,7 @@ export function createImportGraphResolveHook(imports: ResolvedImport[]): module.
         imports.push({
           parent: fileURLToPath(context.parentURL),
           child: fileURLToPath(result.url),
+          via: 'resolve',
         });
       }
     }
@@ -290,20 +316,29 @@ export function createImportGraphResolveHook(imports: ResolvedImport[]): module.
 
 /**
  * The project-relative paths of the captured modules that the project's own code loads.
- * A module inside the project root belongs to the project, and so does every module it loads,
- * directly or through another such module, unless the module is in `node_modules`.
+ * A module's loader is the module whose code was running when it compiled, or else the first file
+ * that resolved it. A module inside the project root belongs to the project, and so does every
+ * module it loads, directly or through another such module, unless the module is in `node_modules`.
  * A config plugin a monorepo workspace package exports sits outside the project root and is
- * reached this way. The modules the config-loading framework resolves before the project's own code
+ * reached this way. The modules the config-loading framework loads before the project's own code
  * runs are not, even when the framework is itself a linked workspace package.
  */
 export function collectProjectModulePaths(
   capturedModules: CapturedModule[],
-  imports: ResolvedImport[],
+  imports: ModuleImport[],
   projectRoot: string
 ): string[] {
   const toRelativePath = (filename: string) => toProjectRelativePath(projectRoot, filename);
+  const loaderByModule = new Map<string, string>();
+  for (const via of ['compile', 'resolve'] as const) {
+    for (const entry of imports) {
+      if (entry.via === via && !loaderByModule.has(entry.child)) {
+        loaderByModule.set(entry.child, entry.parent);
+      }
+    }
+  }
   const importsByParent = new Map<string, string[]>();
-  for (const { parent, child } of imports) {
+  for (const [child, parent] of loaderByModule) {
     const children = importsByParent.get(parent);
     if (children) {
       children.push(child);

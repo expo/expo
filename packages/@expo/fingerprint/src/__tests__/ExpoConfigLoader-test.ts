@@ -12,7 +12,7 @@ import {
   installModuleCaptureHook,
   resolveLoadedModuleSourcesAsync,
   type CapturedModule,
-  type ResolvedImport,
+  type ModuleImport,
 } from '../ExpoConfigLoader';
 
 const minimatchConstructorSpy = jest.fn();
@@ -181,17 +181,17 @@ describe('createImportGraphResolveHook', () => {
   };
 
   it('should record an import from one file to another and return the resolution', () => {
-    const imports: ResolvedImport[] = [];
+    const imports: ModuleImport[] = [];
     const resolution = { url: pathToFileURL(child).href };
 
     const result = createImportGraphResolveHook(imports)('plugin', context, () => resolution);
 
     expect(result).toBe(resolution);
-    expect(imports).toEqual([{ parent, child }]);
+    expect(imports).toEqual([{ parent, child, via: 'resolve' }]);
   });
 
   it('should record only the import that first resolves a file', () => {
-    const imports: ResolvedImport[] = [];
+    const imports: ModuleImport[] = [];
     const resolve = createImportGraphResolveHook(imports);
     const framework = path.join(os.tmpdir(), 'packages', 'config', 'index.js');
     const resolution = { url: pathToFileURL(child).href };
@@ -199,11 +199,11 @@ describe('createImportGraphResolveHook', () => {
     resolve('plugin', { ...context, parentURL: pathToFileURL(framework).href }, () => resolution);
     resolve('plugin', context, () => resolution);
 
-    expect(imports).toEqual([{ parent: framework, child }]);
+    expect(imports).toEqual([{ parent: framework, child, via: 'resolve' }]);
   });
 
   it('should not record a builtin or an import with no parent file', () => {
-    const imports: ResolvedImport[] = [];
+    const imports: ModuleImport[] = [];
     const resolve = createImportGraphResolveHook(imports);
 
     resolve('node:path', context, () => ({ url: 'node:path' }));
@@ -249,19 +249,35 @@ describe('installImportGraphHook', () => {
       { conditions: [], importAttributes: {}, parentURL: pathToFileURL(parent).href },
       () => ({ url: pathToFileURL(child).href })
     );
-    expect(hook.getImports()).toEqual([{ parent, child }]);
+    expect(hook.getImports()).toEqual([{ parent, child, via: 'resolve' }]);
 
     hook.uninstall();
     expect(deregister).toHaveBeenCalledTimes(1);
   });
 
-  it('should record no import when Node has no module.registerHooks', () => {
+  it('should record the module whose code was running when a module compiled, without module.registerHooks', () => {
     stubRegisterHooks(undefined);
+    const moduleProto = (require('module') as { prototype: { _compile: (...args: unknown[]) => unknown } })
+      .prototype;
+    const originalCompile = moduleProto._compile;
+    const parent = path.join(os.tmpdir(), 'app', 'app.config.js');
+    const child = path.join(os.tmpdir(), 'packages', 'plugin', 'index.js');
+    const compile = jest.fn((_content: unknown, filename: unknown) => {
+      if (filename === parent) {
+        moduleProto._compile.call({}, 'module.exports = 1;', child);
+      }
+    });
+    moduleProto._compile = compile;
+    try {
+      const hook = installImportGraphHook();
+      moduleProto._compile.call({}, "module.exports = require('plugin');", parent);
+      expect(hook.getImports()).toEqual([{ parent, child, via: 'compile' }]);
 
-    const hook = installImportGraphHook();
-
-    expect(hook.getImports()).toEqual([]);
-    expect(() => hook.uninstall()).not.toThrow();
+      hook.uninstall();
+      expect(moduleProto._compile).toBe(compile);
+    } finally {
+      moduleProto._compile = originalCompile;
+    }
   });
 });
 
@@ -274,9 +290,14 @@ describe('collectProjectModulePaths', () => {
       filename: filename(relativePath),
       content: '',
     }));
-  const imported = (parent: string, child: string): ResolvedImport => ({
+  const imported = (
+    parent: string,
+    child: string,
+    via: ModuleImport['via'] = 'resolve'
+  ): ModuleImport => ({
     parent: filename(parent),
     child: filename(child),
+    via,
   });
 
   it('should reach a workspace module the project imports, and the modules it imports', () => {
@@ -323,5 +344,25 @@ describe('collectProjectModulePaths', () => {
     const modules = captured(['app.config.js', '../../packages/plugin/index.js']);
 
     expect(collectProjectModulePaths(modules, [], projectRoot)).toEqual(['app.config.js']);
+  });
+
+  it('should take the module whose code compiled a module over a file that resolved it first', () => {
+    const modules = captured([
+      'app.config.js',
+      '../../packages/plugin/index.js',
+      '../../packages/@expo/config-plugins/build/index.js',
+    ]);
+    const framework = '../../packages/@expo/config/build/index.js';
+    const imports = [
+      imported(framework, '../../packages/plugin/index.js'),
+      imported('app.config.js', '../../packages/plugin/index.js', 'compile'),
+      imported('app.config.js', '../../packages/@expo/config-plugins/build/index.js'),
+      imported(framework, '../../packages/@expo/config-plugins/build/index.js', 'compile'),
+    ];
+
+    expect(collectProjectModulePaths(modules, imports, projectRoot)).toEqual([
+      '../../packages/plugin/index.js',
+      'app.config.js',
+    ]);
   });
 });

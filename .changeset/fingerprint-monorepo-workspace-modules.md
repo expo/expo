@@ -2,4 +2,4 @@
 '@expo/fingerprint': patch
 ---
 
-Include the CommonJS modules that an app config loads from a linked workspace package, such as a config plugin, in the fingerprint on Node.js 22.15 and later. Older Node versions still omit them, so the fingerprint of such a project differs between Node versions. On Node.js 22.15 and later, it changes once on upgrade.
+Include the modules that an app config requires from outside the project, such as a config plugin from a linked workspace package, in the fingerprint, except those in `node_modules`. Fingerprints change once on upgrade for projects that require such modules.
