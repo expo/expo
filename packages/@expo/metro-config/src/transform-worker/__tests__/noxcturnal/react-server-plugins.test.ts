@@ -1,6 +1,7 @@
 import * as babel from '@babel/core';
 import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -907,4 +908,40 @@ describe('project-relative filenames', () => {
     expect(result.metadata[testCase.metadata]).toBe(pathToFileURL(absoluteFilename).href);
     expect(result.code).toContain(JSON.stringify(testCase.moduleId));
   });
+
+  it.each([false, true])(
+    'resolves DOM component file URLs against the app root in dev=%s',
+    (dev) => {
+      const filename = 'components/Card.tsx';
+      const result = transform(
+        filename,
+        '"use dom"; export default function Card() { return null; }',
+        {},
+        dev
+      );
+      const fileUrl = pathToFileURL(path.resolve(projectRoot, filename)).href;
+      expect(result.metadata.expoDomComponentReference).toBe(fileUrl);
+      expect(result.code).toContain(
+        dev ? fileUrl : createHash('md5').update(fileUrl).digest('hex') + '.html'
+      );
+    }
+  );
+
+  it.each(['app/_layout.tsx', 'app/value+api.tsx'])(
+    'retains the DOM component boundary for a relative app path: %s',
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Route() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
+
+  it.each(['../mobile-other/_layout.tsx', '../mobile-other/value+api.tsx'])(
+    "matches Babel's DOM validation for a relative sibling path sharing the app prefix: %s",
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Card() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
 });
