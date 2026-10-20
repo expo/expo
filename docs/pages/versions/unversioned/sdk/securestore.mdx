@@ -96,7 +96,7 @@ On iOS, values are stored using the [keychain services](https://developer.apple.
 - **On Android:** Data saved using `expo-secure-store` **will not be preserved upon app uninstallation**.
 - **On iOS:** Data saved using `expo-secure-store` **will persist across app uninstallations** if the app is reinstalled with the same bundle ID. This is due to how the iOS Keychain manages stored credentials. Keep in mind that this is not guaranteed and you should never rely on this implementation detail.
 
-Additionally, any data protected with the `requireAuthentication` option set to `'biometry'` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
+Additionally, any data protected with the `requireAuthentication` option set to `'biometry'` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint. Data protected with `'deviceCredentials'` is not affected by biometric changes. On Android, data protected with either method becomes inaccessible when the user removes the device's lock screen.
 
 ### Exempting encryption prompt
 
