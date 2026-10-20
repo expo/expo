@@ -14,4 +14,6 @@ export {
   ensureBackgroundSessionStarted,
   stopBackgroundSession,
   getBackgroundSessionStatus,
+  geocode,
+  reverseGeocode,
 } from './js';
