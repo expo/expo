@@ -7,8 +7,7 @@ import {
 
 import type { CheckboxProps } from './types';
 
-// Material's minimum touch target. A checkbox without its own handler drops this size, so a labeled
-// checkbox gets it back here to keep the same layout.
+// Material's minimum touch target.
 const MIN_INTERACTIVE_SIZE = 48;
 
 export function Checkbox({
@@ -23,9 +22,6 @@ export function Checkbox({
   const checkbox = (
     <ComposeCheckbox
       value={value}
-      // A labeled row is the one toggleable node, so the checkbox gets no handler and merges into it.
-      // Unlabeled, it keeps its handler even when disabled: `enabled` blocks input, and the handler
-      // keeps its checked state and touch size in the accessibility tree.
       onCheckedChange={isLabeled ? undefined : onValueChange}
       enabled={!disabled}
       modifiers={[
