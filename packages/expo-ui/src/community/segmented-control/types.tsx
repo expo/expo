@@ -52,6 +52,11 @@ export interface SegmentedControlProps {
   appearance?: 'dark' | 'light';
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  /**
+   * The name of the control that screen readers announce.
+   * @platform ios
+   */
+  accessibilityLabel?: string;
 }
 
 /**
