@@ -143,6 +143,42 @@ export default function ThumbContentExample() {
 
 </ComponentExample>
 
+### Labeled switch
+
+Apply the `toggleable` modifier to a `Row` to make the label and the switch one tappable node that screen readers announce by the label. Omit `onCheckedChange` from the switch itself, so it does not become a separate unnamed node. Without `onCheckedChange`, the switch drops its 48 dp minimum touch size, so set it with `defaultMinSize`.
+
+```tsx
+import { useState } from 'react';
+import { Host, Row, Switch, Text } from '@expo/ui/jetpack-compose';
+import {
+  defaultMinSize,
+  toggleable,
+  weight,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function LabeledSwitchExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Row
+        verticalAlignment="center"
+        modifiers={[
+          toggleable(checked, () => setChecked(!checked), {
+            role: 'switch',
+          }),
+        ]}>
+        <Text modifiers={[weight(1)]}>Wi-Fi</Text>
+        <Switch
+          value={checked}
+          modifiers={[defaultMinSize({ minWidth: 48, minHeight: 48 })]}
+        />
+      </Row>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
