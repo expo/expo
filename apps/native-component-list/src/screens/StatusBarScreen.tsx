@@ -1,5 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar, useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
+import { Platform, Text } from 'react-native';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
@@ -17,6 +18,8 @@ export default function StatusBarScreen() {
     StatusBar.setHidden(false, randomAnimation());
   };
 
+  const verticalBarEdge = useVerticalBarEdgeIOS();
+
   return (
     <Page>
       <Section title="Toggle" row>
@@ -24,6 +27,12 @@ export default function StatusBarScreen() {
 
         <Button onPress={show} title="Show" />
       </Section>
+
+      {Platform.OS === 'ios' && (
+        <Section title="Vertical bar">
+          <Text testID="vertical-bar-edge">Edge: {verticalBarEdge ?? 'none'}</Text>
+        </Section>
+      )}
     </Page>
   );
 }
