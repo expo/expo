@@ -183,7 +183,7 @@ public macro SharedObject(_ name: String? = nil) =
 @attached(
   member,
   names: named(init), named(from), named(toDictionary), named(toObject), named(decode), named(encode),
-  named(_assertTypesConformance))
+  named(_assertTypesConformance), named(_PropNames))
 @attached(extension, conformances: Record)
 public macro Record() =
   #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")
