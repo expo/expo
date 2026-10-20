@@ -257,8 +257,9 @@ describe('installImportGraphHook', () => {
 
   it('should record the module whose code was running when a module compiled, without module.registerHooks', () => {
     stubRegisterHooks(undefined);
-    const moduleProto = (require('module') as { prototype: { _compile: (...args: unknown[]) => unknown } })
-      .prototype;
+    const moduleProto = (
+      require('module') as { prototype: { _compile: (...args: unknown[]) => unknown } }
+    ).prototype;
     const originalCompile = moduleProto._compile;
     const parent = path.join(os.tmpdir(), 'app', 'app.config.js');
     const child = path.join(os.tmpdir(), 'packages', 'plugin', 'index.js');
