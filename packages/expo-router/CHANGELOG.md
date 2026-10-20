@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a crash when swiping the drawer on React Native 0.88. ([#51590](https://github.com/expo/expo/pull/51590) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 57.0.28 — 2026-10-15
