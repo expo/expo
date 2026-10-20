@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { useEffect, type ComponentType, type ReactNode } from 'react';
 import { Text } from 'react-native';
 
-import { router, useNavigation, usePathname, useRouter } from '../exports';
+import { router, useLocalSearchParams, useNavigation, usePathname, useRouter } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -521,4 +521,84 @@ describe('Stack nested in Tabs render counts', () => {
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(false);
   });
+});
+
+describe('useLocalSearchParams render counts', () => {
+  // noop = no hook
+  it.each([
+    {
+      usedIn: 'layouts only',
+      layoutHook: useLocalSearchParams,
+      pageHook: noop,
+      layoutRerenders: 1,
+    },
+    { usedIn: 'pages only', layoutHook: noop, pageHook: useLocalSearchParams, layoutRerenders: 0 },
+    {
+      usedIn: 'layouts and pages',
+      layoutHook: useLocalSearchParams,
+      pageHook: useLocalSearchParams,
+      layoutRerenders: 1,
+    },
+  ])(
+    'when the hook is used in $usedIn, layouts rerender $layoutRerenders time(s) on push and setParams',
+    async ({ layoutHook, pageHook, layoutRerenders }) => {
+      const layoutRender = jest.fn();
+      const idLayoutRender = jest.fn();
+      const indexRender = jest.fn();
+      const detailsRender = jest.fn();
+
+      await renderRouter(
+        {
+          _layout: function Layout() {
+            layoutRender();
+            layoutHook();
+            return <TestStack />;
+          },
+          '[id]/_layout': function IdLayout() {
+            idLayoutRender();
+            layoutHook();
+            return <TestStack />;
+          },
+          '[id]/index': function Index() {
+            indexRender();
+            pageHook();
+            return <Text testID="index">Index</Text>;
+          },
+          '[id]/details': function Details() {
+            detailsRender();
+            pageHook();
+            return <Text testID="details">Details</Text>;
+          },
+        },
+        { initialUrl: '/1' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+
+      expect(layoutRender).toHaveBeenCalledTimes(1);
+      expect(idLayoutRender).toHaveBeenCalledTimes(1);
+      expect(indexRender).toHaveBeenCalledTimes(1);
+      expect(detailsRender).not.toHaveBeenCalled();
+
+      jest.clearAllMocks();
+
+      await act(() => router.push('/1/details?tab=info'));
+
+      expect(screen.getByTestId('details')).toBeVisible();
+
+      expect(layoutRender).toHaveBeenCalledTimes(layoutRerenders);
+      expect(idLayoutRender).toHaveBeenCalledTimes(layoutRerenders);
+      expect(indexRender).not.toHaveBeenCalled();
+      expect(detailsRender).toHaveBeenCalledTimes(1);
+
+      jest.clearAllMocks();
+
+      await act(() => router.setParams({ tab: 'more' }));
+
+      expect(layoutRender).toHaveBeenCalledTimes(layoutRerenders);
+      expect(idLayoutRender).toHaveBeenCalledTimes(layoutRerenders);
+      expect(indexRender).not.toHaveBeenCalled();
+      expect(detailsRender).toHaveBeenCalledTimes(1);
+    }
+  );
 });
