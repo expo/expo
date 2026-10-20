@@ -53,8 +53,14 @@ extension ExpoSwiftUI {
 
     // MARK: - AnyChild implementations
 
+    @ViewBuilder
     var childView: some SwiftUI.View {
-      self
+      if let hostingView = view as? AnyHostingView {
+        // A nested `Host` that matches its contents takes the content size, like other SwiftUI views.
+        MatchedContentSizeFrame(size: hostingView.matchedContentSize) { self }
+      } else {
+        self
+      }
     }
 
     var id: ObjectIdentifier {
@@ -63,6 +69,34 @@ extension ExpoSwiftUI {
 
     var uiView: UIView? {
       view
+    }
+  }
+
+  /**
+   Content size of a hosting view on the axes it matches; `nil` on the other axes.
+   */
+  internal final class MatchedContentSize: ObservableObject {
+    @Published private(set) var width: CGFloat?
+    @Published private(set) var height: CGFloat?
+
+    func update(width: NSNumber?, height: NSNumber?) {
+      let newWidth = width.map { CGFloat($0.doubleValue) }
+      let newHeight = height.map { CGFloat($0.doubleValue) }
+      if self.width != newWidth {
+        self.width = newWidth
+      }
+      if self.height != newHeight {
+        self.height = newHeight
+      }
+    }
+  }
+
+  private struct MatchedContentSizeFrame<Content: SwiftUI.View>: SwiftUI.View {
+    @ObservedObject var size: MatchedContentSize
+    @ViewBuilder let content: () -> Content
+
+    var body: some SwiftUI.View {
+      content().frame(width: size.width, height: size.height)
     }
   }
 

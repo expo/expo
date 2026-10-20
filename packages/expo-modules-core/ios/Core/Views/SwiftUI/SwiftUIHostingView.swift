@@ -9,6 +9,7 @@ internal protocol AnyExpoSwiftUIHostingView {
   func updateProps(_ rawProps: [String: Any])
   func getContentView() -> any ExpoSwiftUI.View
   func getProps() -> ExpoSwiftUI.ViewProps
+  var matchedContentSize: ExpoSwiftUI.MatchedContentSize { get }
 }
 
 extension ExpoSwiftUI {
@@ -56,6 +57,11 @@ extension ExpoSwiftUI {
     private let shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
     /**
+     Content size on the axes where the content sets the style size, for a SwiftUI container that hosts this view.
+     */
+    let matchedContentSize = MatchedContentSize()
+
+    /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
     private let hostingController: UIHostingController<AnyView>
@@ -82,6 +88,7 @@ extension ExpoSwiftUI {
 
       shadowNodeProxy.setStyleSize = { [weak self] width, height in
         self?.setStyleSize(width, height: height)
+        self?.matchedContentSize.update(width: width, height: height)
       }
 
       props.shadowNodeProxy = shadowNodeProxy
