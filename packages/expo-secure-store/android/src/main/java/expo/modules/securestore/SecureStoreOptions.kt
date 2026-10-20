@@ -17,13 +17,7 @@ class SecureStoreOptions(
 ) : Record, Serializable {
   val authenticationRequirement: String?
     get() {
-      val requirement = requireAuthentication?.let { value ->
-        if (value.`is`(Boolean::class)) {
-          normalizeAuthenticationRequirement(value.get(Boolean::class))
-        } else {
-          normalizeAuthenticationRequirement(value.get(String::class))
-        }
-      }
+      val requirement = normalizeAuthenticationRequirement(requireAuthentication)
       if (requirement == AUTHENTICATION_METHOD_DEVICE_CREDENTIALS && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
         throw UnsupportedDeviceCredentialsException()
       }
