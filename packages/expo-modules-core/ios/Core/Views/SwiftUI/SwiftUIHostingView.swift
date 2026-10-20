@@ -67,7 +67,11 @@ extension ExpoSwiftUI {
       self.contentView = ContentView(props: props)
       let rootView = AnyView(contentView)
       self.props = props
+      #if os(iOS) || os(tvOS)
+      let controller: UIHostingController<AnyView> = AppearanceTrackingHostingController(rootView: rootView)
+      #else
       let controller = UIHostingController(rootView: rootView)
+      #endif
 
       if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         controller.sizingOptions = [.intrinsicContentSize]
@@ -259,26 +263,27 @@ extension ExpoSwiftUI {
       addSubview(hostingController.view)
       #if os(iOS) || os(tvOS)
       hostingController.didMove(toParent: parentController)
-      parentController.transitionCoordinator?.animate(alongsideTransition: nil) { [weak self] _ in
-        self?.reattachHostingViewIfSafeAreaIsStale()
-      }
+      forwardAppearanceIfMissed(parentController: parentController)
       #endif
       setupHostingViewConstraints()
     }
 
     #if os(iOS) || os(tvOS)
-    // UIKit can leave a child added during a presentation transition without a safe area; adding its view again fixes it.
-    private func reattachHostingViewIfSafeAreaIsStale() {
+    /**
+     UIKit forwards appearance to a child added while its parent appears. If the parent already appeared and a
+     transition still runs, which react-native-screens does in a modal's nested stack, the child never appears,
+     and UIKit never gives it a safe area. https://github.com/expo/expo/issues/51288
+     */
+    private func forwardAppearanceIfMissed(parentController: UIViewController) {
       guard
-        window != nil,
-        hostingController.view.superview === self,
-        hostingController.view.safeAreaInsets != safeAreaInsets
+        parentController.transitionCoordinator != nil,
+        let controller = hostingController as? AppearanceTrackingHostingController,
+        !controller.isAppearing
       else {
         return
       }
-      hostingController.view.removeFromSuperview()
-      addSubview(hostingController.view)
-      setupHostingViewConstraints()
+      controller.beginAppearanceTransition(true, animated: false)
+      controller.endAppearanceTransition()
     }
     #endif
 
@@ -296,6 +301,23 @@ extension ExpoSwiftUI {
 #endif
   }
 }
+
+#if os(iOS) || os(tvOS)
+// Records whether UIKit forwarded appearance, so `HostingView` can forward it when UIKit misses it.
+private final class AppearanceTrackingHostingController: UIHostingController<AnyView> {
+  private(set) var isAppearing = false
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    isAppearing = true
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    isAppearing = false
+  }
+}
+#endif
 
 extension UIHostingController {
   /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
