@@ -1,5 +1,20 @@
 ---
 description: Config plugins, prebuild and autolinking — non-idempotent native file edits, dangerous mods that bypass a typed base mod, unscoped or renamed merge tags, unguarded anchor regexes, unvalidated values written into native files, and expo-module.config.json or podspec/spm.config declarations left out of sync.
+# The packages and files listed below, plus native sources: a new `Module` subclass or a moved iOS
+# source directory needs its declarations updated even when the PR changes no declaration file.
+paths:
+  - "packages/@expo/config-plugins/**"
+  - "packages/@expo/prebuild-config/**"
+  - "packages/@expo/config/**"
+  - "packages/expo-modules-autolinking/**"
+  - "packages/**/plugin/**"
+  - "packages/**/expo-module.config.json"
+  - "packages/**/*.podspec"
+  - "packages/**/spm.config.json"
+  - "packages/**/build.gradle"
+  - "packages/**/ios/**"
+  - "packages/**/apple/**"
+  - "packages/**/android/src/**"
 ---
 
 # Config plugins & prebuild
