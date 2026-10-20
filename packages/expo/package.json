@@ -194,6 +194,7 @@
     "./scripts/*": "./scripts/*.js",
     "./bin/*": "./bin/*",
     "./package.json": "./package.json",
+    "./tsconfig.base": "./tsconfig.base.json",
     "./*.json": "./*.json",
     "./*": {
       "types": "./*.d.ts",
