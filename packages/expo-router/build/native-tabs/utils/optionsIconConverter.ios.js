@@ -28,6 +28,13 @@ function appendIconOptions(options, props) {
         }
     }
     else if ('xcasset' in props && props.xcasset) {
+        if (process.env.NODE_ENV !== 'production' &&
+            'renderingMode' in props &&
+            props.renderingMode !== undefined) {
+            console.warn('`renderingMode` has no effect on `xcasset` icons — tinting is controlled by the ' +
+                'asset\'s "Render As" setting in the asset catalog instead. Remove `renderingMode`, ' +
+                'or use `src` if you need to control tinting from JavaScript.');
+        }
         if (typeof props.xcasset === 'string') {
             options.icon = { xcasset: props.xcasset };
             options.selectedIcon = undefined;
@@ -58,6 +65,16 @@ function convertOptionsIconToScreensPropsIcon(icon, renderingMode) {
             name: icon.sf,
         };
     }
+    // Asset catalog icons have to be resolved natively with `[UIImage imageNamed:]`.
+    // Passing the name to the image loader as a `{ uri }` source happens to work for
+    // image sets, but symbol sets can never be produced that way. Tinting is then
+    // controlled by the asset's "Render As" setting in the asset catalog, not `renderingMode`.
+    if (icon && 'xcasset' in icon && icon.xcasset) {
+        return {
+            type: 'xcasset',
+            name: icon.xcasset,
+        };
+    }
     const imageSource = getIconImageSource(icon);
     if (!imageSource) {
         return undefined;
@@ -68,12 +85,11 @@ function convertOptionsIconToScreensPropsIcon(icon, renderingMode) {
     }
     return { type: 'templateSource', templateSource: imageSource };
 }
+// Mirrors the precedence in `convertOptionsIconToScreensPropsIcon` — SF Symbols and asset
+// catalog icons aren't resolved through `renderingMode`, so both resolve to `undefined` here.
 function getIconImageSource(icon) {
-    if (!icon || ('sf' in icon && icon.sf)) {
+    if (!icon || ('sf' in icon && icon.sf) || ('xcasset' in icon && icon.xcasset)) {
         return undefined;
-    }
-    if ('xcasset' in icon && icon.xcasset) {
-        return { uri: icon.xcasset };
     }
     if ('src' in icon && icon.src) {
         return icon.src;
