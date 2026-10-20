@@ -5,6 +5,7 @@ import {
   accessibilityLabel as accessibilityLabelModifier,
   disabled as disabledModifier,
 } from '../../swift-ui/modifiers';
+import { createModifier } from '../../swift-ui/modifiers/createModifier';
 import { environment } from '../../swift-ui/modifiers/environment';
 import { pickerStyle } from '../../swift-ui/modifiers/pickerStyle';
 import { tag } from '../../swift-ui/modifiers/tag';
@@ -18,6 +19,7 @@ export function SegmentedControl(props: SegmentedControlProps) {
     enabled = true,
     onChange,
     onValueChange,
+    tintColor,
     appearance,
     style,
     testID,
@@ -30,6 +32,9 @@ export function SegmentedControl(props: SegmentedControlProps) {
   }
   if (accessibilityLabel) {
     modifiers.push(accessibilityLabelModifier(accessibilityLabel));
+  }
+  if (tintColor) {
+    modifiers.push(createModifier('selectedSegmentTintColor', { color: tintColor }));
   }
   if (appearance) {
     modifiers.push(environment('colorScheme', appearance));

@@ -43,7 +43,6 @@ export interface SegmentedControlProps {
   onValueChange?: (value: string) => void;
   /**
    * Accent color of the control.
-   * @platform android, web
    */
   tintColor?: string;
   /**
