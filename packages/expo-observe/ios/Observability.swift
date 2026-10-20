@@ -33,15 +33,23 @@ internal struct ObservabilityManager {
   /// hook waits its turn rather than sending the same rows twice.
   private static let serializer = DispatchSerializer()
 
+  /// Log names that `errorSampleRate` applies to. `ExpoAppMetrics` writes them for JS errors and crash reports.
+  private nonisolated static let errorLogNames: Set<String> = ["js.exception", "native.exception"]
+
   internal static func dispatch() async {
     await serializer.run {
       // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` /
       // `dispatchTraces` rather than here, so a backoff on one endpoint doesn't suppress the
       // others' traffic.
-      let shouldDispatch = Self.shouldDispatch()
+      let config = ObserveUserDefaults.config
+      let shouldDispatch = Self.shouldDispatch(config: config, rate: config?.sampleRate)
+      let shouldDispatchErrors = Self.shouldDispatch(
+        config: config,
+        rate: config?.errorSampleRate ?? config?.sampleRate
+      )
 
       await dispatchMetrics(shouldDispatch: shouldDispatch)
-      await dispatchLogs(shouldDispatch: shouldDispatch)
+      await dispatchLogs(shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors)
       await dispatchTraces(shouldDispatch: shouldDispatch)
     }
   }
@@ -145,7 +153,7 @@ internal struct ObservabilityManager {
     )
   }
 
-  private static func dispatchLogs(shouldDispatch: Bool) async {
+  private static func dispatchLogs(shouldDispatch: Bool, shouldDispatchErrors: Bool) async {
     guard let endpointUrl = logsEndpointUrl else {
       return
     }
@@ -156,7 +164,7 @@ internal struct ObservabilityManager {
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
-    if !shouldDispatch {
+    if !shouldDispatch && !shouldDispatchErrors {
       do {
         if let highestId = try AppMetrics.getMaxLogId() {
           ObserveUserDefaults.lastDispatchedLogId = highestId
@@ -177,7 +185,12 @@ internal struct ObservabilityManager {
         return logs
       },
       rowId: { $0.id },
-      send: { logs in
+      // Filtering inside `send` keeps the cursor and chunk halving on the whole fetched chunk.
+      send: { fetchedLogs in
+        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors)
+        guard !logs.isEmpty else {
+          return nil
+        }
         let events = try buildEvents(forLogs: logs)
         let resourceLogs = events.compactMap { event -> OTResourceLogs? in
           guard !event.logs.isEmpty else {
@@ -371,18 +384,22 @@ internal struct ObservabilityManager {
     return dispatchingEnabled && isInSample && (!isDev || dispatchInDebug)
   }
 
-  private static func shouldDispatch() -> Bool {
+  private static func shouldDispatch(config: PersistedConfig?, rate: Double?) -> Bool {
     let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
     let isDev = EXAppDefines.APP_DEBUG || isJsDev
-    return Self.shouldDispatch(
-      config: ObserveUserDefaults.config,
-      isDev: isDev,
-      isInSample: isInSample()
-    )
+    return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
-  private static func isInSample() -> Bool {
-    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+  internal nonisolated static func sampledLogs(
+    _ logs: [LogRow],
+    shouldDispatch: Bool,
+    shouldDispatchErrors: Bool
+  ) -> [LogRow] {
+    return logs.filter { errorLogNames.contains($0.name) ? shouldDispatchErrors : shouldDispatch }
+  }
+
+  private static func isInSample(rate: Double?) -> Bool {
+    guard let rate else {
       return true
     }
     let clamped = min(max(rate, 0.0), 1.0)
