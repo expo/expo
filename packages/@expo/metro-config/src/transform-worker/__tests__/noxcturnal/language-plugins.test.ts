@@ -4,6 +4,7 @@ import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
+import { runInNewContext } from 'node:vm';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -1015,6 +1016,29 @@ function Component(props: Props) {
     }
   }
 );
+
+it.each([false, true])('compiles a TypeScript generic arrow with React Compiler dev=%s', (dev) => {
+  const result = transformFileFullyWithNoxcturnalSync({
+    filename: '/app/generic.ts',
+    projectRoot: '/app',
+    source: 'export const identity = <T>(value: T) => value;',
+    options: options({
+      dev,
+      customTransformOptions: { engine: 'hermes', reactCompiler: 'true' },
+    }),
+    config: fullConfig(),
+    isDefaultExpoTransformer: true,
+  });
+  if (result.status === 'fallback') throw new Error(result.reason);
+
+  const module = { exports: {} as { identity: <T>(value: T) => T } };
+  runInNewContext(canonicalModuleBody(result.result.code, true), {
+    module,
+    exports: module.exports,
+  });
+  expect(module.exports.identity(42)).toBe(42);
+  expect(module.exports.identity('value')).toBe('value');
+});
 
 it("matches React Refresh's component registrations and hook signatures", () => {
   const source = `

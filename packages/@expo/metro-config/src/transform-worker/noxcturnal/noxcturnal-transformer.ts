@@ -704,7 +704,7 @@ function createReactCompilerPreflight(input: NoxcturnalTransformInput): Prefligh
       // defaults, matching Babel preset Expo's merged directive list.
       customOptOutDirectives: ['widget'],
     },
-    jsx: 'preserve',
+    jsx: /\.(?:[cm]?ts)$/.test(input.filename) ? undefined : 'preserve',
     comments: true,
     compact: false,
   };
