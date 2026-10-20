@@ -41,6 +41,8 @@ struct RNHostView: ExpoSwiftUI.View {
 
   var body: some View {
     hostedContent
+      // Rebuilds the size observer and touch handler when a new child is mounted.
+      .id(props.children?.first?.childIdentity)
       .modifier(
         PublishContentOriginModifier(
           shadowNodeProxy: props.shadowNodeProxy,
@@ -66,7 +68,7 @@ struct RNHostView: ExpoSwiftUI.View {
         }
       }
       .onDisappear {
-        touchHandler.detach()
+        touchHandler.detach(from: childUIView)
       }
     } else if matchesContents {
       // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
@@ -79,16 +81,19 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
+      let childUIView = firstChildUIView
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
-          if props.layoutRoot, let view = firstChildUIView {
-            touchHandler.attach(to: view)
+          if props.layoutRoot, let childUIView {
+            touchHandler.attach(to: childUIView)
           }
         }
         .onDisappear {
-          touchHandler.detach()
+          if let childUIView {
+            touchHandler.detach(from: childUIView)
+          }
         }
     }
   }
@@ -153,6 +158,13 @@ private final class RNHostTouchHandler: ObservableObject {
     detach()
     touchHandler = ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: view)
     attachedView = view
+  }
+
+  // A new child can appear before the old one disappears.
+  func detach(from view: UIView) {
+    if attachedView === view {
+      detach()
+    }
   }
 
   func detach() {
