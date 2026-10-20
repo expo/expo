@@ -4,6 +4,7 @@ import { act as reactAct, use, useState } from 'react';
 import { Text } from 'react-native';
 
 import { useCanGoBack } from '../exports';
+import { renderHook } from '../hooks/__tests__/renderHook';
 import { router } from '../imperative-api';
 import { Drawer } from '../layouts/Drawer';
 import Stack from '../layouts/Stack';
@@ -65,37 +66,47 @@ const navigators = {
   ),
 };
 
+async function renderAnchoredLayout(
+  navigator: keyof typeof navigators,
+  anchor: string | undefined,
+  backBehavior: 'none' | 'initialRoute',
+  dir = ''
+) {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  await renderRouter(
+    {
+      [`${dir}_layout`]: {
+        unstable_settings: { anchor },
+        default: () => navigators[navigator](backBehavior),
+      },
+      [`${dir}index`]: () => <Text>Index</Text>,
+      [`${dir}second`]: () => <Text>Second</Text>,
+    },
+    { initialUrl: '/second' }
+  );
+  return warn.mock.calls.filter(([message]) =>
+    String(message).startsWith(
+      `Layout "./${dir}_layout.js" sets both \`unstable_settings.anchor\` and \`backBehavior="none"\``
+    )
+  );
+}
+
 describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (navigator) => {
   it.each([
-    { anchor: 'index', backBehavior: 'none', warns: true },
-    { anchor: undefined, backBehavior: 'none', warns: false },
-    { anchor: 'index', backBehavior: 'initialRoute', warns: false },
+    { anchor: undefined, backBehavior: 'none' },
+    { anchor: 'index', backBehavior: 'initialRoute' },
   ] as const)(
-    'warns only for anchor=$anchor and backBehavior=$backBehavior',
-    async ({ anchor, backBehavior, warns }) => {
-      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // The warning fires once per layout, so each navigator gets its own layout.
-      await renderRouter(
-        {
-          [`(${navigator})/_layout`]: {
-            unstable_settings: { anchor },
-            default: () => navigators[navigator](backBehavior),
-          },
-          [`(${navigator})/index`]: () => <Text>Index</Text>,
-          [`(${navigator})/second`]: () => <Text>Second</Text>,
-        },
-        { initialUrl: '/second' }
-      );
-
-      const warnings = warn.mock.calls.filter(([message]) =>
-        String(message).startsWith(
-          `Layout "./(${navigator})/_layout.js" sets both ` +
-            '`unstable_settings.anchor` and `backBehavior="none"`, so `useCanGoBack()` can return `true` on the first render.'
-        )
-      );
-      expect(warnings).toHaveLength(warns ? 1 : 0);
+    'does not warn for anchor=$anchor and backBehavior=$backBehavior',
+    async ({ anchor, backBehavior }) => {
+      expect(await renderAnchoredLayout(navigator, anchor, backBehavior)).toHaveLength(0);
     }
   );
+
+  it('warns for an anchor with backBehavior none', async () => {
+    // A layout warns once per test file, so each navigator needs its own layout.
+    const warnings = await renderAnchoredLayout(navigator, 'index', 'none', `(${navigator})/`);
+    expect(warnings).toHaveLength(1);
+  });
 
   it('adds back history after an initial deep link', async () => {
     await renderRouter(
@@ -116,24 +127,12 @@ describe.each(Object.keys(navigators) as (keyof typeof navigators)[])('%s', (nav
 });
 
 it('reads the current stack during render', async () => {
-  const values: boolean[] = [];
-  function Screen() {
-    values.push(useCanGoBack());
-    return <Text>Screen</Text>;
-  }
-
-  await renderRouter({ _layout: () => <Stack />, index: Screen, second: Screen });
-  expect(values[0]).toBe(false);
-  expect(values.at(-1)).toBe(router.canGoBack());
-
-  values.length = 0;
+  const { result } = await renderHook(() => useCanGoBack(), ['index', 'second']);
+  expect(result.current).toBe(false);
   await act(() => router.push('/second'));
-  expect(values).toContain(true);
-  expect(values.at(-1)).toBe(router.canGoBack());
-
+  expect(result.current).toBe(true);
   await act(() => router.back());
-  expect(values.at(-1)).toBe(false);
-  expect(values.at(-1)).toBe(router.canGoBack());
+  expect(result.current).toBe(false);
 });
 
 it.each(['firstRoute', 'initialRoute', 'order', 'history', 'fullHistory', 'none'] as const)(
@@ -368,19 +367,9 @@ it('returns to an explicitly configured initial tab', async () => {
 
 it('does not re-render when root state changes without changing the value', async () => {
   let renders = 0;
-  function Counter() {
+  await renderHook(() => {
     renders++;
-    useCanGoBack();
-    return null;
-  }
-  await renderRouter({
-    _layout: () => (
-      <>
-        <Counter />
-        <Stack />
-      </>
-    ),
-    index: () => <Text>Index</Text>,
+    return useCanGoBack();
   });
   const initialRenders = renders;
   await act(() => router.setParams({ value: '1' }));
