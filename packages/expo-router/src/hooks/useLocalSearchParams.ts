@@ -52,9 +52,8 @@ export function useLocalSearchParams() {
   const { params: previewParams } = usePreviewInfo();
 
   if (node?.type === 'layout' && !previewParams) {
-    // TODO(@ubax): Reading this context re-renders the layout on any navigation inside it, even when
-    // params do not change. React 19 also re-renders it on navigations outside it
-    // (https://github.com/react/react/issues/35397). Investigate a subscription with a selector.
+    // TODO(@ubax): Reading this context re-renders the layout on any navigation, even when params do not
+    // change; outside it via https://github.com/react/react/issues/35397. Investigate a selector subscription.
     let { state } = React.use(NavigationStateContext);
     while (state) {
       const child = state.routes[state.index ?? 0];
