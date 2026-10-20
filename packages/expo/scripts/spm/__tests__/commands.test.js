@@ -1,5 +1,9 @@
 'use strict';
 
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
 const { configureSpmUpdateCommand, spmUpdateCommand } = require('../commands');
 
 describe('spmUpdateCommand', () => {
@@ -19,6 +23,26 @@ describe('spmUpdateCommand', () => {
     expect(spmUpdateCommand()).toBe(
       'node ../../node_modules/react-native/scripts/setup-apple-spm.js update'
     );
+  });
+
+  it('runs the script of a hoisted react-native when the app root is reached through a symlink', () => {
+    const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-commands-')));
+    try {
+      const reactNativeRoot = path.join(root, 'deep', 'repo', 'node_modules', 'react-native');
+      fs.mkdirSync(reactNativeRoot, { recursive: true });
+      fs.mkdirSync(path.join(root, 'deep', 'repo', 'apps', 'mobile'), { recursive: true });
+      fs.symlinkSync(path.join(root, 'deep', 'repo'), path.join(root, 'link'));
+
+      configureSpmUpdateCommand({
+        appRoot: path.join(root, 'link', 'apps', 'mobile'),
+        reactNativeRoot,
+      });
+      expect(spmUpdateCommand()).toBe(
+        'node ../../node_modules/react-native/scripts/setup-apple-spm.js update'
+      );
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it('returns to the default when configured with nothing', () => {

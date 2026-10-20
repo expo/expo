@@ -402,15 +402,13 @@ describe('the module registry', () => {
     generateModulesProvider.mockImplementation(() => {
       throw new Error('expo-modules-autolinking exited with code 1');
     });
-    // Node resolves to the real path, and the macOS temporary folder is behind a symlink.
-    const root = fs.realpathSync(tmp);
-    const reactNativeRoot = path.join(root, 'node_modules', 'react-native');
+    const reactNativeRoot = path.join(tmp, 'node_modules', 'react-native');
     fs.mkdirSync(reactNativeRoot, { recursive: true });
     fs.writeFileSync(path.join(reactNativeRoot, 'package.json'), '{"name":"react-native"}');
     const hoistedApp = () =>
       runPlugin(tmp, {
-        projectRoot: path.join(root, 'apps', 'mobile'),
-        appRoot: path.join(root, 'apps', 'mobile', 'ios'),
+        projectRoot: path.join(tmp, 'apps', 'mobile'),
+        appRoot: path.join(tmp, 'apps', 'mobile', 'ios'),
         reactNativeRoot: undefined,
       });
 
