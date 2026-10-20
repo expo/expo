@@ -1,8 +1,10 @@
 import * as babel from '@babel/core';
 import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -847,3 +849,99 @@ it.each(['one', '"one"', '["one"]'])(
     });
   }
 );
+
+describe('project-relative filenames', () => {
+  const projectRoot = '/workspace/apps/mobile';
+
+  function transform(
+    filename: string,
+    source: string,
+    customTransformOptions: JsTransformOptions['customTransformOptions'] = {},
+    dev = false
+  ) {
+    const result = transformFileFullyWithNoxcturnalSync({
+      filename,
+      source,
+      projectRoot,
+      isDefaultExpoTransformer: true,
+      options: options({
+        dev,
+        inlinePlatform: false,
+        customTransformOptions: { engine: 'hermes', ...customTransformOptions },
+      }),
+      config: fullConfig(),
+    });
+    if (result.status !== 'complete') throw new Error(result.reason);
+    return result.result;
+  }
+
+  it.each([
+    {
+      name: 'client reference',
+      filename: 'components/Card.tsx',
+      source: '"use client"; export const value = 1;',
+      environment: 'react-server',
+      metadata: 'reactClientReference',
+      moduleId: './components/Card.tsx',
+    },
+    {
+      name: 'server reference',
+      filename: 'actions/save.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: undefined,
+      metadata: 'reactServerReference',
+      moduleId: './actions/save.ts#save',
+    },
+    {
+      name: 'server action registration',
+      filename: '../shared/actions.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: 'react-server',
+      metadata: 'reactServerReference',
+      moduleId: './../shared/actions.ts',
+    },
+  ])('resolves the $name against the app root while keeping its module ID relative', (testCase) => {
+    const result = transform(testCase.filename, testCase.source, {
+      environment: testCase.environment,
+    });
+    const absoluteFilename = path.resolve(projectRoot, testCase.filename);
+    expect(result.metadata[testCase.metadata]).toBe(pathToFileURL(absoluteFilename).href);
+    expect(result.code).toContain(JSON.stringify(testCase.moduleId));
+  });
+
+  it.each([false, true])(
+    'resolves DOM component file URLs against the app root in dev=%s',
+    (dev) => {
+      const filename = 'components/Card.tsx';
+      const result = transform(
+        filename,
+        '"use dom"; export default function Card() { return null; }',
+        {},
+        dev
+      );
+      const fileUrl = pathToFileURL(path.resolve(projectRoot, filename)).href;
+      expect(result.metadata.expoDomComponentReference).toBe(fileUrl);
+      expect(result.code).toContain(
+        dev ? fileUrl : createHash('md5').update(fileUrl).digest('hex') + '.html'
+      );
+    }
+  );
+
+  it.each(['app/_layout.tsx', 'app/value+api.tsx'])(
+    'retains the DOM component boundary for a relative app path: %s',
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Route() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
+
+  it.each(['../mobile-other/_layout.tsx', '../mobile-other/value+api.tsx'])(
+    "matches Babel's DOM validation for a relative sibling path sharing the app prefix: %s",
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Card() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
+});

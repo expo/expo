@@ -408,6 +408,12 @@ export function usesPublicEnvPlugin(input: NoxcturnalTransformInput): boolean {
   return !isNodeModule(input.filename) && environment !== 'node' && environment !== 'react-server';
 }
 
+export function resolveInputFilename(
+  input: Pick<NoxcturnalTransformInput, 'projectRoot' | 'filename'>
+): string {
+  return path.resolve(input.projectRoot, input.filename);
+}
+
 export function isPathInsideRoot(
   root: string,
   candidate: string,
@@ -428,7 +434,7 @@ function isInExpoRouterAppDirectory(input: NoxcturnalTransformInput): boolean {
   const absoluteRouterRoot = path.isAbsolute(routerRoot)
     ? routerRoot
     : path.join(input.projectRoot, routerRoot);
-  return isPathInsideRoot(absoluteRouterRoot, input.filename);
+  return isPathInsideRoot(absoluteRouterRoot, resolveInputFilename(input));
 }
 
 function isSupportedJavaScriptSource(filename: string): boolean {
