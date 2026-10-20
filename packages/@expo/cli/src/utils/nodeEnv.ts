@@ -21,7 +21,6 @@ declare module '2g' {
   interface EventRegistry {
     'env:mode': {
       nodeEnv: EnvironmentMode;
-      babelEnv: string;
       mode: EnvironmentMode;
     };
     'env:load': {
@@ -41,12 +40,10 @@ function relativeFiles(files: string[]) {
 
 export function setNodeEnv(mode: EnvironmentMode) {
   env.setNodeEnv(mode);
-  process.env.BABEL_ENV = mode;
   globalThis.__DEV__ = mode === 'development';
 
   event('mode', {
     nodeEnv: mode,
-    babelEnv: process.env.BABEL_ENV,
     mode,
   });
 }

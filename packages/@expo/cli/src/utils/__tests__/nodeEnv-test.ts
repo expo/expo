@@ -81,11 +81,11 @@ describe('Node environment', () => {
     expect(process.env.EXPO_PUBLIC_VALUE).toBe('production-v2');
   });
 
-  it('sets BABEL_ENV to the mode when one is inherited', () => {
+  it('removes an inherited BABEL_ENV', () => {
     process.env.BABEL_ENV = 'development';
 
     loadEnvFiles('/app', { mode: 'production', silent: true });
 
-    expect(process.env.BABEL_ENV).toBe('production');
+    expect(process.env.BABEL_ENV).toBeUndefined();
   });
 });
