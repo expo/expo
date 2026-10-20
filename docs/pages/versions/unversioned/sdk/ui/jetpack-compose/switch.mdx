@@ -145,7 +145,9 @@ export default function ThumbContentExample() {
 
 ### Labeled switch
 
-Apply the `toggleable` modifier to a `Row` to make the label and the switch one tappable node that screen readers announce by the label. Omit `onCheckedChange` from the switch itself, so it does not become a separate unnamed node. Without `onCheckedChange`, the switch drops its 48 dp minimum touch size, so set it with `defaultMinSize`.
+To make the whole row tappable and have screen readers read the label with the switch, apply the `toggleable` modifier to the `Row`. Handle the change in `toggleable` and do not pass `onCheckedChange` to the `Switch`.
+
+Without `onCheckedChange`, the switch is smaller. Use `defaultMinSize` to keep its 48 dp touch size.
 
 ```tsx
 import { useState } from 'react';
