@@ -262,7 +262,20 @@ class PreviewViewController: UIViewController {
   }
 
   override func loadView() {
-    self.view = linkPreviewNativePreview
+    // A preview is a screen. Its content renders when the gesture begins and
+    // can take longer than the lift, and until it draws, the content view is
+    // transparent: the platter would open as a hole onto the page behind it.
+    // A screen's own background behind the content keeps the platter a blank
+    // screen until the content draws over it.
+    let screen = UIView()
+    screen.backgroundColor = .systemBackground
+    screen.addSubview(linkPreviewNativePreview)
+    self.view = screen
+  }
+
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    linkPreviewNativePreview.frame = view.bounds
   }
 
   @available(*, unavailable)
