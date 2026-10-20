@@ -434,7 +434,7 @@ function isInExpoRouterAppDirectory(input: NoxcturnalTransformInput): boolean {
   const absoluteRouterRoot = path.isAbsolute(routerRoot)
     ? routerRoot
     : path.join(input.projectRoot, routerRoot);
-  return isPathInsideRoot(absoluteRouterRoot, input.filename);
+  return isPathInsideRoot(absoluteRouterRoot, resolveInputFilename(input));
 }
 
 function isSupportedJavaScriptSource(filename: string): boolean {
