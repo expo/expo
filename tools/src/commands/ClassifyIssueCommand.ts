@@ -12,18 +12,16 @@ import {
 import {
   Agreement,
   agreements,
+  closeBlocker,
+  decideLabels,
   classifyIssueAsync,
   formatReport,
   gateConfidences,
   humanAppliedLabels,
-  isAlreadyTriaged,
-  isTeamAuthor,
   packageOptionsFromLabels,
-  planLabels,
   QUESTION_IDS,
   QuestionId,
   TriageIssue,
-  wouldClose,
 } from '../IssueTriage';
 import logger from '../Logger';
 
@@ -92,7 +90,6 @@ async function action(options: ActionOptions) {
 }
 
 async function classifyOneAsync(issueNumber: number, apply: boolean, closeInvalid: boolean) {
-  let closing = closeInvalid;
   const [issue, labelNamesInRepo] = await Promise.all([
     getIssueAsync(issueNumber),
     listRepoLabelNamesAsync(),
@@ -103,21 +100,15 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closeInvali
     logger.warn(`Issue #${issueNumber} is closed, reporting only.`);
     apply = false;
   }
-  const blockedBy = isAlreadyTriaged(issue.state, labelNames(issue.labels))
-    ? 'already triaged'
-    : isTeamAuthor(issue.author_association)
-      ? 'from an Expo member'
-      : null;
-  if (apply && closing && blockedBy) {
+  const blockedBy = closeBlocker(issue.state, labelNames(issue.labels), issue.author_association);
+  if (closeInvalid && blockedBy) {
     logger.warn(`Issue #${issueNumber} is ${blockedBy}, holding back closing labels.`);
-    closing = false;
   }
-  const plan = planLabels(result.classification, { closing: !apply || closing });
+  const { plan, close } = decideLabels(result.classification, { closeInvalid, blockedBy });
   if (apply && plan.apply.length > 0) {
     await addIssueLabelsAsync(issueNumber, plan.apply);
   }
 
-  const close = closeInvalid ? undefined : wouldClose(result.classification, blockedBy);
   const report = formatReport(issueNumber, result, plan, !apply, close);
   console.log(report);
   appendStepSummary(report);

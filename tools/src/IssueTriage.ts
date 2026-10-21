@@ -323,6 +323,30 @@ export function wouldClose(
   return { label: candidate.label, confidence: candidate.confidence, blockedBy };
 }
 
+/** The guard that keeps `--close-invalid` from closing the issue, or `null`. */
+export function closeBlocker(
+  state: string,
+  labels: string[],
+  authorAssociation: string
+): string | null {
+  if (isAlreadyTriaged(state, labels)) {
+    return 'already triaged';
+  }
+  return isTeamAuthor(authorAssociation) ? 'from an Expo member' : null;
+}
+
+export type LabelDecision = { plan: LabelPlan; close?: CloseDecision | null };
+
+export function decideLabels(
+  classification: IssueClassification,
+  { closeInvalid, blockedBy }: { closeInvalid: boolean; blockedBy: string | null }
+): LabelDecision {
+  return {
+    plan: planLabels(classification, { closing: closeInvalid && !blockedBy }),
+    close: closeInvalid ? undefined : wouldClose(classification, blockedBy),
+  };
+}
+
 export function formatReport(
   issueNumber: number,
   result: ClassificationResult,

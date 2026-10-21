@@ -4,6 +4,8 @@ import { describe, it } from 'node:test';
 import {
   agreements,
   buildQuestions,
+  closeBlocker,
+  decideLabels,
   formatReport,
   gateConfidences,
   humanAppliedLabels,
@@ -104,6 +106,36 @@ describe('planLabels', () => {
     assert.deepEqual(docs.apply, ['docs']);
     const redirect = planLabels(classification({ triage: ['third_party_library', 0.99] }));
     assert.deepEqual(redirect, { apply: [], suggest: [] });
+  });
+});
+
+describe('decideLabels', () => {
+  const jev = classification({ triage: ['feature_request', 0.97], platform: ['ios', 0.95] });
+  const closing = 'invalid issue: feature request';
+  const cases: [boolean, string | null, boolean, boolean][] = [
+    // closeInvalid, blockedBy, applies the closing label, has a close line
+    [false, null, false, true],
+    [false, 'from an Expo member', false, true],
+    [true, null, true, false],
+    [true, 'from an Expo member', false, false],
+  ];
+  for (const [closeInvalid, blockedBy, applies, hasClose] of cases) {
+    it(`closeInvalid=${closeInvalid} blockedBy=${blockedBy}`, () => {
+      const { plan, close } = decideLabels(jev, { closeInvalid, blockedBy });
+      assert.equal(plan.apply.includes(closing), applies);
+      assert.equal(plan.suggest.includes(closing), false);
+      assert.ok(plan.apply.includes('iOS'));
+      assert.equal(close !== undefined, hasClose);
+    });
+  }
+});
+
+describe('closeBlocker', () => {
+  it('names the guard that holds back closing labels', () => {
+    assert.equal(closeBlocker('open', ['needs validation'], 'NONE'), null);
+    assert.equal(closeBlocker('open', ['Issue accepted'], 'NONE'), 'already triaged');
+    assert.equal(closeBlocker('closed', [], 'NONE'), 'already triaged');
+    assert.equal(closeBlocker('open', [], 'MEMBER'), 'from an Expo member');
   });
 });
 
