@@ -123,24 +123,10 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  let anchor: string | undefined;
-  let anchorGroupName: string | undefined;
-  if (settings) {
-    try {
-      warnIfInitialRouteNameIsUsed(settings, groupName);
-      anchor = settings.anchor ?? settings.initialRouteName;
-    } catch (error) {
-      if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
-        throw error;
-      }
-    }
-
-    if (groupName) {
-      const groupAnchor = settings[groupName]?.anchor ?? settings[groupName]?.initialRouteName;
-      anchor = groupAnchor ?? anchor;
-      anchorGroupName = groupAnchor ? groupName : undefined;
-    }
-  }
+  const layoutAnchor = settings ? readLayoutAnchorSetting(settings, groupName) : undefined;
+  const groupSettings = groupName ? settings?.[groupName] : undefined;
+  const groupAnchor = groupSettings?.anchor ?? groupSettings?.initialRouteName;
+  const anchor = groupAnchor ?? layoutAnchor;
   if (!anchor) {
     return undefined;
   }
@@ -149,12 +135,27 @@ function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) 
     node.children.find((child) => child.route === `${anchor}/index`);
   if (!route) {
     throw new Error(
-      `The initial route name "${anchor}"${anchorGroupName ? ` for group "${anchorGroupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
+      `The initial route name "${anchor}"${groupAnchor ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
         `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
         'Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   }
   return route.route;
+}
+
+function readLayoutAnchorSetting(
+  settings: Record<string, any>,
+  groupName: string | undefined
+): string | undefined {
+  try {
+    warnIfInitialRouteNameIsUsed(settings, groupName);
+    return settings.anchor ?? settings.initialRouteName;
+  } catch (error) {
+    if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
+      throw error;
+    }
+    return undefined;
+  }
 }
 
 function warnIfInitialRouteNameIsUsed(
