@@ -33,7 +33,8 @@ const CompositionLocalProviderNativeView: React.ComponentType<NativeCompositionL
 
 /**
  * Provides composition local values to its children, like Jetpack Compose's `CompositionLocalProvider`.
- * It does not add a layout node.
+ * It adds no layout of its own, so children keep modifiers such as `weight` from the parent `Row`
+ * or `Column`.
  */
 export function CompositionLocalProvider({ values, children }: CompositionLocalProviderProps) {
   return (

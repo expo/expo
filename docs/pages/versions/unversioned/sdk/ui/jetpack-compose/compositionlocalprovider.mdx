@@ -9,7 +9,7 @@ platforms: ['android', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI CompositionLocalProvider matches the official Jetpack Compose [`CompositionLocalProvider`](https://developer.android.com/develop/ui/compose/compositionlocal) API. It provides values to all components inside it, without adding a layout node.
+Expo UI CompositionLocalProvider matches the official Jetpack Compose [`CompositionLocalProvider`](<https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#CompositionLocalProvider(kotlin.Array,kotlin.Function0)>) API. It provides values to all components inside it. It adds no layout of its own, so children keep modifiers such as `weight` from the parent `Row` or `Column`.
 
 ## Installation
 
