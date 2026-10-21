@@ -70,7 +70,7 @@ export interface StackScreenProps extends PropsWithChildren {
 
   /**
    * Screens that must be below this screen in the stack. Missing screens are added directly below
-   * it when it is focused.
+   * it when a deep link or a navigation adds it to the stack.
    *
    * Each entry is a screen name from this navigator, such as `'[id]'`. It is not an href, such as
    * `'/42'`.

@@ -1193,10 +1193,10 @@ describe('unstable_requiredScreensBelow', () => {
     expect(IdScreen).toHaveBeenCalledTimes(1);
   });
 
-  it('adds required screens when the prop changes and keeps them when it is removed', async () => {
-    let setRequired: (screens: string[] | undefined) => void = () => {};
+  it('does not add required screens when the prop changes on a screen already in the stack', async () => {
+    let setRequired: (screens: string[]) => void = () => {};
     function Layout() {
-      const [required, setState] = useState<string[] | undefined>();
+      const [required, setState] = useState<string[]>();
       setRequired = setState;
       return (
         <Stack>
@@ -1204,23 +1204,37 @@ describe('unstable_requiredScreensBelow', () => {
         </Stack>
       );
     }
-    const Index = jest.fn(() => <Text testID="index" />);
+    const Index = jest.fn(() => null);
 
     await renderRouter(
-      { _layout: Layout, index: Index, details: () => <Text testID="details" /> },
+      { _layout: Layout, index: Index, details: () => null },
       { initialUrl: '/details' }
     );
-    expect(screen.getByTestId('details')).toBeVisible();
-    expect(screen.queryByTestId('index', { includeHiddenElements: true })).toBeNull();
-
     await act(() => setRequired(['index']));
-    expect(screen.getByTestId('details')).toBeVisible();
-    expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
-    expect(Index).toHaveBeenCalledTimes(1);
 
-    await act(() => setRequired(undefined));
-    expect(screen.getByTestId('index', { includeHiddenElements: true })).toBeOnTheScreen();
-    expect(Index).toHaveBeenCalledTimes(1);
+    expect(navigationRef.getRootState()).toMatchObject(stackState('details'));
+    expect(Index).not.toHaveBeenCalled();
+  });
+
+  it('adds required screens when the stack pushes a preloaded screen', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['list']} />
+          </Stack>
+        ),
+        index: () => null,
+        list: () => null,
+        details: () => null,
+      },
+      { initialUrl: '/' }
+    );
+
+    await act(() => router.prefetch('/details'));
+    await act(() => router.push('/details'));
+
+    expect(navigationRef.getRootState()).toMatchObject(stackState('index', 'list', 'details'));
   });
 
   it('renders a required screen that contains a nested stack once', async () => {
@@ -1244,28 +1258,25 @@ describe('unstable_requiredScreensBelow', () => {
     expect(NestedIndex).toHaveBeenCalledTimes(1);
   });
 
-  it('warns and does not loop when two screens require each other', async () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      await renderRouter(
-        {
-          _layout: () => (
-            <Stack>
-              <Stack.Screen name="a" unstable_requiredScreensBelow={['b']} />
-              <Stack.Screen name="b" unstable_requiredScreensBelow={['a']} />
-            </Stack>
-          ),
-          a: () => null,
-          b: () => null,
-        },
-        { initialUrl: '/a' }
-      );
+  it('does not add required screens when the stack goes back to a screen', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['list']} />
+            <Stack.Screen name="list" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: () => null,
+        list: () => null,
+        details: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+    expect(navigationRef.getRootState()).toMatchObject(stackState('list', 'details'));
 
-      expect(navigationRef.getRootState()).toMatchObject(stackState('b', 'a'));
-      expect(warn).toHaveBeenCalledTimes(1);
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('a -> b -> a'));
-    } finally {
-      warn.mockRestore();
-    }
+    await act(() => router.back());
+
+    expect(navigationRef.getRootState()).toMatchObject(stackState('list'));
   });
 });

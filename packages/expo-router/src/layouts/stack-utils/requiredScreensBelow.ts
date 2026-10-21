@@ -1,5 +1,5 @@
 'use client';
-import { Children, type ReactNode, use, useEffectEvent, useLayoutEffect } from 'react';
+import { use, useEffectEvent, useLayoutEffect, useState } from 'react';
 
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { matchDynamicName } from '../../matchers';
@@ -15,10 +15,8 @@ import type {
   PlaceholderDescriptorMap,
 } from '../../standard-navigation/types';
 import type { UnknownInputParams } from '../../types';
-import { isChildOfType } from '../../utils/children';
 import { getSingularId } from '../../utils/getSingularId';
-import { Protected } from '../../views/Protected';
-import { StackScreen, type StackScreenProps } from './StackScreen';
+import type { StackScreenProps } from './StackScreen';
 
 type RequiredScreenBelow = NonNullable<StackScreenProps['unstable_requiredScreensBelow']>[number];
 
@@ -107,6 +105,38 @@ function getRouteRequiredScreens(
   return options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
 }
 
+/**
+ * Keeps the required screens of the focused route from the render where a deep link or a
+ * navigation added the route. A prop change, or a back action to a route that is already in the
+ * stack, adds no screens.
+ */
+export function useRequiredScreensOnArrival<NavigatorOptions extends object>(
+  descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
+  state: NavigationState
+): PlaceholderDescriptorMap<NavigatorOptions> {
+  const routeKey = state.routes[state.index]?.key;
+  const screens = getRouteRequiredScreens(routeKey, descriptors);
+  const [arrival, setArrival] = useState({ state, screens });
+  let arrivalScreens = arrival.screens;
+  if (arrival.state !== state) {
+    // Preloaded routes above the index are not in the stack yet.
+    const isInStack = arrival.state.routes
+      .slice(0, arrival.state.index + 1)
+      .some((route) => route.key === routeKey);
+    arrivalScreens = isInStack ? undefined : screens;
+    setArrival({ state, screens: arrivalScreens });
+  }
+  const descriptor = routeKey ? descriptors[routeKey] : undefined;
+  if (!routeKey || !descriptor || arrivalScreens === screens) {
+    return descriptors;
+  }
+  const options = {
+    ...descriptor.options,
+    [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]: arrivalScreens,
+  };
+  return { ...descriptors, [routeKey]: { ...descriptor, options } };
+}
+
 /** Adds descriptors for the required screens that the state does not have yet. */
 export function processRequiredScreensDescriptors<
   State extends NavigationState,
@@ -176,60 +206,4 @@ export function useSyncRequiredScreensBelow(descriptors: PlaceholderDescriptorMa
       sync();
     }
   }, [nextRouteKeys]);
-}
-
-// Warn once per cycle, so layout re-renders do not repeat the warning.
-const warnedCycles = new Set<string>();
-
-/** Warns in development when the `unstable_requiredScreensBelow` props of `children` form a cycle. */
-export function warnIfRequiredScreensCycle(children: ReactNode) {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-  const required = new Map<string, string[]>();
-  const collect = (nodes: ReactNode) =>
-    Children.forEach(nodes, (child) => {
-      if (isChildOfType(child, StackScreen) && child.props.name) {
-        required.set(
-          child.props.name,
-          (child.props.unstable_requiredScreensBelow ?? []).map((screen) =>
-            typeof screen === 'string' ? screen : screen.name
-          )
-        );
-      } else if (isChildOfType(child, Protected)) {
-        collect(child.props.children);
-      }
-    });
-  collect(children);
-
-  const checked = new Set<string>();
-  const findCycle = (name: string, path: string[]): string[] | undefined => {
-    if (path.includes(name)) {
-      return [...path.slice(path.indexOf(name)), name];
-    }
-    if (checked.has(name)) {
-      return undefined;
-    }
-    checked.add(name);
-    // A screen that lists itself cannot make a back loop, so it is not a cycle.
-    for (const below of required.get(name)?.filter((screen) => screen !== name) ?? []) {
-      const cycle = findCycle(below, [...path, name]);
-      if (cycle) {
-        return cycle;
-      }
-    }
-    return undefined;
-  };
-  for (const name of required.keys()) {
-    const cycle = findCycle(name, []);
-    // The sorted names identify a cycle, whichever screen it starts from.
-    const key = cycle && [...new Set(cycle)].sort().join('\0');
-    if (cycle && key && !warnedCycles.has(key)) {
-      warnedCycles.add(key);
-      console.warn(
-        `The \`unstable_requiredScreensBelow\` props of Stack.Screen form a cycle: ${cycle.join(' -> ')}. Each screen in the cycle adds the next one below it when it is focused, so the back action never leaves these screens. Remove a screen from one of these props to break the cycle.`
-      );
-      return;
-    }
-  }
 }
