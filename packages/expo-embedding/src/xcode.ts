@@ -1,7 +1,7 @@
 import { parse, build } from '@bacons/xcode/json';
 import { createHash } from 'node:crypto';
-import { readFileSync, mkdirSync, existsSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+
+import { readText, writeGenerated } from './files';
 
 type PBXObject = { isa: string; [key: string]: any };
 type PBXData = {
@@ -11,10 +11,6 @@ type PBXData = {
   objects: Record<string, PBXObject>;
   rootObject: string;
 };
-export function writeGenerated(path: string, text: string): void {
-  mkdirSync(dirname(path), { recursive: true });
-  if (!existsSync(path) || readFileSync(path, 'utf8') !== text) writeFileSync(path, text);
-}
 export const shellQuote = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
 export function splitFlags(value: string): string[] {
   const words: string[] = [];
@@ -46,8 +42,8 @@ export class Project {
   static parse(contents: string): Project {
     return new Project(parse(contents) as PBXData);
   }
-  static open(path: string): Project {
-    return Project.parse(readFileSync(path, 'utf8'));
+  static async open(path: string): Promise<Project> {
+    return Project.parse(await readText(path));
   }
   static create(configurations = ['Debug', 'Release']): Project {
     const project = new Project({
@@ -62,7 +58,10 @@ export class Project {
       name: 'Products',
       sourceTree: '<group>',
     });
-    const main = project.add('PBXGroup', 'main', { children: [products], sourceTree: '<group>' });
+    const main = project.add('PBXGroup', 'main', {
+      children: [products],
+      sourceTree: '<group>',
+    });
     project.data.rootObject = project.add('PBXProject', 'root', {
       attributes: { LastUpgradeCheck: '1600' },
       buildConfigurationList: project.addConfigurations('project', configurations),
@@ -218,8 +217,8 @@ export class Project {
   serialize(): string {
     return build(this.data as any);
   }
-  save(path: string): void {
-    writeGenerated(path, this.serialize());
+  async save(path: string): Promise<void> {
+    await writeGenerated(path, this.serialize());
   }
 }
 

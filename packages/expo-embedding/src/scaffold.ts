@@ -1,16 +1,18 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
-export function findAppRoot(directory: string): string {
+import { exists, readText } from './files';
+export async function findAppRoot(directory: string): Promise<string> {
   let candidate = directory;
   while (true) {
-    if (
-      readdirSync(candidate).some(
-        (name) =>
-          name.endsWith('.xcodeproj') && existsSync(join(candidate, name, 'project.pbxproj'))
-      )
-    )
-      return candidate;
+    let foundProject = false;
+    for (const name of await readdir(candidate)) {
+      if (name.endsWith('.xcodeproj') && (await exists(join(candidate, name, 'project.pbxproj')))) {
+        foundProject = true;
+        break;
+      }
+    }
+    if (foundProject) return candidate;
     const parent = dirname(candidate);
     if (parent === candidate) {
       throw new Error(
@@ -20,20 +22,22 @@ export function findAppRoot(directory: string): string {
     candidate = parent;
   }
 }
-
-export function scaffoldExpoProject(root: string, versions: Record<string, string>): void {
+export async function scaffoldExpoProject(
+  root: string,
+  versions: Record<string, string>
+): Promise<void> {
   const directory = join(root, 'expo');
-  if (!existsSync(join(directory, 'package.json'))) {
-    if (existsSync(directory) && readdirSync(directory).length !== 0) {
+  if (!(await exists(join(directory, 'package.json')))) {
+    if ((await exists(directory)) && (await readdir(directory)).length !== 0) {
       throw new Error(
         'Could not create the Expo starter because expo/ is not empty and has no package.json. Move its files aside or finish configuring that Expo app, then rerun init.'
       );
     }
-    mkdirSync(join(directory, 'Native'), { recursive: true });
+    await mkdir(join(directory, 'Native'), { recursive: true });
     for (const [name, contents] of Object.entries(starterFiles)) {
-      writeFileSync(join(directory, name), contents, { flag: 'wx' });
+      await writeFile(join(directory, name), contents, { flag: 'wx' });
     }
-    writeFileSync(
+    await writeFile(
       join(directory, 'package.json'),
       JSON.stringify(
         {
@@ -49,9 +53,8 @@ export function scaffoldExpoProject(root: string, versions: Record<string, strin
       { flag: 'wx' }
     );
   }
-
   const ignorePath = join(root, '.gitignore');
-  const previous = existsSync(ignorePath) ? readFileSync(ignorePath, 'utf8') : '';
+  const previous = (await exists(ignorePath)) ? await readText(ignorePath) : '';
   const lines = new Set(previous.split(/\r?\n/));
   const missing = [
     '/node_modules/',
@@ -60,13 +63,12 @@ export function scaffoldExpoProject(root: string, versions: Record<string, strin
     '/.expo-source/',
   ].filter((line) => !lines.has(line));
   if (missing.length) {
-    writeFileSync(
+    await writeFile(
       ignorePath,
       previous + (previous && !previous.endsWith('\n') ? '\n' : '') + missing.join('\n') + '\n'
     );
   }
 }
-
 const starterFiles = {
   'index.js': `import { AppRegistry } from 'react-native';
 import App from './App';
