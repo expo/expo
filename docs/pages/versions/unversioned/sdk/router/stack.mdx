@@ -71,7 +71,6 @@ When the user opens **/42/comments**, the stack contains `index`, `[id]` with `i
 - The stack skips names that are not routes of the stack.
 - Screens that the stack already added stay when the prop changes or is removed.
 - Right after the screen renders, before the stack adds the screens to the navigation state, `router.canGoBack()` returns the previous result.
-- On web, the stack adds the screens without new browser history entries. The header back button goes to the added screens. The browser back button skips them and goes to the page before the focused screen, which can be outside your app.
 
 The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.
 
