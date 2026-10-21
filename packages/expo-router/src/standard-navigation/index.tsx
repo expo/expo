@@ -6,6 +6,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 
 import { ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
+import { useRequiredScreensOnArrival } from '../layouts/stack-utils/requiredScreensBelow';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -184,7 +185,13 @@ export function integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props, getValidInitialRouteName(routeNode));
-    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
+    const {
+      state,
+      navigation,
+      describe,
+      descriptors: builderDescriptors,
+      NavigationContent,
+    } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -194,6 +201,8 @@ export function integrateWithRouter<
       activityDefaultThreshold: options?.activityDefaultThreshold,
     });
 
+    // Only stack screens set this option.
+    const descriptors = useRequiredScreensOnArrival(builderDescriptors, state);
     const { dispatch, dispatchSync } = navigation;
     const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
