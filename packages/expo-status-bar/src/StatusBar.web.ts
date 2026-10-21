@@ -7,6 +7,7 @@ export function StatusBar() {
 StatusBar.setStyle = () => {};
 StatusBar.setHidden = () => {};
 StatusBar.getVerticalBarEdgeIOS = (): VerticalBarEdgeIOS | null => null;
+StatusBar.setVerticalBarBehaviorIOS = () => {};
 
 export function setStatusBarStyle() {}
 export function setStatusBarHidden() {}

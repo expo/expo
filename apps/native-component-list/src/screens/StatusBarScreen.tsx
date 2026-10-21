@@ -33,6 +33,20 @@ export default function StatusBarScreen() {
           <Text testID="vertical-bar-edge">Edge: {verticalBarEdge ?? 'none'}</Text>
         </Section>
       )}
+
+      {Platform.OS === 'ios' && (
+        <Section title="Vertical bar behavior" row>
+          <Button
+            onPress={() => StatusBar.setVerticalBarBehaviorIOS('automatic')}
+            title="Automatic"
+          />
+
+          <Button
+            onPress={() => StatusBar.setVerticalBarBehaviorIOS('disabled')}
+            title="Disabled"
+          />
+        </Section>
+      )}
     </Page>
   );
 }
