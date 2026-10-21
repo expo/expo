@@ -1,6 +1,6 @@
 import { requireOptionalNativeModule, type NativeModule } from 'expo';
 
-import type { VerticalBarEdgeIOS } from './types';
+import type { VerticalBarBehaviorIOS, VerticalBarEdgeIOS } from './types';
 
 type ExpoStatusBarEvents = {
   onVerticalBarEdgeChange(event: { edge: VerticalBarEdgeIOS | null }): void;
@@ -8,6 +8,7 @@ type ExpoStatusBarEvents = {
 
 declare class ExpoStatusBarModule extends NativeModule<ExpoStatusBarEvents> {
   getVerticalBarEdge(): VerticalBarEdgeIOS | null;
+  setVerticalBarBehavior(behavior: VerticalBarBehaviorIOS): void;
 }
 
 export default requireOptionalNativeModule<ExpoStatusBarModule>('ExpoStatusBar');
