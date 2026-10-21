@@ -25,9 +25,9 @@ export function MaskedView(props: MaskedViewProps) {
   if (matchContents) {
     return (
       <View {...viewProps} style={outerStyle}>
-        <Host matchContents={matchContents}>
+        <Host matchContents>
           <MaskNativeView alignment="topStart">
-            <RNHostView matchContents={matchContents}>
+            <RNHostView matchContents>
               <View style={contentStyle}>{children}</View>
             </RNHostView>
             <Slot slotName="content">
