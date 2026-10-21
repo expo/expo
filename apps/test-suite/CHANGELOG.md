@@ -1,5 +1,64 @@
 # test-suite
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51720](https://github.com/expo/expo/pull/51720), [#44804](https://github.com/expo/expo/pull/44804), [#51801](https://github.com/expo/expo/pull/51801), [#50576](https://github.com/expo/expo/pull/50576), [#51911](https://github.com/expo/expo/pull/51911), [#51730](https://github.com/expo/expo/pull/51730), [#51854](https://github.com/expo/expo/pull/51854), [#51905](https://github.com/expo/expo/pull/51905), [#51923](https://github.com/expo/expo/pull/51923), [#51751](https://github.com/expo/expo/pull/51751), [#51896](https://github.com/expo/expo/pull/51896), [#51988](https://github.com/expo/expo/pull/51988), [#51914](https://github.com/expo/expo/pull/51914), [#51954](https://github.com/expo/expo/pull/51954), [#51650](https://github.com/expo/expo/pull/51650), [#51958](https://github.com/expo/expo/pull/51958), [#51888](https://github.com/expo/expo/pull/51888), [#51971](https://github.com/expo/expo/pull/51971), [#50024](https://github.com/expo/expo/pull/50024), [#51906](https://github.com/expo/expo/pull/51906), [#51899](https://github.com/expo/expo/pull/51899), [#51904](https://github.com/expo/expo/pull/51904), [#51651](https://github.com/expo/expo/pull/51651), [#51698](https://github.com/expo/expo/pull/51698), [#51889](https://github.com/expo/expo/pull/51889), [#51588](https://github.com/expo/expo/pull/51588), [#51474](https://github.com/expo/expo/pull/51474), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814), [#51799](https://github.com/expo/expo/pull/51799), [#51867](https://github.com/expo/expo/pull/51867))
+  - expo-app-metrics@58.0.14
+  - expo-audio@58.0.10
+  - expo-camera@58.0.12
+  - expo-observe@58.0.16
+  - expo-clipboard@58.0.4
+  - expo-modules-core@58.0.24
+  - expo@58.0.17
+  - @expo/ui@58.0.22
+  - expo-network@58.0.4
+  - expo-router@58.0.25
+  - expo-image@58.0.16
+  - expo-constants@58.0.13
+  - expo-application@58.1.2
+  - expo-asset@58.0.18
+  - expo-auth-session@58.0.14
+  - expo-background-fetch@58.0.11
+  - expo-battery@58.0.3
+  - expo-blob@58.0.3
+  - expo-blur@58.0.5
+  - expo-brightness@58.0.2
+  - expo-calendar@58.0.6
+  - expo-cellular@58.0.3
+  - expo-checkbox@58.0.2
+  - expo-contacts@58.0.8
+  - expo-crypto@58.0.7
+  - expo-device@58.0.5
+  - expo-eas-client@58.0.2
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - expo-gl@58.0.3
+  - expo-glass-effect@58.0.4
+  - expo-haptics@58.0.7
+  - expo-image-manipulator@58.0.15
+  - expo-image-picker@58.0.10
+  - expo-keep-awake@58.0.3
+  - expo-linear-gradient@58.0.3
+  - expo-linking@58.0.14
+  - expo-localization@58.0.5
+  - expo-location@58.0.18
+  - expo-media-library@58.0.11
+  - expo-navigation-bar@58.0.4
+  - expo-notifications@58.1.6
+  - expo-screen-orientation@58.0.3
+  - expo-secure-store@58.0.2
+  - expo-sms@58.0.2
+  - expo-speech@58.0.3
+  - expo-sqlite@58.0.13
+  - expo-store-review@58.0.2
+  - expo-system-ui@58.0.6
+  - expo-task-manager@58.0.12
+  - expo-video@58.0.12
+  - expo-web-browser@58.0.6
+  - @expo/html-elements@58.0.3
+
 ## 1.0.10
 
 ### Patch Changes

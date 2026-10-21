@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.1.14
+
+### Patch Changes
+
+- Fix native builds from `expo run:android` and `expo run:ios` bundling with the CLI's development `BABEL_ENV`. ([#51872](https://github.com/expo/expo/pull/51872) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Stop setting `BABEL_ENV` in Expo commands. ([#51946](https://github.com/expo/expo/pull/51946) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51986](https://github.com/expo/expo/pull/51986), [#51946](https://github.com/expo/expo/pull/51946), [#51937](https://github.com/expo/expo/pull/51937), [#52008](https://github.com/expo/expo/pull/52008), [#51868](https://github.com/expo/expo/pull/51868), [#51872](https://github.com/expo/expo/pull/51872), [#51932](https://github.com/expo/expo/pull/51932), [#51714](https://github.com/expo/expo/pull/51714), [#51913](https://github.com/expo/expo/pull/51913))
+  - @expo/config-plugins@58.0.10
+  - @expo/env@2.5.3
+  - @expo/metro-config@58.0.16
+  - @expo/log-box@58.0.13
+  - @expo/prebuild-config@58.0.15
+  - @expo/config@58.0.7
+  - @expo/inline-modules@0.2.7
+  - @expo/router-server@58.0.16
+
 ## 58.1.13
 
 ### Patch Changes

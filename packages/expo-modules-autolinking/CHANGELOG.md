@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`. ([#50388](https://github.com/expo/expo/pull/50388) by [@vitalyster](https://github.com/vitalyster))
+
 ## 58.0.13
 
 ### Patch Changes

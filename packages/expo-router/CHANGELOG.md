@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.25
+
+### Patch Changes
+
+- Warn in development when a modal route is the first screen in a native stack and renders as a card. ([#51803](https://github.com/expo/expo/pull/51803) by [@Ubax](https://github.com/Ubax))
+- Pad `TabList` from `expo-router/ui` by the left and right safe area insets, so tab triggers stay clear of the iPhone Duo rail and landscape cutouts. ([#51813](https://github.com/expo/expo/pull/51813) by [@huntie](https://github.com/huntie))
+- Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
+- Lay out the JavaScript top tab bar inside the left and right safe area insets, so tabs stay clear of the iPhone Duo rail and landscape cutouts. Override the insets with the `safeAreaInsets` prop on `TopTabs`. ([#51814](https://github.com/expo/expo/pull/51814) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51868](https://github.com/expo/expo/pull/51868), [#51545](https://github.com/expo/expo/pull/51545))
+  - @expo/log-box@58.0.13
+  - @expo/metro-runtime@58.0.15
+
 ## 58.0.24
 
 ### Patch Changes

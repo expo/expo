@@ -1,5 +1,12 @@
 # expo-brownfield-tester
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588))
+  - expo@58.0.17
+
 ## 0.0.11
 
 ### Patch Changes

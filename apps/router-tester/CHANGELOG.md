@@ -1,5 +1,21 @@
 # router-tester
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814), [#51996](https://github.com/expo/expo/pull/51996), [#51928](https://github.com/expo/expo/pull/51928), [#51927](https://github.com/expo/expo/pull/51927))
+  - expo@58.0.17
+  - expo-router@58.0.25
+  - expo-status-bar@58.0.4
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - expo-constants@58.0.13
+  - expo-dev-client@58.0.14
+  - expo-linking@58.0.14
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.6
+
 ## 1.0.10
 
 ### Patch Changes

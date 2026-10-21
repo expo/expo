@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Internal] Add an `integration` error source for errors that an integration reports for a library. ([#51720](https://github.com/expo/expo/pull/51720) by [@douglowder](https://github.com/douglowder))
+
 ## 58.0.13
 
 ### Patch Changes
