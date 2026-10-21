@@ -13,7 +13,8 @@ let isInstalledOnUIRuntime = false;
  * Subscribes a worklet to hinge changes. The worklet runs on the UI thread, synchronously with the
  * native change, and never waits for the JS thread. Unlike
  * [`addHingeListener`](#addhingelistenerlistener), it also runs once with the current hinge right
- * after the subscription. Requires `react-native-reanimated` and `react-native-worklets`.
+ * after the subscription. Throws an error when `worklet` is not a worklet. Import it from
+ * `expo-hinge/reanimated`, which requires `react-native-reanimated` and `react-native-worklets`.
  * @param worklet A worklet that is invoked with a [`HingeChangeEvent`](#hingechangeevent).
  * @return An `EventSubscription` whose `remove()` unsubscribes the worklet.
  */
@@ -39,7 +40,8 @@ export function addHingeWorkletListener(
 /**
  * Returns a Reanimated shared value with the live hinge state. The UI thread updates it with no
  * JS-thread round trip, so animations that read it keep up with the hinge while the JS thread is
- * busy. Requires `react-native-reanimated` and `react-native-worklets`.
+ * busy. Import it from `expo-hinge/reanimated`, which requires `react-native-reanimated` and
+ * `react-native-worklets`.
  * @example
  * ```tsx
  * const hinge = useAnimatedHinge();
