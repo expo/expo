@@ -93,6 +93,28 @@ describe('canDismiss', () => {
 
     expect(router.canDismiss()).toBe(true);
   });
+
+  // Known limitation: seeded states have no `type`, so tabs are treated as a stack.
+  it('returns true for an anchored tab state opened at a deep link', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { initialRouteName: 'a' },
+          default: () => (
+            <Tabs>
+              <Tabs.Screen name="a" />
+              <Tabs.Screen name="b" />
+            </Tabs>
+          ),
+        },
+        a: () => null,
+        b: () => null,
+      },
+      { initialUrl: '/b' }
+    );
+
+    expect(router.canDismiss()).toBe(true);
+  });
 });
 
 test('dismiss', async () => {
