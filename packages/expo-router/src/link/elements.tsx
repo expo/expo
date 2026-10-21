@@ -92,7 +92,8 @@ export interface LinkMenuActionProps {
    */
   subtitle?: string;
   /**
-   * The color of the menu item's icon. Destructive items keep the system's red.
+   * The color of the menu item's icon. Destructive items keep the system's red, and disabled items
+   * stay gray.
    *
    * @platform ios
    */
