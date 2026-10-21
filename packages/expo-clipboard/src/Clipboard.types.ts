@@ -102,12 +102,17 @@ export type SetStringIOSOptions = {
    * [`UIPasteboard.OptionsKey.localOnly`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/localonly)
    * option, so the content isn't shared with the user's other devices through Universal Clipboard.
    *
-   * Recommended for secrets and private data such as passwords, recovery phrases,
-   * private keys, access tokens, or financial information.
-   *
    * @default false
    */
   localOnly?: boolean;
+  /**
+   * The time after which the system removes the copied content from the clipboard.
+   *
+   * Sets the
+   * [`UIPasteboard.OptionsKey.expirationDate`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/expirationdate)
+   * option.
+   */
+  expiresAt?: Date;
 };
 
 export type SetStringOptions = {
@@ -118,23 +123,6 @@ export type SetStringOptions = {
    * @default StringFormat.PLAIN_TEXT
    */
   inputFormat?: StringFormat;
-  /**
-   * The time after which the copied content is removed from the clipboard.
-   *
-   * On iOS, this sets the
-   * [`UIPasteboard.OptionsKey.expirationDate`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/expirationdate)
-   * option and the system removes the content.
-   *
-   * On Android 8+ (API 26+), the module clears the clipboard at that time, but only while it
-   * still holds this copy, so content copied later by the user or another app is kept.
-   * Android doesn't let an app read the clipboard while its window doesn't have focus, so an
-   * expiry that comes due then is applied when the window gains focus again. The expiry is kept
-   * in memory only: if the app process ends before the copy is cleared, the copy stays.
-   *
-   * @platform android
-   * @platform ios
-   */
-  expiresAt?: Date;
   /**
    * Android-specific options for clipboard behavior.
    * @platform android

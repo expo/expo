@@ -45,11 +45,14 @@ export async function setStringAsync(
   if (!ExpoClipboard.setStringAsync) {
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
-  const { expiresAt, ...platformOptions } = options;
-  return ExpoClipboard.setStringAsync(text, {
-    ...flattenPlatformOptions(platformOptions),
-    expiresAt: expiresAt?.getTime(),
-  });
+  const { ios, ...commonOptions } = options;
+  return ExpoClipboard.setStringAsync(
+    text,
+    flattenPlatformOptions({
+      ...commonOptions,
+      ios: ios && { ...ios, expiresAt: ios.expiresAt?.getTime() },
+    })
+  );
 }
 
 /**

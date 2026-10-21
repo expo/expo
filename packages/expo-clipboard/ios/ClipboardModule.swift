@@ -22,7 +22,7 @@ public class ClipboardModule: Module {
 
     AsyncFunction("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
       #if !os(macOS)
-      if options.localOnly || options.expiresAt != nil {
+      if let content, options.localOnly || options.expiresAt != nil {
         var pasteboardOptions: [UIPasteboard.OptionsKey: Any] = [:]
         if options.localOnly {
           pasteboardOptions[.localOnly] = true
@@ -33,7 +33,7 @@ public class ClipboardModule: Module {
         let item: [String: Any]
         switch options.inputFormat {
         case .plainText:
-          item = [UTType.utf8PlainText.identifier: content ?? ""]
+          item = [UTType.utf8PlainText.identifier: content]
         case .html:
           item = UIPasteboard.htmlItem(content) ?? [UTType.utf8PlainText.identifier: ""]
         }

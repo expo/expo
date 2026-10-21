@@ -17,9 +17,9 @@ export const clipboardEventName = 'onClipboardChanged';
  * `setStringAsync` options as the native module receives them: platform options are flattened,
  * and `expiresAt` is a Unix time in milliseconds.
  */
-export type NativeSetStringOptions = Omit<SetStringOptions, 'android' | 'ios' | 'expiresAt'> &
+export type NativeSetStringOptions = Omit<SetStringOptions, 'android' | 'ios'> &
   SetStringAndroidOptions &
-  SetStringIOSOptions & {
+  Omit<SetStringIOSOptions, 'expiresAt'> & {
     expiresAt?: number;
   };
 
