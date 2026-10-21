@@ -9,6 +9,9 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-embedding"
   },
+  "bin": {
+    "expo-embedding": "bin/expo-embedding.js"
+  },
   "files": [
     "bin",
     "build",
@@ -27,8 +30,8 @@
     "depscheck": "expo-module depscheck"
   },
   "dependencies": {
-    "minimatch": "^9.0.9",
-    "@bacons/xcode": "1.0.0-alpha.33"
+    "@bacons/xcode": "1.0.0-alpha.33",
+    "minimatch": "^9.0.9"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
@@ -40,8 +43,5 @@
   },
   "engines": {
     "node": ">=22"
-  },
-  "bin": {
-    "expo-embedding": "bin/expo-embedding.js"
   }
 }
