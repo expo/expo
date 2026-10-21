@@ -28,7 +28,10 @@ export function MaskedView(props: MaskedViewProps) {
         <Host matchContents>
           <MaskNativeView alignment="topStart">
             <RNHostView matchContents>
-              <View style={contentStyle}>{children}</View>
+              {/* Not flattened, so its padding stays inside the mask. */}
+              <View collapsable={false} style={contentStyle}>
+                {children}
+              </View>
             </RNHostView>
             <Slot slotName="content">
               <RNHostView modifiers={[matchParentSize()]}>
