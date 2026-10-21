@@ -7,6 +7,13 @@ import type { RouteProp } from './types';
 
 type RouteCache = Map<string, RouteProp<ParamListBase>>;
 
+// Navigating with the same param values gives a new params object. Compare params by value so the screen does not render again.
+function isRouteEqual(a: RouteProp<ParamListBase>, b: RouteProp<ParamListBase>) {
+  const { params: aParams, ...aRest } = a;
+  const { params: bParams, ...bRest } = b;
+  return isRecordEqual(aRest, bRest) && isRecordEqual({ ...aParams }, { ...bParams });
+}
+
 /**
  * Utilities such as `getFocusedRouteNameFromRoute` need to access state.
  * So we need a way to suppress the warning for those use cases.
@@ -28,7 +35,7 @@ export function useRouteCache<State extends NavigationState>(routes: State['rout
 
     let proxy;
 
-    if (previous && isRecordEqual(previous, routeWithoutState)) {
+    if (previous && isRouteEqual(previous, routeWithoutState)) {
       // If a cached route object already exists, reuse it
       proxy = previous;
     } else {
