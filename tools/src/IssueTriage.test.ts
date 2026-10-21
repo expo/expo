@@ -14,14 +14,36 @@ import {
   IssueClassification,
   MISSING_REPRO_LABEL,
   packageOptionsFromLabels,
+  parseAnswers,
   planLabels,
   QuestionId,
+  QUESTION_IDS,
   wouldClose,
 } from './IssueTriage';
 
 type Choices = {
   [K in QuestionId]?: [IssueClassification[K]['choice'], number, Record<string, number>?];
 };
+
+const QUESTIONS = buildQuestions(['expo-audio', 'expo-video', 'none']);
+
+function answer(
+  name: string,
+  choice: string,
+  confidence = 0.99,
+  probabilities = { [choice]: confidence }
+) {
+  return {
+    type: 'choice' as const,
+    name,
+    choice,
+    confidence,
+    probabilities: Object.entries(probabilities).map(([value, probability]) => ({
+      value,
+      probability,
+    })),
+  };
+}
 
 function classification(overrides: Choices = {}): IssueClassification {
   const choices: Record<QuestionId, [string, number, Record<string, number>?]> = {
@@ -30,17 +52,13 @@ function classification(overrides: Choices = {}): IssueClassification {
     platform: ['multiple_or_unclear', 0.99],
     ...overrides,
   };
-  const answers: Record<string, unknown> = {};
-  for (const id of Object.keys(choices) as QuestionId[]) {
-    const [choice, confidence, probabilities] = choices[id];
-    answers[id] = {
-      type: 'choice',
-      choice,
-      confidence,
-      probabilities: probabilities ?? { question: 0, missing_info: 0, [choice]: confidence },
-    };
-  }
-  return answers as IssueClassification;
+  return parseAnswers(
+    QUESTION_IDS.map((id) => {
+      const [choice, confidence, probabilities] = choices[id];
+      return answer(id, choice, confidence, probabilities);
+    }),
+    QUESTIONS
+  );
 }
 
 describe('packageOptionsFromLabels', () => {
@@ -60,6 +78,13 @@ describe('buildQuestions', () => {
     const options = Array.from({ length: 256 }, (_, i) => `expo-pkg-${i}`);
     assert.throws(() => buildQuestions(options), /255/);
     assert.ok(buildQuestions(options.slice(0, 255)));
+  });
+});
+
+describe('parseAnswers', () => {
+  it('refuses a response without an answer to every question', () => {
+    const answers = [answer('triage', 'bug_report'), answer('package', 'none')];
+    assert.throws(() => parseAnswers(answers, QUESTIONS), /`platform` question/);
   });
 });
 

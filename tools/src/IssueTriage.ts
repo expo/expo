@@ -52,8 +52,7 @@ const NO_PACKAGE = 'none';
 /** The most options a Decisions API choice question accepts. */
 const MAX_CHOICE_OPTIONS = 255;
 
-const DEFAULT_THRESHOLDS = { triage: 0.9, package: 0.9, platform: 0.9 } as const;
-export const QUESTION_IDS = Object.keys(DEFAULT_THRESHOLDS) as QuestionId[];
+const DEFAULT_THRESHOLDS: Record<QuestionId, number> = { triage: 0.9, package: 0.9, platform: 0.9 };
 /** Maintainers sometimes accept feature requests as tracking issues, so that label needs more. */
 const LABEL_THRESHOLDS: Record<string, number> = { [TRIAGE_LABELS.feature_request]: 0.95 };
 
@@ -83,17 +82,11 @@ type ChoiceAnswer<K extends string> = {
   probabilities: Partial<Record<K, number>>;
 };
 
-type IssueQuestions = {
-  triage: ChoiceQuestion<TriageKind>;
-  package: ChoiceQuestion<string>;
-  platform: ChoiceQuestion<PlatformKind>;
-};
-export type IssueClassification = {
-  triage: ChoiceAnswer<TriageKind>;
-  package: ChoiceAnswer<string>;
-  platform: ChoiceAnswer<PlatformKind>;
-};
-export type QuestionId = keyof IssueClassification;
+type ChoiceKinds = { triage: TriageKind; package: string; platform: PlatformKind };
+export type QuestionId = keyof ChoiceKinds;
+export const QUESTION_IDS: readonly QuestionId[] = ['triage', 'package', 'platform'];
+type IssueQuestions = { [K in QuestionId]: ChoiceQuestion<ChoiceKinds[K]> };
+export type IssueClassification = { [K in QuestionId]: ChoiceAnswer<ChoiceKinds[K]> };
 
 export type ClassificationResult = {
   model: string;
@@ -193,7 +186,7 @@ export async function classifyIssueAsync(
     input: JSON.stringify(buildState(issue)),
     questions: QUESTION_IDS.map((id) => toDecisionQuestion(id, questions[id])),
   });
-  return { model, classification: parseAnswers(answers), usage };
+  return { model, classification: parseAnswers(answers, questions), usage };
 }
 
 function toDecisionQuestion(
@@ -210,24 +203,54 @@ function toDecisionQuestion(
   };
 }
 
-function parseAnswers(answers: Decision['answers']): IssueClassification {
-  const classification: Partial<Record<QuestionId, ChoiceAnswer<string>>> = {};
-  for (const answer of answers) {
-    if (answer.type !== 'choice') {
-      throw new Error(
-        `Cannot classify the issue because the model returned a \`${answer.type}\` answer to the \`${answer.name}\` question instead of a choice. ` +
-          'The model refuses a question when it declines to judge the input. Label the issue by hand.'
-      );
-    }
-    classification[answer.name as QuestionId] = {
-      choice: String(answer.choice),
-      confidence: answer.confidence,
-      probabilities: Object.fromEntries(
-        answer.probabilities.map(({ value, probability }) => [String(value), probability])
-      ),
-    };
+export function parseAnswers(
+  answers: Decision['answers'],
+  questions: IssueQuestions
+): IssueClassification {
+  return {
+    triage: parseAnswer(answers, 'triage', questions.triage),
+    package: parseAnswer(answers, 'package', questions.package),
+    platform: parseAnswer(answers, 'platform', questions.platform),
+  };
+}
+
+function parseAnswer<K extends string>(
+  answers: Decision['answers'],
+  name: QuestionId,
+  { criteria }: ChoiceQuestion<K>
+): ChoiceAnswer<K> {
+  const answer = answers.find((candidate) => candidate.name === name);
+  if (!answer) {
+    throw new Error(
+      `Cannot classify the issue because the model returned no answer to the \`${name}\` question. ` +
+        'The Decisions API answers every question it is sent, so the response is malformed. Run the command again, or label the issue by hand.'
+    );
   }
-  return classification as IssueClassification;
+  if (answer.type !== 'choice') {
+    throw new Error(
+      `Cannot classify the issue because the model returned a \`${answer.type}\` answer to the \`${answer.name}\` question instead of a choice. ` +
+        'The model refuses a question when it declines to judge the input. Label the issue by hand.'
+    );
+  }
+  const choice = String(answer.choice);
+  if (!isChoice(choice, criteria)) {
+    throw new Error(
+      `Cannot classify the issue because the model answered \`${choice}\` to the \`${name}\` question, which is not one of its choices. ` +
+        'The Decisions API only returns choices it is sent, so the response is malformed. Run the command again, or label the issue by hand.'
+    );
+  }
+  const probabilities: Partial<Record<K, number>> = {};
+  for (const { value, probability } of answer.probabilities) {
+    const key = String(value);
+    if (isChoice(key, criteria)) {
+      probabilities[key] = probability;
+    }
+  }
+  return { choice, confidence: answer.confidence, probabilities };
+}
+
+function isChoice<K extends string>(value: string, criteria: Record<K, string | null>): value is K {
+  return value in criteria;
 }
 
 type LabelCandidate = {
@@ -389,7 +412,7 @@ export function formatReport(
 ): string {
   const labels = new Map(labelCandidates(result.classification).map((c) => [c.question, c.label]));
   const confidences = gateConfidences(result.classification);
-  const rows = (Object.keys(result.classification) as QuestionId[]).map((id) => {
+  const rows = QUESTION_IDS.map((id) => {
     const label = labels.get(id);
     const applied = label && plan.apply.includes(label) ? label : '';
     return `| ${id} | ${result.classification[id].choice} | ${confidences[id].toFixed(2)} | ${applied} |`;
