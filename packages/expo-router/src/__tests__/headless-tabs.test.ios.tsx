@@ -905,29 +905,6 @@ it('redirects router.push from a filesystem route without a trigger', async () =
   expect(screen.getByTestId('goto-index')).toHaveProp('isFocused', true);
 });
 
-it('redirects a filesystem route without a trigger to the initially focused tab with initialRoute backBehavior', async () => {
-  await renderRouter(
-    {
-      _layout: () => (
-        <Tabs options={{ backBehavior: 'initialRoute' }}>
-          <TabList>
-            <TabTrigger name="index" href="/" />
-            <TabTrigger name="visible" href="/visible" />
-          </TabList>
-          <TabSlot />
-        </Tabs>
-      ),
-      index: () => null,
-      visible: () => null,
-      hidden: () => null,
-    },
-    { initialUrl: '/visible' }
-  );
-
-  await act(() => router.push('/hidden'));
-  expect(screen).toHavePathname('/visible');
-});
-
 it('removes a redirected filesystem route from tab history', async () => {
   await renderRouter({
     _layout: () => (
@@ -950,6 +927,61 @@ it('removes a redirected filesystem route from tab history', async () => {
 
   await act(() => router.back());
   expect(screen).toHavePathname('/visible');
+});
+
+it('goes back to backBehaviorInitialRoute with initialRoute backBehavior', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs options={{ backBehavior: 'initialRoute', backBehaviorInitialRoute: 'second' }}>
+          <TabList>
+            <TabTrigger name="index" href="/" />
+            <TabTrigger name="second" href="/second" />
+            <TabTrigger name="third" href="/third" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => null,
+      second: () => null,
+      third: () => null,
+    },
+    { initialUrl: '/third' }
+  );
+
+  await act(() => router.push('/'));
+  await act(() => router.back());
+
+  expect(screen).toHavePathname('/second');
+});
+
+it('warns once when initialRoute backBehavior has no backBehaviorInitialRoute', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs options={{ backBehavior: 'initialRoute' }}>
+          <TabList>
+            <TabTrigger name="index" href="/" />
+            <TabTrigger name="second" href="/second" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => null,
+      second: () => null,
+    },
+    { initialUrl: '/second' }
+  );
+
+  await act(() => router.push('/'));
+
+  expect(warn).toHaveBeenCalledTimes(1);
+  expect(warn).toHaveBeenCalledWith(
+    `The navigator at "./_layout.js" sets \`backBehavior: 'initialRoute'\` without \`backBehaviorInitialRoute\`. Going back returns to the layout anchor, or to the first route when the layout has no anchor. Set \`backBehaviorInitialRoute\` to the name of the route that going back should return to.`
+  );
+  warn.mockRestore();
 });
 
 it('redirects a Link from a filesystem route without a trigger', async () => {

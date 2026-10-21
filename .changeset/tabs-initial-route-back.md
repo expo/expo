@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Tabs with `backBehavior: 'initialRoute'` and no anchor go back and redirect to the tab focused first, instead of the first tab.
+Add the `backBehaviorInitialRoute` prop to tabs, native tabs, drawer, top tabs, and headless tabs to set the route that `backBehavior: 'initialRoute'` goes back to, and warn when `backBehavior: 'initialRoute'` is set without it.

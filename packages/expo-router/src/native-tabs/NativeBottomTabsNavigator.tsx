@@ -18,6 +18,7 @@ import type {
   StandardNavigatorContentProps,
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
+import { useInitialRouteBackBehaviorWarning } from '../standard-navigation/useInitialRouteBackBehaviorWarning';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
@@ -43,7 +44,6 @@ export interface NativeTabsNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
-  history: TabNavigationState<ParamListBase>['history'];
   preload: (name: string) => void;
   navigateSync: (name: string) => void;
 }
@@ -79,8 +79,6 @@ export function createNativeTabsProps(
 function NativeTabsContent({
   state,
   routeNames,
-  history,
-  backBehavior,
   descriptors,
   actions: _actions,
   emitter,
@@ -121,8 +119,6 @@ function NativeTabsContent({
     routes,
     routeNames,
     focusedRouteKey: routes[state.index]?.key,
-    backBehavior,
-    history,
     descriptors,
   });
   const visibleTabs = useMemo(
@@ -250,6 +246,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     [props.children]
   );
   const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
+  useInitialRouteBackBehaviorWarning(props);
 
   const {
     backBehavior = defaultBackBehavior,

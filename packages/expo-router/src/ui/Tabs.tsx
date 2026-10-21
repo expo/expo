@@ -22,6 +22,7 @@ import {
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { useInitialRouteBackBehaviorWarning } from '../standard-navigation/useInitialRouteBackBehaviorWarning';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -59,6 +60,11 @@ export type UseTabsOptions = Omit<
 > & {
   activityEnabled?: boolean;
   backBehavior?: TabRouterOptions['backBehavior'];
+  /**
+   * The name of the tab that going back returns to when `backBehavior` is `initialRoute`. It takes
+   * precedence over the layout anchor. Changes after the tabs mount are ignored.
+   */
+  backBehaviorInitialRoute?: string;
 };
 
 export type TabsProps = ViewProps & {
@@ -164,13 +170,13 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const contextKey = useContextKey();
   const linking = use(LinkingContext).options;
   const routeInfo = useRouteInfo();
+  useInitialRouteBackBehaviorWarning(rest);
 
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
   const initialRouteName = getValidInitialRouteName(routeNode);
-  const backBehavior = rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
@@ -195,7 +201,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       triggerMap,
       id: contextKey,
       initialRouteName,
-      backBehavior,
+      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
     },
     { activityDefaultThreshold: 1 }
   );
@@ -234,7 +240,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const NavigationContent = useComponent((children: React.ReactNode) => (
     // Headless tabs have no guards, so shadow parent guards whose route names may collide.
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
-      <TabVisibilityRedirect state={state} backBehavior={backBehavior} descriptors={descriptors} />
+      <TabVisibilityRedirect state={state} descriptors={descriptors} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
           <NavigatorContext.Provider value={navigatorContextValue}>
@@ -250,11 +256,9 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
 function TabVisibilityRedirect({
   state,
-  backBehavior,
   descriptors,
 }: {
   state: TabNavigationState<any>;
-  backBehavior: TabRouterOptions['backBehavior'];
   descriptors: PlaceholderDescriptorMap;
 }) {
   const stateWithPlaceholders = useMemo(
@@ -265,8 +269,6 @@ function TabVisibilityRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,
     focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
-    backBehavior,
-    history: stateWithPlaceholders.history,
     descriptors,
   });
   return null;

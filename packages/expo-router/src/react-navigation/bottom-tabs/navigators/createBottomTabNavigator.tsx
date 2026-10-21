@@ -3,9 +3,10 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { useInitialRouteBackBehaviorWarning } from '../../../standard-navigation/useInitialRouteBackBehaviorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { ParamListBase, TabNavigationState, TabRouterOptions } from '../../native';
+import type { TabRouterOptions } from '../../native';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -18,7 +19,6 @@ export interface BottomTabNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
-  history: TabNavigationState<ParamListBase>['history'];
   popNestedStackToTop: (routeKey: string) => void;
   preload: (name: string) => void;
 }
@@ -29,8 +29,8 @@ export type BottomTabNavigatorContentProps = BottomTabNavigationConfig &
 type ContentArgs = NavigatorContentProps<
   BottomTabNavigationOptions,
   BottomTabNavigationEventMap,
-  // Router options, like `backBehavior`, are forwarded to the content too.
-  BottomTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior'>,
+  // Router options are forwarded to the content too.
+  BottomTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior' | 'backBehaviorInitialRoute'>,
   BottomTabNavigatorCreateProps
 >;
 
@@ -42,18 +42,17 @@ function BottomTabNavigatorContent({
   isPreloaded: _isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
   routeNames,
-  history,
-  backBehavior,
   popNestedStackToTop,
   preload,
+  backBehavior,
+  backBehaviorInitialRoute,
   ...rest
 }: ContentArgs) {
+  useInitialRouteBackBehaviorWarning({ backBehavior, backBehaviorInitialRoute });
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
-    backBehavior,
-    history,
     descriptors,
   });
   // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety

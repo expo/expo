@@ -28,7 +28,6 @@ export function createBaseTabProps({
     isPreloaded,
     isRemovalPrevented,
     routeNames: state.routeNames,
-    history: state.history,
     preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
   };
 }

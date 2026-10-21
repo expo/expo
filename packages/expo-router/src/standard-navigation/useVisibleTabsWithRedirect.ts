@@ -11,7 +11,6 @@ import {
   type RouteProp,
   useIsFocused,
 } from '../react-navigation/native';
-import type { BackBehavior } from '../react-navigation/routers/TabRouter';
 import { getValidInitialRouteName } from '../routeNode';
 import { orderRoutesByRouteNames } from '../utils/orderRoutesByRouteNames';
 import type { StandardNavigatorDescriptor } from './types';
@@ -26,8 +25,7 @@ export type TabDescriptor<Options extends object> = Partial<
 
 /**
  * Returns the visible layout tabs and their focused index. When the navigator is focused, redirects
- * an unavailable focused route to the layout's initial route, the initially focused tab with
- * `backBehavior: 'initialRoute'`, or the first visible tab.
+ * an unavailable focused route to the layout's initial route or the first visible tab.
  */
 export function useVisibleTabsWithRedirect<
   Route extends TabRoute,
@@ -36,15 +34,11 @@ export function useVisibleTabsWithRedirect<
   routes,
   routeNames,
   focusedRouteKey,
-  backBehavior,
-  history,
   descriptors,
 }: {
   routes: Route[];
   routeNames: string[];
   focusedRouteKey: string | undefined;
-  backBehavior?: BackBehavior;
-  history?: { type: string; key?: string }[];
   descriptors: Record<string, TabDescriptor<Options>>;
 }) {
   const buildHref = useBuildHref();
@@ -77,24 +71,18 @@ export function useVisibleTabsWithRedirect<
   const focusedIndex = visibleFocusedIndex;
 
   const initialRouteName = getValidInitialRouteName(routeNode);
-  const initialRouteKey =
-    backBehavior === 'initialRoute'
-      ? history?.find((item) => item.type === 'route')?.key
-      : undefined;
 
   const redirectHref = useMemo(() => {
     if (guardRedirect !== undefined) {
       return guardRedirect;
     }
     const redirectRoute =
-      visibleRoutes.find((route) => route.name === initialRouteName) ??
-      visibleRoutes.find((route) => route.key === initialRouteKey) ??
-      visibleRoutes[0];
+      visibleRoutes.find((route) => route.name === initialRouteName) ?? visibleRoutes[0];
     if (redirectRoute) {
       return buildHref(redirectRoute);
     }
     return null;
-  }, [buildHref, guardRedirect, initialRouteKey, initialRouteName, visibleRoutes]);
+  }, [buildHref, guardRedirect, initialRouteName, visibleRoutes]);
 
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.

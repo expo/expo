@@ -425,6 +425,13 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   backBehavior?: 'none' | 'initialRoute' | 'history';
   /**
+   * The name of the tab that going back returns to when `backBehavior` is `initialRoute`. It takes
+   * precedence over the layout anchor. Changes after the tabs mount are ignored.
+   *
+   * @platform android
+   */
+  backBehaviorInitialRoute?: string;
+  /**
    * The visibility mode of the tab item label.
    *
    * @see [Material Components documentation](https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md#making-navigation-bar-accessible)

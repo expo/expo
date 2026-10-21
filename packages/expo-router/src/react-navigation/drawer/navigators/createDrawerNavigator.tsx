@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import { useInitialRouteBackBehaviorWarning } from '../../../standard-navigation/useInitialRouteBackBehaviorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type { DrawerNavigationState, DrawerRouterOptions, ParamListBase } from '../../native';
@@ -38,13 +39,14 @@ export type StandardDrawerNavigationEventMap = {
 type ContentArgs = StandardNavigatorContentProps<
   DrawerNavigationOptions,
   StandardDrawerNavigationEventMap,
-  DrawerNavigatorContentProps & Pick<DrawerRouterOptions, 'backBehavior'>
+  // Router options are forwarded to the content too.
+  DrawerNavigatorContentProps &
+    Pick<DrawerRouterOptions, 'backBehavior' | 'backBehaviorInitialRoute'>
 >;
 
 function DrawerNavigatorContent({
   descriptors,
   drawerState,
-  backBehavior,
   navigation,
   isPreloaded: _isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
@@ -52,13 +54,14 @@ function DrawerNavigatorContent({
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
+  backBehavior,
+  backBehaviorInitialRoute,
 }: ContentArgs) {
+  useInitialRouteBackBehaviorWarning({ backBehavior, backBehaviorInitialRoute });
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,
     focusedRouteKey: drawerState.routes[drawerState.index]?.key,
-    backBehavior,
-    history: drawerState.history,
     descriptors,
   });
   // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety

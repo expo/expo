@@ -63,6 +63,53 @@ test('renders a drawer navigator and navigates between screens', async () => {
   expect(screen).toHavePathname('/second');
 });
 
+test('goes back to backBehaviorInitialRoute with initialRoute backBehavior', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Drawer backBehavior="initialRoute" backBehaviorInitialRoute="second">
+          <Drawer.Screen name="index" />
+          <Drawer.Screen name="second" />
+          <Drawer.Screen name="third" />
+        </Drawer>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+      third: () => <View testID="third" />,
+    },
+    { initialUrl: '/third' }
+  );
+
+  await act(() => router.navigate('/'));
+  await act(() => router.back());
+
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(screen).toHavePathname('/second');
+});
+
+test('warns once when initialRoute backBehavior has no backBehaviorInitialRoute', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Drawer backBehavior="initialRoute">
+          <Drawer.Screen name="index" />
+          <Drawer.Screen name="second" />
+        </Drawer>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    },
+    { initialUrl: '/second' }
+  );
+
+  await act(() => router.navigate('/'));
+
+  expect(warnSpy).toHaveBeenCalledTimes(1);
+  expect(warnSpy).toHaveBeenCalledWith(
+    `The navigator at "./_layout.js" sets \`backBehavior: 'initialRoute'\` without \`backBehaviorInitialRoute\`. Going back returns to the layout anchor, or to the first route when the layout has no anchor. Set \`backBehaviorInitialRoute\` to the name of the route that going back should return to.`
+  );
+});
+
 test('renders only declared drawer items and redirects from unavailable routes', async () => {
   await renderRouter({
     _layout: () => (

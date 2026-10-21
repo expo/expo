@@ -248,29 +248,6 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
-  it('redirects to the initially focused tab when navigating to a route without a visible tab', async () => {
-    await renderRouter(
-      {
-        _layout: () => (
-          <NativeTabs>
-            <NativeTabs.Trigger name="index" />
-            <NativeTabs.Trigger name="second" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-        second: () => <View testID="second" />,
-        notSpecified: () => <View testID="not-specified" />,
-      },
-      { initialUrl: '/second' }
-    );
-
-    await act(() => router.push('/notSpecified'));
-
-    expect(screen.getByTestId('second')).toBeVisible();
-    expect(screen.queryByTestId('not-specified')).toBeNull();
-    expect(screen).toHavePathname('/second');
-  });
-
   it('removes a replaced route from tab history', async () => {
     await renderRouter({
       _layout: () => (
@@ -290,6 +267,56 @@ describe('Native Bottom Tabs trigger changes', () => {
 
     await act(() => router.back());
     expect(screen).toHavePathname('/second');
+  });
+
+  it('goes back to backBehaviorInitialRoute with the default backBehavior', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs backBehaviorInitialRoute="second">
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+            <NativeTabs.Trigger name="third" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+        third: () => <View testID="third" />,
+      },
+      { initialUrl: '/third' }
+    );
+
+    await act(() => router.push('/'));
+    await act(() => router.back());
+
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen).toHavePathname('/second');
+  });
+
+  it('warns once when initialRoute backBehavior has no backBehaviorInitialRoute', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs backBehavior="initialRoute">
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+      },
+      { initialUrl: '/second' }
+    );
+
+    await act(() => router.push('/'));
+
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(
+      `The navigator at "./_layout.js" sets \`backBehavior: 'initialRoute'\` without \`backBehaviorInitialRoute\`. Going back returns to the layout anchor, or to the first route when the layout has no anchor. Set \`backBehaviorInitialRoute\` to the name of the route that going back should return to.`
+    );
+    warn.mockRestore();
   });
 
   it('respects initialRouteName when redirecting from a route without a visible tab', async () => {
