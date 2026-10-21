@@ -1,9 +1,14 @@
-import React, { isValidElement, use, type ReactNode } from 'react';
+import React, { isValidElement, use, type ReactElement, type ReactNode } from 'react';
 
 import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { Slot } from '../views/Navigator';
-import { SplitViewColumn, SplitViewInspector } from './elements';
+import {
+  renderSplitViewColumnContent,
+  SplitViewColumn,
+  SplitViewInspector,
+  type SplitViewColumnProps,
+} from './elements';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -31,10 +36,12 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
 
   const allChildrenArray = React.Children.toArray(children);
   const columnChildren = allChildrenArray.filter(
-    (child) => isValidElement(child) && child.type === SplitViewColumn
+    (child): child is ReactElement<SplitViewColumnProps> =>
+      isValidElement(child) && child.type === SplitViewColumn
   );
   const inspectorChildren = allChildrenArray.filter(
-    (child) => isValidElement(child) && child.type === SplitViewInspector
+    (child): child is ReactElement<SplitViewColumnProps> =>
+      isValidElement(child) && child.type === SplitViewInspector
   );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
@@ -54,15 +61,23 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
     return <Slot activityEnabled={activityEnabled} />;
   }
 
+  // Split.Host recognizes its columns and inspectors by element type, to count them and give each column its
+  // index, so they are passed as Split.Column and Split.Inspector elements instead of SplitView wrappers.
   // The key is needed, because number of columns cannot be changed dynamically
   return (
     <IsWithinNativeNavigator value>
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-        {columnChildren}
+        {columnChildren.map((column) => (
+          <Split.Column key={column.key}>
+            {renderSplitViewColumnContent(column.props.children)}
+          </Split.Column>
+        ))}
         <Split.Column>
           <Slot activityEnabled={activityEnabled} />
         </Split.Column>
-        {inspectorChildren}
+        {inspectorChildren.map((inspector) => (
+          <Split.Inspector key={inspector.key}>{inspector.props.children}</Split.Inspector>
+        ))}
       </Split.Host>
     </IsWithinNativeNavigator>
   );
