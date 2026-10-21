@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import type { Decision, DecisionCreateParams } from 'openai/resources/decisions';
 
-import { getIssueAsync, LabelEvent } from './GitHub';
+import { getIssueAsync } from './GitHub';
 
 const MODEL = 'gpt-6-luna';
 
@@ -377,44 +377,6 @@ export function closeBlocker(
   return isTeamAuthor(authorAssociation) ? 'from an Expo member' : null;
 }
 
-/**
- * Whether the live step could have closed the issue. Only template labels from the author and
- * labels from the bot exist before the step runs. Maintainers label the issue later.
- */
-export function couldCloseWhenOpened(
-  issue: { user: { login: string } | null; author_association: string },
-  events: LabelEvent[]
-): boolean {
-  const labels = events
-    .filter(
-      (event) =>
-        BOT_ACTORS.includes(event.actor) ||
-        (event.actor === issue.user?.login && TEMPLATE_LABELS.includes(event.label))
-    )
-    .map((event) => event.label);
-  return closeBlocker('open', labels, issue.author_association) === null;
-}
-
-export type WouldCloseCounts = { n: number; agree: number; noTruth: number };
-
-export function countWouldClose(
-  counts: Map<string, WouldCloseCounts>,
-  label: string | null,
-  truth: Agreement | null
-) {
-  if (!label) {
-    return;
-  }
-  const entry = counts.get(label) ?? { n: 0, agree: 0, noTruth: 0 };
-  counts.set(label, entry);
-  if (!truth) {
-    entry.noTruth += 1;
-    return;
-  }
-  entry.n += 1;
-  entry.agree += truth.agrees ? 1 : 0;
-}
-
 export function formatReport(
   issueNumber: number,
   result: ClassificationResult,
@@ -475,36 +437,9 @@ function isTeamAuthor(authorAssociation: string): boolean {
   return TEAM_ASSOCIATIONS.includes(authorAssociation);
 }
 
-const BOT_ACTORS = ['expo-bot', 'github-actions[bot]'];
-const TEMPLATE_LABELS: string[] = TRIAGE_RULE_ENTRIES.filter(([, rule]) => rule.template).map(
-  ([, rule]) => rule.truth
-);
-/** The one-off backfill of 2026-09-22 ran under a personal token, so its labels look human. */
-const BACKFILL_WINDOW = { from: '2026-09-22T20:20:00Z', to: '2026-09-22T20:45:00Z' };
-
-/**
- * The labels currently on the issue that a person applied. Labels from the bot account and
- * from the 2026-09-22 backfill are classifier output and must not count as truth. Template labels
- * applied as the author are not truth either.
- */
-export function humanAppliedLabels(
-  currentLabels: string[],
-  events: LabelEvent[],
-  author: string
-): string[] {
-  const human = new Set(
-    events
-      .filter(
-        (event) =>
-          !BOT_ACTORS.includes(event.actor) &&
-          !(event.actor === author && TEMPLATE_LABELS.includes(event.label)) &&
-          (event.createdAt < BACKFILL_WINDOW.from || event.createdAt > BACKFILL_WINDOW.to)
-      )
-      .map((event) => event.label)
-  );
-  return currentLabels.filter((label) => human.has(label));
-}
-
+export const TEMPLATE_LABELS: string[] = TRIAGE_RULE_ENTRIES.filter(
+  ([, rule]) => rule.template
+).map(([, rule]) => rule.truth);
 export type Agreement = { truth: string; agrees: boolean };
 
 /**
