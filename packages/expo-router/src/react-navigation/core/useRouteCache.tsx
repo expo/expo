@@ -71,7 +71,8 @@ export function useRouteCache<State extends NavigationState>(routes: State['rout
     return acc;
   }, new Map() as RouteCache);
 
-  // A navigator can render a route before the state has it. Keep one object for that route, so the screen does not render again when the state adds it.
+  // A navigator can render a route before the state has it. Keep one object for that route, so
+  // the screen does not render again when the state adds it.
   const getMissingRoute = (route: RouteProp<ParamListBase>) => {
     const previous = previousRoutes.get(route.key);
     const cached = previous && isRouteEqual(previous, route) ? previous : route;
