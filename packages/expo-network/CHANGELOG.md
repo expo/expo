@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix network state listeners that never receive events after the last listener was removed. ([#51474](https://github.com/expo/expo/pull/51474) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-09-11
