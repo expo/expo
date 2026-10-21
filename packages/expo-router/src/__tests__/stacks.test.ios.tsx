@@ -1259,6 +1259,8 @@ describe('unstable_requiredScreensBelow', () => {
   });
 
   it('does not add required screens when the stack goes back to a screen', async () => {
+    const Index = jest.fn(() => null);
+
     await renderRouter(
       {
         _layout: () => (
@@ -1267,7 +1269,7 @@ describe('unstable_requiredScreensBelow', () => {
             <Stack.Screen name="list" unstable_requiredScreensBelow={['index']} />
           </Stack>
         ),
-        index: () => null,
+        index: Index,
         list: () => null,
         details: () => null,
       },
@@ -1278,5 +1280,6 @@ describe('unstable_requiredScreensBelow', () => {
     await act(() => router.back());
 
     expect(navigationRef.getRootState()).toMatchObject(stackState('list'));
+    expect(Index).not.toHaveBeenCalled();
   });
 });
