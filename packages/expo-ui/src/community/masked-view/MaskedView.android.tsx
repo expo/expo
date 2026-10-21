@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { Host } from '../../jetpack-compose/Host';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Slot } from '../../jetpack-compose/SlotView';
-import { fillMaxSize } from '../../jetpack-compose/modifiers';
+import { fillMaxSize, matchParentSize } from '../../jetpack-compose/modifiers';
+import { getMaskedViewLayout } from './layout';
 import type { MaskedViewProps } from './types';
 
 const MaskNativeView: React.ComponentType<{
@@ -19,15 +20,33 @@ const MaskNativeView: React.ComponentType<{
  */
 export function MaskedView(props: MaskedViewProps) {
   const { maskElement, children, style, ...viewProps } = props;
-  // `style` is applied only to the outer container. Re-applying it inside the
-  // Host/MaskView wrappers used to double offsets (`translateX`, `marginLeft`, …)
-  // and transforms because the inner views inherit layout from `absoluteFill`.
+  const { outerStyle, contentStyle, matchContents } = getMaskedViewLayout(style);
+
+  if (matchContents) {
+    return (
+      <View {...viewProps} style={outerStyle}>
+        <Host matchContents={matchContents}>
+          <MaskNativeView alignment="topStart">
+            <RNHostView matchContents={matchContents}>
+              <View style={contentStyle}>{children}</View>
+            </RNHostView>
+            <Slot slotName="content">
+              <RNHostView modifiers={[matchParentSize()]}>
+                <View style={StyleSheet.absoluteFill}>{maskElement}</View>
+              </RNHostView>
+            </Slot>
+          </MaskNativeView>
+        </Host>
+      </View>
+    );
+  }
+
   return (
-    <View {...viewProps} style={style}>
+    <View {...viewProps} style={outerStyle}>
       <Host style={StyleSheet.absoluteFill}>
         <MaskNativeView alignment="topStart" modifiers={[fillMaxSize()]}>
           <RNHostView modifiers={[fillMaxSize()]}>
-            <View style={StyleSheet.absoluteFill}>{children}</View>
+            <View style={[StyleSheet.absoluteFill, contentStyle]}>{children}</View>
           </RNHostView>
           <Slot slotName="content">
             <RNHostView modifiers={[fillMaxSize()]}>
