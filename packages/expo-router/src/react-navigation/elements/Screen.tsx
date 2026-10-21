@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
@@ -13,7 +14,8 @@ import {
 import { Background } from './Background';
 import { HeaderHeightContext } from './Header/HeaderHeightContext';
 import { HeaderShownContext } from './Header/HeaderShownContext';
-import { getDefaultHeaderHeight } from './Header/getDefaultHeaderHeight';
+import { getDefaultJSHeaderHeight } from './Header/getDefaultHeaderHeight';
+import { getHeaderStatusBarHeight } from './Header/getHeaderStatusBarHeight';
 import { useFrameSize } from './useFrameSize';
 
 type Props = {
@@ -31,6 +33,7 @@ type Props = {
 
 export function Screen(props: Props) {
   const insets = useSafeAreaInsets();
+  const verticalBarEdge = useVerticalBarEdgeIOS();
 
   const isParentHeaderShown = use(HeaderShownContext);
   const parentHeaderHeight = use(HeaderHeightContext);
@@ -41,7 +44,9 @@ export function Screen(props: Props) {
     header,
     headerShown = true,
     headerTransparent,
-    headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top,
+    headerStatusBarHeight = isParentHeaderShown
+      ? 0
+      : getHeaderStatusBarHeight(insets, verticalBarEdge),
     navigation,
     route,
     children,
@@ -49,7 +54,7 @@ export function Screen(props: Props) {
   } = props;
 
   const defaultHeaderHeight = useFrameSize((size) =>
-    getDefaultHeaderHeight(size, modal, headerStatusBarHeight)
+    getDefaultJSHeaderHeight(size, modal, headerStatusBarHeight)
   );
 
   const headerRef = React.useRef<View>(null);
