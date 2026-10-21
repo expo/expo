@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
@@ -402,11 +403,42 @@ export class StackView extends React.Component<Props, State> {
     });
   };
 
+  private descriptorsWithSafeAreaInsets?: {
+    descriptors: StackViewDescriptorMap;
+    top: number;
+    result: StackViewDescriptorMap;
+  };
+
+  // `safeAreaInsets.top` sets each header's top offset unless the screen sets its own. The result is
+  // cached so `CardStack` sees the same descriptors object until they or the inset change.
+  private getDescriptorsWithSafeAreaInsets(
+    descriptors: StackViewDescriptorMap,
+    top: number | undefined
+  ): StackViewDescriptorMap {
+    if (top === undefined) {
+      return descriptors;
+    }
+    const cache = this.descriptorsWithSafeAreaInsets;
+    if (cache?.descriptors === descriptors && cache.top === top) {
+      return cache.result;
+    }
+    const result: StackViewDescriptorMap = {};
+    for (const [key, descriptor] of Object.entries(descriptors)) {
+      result[key] =
+        descriptor.options.headerStatusBarHeight === undefined
+          ? { ...descriptor, options: { ...descriptor.options, headerStatusBarHeight: top } }
+          : descriptor;
+    }
+    this.descriptorsWithSafeAreaInsets = { descriptors, top, result };
+    return result;
+  }
+
   render() {
     const {
       state,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       descriptors: _,
+      safeAreaInsets,
       ...rest
     } = this.props;
 
@@ -421,7 +453,7 @@ export class StackView extends React.Component<Props, State> {
                 {(isParentModal) => (
                   <HeaderShownContext.Consumer>
                     {(isParentHeaderShown) => (
-                      <CardStack
+                      <CardStackWithVerticalBarEdge
                         insets={insets!}
                         isParentHeaderShown={isParentHeaderShown}
                         isParentModal={isParentModal}
@@ -435,7 +467,10 @@ export class StackView extends React.Component<Props, State> {
                         onTransitionEnd={this.handleTransitionEnd}
                         renderHeader={this.renderHeader}
                         state={state}
-                        descriptors={descriptors}
+                        descriptors={this.getDescriptorsWithSafeAreaInsets(
+                          descriptors,
+                          safeAreaInsets?.top
+                        )}
                         onGestureStart={this.handleGestureStart}
                         onGestureEnd={this.handleGestureEnd}
                         onGestureCancel={this.handleGestureCancel}
@@ -458,3 +493,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+function CardStackWithVerticalBarEdge(
+  props: Omit<React.ComponentProps<typeof CardStack>, 'verticalBarEdge'>
+) {
+  return <CardStack {...props} verticalBarEdge={useVerticalBarEdgeIOS()} />;
+}

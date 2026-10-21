@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import {
@@ -23,7 +24,8 @@ import { HeaderIcon } from './HeaderIcon';
 import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
-import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
+import { getDefaultHeaderBottomPadding, getDefaultJSHeaderHeight } from './getDefaultHeaderHeight';
+import { getHeaderStatusBarHeight } from './getHeaderStatusBarHeight';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
@@ -74,6 +76,7 @@ const warnIfHeaderStylesDefined = (styles: Record<string, any>) => {
 
 export function Header(props: Props) {
   const insets = useSafeAreaInsets();
+  const verticalBarEdge = useVerticalBarEdgeIOS();
   const frame = useFrameSize((size) => size, true);
   const { colors } = useTheme();
 
@@ -120,10 +123,12 @@ export function Header(props: Props) {
     headerShadowVisible,
     headerPressColor,
     headerPressOpacity,
-    headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top,
+    headerStatusBarHeight = isParentHeaderShown
+      ? 0
+      : getHeaderStatusBarHeight(insets, verticalBarEdge),
   } = props;
 
-  const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
+  const defaultHeight = getDefaultJSHeaderHeight(layout, modal, headerStatusBarHeight);
 
   const {
     height = defaultHeight,
@@ -176,6 +181,9 @@ export function Header(props: Props) {
     transformOrigin,
     ...unsafeStyles
   } = StyleSheet.flatten(customHeaderStyle || {}) as ViewStyle;
+
+  // A custom height replaces the default, along with its bottom padding.
+  const bottomPadding = height === defaultHeight ? getDefaultHeaderBottomPadding(layout, modal) : 0;
 
   if (process.env.NODE_ENV !== 'production') {
     warnIfHeaderStylesDefined(unsafeStyles);
@@ -324,6 +332,7 @@ export function Header(props: Props) {
       <View
         style={[
           styles.content,
+          bottomPadding ? { paddingBottom: bottomPadding } : null,
           process.env.EXPO_OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH
             ? styles.large
             : null,
