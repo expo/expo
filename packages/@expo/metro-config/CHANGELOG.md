@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Bump to `noxcturnal@^0.1.7` ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Update to `noxcturnal@^0.1.8` ([#52008](https://github.com/expo/expo/pull/52008) by [@kitten](https://github.com/kitten))
+- Fix Babel transforms using the process `BABEL_ENV` instead of the bundle's mode. ([#51872](https://github.com/expo/expo/pull/51872) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve project-relative filenames against the app root in Noxcturnal plugins for React Server references, server actions, DOM components, Router export detection, and Router environment values. Preserve project-relative module IDs. ([#51932](https://github.com/expo/expo/pull/51932) by [@kitten](https://github.com/kitten))
+- Pass the app root to Noxcturnal so diagnostic filenames resolve correctly when Metro runs from a workspace root. ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Add asset transformer through noxcturnal for `experiments.noxcturnalTransformWorker` ([#51714](https://github.com/expo/expo/pull/51714) by [@kitten](https://github.com/kitten))
+- Switch default React Compiler panic threshold for Noxcturnal to `none` to match `babel-plugin-react-compiler`. ([#51913](https://github.com/expo/expo/pull/51913) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+  - @expo/config@58.0.7
+
 ## 58.0.15
 
 ### Patch Changes

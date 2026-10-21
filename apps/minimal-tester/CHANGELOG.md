@@ -1,5 +1,24 @@
 # minimal-tester
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51801](https://github.com/expo/expo/pull/51801), [#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588), [#51996](https://github.com/expo/expo/pull/51996), [#51928](https://github.com/expo/expo/pull/51928), [#51927](https://github.com/expo/expo/pull/51927))
+  - expo-camera@58.0.12
+  - expo@58.0.17
+  - expo-status-bar@58.0.4
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - expo-brownfield@58.0.16
+  - expo-updates@58.0.18
+  - expo-apple-authentication@58.0.2
+  - expo-blur@58.0.5
+  - expo-build-properties@58.0.11
+  - expo-dev-client@58.0.14
+  - expo-linear-gradient@58.0.3
+  - expo-video@58.0.12
+
 ## 1.0.10
 
 ### Patch Changes

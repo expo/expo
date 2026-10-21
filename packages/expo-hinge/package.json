@@ -1,6 +1,6 @@
 {
   "name": "expo-hinge",
-  "version": "58.0.1",
+  "version": "58.0.2",
   "description": "Provides the device hinge angle and status on iPhone Duo and Android foldables.",
   "keywords": [
     "android",
