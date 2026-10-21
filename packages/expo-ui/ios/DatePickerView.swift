@@ -45,6 +45,8 @@ internal struct DatePickerView: ExpoSwiftUI.View {
 
   private var swiftUIDatePicker: some View {
     createDatePicker()
+      // Graphical style on macOS: https://github.com/expo/expo/issues/47062
+      .frame(minWidth: isGraphicalStyle ? 320 : nil)
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
   }
 
