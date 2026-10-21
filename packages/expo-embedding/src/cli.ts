@@ -1,12 +1,15 @@
+import { readdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-import { readJSON } from './files';
-import { printIntegrationInstructions } from './integration';
+import { prepareAndroidWorkspace } from './android';
+import { prepareAndroid, hoistAndroidDependencies, initializeAndroid } from './android-setup';
+import { exists, readJSON } from './files';
 import { prepareIos, initializeIos } from './ios';
 import { findAppRoot } from './scaffold';
 import { prepareExpoProject, installDependencies, installPackages } from './setup';
+import { printIntegrationInstructions } from './integration';
 import { usage } from './usage';
 
 async function main(): Promise<void> {
@@ -16,6 +19,8 @@ async function main(): Promise<void> {
       project: { type: 'string' },
       target: { type: 'string' },
       platform: { type: 'string' },
+      'migrate-activity': { type: 'string' },
+      'configure-host': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },
@@ -49,14 +54,36 @@ async function main(): Promise<void> {
   }
 
   const root = await findAppRoot(process.cwd());
-  if (values.platform && values.platform !== 'ios')
-    throw new Error('This integration supports --platform ios.');
-  const ios = await prepareIos(root, packageRoot, values);
-  await prepareExpoProject(root, command, frozen);
-  const manager = await installDependencies(root, frozen);
+  const hasIos = (await readdir(root)).some((name) => name.endsWith('.xcodeproj'));
+  const hasAndroid =
+    (await exists(join(root, 'settings.gradle.kts'))) ||
+    (await exists(join(root, 'settings.gradle')));
+  const platform =
+    values.platform ?? (hasAndroid && !hasIos ? 'android' : !hasAndroid ? 'ios' : undefined);
+  if (platform !== 'ios' && platform !== 'android')
+    throw new Error('Select a native platform with --platform ios or --platform android.');
+  if (
+    values['migrate-activity'] !== undefined &&
+    (platform !== 'android' || values['migrate-activity'] !== 'appcompat')
+  )
+    throw new Error('Use --migrate-activity=appcompat only with Android setup.');
+  if (values['configure-host'] && platform !== 'android')
+    throw new Error('Use --configure-host only with Android setup.');
+
+  const ios = platform === 'ios' ? await prepareIos(root, packageRoot, values) : undefined;
+  const hostChanges = platform === 'android' ? await prepareAndroid(root, values) : [];
+  await prepareExpoProject(root, command, frozen, platform);
+  if (platform === 'android') await prepareAndroidWorkspace(root, frozen);
+  const manager = await installDependencies(
+    root,
+    frozen,
+    platform === 'android' ? root : undefined
+  );
+  if (platform === 'android') await hoistAndroidDependencies(root, frozen);
   if (command === 'install') await installPackages(root, manager, packages);
   try {
-    await initializeIos(ios, packageRoot);
+    if (ios) await initializeIos(ios, packageRoot);
+    else await initializeAndroid(root, packageRoot, hostChanges);
   } catch (error) {
     if (command === 'install') {
       throw new Error(
@@ -66,7 +93,7 @@ async function main(): Promise<void> {
     }
     throw error;
   }
-  if (command === 'init') {
+  if (ios && command === 'init') {
     await printIntegrationInstructions(packageRoot, {
       root,
       platform: 'ios',
