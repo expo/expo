@@ -784,6 +784,10 @@ function tabRouterExtension({
             isFocused &&
             (backBehavior === 'initialRoute' ||
               state.history.filter((item) => item.type === TYPE_ROUTE).length === 1);
+          if (backBehavior === 'history' && isFocused && !replacesFocused) {
+            // The route was already visited, so `history` keeps its entry once, after the others.
+            return { state, affectedRouteKey: focusedRoute?.key };
+          }
           const history = [
             { type: TYPE_INITIAL_ROUTE, name },
             ...state.history.filter(

@@ -2251,7 +2251,7 @@ test('does not add the focused route from ADD_INITIAL_ROUTE twice on jump to wit
   expect(result.history).toEqual([{ type: 'route', key: 'baz-test', params: undefined }]);
 });
 
-test('keeps earlier history when ADD_INITIAL_ROUTE names a focused route that was navigated to with backBehavior: history', () => {
+test('ignores ADD_INITIAL_ROUTE for a focused route that was navigated to with backBehavior: history', () => {
   const router = TabRouter({ backBehavior: 'history' });
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
@@ -2278,7 +2278,6 @@ test('keeps earlier history when ADD_INITIAL_ROUTE names a focused route that wa
   ).state as TabNavigationState<ParamListBase>;
 
   expect(state.history).toEqual([
-    { type: 'initialRoute', name: 'baz' },
     { type: 'route', key: 'qux-test' },
     { type: 'route', key: 'baz:tab-0' },
   ]);
@@ -2287,6 +2286,9 @@ test('keeps earlier history when ADD_INITIAL_ROUTE names a focused route that wa
     .state as TabNavigationState<ParamListBase>;
 
   expect(state.routes[state.index]).toEqual({ key: 'qux-test', name: 'qux' });
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBe(
+    RouterActionHandling.Unhandled
+  );
 });
 
 test('handles back action with backBehavior: none', () => {
