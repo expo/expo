@@ -179,6 +179,43 @@ describe('StackToolbarView component', () => {
     }
   );
 
+  it.each(['plain', 'prominent', undefined] as const)(
+    'passes variant=%s as barButtonItemStyle',
+    async (variant) => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarView variant={variant}>
+            <Text>Content</Text>
+          </StackToolbarView>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          barButtonItemStyle: variant,
+        }),
+        undefined
+      );
+    }
+  );
+
+  it('passes tintColor prop', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarView tintColor="red">
+          <Text>Content</Text>
+        </StackToolbarView>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tintColor: 'red',
+      }),
+      undefined
+    );
+  });
+
   it.each([true, false, undefined])(
     'passes sharesBackground as inverted separateBackground=%s',
     async (separateBackground) => {
