@@ -74,9 +74,6 @@ class ViewManagerWrapperDelegate(
    *
    * @return A List of property names that were successfully updated.
    */
-  // Whether React Native is creating a view with its initial props.
-  internal var isCreatingView = false
-
   fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
     val expoProps = props
     val handledProps = mutableListOf<String>()
@@ -96,8 +93,9 @@ class ViewManagerWrapperDelegate(
               return@let
             }
 
-            // Fabric can create a view from props queued before its owner unmounted; it's deleted unshown.
-            if (isCreatingView && exception.isCausedByReleasedSharedObject()) {
+            // Fabric can create a view from props queued before its owner unmounted, and deletes it unshown.
+            // Such a view has no parent yet.
+            if (view.parent == null && exception.isCausedByReleasedSharedObject()) {
               logger.warn("⚠️ Skipped the '$key' prop on '$view', because its shared object was already released")
               return@let
             }
