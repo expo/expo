@@ -48,7 +48,7 @@ function StackNavigatorContent({
 }: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
-  useClearGuardedRoutes(removeRoutes);
+  useClearGuardedRoutes(state, removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   if (state.routes.length === 0) {
