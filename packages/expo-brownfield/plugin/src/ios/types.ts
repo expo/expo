@@ -4,6 +4,8 @@ export interface PluginConfig {
   buildReactNativeFromSource: boolean;
   multipleFrameworks: boolean;
   hostProvidedFrameworks: string[];
+  /** Embed JavaScript and assets in Debug and Release frameworks. Defaults to true. */
+  embeddedBundle: boolean;
 }
 
 export type IOSPluginProps = Partial<PluginConfig>;
