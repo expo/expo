@@ -335,6 +335,44 @@ export function closeBlocker(
   return isTeamAuthor(authorAssociation) ? 'from an Expo member' : null;
 }
 
+/** The live step runs within about a minute of the issue opening. */
+const OPENED_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * Whether the live step could have closed the issue: the labels it had right after it opened
+ * and its author pass `closeBlocker`.
+ */
+export function couldCloseWhenOpened(
+  issue: { created_at: string; author_association: string },
+  events: LabelEvent[]
+): boolean {
+  const openedAt = Date.parse(issue.created_at);
+  const labels = events
+    .filter((event) => Date.parse(event.createdAt) - openedAt < OPENED_WINDOW_MS)
+    .map((event) => event.label);
+  return closeBlocker('open', labels, issue.author_association) === null;
+}
+
+export type WouldCloseCounts = { n: number; agree: number; noTruth: number };
+
+export function countWouldClose(
+  counts: Map<string, WouldCloseCounts>,
+  close: CloseDecision | null,
+  truth: Agreement | null
+) {
+  if (!close) {
+    return;
+  }
+  const entry = counts.get(close.label) ?? { n: 0, agree: 0, noTruth: 0 };
+  counts.set(close.label, entry);
+  if (!truth) {
+    entry.noTruth += 1;
+    return;
+  }
+  entry.n += 1;
+  entry.agree += truth.agrees ? 1 : 0;
+}
+
 export type LabelDecision = { plan: LabelPlan; close?: CloseDecision | null };
 
 export function decideLabels(

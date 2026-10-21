@@ -13,6 +13,8 @@ import {
   Agreement,
   agreements,
   closeBlocker,
+  couldCloseWhenOpened,
+  countWouldClose,
   decideLabels,
   classifyIssueAsync,
   formatReport,
@@ -22,6 +24,8 @@ import {
   QUESTION_IDS,
   QuestionId,
   TriageIssue,
+  wouldClose,
+  WouldCloseCounts,
 } from '../IssueTriage';
 import logger from '../Logger';
 
@@ -125,6 +129,8 @@ async function evaluateAsync(limit: number) {
     Tally
   >;
 
+  const wouldCloseCounts = new Map<string, WouldCloseCounts>();
+  let closable = 0;
   let model = '';
   let inputTokens = 0;
   let failures = 0;
@@ -158,6 +164,14 @@ async function evaluateAsync(limit: number) {
       for (const id of QUESTION_IDS) {
         tally(tallies[id], confidences[id], agreement[id]);
       }
+      if (couldCloseWhenOpened(issue, events)) {
+        closable += 1;
+        countWouldClose(
+          wouldCloseCounts,
+          wouldClose(result.classification, null),
+          agreement.triage
+        );
+      }
 
       logger.log(
         `${prefix} ${result.classification.triage.choice} ` +
@@ -167,7 +181,14 @@ async function evaluateAsync(limit: number) {
   };
   await Promise.all(Array.from({ length: EVALUATE_CONCURRENCY }, worker));
 
-  const report = formatEvaluation(tallies, model, inputTokens, issues.length, failures);
+  const report = formatEvaluation(
+    tallies,
+    { counts: wouldCloseCounts, closable },
+    model,
+    inputTokens,
+    issues.length,
+    failures
+  );
   console.log(report);
   appendStepSummary(report);
 }
@@ -192,6 +213,7 @@ async function listClosedIssuesAsync(limit: number): Promise<TriageIssueWithNumb
 
 type TriageIssueWithNumber = TriageIssue & {
   number: number;
+  created_at: string;
   user: { login: string } | null;
 };
 
@@ -232,6 +254,7 @@ function emptyTally(): Tally {
 
 function formatEvaluation(
   tallies: Record<QuestionId, Tally>,
+  wouldCloseTally: { counts: Map<string, WouldCloseCounts>; closable: number },
   model: string,
   inputTokens: number,
   issueCount: number,
@@ -263,6 +286,19 @@ function formatEvaluation(
     for (const [truth, counts] of [...truths].sort((a, b) => b[1].n - a[1].n)) {
       lines.push(row(truth, counts));
     }
+  }
+
+  lines.push(
+    '',
+    '#### would close',
+    '',
+    `Only the ${wouldCloseTally.closable} issues that the live step could close: no team author, and no triaged label right after the issue opened.`,
+    '',
+    '| label | n | agree | agree % | no truth |',
+    '| --- | --- | --- | --- | --- |'
+  );
+  for (const [label, counts] of wouldCloseTally.counts) {
+    lines.push(`${row(label, counts)} ${counts.noTruth} |`);
   }
 
   lines.push('', `total input tokens: ${inputTokens}`);

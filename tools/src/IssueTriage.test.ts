@@ -5,6 +5,8 @@ import {
   agreements,
   buildQuestions,
   closeBlocker,
+  couldCloseWhenOpened,
+  countWouldClose,
   decideLabels,
   formatReport,
   gateConfidences,
@@ -136,6 +138,34 @@ describe('closeBlocker', () => {
     assert.equal(closeBlocker('open', ['Issue accepted'], 'NONE'), 'already triaged');
     assert.equal(closeBlocker('closed', [], 'NONE'), 'already triaged');
     assert.equal(closeBlocker('open', [], 'MEMBER'), 'from an Expo member');
+  });
+});
+
+describe('couldCloseWhenOpened', () => {
+  const opened = '2026-09-23T09:00:00Z';
+  const issue = { created_at: opened, author_association: 'NONE' };
+  const event = (label: string, createdAt: string) => ({ actor: 'someone', label, createdAt });
+
+  it('is false when the live guard would have held back closing labels', () => {
+    assert.equal(couldCloseWhenOpened(issue, []), true);
+    assert.equal(couldCloseWhenOpened({ ...issue, author_association: 'MEMBER' }, []), false);
+    const template = [event('invalid issue: question', '2026-09-23T09:00:01Z')];
+    assert.equal(couldCloseWhenOpened(issue, template), false);
+    const later = [event('Issue accepted', '2026-09-24T09:00:00Z')];
+    assert.equal(couldCloseWhenOpened(issue, later), true);
+  });
+});
+
+describe('countWouldClose', () => {
+  it('counts agreement per closing label and keeps issues without truth apart', () => {
+    const counts = new Map();
+    const close = { label: 'invalid issue: question', confidence: 0.95, blockedBy: null };
+    countWouldClose(counts, close, { truth: 'question', agrees: true });
+    countWouldClose(counts, close, { truth: 'bug_report', agrees: false });
+    countWouldClose(counts, close, null);
+    countWouldClose(counts, null, { truth: 'bug_report', agrees: false });
+    assert.deepEqual(counts.get('invalid issue: question'), { n: 2, agree: 1, noTruth: 1 });
+    assert.equal(counts.size, 1);
   });
 });
 
