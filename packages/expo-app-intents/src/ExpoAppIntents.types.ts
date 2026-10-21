@@ -9,8 +9,8 @@ import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
  * Delivery is at-least-once, so handlers must be idempotent for each `id`.
  *
  * A background task that `runBackgroundTask(name:params:timeout:)` runs from Swift receives an
- * invocation as its `data` too. That invocation is not persisted and is delivered at most once, and
- * every run has a new `id`.
+ * invocation as its `data` too. The native layer does not persist that invocation, delivers it at
+ * most once, and gives every run a new `id`.
  */
 export type AppIntentInvocation = {
   /**
