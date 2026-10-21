@@ -147,7 +147,7 @@ export default function ThumbContentExample() {
 
 To make the whole row tappable and have screen readers read the label with the switch, apply the `toggleable` modifier to the `Row`. Handle the change in `toggleable` and do not pass `onCheckedChange` to the `Switch`.
 
-Without `onCheckedChange`, the switch is smaller. Use `defaultMinSize` to keep its 48 dp touch size.
+Without `onCheckedChange`, the switch loses its 48 dp minimum touch size. Use `defaultMinSize` to keep it.
 
 ```tsx
 import { useState } from 'react';

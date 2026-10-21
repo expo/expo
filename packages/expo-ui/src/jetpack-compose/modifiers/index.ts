@@ -403,8 +403,10 @@ export const selectableGroup = () => createModifier('selectableGroup');
  * @param value - The current toggle state.
  * @param handler - Function to call when toggled.
  * @param options - Optional configuration.
- * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
- * @param options.enabled - Whether the view responds to input and is reported as enabled to accessibility services. Defaults to `true`.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`,
+ * `'switch'`, or `'tab'`.
+ * @param options.enabled - Whether the view responds to input and is reported as enabled to
+ * accessibility services. Defaults to `true`.
  */
 export const toggleable = (
   value: boolean,
