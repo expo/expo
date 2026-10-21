@@ -60,9 +60,9 @@ export async function getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePay
 
 /**
  * Clears the data shared with the app.
- * On Android and iOS, it also deletes the files that the shared payloads point to.
+ * On Android and iOS, it also deletes the copies of shared files that `expo-sharing` keeps in a cache directory.
  *
- * > **Note:** Copy the files you want to keep before you call this method. After it runs, the `contentUri` of a resolved payload no longer points to a file.
+ * > **Note:** Copy the files you want to keep before you call this method. After it runs, the `contentUri` of a file shared into the app no longer points to a file.
  */
 export function clearSharedPayloads(): void {
   SharingNativeModule.clearSharedPayloads();
