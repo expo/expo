@@ -1,5 +1,4 @@
 import type { RouteNode } from './Route';
-import { getGroupMatchingRouteName } from './layoutAnchor';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -8,7 +7,6 @@ export type Screen =
       path: string;
       screens: Record<string, Screen>;
       _route?: RouteNode;
-      initialRouteName?: string;
     };
 
 // `[page]` -> `:page`
@@ -65,13 +63,6 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     path,
     screens,
   };
-
-  // When several routes match a URL equally well, the URL parser prefers the layout's initial route.
-  // The anchor from `unstable_settings` is not used, because reading it loads the layout.
-  const groupMatchingRouteName = getGroupMatchingRouteName(node);
-  if (groupMatchingRouteName) {
-    screen.initialRouteName = groupMatchingRouteName;
-  }
 
   if (!metaOnly) {
     screen._route = node;

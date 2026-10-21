@@ -1,7 +1,6 @@
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
-import { getGroupMatchingRouteName } from '../layoutAnchor';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
@@ -91,54 +90,13 @@ export function createSeededNavigationState(
     .map((child) => child.route);
 
   return createSeededState({
-    targetState: withoutParsedGroupAnchor(
-      targetState,
-      getGroupMatchingRouteName(routeNode),
-      initialRouteName
-    ),
+    targetState,
     routeNames,
     initialRouteName,
     anchorParams,
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
-}
-
-/**
- * Removes the anchor that the URL parser added when `unstable_settings.anchor` picks another one.
- *
- * ```
- * (home)/
- *   _layout.tsx    // unstable_settings = { anchor: 'dashboard' }
- *   home.tsx       // Anchor added by the URL parser, because it is named like the group
- *   dashboard.tsx  // Anchor from settings
- *   details.tsx
- * ```
- *
- * The parser turns `/details` into `[home, details]`. This function returns `[details]`, and
- * `createSeededState` then adds `dashboard` to make `[dashboard, details]`.
- */
-function withoutParsedGroupAnchor(
-  state: SeedState | undefined,
-  parsedAnchor: string | undefined,
-  anchor: string | undefined
-): SeedState | undefined {
-  if (
-    // Complete states do not come from the parser.
-    !state ||
-    state.stale === false ||
-    parsedAnchor === anchor ||
-    state.routes.length < 2 ||
-    state.routes[0]!.name !== parsedAnchor ||
-    state.index === 0
-  ) {
-    return state;
-  }
-  return {
-    ...state,
-    routes: state.routes.slice(1),
-    index: state.index === undefined ? undefined : state.index - 1,
-  };
 }
 
 // TODO(@ubax): consider replacing findChildNode here and in other places

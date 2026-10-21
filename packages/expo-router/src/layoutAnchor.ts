@@ -18,9 +18,8 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   if (anchors.has(node)) {
     return anchors.get(node);
   }
-  // A layout that failed to load keeps the anchor known without loading it.
   if (collector?.skipped.has(node)) {
-    return getGroupMatchingRouteName(node);
+    return undefined;
   }
   const loaded = loadLayout(node);
   if (loaded instanceof Promise) {
@@ -30,12 +29,6 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   const anchor = readAnchor(node, loaded?.unstable_settings);
   anchors.set(node, anchor);
   return anchor;
-}
-
-/** Returns the child named like the layout's group, which is the anchor unless settings override it. */
-export function getGroupMatchingRouteName(node: RouteNode): string | undefined {
-  return node.children.find((child) => child.route.replace(/\/index$/, '') === node.groupName)
-    ?.route;
 }
 
 /**
@@ -130,12 +123,12 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  let anchor = getGroupMatchingRouteName(node);
+  let anchor: string | undefined;
   let anchorGroupName: string | undefined;
   if (settings) {
     try {
       warnIfInitialRouteNameIsUsed(settings, groupName);
-      anchor = settings.anchor ?? settings.initialRouteName ?? anchor;
+      anchor = settings.anchor ?? settings.initialRouteName;
     } catch (error) {
       if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
         throw error;
