@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.6.19 — 2026-10-21
+
+_This version does not introduce any user-facing changes._
+
 ## 3.6.18 — 2026-08-17
 
 ### 🐛 Bug fixes

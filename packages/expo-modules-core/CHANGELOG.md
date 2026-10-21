@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.27 — 2026-10-21
+
+### 💡 Others
+
 - [Android] Improve performance of `PersistentFileLog`. ([#45058](https://github.com/expo/expo/pull/45058) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.26 — 2026-08-31
