@@ -1,10 +1,11 @@
 import { minimatch } from 'minimatch';
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { readFile, readdir } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
+import { exists, lstatIfExists } from './files';
 import { readPodspec } from './podspec';
+import { readCommandOutput } from './process';
 
 type Settings = {
   cFlags: string[];
@@ -25,7 +26,11 @@ export type NativeTarget = {
   deploymentTarget: string;
   settings: { Debug: Settings; Release: Settings };
 };
-export type NativeBuild = { source: string; targets: NativeTarget[]; manifestHash?: string };
+export type NativeBuild = {
+  source: string;
+  targets: NativeTarget[];
+  manifestHash?: string;
+};
 type ObjectValue = Record<string, any>;
 
 function unsupported(detail: string): never {
@@ -53,27 +58,29 @@ function identifier(value: string): string {
   return value;
 }
 
-function localPath(root: string, base: string, path: string): string {
+async function localPath(root: string, base: string, path: string): Promise<string> {
   const full = resolve(base, path);
   const rel = relative(root, full);
   if (isAbsolute(path) || rel === '..' || rel.startsWith('../'))
     unsupported(`path outside package: ${path}`);
   for (let candidate = full; candidate !== resolve(root); candidate = dirname(candidate)) {
-    if (lstatSync(candidate, { throwIfNoEntry: false })?.isSymbolicLink()) {
+    if ((await lstatIfExists(candidate))?.isSymbolicLink()) {
       unsupported(`source symlink ${candidate}`);
     }
   }
   return full;
 }
 
-function walk(directory: string): string[] {
-  if (!existsSync(directory)) unsupported(`missing source directory ${directory}`);
-  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    if (['node_modules', '.build', 'build', '.git'].includes(entry.name)) return [];
+async function walk(directory: string): Promise<string[]> {
+  if (!(await exists(directory))) unsupported(`missing source directory ${directory}`);
+  const paths: string[] = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    if (['node_modules', '.build', 'build', '.git'].includes(entry.name)) continue;
     const path = join(directory, entry.name);
     if (entry.isSymbolicLink()) unsupported(`source symlink ${path}`);
-    return entry.isDirectory() ? walk(path) : [path];
-  });
+    paths.push(...(entry.isDirectory() ? await walk(path) : [path]));
+  }
+  return paths;
 }
 
 function matches(path: string, patterns: string[]): boolean {
@@ -85,10 +92,14 @@ function matches(path: string, patterns: string[]): boolean {
   );
 }
 
-function files(root: string, base: string, patterns: string[], excludes: string[] = []): string[] {
-  patterns.forEach((pattern) => localPath(root, base, pattern));
-  excludes.forEach((pattern) => localPath(root, base, pattern));
-  return walk(base)
+async function files(
+  root: string,
+  base: string,
+  patterns: string[],
+  excludes: string[] = []
+): Promise<string[]> {
+  for (const pattern of [...patterns, ...excludes]) await localPath(root, base, pattern);
+  return (await walk(base))
     .filter((file) => {
       const path = relative(base, file);
       return matches(path, patterns) && !matches(path, excludes);
@@ -96,18 +107,23 @@ function files(root: string, base: string, patterns: string[], excludes: string[
     .sort();
 }
 
-function resources(root: string, base: string, entries: ObjectValue[]): string[] {
-  return entries.flatMap((entry) => {
+async function resources(root: string, base: string, entries: ObjectValue[]): Promise<string[]> {
+  const paths: string[] = [];
+  for (const entry of entries) {
     keys(entry, ['path', 'rule'], 'resource');
     const rule =
       typeof entry.rule === 'string' ? entry.rule : Object.keys(entry.rule ?? { copy: {} })[0];
     if (rule !== 'copy') unsupported(`resource rule ${rule}; this adapter currently supports copy`);
-    const path = localPath(root, base, entry.path);
-    if (existsSync(path)) return [path];
-    const matched = files(root, base, [entry.path]);
+    const path = await localPath(root, base, entry.path);
+    if (await exists(path)) {
+      paths.push(path);
+      continue;
+    }
+    const matched = await files(root, base, [entry.path]);
     if (!matched.length) unsupported(`resource pattern ${entry.path} matches no files`);
-    return matched;
-  });
+    paths.push(...matched);
+  }
+  return paths;
 }
 
 function swiftVersion(value: unknown): string {
@@ -130,7 +146,12 @@ function target(name: string, version?: unknown, deploymentTarget = '16.4'): Nat
       `iOS deployment target ${deploymentTarget} exceeds the embedding host's 16.4 floor`
     );
   }
-  const settings = (): Settings => ({ cFlags: [], cxxFlags: [], swiftFlags: [], linkerFlags: [] });
+  const settings = (): Settings => ({
+    cFlags: [],
+    cxxFlags: [],
+    swiftFlags: [],
+    linkerFlags: [],
+  });
   return {
     name: identifier(name),
     files: [],
@@ -188,7 +209,7 @@ function finish(build: NativeBuild): NativeBuild {
   return build;
 }
 
-export function fromSpmConfig(root: string, config: ObjectValue): NativeBuild {
+export async function fromSpmConfig(root: string, config: ObjectValue): Promise<NativeBuild> {
   keys(config, ['$schema', 'publishPrebuilds', 'products'], 'spm.config.json');
   const targets: NativeTarget[] = [];
   for (const product of config.products ?? []) {
@@ -235,20 +256,22 @@ export function fromSpmConfig(root: string, config: ObjectValue): NativeBuild {
       const name = aliases.get(input.name)!;
       const item = groups.get(name) ?? target(name, product.swiftLanguageVersions, minimum);
       groups.set(name, item);
-      const base = localPath(root, root, input.path ?? '');
+      const base = await localPath(root, root, input.path ?? '');
       const patterns = input.pattern
         ? [input.pattern]
         : [input.type === 'swift' ? '**/*.swift' : '**/*.{m,mm,c,cc,cpp}'];
       const excludes = ['**/Tests/**', ...strings(input.exclude)];
-      const selected = files(root, base, patterns, excludes);
+      const selected = await files(root, base, patterns, excludes);
       if (selected.some((file) => !sourcePattern.test(file)))
         unsupported(`non-source file in target ${input.name}`);
-      const headers = files(root, base, [input.headerPattern ?? '**/*.h'], excludes);
+      const headers = await files(root, base, [input.headerPattern ?? '**/*.h'], excludes);
       item.files.push(...selected, ...headers);
       if (input.publicHeaders !== false) item.publicHeaders.push(...headers);
       item.headerSearchPaths.push(
         base,
-        ...strings(input.includeDirectories).map((path) => localPath(root, base, path))
+        ...(await Promise.all(
+          strings(input.includeDirectories).map((path) => localPath(root, base, path))
+        ))
       );
       item.dependencies.push(
         ...[...strings(input.dependencies), ...strings(product.externalDependencies)].map(
@@ -256,7 +279,7 @@ export function fromSpmConfig(root: string, config: ObjectValue): NativeBuild {
         )
       );
       item.frameworks.push(...strings(input.linkedFrameworks).map(identifier));
-      item.resources.push(...resources(root, root, input.resources ?? []));
+      item.resources.push(...(await resources(root, root, input.resources ?? [])));
       item.resourceAccessor ||= (input.resources?.length ?? 0) > 0;
       for (const mode of ['Debug', 'Release'] as const) {
         const flags = input.compilerFlags;
@@ -284,7 +307,7 @@ function swiftConditions(condition: ObjectValue = {}): ('Debug' | 'Release')[] {
     : ['Debug', 'Release'];
 }
 
-export function fromSwiftPackage(root: string, manifest: ObjectValue): NativeBuild {
+export async function fromSwiftPackage(root: string, manifest: ObjectValue): Promise<NativeBuild> {
   keys(
     manifest,
     [
@@ -323,97 +346,118 @@ export function fromSwiftPackage(root: string, manifest: ObjectValue): NativeBui
   const minimum = manifest.platforms?.find(
     (platform: ObjectValue) => platform.platformName === 'ios'
   )?.version;
-  const targets = inputs.map((input: ObjectValue) => {
-    if (input.type !== 'regular') unsupported(`Swift target ${input.name} type ${input.type}`);
-    keys(
-      input,
-      [
-        'name',
-        'type',
-        'path',
-        'dependencies',
-        'exclude',
-        'sources',
-        'resources',
-        'publicHeadersPath',
-        'settings',
-        'packageAccess',
-      ],
-      `Swift target ${input.name}`
-    );
-    const language = manifest.swiftLanguageVersions ?? [
-      Number(manifest.toolsVersion?._version?.split('.')[0] ?? 5) >= 6 ? '6' : '5',
-    ];
-    const item = target(input.name, language, minimum);
-    const inferred =
-      ['Sources', 'Source', 'src', 'srcs']
-        .map((path) => join(path, input.name))
-        .find((path) => existsSync(join(root, path))) ??
-      (inputs.length === 1
-        ? ['Sources', 'Source', 'src', 'srcs'].find((path) => existsSync(join(root, path)))
-        : undefined);
-    if (!input.path && !inferred) unsupported(`Swift target ${input.name} source path`);
-    const base = localPath(root, root, input.path ?? inferred);
-    item.files = files(root, base, input.sources ?? ['**/*'], input.exclude ?? []).filter((file) =>
-      sourcePattern.test(file)
-    );
-    const publicPath = localPath(root, base, input.publicHeadersPath ?? 'include');
-    if (existsSync(join(publicPath, 'module.modulemap')))
-      unsupported(`Swift target ${input.name} custom module.modulemap`);
-    item.publicHeaders = existsSync(publicPath)
-      ? files(root, publicPath, ['**/*.h'], input.exclude ?? [])
-      : [];
-    item.files.push(...item.publicHeaders);
-    item.headerSearchPaths = [base, ...item.publicHeaders.map(dirname)];
-    item.resources = resources(root, base, input.resources ?? []);
-    item.resourceAccessor = item.resources.length > 0;
-    for (const mode of ['Debug', 'Release'] as const) {
-      item.settings[mode].swiftFlags.push(
-        '-DSWIFT_PACKAGE',
-        '-package-name',
-        identifier(manifest.name.replace(/[^A-Za-z0-9_]/g, '_'))
+  const targets = await Promise.all(
+    inputs.map(async (input: ObjectValue) => {
+      if (input.type !== 'regular') unsupported(`Swift target ${input.name} type ${input.type}`);
+      keys(
+        input,
+        [
+          'name',
+          'type',
+          'path',
+          'dependencies',
+          'exclude',
+          'sources',
+          'resources',
+          'publicHeadersPath',
+          'settings',
+          'packageAccess',
+        ],
+        `Swift target ${input.name}`
       );
-    }
-    for (const dep of input.dependencies ?? []) {
-      keys(dep, ['byName', 'target'], `Swift target ${input.name} dependency`);
-      const [name, condition] = dep.byName ?? dep.target ?? [];
-      if (condition?.config) unsupported('configuration-specific Swift target dependencies');
-      if (swiftConditions(condition ?? {}).length) item.dependencies.push(dependencyName(name));
-    }
-    for (const setting of input.settings ?? []) {
-      const [kind, wrapped] = Object.entries(setting.kind ?? {})[0] ?? [];
-      const value = (wrapped as ObjectValue)?._0;
-      for (const mode of swiftConditions(setting.condition)) {
-        const settings = item.settings[mode];
-        if (kind === 'linkedFramework' && setting.tool === 'linker')
-          settings.linkerFlags.push('-framework', identifier(value));
-        else if (kind === 'linkedLibrary' && setting.tool === 'linker')
-          settings.linkerFlags.push(`-l${identifier(value)}`);
-        else {
-          const field = (
-            { swift: 'swiftFlags', c: 'cFlags', cxx: 'cxxFlags', linker: 'linkerFlags' } as const
-          )[setting.tool as 'swift'];
-          if (!field) unsupported(`Swift setting tool ${setting.tool}`);
-          if (kind === 'define' && setting.tool !== 'linker') settings[field].push(`-D${value}`);
-          else if (kind === 'unsafeFlags') settings[field].push(...strings(value));
-          else if (kind === 'headerSearchPath' && ['c', 'cxx'].includes(setting.tool))
-            settings[field].push('-I', localPath(root, base, value));
-          else if (
-            ['enableUpcomingFeature', 'enableExperimentalFeature'].includes(kind) &&
-            setting.tool === 'swift'
-          )
-            settings.swiftFlags.push(
-              kind === 'enableUpcomingFeature'
-                ? '-enable-upcoming-feature'
-                : '-enable-experimental-feature',
-              value
-            );
-          else unsupported(`Swift setting ${setting.tool}.${kind}`);
+      const language = manifest.swiftLanguageVersions ?? [
+        Number(manifest.toolsVersion?._version?.split('.')[0] ?? 5) >= 6 ? '6' : '5',
+      ];
+      const item = target(input.name, language, minimum);
+      let inferred: string | undefined;
+      for (const directory of ['Sources', 'Source', 'src', 'srcs']) {
+        if (await exists(join(root, directory, input.name))) {
+          inferred = join(directory, input.name);
+          break;
         }
       }
-    }
-    return item;
-  });
+      if (!inferred && inputs.length === 1) {
+        for (const directory of ['Sources', 'Source', 'src', 'srcs']) {
+          if (await exists(join(root, directory))) {
+            inferred = directory;
+            break;
+          }
+        }
+      }
+      if (!input.path && !inferred) unsupported(`Swift target ${input.name} source path`);
+      const base = await localPath(root, root, input.path ?? inferred);
+      item.files = (await files(root, base, input.sources ?? ['**/*'], input.exclude ?? [])).filter(
+        (file) => sourcePattern.test(file)
+      );
+      const publicPath = await localPath(root, base, input.publicHeadersPath ?? 'include');
+      if (await exists(join(publicPath, 'module.modulemap')))
+        unsupported(`Swift target ${input.name} custom module.modulemap`);
+      item.publicHeaders = (await exists(publicPath))
+        ? (await files(root, publicPath, ['**/*.h'])).filter(
+            (file) => !matches(relative(base, file), input.exclude ?? [])
+          )
+        : [];
+      item.files.push(...item.publicHeaders);
+      item.headerSearchPaths = [base, ...item.publicHeaders.map(dirname)];
+      item.resources = await resources(root, base, input.resources ?? []);
+      item.resourceAccessor = item.resources.length > 0;
+      for (const mode of ['Debug', 'Release'] as const) {
+        item.settings[mode].cFlags.push('-DSWIFT_PACKAGE');
+        item.settings[mode].cxxFlags.push('-DSWIFT_PACKAGE');
+        item.settings[mode].swiftFlags.push(
+          '-DSWIFT_PACKAGE',
+          '-Xcc',
+          '-DSWIFT_PACKAGE',
+          '-package-name',
+          identifier(manifest.name.replace(/[^A-Za-z0-9_]/g, '_'))
+        );
+      }
+      for (const dep of input.dependencies ?? []) {
+        keys(dep, ['byName', 'target'], `Swift target ${input.name} dependency`);
+        const [name, condition] = dep.byName ?? dep.target ?? [];
+        if (condition?.config) unsupported('configuration-specific Swift target dependencies');
+        if (swiftConditions(condition ?? {}).length) item.dependencies.push(dependencyName(name));
+      }
+      for (const setting of input.settings ?? []) {
+        const [kind, wrapped] = Object.entries(setting.kind ?? {})[0] ?? [];
+        const value = (wrapped as ObjectValue)?._0;
+        for (const mode of swiftConditions(setting.condition)) {
+          const settings = item.settings[mode];
+          if (kind === 'linkedFramework' && setting.tool === 'linker')
+            settings.linkerFlags.push('-framework', identifier(value));
+          else if (kind === 'linkedLibrary' && setting.tool === 'linker')
+            settings.linkerFlags.push(`-l${identifier(value)}`);
+          else {
+            const field = (
+              {
+                swift: 'swiftFlags',
+                c: 'cFlags',
+                cxx: 'cxxFlags',
+                linker: 'linkerFlags',
+              } as const
+            )[setting.tool as 'swift'];
+            if (!field) unsupported(`Swift setting tool ${setting.tool}`);
+            if (kind === 'define' && setting.tool !== 'linker') settings[field].push(`-D${value}`);
+            else if (kind === 'unsafeFlags') settings[field].push(...strings(value));
+            else if (kind === 'headerSearchPath' && ['c', 'cxx'].includes(setting.tool))
+              settings[field].push('-I', await localPath(root, base, value));
+            else if (
+              ['enableUpcomingFeature', 'enableExperimentalFeature'].includes(kind) &&
+              setting.tool === 'swift'
+            )
+              settings.swiftFlags.push(
+                kind === 'enableUpcomingFeature'
+                  ? '-enable-upcoming-feature'
+                  : '-enable-experimental-feature',
+                value
+              );
+            else unsupported(`Swift setting ${setting.tool}.${kind}`);
+          }
+        }
+      }
+      return item;
+    })
+  );
   for (const product of manifest.products ?? []) {
     for (const name of product.targets ?? [])
       if (!targets.some((item: NativeTarget) => item.name === name))
@@ -422,7 +466,11 @@ export function fromSwiftPackage(root: string, manifest: ObjectValue): NativeBui
   return finish({ source: 'Package.swift', targets });
 }
 
-export function fromPodspec(root: string, base: string, spec: ObjectValue): NativeBuild {
+export async function fromPodspec(
+  root: string,
+  base: string,
+  spec: ObjectValue
+): Promise<NativeBuild> {
   const ignored = [
     'version',
     'summary',
@@ -495,7 +543,7 @@ export function fromPodspec(root: string, base: string, spec: ObjectValue): Nati
     attributes.swift_version ?? attributes.swift_versions,
     spec.platforms?.ios ?? spec.ios?.deployment_target
   );
-  item.files = files(
+  item.files = await files(
     root,
     base,
     strings(attributes.source_files),
@@ -509,7 +557,7 @@ export function fromPodspec(root: string, base: string, spec: ObjectValue): Nati
         matches(relative(base, file), strings(attributes.public_header_files))) &&
       !matches(relative(base, file), strings(attributes.private_header_files))
   );
-  item.resources = resources(
+  item.resources = await resources(
     root,
     base,
     strings(attributes.resources).map((path) => ({ path, rule: 'copy' }))
@@ -559,25 +607,28 @@ export function validateBuildDependencies(targets: NativeTarget[], provided: str
   targets.forEach((item) => visit(item.name));
 }
 
-export function readNativeBuild(root: string, podspecs: string[]): NativeBuild {
-  if (existsSync(join(root, 'Package.swift'))) {
+export async function readNativeBuild(root: string, podspecs: string[]): Promise<NativeBuild> {
+  if (await exists(join(root, 'Package.swift'))) {
     const { SDKROOT: _sdkroot, ...env } = process.env;
-    const output = execFileSync('swift', ['package', '--package-path', root, 'dump-package'], {
-      encoding: 'utf8',
-      env,
-      maxBuffer: 32 * 1024 * 1024,
-    });
+    const output = await readCommandOutput(
+      'swift',
+      ['package', '--package-path', root, 'dump-package'],
+      {
+        env,
+        maxBuffer: 32 * 1024 * 1024,
+      }
+    );
     return {
-      ...fromSwiftPackage(root, JSON.parse(output)),
+      ...(await fromSwiftPackage(root, JSON.parse(output))),
       manifestHash: createHash('sha256')
-        .update(readFileSync(join(root, 'Package.swift')))
+        .update(await readFile(join(root, 'Package.swift')))
         .digest('hex'),
     };
   }
-  if (existsSync(join(root, 'spm.config.json'))) {
-    const input = readFileSync(join(root, 'spm.config.json'), 'utf8');
+  if (await exists(join(root, 'spm.config.json'))) {
+    const input = await readFile(join(root, 'spm.config.json'), 'utf8');
     return {
-      ...fromSpmConfig(root, JSON.parse(input)),
+      ...(await fromSpmConfig(root, JSON.parse(input))),
       manifestHash: createHash('sha256').update(input).digest('hex'),
     };
   }
@@ -585,7 +636,9 @@ export function readNativeBuild(root: string, podspecs: string[]): NativeBuild {
     unsupported(`${root} needs one podspec or an explicit Swift build manifest`);
   const path = podspecs[0];
   return {
-    ...fromPodspec(root, dirname(path), readPodspec(root, path)),
-    manifestHash: createHash('sha256').update(readFileSync(path)).digest('hex'),
+    ...(await fromPodspec(root, dirname(path), await readPodspec(root, path))),
+    manifestHash: createHash('sha256')
+      .update(await readFile(path))
+      .digest('hex'),
   };
 }

@@ -1,4 +1,4 @@
-import { readFileSync, realpathSync } from 'node:fs';
+import { readFile, realpath } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 
 type Token = {
@@ -13,15 +13,20 @@ type Expression =
   | { kind: 'array'; items: Expression[] }
   | { kind: 'hash'; entries: [string, Expression][] }
   | { kind: 'index'; receiver: Expression; key: Expression }
-  | { kind: 'call'; receiver: Expression; method: string; arguments: Expression[] };
+  | {
+      kind: 'call';
+      receiver: Expression;
+      method: string;
+      arguments: Expression[];
+    };
 
-export function readPodspec(root: string, path: string): Record<string, any> {
+export async function readPodspec(root: string, path: string): Promise<Record<string, any>> {
   const fail = (line: number, detail: string): never => {
     throw new Error(
       `${path}:${line}: Unsupported podspec syntax or expression: ${detail}. Use literal build declarations or Swift build metadata, then rerun init.`
     );
   };
-  const input = readFileSync(path, 'utf8');
+  const input = await readFile(path, 'utf8');
   const tokens: Token[] = [];
   let line = 1;
   for (let offset = 0; offset < input.length; ) {
@@ -141,7 +146,10 @@ export function readPodspec(root: string, path: string): Record<string, any> {
     else if (token.kind === 'number') result = { kind: 'literal', value: Number(token.value) };
     else if (token.kind === 'name') {
       if (['true', 'false', 'nil'].includes(token.value))
-        result = { kind: 'literal', value: token.value === 'nil' ? null : token.value === 'true' };
+        result = {
+          kind: 'literal',
+          value: token.value === 'nil' ? null : token.value === 'true',
+        };
       else result = { kind: 'variable', name: token.value };
     } else if (token.value === '[') result = { kind: 'array', items: argumentsList(']') };
     else if (token.value === ':') result = { kind: 'literal', value: name() };
@@ -191,19 +199,23 @@ export function readPodspec(root: string, path: string): Record<string, any> {
     return result;
   }
   const variables: Record<string, Value> = Object.create(null);
-  function evaluate(node: Expression, at: number): Value {
+  async function evaluate(node: Expression, at: number): Promise<Value> {
     if (node.kind === 'literal') return node.value;
     if (node.kind === 'variable') {
       if (node.name === '__dir__') return dirname(path);
       if (Object.hasOwn(variables, node.name)) return variables[node.name];
       return fail(at, `variable ${node.name}`);
     }
-    if (node.kind === 'array') return node.items.map((item) => evaluate(item, at));
+    if (node.kind === 'array') return Promise.all(node.items.map((item) => evaluate(item, at)));
     if (node.kind === 'hash')
-      return Object.fromEntries(node.entries.map(([key, value]) => [key, evaluate(value, at)]));
+      return Object.fromEntries(
+        await Promise.all(
+          node.entries.map(async ([key, value]) => [key, await evaluate(value, at)])
+        )
+      );
     if (node.kind === 'index') {
-      const receiver = evaluate(node.receiver, at);
-      const key = evaluate(node.key, at);
+      const receiver = await evaluate(node.receiver, at);
+      const key = await evaluate(node.key, at);
       if (
         !receiver ||
         typeof receiver !== 'object' ||
@@ -213,7 +225,7 @@ export function readPodspec(root: string, path: string): Record<string, any> {
         return fail(at, `missing metadata key ${String(key)}`);
       return (receiver as Record<string, Value>)[key];
     }
-    const args = node.arguments.map((arg) => evaluate(arg, at));
+    const args = await Promise.all(node.arguments.map((arg) => evaluate(arg, at)));
     const owner = node.receiver.kind === 'variable' ? node.receiver.name : '';
     if (
       owner === 'JSON' &&
@@ -239,15 +251,15 @@ export function readPodspec(root: string, path: string): Record<string, any> {
       typeof args[0] === 'string'
     ) {
       const candidate = resolve(dirname(path), args[0]);
-      const allowed = join(realpathSync(root), 'package.json');
-      if (!candidate.endsWith('/package.json') || realpathSync(candidate) !== allowed)
+      const allowed = join(await realpath(root), 'package.json');
+      if (!candidate.endsWith('/package.json') || (await realpath(candidate)) !== allowed)
         return fail(at, 'only package.json in the installed package may be read');
-      return readFileSync(candidate, 'utf8');
+      return readFile(candidate, 'utf8');
     }
     return fail(at, `call ${owner}.${node.method}`);
   }
   let spec: Record<string, any> | undefined;
-  function declarations(alias: string, attributes: Record<string, any>): void {
+  async function declarations(alias: string, attributes: Record<string, any>): Promise<void> {
     newlines();
     while (!is('end')) {
       const at = peek().line;
@@ -267,12 +279,14 @@ export function readPodspec(root: string, path: string): Record<string, any> {
       const method = parts[0];
       if (is('=')) {
         take();
-        const values = argumentsList().map((arg) => evaluate(arg, at));
+        const values = await Promise.all(argumentsList().map((arg) => evaluate(arg, at)));
         destination[method] = values.length === 1 ? values[0] : values;
       } else if (method === 'dependency' || method === 'test_spec') {
         const parenthesized = is('(');
         if (parenthesized) take();
-        const args = argumentsList(parenthesized ? ')' : undefined).map((arg) => evaluate(arg, at));
+        const args = await Promise.all(
+          argumentsList(parenthesized ? ')' : undefined).map((arg) => evaluate(arg, at))
+        );
         if (args.some((arg) => typeof arg !== 'string')) fail(at, `${method} expects strings`);
         if (method === 'dependency') {
           const [dependency, ...requirements] = args as string[];
@@ -314,7 +328,7 @@ export function readPodspec(root: string, path: string): Record<string, any> {
     const at = peek().line;
     const identifier = name();
     if (identifier === 'require') {
-      const module = evaluate(expression(), at);
+      const module = await evaluate(expression(), at);
       if (module !== 'json') fail(at, `require ${String(module)}`);
     } else if (identifier === 'Pod') {
       if (spec) fail(at, 'multiple specifications');
@@ -327,10 +341,10 @@ export function readPodspec(root: string, path: string): Record<string, any> {
       const alias = name();
       expect('|');
       spec = Object.create(null);
-      declarations(alias, spec!);
+      await declarations(alias, spec!);
     } else {
       expect('=');
-      variables[identifier] = evaluate(expression(), at);
+      variables[identifier] = await evaluate(expression(), at);
     }
     endStatement();
   }

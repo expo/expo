@@ -9,7 +9,6 @@ import {
   validateBuildDependencies,
 } from '../metadata';
 import { readPodspec } from '../podspec';
-
 describe('Reading native build metadata', () => {
   let root: string;
   beforeEach(() => {
@@ -48,13 +47,12 @@ describe('Reading native build metadata', () => {
       ],
     };
   }
-
-  it('should combine declared Swift and Objective-C sources into their shared module', () => {
+  it('should combine declared Swift and Objective-C sources into their shared module', async () => {
     file('ios/Example.swift');
     file('ios/Helper.m');
     file('ios/Helper.h');
     file('ios/Tests/ExampleTests.swift');
-    const build = fromSpmConfig(root, config());
+    const build = await fromSpmConfig(root, config());
     expect(build.targets).toHaveLength(1);
     expect(build.targets[0].files.map((path) => path.slice(root.length + 1))).toEqual([
       'ios/Example.swift',
@@ -64,12 +62,11 @@ describe('Reading native build metadata', () => {
     expect(build.targets[0].dependencies).toEqual(['ExpoModulesCore']);
     expect(build.targets[0].frameworks).toContain('AVFoundation');
   });
-
-  it('should preserve source exclusions and resource files', () => {
+  it('should preserve source exclusions and resource files', async () => {
     file('ios/Example.swift');
     file('ios/Excluded.swift');
     file('ios/PrivacyInfo.xcprivacy');
-    const build = fromSpmConfig(root, {
+    const build = await fromSpmConfig(root, {
       products: [
         {
           name: 'Example',
@@ -89,35 +86,48 @@ describe('Reading native build metadata', () => {
     expect(build.targets[0].files).toEqual([join(root, 'ios/Example.swift')]);
     expect(build.targets[0].resources).toEqual([join(root, 'ios/PrivacyInfo.xcprivacy')]);
   });
-
-  it('should reject build features it cannot translate instead of dropping them', () => {
-    expect(() =>
-      fromSpmConfig(root, { products: [{ name: 'Example', customBuild: { script: 'build.sh' } }] })
-    ).toThrow('customBuild');
-    expect(() =>
+  it('should reject build features it cannot translate instead of dropping them', async () => {
+    await expect(
       fromSpmConfig(root, {
-        products: [{ name: 'Example', spmPackages: [{ url: 'https://example.com/lib' }] }],
+        products: [{ name: 'Example', customBuild: { script: 'build.sh' } }],
       })
-    ).toThrow('spmPackages');
-  });
-
-  it('should reject source paths outside the installed package', () => {
-    expect(() =>
+    ).rejects.toThrow('customBuild');
+    await expect(
       fromSpmConfig(root, {
         products: [
-          { name: 'Example', targets: [{ name: 'Example', type: 'swift', path: '../outside' }] },
+          {
+            name: 'Example',
+            spmPackages: [{ url: 'https://example.com/lib' }],
+          },
         ],
       })
-    ).toThrow('outside');
+    ).rejects.toThrow('spmPackages');
   });
-
-  it('should translate Swift manifest sources, resources, and conditional compiler settings', () => {
+  it('should reject source paths outside the installed package', async () => {
+    await expect(
+      fromSpmConfig(root, {
+        products: [
+          {
+            name: 'Example',
+            targets: [{ name: 'Example', type: 'swift', path: '../outside' }],
+          },
+        ],
+      })
+    ).rejects.toThrow('outside');
+  });
+  it('should translate Swift manifest sources, resources, and conditional compiler settings', async () => {
     file('Sources/Example/Example.swift');
     file('Sources/Example/data.json', '{}');
-    const build = fromSwiftPackage(root, {
+    const build = await fromSwiftPackage(root, {
       name: 'example',
       dependencies: [],
-      products: [{ name: 'Example', targets: ['Example'], type: { library: ['automatic'] } }],
+      products: [
+        {
+          name: 'Example',
+          targets: ['Example'],
+          type: { library: ['automatic'] },
+        },
+      ],
       targets: [
         {
           name: 'Example',
@@ -142,20 +152,25 @@ describe('Reading native build metadata', () => {
     expect(build.targets[0].settings.Debug.swiftFlags).toContain('-DFEATURE');
     expect(build.targets[0].settings.Release.swiftFlags).not.toContain('-DFEATURE');
   });
-
-  it('should reject Swift plugins and external packages', () => {
-    expect(() =>
-      fromSwiftPackage(root, { dependencies: [{ sourceControl: [] }], products: [], targets: [] })
-    ).toThrow('dependencies');
-    expect(() =>
-      fromSwiftPackage(root, { products: [], targets: [{ name: 'Plugin', type: 'plugin' }] })
-    ).toThrow('plugin');
+  it('should reject Swift plugins and external packages', async () => {
+    await expect(
+      fromSwiftPackage(root, {
+        dependencies: [{ sourceControl: [] }],
+        products: [],
+        targets: [],
+      })
+    ).rejects.toThrow('dependencies');
+    await expect(
+      fromSwiftPackage(root, {
+        products: [],
+        targets: [{ name: 'Plugin', type: 'plugin' }],
+      })
+    ).rejects.toThrow('plugin');
   });
-
-  it('should apply podspec iOS attributes and exclude test sources', () => {
+  it('should apply podspec iOS attributes and exclude test sources', async () => {
     file('ios/Example.swift');
     file('ios/Tests/UnitTests.swift');
-    const build = fromPodspec(root, join(root, 'ios'), {
+    const build = await fromPodspec(root, join(root, 'ios'), {
       name: 'Example',
       source_files: '**/*.swift',
       exclude_files: 'Tests/**',
@@ -167,19 +182,26 @@ describe('Reading native build metadata', () => {
     expect(build.targets[0].files).toEqual([join(root, 'ios/Example.swift')]);
     expect(build.targets[0].frameworks).toEqual(['AVFoundation']);
     expect(build.targets[0].swiftVersion).toBe('5.0');
-    expect(() =>
-      fromPodspec(root, root, { name: 'Example', script_phases: [{ script: 'echo build' }] })
-    ).toThrow('script_phases');
+    await expect(
+      fromPodspec(root, root, {
+        name: 'Example',
+        script_phases: [{ script: 'echo build' }],
+      })
+    ).rejects.toThrow('script_phases');
   });
-
-  it('should forward declared C flags to the Swift Clang importer', () => {
+  it('should forward declared C flags to the Swift Clang importer', async () => {
     file('ios/Example.swift');
-    const build = fromSpmConfig(root, {
+    const build = await fromSpmConfig(root, {
       products: [
         {
           name: 'Example',
           targets: [
-            { name: 'Example', type: 'swift', path: 'ios', compilerFlags: ['-DFEATURE=1'] },
+            {
+              name: 'Example',
+              type: 'swift',
+              path: 'ios',
+              compilerFlags: ['-DFEATURE=1'],
+            },
           ],
         },
       ],
@@ -188,22 +210,26 @@ describe('Reading native build metadata', () => {
       expect.arrayContaining(['-Xcc', '-DFEATURE=1'])
     );
   });
-
-  it('should use SwiftPM default public headers and toolchain language mode', () => {
+  it('should use SwiftPM default public headers and toolchain language mode', async () => {
     file('Sources/Example/example.c');
     file('Sources/Example/include/example.h');
-    const build = fromSwiftPackage(root, {
+    file('Sources/Example/include/Excluded.h');
+    const build = await fromSwiftPackage(root, {
       name: 'Example',
       toolsVersion: { _version: '6.0.0' },
-      targets: [{ name: 'Example', type: 'regular' }],
+      targets: [{ name: 'Example', type: 'regular', exclude: ['include/Excluded.h'] }],
     });
     expect(build.targets[0].publicHeaders).toEqual([
       join(root, 'Sources/Example/include/example.h'),
     ]);
     expect(build.targets[0].swiftVersion).toBe('6.0');
+    expect(build.targets[0].files).not.toContain(join(root, 'Sources/Example/include/Excluded.h'));
+    for (const settings of Object.values(build.targets[0].settings)) {
+      expect(settings.cFlags).toContain('-DSWIFT_PACKAGE');
+      expect(settings.cxxFlags).toContain('-DSWIFT_PACKAGE');
+    }
   });
-
-  it('should evaluate podspec metadata without loading CocoaPods', () => {
+  it('should evaluate podspec metadata without loading CocoaPods', async () => {
     file('ios/Example.swift');
     file(
       'ios/Example.podspec',
@@ -215,47 +241,59 @@ describe('Reading native build metadata', () => {
       s.test_spec('Tests') { raise 'test specs must not execute' }
     end`
     );
-    const spec = readPodspec(root, join(root, 'ios/Example.podspec'));
-    expect(fromPodspec(root, join(root, 'ios'), spec).targets[0].dependencies).toEqual([
+    const spec = await readPodspec(root, join(root, 'ios/Example.podspec'));
+    expect((await fromPodspec(root, join(root, 'ios'), spec)).targets[0].dependencies).toEqual([
       'ExpoModulesCore',
     ]);
   });
-
-  it('should reject dependency version constraints the adapter cannot resolve', () => {
+  it('should reject dependency version constraints the adapter cannot resolve', async () => {
     file('ios/Example.swift');
-    expect(() =>
+    await expect(
       fromPodspec(root, root, {
         name: 'Example',
         source_files: 'ios/*.swift',
         dependencies: { AnotherLibrary: ['~> 2.0'] },
       })
-    ).toThrow('version requirements');
+    ).rejects.toThrow('version requirements');
   });
-
-  it('should not compile source files inside copied resource directories', () => {
+  it('should not compile source files inside copied resource directories', async () => {
     file('Sources/Example/Example.swift');
     file('Sources/Example/Examples/Sample.swift');
-    const build = fromSwiftPackage(root, {
+    const build = await fromSwiftPackage(root, {
       name: 'Example',
       targets: [
-        { name: 'Example', type: 'regular', resources: [{ path: 'Examples', rule: { copy: {} } }] },
+        {
+          name: 'Example',
+          type: 'regular',
+          resources: [{ path: 'Examples', rule: { copy: {} } }],
+        },
       ],
     });
     expect(build.targets[0].files).toEqual([join(root, 'Sources/Example/Example.swift')]);
   });
-
-  it('should reject unresolved dependencies and cycles before Xcode generation', () => {
+  it('should reject unresolved dependencies and cycles before Xcode generation', async () => {
     file('ios/Example.swift');
-    const build = fromSpmConfig(root, {
+    const build = await fromSpmConfig(root, {
       products: [
         {
           name: 'Example',
-          targets: [{ name: 'Example', type: 'swift', path: 'ios', dependencies: ['Missing'] }],
+          targets: [
+            {
+              name: 'Example',
+              type: 'swift',
+              path: 'ios',
+              dependencies: ['Missing'],
+            },
+          ],
         },
       ],
     });
     expect(() => validateBuildDependencies(build.targets, ['ExpoModulesCore'])).toThrow('Missing');
-    const second = { ...build.targets[0], name: 'Second', dependencies: ['Example'] };
+    const second = {
+      ...build.targets[0],
+      name: 'Second',
+      dependencies: ['Example'],
+    };
     expect(() =>
       validateBuildDependencies([{ ...build.targets[0], dependencies: ['Second'] }, second], [])
     ).toThrow('cycle');

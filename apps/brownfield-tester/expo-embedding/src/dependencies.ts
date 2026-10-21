@@ -1,15 +1,7 @@
-import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  readlinkSync,
-  readdirSync,
-  renameSync,
-} from 'node:fs';
+import { lstat, mkdir, mkdtemp, readlink, readdir, rename } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
+import { exists, readJSON } from './files';
 const lockfiles = {
   npm: ['package-lock.json', 'npm-shrinkwrap.json'],
   pnpm: ['pnpm-lock.yaml'],
@@ -17,13 +9,17 @@ const lockfiles = {
   bun: ['bun.lock', 'bun.lockb'],
 };
 
-export function getInstallArguments(
+export async function getInstallArguments(
   project: string,
   manager: keyof typeof lockfiles,
   frozen: boolean
-): string[] {
+): Promise<string[]> {
   if (!frozen) return ['install'];
-  if (!lockfiles[manager].some((file) => existsSync(join(project, file)))) {
+  if (
+    !(await Promise.all(lockfiles[manager].map((file) => exists(join(project, file))))).some(
+      Boolean
+    )
+  ) {
     throw new Error(
       `A frozen ${manager} install requires a lockfile in ${project}. Run init locally and commit its lockfile before retrying --frozen-lockfile.`
     );
@@ -31,8 +27,8 @@ export function getInstallArguments(
   return manager === 'npm' ? ['ci'] : ['install', '--frozen-lockfile'];
 }
 
-export function getPackageManager(project: string): 'npm' | 'pnpm' | 'yarn' | 'bun' {
-  const manifest = JSON.parse(readFileSync(join(project, 'package.json'), 'utf8'));
+export async function getPackageManager(project: string): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> {
+  const manifest = await readJSON(join(project, 'package.json'));
   if (manifest.packageManager) {
     const name = manifest.packageManager.split('@')[0];
     if (['npm', 'pnpm', 'yarn', 'bun'].includes(name)) return name;
@@ -40,9 +36,13 @@ export function getPackageManager(project: string): 'npm' | 'pnpm' | 'yarn' | 'b
       `Unsupported packageManager: ${manifest.packageManager}. Select npm, pnpm, yarn, or bun in expo/package.json.`
     );
   }
-  const managers = (['npm', 'pnpm', 'yarn', 'bun'] as const).filter((name) => {
-    return lockfiles[name].some((file) => existsSync(join(project, file)));
-  });
+  const managers: (keyof typeof lockfiles)[] = [];
+  for (const name of ['npm', 'pnpm', 'yarn', 'bun'] as const) {
+    if (
+      (await Promise.all(lockfiles[name].map((file) => exists(join(project, file))))).some(Boolean)
+    )
+      managers.push(name);
+  }
   if (managers.length > 1) {
     throw new Error(
       'Multiple package manager lockfiles exist in expo/. Set packageManager in expo/package.json or remove the obsolete lockfiles, then rerun init.'
@@ -51,51 +51,61 @@ export function getPackageManager(project: string): 'npm' | 'pnpm' | 'yarn' | 'b
   return managers[0] ?? 'npm';
 }
 
-export function detachSharedNodeModules(project: string, frozen = false): string | undefined {
+export async function detachSharedNodeModules(
+  project: string,
+  frozen = false
+): Promise<string | undefined> {
   const modules = join(project, 'node_modules');
-  const stat = lstatSync(modules, { throwIfNoEntry: false });
-  const manifest = JSON.parse(readFileSync(join(project, 'package.json'), 'utf8'));
+  const stat = await lstat(modules).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') return undefined;
+    throw error;
+  });
+  const manifest = await readJSON(join(project, 'package.json'));
   const declarations = {
     ...manifest.dependencies,
     ...manifest.devDependencies,
     ...manifest.optionalDependencies,
   };
-  const isExternalLink = (path: string) => {
-    if (!lstatSync(path).isSymbolicLink()) return false;
-    const target = resolve(dirname(path), readlinkSync(path));
+  const isExternalLink = async (path: string) => {
+    if (!(await lstat(path)).isSymbolicLink()) return false;
+    const target = resolve(dirname(path), await readlink(path));
     const pathFromModules = relative(modules, target);
     return (
       pathFromModules === '..' || pathFromModules.startsWith('../') || isAbsolute(pathFromModules)
     );
   };
-  const isLegacyPackage = (name: string) =>
-    isExternalLink(join(modules, name)) &&
+  const isLegacyPackage = async (name: string) =>
+    (await isExternalLink(join(modules, name))) &&
     !/^(file:|link:|workspace:)/.test(declarations[name] ?? '');
-  const shared =
-    stat &&
-    (stat.isSymbolicLink() ||
-      readdirSync(modules).some((name) => {
-        if (name === '.bin') return isExternalLink(join(modules, name));
-        if (name.startsWith('@')) {
-          if (isExternalLink(join(modules, name))) return true;
-          return readdirSync(join(modules, name)).some((child) =>
-            isLegacyPackage(`${name}/${child}`)
-          );
+  let shared = stat?.isSymbolicLink() ?? false;
+  if (stat?.isDirectory()) {
+    for (const name of await readdir(modules)) {
+      if (name === '.bin') shared ||= await isExternalLink(join(modules, name));
+      else if (name.startsWith('@')) {
+        shared ||= await isExternalLink(join(modules, name));
+        if (!shared) {
+          for (const child of await readdir(join(modules, name))) {
+            shared ||= await isLegacyPackage(`${name}/${child}`);
+          }
         }
-        return !name.startsWith('.') && isLegacyPackage(name);
-      }));
-  const linkedLockfiles = ['package-lock.json', 'npm-shrinkwrap.json'].filter((name) => {
+      } else if (!name.startsWith('.')) shared ||= await isLegacyPackage(name);
+      if (shared) break;
+    }
+  }
+  const linkedLockfiles: string[] = [];
+  for (const name of ['package-lock.json', 'npm-shrinkwrap.json']) {
     const path = join(project, name);
-    if (!existsSync(path)) return false;
-    const lock = JSON.parse(readFileSync(path, 'utf8'));
-    return Object.entries(declarations).some(([name, specifier]) => {
+    if (!(await exists(path))) continue;
+    const lock = await readJSON(path);
+    const hasExternalLink = Object.entries(declarations).some(([name, specifier]) => {
       const entry = lock.packages?.[`node_modules/${name}`];
       if (!entry?.link || !entry.resolved || /^(file:|link:|workspace:)/.test(String(specifier)))
         return false;
       const target = relative(project, resolve(project, entry.resolved));
       return target === '..' || target.startsWith('../') || isAbsolute(target);
     });
-  });
+    if (hasExternalLink) linkedLockfiles.push(name);
+  }
   if (!shared && !linkedLockfiles.length) return;
   if (frozen) {
     throw new Error(
@@ -105,9 +115,9 @@ export function detachSharedNodeModules(project: string, frozen = false): string
 
   // Move the links themselves; never modify the shared checkout they point at.
   const generated = join(dirname(project), '.expo-source');
-  mkdirSync(generated, { recursive: true });
-  const backup = mkdtempSync(join(generated, 'dependencies-backup-'));
-  if (shared) renameSync(modules, join(backup, 'node_modules'));
-  for (const name of linkedLockfiles) renameSync(join(project, name), join(backup, name));
+  await mkdir(generated, { recursive: true });
+  const backup = await mkdtemp(join(generated, 'dependencies-backup-'));
+  if (shared) await rename(modules, join(backup, 'node_modules'));
+  for (const name of linkedLockfiles) await rename(join(project, name), join(backup, name));
   return backup;
 }
