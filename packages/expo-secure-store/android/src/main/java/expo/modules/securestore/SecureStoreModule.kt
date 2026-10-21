@@ -411,25 +411,49 @@ internal fun saveEncryptedItem(
     throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
   }
 
-  // Read the currently persisted value first so we can put it back if the write is rejected.
-  // This is racy in the sense that another thread writing the same key between this read and the
-  // rollback below would have its value overwritten by the old one. Concurrent writes to the same
-  // key are already last-writer-wins here, and losing a write that itself never reached disk is
-  // preferable to leaving the in-memory map claiming a value that isn't persisted.
-  val previousItemString = prefs.getString(key, null)
+  // `commit()` returns `false` for two unrelated reasons, and the caller cannot tell them apart:
+  // the disk write failed, or `writtenToDiskLatch.await()` threw because this thread's interrupt
+  // flag was already set. The second one is not a failed write. On the ordinary path AOSP runs the
+  // disk write inline on the calling thread *before* it awaits the latch, so an interrupt set
+  // before we were called makes `await()` throw over a latch that already reached zero — the bytes
+  // are written and fsynced, and rolling back would overwrite a value that really did persist.
+  //
+  // Taking the flag off the thread for the duration removes that case entirely rather than
+  // guessing at it: `await()` returns normally, `commit()` reports the real disk result, and the
+  // rollback below is only ever reached by a write that genuinely did not land. The flag is handed
+  // back in `finally`, so the caller's cancellation is not swallowed.
+  //
+  // This has to happen before the read below, not just before the write. `getString` goes through
+  // `awaitLoadedLocked()`, which catches `InterruptedException` and drops it while the instance is
+  // still loading from disk — so on a cold instance the flag would be gone before we ever looked
+  // at it, and the caller's cancellation would be lost by AOSP rather than returned by us.
+  val wasInterrupted = Thread.interrupted()
+  try {
+    // Read the currently persisted value first so we can put it back if the write is rejected.
+    // This is racy in the sense that another thread writing the same key between this read and the
+    // rollback below would have its value overwritten by the old one. Concurrent writes to the same
+    // key are already last-writer-wins here, and losing a write that itself never reached disk is
+    // preferable to leaving the in-memory map claiming a value that isn't persisted.
+    val previousItemString = prefs.getString(key, null)
 
-  if (!prefs.edit().putString(key, encryptedItemString).commit()) {
-    // `commit()` already mutated the in-memory map, so restore the previous entry before throwing.
-    // This restoring commit reports `false` too — the disk is still broken — and that is fine and
-    // expected: we only need its in-memory effect, which is applied regardless of the disk write.
-    val rollback = prefs.edit()
-    if (previousItemString != null) {
-      rollback.putString(key, previousItemString)
-    } else {
-      rollback.remove(key)
+    if (!prefs.edit().putString(key, encryptedItemString).commit()) {
+      // `commit()` already mutated the in-memory map, so restore the previous entry before
+      // throwing. This restoring commit reports `false` too — the disk is still broken — and that
+      // is fine and expected: we only need its in-memory effect, which is applied regardless of
+      // the disk write.
+      val rollback = prefs.edit()
+      if (previousItemString != null) {
+        rollback.putString(key, previousItemString)
+      } else {
+        rollback.remove(key)
+      }
+      rollback.commit()
+
+      throw WriteException("Could not write the encrypted item to SecureStore", key, keychainService)
     }
-    rollback.commit()
-
-    throw WriteException("Could not write the encrypted item to SecureStore", key, keychainService)
+  } finally {
+    if (wasInterrupted) {
+      Thread.currentThread().interrupt()
+    }
   }
 }
