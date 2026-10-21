@@ -22,6 +22,25 @@ const LOAD_CONTEXT: module.LoadHookContext = {
   importAttributes: {},
 };
 
+const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
+
+// Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
+function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
+  Object.defineProperty(module, 'registerHooks', {
+    configurable: true,
+    writable: true,
+    value: registerHooks,
+  });
+}
+
+function restoreRegisterHooks() {
+  if (registerHooksDescriptor) {
+    Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
+  } else {
+    delete (module as { registerHooks?: unknown }).registerHooks;
+  }
+}
+
 const minimatchConstructorSpy = jest.fn();
 jest.mock('minimatch', () => {
   const actual = jest.requireActual('minimatch');
@@ -38,16 +57,6 @@ describe('installModuleCaptureHook', () => {
   let tmpDir: string;
   let hook: ReturnType<typeof installModuleCaptureHook> | null = null;
   let deregister: jest.Mock;
-  const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
-
-  // Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
-  function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
-    Object.defineProperty(module, 'registerHooks', {
-      configurable: true,
-      writable: true,
-      value: registerHooks,
-    });
-  }
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-fingerprint-hook-'));
@@ -58,11 +67,7 @@ describe('installModuleCaptureHook', () => {
   afterEach(() => {
     hook?.uninstall();
     hook = null;
-    if (registerHooksDescriptor) {
-      Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
-    } else {
-      delete (module as { registerHooks?: unknown }).registerHooks;
-    }
+    restoreRegisterHooks();
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -322,23 +327,8 @@ describe('createImportGraphResolveHook', () => {
 });
 
 describe('installImportGraphHook', () => {
-  const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
-
-  // Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
-  function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
-    Object.defineProperty(module, 'registerHooks', {
-      configurable: true,
-      writable: true,
-      value: registerHooks,
-    });
-  }
-
   afterEach(() => {
-    if (registerHooksDescriptor) {
-      Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
-    } else {
-      delete (module as { registerHooks?: unknown }).registerHooks;
-    }
+    restoreRegisterHooks();
   });
 
   it('should register a resolve hook that records imports and deregister it on uninstall', () => {
