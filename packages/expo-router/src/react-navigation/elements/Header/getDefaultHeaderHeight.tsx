@@ -39,3 +39,26 @@ export function getDefaultHeaderHeight(
 
   return headerHeight + statusBarHeight;
 }
+
+/**
+ * The default height of a header that JavaScript renders, with the bottom padding from
+ * `getDefaultHeaderBottomPadding`. Native headers use `getDefaultHeaderHeight`.
+ */
+export function getDefaultJSHeaderHeight(
+  layout: Layout,
+  modalPresentation: boolean,
+  topInset: number
+): number {
+  return (
+    getDefaultHeaderHeight(layout, modalPresentation, topInset) +
+    getDefaultHeaderBottomPadding(layout, modalPresentation)
+  );
+}
+
+// Space below the title row of a JavaScript header on iPhone in portrait, which balances the title
+// between the status bar and the content.
+export function getDefaultHeaderBottomPadding(layout: Layout, modalPresentation: boolean): number {
+  const isPhone = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV;
+  const isLandscape = layout.width > layout.height;
+  return isPhone && !isLandscape && !modalPresentation ? 8 : 0;
+}

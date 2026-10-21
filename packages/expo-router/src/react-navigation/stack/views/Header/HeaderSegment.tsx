@@ -3,12 +3,12 @@ import * as React from 'react';
 import { type LayoutChangeEvent, Platform, StyleSheet, type ViewStyle } from 'react-native';
 
 import {
-  getDefaultHeaderHeight,
   Header,
   HeaderBackButton,
   type HeaderBackButtonProps,
   HeaderTitle,
 } from '../../../elements';
+import { getDefaultJSHeaderHeight } from '../../../elements/Header/getDefaultHeaderHeight';
 import { useLocale } from '../../../native';
 import type {
   Layout,
@@ -86,7 +86,7 @@ export function HeaderSegment(props: Props) {
     ...rest
   } = props;
 
-  const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
+  const defaultHeight = getDefaultJSHeaderHeight(layout, modal, headerStatusBarHeight);
 
   const { height = defaultHeight } = StyleSheet.flatten(customHeaderStyle || {}) as ViewStyle;
 
