@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "57.0.32",
+  "version": "57.0.33",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -12,15 +12,15 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/ui": "~57.0.25",
-    "expo": "~57.0.30",
+    "@expo/ui": "~57.0.26",
+    "expo": "~57.0.31",
     "expo-constants": "~57.0.22",
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.4",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.13",
-    "expo-router": "~57.0.28",
+    "expo-router": "~57.0.29",
     "expo-splash-screen": "~57.0.10",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.3",

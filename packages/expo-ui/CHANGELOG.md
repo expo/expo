@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Stop the community `SegmentedControl` from logging the `useNativeDriver` warning when it mounts. ([#51775](https://github.com/expo/expo/pull/51775) by [@miniware9](https://github.com/miniware9))
-
 ### 💡 Others
+
+## 57.0.26 — 2026-10-21
+
+### 🐛 Bug fixes
+
+- [Web] Stop the community `SegmentedControl` from logging the `useNativeDriver` warning when it mounts. ([#51775](https://github.com/expo/expo/pull/51775) by [@miniware9](https://github.com/miniware9))
 
 ## 57.0.25 — 2026-10-15
 

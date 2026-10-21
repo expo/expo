@@ -8,13 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.1.3 — 2026-10-21
+
+### 🐛 Bug fixes
+
 - [iOS] Fix the `.swiftinterface` failing to compile with Xcode 27 (Swift 6.4), because a C++ type extension was no longer stripped from it. ([#50569](https://github.com/expo/expo/pull/50569) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix crash reports symbolicated on the device showing no function names for `ExpoModulesJSI` frames. ([#50698](https://github.com/expo/expo/pull/50698) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fix `Conformance of 'Bool' to 'JavaScriptRepresentable' is unavailable` build errors with Xcode 27.1 (Swift 6.4). Swift 6.4 printed placeholder conformances marked `@available(*, unavailable)` into the public `.swiftinterface`, and the leftover attributes attached to the next declaration. ([#51234](https://github.com/expo/expo/pull/51234) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fix a launch crash (`Symbol not found: _swift_allocateMetadataPack`) in apps that use precompiled Expo modules and build with Xcode 27. `ExpoModulesJSI` no longer exports Swift runtime symbols, so the precompiled `ExpoModulesCore` no longer depends on them. ([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix the `ExpoModulesJSI` xcframework slice staying built against another Xcode's SDK. The slice cache now includes the Xcode build, so switching between Xcode releases that share a Swift compiler (such as Xcode 27.0 and 27.1) rebuilds it, and the rebuild uses the app build's `TOOLCHAINS` instead of the default toolchain. ([#51371](https://github.com/expo/expo/pull/51371) by [@mwolson](https://github.com/mwolson))
-
-### 💡 Others
 
 ## 57.1.2 — 2026-10-12
 
