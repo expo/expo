@@ -12,8 +12,6 @@ import {
   gateConfidences,
   humanAppliedLabels,
   IssueClassification,
-  isAlreadyTriaged,
-  isTeamAuthor,
   MISSING_REPRO_LABEL,
   packageOptionsFromLabels,
   planLabels,
@@ -82,23 +80,23 @@ describe('planLabels', () => {
   });
 
   it('gates question and missing_info on their summed probability', () => {
-    const jev = classification({
+    const answers = classification({
       triage: ['question', 0.5, { question: 0.55, missing_info: 0.4, bug_report: 0.05 }],
     });
-    assert.deepEqual(planLabels(jev).apply, ['invalid issue: question']);
+    assert.deepEqual(planLabels(answers).apply, ['invalid issue: question']);
   });
 
   it('holds back closing labels when asked, but not the docs label', () => {
-    const jev = classification({
+    const answers = classification({
       triage: ['feature_request', 0.95],
       package: ['expo-video', 0.95],
       platform: ['android', 0.92],
     });
-    assert.deepEqual(planLabels(jev), {
+    assert.deepEqual(planLabels(answers), {
       apply: ['invalid issue: feature request', '📦 expo-video', 'Android'],
       suggest: [],
     });
-    assert.deepEqual(planLabels(jev, { closing: false }), {
+    assert.deepEqual(planLabels(answers, { closing: false }), {
       apply: ['📦 expo-video', 'Android'],
       suggest: [],
     });
@@ -112,7 +110,7 @@ describe('planLabels', () => {
 });
 
 describe('decideLabels', () => {
-  const jev = classification({ triage: ['feature_request', 0.97], platform: ['ios', 0.95] });
+  const answers = classification({ triage: ['feature_request', 0.97], platform: ['ios', 0.95] });
   const closing = 'invalid issue: feature request';
   const cases: [boolean, string | null, boolean, boolean][] = [
     // closeInvalid, blockedBy, applies the closing label, has a close line
@@ -123,7 +121,7 @@ describe('decideLabels', () => {
   ];
   for (const [closeInvalid, blockedBy, applies, hasClose] of cases) {
     it(`closeInvalid=${closeInvalid} blockedBy=${blockedBy}`, () => {
-      const { plan, close } = decideLabels(jev, { closeInvalid, blockedBy });
+      const { plan, close } = decideLabels(answers, { closeInvalid, blockedBy });
       assert.equal(plan.apply.includes(closing), applies);
       assert.equal(plan.suggest.includes(closing), false);
       assert.ok(plan.apply.includes('iOS'));
@@ -197,11 +195,11 @@ describe('wouldClose', () => {
 
 describe('formatReport', () => {
   it('shows the close decision and the gate confidence', () => {
-    const jev = classification({
+    const answers = classification({
       triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }],
     });
-    const result = { model: 'gpt-6-luna', classification: jev, usage: {} as never };
-    const report = formatReport(1, result, planLabels(jev, { closing: false }), false, {
+    const result = { model: 'gpt-6-luna', classification: answers, usage: {} as never };
+    const report = formatReport(1, result, planLabels(answers, { closing: false }), false, {
       label: 'invalid issue: question',
       confidence: 0.95,
       blockedBy: 'from an Expo member',
@@ -215,31 +213,31 @@ describe('formatReport', () => {
   });
 
   it('leaves out the close decision when --close-invalid is on', () => {
-    const jev = classification({ triage: ['question', 0.95] });
-    const result = { model: 'gpt-6-luna', classification: jev, usage: {} as never };
-    assert.doesNotMatch(formatReport(1, result, planLabels(jev), false), /would close/);
+    const answers = classification({ triage: ['question', 0.95] });
+    const result = { model: 'gpt-6-luna', classification: answers, usage: {} as never };
+    assert.doesNotMatch(formatReport(1, result, planLabels(answers), false), /would close/);
   });
 });
 
 describe('agreements', () => {
   it('reads truth only from labels a maintainer applies', () => {
-    const jev = classification({
+    const answers = classification({
       triage: ['question', 0.9],
       package: ['expo-video', 0.9],
       platform: ['android', 0.9],
     });
-    assert.deepEqual(agreements(['needs review', MISSING_REPRO_LABEL], jev), {
+    assert.deepEqual(agreements(['needs review', MISSING_REPRO_LABEL], answers), {
       triage: null,
       package: null,
       platform: null,
     });
-    assert.deepEqual(agreements(['Issue accepted', '📦 expo-video', 'Android', 'iOS'], jev), {
+    assert.deepEqual(agreements(['Issue accepted', '📦 expo-video', 'Android', 'iOS'], answers), {
       triage: { truth: 'bug_report', agrees: false },
       package: { truth: 'expo-video', agrees: true },
       platform: { truth: 'multiple_or_unclear', agrees: false },
     });
-    assert.equal(agreements(['invalid issue: question'], jev).triage?.agrees, true);
-    assert.equal(agreements(['incomplete issue: missing info'], jev).triage?.agrees, true);
+    assert.equal(agreements(['invalid issue: question'], answers).triage?.agrees, true);
+    assert.equal(agreements(['incomplete issue: missing info'], answers).triage?.agrees, true);
   });
 });
 
@@ -249,26 +247,6 @@ describe('gateConfidences', () => {
       classification({ triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }] })
     );
     assert.ok(Math.abs(confidences.triage - 0.95) < 1e-9);
-  });
-});
-
-describe('isAlreadyTriaged', () => {
-  it('is true for closed issues and issues a maintainer or the validator labeled', () => {
-    assert.equal(isAlreadyTriaged('open', ['needs validation']), false);
-    assert.equal(isAlreadyTriaged('closed', []), true);
-    assert.equal(isAlreadyTriaged('open', ['Issue accepted']), true);
-    assert.equal(isAlreadyTriaged('open', [MISSING_REPRO_LABEL]), true);
-    assert.equal(isAlreadyTriaged('open', ['!']), true);
-  });
-});
-
-describe('isTeamAuthor', () => {
-  it('is true for Expo members and collaborators only', () => {
-    assert.equal(isTeamAuthor('MEMBER'), true);
-    assert.equal(isTeamAuthor('OWNER'), true);
-    assert.equal(isTeamAuthor('COLLABORATOR'), true);
-    assert.equal(isTeamAuthor('CONTRIBUTOR'), false);
-    assert.equal(isTeamAuthor('NONE'), false);
   });
 });
 

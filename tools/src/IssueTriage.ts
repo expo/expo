@@ -11,7 +11,7 @@ const MODEL = 'gpt-6-luna';
  * problems whose fix lives outside expo/expo) stay `null` until the logs show the model is right about
  * them often enough.
  */
-export const TRIAGE_LABELS = {
+const TRIAGE_LABELS = {
   bug_report: null,
   question: 'invalid issue: question',
   feature_request: 'invalid issue: feature request',
@@ -21,7 +21,7 @@ export const TRIAGE_LABELS = {
   missing_info: 'incomplete issue: missing info',
   documentation: 'docs',
 } as const;
-export type TriageKind = keyof typeof TRIAGE_LABELS;
+type TriageKind = keyof typeof TRIAGE_LABELS;
 /**
  * The labels maintainers use for the off-repo kinds (problems whose fix lives outside expo/expo).
  * `--evaluate` reads them as truth. Nothing applies them.
@@ -39,30 +39,23 @@ const CLOSING_LABELS: string[] = Object.values(TRIAGE_LABELS).filter(
 );
 export const MISSING_REPRO_LABEL = 'incomplete issue: missing or invalid repro';
 
-export const PLATFORM_LABELS = {
+const PLATFORM_LABELS = {
   android: 'Android',
   ios: 'iOS',
   web: 'Platform: web',
   multiple_or_unclear: null,
 } as const;
-export type PlatformKind = keyof typeof PLATFORM_LABELS;
+type PlatformKind = keyof typeof PLATFORM_LABELS;
 
-export const PACKAGE_LABEL_PREFIX = '📦 ';
-export const NO_PACKAGE = 'none';
+const PACKAGE_LABEL_PREFIX = '📦 ';
+const NO_PACKAGE = 'none';
 /** The most options a Decisions API choice question accepts. */
 const MAX_CHOICE_OPTIONS = 255;
 
-export const DEFAULT_THRESHOLDS = { triage: 0.9, package: 0.9, platform: 0.9 } as const;
-export type Thresholds = typeof DEFAULT_THRESHOLDS;
+const DEFAULT_THRESHOLDS = { triage: 0.9, package: 0.9, platform: 0.9 } as const;
 export const QUESTION_IDS = Object.keys(DEFAULT_THRESHOLDS) as QuestionId[];
 /** Maintainers sometimes accept feature requests as tracking issues, so that label needs more. */
 const LABEL_THRESHOLDS: Record<string, number> = { [TRIAGE_LABELS.feature_request]: 0.95 };
-
-export type PlanOptions = {
-  thresholds?: Thresholds;
-  /** Whether labels that close the issue may be applied. Defaults to true. */
-  closing?: boolean;
-};
 
 const ACCEPTED_LABEL = 'Issue accepted';
 const TRUSTED_AUTHOR_LABEL = '!';
@@ -182,7 +175,7 @@ export function buildQuestions(packageOptions: string[]): IssueQuestions {
   };
 }
 
-export function buildState(issue: TriageIssue): IssueState {
+function buildState(issue: TriageIssue): IssueState {
   return {
     title: issue.title,
     body: (issue.body ?? '').slice(0, MAX_BODY_CHARACTERS),
@@ -287,14 +280,15 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
   return candidates;
 }
 
-function passes(candidate: LabelCandidate, thresholds: Thresholds): boolean {
-  const threshold = LABEL_THRESHOLDS[candidate.label] ?? thresholds[candidate.question];
+function passes(candidate: LabelCandidate): boolean {
+  const threshold = LABEL_THRESHOLDS[candidate.label] ?? DEFAULT_THRESHOLDS[candidate.question];
   return candidate.confidence >= threshold;
 }
 
 export function planLabels(
   classification: IssueClassification,
-  { thresholds = DEFAULT_THRESHOLDS, closing = true }: PlanOptions = {}
+  /** Whether labels that close the issue may be applied. */
+  { closing = true }: { closing?: boolean } = {}
 ): LabelPlan {
   const apply: string[] = [];
   const suggest: string[] = [];
@@ -303,7 +297,7 @@ export function planLabels(
     if (!closing && CLOSING_LABELS.includes(candidate.label)) {
       continue;
     }
-    (passes(candidate, thresholds) ? apply : suggest).push(candidate.label);
+    (passes(candidate) ? apply : suggest).push(candidate.label);
   }
 
   return { apply, suggest };
@@ -317,7 +311,7 @@ export function wouldClose(
   blockedBy: string | null
 ): CloseDecision | null {
   const candidate = labelCandidates(classification).find((c) => CLOSING_LABELS.includes(c.label));
-  if (!candidate || !passes(candidate, DEFAULT_THRESHOLDS)) {
+  if (!candidate || !passes(candidate)) {
     return null;
   }
   return { label: candidate.label, confidence: candidate.confidence, blockedBy };
@@ -425,7 +419,7 @@ function formatCloseDecision(close: CloseDecision | null): string {
  * Whether a maintainer or the validator already decided about the issue, so `--close-invalid` must not
  * add a closing label. Non-closing labels only need the issue to be open.
  */
-export function isAlreadyTriaged(state: string, labels: string[]): boolean {
+function isAlreadyTriaged(state: string, labels: string[]): boolean {
   return state !== 'open' || labels.some((label) => TRIAGED_LABELS.includes(label));
 }
 
@@ -435,7 +429,7 @@ const TEAM_ASSOCIATIONS = ['OWNER', 'MEMBER', 'COLLABORATOR'];
  * Whether an Expo member or collaborator opened the issue. They file tracking issues with the bug
  * template, so `--close-invalid` must not close their issues.
  */
-export function isTeamAuthor(authorAssociation: string): boolean {
+function isTeamAuthor(authorAssociation: string): boolean {
   return TEAM_ASSOCIATIONS.includes(authorAssociation);
 }
 
