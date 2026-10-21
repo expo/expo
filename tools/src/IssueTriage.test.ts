@@ -117,7 +117,7 @@ describe('decideLabels', () => {
     assert.deepEqual(plan(answers).apply, ['invalid issue: question']);
   });
 
-  it('holds back closing labels when asked, but not the docs label', () => {
+  it('holds back closing labels when asked', () => {
     const answers = classification({
       triage: ['feature_request', 0.95],
       package: ['expo-video', 0.95],
@@ -131,10 +131,12 @@ describe('decideLabels', () => {
       apply: ['📦 expo-video', 'Android'],
       suggest: [],
     });
-    const docs = plan(classification({ triage: ['documentation', 0.95] }), false);
-    assert.deepEqual(docs.apply, ['docs']);
-    const redirect = plan(classification({ triage: ['third_party_library', 0.99] }));
-    assert.deepEqual(redirect, { apply: [], suggest: [] });
+  });
+
+  it('leaves docs and off-repo issues to a maintainer', () => {
+    for (const kind of ['documentation', 'third_party_library'] as const) {
+      assert.deepEqual(plan(classification({ triage: [kind, 0.99] })), { apply: [], suggest: [] });
+    }
   });
 
   it('holds a closing label only when it passes its threshold', () => {

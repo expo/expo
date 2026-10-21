@@ -9,7 +9,8 @@ type TriageRule = {
   /**
    * The label the bot applies, or `null` to leave the issue to a maintainer. The off-repo kinds
    * (problems whose fix lives outside expo/expo) stay `null` until the logs show the model is right
-   * about them often enough.
+   * about them often enough. `documentation` stays `null` because the docs template already
+   * applies `docs`.
    */
   applies: string | null;
   /** The label a maintainer applies. `--evaluate` reads it as truth. */
@@ -56,7 +57,7 @@ const TRIAGE_RULES = {
     truth: 'incomplete issue: missing info',
     closes: true,
   },
-  documentation: { applies: 'docs', truth: 'docs', closes: false, template: true },
+  documentation: { applies: null, truth: 'docs', closes: false, template: true },
   bug_report: { applies: null, truth: 'Issue accepted', closes: false },
 } satisfies Record<string, TriageRule>;
 type TriageKind = keyof typeof TRIAGE_RULES;

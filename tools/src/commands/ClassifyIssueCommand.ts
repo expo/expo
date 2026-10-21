@@ -41,11 +41,7 @@ export default (program: Command) => {
       'Classifies a GitHub issue with the OpenAI Decisions API and reports the labels it would apply.'
     )
     .option('-i, --issue <number>', 'Number of the issue to classify.')
-    .option(
-      '--tag',
-      'Adds the package, platform, and docs labels instead of only reporting them.',
-      false
-    )
+    .option('--tag', 'Adds the package and platform labels instead of only reporting them.', false)
     .option(
       '--close-invalid',
       'With --tag, also labels issues that are questions, feature requests, or missing info. Each of those labels makes the triage workflow post a canned reply and close the issue.',
