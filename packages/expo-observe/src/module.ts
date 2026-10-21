@@ -50,7 +50,7 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
   if (errorRate < overallRate) {
     console.warn(
       `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}). ` +
-        'Installations in-sample for `sampleRate` always send errors, so errors use `sampleRate`. ' +
+        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
         'Set `errorSampleRate` to at least `sampleRate`.'
     );
   }
