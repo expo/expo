@@ -370,6 +370,12 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             )
             return nil
           }
+          // From iOS 26 the zoom reads the source's corners from `cornerConfiguration`, not from
+          // `layer.cornerRadius`, which is how React Native rounds a view. Without this, a rounded
+          // source zooms out square.
+          if #available(iOS 26.0, *), view.layer.cornerRadius > 0 {
+            view.cornerConfiguration = .corners(radius: .fixed(view.layer.cornerRadius))
+          }
           return view
         }
         return
