@@ -952,10 +952,10 @@ importers:
         version: 2.5.7(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-vector-icons/ionicons':
         specifier: ^13.1.2
-        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@shopify/flash-list':
         specifier: 2.3.2
         version: 2.3.2(@babel/runtime@7.29.7)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1802,7 +1802,7 @@ importers:
         version: 2.2.0(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       async-retry:
         specifier: ^1.1.4
         version: 1.3.3
@@ -2449,8 +2449,8 @@ importers:
         specifier: ^1.6.6
         version: 1.6.8
       xcode:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^4.0.0
+        version: 4.0.0
       xml2js:
         specifier: 0.6.0
         version: 0.6.0
@@ -15767,11 +15767,6 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
-  uuid@7.0.3:
-    resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -16132,9 +16127,9 @@ packages:
       utf-8-validate:
         optional: true
 
-  xcode@3.0.1:
-    resolution: {integrity: sha512-kCz5k7J7XbJtjABOvkc5lJmkiDh8VhjVCGNiqdKCscmVpdVUpEAyXv1xmCLkQJ5dsHqx3IPO4XW+NTDhU/fatA==}
-    engines: {node: '>=10.0.0'}
+  xcode@4.0.0:
+    resolution: {integrity: sha512-dDaoWzc9EP2fp9FS9PVZUkyvFxY4y1TOV9pcKaKLk++Ei/qb97XDFEVP7GnW7Osii/TzVABJ0jq2F+9/lq0TVA==}
+    engines: {node: '>=14.17.0'}
 
   xcparse@0.0.3:
     resolution: {integrity: sha512-/HgjZ1o81gudtNHt5a/EGEyMa991WZjZqu8ryPWJ1UtG4NRJyQ2AthR8MaqD6nN7UnCe7IcFShMm5oEA/S9nEQ==}
@@ -18701,31 +18696,37 @@ snapshots:
       '@react-native/assets-registry': 0.86.0
       expo-font: link:packages/expo-font
 
-  '@react-native-vector-icons/ionicons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/ionicons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
+      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.88.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
+      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
+      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
@@ -25561,8 +25562,6 @@ snapshots:
 
   uuid@3.4.0: {}
 
-  uuid@7.0.3: {}
-
   uuid@8.3.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
@@ -26050,10 +26049,9 @@ snapshots:
 
   ws@8.19.0: {}
 
-  xcode@3.0.1:
+  xcode@4.0.0:
     dependencies:
       simple-plist: 1.3.1
-      uuid: 7.0.3
 
   xcparse@0.0.3: {}
 
