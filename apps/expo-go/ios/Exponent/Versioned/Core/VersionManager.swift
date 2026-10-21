@@ -87,6 +87,7 @@ final class VersionManager: EXVersionManagerObjC {
   override func extraModules() -> [Any] {
     // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
     // that would work well for us (especially properly invalidating existing app context on reload).
+    self.appContext = nil
     let appContext = getOrCreateAppContext()
 
     guard let legacyModuleRegistry else {
