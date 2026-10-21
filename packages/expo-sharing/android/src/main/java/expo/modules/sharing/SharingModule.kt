@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
@@ -55,7 +56,7 @@ class SharingModule : Module() {
       } catch (e: Exception) {
         throw SharingFailedException("Failed to share the file: ${e.message}", e)
       }
-    }
+    }.runOnQueue(Queues.MAIN)
 
     Function("getSharedPayloads") {
       val intent = SharingSingleton.intent
