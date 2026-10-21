@@ -115,11 +115,6 @@ export type ClassificationResult = {
   usage: Decision.Usage;
 };
 
-export type LabelPlan = {
-  apply: string[];
-  suggest: string[];
-};
-
 const TRIAGE_QUESTION: ChoiceQuestion<TriageKind> = {
   instructions:
     'The input is a GitHub issue as JSON reported against expo/expo, the repository of the Expo SDK and its tooling. ' +
@@ -283,7 +278,7 @@ type LabelCandidate = {
 };
 
 /**
- * The confidence that `planLabels` compares with the threshold for each question.
+ * The confidence that `decideLabels` compares with the threshold for each question.
  */
 export function gateConfidences(classification: IssueClassification): Record<QuestionId, number> {
   const { triage, package: pkg, platform } = classification;
@@ -336,40 +331,38 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
   return candidates;
 }
 
-function passes(candidate: LabelCandidate): boolean {
-  return candidate.confidence >= candidate.threshold;
-}
+export type Blocker = 'already triaged' | 'from an Expo member';
 
-export function planLabels(
+/**
+ * `held` marks a closing label that passed its threshold but may not be applied. `blockedBy` is
+ * `null` when only the missing `--close-invalid` flag holds it back.
+ */
+type LabelStatus =
+  | { kind: 'apply' }
+  | { kind: 'suggest' }
+  | { kind: 'held'; blockedBy: Blocker | null };
+export type LabelDecision = LabelCandidate & { status: LabelStatus };
+
+/**
+ * Decides every candidate label. A closing label that may not be applied and misses its threshold
+ * is left out, so it is neither suggested nor reported as held.
+ */
+export function decideLabels(
   classification: IssueClassification,
-  /** Whether labels that close the issue may be applied. */
-  { closing = true }: { closing?: boolean } = {}
-): LabelPlan {
-  const apply: string[] = [];
-  const suggest: string[] = [];
-
-  for (const candidate of labelCandidates(classification)) {
-    if (!closing && candidate.closes) {
-      continue;
+  { closeInvalid, blockedBy }: { closeInvalid: boolean; blockedBy: Blocker | null }
+): LabelDecision[] {
+  const closingAllowed = closeInvalid && !blockedBy;
+  return labelCandidates(classification).flatMap((candidate): LabelDecision[] => {
+    const passes = candidate.confidence >= candidate.threshold;
+    if (candidate.closes && !closingAllowed) {
+      return passes ? [{ ...candidate, status: { kind: 'held', blockedBy } }] : [];
     }
-    (passes(candidate) ? apply : suggest).push(candidate.label);
-  }
-
-  return { apply, suggest };
+    return [{ ...candidate, status: { kind: passes ? 'apply' : 'suggest' } }];
+  });
 }
 
-/** The closing label that `--close-invalid` would apply, and the guard that holds it back. */
-export type CloseDecision = { label: string; confidence: number; blockedBy: string | null };
-
-export function wouldClose(
-  classification: IssueClassification,
-  blockedBy: string | null
-): CloseDecision | null {
-  const candidate = labelCandidates(classification).find((c) => c.closes);
-  if (!candidate || !passes(candidate)) {
-    return null;
-  }
-  return { label: candidate.label, confidence: candidate.confidence, blockedBy };
+export function labelsWithStatus(decisions: LabelDecision[], kind: LabelStatus['kind']): string[] {
+  return decisions.filter((decision) => decision.status.kind === kind).map((d) => d.label);
 }
 
 /** The guard that keeps `--close-invalid` from closing the issue, or `null`. */
@@ -377,7 +370,7 @@ export function closeBlocker(
   state: string,
   labels: string[],
   authorAssociation: string
-): string | null {
+): Blocker | null {
   if (isAlreadyTriaged(state, labels)) {
     return 'already triaged';
   }
@@ -406,14 +399,14 @@ export type WouldCloseCounts = { n: number; agree: number; noTruth: number };
 
 export function countWouldClose(
   counts: Map<string, WouldCloseCounts>,
-  close: CloseDecision | null,
+  label: string | null,
   truth: Agreement | null
 ) {
-  if (!close) {
+  if (!label) {
     return;
   }
-  const entry = counts.get(close.label) ?? { n: 0, agree: 0, noTruth: 0 };
-  counts.set(close.label, entry);
+  const entry = counts.get(label) ?? { n: 0, agree: 0, noTruth: 0 };
+  counts.set(label, entry);
   if (!truth) {
     entry.noTruth += 1;
     return;
@@ -422,33 +415,26 @@ export function countWouldClose(
   entry.agree += truth.agrees ? 1 : 0;
 }
 
-export type LabelDecision = { plan: LabelPlan; close?: CloseDecision | null };
-
-export function decideLabels(
-  classification: IssueClassification,
-  { closeInvalid, blockedBy }: { closeInvalid: boolean; blockedBy: string | null }
-): LabelDecision {
-  return {
-    plan: planLabels(classification, { closing: closeInvalid && !blockedBy }),
-    close: closeInvalid ? undefined : wouldClose(classification, blockedBy),
-  };
-}
-
 export function formatReport(
   issueNumber: number,
   result: ClassificationResult,
-  plan: LabelPlan,
-  shadow: boolean,
-  /** Leave out when `--close-invalid` is on, because the applied column already shows the result. */
-  close?: CloseDecision | null
+  decisions: LabelDecision[],
+  {
+    shadow,
+    closeInvalid,
+  }: {
+    shadow: boolean;
+    /** Leaves out the close line, because the applied column already shows the result. */
+    closeInvalid: boolean;
+  }
 ): string {
-  const labels = new Map(labelCandidates(result.classification).map((c) => [c.question, c.label]));
   const confidences = gateConfidences(result.classification);
   const rows = QUESTION_IDS.map((id) => {
-    const label = labels.get(id);
-    const applied = label && plan.apply.includes(label) ? label : '';
+    const decision = decisions.find((d) => d.question === id);
+    const applied = decision?.status.kind === 'apply' ? decision.label : '';
     return `| ${id} | ${result.classification[id].choice} | ${confidences[id].toFixed(2)} | ${applied} |`;
   });
+  const suggest = labelsWithStatus(decisions, 'suggest');
 
   return [
     `### Classification of issue #${issueNumber} (${result.model})`,
@@ -457,17 +443,18 @@ export function formatReport(
     '| --- | --- | --- | --- |',
     ...rows,
     '',
-    ...(close === undefined ? [] : [`would close: ${formatCloseDecision(close)}`]),
-    `suggest: ${plan.suggest.length > 0 ? plan.suggest.join(', ') : 'none'}`,
+    ...(closeInvalid ? [] : [`would close: ${formatWouldClose(decisions)}`]),
+    `suggest: ${suggest.length > 0 ? suggest.join(', ') : 'none'}`,
   ].join('\n');
 }
 
-function formatCloseDecision(close: CloseDecision | null): string {
-  if (!close) {
+function formatWouldClose(decisions: LabelDecision[]): string {
+  const held = decisions.find((d) => d.status.kind === 'held');
+  if (held?.status.kind !== 'held') {
     return 'no';
   }
-  const label = `${close.label} (${close.confidence.toFixed(2)})`;
-  return close.blockedBy ? `no, held back (${close.blockedBy}): ${label}` : label;
+  const label = `${held.label} (${held.confidence.toFixed(2)})`;
+  return held.status.blockedBy ? `no, held back (${held.status.blockedBy}): ${label}` : label;
 }
 
 /**

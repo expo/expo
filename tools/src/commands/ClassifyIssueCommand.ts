@@ -20,11 +20,11 @@ import {
   formatReport,
   gateConfidences,
   humanAppliedLabels,
+  labelsWithStatus,
   packageOptionsFromLabels,
   QUESTION_IDS,
   QuestionId,
   TriageIssue,
-  wouldClose,
   WouldCloseCounts,
 } from '../IssueTriage';
 import logger from '../Logger';
@@ -115,12 +115,13 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closeInvali
   if (closeInvalid && blockedBy) {
     logger.warn(`Issue #${issueNumber} is ${blockedBy}, holding back closing labels.`);
   }
-  const { plan, close } = decideLabels(result.classification, { closeInvalid, blockedBy });
-  if (apply && plan.apply.length > 0) {
-    await addIssueLabelsAsync(issueNumber, plan.apply);
+  const decisions = decideLabels(result.classification, { closeInvalid, blockedBy });
+  const labels = labelsWithStatus(decisions, 'apply');
+  if (apply && labels.length > 0) {
+    await addIssueLabelsAsync(issueNumber, labels);
   }
 
-  const report = formatReport(issueNumber, result, plan, !apply, close);
+  const report = formatReport(issueNumber, result, decisions, { shadow: !apply, closeInvalid });
   console.log(report);
   appendStepSummary(report);
 }
@@ -176,9 +177,10 @@ async function evaluateAsync(limit: number) {
       }
       if (couldCloseWhenOpened(issue, events)) {
         closable += 1;
+        const held = decideLabels(result.classification, { closeInvalid: false, blockedBy: null });
         countWouldClose(
           wouldCloseCounts,
-          wouldClose(result.classification, null),
+          labelsWithStatus(held, 'held')[0] ?? null,
           agreement.triage
         );
       }

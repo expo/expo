@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 
 import {
   agreements,
+  Blocker,
   buildQuestions,
   closeBlocker,
   couldCloseWhenOpened,
@@ -12,13 +13,13 @@ import {
   gateConfidences,
   humanAppliedLabels,
   IssueClassification,
+  LabelDecision,
+  labelsWithStatus,
   MISSING_REPRO_LABEL,
   packageOptionsFromLabels,
   parseAnswers,
-  planLabels,
   QuestionId,
   QUESTION_IDS,
-  wouldClose,
 } from './IssueTriage';
 
 type Choices = {
@@ -88,18 +89,26 @@ describe('parseAnswers', () => {
   });
 });
 
-describe('planLabels', () => {
+function plan(answers: IssueClassification, closeInvalid = true) {
+  const decisions = decideLabels(answers, { closeInvalid, blockedBy: null });
+  return {
+    apply: labelsWithStatus(decisions, 'apply'),
+    suggest: labelsWithStatus(decisions, 'suggest'),
+  };
+}
+
+describe('decideLabels', () => {
   it('applies a confident invalid-issue label and suggests a weak one', () => {
-    const confident = planLabels(classification({ triage: ['question', 0.95] }));
+    const confident = plan(classification({ triage: ['question', 0.95] }));
     assert.deepEqual(confident, { apply: ['invalid issue: question'], suggest: [] });
 
-    const weak = planLabels(classification({ triage: ['question', 0.5] }));
+    const weak = plan(classification({ triage: ['question', 0.5] }));
     assert.deepEqual(weak, { apply: [], suggest: ['invalid issue: question'] });
   });
 
   it('needs 0.95 for the feature request label', () => {
-    assert.deepEqual(planLabels(classification({ triage: ['feature_request', 0.94] })).apply, []);
-    assert.deepEqual(planLabels(classification({ triage: ['feature_request', 0.96] })).apply, [
+    assert.deepEqual(plan(classification({ triage: ['feature_request', 0.94] })).apply, []);
+    assert.deepEqual(plan(classification({ triage: ['feature_request', 0.96] })).apply, [
       'invalid issue: feature request',
     ]);
   });
@@ -108,7 +117,7 @@ describe('planLabels', () => {
     const answers = classification({
       triage: ['question', 0.5, { question: 0.55, missing_info: 0.4, bug_report: 0.05 }],
     });
-    assert.deepEqual(planLabels(answers).apply, ['invalid issue: question']);
+    assert.deepEqual(plan(answers).apply, ['invalid issue: question']);
   });
 
   it('holds back closing labels when asked, but not the docs label', () => {
@@ -117,40 +126,47 @@ describe('planLabels', () => {
       package: ['expo-video', 0.95],
       platform: ['android', 0.92],
     });
-    assert.deepEqual(planLabels(answers), {
+    assert.deepEqual(plan(answers), {
       apply: ['invalid issue: feature request', '📦 expo-video', 'Android'],
       suggest: [],
     });
-    assert.deepEqual(planLabels(answers, { closing: false }), {
+    assert.deepEqual(plan(answers, false), {
       apply: ['📦 expo-video', 'Android'],
       suggest: [],
     });
-    const docs = planLabels(classification({ triage: ['documentation', 0.95] }), {
-      closing: false,
-    });
+    const docs = plan(classification({ triage: ['documentation', 0.95] }), false);
     assert.deepEqual(docs.apply, ['docs']);
-    const redirect = planLabels(classification({ triage: ['third_party_library', 0.99] }));
+    const redirect = plan(classification({ triage: ['third_party_library', 0.99] }));
     assert.deepEqual(redirect, { apply: [], suggest: [] });
   });
-});
 
-describe('decideLabels', () => {
+  it('holds a closing label only when it passes its threshold', () => {
+    const held = (answers: IssueClassification) =>
+      decideLabels(answers, { closeInvalid: false, blockedBy: null }).find(
+        (d) => d.status.kind === 'held'
+      );
+    const summed = held(
+      classification({ triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }] })
+    );
+    assert.equal(summed?.label, 'invalid issue: question');
+    assert.ok(Math.abs((summed?.confidence ?? 0) - 0.95) < 1e-9);
+    assert.equal(held(classification({ triage: ['feature_request', 0.94] })), undefined);
+    assert.equal(held(classification({ triage: ['documentation', 0.99] })), undefined);
+  });
+
   const answers = classification({ triage: ['feature_request', 0.97], platform: ['ios', 0.95] });
-  const closing = 'invalid issue: feature request';
-  const cases: [boolean, string | null, boolean, boolean][] = [
-    // closeInvalid, blockedBy, applies the closing label, has a close line
-    [false, null, false, true],
-    [false, 'from an Expo member', false, true],
-    [true, null, true, false],
-    [true, 'from an Expo member', false, false],
+  const cases: [boolean, Blocker | null, LabelDecision['status']][] = [
+    [false, null, { kind: 'held', blockedBy: null }],
+    [false, 'from an Expo member', { kind: 'held', blockedBy: 'from an Expo member' }],
+    [true, null, { kind: 'apply' }],
+    [true, 'from an Expo member', { kind: 'held', blockedBy: 'from an Expo member' }],
   ];
-  for (const [closeInvalid, blockedBy, applies, hasClose] of cases) {
+  for (const [closeInvalid, blockedBy, status] of cases) {
     it(`closeInvalid=${closeInvalid} blockedBy=${blockedBy}`, () => {
-      const { plan, close } = decideLabels(answers, { closeInvalid, blockedBy });
-      assert.equal(plan.apply.includes(closing), applies);
-      assert.equal(plan.suggest.includes(closing), false);
-      assert.ok(plan.apply.includes('iOS'));
-      assert.equal(close !== undefined, hasClose);
+      const decisions = decideLabels(answers, { closeInvalid, blockedBy });
+      const closing = decisions.find((d) => d.label === 'invalid issue: feature request');
+      assert.deepEqual(closing?.status, status);
+      assert.ok(labelsWithStatus(decisions, 'apply').includes('iOS'));
     });
   }
 });
@@ -187,34 +203,13 @@ describe('couldCloseWhenOpened', () => {
 describe('countWouldClose', () => {
   it('counts agreement per closing label and keeps issues without truth apart', () => {
     const counts = new Map();
-    const close = { label: 'invalid issue: question', confidence: 0.95, blockedBy: null };
-    countWouldClose(counts, close, { truth: 'question', agrees: true });
-    countWouldClose(counts, close, { truth: 'bug_report', agrees: false });
-    countWouldClose(counts, close, null);
+    const label = 'invalid issue: question';
+    countWouldClose(counts, label, { truth: 'question', agrees: true });
+    countWouldClose(counts, label, { truth: 'bug_report', agrees: false });
+    countWouldClose(counts, label, null);
     countWouldClose(counts, null, { truth: 'bug_report', agrees: false });
     assert.deepEqual(counts.get('invalid issue: question'), { n: 2, agree: 1, noTruth: 1 });
     assert.equal(counts.size, 1);
-  });
-});
-
-describe('wouldClose', () => {
-  it('returns the closing label that passes its threshold', () => {
-    const summed = wouldClose(
-      classification({ triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }] }),
-      null
-    );
-    assert.equal(summed?.label, 'invalid issue: question');
-    assert.ok(Math.abs((summed?.confidence ?? 0) - 0.95) < 1e-9);
-    assert.equal(wouldClose(classification({ triage: ['feature_request', 0.94] }), null), null);
-    assert.equal(wouldClose(classification({ triage: ['documentation', 0.99] }), null), null);
-  });
-
-  it('keeps the reason a guard holds the label back', () => {
-    const decision = wouldClose(
-      classification({ triage: ['feature_request', 0.96] }),
-      'from an Expo member'
-    );
-    assert.equal(decision?.blockedBy, 'from an Expo member');
   });
 });
 
@@ -224,11 +219,11 @@ describe('formatReport', () => {
       triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }],
     });
     const result = { model: 'gpt-6-luna', classification: answers, usage: {} as never };
-    const report = formatReport(1, result, planLabels(answers, { closing: false }), false, {
-      label: 'invalid issue: question',
-      confidence: 0.95,
+    const decisions = decideLabels(answers, {
+      closeInvalid: false,
       blockedBy: 'from an Expo member',
     });
+    const report = formatReport(1, result, decisions, { shadow: false, closeInvalid: false });
     assert.match(report, /\| triage \| question \| 0\.95 \| {2}\|/);
     assert.match(
       report,
@@ -240,7 +235,11 @@ describe('formatReport', () => {
   it('leaves out the close decision when --close-invalid is on', () => {
     const answers = classification({ triage: ['question', 0.95] });
     const result = { model: 'gpt-6-luna', classification: answers, usage: {} as never };
-    assert.doesNotMatch(formatReport(1, result, planLabels(answers), false), /would close/);
+    const decisions = decideLabels(answers, { closeInvalid: true, blockedBy: null });
+    assert.doesNotMatch(
+      formatReport(1, result, decisions, { shadow: false, closeInvalid: true }),
+      /would close/
+    );
   });
 });
 
