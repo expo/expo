@@ -1,12 +1,18 @@
 'use client';
 // TODO: Rename this file to `createStandardDrawerNavigator.tsx` in a follow-up.
+import { use } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
 import { useBackBehaviorInitialRoute } from '../../../standard-navigation/useBackBehaviorInitialRoute';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { DrawerNavigationState, DrawerRouterOptions, ParamListBase } from '../../native';
+import {
+  type DrawerNavigationState,
+  type DrawerRouterOptions,
+  NavigationHelpersContext,
+  type ParamListBase,
+} from '../../native';
 import type {
   DrawerDescriptorMap,
   DrawerNavigationConfig,
@@ -57,7 +63,11 @@ function DrawerNavigatorContent({
   backBehavior,
   backBehaviorInitialRoute,
 }: ContentArgs) {
-  useBackBehaviorInitialRoute({ backBehavior, backBehaviorInitialRoute, navigation });
+  useBackBehaviorInitialRoute({
+    backBehavior,
+    backBehaviorInitialRoute,
+    navigation: use(NavigationHelpersContext),
+  });
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,

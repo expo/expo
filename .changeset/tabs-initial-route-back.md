@@ -1,5 +1,5 @@
 ---
-'expo-router': patch
+'expo-router': minor
 ---
 
-Add the `backBehaviorInitialRoute` prop to tabs, native tabs, drawer, top tabs, and headless tabs to set the route that going back returns to.
+Add `backBehaviorInitialRoute` to set the route that going back returns to.

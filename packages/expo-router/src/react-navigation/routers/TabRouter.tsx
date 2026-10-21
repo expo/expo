@@ -66,11 +66,8 @@ export type TabRouterOptions = DefaultRouterOptions & {
    */
   backBehavior?: BackBehavior;
   /**
-   * The name of the route that going back returns to when `backBehavior` is `initialRoute`. When
-   * the navigator mounts, it adds this route to the start of the history, unless the route is
-   * already in the history. The screen mounts only when going back reaches it. It takes precedence
-   * over the layout anchor. With `history` and `fullHistory`, going back also reaches it after the
-   * visited routes. Other back behaviors ignore it. Changes after the navigator mounts are ignored.
+   * Route that going back returns to with `initialRoute` (and after the visited routes with
+   * `history` and `fullHistory`). Read once on mount.
    */
   backBehaviorInitialRoute?: string;
 };
@@ -335,9 +332,17 @@ const changeIndex = (
           : isInitialRouteItem(it) && it.name !== currentRoute.name
       );
     } else if (backBehavior === 'fullHistory') {
-      const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
+      const lastHistoryRouteItemIndex = history.findLastIndex(
+        (item) => item.type === 'route' || isInitialRouteItem(item)
+      );
+      const lastHistoryRouteItem = history[lastHistoryRouteItemIndex];
 
-      if (currentRoute.key === history[lastHistoryRouteItemIndex]?.key) {
+      if (
+        lastHistoryRouteItem !== undefined &&
+        (isInitialRouteItem(lastHistoryRouteItem)
+          ? lastHistoryRouteItem.name === currentRoute.name
+          : lastHistoryRouteItem.key === currentRoute.key)
+      ) {
         // For full-history, only remove if it matches the last route
         // Useful for drawer, if current route was in history, then drawer state changed
         // Then we only need to move the route to the front
@@ -529,7 +534,10 @@ function tabRouterExtension({
               ),
               ...history.filter(isOtherHistoryItem),
             ];
-          } else if (!history.some((item) => item.type === 'route')) {
+          } else if (
+            !history.some((item) => item.type === 'route') &&
+            history.find(isInitialRouteItem)?.name !== routes[index]!.name
+          ) {
             history = [
               ...history.filter(isInitialRouteItem),
               ...getRouteHistory(routes, index, backBehavior, initialRouteName),
@@ -770,13 +778,20 @@ function tabRouterExtension({
           }
 
           // `initialRoute` keeps one back entry, so the new entry replaces the one from
-          // `initialRouteName`. A focused route is replaced by the entry that stands for it.
+          // `initialRouteName`. The entry stands for the focused route, unless other routes were
+          // visited before it.
+          const replacesFocused =
+            isFocused &&
+            (backBehavior === 'initialRoute' ||
+              state.history.filter((item) => item.type === TYPE_ROUTE).length === 1);
           const history = [
             { type: TYPE_INITIAL_ROUTE, name },
             ...state.history.filter(
               (item) =>
                 item.type !== TYPE_ROUTE ||
-                (item.key === focusedRoute?.key ? !isFocused : backBehavior !== 'initialRoute')
+                (item.key === focusedRoute?.key
+                  ? !replacesFocused
+                  : backBehavior !== 'initialRoute')
             ),
           ];
 
