@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix autolinking choosing a different copy of a duplicated native module between runs when it is reachable at more than one dependency depth, which also made the `@expo/fingerprint` hash unstable. A resolved module no longer lists its own path among its duplicates. ([#51477](https://github.com/expo/expo/pull/51477) by [@jszumski](https://github.com/jszumski))
-
 ### 💡 Others
+
+## 56.0.24 — 2026-10-21
+
+### 🐛 Bug fixes
+
+- Fix autolinking choosing a different copy of a duplicated native module between runs when it is reachable at more than one dependency depth, which also made the `@expo/fingerprint` hash unstable. A resolved module no longer lists its own path among its duplicates. ([#51477](https://github.com/expo/expo/pull/51477) by [@jszumski](https://github.com/jszumski))
 
 ## 56.0.23 — 2026-08-28
 
