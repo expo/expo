@@ -146,6 +146,12 @@ describe('formatReport', () => {
     );
     assert.match(report, /suggest: none/);
   });
+
+  it('leaves out the close decision when --close-invalid is on', () => {
+    const jev = classification({ triage: ['question', 0.95] });
+    const result = { model: 'gpt-6-luna', classification: jev, usage: {} as never };
+    assert.doesNotMatch(formatReport(1, result, planLabels(jev), false), /would close/);
+  });
 });
 
 describe('agreements', () => {

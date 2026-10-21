@@ -328,7 +328,8 @@ export function formatReport(
   result: ClassificationResult,
   plan: LabelPlan,
   shadow: boolean,
-  close: CloseDecision | null
+  /** Leave out when `--close-invalid` is on, because the applied column already shows the result. */
+  close?: CloseDecision | null
 ): string {
   const labels = new Map(labelCandidates(result.classification).map((c) => [c.question, c.label]));
   const confidences = gateConfidences(result.classification);
@@ -345,7 +346,7 @@ export function formatReport(
     '| --- | --- | --- | --- |',
     ...rows,
     '',
-    `would close: ${formatCloseDecision(close)}`,
+    ...(close === undefined ? [] : [`would close: ${formatCloseDecision(close)}`]),
     `suggest: ${plan.suggest.length > 0 ? plan.suggest.join(', ') : 'none'}`,
   ].join('\n');
 }

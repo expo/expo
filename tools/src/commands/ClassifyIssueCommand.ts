@@ -91,7 +91,8 @@ async function action(options: ActionOptions) {
   );
 }
 
-async function classifyOneAsync(issueNumber: number, apply: boolean, closing: boolean) {
+async function classifyOneAsync(issueNumber: number, apply: boolean, closeInvalid: boolean) {
+  let closing = closeInvalid;
   const [issue, labelNamesInRepo] = await Promise.all([
     getIssueAsync(issueNumber),
     listRepoLabelNamesAsync(),
@@ -116,7 +117,7 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closing: bo
     await addIssueLabelsAsync(issueNumber, plan.apply);
   }
 
-  const close = wouldClose(result.classification, blockedBy);
+  const close = closeInvalid ? undefined : wouldClose(result.classification, blockedBy);
   const report = formatReport(issueNumber, result, plan, !apply, close);
   console.log(report);
   appendStepSummary(report);
