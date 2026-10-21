@@ -5,38 +5,63 @@ import { getIssueAsync, LabelEvent } from './GitHub';
 
 const MODEL = 'gpt-6-luna';
 
-/**
- * Kinds that map to `null` produce no label, so the issue falls through to a maintainer.
- * The three off-repo kinds (third-party library, react-native core, EAS Build troubleshooting:
- * problems whose fix lives outside expo/expo) stay `null` until the logs show the model is right about
- * them often enough.
- */
-const TRIAGE_LABELS = {
-  bug_report: null,
-  question: 'invalid issue: question',
-  feature_request: 'invalid issue: feature request',
-  third_party_library: null,
-  react_native_core: null,
-  eas_build_troubleshooting: null,
-  missing_info: 'incomplete issue: missing info',
-  documentation: 'docs',
-} as const;
-type TriageKind = keyof typeof TRIAGE_LABELS;
-/**
- * The labels maintainers use for the off-repo kinds (problems whose fix lives outside expo/expo).
- * `--evaluate` reads them as truth. Nothing applies them.
- */
-const TRIAGE_TRUTH_LABELS: Record<TriageKind, string | null> = {
-  ...TRIAGE_LABELS,
-  third_party_library: 'invalid issue: third-party library',
-  react_native_core: 'invalid issue: react-native-core',
-  eas_build_troubleshooting: 'invalid issue: EAS Build troubleshooting',
+type TriageRule = {
+  /**
+   * The label the bot applies, or `null` to leave the issue to a maintainer. The off-repo kinds
+   * (problems whose fix lives outside expo/expo) stay `null` until the logs show the model is right
+   * about them often enough.
+   */
+  applies: string | null;
+  /** The label a maintainer applies. `--evaluate` reads it as truth. */
+  truth: string;
+  /** Whether the label makes the triage workflow post a canned reply and close the issue. */
+  closes: boolean;
+  /** Maintainers sometimes accept feature requests as tracking issues, so that label needs more. */
+  threshold?: number;
+  /**
+   * Whether a `.github/ISSUE_TEMPLATE/*.yml` file applies `truth`. GitHub records the issue author
+   * as the actor, so the label shows the author's template pick and not a maintainer's decision.
+   */
+  template?: boolean;
 };
+
+/** `--evaluate` reads truth labels in this order, so `bug_report` stays last. */
+const TRIAGE_RULES = {
+  question: {
+    applies: 'invalid issue: question',
+    truth: 'invalid issue: question',
+    closes: true,
+    template: true,
+  },
+  feature_request: {
+    applies: 'invalid issue: feature request',
+    truth: 'invalid issue: feature request',
+    closes: true,
+    threshold: 0.95,
+    template: true,
+  },
+  third_party_library: {
+    applies: null,
+    truth: 'invalid issue: third-party library',
+    closes: true,
+  },
+  react_native_core: { applies: null, truth: 'invalid issue: react-native-core', closes: true },
+  eas_build_troubleshooting: {
+    applies: null,
+    truth: 'invalid issue: EAS Build troubleshooting',
+    closes: true,
+  },
+  missing_info: {
+    applies: 'incomplete issue: missing info',
+    truth: 'incomplete issue: missing info',
+    closes: true,
+  },
+  documentation: { applies: 'docs', truth: 'docs', closes: false, template: true },
+  bug_report: { applies: null, truth: 'Issue accepted', closes: false },
+} satisfies Record<string, TriageRule>;
+type TriageKind = keyof typeof TRIAGE_RULES;
+const TRIAGE_RULE_ENTRIES = Object.entries(TRIAGE_RULES) as [TriageKind, TriageRule][];
 const NOT_ACTIONABLE_KINDS: readonly TriageKind[] = ['question', 'missing_info'];
-/** Labels that make the triage workflow post a canned reply and close the issue. */
-const CLOSING_LABELS: string[] = Object.values(TRIAGE_LABELS).filter(
-  (label) => label !== null && label !== TRIAGE_LABELS.documentation
-);
 export const MISSING_REPRO_LABEL = 'incomplete issue: missing or invalid repro';
 
 const PLATFORM_LABELS = {
@@ -53,16 +78,12 @@ const NO_PACKAGE = 'none';
 const MAX_CHOICE_OPTIONS = 255;
 
 const DEFAULT_THRESHOLDS: Record<QuestionId, number> = { triage: 0.9, package: 0.9, platform: 0.9 };
-/** Maintainers sometimes accept feature requests as tracking issues, so that label needs more. */
-const LABEL_THRESHOLDS: Record<string, number> = { [TRIAGE_LABELS.feature_request]: 0.95 };
 
-const ACCEPTED_LABEL = 'Issue accepted';
 const TRUSTED_AUTHOR_LABEL = '!';
 const TRIAGED_LABELS: string[] = [
-  ACCEPTED_LABEL,
   TRUSTED_AUTHOR_LABEL,
   MISSING_REPRO_LABEL,
-  ...Object.values(TRIAGE_TRUTH_LABELS).filter((label) => label !== null),
+  ...TRIAGE_RULE_ENTRIES.map(([, rule]) => rule.truth),
 ];
 
 const MAX_BODY_CHARACTERS = 60_000;
@@ -257,6 +278,8 @@ type LabelCandidate = {
   question: QuestionId;
   label: string;
   confidence: number;
+  threshold: number;
+  closes: boolean;
 };
 
 /**
@@ -278,9 +301,15 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
   const confidences = gateConfidences(classification);
   const candidates: LabelCandidate[] = [];
 
-  const triageLabel = TRIAGE_LABELS[triage.choice];
-  if (triageLabel) {
-    candidates.push({ question: 'triage', label: triageLabel, confidence: confidences.triage });
+  const triageRule: TriageRule = TRIAGE_RULES[triage.choice];
+  if (triageRule.applies) {
+    candidates.push({
+      question: 'triage',
+      label: triageRule.applies,
+      confidence: confidences.triage,
+      threshold: triageRule.threshold ?? DEFAULT_THRESHOLDS.triage,
+      closes: triageRule.closes,
+    });
   }
 
   if (pkg.choice !== NO_PACKAGE) {
@@ -288,6 +317,8 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
       question: 'package',
       label: PACKAGE_LABEL_PREFIX + pkg.choice,
       confidence: confidences.package,
+      threshold: DEFAULT_THRESHOLDS.package,
+      closes: false,
     });
   }
 
@@ -297,6 +328,8 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
       question: 'platform',
       label: platformLabel,
       confidence: confidences.platform,
+      threshold: DEFAULT_THRESHOLDS.platform,
+      closes: false,
     });
   }
 
@@ -304,8 +337,7 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
 }
 
 function passes(candidate: LabelCandidate): boolean {
-  const threshold = LABEL_THRESHOLDS[candidate.label] ?? DEFAULT_THRESHOLDS[candidate.question];
-  return candidate.confidence >= threshold;
+  return candidate.confidence >= candidate.threshold;
 }
 
 export function planLabels(
@@ -317,7 +349,7 @@ export function planLabels(
   const suggest: string[] = [];
 
   for (const candidate of labelCandidates(classification)) {
-    if (!closing && CLOSING_LABELS.includes(candidate.label)) {
+    if (!closing && candidate.closes) {
       continue;
     }
     (passes(candidate) ? apply : suggest).push(candidate.label);
@@ -333,7 +365,7 @@ export function wouldClose(
   classification: IssueClassification,
   blockedBy: string | null
 ): CloseDecision | null {
-  const candidate = labelCandidates(classification).find((c) => CLOSING_LABELS.includes(c.label));
+  const candidate = labelCandidates(classification).find((c) => c.closes);
   if (!candidate || !passes(candidate)) {
     return null;
   }
@@ -457,16 +489,9 @@ function isTeamAuthor(authorAssociation: string): boolean {
 }
 
 const BOT_ACTORS = ['expo-bot', 'github-actions[bot]'];
-/**
- * Labels from `.github/ISSUE_TEMPLATE/*.yml` that are also truth labels. GitHub records the issue
- * author as the actor when a template applies them, so they show the author's template pick and
- * not a maintainer's decision. Update the list when a template's `labels` change.
- */
-const TEMPLATE_LABELS: string[] = [
-  TRIAGE_LABELS.question,
-  TRIAGE_LABELS.feature_request,
-  TRIAGE_LABELS.documentation,
-];
+const TEMPLATE_LABELS: string[] = TRIAGE_RULE_ENTRIES.filter(([, rule]) => rule.template).map(
+  ([, rule]) => rule.truth
+);
 /** The one-off backfill of 2026-09-22 ran under a personal token, so its labels look human. */
 const BACKFILL_WINDOW = { from: '2026-09-22T20:20:00Z', to: '2026-09-22T20:45:00Z' };
 
@@ -527,15 +552,8 @@ export function agreements(
 }
 
 function triageTruth(labels: string[]): TriageKind | null {
-  for (const [kind, label] of Object.entries(TRIAGE_TRUTH_LABELS) as [
-    TriageKind,
-    string | null,
-  ][]) {
-    if (label && labels.includes(label)) {
-      return kind;
-    }
-  }
-  return labels.includes(ACCEPTED_LABEL) ? 'bug_report' : null;
+  const entry = TRIAGE_RULE_ENTRIES.find(([, rule]) => labels.includes(rule.truth));
+  return entry ? entry[0] : null;
 }
 
 function platformTruth(labels: string[]): PlatformKind | null {
