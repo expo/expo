@@ -123,9 +123,8 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  const layoutAnchor = settings ? readLayoutAnchorSetting(settings, groupName) : undefined;
-  const groupSettings = groupName ? settings?.[groupName] : undefined;
-  const groupAnchor = groupSettings?.anchor ?? groupSettings?.initialRouteName;
+  const layoutAnchor = readLayoutAnchorSetting(settings);
+  const groupAnchor = groupName ? readLayoutAnchorSetting(settings?.[groupName]) : undefined;
   const anchor = groupAnchor ?? layoutAnchor;
   if (!anchor) {
     return undefined;
@@ -143,12 +142,12 @@ function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) 
   return route.route;
 }
 
-function readLayoutAnchorSetting(
-  settings: Record<string, any>,
-  groupName: string | undefined
-): string | undefined {
+function readLayoutAnchorSetting(settings: Record<string, any> | undefined): string | undefined {
+  if (!settings) {
+    return undefined;
+  }
   try {
-    warnIfInitialRouteNameIsUsed(settings, groupName);
+    warnIfInitialRouteNameIsUsed(settings);
     return settings.anchor ?? settings.initialRouteName;
   } catch (error) {
     if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
@@ -158,15 +157,8 @@ function readLayoutAnchorSetting(
   }
 }
 
-function warnIfInitialRouteNameIsUsed(
-  settings: Record<string, any>,
-  groupName: string | undefined
-) {
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    (settings.initialRouteName !== undefined ||
-      settings[groupName ?? '']?.initialRouteName !== undefined)
-  ) {
+function warnIfInitialRouteNameIsUsed(settings: Record<string, any>) {
+  if (process.env.NODE_ENV !== 'production' && settings.initialRouteName !== undefined) {
     console.warn(
       '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
     );
