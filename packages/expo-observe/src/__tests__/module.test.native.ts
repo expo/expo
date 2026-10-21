@@ -298,6 +298,11 @@ describe('module Proxy', () => {
     const Observe = loadModule();
     Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
     expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03). ' +
+        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
   });
 
   it('warns when errorSampleRate is set without sampleRate', () => {
@@ -305,6 +310,11 @@ describe('module Proxy', () => {
     const Observe = loadModule();
     Observe.configure({ errorSampleRate: 0.5 });
     expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1). ' +
+        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
   });
 
   it('passes the config through to the native module unchanged', () => {

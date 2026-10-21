@@ -73,9 +73,8 @@ export type ObserveConfig = {
    * are clamped. Use it to keep more errors than other events, for example, `sampleRate: 0.03` with
    * `errorSampleRate: 1`.
    *
-   * Errors are log events named `js.exception` and `native.exception`. They include unhandled
-   * JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash
-   * reports. All other events follow `sampleRate`.
+   * Errors include unhandled JavaScript errors, errors from `reportError` and
+   * `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`.
    *
    * A value lower than `sampleRate` has no effect beyond `sampleRate`, and a warning is printed.
    *

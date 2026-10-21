@@ -43,6 +43,7 @@ internal struct ObservabilityManager {
       // others' traffic.
       let config = ObserveUserDefaults.config
       let shouldDispatch = Self.shouldDispatch(config: config, rate: config?.sampleRate)
+      // When a log is sampled in by `sampleRate`, all its logs and errors are sent. If `errorSampleRate` is lower than `sampleRate`, errors are still sent according to `sampleRate`.
       let shouldDispatchErrors = Self.shouldDispatch(
         config: config,
         rate: config?.errorSampleRate ?? config?.sampleRate
@@ -185,7 +186,6 @@ internal struct ObservabilityManager {
         return logs
       },
       rowId: { $0.id },
-      // Filtering inside `send` keeps the cursor and chunk halving on the whole fetched chunk.
       send: { fetchedLogs in
         let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch)
         guard !logs.isEmpty else {
@@ -390,7 +390,6 @@ internal struct ObservabilityManager {
     return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
-  // In-sample for `sampleRate` sends every log, so errors use max(`errorSampleRate`, `sampleRate`).
   internal nonisolated static func sampledLogs(_ logs: [LogRow], shouldDispatch: Bool) -> [LogRow] {
     return shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
   }

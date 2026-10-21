@@ -216,9 +216,10 @@ class BaseObservabilityManager(
 
     repairLogCursorIfStale(context, sessionManager)
     val config = ObservePreferences.getConfig(context)
-    val dispatchAll = shouldDispatch(config, config?.sampleRate)
+    // When a log is sampled in by `sampleRate`, all its logs and errors are sent. If `errorSampleRate` is lower than `sampleRate`, errors are still sent according to `sampleRate`.
+    val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
     val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
-    if (!dispatchAll && !dispatchErrors) {
+    if (!dispatchLogsAndErrors && !dispatchErrors) {
       val maxId = sessionManager.getMaxLogId() ?: -1
       if (ObservePreferences.getLastDispatchedLogId(context) != maxId) {
         ObservePreferences.setLastDispatchedLogId(context, maxId)
@@ -236,9 +237,7 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      // In-sample for `sampleRate` sends every log, so errors use max(`errorSampleRate`, `sampleRate`).
-      // The cursor, chunk halving, and log messages still use the whole fetched chunk.
-      val sampledLogs = if (dispatchAll) logs else logs.filter { it.name in ERROR_LOG_NAMES }
+      val sampledLogs = if (dispatchLogsAndErrors) logs else logs.filter { it.name in ERROR_LOG_NAMES }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
       val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->
