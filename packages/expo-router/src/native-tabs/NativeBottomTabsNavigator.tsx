@@ -18,6 +18,7 @@ import type {
   StandardNavigatorContentProps,
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
@@ -112,6 +113,7 @@ function NativeTabsContent({
     );
   }
 
+  useNonStackAnchorWarning();
   const { routes } = state;
 
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({

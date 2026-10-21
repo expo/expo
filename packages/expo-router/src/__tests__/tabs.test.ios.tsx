@@ -648,3 +648,32 @@ it('can set params for dynamic routes using href when nested stack is used', asy
   expect(screen.getByTestId('id-index')).toBeVisible();
   expect(screen.getByTestId('id-index')).toHaveTextContent('1234');
 });
+
+it('warns when the layout uses an anchor', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  try {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'a' },
+          default: () => (
+            <Tabs>
+              <Tabs.Screen name="a" />
+              <Tabs.Screen name="b" />
+            </Tabs>
+          ),
+        },
+        a: () => null,
+        b: () => null,
+      },
+      { initialUrl: '/b' }
+    );
+
+    expect(warn).toHaveBeenCalledWith(
+      'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are not fully supported and may be removed in a future release.'
+    );
+  } finally {
+    warn.mockRestore();
+  }
+});

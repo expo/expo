@@ -22,6 +22,7 @@ import {
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -258,6 +259,7 @@ function TabVisibilityRedirect({
     () => appendMissingPlaceholderTabRoutes(state, descriptors),
     [descriptors, state]
   );
+  useNonStackAnchorWarning();
   useVisibleTabsWithRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,

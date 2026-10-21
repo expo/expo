@@ -258,3 +258,26 @@ test('resets a nested stack when its drawer screen loses focus with popToTopOnBl
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
 });
+
+test('warns when a drawer layout uses an anchor', async () => {
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'a' },
+        default: () => (
+          <Drawer>
+            <Drawer.Screen name="a" />
+            <Drawer.Screen name="b" />
+          </Drawer>
+        ),
+      },
+      a: () => null,
+      b: () => null,
+    },
+    { initialUrl: '/b' }
+  );
+
+  expect(warnSpy).toHaveBeenCalledWith(
+    'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are not fully supported and may be removed in a future release.'
+  );
+});
