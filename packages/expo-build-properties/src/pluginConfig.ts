@@ -508,7 +508,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * user's preferred languages. Xcode derives the `DEVELOPMENT_LANGUAGE` build setting from it,
    * and the `CFBundleDevelopmentRegion` key in **Info.plist** uses that build setting.
    *
-   * The development region is also added to `knownRegions`.
+   * Setting this option also adds the development region to `knownRegions`.
    *
    * @default "en"
    */
