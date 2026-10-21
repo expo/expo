@@ -80,6 +80,13 @@ open class SharedObject(runtime: Runtime? = null) {
     }
   }
 
+  /**
+   * Whether the release should wait until React Native has applied the view updates queued so far.
+   * Enable it for objects passed as view props, so that a view created from older props can still use them.
+   * Don't enable it for objects that hold resources that must be freed right away.
+   */
+  open val releasesAfterPendingViewUpdates: Boolean = false
+
   open fun onStartListeningToEvent(eventName: String) = Unit
 
   open fun onStopListeningToEvent(eventName: String) = Unit
