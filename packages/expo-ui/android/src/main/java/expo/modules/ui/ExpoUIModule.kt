@@ -487,6 +487,12 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<CompositionLocalProviderProps>("CompositionLocalProviderView") {
+      Content { props ->
+        CompositionLocalProviderContent(props)
+      }
+    }
+
     ExpoUIView<LayoutProps>("BoxView") {
       Content { props ->
         BoxContent(props)
