@@ -1,6 +1,6 @@
-import { Column, Host, Row } from '@expo/ui';
+import { Column, Host, Row, type ColumnProps } from '@expo/ui';
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
@@ -21,6 +21,17 @@ const HOST_HEIGHT = 100;
 
 type Axes = { width: number; height: number };
 type Measured = { laid: Axes; content: Axes };
+type Modifier = NonNullable<ColumnProps['modifiers']>[number];
+
+/** A platform modifier that reports the size of the view it is on, in points. */
+function sizeReporter(onSize: (size: Axes) => void): Modifier {
+  if (Platform.OS === 'ios') {
+    const { onGeometryChange } = require('@expo/ui/swift-ui/modifiers');
+    return onGeometryChange(({ width, height }: Axes) => onSize({ width, height }));
+  }
+  const { onSizeChanged } = require('@expo/ui/jetpack-compose/modifiers');
+  return onSizeChanged(onSize);
+}
 
 /** Reports both sizes once layout has been quiet for `SETTLE_MS`. */
 function useSettledSize(onSettled: (measured: Measured) => void) {
@@ -86,6 +97,39 @@ function SizeProbe({
   );
 }
 
+/** Reports the size of the child that carries `report`, once layout has been quiet for `SETTLE_MS`. */
+function ChildSizeProbe({
+  children,
+  onMeasured,
+}: {
+  children: (report: Modifier) => React.ReactNode;
+  onMeasured: (size: Axes) => void;
+}) {
+  const settle = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const onMeasuredRef = React.useRef(onMeasured);
+
+  React.useEffect(() => {
+    onMeasuredRef.current = onMeasured;
+  });
+
+  React.useEffect(() => () => clearTimeout(settle.current), []);
+
+  const report = React.useMemo(
+    () =>
+      sizeReporter((size) => {
+        clearTimeout(settle.current);
+        settle.current = setTimeout(() => onMeasuredRef.current(size), SETTLE_MS);
+      }),
+    []
+  );
+
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host style={{ width: HOST_WIDTH, height: HOST_HEIGHT }}>{children(report)}</Host>
+    </View>
+  );
+}
+
 export async function test(
   { it, describe, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
@@ -97,6 +141,14 @@ export async function test(
   const measure = (children: React.ReactNode) =>
     mountAndWaitForWithTimeout<Measured>(
       <SizeProbe onMeasured={() => {}}>{children}</SizeProbe>,
+      'onMeasured',
+      setPortalChild,
+      TIMEOUT_MS
+    );
+
+  const measureChild = (children: (report: Modifier) => React.ReactNode) =>
+    mountAndWaitForWithTimeout<Axes>(
+      <ChildSizeProbe onMeasured={() => {}}>{children}</ChildSizeProbe>,
       'onMeasured',
       setPortalChild,
       TIMEOUT_MS
@@ -164,6 +216,40 @@ export async function test(
       expectNear(measured.laid.height, HOST_HEIGHT);
       expectNear(measured.content.width, HOST_WIDTH * 0.6);
       expectNear(measured.content.height, HOST_HEIGHT);
+    });
+
+    it('lays a percentage child out against its column', async () => {
+      const size = await measureChild((report) => (
+        <Column style={{ width: '100%', height: '100%' }}>
+          <Column style={{ width: '50%', height: '25%' }} modifiers={[report]} />
+        </Column>
+      ));
+
+      expectNear(size.width, HOST_WIDTH / 2);
+      expectNear(size.height, HOST_HEIGHT / 4);
+    });
+
+    it('lays a percentage child out against its row', async () => {
+      const size = await measureChild((report) => (
+        <Row spacing={0} style={{ width: '100%', height: '100%' }}>
+          <Column style={{ width: '30%', height: '50%' }} modifiers={[report]} />
+          <Column style={{ width: '70%', height: '100%' }} />
+        </Row>
+      ));
+
+      expectNear(size.width, HOST_WIDTH * 0.3);
+      expectNear(size.height, HOST_HEIGHT / 2);
+    });
+
+    it('lays a nested percentage out against the column and not the host', async () => {
+      const size = await measureChild((report) => (
+        <Column style={{ width: 120, height: '100%' }}>
+          <Column style={{ width: '50%', height: 20 }} modifiers={[report]} />
+        </Column>
+      ));
+
+      expectNear(size.width, 60);
+      expectNear(size.height, 20);
     });
   });
 }

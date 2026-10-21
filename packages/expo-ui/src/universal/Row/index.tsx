@@ -1,13 +1,14 @@
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useUniversalLifecycle } from '../hooks';
+import { StackAxisContext, useCrossAxisSize } from '../stackAxis';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row' },
-  // Fill the parent's cross axis when this row has no width of its own,
-  // so a flexible child still has leftover space. A set width must not use
+  // Fill the parent's cross axis when this row has no size of its own on that axis,
+  // so a flexible child still has leftover space. A set size must not use
   // stretch, or the parent's alignment cannot move it.
   stretch: { alignSelf: 'stretch' },
   hidden: { display: 'none' },
@@ -39,6 +40,7 @@ export function Row({
   testID,
 }: RowProps) {
   useUniversalLifecycle(onAppear, onDisappear);
+  const crossAxisSize = useCrossAxisSize(style);
 
   const Container = onPress ? Pressable : View;
 
@@ -49,14 +51,14 @@ export function Row({
       testID={testID}
       style={[
         styles.row,
-        style?.width == null && styles.stretch,
+        crossAxisSize == null && styles.stretch,
         alignmentStyles[alignment],
         spacing != null && { gap: spacing },
         style,
         hidden && styles.hidden,
         disabled && styles.disabled,
       ]}>
-      {children}
+      <StackAxisContext.Provider value="horizontal">{children}</StackAxisContext.Provider>
     </Container>
   );
 }

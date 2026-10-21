@@ -83,7 +83,7 @@ export default function SizeScreen() {
           </Column>
 
           <Column spacing={8} style={{ width: '100%' }}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Alignment</Text>
+            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Column alignment</Text>
             {(['start', 'center', 'end'] as const).map((align) => (
               <Column
                 key={align}
@@ -100,6 +100,38 @@ export default function SizeScreen() {
                 <Text textStyle={{ fontSize: 12 }}>{align}</Text>
               </Column>
             ))}
+          </Column>
+
+          <Column spacing={8} style={{ width: '100%' }}>
+            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Row alignment</Text>
+            {(['start', 'center', 'end'] as const).map((align) => (
+              <Row
+                key={align}
+                testID={`universal-size-row-align-${align}`}
+                alignment={align}
+                spacing={8}
+                style={{
+                  width: '100%',
+                  height: 56,
+                  backgroundColor: track,
+                  padding: 8,
+                  borderRadius: 8,
+                }}>
+                <Row
+                  alignment="center"
+                  style={{
+                    height: 24,
+                    paddingHorizontal: 8,
+                    backgroundColor: half,
+                    borderRadius: 4,
+                  }}>
+                  <Text textStyle={{ fontSize: 12, color: '#FFFFFF' }}>{align}</Text>
+                </Row>
+              </Row>
+            ))}
+            <Text textStyle={{ fontSize: 12, color: '#666666' }}>
+              The pill sets only a height. The row places it.
+            </Text>
           </Column>
 
           <Column style={{ height: 40 }} />
