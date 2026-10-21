@@ -40,8 +40,7 @@ describe('canDismiss', () => {
     expect(router.canDismiss()).toBe(true);
   });
 
-  // TODO(ENG-22019): Detect typeless stacks created by the default Stack.
-  it.skip('should work within the default Stack', async () => {
+  it('should work within the default Stack', async () => {
     await renderRouter(
       {
         a: () => null,
@@ -79,17 +78,12 @@ describe('canDismiss', () => {
     expect(router.canDismiss()).toBe(false);
   });
 
-  it('does not treat an anchored tab state as a stack', async () => {
+  it('returns true for an anchored stack opened at a deep link', async () => {
     await renderRouter(
       {
         _layout: {
-          unstable_settings: { initialRouteName: 'a' },
-          default: () => (
-            <Tabs>
-              <Tabs.Screen name="a" />
-              <Tabs.Screen name="b" />
-            </Tabs>
-          ),
+          unstable_settings: { anchor: 'a' },
+          default: () => <Stack />,
         },
         a: () => null,
         b: () => null,
@@ -97,7 +91,7 @@ describe('canDismiss', () => {
       { initialUrl: '/b' }
     );
 
-    expect(router.canDismiss()).toBe(false);
+    expect(router.canDismiss()).toBe(true);
   });
 });
 
