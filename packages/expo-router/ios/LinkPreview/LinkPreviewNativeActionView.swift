@@ -134,6 +134,9 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
     baseUiAction.title = title
     baseUiAction.image = image
+    if destructive != true, let customTintColor, let symbol = image, symbol.renderingMode != .alwaysOriginal {
+      baseUiAction.image = symbol.withTintColor(customTintColor, renderingMode: .alwaysOriginal)
+    }
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 
