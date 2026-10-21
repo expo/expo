@@ -1,24 +1,28 @@
-import { cpSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { cp, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-export function withGenerationRollback(paths: string[], generate: () => void): void {
-  const backup = mkdtempSync(join(tmpdir(), 'expo-embedding-generation-'));
+import { exists } from './files';
+export async function withGenerationRollback(
+  paths: string[],
+  generate: () => void | Promise<void>
+): Promise<void> {
+  const backup = await mkdtemp(join(tmpdir(), 'expo-embedding-generation-'));
   try {
     for (const [index, path] of paths.entries()) {
-      if (existsSync(path)) cpSync(path, join(backup, String(index)), { recursive: true });
+      if (await exists(path)) await cp(path, join(backup, String(index)), { recursive: true });
     }
     try {
-      generate();
+      await generate();
     } catch (error) {
       for (const [index, path] of paths.entries()) {
-        rmSync(path, { recursive: true, force: true });
+        await rm(path, { recursive: true, force: true });
         const previous = join(backup, String(index));
-        if (existsSync(previous)) cpSync(previous, path, { recursive: true });
+        if (await exists(previous)) await cp(previous, path, { recursive: true });
       }
       throw error;
     }
   } finally {
-    rmSync(backup, { recursive: true, force: true });
+    await rm(backup, { recursive: true, force: true });
   }
 }

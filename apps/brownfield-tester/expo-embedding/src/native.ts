@@ -1,18 +1,11 @@
-import { execFileSync } from 'node:child_process';
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 
+import { exists, readJSON, readText, writeGenerated } from './files';
 import { readNativeBuild, validateBuildDependencies, type NativeBuild } from './metadata';
+import { readCommandOutput, runCommand } from './process';
 
 // These are build recipes, not module registrations. Autolinking owns the registry.
 const recipes: Record<string, string> = {
@@ -88,15 +81,12 @@ export function validateNativeGraph(
   }
 }
 
-function readJSON(path: string) {
-  return JSON.parse(readFileSync(path, 'utf8'));
-}
-
-function packageRoot(module: ModuleDescriptor): string {
+async function packageRoot(module: ModuleDescriptor): Promise<string> {
   let candidate = module.pods[0]?.podspecDir;
   while (candidate) {
     const manifest = join(candidate, 'package.json');
-    if (existsSync(manifest) && readJSON(manifest).name === module.packageName) return candidate;
+    if ((await exists(manifest)) && (await readJSON(manifest)).name === module.packageName)
+      return candidate;
     const parent = dirname(candidate);
     if (parent === candidate) break;
     candidate = parent;
@@ -106,33 +96,38 @@ function packageRoot(module: ModuleDescriptor): string {
   );
 }
 
-export function discoverNativeModules(projectRoot: string) {
+export async function discoverNativeModules(projectRoot: string) {
   const requireFromApp = createRequire(join(projectRoot, 'package.json'));
   const resolvePackage = (name: string) => dirname(requireFromApp.resolve(`${name}/package.json`));
   const expoRoot = resolvePackage('expo');
   const reactNativeRoot = resolvePackage('react-native');
   const versions = Object.fromEntries(
-    ['expo', 'react', 'react-native'].map((name) => [
-      name,
-      readJSON(join(resolvePackage(name), 'package.json')).version,
-    ])
+    await Promise.all(
+      ['expo', 'react', 'react-native'].map(async (name) => [
+        name,
+        (await readJSON(join(resolvePackage(name), 'package.json'))).version,
+      ])
+    )
   );
   validateVersions(versions);
   const bin = createRequire(join(expoRoot, 'package.json')).resolve(
     'expo-modules-autolinking/bin/expo-modules-autolinking.js'
   );
   const run = (args: string[]) =>
-    execFileSync(process.execPath, [bin, ...args], {
+    readCommandOutput(process.execPath, [bin, ...args], {
       cwd: projectRoot,
-      encoding: 'utf8',
       maxBuffer: 64 * 1024 * 1024,
     });
-  const expo: ExpoGraph = JSON.parse(run(['resolve', '--platform', 'apple', '--json']));
-  const searched = JSON.parse(run(['search', '--platform', 'apple', '--json']));
+  const expo: ExpoGraph = JSON.parse(await run(['resolve', '--platform', 'apple', '--json']));
+  const searched = JSON.parse(await run(['search', '--platform', 'apple', '--json']));
   for (const [name, revision] of Object.entries(searched) as [string, { path: string }][]) {
     if (
       !expo.modules.some((module) => module.packageName === name) &&
-      ['Package.swift', 'spm.config.json'].some((file) => existsSync(join(revision.path, file)))
+      (
+        await Promise.all(
+          ['Package.swift', 'spm.config.json'].map((file) => exists(join(revision.path, file)))
+        )
+      ).some(Boolean)
     ) {
       throw new Error(
         `${name} has a Swift build manifest but Expo Apple autolinking did not resolve it. This iteration still needs a discovery podspec and expo-module.config.json for registration; add them before rerunning init.`
@@ -140,7 +135,7 @@ export function discoverNativeModules(projectRoot: string) {
     }
   }
   const reactNative: ReactNativeGraph = JSON.parse(
-    run(['react-native-config', '--platform', 'ios', '--project-root', projectRoot, '--json'])
+    await run(['react-native-config', '--platform', 'ios', '--project-root', projectRoot, '--json'])
   );
 
   for (const name of ['expo', 'expo-modules-core', 'expo-modules-jsi', 'expo-constants']) {
@@ -159,9 +154,9 @@ export function discoverNativeModules(projectRoot: string) {
       'Custom Expo LogBox modes have no resource build recipe. Unset EXPO_UNSTABLE_LOG_BOX, EXPO_DEVELOP_LOG_BOX and EXPO_DEBUG_LOG_BOX and rerun init.'
     );
   }
-  const modules = expo.modules
-    .map((module) => {
-      const root = packageRoot(module);
+  const modules = await Promise.all(
+    expo.modules.map(async (module) => {
+      const root = await packageRoot(module);
       const targetName = Object.hasOwn(recipes, module.packageName)
         ? recipes[module.packageName]
         : undefined;
@@ -173,7 +168,7 @@ export function discoverNativeModules(projectRoot: string) {
           build: undefined as NativeBuild | undefined,
         };
       try {
-        const build = readNativeBuild(
+        const build = await readNativeBuild(
           root,
           module.pods.map((pod) => join(pod.podspecDir, `${pod.podName}.podspec`))
         );
@@ -184,12 +179,18 @@ export function discoverNativeModules(projectRoot: string) {
             );
           }
         }
-        return { ...module, packageRoot: root, targetName: build.targets[0].name, build };
+        return {
+          ...module,
+          packageRoot: root,
+          targetName: build.targets[0].name,
+          build,
+        };
       } catch (error) {
         throw new Error(`${module.packageName}: ${error instanceof Error ? error.message : error}`);
       }
     })
-    .sort((a, b) => a.packageName.localeCompare(b.packageName));
+  );
+  modules.sort((a, b) => a.packageName.localeCompare(b.packageName));
   validateNativeGraph(
     expo,
     reactNative,
@@ -208,8 +209,8 @@ export function discoverNativeModules(projectRoot: string) {
     ]
   );
   const inlineRoot = join(projectRoot, 'Native');
-  const inlineFiles = existsSync(inlineRoot)
-    ? readdirSync(inlineRoot, { recursive: true })
+  const inlineFiles = (await exists(inlineRoot))
+    ? (await readdir(inlineRoot, { recursive: true }))
         .map(String)
         .filter((file) => file.endsWith('.swift'))
         .sort()
@@ -217,28 +218,28 @@ export function discoverNativeModules(projectRoot: string) {
   return { modules, versions, expoRoot, reactNativeRoot, bin, inlineFiles };
 }
 
-export function generateModulesProvider(
+export async function generateModulesProvider(
   projectRoot: string,
   output: string,
-  plan: ReturnType<typeof discoverNativeModules>
-): void {
-  mkdirSync(dirname(output), { recursive: true });
-  const temporary = mkdtempSync(join(tmpdir(), 'expo-embedding-provider-'));
+  plan: Awaited<ReturnType<typeof discoverNativeModules>>
+): Promise<void> {
+  await mkdir(dirname(output), { recursive: true });
+  const temporary = await mkdtemp(join(tmpdir(), 'expo-embedding-provider-'));
   try {
     const target = join(temporary, basename(output));
     const properties = join(temporary, 'inline-modules.json');
-    writeFileSync(
+    await writeFile(
       properties,
       JSON.stringify({
         'expo.inlineModules.watchedDirectories': JSON.stringify(
-          existsSync(join(projectRoot, 'Native')) ? ['Native'] : []
+          (await exists(join(projectRoot, 'Native'))) ? ['Native'] : []
         ),
         'expo.inlineModules.xcodeProjectTargets': JSON.stringify({
           targets: ['expoappbrownfield'],
         }),
       })
     );
-    execFileSync(
+    await runCommand(
       process.execPath,
       [
         plan.bin,
@@ -258,13 +259,12 @@ export function generateModulesProvider(
         '--packages',
         ...plan.modules.map((module) => module.packageName),
       ],
-      { cwd: projectRoot, stdio: 'inherit' }
+      { cwd: projectRoot }
     );
     // The upstream provider targets an app; our framework also exposes public inline modules.
-    const contents = readFileSync(target, 'utf8').replace(/^internal import /gm, 'public import ');
-    if (!existsSync(output) || readFileSync(output, 'utf8') !== contents)
-      writeFileSync(output, contents);
+    const contents = (await readText(target)).replace(/^internal import /gm, 'public import ');
+    await writeGenerated(output, contents);
   } finally {
-    rmSync(temporary, { recursive: true, force: true });
+    await rm(temporary, { recursive: true, force: true });
   }
 }
