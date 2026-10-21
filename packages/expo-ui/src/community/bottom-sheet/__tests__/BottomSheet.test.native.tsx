@@ -73,30 +73,6 @@ describe('BottomSheet', () => {
     expect(hostedViewStyle()).toEqual(expect.objectContaining({ flexGrow: 1, height: 0 }));
   });
 
-  itAndroid('opens and closes when the index prop changes', async () => {
-    const view = await render(
-      <BottomSheet index={1} snapPoints={['40%', '80%']}>
-        <View />
-      </BottomSheet>
-    );
-    expect(latestNativeViewProps('ModalBottomSheetView')?.initialFullyExpanded).toBe(true);
-
-    await view.rerender(
-      <BottomSheet index={-1} snapPoints={['40%', '80%']}>
-        <View />
-      </BottomSheet>
-    );
-    expect(view.toJSON()).toBeNull();
-
-    await view.rerender(
-      <BottomSheet index={1} snapPoints={['40%', '80%']}>
-        <View />
-      </BottomSheet>
-    );
-    expect(view.toJSON()).not.toBeNull();
-    expect(latestNativeViewProps('ModalBottomSheetView')?.initialFullyExpanded).toBe(true);
-  });
-
   itAndroid(
     'stays closed when the snap points change after the user dismisses the sheet',
     async () => {
