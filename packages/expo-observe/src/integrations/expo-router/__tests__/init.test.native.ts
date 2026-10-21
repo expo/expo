@@ -556,13 +556,32 @@ describe('navigation total blocking time', () => {
     await flushAsync();
 
     expect(lastBlockingTime().start).toHaveBeenCalledTimes(1);
-    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith({
-      timestamp: expect.any(String),
-      category: 'navigation',
-      name: 'tbt',
-      routeName: '/b',
-      params: { routeParams: { q: '1' }, url: '/b?q=1' },
-    });
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      {
+        timestamp: expect.any(String),
+        category: 'navigation',
+        name: 'tbt',
+        routeName: '/b',
+        params: { routeParams: { q: '1' }, url: '/b?q=1' },
+      },
+      expect.any(Number)
+    );
+  });
+
+  it('starts the tbt window at the navigation time', () => {
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    dispatch(events, 'NAVIGATE', 1300);
+
+    expect(lastBlockingTime().start.mock.calls).toEqual([[1000], [1300]]);
+  });
+
+  it('links the tbt metric at the focus mark time', async () => {
+    dispatch(events, 'NAVIGATE', 1000);
+    focus(events, 'b', undefined, 1250);
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(expect.anything(), 1250);
   });
 
   it('records the measured tbt in the main session', () => {
@@ -597,7 +616,8 @@ describe('navigation total blocking time', () => {
 
     expect(lastBlockingTime().setMetric).toHaveBeenCalledTimes(1);
     expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
-      expect.objectContaining({ routeName: '/b' })
+      expect.objectContaining({ routeName: '/b' }),
+      expect.any(Number)
     );
   });
 

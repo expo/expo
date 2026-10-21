@@ -64,12 +64,10 @@ export function initListeners(
           // PRELOAD comes from router.prefetch() — a route warm-up, not a user
           // navigation — so it must not become a TTR start.
           if (entry.detail.actionType === 'PRELOAD') break;
-          storage.pendingActions.push({
-            actionType: entry.detail.actionType,
-            startTime: enqueueTime ?? entry.startTime,
-          });
+          const startTime = enqueueTime ?? entry.startTime;
+          storage.pendingActions.push({ actionType: entry.detail.actionType, startTime });
           // Navigations before the first screen is focused are part of app launch.
-          if (storage.hasRecordedInitialTtr) blockingTime?.start();
+          if (storage.hasRecordedInitialTtr) blockingTime?.start(startTime);
           break;
         }
         case 'expo-router:page-preloaded':
@@ -154,13 +152,16 @@ export function initListeners(
       params: { isAppLaunch, ...navigationParams },
     });
     if (!isAppLaunch && isFirstFocus) {
-      blockingTime?.setMetric({
-        timestamp,
-        category: 'navigation',
-        name: 'tbt',
-        routeName: routePattern,
-        params: navigationParams,
-      });
+      blockingTime?.setMetric(
+        {
+          timestamp,
+          category: 'navigation',
+          name: 'tbt',
+          routeName: routePattern,
+          params: navigationParams,
+        },
+        now
+      );
     }
     if (hasPendingInteractive) {
       await emitTTI({
