@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `xcode` to 4.0.0. ([#51986](https://github.com/expo/expo/pull/51986) by [@zoontek](https://github.com/zoontek))
+
 ## 57.0.10 — 2026-10-06
 
 _This version does not introduce any user-facing changes._
