@@ -1,6 +1,8 @@
 package host.exp.exponent.kernel
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ExponentUrlsTest {
@@ -16,6 +18,22 @@ class ExponentUrlsTest {
   fun toExpKeepsExpUrlsAndTheirQuery() {
     assertEquals("exp://10.0.0.5:8081/--/p?__expo_disable_fab=1&x=a%2Bb", ExponentUrls.toExp("exp://10.0.0.5:8081/--/p?__expo_disable_fab=1&x=a%2Bb"))
     assertEquals("exps://u.expo.dev/abc", ExponentUrls.toExp("exps://u.expo.dev/abc"))
+  }
+
+  @Test
+  fun expUrlsWithoutAHostOpenHome() {
+    assertTrue(ExponentUrls.isHomeUrl("exp://"))
+    assertTrue(ExponentUrls.isHomeUrl("exps://"))
+    assertTrue(ExponentUrls.isHomeUrl("exp:///"))
+    assertTrue(ExponentUrls.isHomeUrl("EXP://?x=1"))
+  }
+
+  @Test
+  fun projectUrlsDoNotOpenHome() {
+    assertFalse(ExponentUrls.isHomeUrl("exp://192.168.1.1:8081"))
+    assertFalse(ExponentUrls.isHomeUrl("exps://u.expo.dev/abc"))
+    assertFalse(ExponentUrls.isHomeUrl("https://expo.dev"))
+    assertFalse(ExponentUrls.isHomeUrl("https://"))
   }
 
   @Test

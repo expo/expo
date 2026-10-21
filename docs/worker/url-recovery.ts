@@ -117,6 +117,8 @@ function pagePath(pathname: string) {
 function isRecoverable(request: Request, pathname: string) {
   return (
     (request.method === 'GET' || request.method === 'HEAD') &&
+    request.headers.get('Sec-Fetch-Mode') === 'navigate' &&
+    request.headers.get('Sec-Fetch-Dest') === 'document' &&
     pathname.length <= 512 &&
     /^\/(?:ja\/)?(?:versions\/(?:latest|unversioned|v\d+\.\d+\.\d+)\/)?(?:[\w-]+\/)*$/.test(
       pathname
@@ -301,7 +303,7 @@ export async function recoverNotFoundAsync(
       Location: target.href,
       'Cache-Control': 'no-store',
       'X-Robots-Tag': 'noindex',
-      Vary: 'Accept',
+      Vary: 'Accept, Sec-Fetch-Mode, Sec-Fetch-Dest',
     },
   });
 }

@@ -1,6 +1,6 @@
 {
   "name": "expo-ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Access system-provided on-device language models from Expo.",
   "keywords": [
@@ -52,14 +52,14 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

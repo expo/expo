@@ -23,8 +23,8 @@ jest.mock('../../useFocusEffect', () => ({
   useFocusEffect: (effect: () => void) => effect(),
 }));
 
-test('uses the router type from context', () => {
-  render(
+test('uses the router type from context', async () => {
+  await render(
     <NavigatorTypeContext.Provider value="tab">
       <NativeTabTrigger unstable_nativeProps={{ title: 'Home' }} />
     </NavigatorTypeContext.Provider>
@@ -34,12 +34,13 @@ test('uses the router type from context', () => {
   expect(mockNavigation.setOptions).toHaveBeenCalledWith({ nativeProps: { title: 'Home' } });
 });
 
-test('rejects a trigger rendered in a nested stack screen', () => {
-  expect(() =>
-    render(
-      <NavigatorTypeContext.Provider value="stack">
-        <NativeTabTrigger />
-      </NavigatorTypeContext.Provider>
-    )
-  ).toThrow('Trigger component can only be used in the tab screen. Current route: index');
+test('rejects a trigger rendered in a nested stack screen', async () => {
+  await expect(
+    async () =>
+      await render(
+        <NavigatorTypeContext.Provider value="stack">
+          <NativeTabTrigger />
+        </NavigatorTypeContext.Provider>
+      )
+  ).rejects.toThrow('Trigger component can only be used in the tab screen. Current route: index');
 });

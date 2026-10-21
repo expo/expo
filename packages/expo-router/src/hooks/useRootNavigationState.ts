@@ -7,7 +7,8 @@ import type { NavigationState } from '../react-navigation/native';
 
 /**
  * Returns the navigation state of the root navigator — the top-level navigator that
- * contains the current screen.
+ * contains the current screen. Its shape follows the `NavigationState` type of the
+ * installed `expo-router` version.
  *
  * @example
  * ```tsx
@@ -21,9 +22,6 @@ import type { NavigationState } from '../react-navigation/native';
  * ```
  *
  * @returns The current `NavigationState` of the root navigator.
- *
- * @see React Navigation's [navigation state](https://reactnavigation.org/docs/navigation-state/)
- * reference for the shape of the returned object.
  */
 export function useRootNavigationState(): NavigationState {
   const state = use(RootNavigationStateContext);

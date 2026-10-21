@@ -105,6 +105,9 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 }
 
 export default function App() {
+  const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[] | null>(null);
+  const [cachedUpdateReadError, setCachedUpdateReadError] = React.useState<string | null>(null);
+  const [isReadingCachedUpdates, setIsReadingCachedUpdates] = React.useState(false);
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
@@ -197,13 +200,29 @@ export default function App() {
     }
   });
 
+  const handleReadCachedUpdateIds = runBlockAsync(async () => {
+    // Mount the result row even if the first read fails, so polling can retry.
+    setCachedUpdateIds([]);
+    setCachedUpdateReadError(null);
+    setIsReadingCachedUpdates(true);
+    try {
+      setCachedUpdateIds(await ExpoUpdatesE2ETestModule.readCachedUpdateIdsAsync());
+    } catch (error) {
+      setCachedUpdateReadError(String(error));
+    } finally {
+      setIsReadingCachedUpdates(false);
+    }
+  });
+
   const handleReadAssetFiles = runBlockAsync(async () => {
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
     await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
@@ -282,7 +301,19 @@ export default function App() {
       />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
-      <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      {/* Reuse this row so startup diagnostics still fit on smaller emulators. */}
+      {cachedUpdateIds ? (
+        <Text testID="cachedUpdates" style={styles.logEntriesText}>
+          {JSON.stringify({
+            maxUpdatesToKeep: Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2,
+            updateIds: cachedUpdateIds,
+            pending: isReadingCachedUpdates,
+            error: cachedUpdateReadError,
+          })}
+        </Text>
+      ) : (
+        <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      )}
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
@@ -355,6 +386,7 @@ export default function App() {
       {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
+          <TestButton testID="readCachedUpdateIds" onPress={handleReadCachedUpdateIds} />
           <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
           <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
           <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />

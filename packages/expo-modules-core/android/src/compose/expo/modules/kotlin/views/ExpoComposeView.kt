@@ -2,7 +2,6 @@ package expo.modules.kotlin.views
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -83,9 +82,16 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override val shouldUseAndroidLayout = withHostingView
 
+  // A measure pass skipped while detached is cached by Android, so the same specs will not measure
+  // the Compose content again. Set when that happens, so the first attach can request a new pass.
+  // React Native can attach this view from inside its own `layout()`, which clears the forced-layout
+  // flag when it returns, so the request is posted.
+  private var needsLayoutOnAttach = false
+
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     // In case of issues there's an alternative solution in previous commits at https://github.com/expo/expo/pull/33759
     if (shouldUseAndroidLayout && !isAttachedToWindow) {
+      needsLayoutOnAttach = true
       setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
       return
     }
@@ -113,17 +119,12 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    if (needsLayoutOnAttach) {
+      needsLayoutOnAttach = false
+      post { requestLayout() }
+    }
     if (!withHostingView) {
       validateHostingAncestor()
-    }
-  }
-
-  override fun dispatchConfigurationChanged(newConfig: Configuration) {
-    super.dispatchConfigurationChanged(newConfig)
-    // React Native owns this view's bounds and may not schedule another Android layout pass
-    // when a configuration change leaves its Yoga layout unchanged.
-    if (withHostingView && isAttachedToWindow && isLaidOut) {
-      requestLayout()
     }
   }
 

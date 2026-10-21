@@ -18,6 +18,9 @@ const xcode = require(
   require.resolve('xcode', { paths: [path.dirname(require.resolve('@expo/config-plugins'))] })
 );
 
+const { spmUpdateCommand } = require('./commands');
+const { pluginError } = require('./diagnostics');
+
 /** Written by RN's SwiftPM injector into the .xcodeproj it modified. */
 const INJECTION_MARKER = '.spm-injected.json';
 
@@ -114,7 +117,7 @@ function findTarget(appRoot, projectPath, targetName) {
         ? `${WARNING} the Xcode project under ${appRoot} has no target "${targetName}", which is the ` +
             `target its SwiftPM injection marker names, so the Expo module registry will report no app ` +
             `groups. The target was most likely renamed after the last sync — re-run ` +
-            '`npx react-native spm update` to re-inject it.'
+            `\`${spmUpdateCommand()}\` to re-inject it.`
         : `${WARNING} the Xcode project under ${appRoot} has no application target, so the Expo module ` +
             'registry will report no app groups. Regenerate the project with `npx expo prebuild`.'
     );
@@ -176,7 +179,7 @@ function findEntitlementsFile(appRoot, projectPath, targetName) {
       `${WARNING} target "${name}" declares an entitlements file that is not on disk ` +
         `(${declared.join(', ')}), so the Expo module registry will report no app groups. Point ` +
         'CODE_SIGN_ENTITLEMENTS at the file the target really uses, then re-run ' +
-        '`npx react-native spm update`.'
+        `\`${spmUpdateCommand()}\`.`
     );
   } else if (declared.length > 1) {
     console.warn(
@@ -205,4 +208,45 @@ function resolveAppTarget(appRoot) {
   };
 }
 
-module.exports = { resolveAppTarget };
+/**
+ * Podfile.properties.json. Missing → {}; present but unusable → throw, since every gate would
+ * silently fall to its default. This intentionally differs from
+ * precompiled_modules.rb#read_podfile_properties and the Podfile template, which both rescue an
+ * invalid file to {}.
+ */
+function readPodfileProperties(propertiesPath) {
+  if (typeof propertiesPath !== 'string' || propertiesPath.length === 0) return {};
+  let properties;
+  try {
+    properties = JSON.parse(fs.readFileSync(propertiesPath, 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') return {};
+    throw unusablePropertiesError(propertiesPath, error.message, { cause: error });
+  }
+  if (properties == null || typeof properties !== 'object' || Array.isArray(properties)) {
+    throw unusablePropertiesError(
+      propertiesPath,
+      `it holds ${describeType(properties)}, not an object`
+    );
+  }
+  return properties;
+}
+
+/** Type only: JSON.stringify can overflow on a deep payload. */
+function describeType(payload) {
+  if (payload === null) return 'null';
+  return Array.isArray(payload) ? 'an array' : `a ${typeof payload}`;
+}
+
+function unusablePropertiesError(propertiesPath, reason, options) {
+  return pluginError(
+    {
+      what: `${propertiesPath} could not be read as Podfile properties (${reason}), so the plugin cannot tell which products this app links.`,
+      why: "Carrying on would read every property as unset and leave each gated product to its own default instead of the app's configuration, which only shows up at runtime, so the sync stops here.",
+      how: `Restore the file to a JSON object of properties, then re-run \`${spmUpdateCommand()}\`.`,
+    },
+    options
+  );
+}
+
+module.exports = { readPodfileProperties, resolveAppTarget };

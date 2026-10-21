@@ -1,14 +1,41 @@
 # Changelog
 
-## Unpublished
+## 58.1.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fix async functions rejecting with `NoSuchMethodError` on `expo-modules-core` 58.0.18 and later. The prebuilt Android library is now built against Expo Modules v2 runtime 0.2.5. ([#51693](https://github.com/expo/expo/pull/51693) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 58.1.1
 
-### 💡 Others
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] Add `getAppleStoreEnvironmentAsync()`, which returns StoreKit's App Store environment for the running build (`'production'`, `'sandbox'` or `'xcode'`), so apps can tell TestFlight, App Review and development builds apart from App Store releases. ([#51209](https://github.com/expo/expo/pull/51209) by [@huntie](https://github.com/huntie))
+
+## 58.0.4
+
+### Patch Changes
+
+- [Android] Migrate to the Expo Modules API 2.0. ([#51077](https://github.com/expo/expo/pull/51077) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.1 — 2026-09-14
 

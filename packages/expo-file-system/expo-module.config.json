@@ -8,6 +8,11 @@
     "modules": [
       "expo.modules.filesystem.FileSystemModule",
       "expo.modules.filesystem.legacy.FileSystemLegacyModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.filesystem",
+      "repository": "local-maven-repo"
+    }
   }
 }

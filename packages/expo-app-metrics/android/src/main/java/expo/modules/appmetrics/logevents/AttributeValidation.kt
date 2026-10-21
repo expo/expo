@@ -116,7 +116,11 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
   }
 
   return SanitizedLogAttributes(
-    attributes = if (sanitized.isEmpty()) null else sanitized,
+    attributes = if (sanitized.isEmpty()) {
+      null
+    } else {
+      sanitized
+    },
     droppedCount = emptyKeyDrops + reservedKeyDrops.size + overflowDrops
   )
 }

@@ -1002,7 +1002,7 @@ export declare class Contact {
    * @returns a promise resolving to `true` if a contact was created, `false` otherwise.
    * @example
    * ```ts
-   * const wasCreated = await Contact.createWithForm({
+   * const wasCreated = await Contact.presentCreateForm({
    *   givenName: 'Jane',
    *   familyName: 'Doe'
    * });

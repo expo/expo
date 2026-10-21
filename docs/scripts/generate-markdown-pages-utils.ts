@@ -987,6 +987,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
 }
 
+function resolveSamePageLinks($: CheerioAPI, main: Cheerio<AnyNode>, pagePath: string): void {
+  main.find('a[href^="#"]').each((_, el) => {
+    const $link = $(el);
+    const href = $link.attr('href');
+    $link.attr('href', `${pagePath}${href}`);
+  });
+}
+
 export function insertAgentInstructionsAfterH1(
   markdown: string,
   block: string,
@@ -1211,7 +1219,7 @@ const NO_CONTENT_FALLBACK =
  * Always returns a string so every page gets a .md file.
  * For redirect pages (meta refresh), returns a pointer to the redirect target.
  */
-export function convertHtmlToMarkdown(html: string): string {
+export function convertHtmlToMarkdown(html: string, pagePath?: string): string {
   const $ = cheerio.load(html);
 
   // Detect redirect pages via <meta http-equiv="refresh" content="0; url=/path/">
@@ -1234,6 +1242,9 @@ export function convertHtmlToMarkdown(html: string): string {
   }
 
   cleanHtml($, main);
+  if (pagePath) {
+    resolveSamePageLinks($, main, pagePath);
+  }
 
   const mainHtml = main.html();
   if (!mainHtml) {

@@ -72,10 +72,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.typeOf
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 enum class DevSessionPlatform {
   Native,
@@ -127,8 +125,6 @@ data class FeedbackBody(
   val metadata: Map<String, String?>
 )
 
-fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
-
 class HomeAppViewModelFactory(
   private val exponentHistoryService: ExponentHistoryService,
   private val expoViewKernel: ExpoViewKernel,
@@ -177,9 +173,9 @@ class HomeAppViewModel(
 
   private val client = OkHttpClient
     .Builder()
-    .connectTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .readTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .writeTimeout(10.toJDuration(DurationUnit.SECONDS))
+    .connectTimeout(10, TimeUnit.SECONDS)
+    .readTimeout(10, TimeUnit.SECONDS)
+    .writeTimeout(10, TimeUnit.SECONDS)
     .build()
 
   val recents = exponentHistoryService.history
@@ -286,33 +282,23 @@ class HomeAppViewModel(
     )
   }
 
-  private val remoteSnackSessions: StateFlow<List<DevSession>> = flow {
-    while (true) {
-      try {
-        val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
-          "development-sessions",
-          typeOf<DevSessionResponse>()
+  private val remoteSnackSessions: StateFlow<List<DevSession>> = pollDevSessions {
+    restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
+      "development-sessions",
+      typeOf<DevSessionResponse>()
+    )
+      .data
+      .map { session ->
+        session.copy(
+          // The `development-sessions` not always contains source, but we can infer it based on the URL
+          source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
+            DevSessionSource.Snack
+          } else {
+            DevSessionSource.Desktop
+          }
         )
-        emit(
-          sessions
-            .data
-            .map { session ->
-              session.copy(
-                // The `development-sessions` not always contains source, but we can infer it based on the URL
-                source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
-                  DevSessionSource.Snack
-                } else {
-                  DevSessionSource.Desktop
-                }
-              )
-            }
-            .filter { session -> session.source == DevSessionSource.Snack }
-        )
-      } catch (_: Exception) {
-        emit(emptyList())
       }
-      delay(3000)
-    }
+      .filter { session -> session.source == DevSessionSource.Snack }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(5000),

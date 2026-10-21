@@ -9,6 +9,7 @@ import { StyleSheet, Text as ReactNativeText, View } from 'react-native';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentDonationButtons } from './AppIntentDonationButtons';
 import { AppIntentExitButton } from './AppIntentExitButton';
 import {
   addSampleMailDrafts,
@@ -23,6 +24,12 @@ import { useAppIntentState } from './useAppIntentState';
 function formatDate(timestamp?: number): string {
   return timestamp ? new Date(timestamp).toLocaleString() : 'Never';
 }
+
+const sampleDonatedDraft = {
+  subject: 'Weekly update',
+  body: 'Here is what changed this week.',
+  recipients: ['sam@example.com'],
+};
 
 const entityAssociationModes = ['None', 'UIKit', 'ExpoUI'] as const;
 type EntityAssociationMode = (typeof entityAssociationModes)[number];
@@ -122,6 +129,16 @@ function MailDraft({
           onPress={() => onToggleFlag('hideInSuggestions')}
         />
       </View>
+
+      {/* OpenMailDraftIntent needs iOS 27, so on earlier versions the donation rejects because
+          nothing is registered as 'openMailDraft'. Deleting by entity works from iOS 18. */}
+      <AppIntentDonationButtons
+        title="Open this draft"
+        intent="openMailDraft"
+        params={{ draftId: draft.id }}
+        deleteFilter={{ entity: 'mailDraft', id: draft.id }}
+        deleteTitle="Delete donations about this draft"
+      />
     </View>
   );
 }
@@ -180,6 +197,21 @@ export default function AppIntentMailScreen() {
         ) : (
           <BodyText>No mail drafts have been created yet.</BodyText>
         )}
+      </Section>
+
+      <Section title="Donations">
+        <View style={styles.controls}>
+          <BodyText>
+            Donates a draft that the user wrote in the app, so the system can suggest writing a
+            similar one. Each draft above can also donate opening it (iOS 27), and delete every
+            donation that refers to it, which is what an app does when the user deletes a draft.
+          </BodyText>
+          <AppIntentDonationButtons
+            title="New draft to Sam"
+            intent="createMailDraft"
+            params={sampleDonatedDraft}
+          />
+        </View>
       </Section>
 
       <Section title="Controls">

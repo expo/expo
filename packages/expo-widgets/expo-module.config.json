@@ -7,9 +7,9 @@
     "modules": ["expo.modules.widgets.WidgetsModule"],
     "gradlePlugins": [
       {
-        "id": "io.github.jakex7.peek.glance-fork",
-        "group": "io.github.jakex7.peek",
-        "version": "0.3.0"
+        "id": "io.github.expo.peek.glance-fork",
+        "group": "io.github.expo.peek",
+        "version": "0.3.2"
       }
     ]
   }

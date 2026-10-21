@@ -6,6 +6,7 @@ import path from 'path';
 import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
+  getSiblingProductNames,
   isCheckedInResolvedTarget,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
@@ -144,7 +145,11 @@ export const SPMGenerator = {
 
     const checkedInRoot = resolveCheckedInManifestRoot(pkg);
     if (checkedInRoot) {
-      const targets = await resolveCheckedInManifestAsync(checkedInRoot, product);
+      const targets = await resolveCheckedInManifestAsync(
+        checkedInRoot,
+        product,
+        getSiblingProductNames(pkg, product)
+      );
       const internalTargetNames = new Set(targets.map((target) => target.name));
       for (const target of targets) {
         if (!isCheckedInResolvedTarget(target)) continue;

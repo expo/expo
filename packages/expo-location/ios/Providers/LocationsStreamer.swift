@@ -51,11 +51,17 @@ internal class LocationsStreamer: BaseStreamer {
     // Ignore `locationUnknown` (code 0) as it might be a temporary issue.
     // The location manager will keep trying to obtain the location.
     // It's a common error on simulator when there is no default location set in the scheme.
-    guard let clError = error as? CLError, clError.code != .locationUnknown else {
+    switch error {
+    case CLError.locationUnknown:
       return
+    case CLError.denied where manager.authorizationStatus == .authorizedWhenInUse && CLLocationManager.locationServicesEnabled():
+      // The system sends CLError.denied when an app with whenInUse permission moves to the background.
+      // Updates resume on their own once the app returns to the foreground, so this error is ignored.
+      return
+    default:
+      continuation?.finish(throwing: Exceptions.LocationUnavailable().causedBy(error))
+      locationsStream = nil
+      continuation = nil
     }
-    continuation?.finish(throwing: Exceptions.LocationUnavailable().causedBy(error))
-    locationsStream = nil
-    continuation = nil
   }
 }

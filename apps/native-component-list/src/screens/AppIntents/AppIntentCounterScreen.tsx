@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentDonationButtons } from './AppIntentDonationButtons';
 import { AppIntentExitButton } from './AppIntentExitButton';
 import { getCounterState, resetCounterState, type AppIntentCounterState } from './AppIntentsStore';
 import { useAppIntentState } from './useAppIntentState';
@@ -64,6 +65,16 @@ export default function AppIntentCounterScreen() {
               });
             }}
           />
+        </View>
+      </Section>
+
+      <Section title="Donations">
+        <View style={styles.controls}>
+          <BodyText>
+            Increase Counter takes no params, so conforming to DonatableAppIntent is all it needs.
+            Donate it after the user increases the counter in the app.
+          </BodyText>
+          <AppIntentDonationButtons title="Increase Counter" intent="increaseCounter" />
         </View>
       </Section>
     </ScrollPage>

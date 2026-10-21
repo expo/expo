@@ -8,7 +8,11 @@ import android.net.Uri
  * Keep in sync with `packages/expo-dev-menu/ios/Launch/ExpoLauncherURL.swift`.
  */
 class ExpoLauncherUrl(val url: Uri) {
-  private val paramNames: Set<String> = if (url.isHierarchical) url.queryParameterNames else emptySet()
+  private val paramNames: Set<String> = if (url.isHierarchical) {
+    url.queryParameterNames
+  } else {
+    emptySet()
+  }
   private val hasReservedParams = paramNames.any { it.startsWith(RESERVED_PREFIX) }
 
   val isLegacyHost = url.host == LEGACY_HOST
@@ -47,7 +51,9 @@ class ExpoLauncherUrl(val url: Uri) {
 
   /** `__expo_<name>`, or the [legacy] param next to the legacy host. */
   private fun param(name: String, legacy: String? = null): String? {
-    if (!url.isHierarchical) return null
+    if (!url.isHierarchical) {
+      return null
+    }
     return url.getQueryParameter(RESERVED_PREFIX + name)
       ?: legacy?.takeIf { isLegacyHost }?.let(url::getQueryParameter)
   }

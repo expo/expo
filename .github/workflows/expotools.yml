@@ -4,17 +4,13 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/expotools.yml
       - tools/**
       - packages/**/spm.config.json
       - packages/**/Package.swift
   pull_request:
-    paths:
-      - .github/workflows/expotools.yml
-      - tools/**
-      - packages/**/spm.config.json
-      - packages/**/Package.swift
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

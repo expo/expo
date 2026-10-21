@@ -10,6 +10,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompositionLifecycleScreen() {
   // Title
@@ -69,164 +70,163 @@ export default function CompositionLifecycleScreen() {
 
       {showSearchBar && <Stack.SearchBar placeholder="Search..." onChangeText={() => {}} />}
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        contentInsetAdjustmentBehavior="automatic">
-        <Text style={styles.title}>Composition Lifecycle</Text>
-        <Text style={styles.subtitle}>
-          Tests mount/unmount of each composition component via conditional rendering.
-        </Text>
+      <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
+        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+          <Text style={styles.title}>Composition Lifecycle</Text>
+          <Text style={styles.subtitle}>
+            Tests mount/unmount of each composition component via conditional rendering.
+          </Text>
 
-        {/* Title Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Title</Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Title</Text>
-            <Switch testID="toggle-title" value={showTitle} onValueChange={setShowTitle} />
-          </View>
-          {showTitle && (
-            <View style={styles.inputRow}>
-              <Text style={styles.label}>Title Text</Text>
-              <TextInput
-                testID="input-title-text"
-                style={styles.textInput}
-                value={titleText}
-                onChangeText={setTitleText}
-              />
+          {/* Title Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Title</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Title</Text>
+              <Switch testID="toggle-title" value={showTitle} onValueChange={setShowTitle} />
             </View>
-          )}
-        </View>
-
-        {/* BackButton Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Back Button</Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show BackButton</Text>
-            <Switch
-              testID="toggle-back-button"
-              value={showBackButton}
-              onValueChange={setShowBackButton}
-            />
-          </View>
-          {showBackButton && (
-            <View style={styles.inputRow}>
-              <Text style={styles.label}>Label</Text>
-              <TextInput
-                testID="input-back-button-label"
-                style={styles.textInput}
-                value={backButtonLabel}
-                onChangeText={setBackButtonLabel}
-              />
-            </View>
-          )}
-        </View>
-
-        {/* Header Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Header</Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Header</Text>
-            <Switch testID="toggle-header" value={showHeader} onValueChange={setShowHeader} />
-          </View>
-          {showHeader && (
-            <>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Blur Effect</Text>
-                <Switch
-                  testID="toggle-header-blur"
-                  value={headerBlur}
-                  onValueChange={setHeaderBlur}
+            {showTitle && (
+              <View style={styles.inputRow}>
+                <Text style={styles.label}>Title Text</Text>
+                <TextInput
+                  testID="input-title-text"
+                  style={styles.textInput}
+                  value={titleText}
+                  onChangeText={setTitleText}
                 />
               </View>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Background Color</Text>
-                <View style={styles.colorButtonsRow}>
-                  <Pressable
-                    testID="header-color-none"
-                    style={[styles.colorButton, { backgroundColor: '#fff', borderWidth: 1 }]}
-                    onPress={() => setHeaderBgColor(undefined)}
-                  />
-                  <Pressable
-                    testID="header-color-blue"
-                    style={[styles.colorButton, { backgroundColor: '#007AFF' }]}
-                    onPress={() => setHeaderBgColor('#007AFF')}
-                  />
-                  <Pressable
-                    testID="header-color-red"
-                    style={[styles.colorButton, { backgroundColor: '#FF3B30' }]}
-                    onPress={() => setHeaderBgColor('#FF3B30')}
-                  />
-                  <Pressable
-                    testID="header-color-green"
-                    style={[styles.colorButton, { backgroundColor: '#34C759' }]}
-                    onPress={() => setHeaderBgColor('#34C759')}
+            )}
+          </View>
+
+          {/* BackButton Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Back Button</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show BackButton</Text>
+              <Switch
+                testID="toggle-back-button"
+                value={showBackButton}
+                onValueChange={setShowBackButton}
+              />
+            </View>
+            {showBackButton && (
+              <View style={styles.inputRow}>
+                <Text style={styles.label}>Label</Text>
+                <TextInput
+                  testID="input-back-button-label"
+                  style={styles.textInput}
+                  value={backButtonLabel}
+                  onChangeText={setBackButtonLabel}
+                />
+              </View>
+            )}
+          </View>
+
+          {/* Header Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Header</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Header</Text>
+              <Switch testID="toggle-header" value={showHeader} onValueChange={setShowHeader} />
+            </View>
+            {showHeader && (
+              <>
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Blur Effect</Text>
+                  <Switch
+                    testID="toggle-header-blur"
+                    value={headerBlur}
+                    onValueChange={setHeaderBlur}
                   />
                 </View>
-              </View>
-            </>
-          )}
-        </View>
-
-        {/* Left Toolbar Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Left Toolbar</Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Left Toolbar</Text>
-            <Switch
-              testID="toggle-left-toolbar"
-              value={showLeftToolbar}
-              onValueChange={setShowLeftToolbar}
-            />
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Background Color</Text>
+                  <View style={styles.colorButtonsRow}>
+                    <Pressable
+                      testID="header-color-none"
+                      style={[styles.colorButton, { backgroundColor: '#fff', borderWidth: 1 }]}
+                      onPress={() => setHeaderBgColor(undefined)}
+                    />
+                    <Pressable
+                      testID="header-color-blue"
+                      style={[styles.colorButton, { backgroundColor: '#007AFF' }]}
+                      onPress={() => setHeaderBgColor('#007AFF')}
+                    />
+                    <Pressable
+                      testID="header-color-red"
+                      style={[styles.colorButton, { backgroundColor: '#FF3B30' }]}
+                      onPress={() => setHeaderBgColor('#FF3B30')}
+                    />
+                    <Pressable
+                      testID="header-color-green"
+                      style={[styles.colorButton, { backgroundColor: '#34C759' }]}
+                      onPress={() => setHeaderBgColor('#34C759')}
+                    />
+                  </View>
+                </View>
+              </>
+            )}
           </View>
-        </View>
 
-        {/* Right Toolbar Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Right Toolbar</Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Right Toolbar</Text>
-            <Switch
-              testID="toggle-right-toolbar"
-              value={showRightToolbar}
-              onValueChange={setShowRightToolbar}
-            />
+          {/* Left Toolbar Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Left Toolbar</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Left Toolbar</Text>
+              <Switch
+                testID="toggle-left-toolbar"
+                value={showLeftToolbar}
+                onValueChange={setShowLeftToolbar}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* SearchBar Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>SearchBar</Text>
-          <Text style={styles.note}>
-            Note: SearchBar uses navigation.setOptions, not composition registry.
-          </Text>
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show SearchBar</Text>
-            <Switch
-              testID="toggle-search-bar"
-              value={showSearchBar}
-              onValueChange={setShowSearchBar}
-            />
+          {/* Right Toolbar Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Right Toolbar</Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Right Toolbar</Text>
+              <Switch
+                testID="toggle-right-toolbar"
+                value={showRightToolbar}
+                onValueChange={setShowRightToolbar}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* Instructions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Instructions</Text>
-          <Text style={styles.instruction}>
-            1. Toggle each component on/off to test mount/unmount lifecycle
-          </Text>
-          <Text style={styles.instruction}>
-            2. While mounted, change props (title text, back button label, bg color) to test dynamic
-            updates
-          </Text>
-          <Text style={styles.instruction}>
-            3. Unmount all components and verify header reverts to defaults
-          </Text>
-          <Text style={styles.instruction}>
-            4. Components use conditional rendering (not hidden prop) to fully mount/unmount
-          </Text>
-        </View>
+          {/* SearchBar Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>SearchBar</Text>
+            <Text style={styles.note}>
+              Note: SearchBar uses navigation.setOptions, not composition registry.
+            </Text>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show SearchBar</Text>
+              <Switch
+                testID="toggle-search-bar"
+                value={showSearchBar}
+                onValueChange={setShowSearchBar}
+              />
+            </View>
+          </View>
+
+          {/* Instructions */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Instructions</Text>
+            <Text style={styles.instruction}>
+              1. Toggle each component on/off to test mount/unmount lifecycle
+            </Text>
+            <Text style={styles.instruction}>
+              2. While mounted, change props (title text, back button label, bg color) to test
+              dynamic updates
+            </Text>
+            <Text style={styles.instruction}>
+              3. Unmount all components and verify header reverts to defaults
+            </Text>
+            <Text style={styles.instruction}>
+              4. Components use conditional rendering (not hidden prop) to fully mount/unmount
+            </Text>
+          </View>
+        </SafeAreaView>
       </ScrollView>
     </>
   );

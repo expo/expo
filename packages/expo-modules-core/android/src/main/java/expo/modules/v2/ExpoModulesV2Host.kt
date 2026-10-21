@@ -3,7 +3,7 @@ package expo.modules.v2
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.logger
 import io.github.expo.modules.v2.Module
-import io.github.expo.modules.v2.modules.ModuleRegistry
+import io.github.expo.modules.v2.react.ExpoModulesV2React
 import io.github.expo.modules.v2.react.ReactRuntime
 import java.lang.reflect.Modifier
 
@@ -31,10 +31,20 @@ object ExpoModulesV2Host {
       }
 
       try {
-        val registry = ModuleRegistry()
-        modules.forEach(registry::register)
-        runtime = ReactRuntime.attach(reactContext, registry)
-        logger.info("✅ Expo Modules v2 installed ${modules.size} module(s) on globalThis.expoV2")
+        // Must run before `ReactRuntime` initializes. Its superclass, kolibri's `NativeObject`,
+        // otherwise loads the native library under kolibri's default name, which does not exist.
+        ExpoModulesV2React.ensureLoaded()
+        // The runtime creates a context of its own, and serves the modules of that context.
+        val attached = ReactRuntime.attach(reactContext)
+        try {
+          modules.forEach(attached.moduleRegistry::register)
+        } catch (e: Throwable) {
+          // Closing the runtime closes its context, so no module stays bound to it.
+          attached.close()
+          throw e
+        }
+        runtime = attached
+        logger.info("✅ Expo Modules v2 installed ${modules.size} module(s) on globalThis.expo.modules")
       } catch (e: Throwable) {
         logger.error("❌ Cannot install Expo Modules v2: $e", e)
       }

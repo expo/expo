@@ -19,6 +19,15 @@ const _serverLoader = createServerLoader(async (request, _params) => {
 export const loader = process.env.EXPO_USE_STATIC === 'server' ? _serverLoader : undefined;
 
 export default function ServerHelperRoute() {
+  if (process.env.EXPO_USE_STATIC !== 'server') {
+    return (
+      <SiteLinks>
+        <SiteLink href="/">Go to Index</SiteLink>
+        <SiteLink href="/static-helper">Go to Static Helper</SiteLink>
+      </SiteLinks>
+    );
+  }
+
   return (
     <Suspense fallback={<Loading />}>
       <ServerHelperScreen />

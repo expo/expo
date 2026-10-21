@@ -35,6 +35,21 @@ require 'tempfile'
 require 'tmpdir'
 require 'uri'
 
+# The macOS system Ruby is 2.6, which lacks Enumerable#filter_map (added in 2.7). Without it the
+# precompiled modules code raises NoMethodError, and modules silently fall back to building from source.
+unless Enumerable.method_defined?(:filter_map)
+  module Enumerable
+    def filter_map
+      return to_enum(:filter_map) unless block_given?
+
+      each_with_object([]) do |item, result|
+        value = yield(item)
+        result << value if value
+      end
+    end
+  end
+end
+
 module Expo
   module PrecompiledModules
     # The environment variable that enables precompiled modules
@@ -216,6 +231,7 @@ module Expo
       # - Hardcoded list of pods with React headers in their public API
       # - Pods that vendor xcframeworks (already precompiled)
       # - Source-built pods that depend on React-Core (non-modular includes)
+      # - Pods that depend, directly or transitively, on a static pod (CocoaPods rejects that for frameworks)
       #
       # Also stages shared SPM dep xcframework symlinks inside their owner pod's
       # directory — must run before `generate_pods_project` reads each xcframework's
@@ -233,6 +249,13 @@ module Expo
           if has_vendored_xcframeworks?(t)
             pods_to_downgrade.add(t.name)
           elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
+            pods_to_downgrade.add(t.name)
+          end
+        end
+
+        installer.pod_targets.each do |t|
+          next unless t.should_build? && t.build_as_dynamic?
+          if t.recursive_dependent_targets.any? { |d| pods_to_downgrade.include?(d.name) || d.build_as_static? }
             pods_to_downgrade.add(t.name)
           end
         end

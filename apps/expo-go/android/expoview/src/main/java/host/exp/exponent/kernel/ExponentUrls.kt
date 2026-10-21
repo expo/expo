@@ -50,9 +50,26 @@ object ExponentUrls {
     }
     val authority = uri.rawAuthority ?: return rawUrl
     val secure = uri.scheme == "https" || uri.scheme == "exps"
-    val scheme = if (secure) "exps" else "exp"
-    val defaultPort = if (secure) ":443" else ":80"
+    val scheme = if (secure) {
+      "exps"
+    } else {
+      "exp"
+    }
+    val defaultPort = if (secure) {
+      ":443"
+    } else {
+      ":80"
+    }
     return "$scheme://${authority.removeSuffix(defaultPort)}" + rawUrl.removePrefix("${uri.scheme}://$authority")
+  }
+
+  @JvmStatic fun isHomeUrl(rawUrl: String): Boolean {
+    val scheme = rawUrl.substringBefore(':', missingDelimiterValue = "").lowercase()
+    if (scheme != "exp" && scheme != "exps") {
+      return false
+    }
+    val host = rawUrl.substringAfter(':').removePrefix("//").takeWhile { it !in "/?#" }
+    return host.isEmpty()
   }
 
   @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {

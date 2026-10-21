@@ -1,6 +1,6 @@
 ---
 title: Server headers
-description: Learn how to set custom HTTP headers for all server route responses in Expo Router.
+description: Learn how to set global and path-specific HTTP headers in Expo Router.
 ---
 
 import { RouterLogo } from '@expo/styleguide';
@@ -12,7 +12,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** Server headers are available in SDK 54 and later, and requires [`expo-server`](/versions/latest/sdk/server/) to serve your exported application.
 
-Server headers in Expo Router allow you to set custom HTTP headers for security, caching, cookies, and custom metadata on route responses. Headers **only** apply to HTML and API route responses, and are not applicable to static assets such as images, fonts, or JavaScript bundles.
+Server headers in Expo Router allow you to set custom HTTP headers for security, caching, cookies, and custom metadata on route responses. Global `headers` apply to HTML, API route, and data loader responses. In SDK 58 and later, use `pageHeaders` to configure headers for specific HTML pages. These options do not apply to static assets such as images, fonts, or JavaScript bundles.
 
 ## Setup
 
@@ -52,7 +52,7 @@ Start the development server or export for production:
   }}
 />
 
-Headers are automatically applied to all HTML and API route responses.
+The server automatically applies these headers to HTML, API route, and data loader responses.
 
 </Step>
 
@@ -78,6 +78,41 @@ Headers are configured as an object where keys are header names and values are e
   }
 }
 ```
+
+### Path-specific headers
+
+In SDK 58 and later, use `pageHeaders` in the `expo-router` config plugin to apply headers to matching HTML pages:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "headers": {
+            "X-Frame-Options": "DENY"
+          },
+          "pageHeaders": [
+            {
+              "source": "/blog/[slug]",
+              "headers": { "Cache-Control": "public, max-age=60" }
+            },
+            {
+              "source": "/account/[...path]",
+              "headers": { "Cache-Control": "no-store" }
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+The `source` uses Expo Router path syntax: `/blog/[slug]` matches a single segment, and `/account/[...path]` matches nested paths. An exact path such as `/about` applies only to that page.
+
+`pageHeaders` does not apply to API routes. Use global `headers` or set headers in the API route's response instead.
 
 ## Examples
 
@@ -184,19 +219,27 @@ Add custom headers with metadata about your app:
 
 Server headers work with both output modes configured in your app config:
 
-- **`static`**: Headers are applied when serving pre-rendered HTML files with [`expo-server`](/versions/latest/sdk/server/)
-- **`server`**: Headers are applied to dynamically rendered responses
+- **`static`**: [`expo-server`](/versions/latest/sdk/server/) applies headers when serving pre-rendered HTML and loader data files
+- **`server`**: The server applies headers to dynamically rendered HTML, API route, and data loader responses
+
+The development server and `npx expo serve` support global and path-specific headers. For production deployments, use `expo-server` or EAS Hosting to apply these headers. Other static hosts need their own header configuration. For loader caching defaults and development behavior, see [Data loaders: Cache defaults](/router/web/data-loaders/#cache-defaults).
 
 ### Header precedence
 
-Headers defined in the `expo-router` plugin are applied globally but do not override headers set by API routes. If an API route returns a response with a header that is also defined in the plugin configuration, the route-specific header takes precedence.
+For a header with a string value, the following order applies, from highest to lowest priority:
 
-For example, if you configure `Cache-Control: public, max-age=3600` globally, but an API route that returns real-time data sets `Cache-Control: no-store`, the API route's header takes precedence.
+1. Headers set by the route response.
+2. Matching `pageHeaders` rules, for HTML pages.
+3. Global `headers`.
+
+When multiple `pageHeaders` rules match, later rules override earlier rules for the same header. Header names are case-insensitive. The server appends array values, allowing multiple values such as `Set-Cookie` headers.
+
+For example, suppose global `headers` sets `Cache-Control: public, max-age=3600`. A matching `pageHeaders` rule can override it with `private, max-age=60`. If the page response sets `no-store`, that value takes precedence over both settings.
 
 ## Known limitations
 
 - **Redirects**: Headers do not apply to redirect responses
-- **Static assets**: Headers are only applied to HTML and API route responses, not to static assets like images, fonts, or JavaScript bundles
+- **Static assets**: These options do not apply to images, fonts, or JavaScript bundles
 
 ## Related
 

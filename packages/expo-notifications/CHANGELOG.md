@@ -1,14 +1,90 @@
 # Changelog
 
-## Unpublished
+## 58.1.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies.
+  - expo-constants@58.0.13
 
-### 🐛 Bug fixes
+## 58.1.5
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#51693](https://github.com/expo/expo/pull/51693))
+  - expo-application@58.1.2
+
+## 58.1.4
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/image-utils@0.12.5
+  - expo-constants@58.0.12
+
+## 58.1.3
+
+### Patch Changes
+
+- [iOS] Fix a crash (`EXC_BAD_ACCESS` in `__RawDictionaryStorage.find`) when the JS notification handler responds while the same foreground notification times out or another one arrives, by handling `handleNotificationAsync` on the main queue. ([#51370](https://github.com/expo/expo/pull/51370) by [@GersonRocha9](https://github.com/GersonRocha9))
+- Updated dependencies. ([#51368](https://github.com/expo/expo/pull/51368), [#49784](https://github.com/expo/expo/pull/49784))
+  - expo-application@58.1.1
+  - expo-constants@58.0.11
+
+## 58.1.2
+
+### Patch Changes
+
+- Updated dependencies. ([#51209](https://github.com/expo/expo/pull/51209))
+  - expo-application@58.1.0
+
+## 58.1.1
+
+### Patch Changes
+
+- [Android] Add support for grouping notifications via `threadIdentifier`. ([#43388](https://github.com/expo/expo/pull/43388) by [@vonovak](https://github.com/vonovak))
+- [Android] Add `getExactAlarmPermissionsAsync` and `requestExactAlarmPermissionsAsync` to check and request the exact alarm permission. ([#50919](https://github.com/expo/expo/pull/50919) by [@vonovak](https://github.com/vonovak))
+- [Internal] [Android] Return notification permission responses as records instead of bundles. ([#51060](https://github.com/expo/expo/pull/51060) by [@vonovak](https://github.com/vonovak))
+- Updated dependencies. ([#51077](https://github.com/expo/expo/pull/51077))
+  - expo-application@58.0.4
+  - @expo/image-utils@0.12.4
+  - expo-constants@58.0.10
+
+## 58.1.0
+
+### Minor Changes
+
+- Add `enableRemoteNotifications` config plugin option. Set it to `false` to skip the APNs entitlement for apps that use only local notifications. Defaults to `true`. ([#50891](https://github.com/expo/expo/pull/50891) by [@netmaxt3r](https://github.com/netmaxt3r))
+
+### Patch Changes
+
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/image-utils@0.12.3
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-application@58.0.3
+
+## 58.0.10
+
+### Patch Changes
+
+- Allow native push token requests to retry after a transient failure while preserving shared in-flight requests. ([#50848](https://github.com/expo/expo/pull/50848) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+- [Android] Fix notification action buttons going missing after an app update that changes R8 minification, until the app is opened again. ([#50799](https://github.com/expo/expo/pull/50799) by [@icoric4](https://github.com/icoric4))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661))
+  - @expo/image-utils@0.12.2
+  - expo-application@58.0.2
+  - expo-constants@58.0.9
 
 ## 58.0.8 — 2026-09-28
 

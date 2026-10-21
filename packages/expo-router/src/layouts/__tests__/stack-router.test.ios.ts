@@ -1,5 +1,32 @@
-import { CommonActions, type StackNavigationState } from '../../react-navigation/routers';
-import { StackRouter } from '../stack-router';
+import {
+  CommonActions,
+  RouterActionHandling,
+  type StackNavigationState,
+  StackRouter as RNStackRouter,
+} from '../../react-navigation/routers';
+import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
+import { StackRouter, stackRouterOverride } from '../stack-router';
+
+test('stackRouterOverride does not handle an action targeting another navigator', () => {
+  const { getStateForAction } = stackRouterOverride(RNStackRouter({}));
+  const state: StackNavigationState<{ index: undefined }> = {
+    stale: false,
+    routeKeySeq: 1,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['index'],
+    routes: [{ key: 'index:0', name: 'index' }],
+  };
+
+  const result = getStateForAction!(
+    state,
+    { ...CommonActions.navigate('index'), target: 'navigator:other' },
+    { routeNames: ['index'], routeGetIdList: {} }
+  );
+
+  expect(result).toBe(RouterActionHandling.Unhandled);
+});
 
 test('same-route navigation preserves merge semantics without consuming another preload', () => {
   const router = StackRouter({});
@@ -32,11 +59,13 @@ test('same-route navigation preserves merge semantics without consuming another 
     ],
   };
 
-  const result = router.getStateForAction(
-    state,
-    CommonActions.navigate('[id]', { id: 'two' }, { merge: true }),
-    { routeNames: ['[id]'], routeGetIdList: {} }
-  )!;
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      CommonActions.navigate('[id]', { id: 'two' }, { merge: true }),
+      { routeNames: ['[id]'], routeGetIdList: {} }
+    )
+  );
 
   expect(result.affectedRouteKey).toBe('[id]:2');
   expect(result.state.routes[result.state.index]!.params).toEqual({
@@ -67,21 +96,23 @@ test('same-route navigation attaches fresh trusted state', () => {
     ],
   };
 
-  const result = router.getStateForAction(
-    state,
-    {
-      type: 'NAVIGATE',
-      payload: {
-        name: '[id]',
-        params: { id: 'two' },
-        state: {
-          routes: [{ name: 'fresh' }],
-          __internal__routerActionState: true,
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      {
+        type: 'NAVIGATE',
+        payload: {
+          name: '[id]',
+          params: { id: 'two' },
+          state: {
+            routes: [{ name: 'fresh' }],
+            __internal__routerActionState: true,
+          },
         },
       },
-    },
-    { routeNames: ['[id]'], routeGetIdList: {} }
-  )!;
+      { routeNames: ['[id]'], routeGetIdList: {} }
+    )
+  );
 
   expect(result.state.routes[0]!.state).toBe(state.routes[0]!.state);
   expect(result.state.routes[result.state.index]!.state).toEqual({
@@ -133,14 +164,16 @@ describe('native preview identity', () => {
   const options = { routeNames: state.routeNames, routeGetIdList: {} };
 
   it('promotes the exact native key among same-name preloads', () => {
-    const result = router.getStateForAction(
-      state,
-      {
-        type: 'NAVIGATE',
-        payload: { ...{ name: 'detail', __internal__PreviewKey: 'detail:2' } },
-      },
-      options
-    )!;
+    const result = expectHandled(
+      router.getStateForAction(
+        state,
+        {
+          type: 'NAVIGATE',
+          payload: { ...{ name: 'detail', __internal__PreviewKey: 'detail:2' } },
+        },
+        options
+      )
+    );
     expect(result.affectedRouteKey).toBe('detail:2');
     expect(result.state.index).toBe(1);
     expect(result.state.routes.map((route) => route.key)).toEqual([
@@ -149,19 +182,25 @@ describe('native preview identity', () => {
       'detail:1',
       'other:3',
     ]);
+    // Native already pushed the screen. The flag would also disable the back animation.
+    expect(result.state.routes[1]!.params).not.toHaveProperty(
+      '__internal_expo_router_no_animation'
+    );
   });
 
   it.each(['missing', 'other:3'])(
     'uses ordinary navigation for an unowned or mismatched key %s',
     (key) => {
-      const result = router.getStateForAction(
-        state,
-        {
-          type: 'NAVIGATE',
-          payload: { ...{ name: 'index', __internal__PreviewKey: key } },
-        },
-        options
-      )!;
+      const result = expectHandled(
+        router.getStateForAction(
+          state,
+          {
+            type: 'NAVIGATE',
+            payload: { ...{ name: 'index', __internal__PreviewKey: key } },
+          },
+          options
+        )
+      );
       expect(result.affectedRouteKey).toBe('index:0');
       expect(result.state.index).toBe(0);
       expect(result.state.routes).toHaveLength(4);

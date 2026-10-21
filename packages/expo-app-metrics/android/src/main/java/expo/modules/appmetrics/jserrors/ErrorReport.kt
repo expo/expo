@@ -56,7 +56,8 @@ data class ErrorReport(
 enum class ErrorSource(val rawValue: String) : Enumerable {
   GLOBAL("global"),
   ERROR_BOUNDARY("errorBoundary"),
-  REPORTED_BY_USER("reportedByUser")
+  REPORTED_BY_USER("reportedByUser"),
+  INTEGRATION("integration")
 }
 
 /**
@@ -110,7 +111,13 @@ private fun makeExceptionLogRecord(
     sessionId = sessionId,
     timestamp = timestamp,
     name = "js.exception",
-    severity = (if (isFatal) Severity.FATAL else Severity.ERROR).rawValue,
+    severity = (
+      if (isFatal) {
+        Severity.FATAL
+      } else {
+        Severity.ERROR
+      }
+      ).rawValue,
     attributes = JsonAny.encodeMapToJsonString(attributes)
   )
 }

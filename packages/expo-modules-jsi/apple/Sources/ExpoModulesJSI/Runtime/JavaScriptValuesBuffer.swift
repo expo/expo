@@ -16,10 +16,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // Safe to use unowned: the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
   //
-  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
-  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
-  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
-  // native-side cost of a no-op host function call. `unowned(unsafe)` is a plain pointer store/load.
+  // `unowned(unsafe)` rather than `unowned`: a plain pointer store and load, with no reference
+  // counting on every buffer construction and destruction.
   internal unowned(unsafe) let runtime: JavaScriptRuntime
 
   // The start of the storage, type-erased because `facebook.jsi.Value` is not a public type.
@@ -113,7 +111,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   @JavaScriptActor
-  public func map<T>(_ transform: @JavaScriptActor (_ value: JavaScriptValue, _ index: Int) throws -> T) rethrows -> [T]
+  public func map<T>(_ transform: @JavaScriptActor (_ value: borrowing JavaScriptValue, _ index: Int) throws -> T)
+    rethrows -> [T]
   {
     var result: [T] = []
     result.reserveCapacity(count)
@@ -149,6 +148,30 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity),
       ownsMemory: true
     )
+  }
+
+  /// Allocates an owning buffer of `count` undefined values, which ``emplace(_:at:)`` then replaces.
+  /// Allocates nothing for zero values.
+  @usableFromInline
+  internal static func allocateUndefined(in runtime: JavaScriptRuntime, count: Int) -> JavaScriptValuesBuffer {
+    if count == 0 {
+      return JavaScriptValuesBuffer(runtime, start: nil, count: 0)
+    }
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: count)
+    for index in 0..<count {
+      buffer.initializeElement(at: index, to: .undefined())
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// Moves `value` into the buffer at `index`, without a clone. The slot must hold a value that owns
+  /// nothing, such as the `undefined` that ``allocateUndefined(in:count:)`` puts there.
+  @usableFromInline
+  internal func emplace(_ value: consuming JavaScriptValue, at index: Int) {
+    guard (0..<count).contains(index) else {
+      FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
+    }
+    JavaScriptValue.write(value, to: bufferPointer.baseAddress! + index)
   }
 
   /// Allocates new values buffer with the given JS representables.
@@ -189,18 +212,23 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     return copy
   }
 
-  /// Allocates a new owning buffer holding a runtime-aware copy of each value's
-  /// underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
-  /// to `runtime`; mixing runtimes will crash deep inside JSI.
+  /// Allocates a new owning buffer holding a runtime-aware copy of each referenced value's
+  /// underlying `facebook.jsi.Value`. The values are passed through `JavaScriptValue.Ref`, because a
+  /// non-copyable value cannot be a Swift array element. They must all belong to `runtime` or be
+  /// runtime-free; mixing runtimes will crash deep inside JSI. An empty reference yields `undefined`.
   @JavaScriptActor
-  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
+  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue.Ref]) -> JavaScriptValuesBuffer {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
-    for (index, value) in values.enumerated() {
-      assert(
-        value.runtime === runtime,
-        "JavaScriptValue belongs to a different runtime than the buffer being initialized"
-      )
-      buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
+    for (index, ref) in values.enumerated() {
+      let jsiValue = ref.withUnwrappedValue { (value: borrowing JavaScriptValue) -> facebook.jsi.Value in
+        // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
+        assert(
+          value.belongs(to: runtime),
+          "JavaScriptValue belongs to a different runtime than the buffer being initialized"
+        )
+        return value.toJSIValue(in: runtime.pointee)
+      }
+      buffer.initializeElement(at: index, to: jsiValue ?? .undefined())
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }

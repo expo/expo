@@ -8,10 +8,12 @@ import { afterEach, it, type TestContext } from 'node:test';
 import { getExpoRepositoryRootDir } from '../Directories';
 import {
   isFirstPartyPackagePath,
-  resolveCheckedInManifestAsync as resolve,
+  resolveCheckedInHeaderDirectoriesAsync,
+  resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
+import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync } from './Frameworks';
 import type {
   SPMConfig,
   SPMPackageDependencyConfig,
@@ -20,6 +22,15 @@ import type {
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { SPMPackage } from './SPMPackage';
+
+/** The fixture package declares a single product, so it has no siblings unless a test adds some. */
+function resolve(
+  root: string,
+  product: SPMProduct,
+  siblingProductNames: ReadonlySet<string> = new Set()
+) {
+  return resolveCheckedInManifestAsync(root, product, siblingProductNames);
+}
 
 const temporaryDirectories: string[] = [];
 const originalRepoRoot = process.env.EXPO_ROOT_DIR;
@@ -1137,6 +1148,77 @@ it('preserves resolved SPM product references and sibling transitive dependencie
   );
 });
 
+it('rejects a config dependency that names nothing the generated package can resolve', async () => {
+  const input = fixture();
+  (input.product.targets[0] as SourceTarget).dependencies = ['Typo'];
+  await rejectsManifest(
+    input,
+    /spm\.config\.json lists dependency "Typo", .*cannot resolve because it is not a regular target.*\. Fix the name, or declare it as a regular target in Package\.swift, or list the dependency in externalDependencies or spmPackages in spm\.config\.json\.$/
+  );
+});
+
+const RECOGNISED_CONFIG_DEPENDENCIES: {
+  kind: string;
+  dependency: string;
+  setup?: () => ReturnType<typeof fixture>;
+  siblingProductNames?: ReadonlySet<string>;
+}[] = [
+  {
+    kind: 'an external dependency',
+    dependency: 'React',
+    setup: () => {
+      const input = fixture();
+      input.product.externalDependencies = ['React'];
+      return input;
+    },
+  },
+  {
+    kind: 'an external product of another package',
+    dependency: 'expo-modules-core/ExpoModulesCore',
+    setup: () => {
+      const input = fixture();
+      input.product.externalDependencies = ['expo-modules-core/ExpoModulesCore'];
+      return input;
+    },
+  },
+  {
+    kind: 'an spmPackages product',
+    dependency: 'Remote',
+    setup: () => withPackages(REMOTE_PACKAGE, [remote()]),
+  },
+  {
+    kind: 'a framework target of the same product',
+    dependency: 'Vendor',
+    setup: () => {
+      const input = fixture();
+      input.product.targets.push({ type: 'framework', name: 'Vendor', path: 'Vendor.xcframework' });
+      return input;
+    },
+  },
+  {
+    kind: 'a sibling product',
+    dependency: 'Sibling',
+    siblingProductNames: new Set(['Sibling']),
+  },
+];
+
+for (const {
+  kind,
+  dependency,
+  setup = fixture,
+  siblingProductNames,
+} of RECOGNISED_CONFIG_DEPENDENCIES) {
+  it(`keeps a config dependency on ${kind}`, async () => {
+    const input = setup();
+    (input.product.targets[0] as SourceTarget).dependencies = [dependency];
+    const [target] = await resolve(input.root, input.product, siblingProductNames);
+    assert.ok(
+      target.dependencies.includes(dependency),
+      `Expected ${JSON.stringify(target.dependencies)} to include "${dependency}"`
+    );
+  });
+}
+
 it('uses manifest resources even when config resources no longer exist', async () => {
   const input = fixture('.target(name: "Main", path: "ios", resources: [.copy("asset.txt")])', {
     'ios/Thing.swift': 'public let value = 1',
@@ -1184,6 +1266,128 @@ it('prefixes implicit C public headers and builds through the source symlink', a
   assert.match(
     execFileSync('swift', ['build', ...options], { encoding: 'utf8', env }),
     /Build complete!/
+  );
+});
+
+function cFixture(publicHeadersPath?: string, files: Record<string, string> = {}) {
+  const declaration =
+    publicHeadersPath == null ? '' : `, publicHeadersPath: "${publicHeadersPath}"`;
+  const input = fixture(`.target(name: "Main", path: "native"${declaration})`, {
+    'native/Thing.c': 'int thing(void) { return 1; }',
+    ...files,
+  });
+  input.product.targets[0].type = 'objc';
+  (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
+  return input;
+}
+
+it('header directories: maps a C target to its public headers directory in the sources', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  assert.deepEqual(
+    await resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    new Map([['Main', fs.realpathSync.native(path.join(input.root, 'native/headers'))]])
+  );
+});
+
+it('header directories: frameworks copy the public headers from the sources, not the generated include directory', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  const generatedHeaders = SPMGenerator.getHeaderFilesPath(
+    input.pkg,
+    input.product,
+    input.product.targets[0]
+  );
+  fs.mkdirSync(generatedHeaders, { recursive: true });
+  fs.writeFileSync(path.join(generatedHeaders, 'Stale.h'), 'int stale(void);');
+  const xcframework = path.join(input.root, 'Fixture.xcframework');
+
+  const { headerFiles } = await collectAndCopyHeaderFilesFromBuiltFrameworksAsync(
+    input.pkg,
+    input.product,
+    xcframework
+  );
+
+  assert.deepEqual(headerFiles, ['Thing.h']);
+  assert.deepEqual(fs.readdirSync(path.join(xcframework, 'Headers')), ['Thing.h']);
+});
+
+it('header directories: rejects a C target with no publicHeadersPath and no include/ directory', async () => {
+  const input = cFixture();
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/include');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /does not exist, so Package\.swift declares no public headers .* Set publicHeadersPath on target "Main" in Package\.swift .*or add an include\/ directory/,
+        'Main'
+      );
+      assert.ok(
+        error.message.includes(`public headers directory ${missingPath} does not exist`),
+        error.message
+      );
+      return true;
+    }
+  );
+});
+
+it('header directories: rejects a C target whose declared publicHeadersPath is missing', async () => {
+  const input = cFixture('headers/');
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/headers');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(error, / or fix publicHeadersPath on target "Main"/, 'Main');
+      assert.ok(
+        error.message.includes(
+          `the publicHeadersPath "headers" declared in Package.swift does not exist at ${missingPath}`
+        ),
+        error.message
+      );
+      assert.doesNotMatch(error.message, /declares no public headers|include\//);
+      return true;
+    }
+  );
+});
+
+for (const [label, publicHeadersPath, file] of [
+  ['declared publicHeadersPath', 'headers', 'native/headers'],
+  ['default include/ path', undefined, 'native/include'],
+] as const) {
+  it(`header directories: rejects a C target whose ${label} is a file`, async () => {
+    const input = cFixture(publicHeadersPath, { [file]: 'int thing(void);' });
+    const filePath = path.join(fs.realpathSync.native(input.root), file);
+    await assert.rejects(
+      resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+      (error: Error) => {
+        assertManifestDiagnostic(
+          error,
+          / is a file, not a directory, .* Set publicHeadersPath on target "Main" in Package\.swift to the directory that holds its public headers\.$/,
+          'Main'
+        );
+        assert.ok(
+          error.message.includes(`public headers path ${filePath} is a file`),
+          error.message
+        );
+        assert.doesNotMatch(error.message, /does not exist/);
+        return true;
+      }
+    );
+  });
+}
+
+it('header directories: rejects a C target whose public headers spm.config.json disables', async () => {
+  const input = cFixture(undefined, { 'native/include/Thing.h': 'int thing(void);' });
+  (input.product.targets[0] as SourceTarget).publicHeaders = false;
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /spm\.config\.json sets "publicHeaders": false for this target, .* Remove "publicHeaders": false /,
+        'Main'
+      );
+      return true;
+    }
   );
 });
 
@@ -1891,6 +2095,13 @@ for (const [rule, dumped] of [
     );
   });
 }
+
+it('rejects a dumped manifest whose targets is not a list as naming an unknown target', async () => {
+  const input = fixture();
+  await withSwiftOnPath(stubSwiftDump(input, {}, { targets: null }), () =>
+    rejectsManifest(input, /: the product references an unknown target /)
+  );
+});
 
 // Swift rejects absolute sources, excludes and resources itself, so our guard never sees them
 // from a real manifest. It stays as defence in depth for dumps we do not control; the four

@@ -1,14 +1,69 @@
 # Changelog
 
-## Unpublished
+## 58.0.20
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51986](https://github.com/expo/expo/pull/51986))
+  - @expo/config-plugins@58.0.10
 
-### 🐛 Bug fixes
+## 58.0.19
 
-### 💡 Others
+### Patch Changes
+
+- [Android] Classify `text/*` attachments that reach the URI parser as `file` instead of `text`, since their value is a content URI. This covers multi-file shares and single-file shares whose intent MIME type is not `text/plain`. Resolved `contentType` is unchanged. ([#51648](https://github.com/expo/expo/pull/51648) by [@juliusmarminge](https://github.com/juliusmarminge))
+
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config-plugins@58.0.9
+
+## 58.0.17
+
+### Patch Changes
+
+- Updated dependencies. ([#50536](https://github.com/expo/expo/pull/50536))
+  - @expo/config-types@58.0.3
+  - @expo/config-plugins@58.0.8
+
+## 58.0.16
+
+### Patch Changes
+
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4))
+  - @expo/config-plugins@58.0.7
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+
+## 58.0.13
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.12
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config-plugins@58.0.4
+  - @expo/config-types@58.0.2
+  - @expo/plist@0.10.1
 
 ## 58.0.11 — 2026-09-28
 

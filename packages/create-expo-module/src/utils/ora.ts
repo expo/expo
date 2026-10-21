@@ -22,7 +22,7 @@ export async function newStep<Result>(
     return await action(step);
   } catch (error) {
     step.fail();
-    console.error(error);
-    process.exit(1);
+    // Let callers roll back writes and clean up temporary templates before the CLI reports the error.
+    throw error;
   }
 }

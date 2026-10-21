@@ -109,7 +109,11 @@ fun MovableFloatingActionButton(
       if (state.isOpen) {
         fab.restingOffset = fab.animatedOffset.value
         val isOnLeftSide = fab.animatedOffset.value.x < fab.fabAreaBounds.x / 2f
-        val offScreenX = if (isOnLeftSide) -totalFabSizePx.x else constraints.maxWidth.toFloat()
+        val offScreenX = if (isOnLeftSide) {
+          -totalFabSizePx.x
+        } else {
+          constraints.maxWidth.toFloat()
+        }
         fab.animatedOffset.animateTo(
           targetValue = Offset(offScreenX, fab.animatedOffset.value.y),
           animationSpec = tween(durationMillis = 500)

@@ -30,42 +30,42 @@ function nativeModifiers() {
 }
 
 describe('Image', () => {
-  it('applies the default symbol font when no size or font modifier is given', () => {
-    render(<Image systemName="bell.fill" />);
+  it('applies the default symbol font when no size or font modifier is given', async () => {
+    await render(<Image systemName="bell.fill" />);
     expect(nativeModifiers()).toEqual([{ $type: 'font', size: 24 }]);
   });
 
-  it('routes the size prop to a font modifier', () => {
-    render(<Image systemName="bell.fill" size={30} />);
+  it('routes the size prop to a font modifier', async () => {
+    await render(<Image systemName="bell.fill" size={30} />);
     expect(nativeModifiers()).toEqual([{ $type: 'font', size: 30 }]);
   });
 
-  it('routes the color prop to a foregroundStyle modifier', () => {
-    render(<Image systemName="bell.fill" color="red" />);
+  it('routes the color prop to a foregroundStyle modifier', async () => {
+    await render(<Image systemName="bell.fill" color="red" />);
     expect(nativeModifiers()).toEqual([{ $type: 'font', size: 24 }, foregroundStyle('red')]);
   });
 
-  it('does not inject a default font when the user supplies a font modifier', () => {
-    render(<Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />);
+  it('does not inject a default font when the user supplies a font modifier', async () => {
+    await render(<Image systemName="bell.fill" modifiers={[font({ textStyle: 'largeTitle' })]} />);
     expect(nativeModifiers()).toEqual([{ $type: 'font', textStyle: 'largeTitle' }]);
   });
 
-  it('prefers a user font modifier over the size prop', () => {
-    render(
+  it('prefers a user font modifier over the size prop', async () => {
+    await render(
       <Image systemName="bell.fill" size={30} modifiers={[font({ textStyle: 'largeTitle' })]} />
     );
     expect(nativeModifiers()).toEqual([{ $type: 'font', textStyle: 'largeTitle' }]);
   });
 
-  it('attaches the global event listener only when the user passes modifiers', () => {
-    render(<Image systemName="bell.fill" size={30} color="red" />);
-    render(<Image systemName="bell.fill" modifiers={[opacity(0.5)]} />);
+  it('attaches the global event listener only when the user passes modifiers', async () => {
+    await render(<Image systemName="bell.fill" size={30} color="red" />);
+    await render(<Image systemName="bell.fill" modifiers={[opacity(0.5)]} />);
     expect(mockNativeViewFn.mock.calls[0][0].onGlobalEvent).toBeUndefined();
     expect(mockNativeViewFn.mock.calls[1][0].onGlobalEvent).toBeInstanceOf(Function);
   });
 
-  it('keeps user modifiers ahead of the injected ones', () => {
-    render(<Image systemName="bell.fill" color="red" modifiers={[opacity(0.5)]} />);
+  it('keeps user modifiers ahead of the injected ones', async () => {
+    await render(<Image systemName="bell.fill" color="red" modifiers={[opacity(0.5)]} />);
     expect(nativeModifiers()).toEqual([
       { $type: 'opacity', value: 0.5 },
       { $type: 'font', size: 24 },

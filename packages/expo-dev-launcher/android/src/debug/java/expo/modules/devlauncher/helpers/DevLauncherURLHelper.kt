@@ -3,7 +3,11 @@ package expo.modules.devlauncher.helpers
 import android.net.Uri
 import expo.modules.devmenu.launch.ExpoLauncherUrl
 
-fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") uri.buildUpon().scheme(scheme).build() else uri
+fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") {
+  uri.buildUpon().scheme(scheme).build()
+} else {
+  uri
+}
 
 /** Strict `name=1` flag on this URL. Used for the `disableFab` and `disableAutoLaunch` params, which update the saved preferences. */
 fun hasEnabledFlag(uri: Uri, name: String): Boolean {

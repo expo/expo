@@ -1,5 +1,5 @@
 // Declares macro signatures whose implementations are provided by the `ExpoModulesMacros` compiler
-// plugin shipped in the `@expo/expo-modules-macros-plugin` package. Keep the `#externalMacro`
+// plugin shipped in the `expo-modules-macros` package. Keep the `#externalMacro`
 // module/type names below in sync with the macro implementations in that package.
 
 // MARK: - Macro declarations
@@ -36,6 +36,16 @@ public enum JSOptions {
   /// The call sends the module or shared object off the JavaScript thread, so in Swift 6 language
   /// mode the enclosing class must be `Sendable`.
   case concurrent
+
+  /// Binds a synchronous function a second time under the given JavaScript name, as a function that
+  /// returns a promise and runs the body on the concurrent thread pool, for example
+  /// `@JS("textSync", .withAsync("text"))`. The body must be safe to run on any thread, since the
+  /// variant isn't isolated to the JavaScript thread. Only valid on a synchronous function that isn't
+  /// isolated to a global actor, and the name must be a string literal.
+  ///
+  /// The variant sends the module or shared object off the JavaScript thread, so in Swift 6 language
+  /// mode the enclosing class must be `Sendable`.
+  case withAsync(String)
 }
 
 /// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
@@ -58,6 +68,9 @@ public enum JSOptions {
 ///
 ///     @JS("doWork", .concurrent)
 ///     func performHeavyWork() async throws { ... }
+///
+///     @JS("textSync", .withAsync("text"))
+///     func text(path: String) throws -> String { ... }
 ///
 /// Also emits a never-called `_assertTypesConformance_<member>` peer that statically asserts every
 /// type crossing the JS boundary conforms to the JS-convertible protocol, so a non-conforming type
@@ -158,10 +171,15 @@ public macro SharedObject(_ name: String? = nil) =
 /// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no
 /// `@Field` wrapper needed — and the macro synthesizes the whole conversion surface from each
 /// property's static type: a memberwise `init`, the `from(object:appContext:)` /
-/// `from(dictionary:appContext:)` factories, and the `toDictionary(appContext:)` /
-/// `toObject(appContext:)` write side. The type is auto-conformed to `Record`; the synthesized
-/// methods override `Record`'s reflection-based defaults, so it stays usable anywhere a `Record`
-/// argument is expected.
+/// `from(dictionary:appContext:)` factories, the `toDictionary(appContext:)` /
+/// `toObject(appContext:)` write side, and the `JavaScriptDecodable` / `JavaScriptEncodable`
+/// conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to `Record`; the
+/// synthesized methods override `Record`'s reflection-based defaults, so it stays usable anywhere a
+/// `Record` argument is expected.
+///
+/// `decode(_:in:)` and `encode(_:in:)` use the runtime they receive and don't need an app context, so
+/// the record converts on any runtime. A class with an inheritance clause doesn't get them, so it
+/// converts only on a runtime that an app context prepared.
 ///
 /// Requiredness is inferred from each property: a default value makes it optional, an optional type
 /// makes it nullable and optional, and a non-optional property without a default is required (the
@@ -177,8 +195,8 @@ public macro SharedObject(_ name: String? = nil) =
 ///     }
 @attached(
   member,
-  names: named(init), named(from), named(toDictionary), named(toObject),
-  named(_assertTypesConformance))
+  names: named(init), named(from), named(toDictionary), named(toObject), named(decode), named(encode),
+  named(_assertTypesConformance), named(_PropNames))
 @attached(extension, conformances: Record)
 public macro Record() =
   #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")
@@ -216,7 +234,7 @@ public macro Record() =
 ///     }
 @attached(
   member,
-  names: named(decode), named(encode), named(`as`), named(_payloadTypeName),
+  names: named(decode), named(encode), named(decodableKinds), named(`as`), named(_payloadTypeName),
   named(_assertTypesConformance))
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =

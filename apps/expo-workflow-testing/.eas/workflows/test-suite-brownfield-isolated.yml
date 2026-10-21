@@ -13,9 +13,11 @@ on:
       - '!**/__mocks__/**'
       - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
       - apps/brownfield-tester/expo-app/**
@@ -25,6 +27,7 @@ on:
       - '!**/__mocks__/**'
       - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
 

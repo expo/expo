@@ -9,11 +9,12 @@
  * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
  */
 import type { AssetData } from '@expo/metro/metro';
+import { drawableFileTypes, getAndroidResourceIdentifier } from '@react-native/asset-utils';
 import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../log';
-import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
+import { getAssetLocalPath } from './metroAssetLocalPath';
 import type { ExportAssetMap } from './saveAssets';
 
 function cleanAssetCatalog(catalogDir: string): void {
@@ -120,7 +121,7 @@ export async function createKeepFileAsync(
   const assetsList = [];
   for (const asset of assets) {
     const prefix = drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
-    assetsList.push(`@${prefix}/${getResourceIdentifier(asset)}`);
+    assetsList.push(`@${prefix}/${getAndroidResourceIdentifier(asset)}`);
   }
   const keepPath = path.join(outputDirectory, 'raw/keep.xml');
   const content = `<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="${assetsList.join(',')}" />`;
@@ -218,7 +219,7 @@ function getImageSet(
   catalogDir: string,
   asset: Pick<AssetData, 'httpServerLocation' | 'name' | 'type' | 'files' | 'scales'>
 ): ImageSet {
-  const fileName = getResourceIdentifier(asset);
+  const fileName = getAndroidResourceIdentifier(asset);
   return {
     baseUrl: path.join(catalogDir, `${fileName}.imageset`),
     files: getCatalogImages(asset).map(({ scale, src }) => {
@@ -300,21 +301,4 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
     }
   }
   return result;
-}
-
-function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
-  const folderPath = getBaseUrl(asset);
-  return `${folderPath}/${asset.name}`
-    .toLowerCase()
-    .replace(/\//g, '_') // Encode folder structure in file name
-    .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
-    .replace(/^assets_/, ''); // Remove "assets_" prefix
-}
-
-function getBaseUrl(asset: Pick<AssetData, 'httpServerLocation'>): string {
-  let baseUrl = asset.httpServerLocation;
-  if (baseUrl[0] === '/') {
-    baseUrl = baseUrl.substring(1);
-  }
-  return baseUrl;
 }

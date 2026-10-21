@@ -21,6 +21,7 @@ import {
 } from '../../global-state/routerRegistry';
 import {
   ImperativeRoutingQueueBridge,
+  NavigationPendingContext,
   RoutingQueueApiContext,
 } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
@@ -76,6 +77,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
   const routingQueue = use(RoutingQueueApiContext);
+  const isNavigationPending = use(NavigationPendingContext);
   const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
@@ -94,15 +96,22 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      routesWithRemovalPrevented,
-      linking: routerConfig?.linking,
-      redirects: routerConfig?.redirects,
-    });
+  const {
+    state,
+    isWaitingForLayouts,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    handleAction,
+    processIntent,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
   useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
@@ -274,7 +283,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             }
           }
 
-          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. See https://reactnavigation.org/docs/troubleshooting#i-get-the-warning-non-serializable-values-were-found-in-the-navigation-state for more details.`;
+          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. Pass only serializable values in route params.`;
 
           if (!serializableWarnings.includes(message)) {
             serializableWarnings.push(message);
@@ -310,7 +319,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             <RootNavigationStateContext.Provider value={state}>
               <RouterRegistrySettersContext.Provider value={registrySetters}>
                 <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                    <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  </NavigationPendingContext>
                 </EnsureSingleNavigator>
               </RouterRegistrySettersContext.Provider>
               <ImperativeRoutingQueueBridge

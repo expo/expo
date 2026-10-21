@@ -1,5 +1,54 @@
 # Expo release workflow
 
+## Package release automation
+
+Package changes are released through `publish-packages.yml`:
+
+1. Package changes land with `.changeset/*.md` files.
+2. The workflow runs `et version-packages` and updates `Version packages (<branch>)`.
+3. That pull request contains the new package versions, changelogs, generated version files, and
+   lockfile.
+4. After it is merged, the workflow runs `et publish-packages`. This builds and precompiles the
+   packages, publishes them with Changesets, and updates the staging versions endpoint from the
+   checked-out `expo` version.
+
+Only this workflow can use npm trusted publishing. Use it for normal releases.
+
+### Emergency local execution
+
+For an emergency, start from a clean checkout of a release branch that has publishing enabled:
+
+```sh
+et version-packages
+git add -A
+git commit -m "Version packages (<branch>)"
+et publish-packages --dry-run
+```
+
+You must commit the result of `et version-packages` before publishing. Normally it consumes all
+pending changesets, so `--force` is not needed.
+
+`et publish-packages --force` only permits publishing when changeset files remain. It does not skip
+the other safety checks. Local publishing also needs separate npm credentials because npm trusted
+publishing is only available to the GitHub workflow. Prefer pushing the version commit and letting
+the workflow publish it.
+
+### Release branch and dist-tag configuration
+
+`.changeset/expo.json` contains the release settings for each branch:
+
+- `publish` is the npm tag for normal releases. `null` disables them.
+- `canary` is the npm tag for canaries. `null` disables them.
+- `allowMajor` controls whether the branch accepts major changesets.
+- `branches` contains settings for named branches.
+- `sdkBranchDefaults` contains the defaults for other `sdk-N` branches. `{branch}` is replaced with
+  the branch name. For example, `sdk-57` uses `sdk-57` and `canary-sdk-57` by default.
+
+The workflow also has its own branch allowlist. Update both files when enabling a release branch.
+During the SDK 58 beta, `main` publishes to `next` and `sdk-58` publishing is disabled. After beta,
+disable releases from `main`, enable `sdk-58` with the `latest` tag, and enable `sdk-58` in the
+workflow. Older SDK branches use an npm tag matching their branch name.
+
 # Stage 0 - Infra & Prerelease
 
 ## 0.1. Update vendored modules
@@ -14,7 +63,7 @@
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
 - Pay extra attention to messages and warnings printed along the way for each module. Sometimes there's need for some extra manual work to be done in the updated files.
-- Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
+- Add a changeset for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
 
 ## 0.2. Update schema
@@ -63,45 +112,46 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 - Please follow another guide: [Generating Jest Mocks](../Generating%20Jest%20Mocks.md).
 
-## 0.6. Publish `next` packages
+## 0.6. Publish prerelease packages
 
 | Prerequisites                                     |
 | ------------------------------------------------- |
 | [0.5. Generate new mocks](#05-generate-new-mocks) |
 
-**Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions! We do this from main before cutting the release branch so that the version number bumps land on main first.
+**Why:** We need published packages to prepare and test the SDK before the final release.
 
 **How:**
 
-- Make sure Xcode 26.4.1 is installed in `/Applications` (it can coexist with newer Xcodes). `et publish-packages` automatically points the iOS prebuild step at it via `DEVELOPER_DIR` regardless of which Xcode is active, and fails fast with a clear error if 26.4.1 isn't found. This pin matters because the npm-bundled iOS xcframeworks embed the producing Swift compiler version in their `.swiftinterface` headers, and Swift refuses to consume an interface produced by a newer compiler — publishing on a newer Xcode would break every EAS Build worker and consumer on an older one.
-- Run `et publish-packages`. Talk to @tsapeta for more details/information.
-- Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
+- Add Changesets entries for the packages being released and merge them to `main`.
+- During the SDK 58 beta, `publish-packages.yml` maintains a `Version packages (main)` pull request and publishes its merged versions with the `next` npm dist-tag.
+- Merge the version pull request after its package checks and native precompile workflows pass. Package publication then runs automatically from the merge commit.
+- After beta, package releases move to the active `sdk-*` branch. Enable that branch and its npm tag in `.changeset/expo.json` and `publish-packages.yml`, and disable stable publishing from `main`. Canary publishing from `main` is a separate flow.
 
-## 0.7. Merge and cutoff changelogs
+Only `publish-packages.yml` is authorized for npm trusted publishing. `et version-packages` and `et publish-packages` remain available for inspecting or reproducing the individual steps, but normal releases should use the version pull request.
+
+## 0.7. Merge the SDK changelog
 
 **Why:** We need to concatenate all new entries from packages' CHANGELOGs and add them to our main CHANGELOG file.
 
 **How:**
 
-- Run `et merge-changelogs --cut-off`.
+- Run `et merge-changelogs` for the root SDK changelog. Package changelogs are generated automatically.
 - Review the entries, commit and push changes to main.
 
 ## 0.8. Publish `sdk-XX` project templates
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
-| [0.6. Publish `next` packages](#06-publish-next-packages) |
+| Prerequisites                                                       |
+| ------------------------------------------------------------------- |
+| [0.6. Publish prerelease packages](#06-publish-prerelease-packages) |
 
 **Why:** We also need to prepare project templates that are used when people run `npx create-expo-app` command and publish them to NPM registry to test in QA.
 
 **How:**
 
-- On main branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
+- Update the templates and add Changesets entries for them. Run `et check-template-packages`.
 - Update the native project files in bare templates based on the diffs on https://react-native-community.github.io/upgrade-helper/
 - Test these project templates - you don't have to use `create-expo-app` at this point, just `npx expo start` them locally.
-- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `sdk-XX` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `npx create-expo-app`.)
-- If everything works as expected, commit changes to main.
-- You can now init from templates by using the package name and tag, for example: `npx create-expo-app@latest --template blank@sdk-48`.
+- Merge the version PR to publish the templates with the other packages.
 
 ## 0.9. Generate new SDK docs
 
@@ -167,15 +217,12 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 1.5. Publish any missing or changed packages
 
-**Why:** Any changes that have been made to packages during QA / since the initial publish (step [0.6](#06-publish-next-packages)) still need to be published for bare workflow users (and managed, for TS changes).
+**Why:** Any changes that have been made to packages during QA / since the initial publish (step [0.6](#06-publish-prerelease-packages)) still need to be published for bare workflow users (and managed, for TS changes).
 
 **How:**
 
-- Make sure Xcode 26.4.1 is installed in `/Applications` (see [§0.6](#06-publish-next-packages) for why; `et publish-packages` will use it automatically).
-- From the main branch, run `et publish-packages` and publish all packages with changes.
-- From the main branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
-- If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on main in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
-  - Note that **only** the patch version number can be bumped on the release branch; **do not** bump the minor version number of any package on the release branch.
+- Add Changesets entries for the fixes and cherry-pick them to the active SDK branch.
+- Merge the updated `Version packages (sdk-XX)` pull request after its required checks and native precompile workflows pass.
 
 # Stage 2 - Expo Go
 
@@ -200,7 +247,6 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - **iOS**:
-
   - Bump Expo Go versions (CFBundleVersion, CFBundleShortVersionString) in `ios/Exponent/Supporting/Info.plist`.
   - Make sure that production home app is published and new JS bundles are up-to-date - they're gonna be bundled within the binary and used at the first app run (before Expo Go downloads an OTA update).
   - Run `et eas ios-client-build-and-submit` from the project root folder and follow the prompt. This step can take 30+ minutes.
@@ -290,7 +336,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 **Why:** Ensure that the templates include the latest version of packages, so when we release the beta everything is up to date.
 
-**How:** Follow [0.8. Publish `sdk-XX` project templates](#08-publish-sdk-xx-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
+**How:** Follow [0.8. Publish `sdk-XX` project templates](#08-publish-sdk-xx-project-templates). During beta, templates are published with the rest of the version pull request under `next`.
 
 ## 4.4. Promote versions to production with new SDK version flagged as beta
 
@@ -405,10 +451,10 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 **How:**
 
-- Update the templates to point to the final versions of the released packages.
+- Update the templates and add Changesets entries for them.
 - Test these project templates in Expo Go or by building them (bare workflow) - you don't have to use `npx create-expo-app` at this point, just run `npx expo start` to run them locally.
-- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `latest` and `sdk-xx` where `xx` is the major version for the SDK being released.
-- If everything works as expected, commit changes to main and make sure to cherry-pick that commit to the release branch as well.
+- Run `et check-template-packages`.
+- Merge the release branch's version PR to publish the templates.
 
 ## 5.7. Press release
 

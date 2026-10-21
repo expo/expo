@@ -1,0 +1,68 @@
+---
+title: CompositionLocalProvider
+description: A Jetpack Compose CompositionLocalProvider component for providing composition local values to its children.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-58/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI CompositionLocalProvider matches the official Jetpack Compose [`CompositionLocalProvider`](<https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#CompositionLocalProvider(kotlin.Array,kotlin.Function0)>) API. It provides values to all components inside it. It adds no layout of its own, so children keep modifiers such as `weight` from the parent `Row` or `Column`.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Smaller touch targets
+
+Material components such as `Button`, `IconButton`, `Checkbox`, `RadioButton`, and `Switch` reserve at least 48dp of space for touch, even when they are drawn smaller. Set `minimumInteractiveComponentSize` to `0` to remove this minimum. Make sure that the controls are still easy to tap.
+
+```tsx
+import {
+  Checkbox,
+  CompositionLocalProvider,
+  Host,
+  IconButton,
+  Row,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+export default function SmallTouchTargetsExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <CompositionLocalProvider
+        values={{ minimumInteractiveComponentSize: 0 }}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          verticalAlignment="center">
+          <IconButton
+            modifiers={[size(24, 24)]}
+            onClick={() => console.log('Pressed')}>
+            <Text>+</Text>
+          </IconButton>
+          <Checkbox value={checked} onCheckedChange={setChecked} />
+        </Row>
+      </CompositionLocalProvider>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { CompositionLocalProvider } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/compositionlocalprovider"
+  apiName="CompositionLocalProvider"
+/>

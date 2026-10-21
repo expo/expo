@@ -1,32 +1,297 @@
 # Changelog
 
-## Unpublished
+## 58.0.17
 
-### 🛠 Breaking changes
+### Patch Changes
 
-- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
+- Resolve `expo/tsconfig.base` in tools that follow `package.json` `exports`. ([#51751](https://github.com/expo/expo/pull/51751) by [@daemosity](https://github.com/daemosity))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
 
-### 🎉 New features
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
 
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- Updated dependencies. ([#50388](https://github.com/expo/expo/pull/50388), [#51872](https://github.com/expo/expo/pull/51872), [#51946](https://github.com/expo/expo/pull/51946), [#51986](https://github.com/expo/expo/pull/51986), [#51730](https://github.com/expo/expo/pull/51730), [#51854](https://github.com/expo/expo/pull/51854), [#51905](https://github.com/expo/expo/pull/51905), [#51923](https://github.com/expo/expo/pull/51923), [#51906](https://github.com/expo/expo/pull/51906), [#51504](https://github.com/expo/expo/pull/51504), [#51937](https://github.com/expo/expo/pull/51937), [#52008](https://github.com/expo/expo/pull/52008), [#51868](https://github.com/expo/expo/pull/51868), [#51932](https://github.com/expo/expo/pull/51932), [#51714](https://github.com/expo/expo/pull/51714), [#51913](https://github.com/expo/expo/pull/51913))
+  - expo-modules-autolinking@58.0.14
+  - @expo/cli@58.1.14
+  - @expo/config-plugins@58.0.10
+  - expo-modules-core@58.0.24
+  - @expo/fingerprint@0.21.6
+  - @expo/metro-config@58.0.16
+  - @expo/log-box@58.0.13
+  - @expo/config@58.0.7
+  - expo-constants@58.0.13
+  - babel-preset-expo@58.0.19
+  - @expo/local-build-cache-provider@58.0.7
+  - expo-asset@58.0.18
+
+## 58.0.16
+
+### Patch Changes
+
+- Fix web `ViewStyle` and `TextStyle` types disagreeing on `cursor`, `transitionDuration`, and `userSelect`. ([#51805](https://github.com/expo/expo/pull/51805) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823))
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - @expo/cli@58.1.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Add the `expo-modules` command, which runs `expo-modules-cli`. Modules that declare `expo` as a dependency can run it without depending on `expo-modules-cli`. ([#51755](https://github.com/expo/expo/pull/51755) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51797](https://github.com/expo/expo/pull/51797), [#51712](https://github.com/expo/expo/pull/51712), [#51728](https://github.com/expo/expo/pull/51728), [#51780](https://github.com/expo/expo/pull/51780), [#51716](https://github.com/expo/expo/pull/51716), [#51743](https://github.com/expo/expo/pull/51743), [#51663](https://github.com/expo/expo/pull/51663), [#51771](https://github.com/expo/expo/pull/51771), [#51687](https://github.com/expo/expo/pull/51687))
+  - expo-asset@58.0.17
+  - @expo/metro-config@58.0.15
+  - expo-modules-core@58.0.23
+  - expo-modules-cli@0.3.1
+  - babel-preset-expo@58.0.18
+  - @expo/cli@58.1.12
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51582](https://github.com/expo/expo/pull/51582), [#51656](https://github.com/expo/expo/pull/51656), [#51664](https://github.com/expo/expo/pull/51664))
+  - expo-modules-core@58.0.22
+  - @expo/cli@58.1.11
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51624](https://github.com/expo/expo/pull/51624))
+  - expo-modules-core@58.0.21
+  - babel-preset-expo@58.0.17
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51626](https://github.com/expo/expo/pull/51626), [#51493](https://github.com/expo/expo/pull/51493))
+  - @expo/cli@58.1.10
+  - expo-modules-core@58.0.20
+  - babel-preset-expo@58.0.16
+
+## 58.0.11
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `react-native-svg` to 15.16.0. ([#51615](https://github.com/expo/expo/pull/51615) by [@jakex7](https://github.com/jakex7))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51601](https://github.com/expo/expo/pull/51601), [#51456](https://github.com/expo/expo/pull/51456), [#51560](https://github.com/expo/expo/pull/51560), [#51455](https://github.com/expo/expo/pull/51455), [#51302](https://github.com/expo/expo/pull/51302), [#51243](https://github.com/expo/expo/pull/51243), [#51558](https://github.com/expo/expo/pull/51558), [#51602](https://github.com/expo/expo/pull/51602), [#51540](https://github.com/expo/expo/pull/51540))
+  - @expo/cli@58.1.9
+  - @expo/metro-config@58.0.14
+  - babel-preset-expo@58.0.15
+  - expo-modules-core@58.0.19
+  - expo-asset@58.0.16
+
+## 58.0.10
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Add missing `expo/build/winter` exports entry. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51477](https://github.com/expo/expo/pull/51477), [#51481](https://github.com/expo/expo/pull/51481), [#51548](https://github.com/expo/expo/pull/51548), [#51546](https://github.com/expo/expo/pull/51546), [#50406](https://github.com/expo/expo/pull/50406), [#51553](https://github.com/expo/expo/pull/51553), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51526](https://github.com/expo/expo/pull/51526), [#51023](https://github.com/expo/expo/pull/51023), [#51347](https://github.com/expo/expo/pull/51347), [#51338](https://github.com/expo/expo/pull/51338), [#51517](https://github.com/expo/expo/pull/51517), [#51344](https://github.com/expo/expo/pull/51344))
+  - expo-modules-autolinking@58.0.13
+  - expo-modules-core@58.0.18
+  - @expo/cli@58.1.8
+  - @expo/metro-config@58.0.13
+  - babel-preset-expo@58.0.14
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - expo-constants@58.0.12
+  - @expo/local-build-cache-provider@58.0.6
+  - expo-asset@58.0.15
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51463](https://github.com/expo/expo/pull/51463), [#51420](https://github.com/expo/expo/pull/51420))
+  - expo-modules-core@58.0.17
+
+## 58.0.8
+
+### Patch Changes
+
+- [iOS] Detect native module classes annotated with the `@ExpoModule` macro and add them to the generated modules provider automatically, without listing them in `expo-module.config.json`. Generating the modules provider runs the scanner from `expo-modules-macros` once over all package sources and links only the classes that compile for the target platform. When the scan fails, packages that declare their modules still link them, and the build fails if a package relies on the scan for its module classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#49784](https://github.com/expo/expo/pull/49784), [#51417](https://github.com/expo/expo/pull/51417), [#51368](https://github.com/expo/expo/pull/51368), [#51037](https://github.com/expo/expo/pull/51037), [#50978](https://github.com/expo/expo/pull/50978), [#51219](https://github.com/expo/expo/pull/51219), [#51405](https://github.com/expo/expo/pull/51405), [#50536](https://github.com/expo/expo/pull/50536), [#51439](https://github.com/expo/expo/pull/51439), [#51436](https://github.com/expo/expo/pull/51436), [#46526](https://github.com/expo/expo/pull/46526))
+  - expo-modules-autolinking@58.0.12
+  - @expo/cli@58.1.7
+  - expo-file-system@58.0.9
+  - expo-font@58.0.8
+  - expo-modules-core@58.0.16
+  - @expo/metro-config@58.0.12
+  - @expo/config@58.0.5
+  - @expo/config-plugins@58.0.8
+  - @expo/fingerprint@0.21.5
+  - expo-constants@58.0.11
+  - babel-preset-expo@58.0.13
+  - @expo/local-build-cache-provider@58.0.5
+  - expo-asset@58.0.14
+
+## 58.0.7
+
+### Patch Changes
+
+- Stop overriding web style types that React Native already declares. ([#50610](https://github.com/expo/expo/pull/50610) by [@Maher-Reven](https://github.com/Maher-Reven))
+- Updated dependencies. ([#51206](https://github.com/expo/expo/pull/51206), [`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#51204](https://github.com/expo/expo/pull/51204), [#51310](https://github.com/expo/expo/pull/51310), [#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522), [#51227](https://github.com/expo/expo/pull/51227), [#51027](https://github.com/expo/expo/pull/51027), [#51210](https://github.com/expo/expo/pull/51210), [#51083](https://github.com/expo/expo/pull/51083), [#49418](https://github.com/expo/expo/pull/49418), [#51169](https://github.com/expo/expo/pull/51169), [#51168](https://github.com/expo/expo/pull/51168), [#51185](https://github.com/expo/expo/pull/51185), [#51110](https://github.com/expo/expo/pull/51110), [#50956](https://github.com/expo/expo/pull/50956), [#51171](https://github.com/expo/expo/pull/51171), [#51247](https://github.com/expo/expo/pull/51247), [#49801](https://github.com/expo/expo/pull/49801))
+  - expo-modules-core@58.0.15
+  - @expo/config-plugins@58.0.7
+  - babel-preset-expo@58.0.12
+  - @expo/log-box@58.0.12
+  - @expo/cli@58.1.6
+  - @expo/config@58.0.4
+  - @expo/metro-config@58.0.11
+  - expo-modules-autolinking@58.0.11
+  - expo-file-system@58.0.8
+  - @expo/fingerprint@0.21.4
+  - @expo/log-box-utils@58.0.2
+  - @expo/local-build-cache-provider@58.0.4
+
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047), [#51179](https://github.com/expo/expo/pull/51179), [#51044](https://github.com/expo/expo/pull/51044), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50543](https://github.com/expo/expo/pull/50543), [#50696](https://github.com/expo/expo/pull/50696), [#51177](https://github.com/expo/expo/pull/51177))
+  - expo-modules-autolinking@58.0.10
+  - @expo/cli@58.1.5
+  - expo-modules-core@58.0.14
+  - @expo/metro-config@58.0.10
+  - babel-preset-expo@58.0.11
+  - expo-asset@58.0.13
+  - @expo/log-box@58.0.11
+  - expo-file-system@58.0.7
+
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138), [#50976](https://github.com/expo/expo/pull/50976))
+  - expo-file-system@58.0.6
+  - expo-font@58.0.7
+  - @expo/log-box@58.0.10
+  - @expo/cli@58.1.4
+
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Add an overridable `initialProperties` to `ExpoAppSceneDelegate`, restoring the root properties apps could pass through `RCTAppDelegate.initialProps` before React Native moved its startup into `scene(_:willConnectTo:)`. ([#50997](https://github.com/expo/expo/pull/50997) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `./template.tgz` to the `exports` map so `expo/template.tgz` resolves again. Before, the `./*` wildcard mapped it to the nonexistent `template.tgz.js`, so `expo prebuild` couldn't use the template bundled with `expo` and fell back to downloading one from npm. ([#50988](https://github.com/expo/expo/pull/50988) by [@huytdps13400](https://github.com/huytdps13400))
+- Updated dependencies. ([#51066](https://github.com/expo/expo/pull/51066), [#51080](https://github.com/expo/expo/pull/51080), [#50995](https://github.com/expo/expo/pull/50995), [#50894](https://github.com/expo/expo/pull/50894), [#51015](https://github.com/expo/expo/pull/51015), [#51052](https://github.com/expo/expo/pull/51052), [#50989](https://github.com/expo/expo/pull/50989), [#51036](https://github.com/expo/expo/pull/51036), [#51089](https://github.com/expo/expo/pull/51089), [#51125](https://github.com/expo/expo/pull/51125), [#51085](https://github.com/expo/expo/pull/51085))
+  - @expo/cli@58.1.3
+  - @expo/config-plugins@58.0.6
+  - expo-modules-core@58.0.13
+  - @expo/metro-config@58.0.9
+  - @expo/config@58.0.3
+  - expo-constants@58.0.10
+  - expo-modules-autolinking@58.0.9
+  - babel-preset-expo@58.0.10
+  - @expo/local-build-cache-provider@58.0.3
+  - expo-asset@58.0.12
+
+## 58.0.3
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Use [the `TextDecoder` implementation](https://github.com/facebook/hermes/pull/1855) provided by Hermes in React Native 0.88. In addition to UTF-8, this new implementation supports more character encodings including UTF-16 LE and BE, Latin-1, and Windows-1252. Custom JavaScript runtimes must provide `TextDecoder` before initializing Expo. ([#50853](https://github.com/expo/expo/pull/50853) by [@savv](https://github.com/savv))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50975](https://github.com/expo/expo/pull/50975), [#50974](https://github.com/expo/expo/pull/50974), [#47438](https://github.com/expo/expo/pull/47438), [#50016](https://github.com/expo/expo/pull/50016), [#50458](https://github.com/expo/expo/pull/50458), [#49305](https://github.com/expo/expo/pull/49305), [#50905](https://github.com/expo/expo/pull/50905), [#50960](https://github.com/expo/expo/pull/50960), [#50973](https://github.com/expo/expo/pull/50973), [#50959](https://github.com/expo/expo/pull/50959), [#50946](https://github.com/expo/expo/pull/50946), [#50965](https://github.com/expo/expo/pull/50965), [#50970](https://github.com/expo/expo/pull/50970), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/cli@58.1.2
+  - @expo/config-plugins@58.0.5
+  - expo-modules-core@58.0.12
+  - @expo/metro-config@58.0.8
+  - babel-preset-expo@58.0.9
+  - @expo/log-box@58.0.9
+  - expo-modules-autolinking@58.0.8
+  - expo-font@58.0.6
+  - @expo/config@58.0.2
+  - @expo/fingerprint@0.21.3
+  - @expo/local-build-cache-provider@58.0.2
+  - expo-asset@58.0.11
+
+## 58.0.2
+
+### Patch Changes
+
+- [macOS] Fix the `AppController.sharedInstace was called before the module was initialized` assertion at launch with `react-native-macos` 0.83, where `EXReactRootViewFactory` did not override the `viewWithModuleName:initialProperties:launchOptions:devMenuConfiguration:` method that `RCTReactNativeFactory` calls. ([#50885](https://github.com/expo/expo/pull/50885) by [@zoontek](https://github.com/zoontek))
+- [iOS] Declare each module's SwiftPM package dependencies and honour `autolinkWhen` conditions in the SwiftPM autolinking plugin. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fail the SwiftPM autolinking sync with a specific error for module setups the plugin cannot link correctly, instead of producing a broken build. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#50861](https://github.com/expo/expo/pull/50861), [#50881](https://github.com/expo/expo/pull/50881), [#49508](https://github.com/expo/expo/pull/49508), [#50887](https://github.com/expo/expo/pull/50887), [#50660](https://github.com/expo/expo/pull/50660), [#49302](https://github.com/expo/expo/pull/49302), [#48679](https://github.com/expo/expo/pull/48679), [#50867](https://github.com/expo/expo/pull/50867), [#50549](https://github.com/expo/expo/pull/50549))
+  - expo-asset@58.0.10
+  - @expo/cli@58.1.1
+  - expo-file-system@58.0.5
+  - expo-font@58.0.5
+  - expo-keep-awake@58.0.3
+  - expo-modules-core@58.0.11
+  - @expo/metro-config@58.0.7
+  - expo-modules-autolinking@58.0.7
+  - babel-preset-expo@58.0.8
+
+## 58.0.1
+
+### Patch Changes
+
+- Bump recommended `@shopify/flash-list` to `2.3.2` and `@shopify/react-native-skia` to `2.13.1`. ([#50824](https://github.com/expo/expo/pull/50824) by [@zoontek](https://github.com/zoontek))
+- [Android] Fix animated GIF and WebP images showing only their first frame in release builds minified with R8. Fresco 3.7.0 creates these decoders through reflection, and R8 removed their constructors. ([#50815](https://github.com/expo/expo/pull/50815) by [@lukmccall](https://github.com/lukmccall))
+- Remove the `AbortSignal.timeout` and `AbortSignal.any` polyfills now that React Native supports them. ([#50770](https://github.com/expo/expo/pull/50770) by [@Kudo](https://github.com/Kudo))
+- [Internal] [iOS] Simplify the SwiftPM autolinking plugin's internals. The generated packages are unchanged. ([#50547](https://github.com/expo/expo/pull/50547) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Take module identity, deployment target and dependencies from `expo-modules-autolinking prebuilt-metadata` in the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix modules that use Expo Swift macros (`@Field`, `@Record`) failing to build from source with the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#49555](https://github.com/expo/expo/pull/49555), [#50204](https://github.com/expo/expo/pull/50204), [#50843](https://github.com/expo/expo/pull/50843), [#50290](https://github.com/expo/expo/pull/50290), [#49529](https://github.com/expo/expo/pull/49529), [#50674](https://github.com/expo/expo/pull/50674), [#50829](https://github.com/expo/expo/pull/50829))
+  - @expo/cli@58.1.0
+  - @expo/log-box@58.0.8
+  - expo-modules-core@58.0.10
+  - babel-preset-expo@58.0.7
+
+## 58.0.0
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 - [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
-
-### 🐛 Bug fixes
-
-- [iOS] Include the SwiftPM manifest in the published npm package. ([#50612](https://github.com/expo/expo/pull/50612) by [@vonovak](https://github.com/vonovak))
+- [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
+- Upgrade React Native to 0.88.0-rc.0. ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
-- [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
+- [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`. ([#50057](https://github.com/expo/expo/pull/50057) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- [iOS] Accept prebuilt-framework tarballs that bundle SwiftPM dependency XCFrameworks alongside the product in the SwiftPM plugin, instead of rejecting them. ([#50141](https://github.com/expo/expo/pull/50141) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
 - [Web] Stub `requestAnimationFrame` in server bundles, where `react-native-worklets` 0.12 calls it unguarded when Reanimated is imported, crashing server rendering and `expo export`. ([#50507](https://github.com/expo/expo/pull/50507) by [@robhogan](https://github.com/robhogan))
-- [iOS] Accept prebuilt-framework tarballs that bundle SwiftPM dependency XCFrameworks alongside the product in the SwiftPM plugin, instead of rejecting them. ([#50141](https://github.com/expo/expo/pull/50141) by [@chrfalch](https://github.com/chrfalch))
-
-### 💡 Others
-
-- [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
-- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- [iOS] Include the SwiftPM manifest in the published npm package. ([#50612](https://github.com/expo/expo/pull/50612) by [@vonovak](https://github.com/vonovak))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661), [#50680](https://github.com/expo/expo/pull/50680), [#50721](https://github.com/expo/expo/pull/50721))
+  - @expo/cli@58.0.9
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/devtools@58.0.2
+  - @expo/dom-webview@58.0.2
+  - @expo/fingerprint@0.21.2
+  - @expo/local-build-cache-provider@58.0.1
+  - @expo/log-box@58.0.7
+  - @expo/log-box-utils@58.0.1
+  - @expo/metro-config@58.0.6
+  - babel-preset-expo@58.0.6
+  - expo-asset@58.0.9
+  - expo-constants@58.0.9
+  - expo-file-system@58.0.4
+  - expo-font@58.0.4
+  - expo-keep-awake@58.0.2
+  - expo-modules-autolinking@58.0.6
+  - expo-modules-core@58.0.9
 
 ## 58.0.0-preview.0 — 2026-09-10
 

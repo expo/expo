@@ -106,7 +106,9 @@ class BaseObservabilityManager(
   private fun retryGateBlocks(state: DispatchUtils.RetryGateState, signal: String): Boolean {
     val until = state.dispatchAfterMs ?: return false
     val now = currentTimeMs()
-    if (until <= now) return false
+    if (until <= now) {
+      return false
+    }
     Log.d(OBSERVE_TAG, "$signal dispatch suppressed by retry gate until $until (now $now)")
     return true
   }

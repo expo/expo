@@ -23,7 +23,7 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return false
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isUndefined() || jsValue.isNull() {
       return Optional<Any>.none as Any
     }
@@ -39,21 +39,21 @@ internal struct DynamicOptionalType: AnyDynamicType {
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if Optional.isNil(value) || value is NSNull {
-      return .null
+      return .null()
     }
     return try wrappedType.castToJS(value, appContext: appContext)
   }
 
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if Optional.isNil(value) || value is NSNull {
-      return .null
+      return .null()
     }
     return try wrappedType.convertToJS(value, appContext: appContext)
   }
 
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if Optional.isNil(value) || value is NSNull {
-      return .null
+      return .null()
     }
     return try wrappedType.convertToJS(value, appContext: appContext, in: runtime)
   }

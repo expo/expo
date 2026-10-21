@@ -45,14 +45,14 @@ beforeEach(() => {
 });
 
 describe('RouterToolbarHost (Android bottom toolbar)', () => {
-  it("throws when @expo/ui isn't installed", () => {
+  it("throws when @expo/ui isn't installed", async () => {
     mockedRequireExpoUI.mockImplementation(() => {
       throw new Error(
         "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
       );
     });
 
-    expect(() => render(<RouterToolbarHost />)).toThrow(
+    await expect(async () => await render(<RouterToolbarHost />)).rejects.toThrow(
       "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
     );
     expect(mockedRequireExpoUI).toHaveBeenCalledWith(
@@ -60,8 +60,8 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     );
   });
 
-  it('does not cover the full screen so touches above the toolbar pass through', () => {
-    const { getByTestId } = render(
+  it('does not cover the full screen so touches above the toolbar pass through', async () => {
+    const { getByTestId } = await render(
       <RouterToolbarHost>
         <Text>item</Text>
       </RouterToolbarHost>
@@ -78,8 +78,8 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     expect(host.props.matchContents.vertical).toBe(true);
   });
 
-  it('renders its children inside the floating toolbar', () => {
-    const { getByTestId } = render(
+  it('renders its children inside the floating toolbar', async () => {
+    const { getByTestId } = await render(
       <RouterToolbarHost>
         <Text testID="toolbar-child">item</Text>
       </RouterToolbarHost>
@@ -95,8 +95,8 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     [undefined, false],
   ])(
     'includes the imePadding modifier only when withImePadding is %s',
-    (withImePadding, expected) => {
-      const { getByTestId } = render(
+    async (withImePadding, expected) => {
+      const { getByTestId } = await render(
         <RouterToolbarHost withImePadding={withImePadding}>
           <Text>item</Text>
         </RouterToolbarHost>

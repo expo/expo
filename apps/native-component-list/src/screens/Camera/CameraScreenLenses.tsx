@@ -11,6 +11,7 @@ import {
 } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -38,6 +39,7 @@ export default function CameraScreenLenses() {
 
 function CameraScreenLensesIOS() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const [availableLenses, setAvailableLenses] = useState<LensInfo[]>([]);
 
   const [state, setState] = useState<State>({
@@ -114,7 +116,7 @@ function CameraScreenLensesIOS() {
   );
 
   const renderBottomBar = () => (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', paddingBottom: insets.bottom }}>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons
@@ -125,7 +127,10 @@ function CameraScreenLensesIOS() {
         </TouchableOpacity>
 
         <View style={{ flex: 0.4 }}>
-          <TouchableOpacity onPress={takePicture} style={{ alignSelf: 'center' }}>
+          <TouchableOpacity
+            onPress={takePicture}
+            style={{ alignSelf: 'center' }}
+            accessibilityLabel="Take picture">
             <Ionicons
               name="radio-button-on"
               size={64}
@@ -133,16 +138,22 @@ function CameraScreenLensesIOS() {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.bottomButton} onPress={clearSelectedLens}>
+        <TouchableOpacity
+          style={styles.bottomButton}
+          onPress={clearSelectedLens}
+          accessibilityLabel="Use default lens">
           <Ionicons name="close" size={32} color="white" />
         </TouchableOpacity>
       </View>
+      <Text style={styles.status} testID="lens-status">
+        {`Lens: ${state.selectedLens || 'default'} · Zoom: ${(state.zoom ?? 0).toFixed(2)}`}
+      </Text>
       <Slider
         minimumValue={0}
         maximumValue={1.0}
-        step={0.1}
+        step={0.01}
         style={{ width: SCREEN_WIDTH - 20, height: 30 }}
-        onValueChange={(v) => setState((s) => ({ ...s, zoom: parseFloat(v.toFixed(1)) }))}
+        onValueChange={(v) => setState((s) => ({ ...s, zoom: parseFloat(v.toFixed(2)) }))}
       />
     </View>
   );
@@ -155,7 +166,10 @@ function CameraScreenLensesIOS() {
         <View style={styles.lensContainer}>
           <Text style={styles.lensNameLabel}>Selected Lens</Text>
           <View style={styles.lensChooser}>
-            <TouchableOpacity onPress={previousLens} style={{ padding: 6 }}>
+            <TouchableOpacity
+              onPress={previousLens}
+              style={{ padding: 6 }}
+              accessibilityLabel="Previous lens">
               <Ionicons name="arrow-back" size={14} color="white" />
             </TouchableOpacity>
             <View style={styles.lensLabel}>
@@ -163,7 +177,10 @@ function CameraScreenLensesIOS() {
                 {currentLens?.localizedName ?? state.selectedLens}
               </Text>
             </View>
-            <TouchableOpacity onPress={nextLens} style={{ padding: 6 }}>
+            <TouchableOpacity
+              onPress={nextLens}
+              style={{ padding: 6 }}
+              accessibilityLabel="Next lens">
               <Ionicons name="arrow-forward" size={14} color="white" />
             </TouchableOpacity>
           </View>
@@ -281,6 +298,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000BA',
     borderRadius: 4,
     padding: 16,
+  },
+  status: {
+    color: 'white',
+    fontSize: 12,
+    marginBottom: 4,
   },
   bottomButton: {
     flex: 0.3,

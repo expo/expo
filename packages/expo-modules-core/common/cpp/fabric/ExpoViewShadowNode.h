@@ -163,6 +163,20 @@ private:
   }
 
   react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
+    auto constraints = contentStyleConstraints(content);
+
+    // An unmatched axis has the size SwiftUI or Compose gave the host (from `setViewSize`), so lay
+    // the content out at exactly that size. This overrides the content's own min/max on that axis.
+    auto const &ownStyle = this->yogaNode_.style();
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Width),
+                             constraints.minimumSize.width, constraints.maximumSize.width);
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Height),
+                             constraints.minimumSize.height, constraints.maximumSize.height);
+
+    return constraints;
+  }
+
+  react::LayoutConstraints contentStyleConstraints(const react::ShadowNode &content) const {
     react::LayoutConstraints constraints{};
     constraints.layoutDirection = resolvedLayoutDirection();
 
@@ -184,6 +198,14 @@ private:
                       constraints.maximumSize.height);
 
     return constraints;
+  }
+
+  static void constrainExactlyToPoints(facebook::yoga::StyleSizeLength length,
+                                       react::Float &minimum,
+                                       react::Float &maximum) {
+    if (length.isPoints() && length.value().isDefined()) {
+      minimum = maximum = std::max<react::Float>(0, length.value().unwrap());
+    }
   }
 
   static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {

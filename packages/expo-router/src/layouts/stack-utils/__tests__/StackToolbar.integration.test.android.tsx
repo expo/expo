@@ -22,7 +22,7 @@ jest.mock('react-native-screens', () => {
 });
 
 jest.mock('@expo/ui/jetpack-compose', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
   const DropdownMenu = jest.fn((props) => (
     <View testID="DropdownMenu" {...props} />
@@ -40,7 +40,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     LeadingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
     TrailingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
   };
-  DropdownMenuItem.Text = jest.fn((props) => <View testID="DropdownMenuItem.Text" {...props} />);
+  DropdownMenuItem.Text = jest.fn((props) => <Text testID="DropdownMenuItem.Text" {...props} />);
   DropdownMenuItem.LeadingIcon = jest.fn((props) => (
     <View testID="DropdownMenuItem.LeadingIcon" {...props} />
   ));
@@ -61,7 +61,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
     Badge: jest.fn((props) => <View testID="Badge" {...props} />),
     Box: jest.fn((props) => <View testID="Box" {...props} />),
-    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
+    Text: jest.fn((props) => <Text testID="ComposeText" {...props} />),
     RNHostView: jest.fn((props) => <View testID="RNHostView" {...props} />),
   };
 });
@@ -146,8 +146,8 @@ describe('Stack.Toolbar Android integration tests', () => {
   describe('left/right placement from layout', () => {
     it.each(['left', 'right'] as const)(
       'renders Host > Row for %s toolbar with no headerBarButtonItems',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -183,8 +183,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     );
 
-    it('renders both left and right toolbars simultaneously', () => {
-      renderRouter({
+    it('renders both left and right toolbars simultaneously', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -218,8 +218,8 @@ describe('Stack.Toolbar Android integration tests', () => {
 
     it.each(['left', 'right'] as const)(
       'asChild mode for %s placement renders children directly',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -250,8 +250,8 @@ describe('Stack.Toolbar Android integration tests', () => {
 
   it.each(['left', 'right'] as const)(
     'renders menu with DropdownMenu inside %s toolbar',
-    (placement) => {
-      renderRouter({
+    async (placement) => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -281,8 +281,8 @@ describe('Stack.Toolbar Android integration tests', () => {
     }
   );
 
-  it('renders RouterToolbarHost for bottom toolbar', () => {
-    renderRouter({
+  it('renders RouterToolbarHost for bottom toolbar', async () => {
+    await renderRouter({
       index: () => (
         <>
           <Stack.Toolbar placement="bottom">
@@ -299,8 +299,8 @@ describe('Stack.Toolbar Android integration tests', () => {
 
   it.each(['left', 'right'] as const)(
     'renders %s toolbar from page with Host > Row wrapper',
-    (placement) => {
-      renderRouter({
+    async (placement) => {
+      await renderRouter({
         _layout: () => <Stack />,
         index: () => (
           <>
@@ -329,8 +329,8 @@ describe('Stack.Toolbar Android integration tests', () => {
   describe('badge support in left/right placement', () => {
     it.each(['left', 'right'] as const)(
       'renders Box with Badge when button has a Badge child in %s placement',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -355,8 +355,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     );
 
-    it('renders dot badge when Badge has no children', () => {
-      renderRouter({
+    it('renders dot badge when Badge has no children', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -377,8 +377,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(screen.queryByTestId('ComposeText')).toBeNull();
     });
 
-    it('does not render Box when button has no Badge child', () => {
-      renderRouter({
+    it('does not render Box when button has no Badge child', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -401,8 +401,8 @@ describe('Stack.Toolbar Android integration tests', () => {
   describe('menu badge support in left/right placement', () => {
     it.each(['left', 'right'] as const)(
       'renders Box with Badge when menu has a Badge child in %s placement',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -427,8 +427,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     );
 
-    it('renders dot badge when menu Badge has no children', () => {
-      renderRouter({
+    it('renders dot badge when menu Badge has no children', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -450,8 +450,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(within(badge).queryByTestId('ComposeText')).toBeNull();
     });
 
-    it('folds the badge value into the icon contentDescription for TalkBack', () => {
-      renderRouter({
+    it('folds the badge value into the icon contentDescription for TalkBack', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -472,8 +472,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(icon.props.contentDescription).toBe('Notifications, 5');
     });
 
-    it('does not render Box when menu has no Badge child', () => {
-      renderRouter({
+    it('does not render Box when menu has no Badge child', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">

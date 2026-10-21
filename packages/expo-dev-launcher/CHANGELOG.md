@@ -1,14 +1,48 @@
 # Changelog
 
-## Unpublished
+## 58.0.14
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
 
-### 🐛 Bug fixes
+## 58.0.13
 
-### 💡 Others
+### Patch Changes
+
+- [iOS] Remove the unused date formatter in `getAppExpirationDate`, which built a string nothing read and triggered an `-Wunused-variable` warning. ([#51360](https://github.com/expo/expo/pull/51360) by [@yasserstudio](https://github.com/yasserstudio))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Removed a reflective write to an `AppearanceModule` field that no longer exists, which logged a warning every time an app was loaded. ([#51131](https://github.com/expo/expo/pull/51131) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#51130](https://github.com/expo/expo/pull/51130))
+  - expo-dev-menu@58.0.11
+
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Request the local network permission on Android 17 so the launcher can discover and load development servers. ([#50951](https://github.com/expo/expo/pull/50951) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#50900](https://github.com/expo/expo/pull/50900))
+  - expo-dev-menu@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/schema-utils@58.0.1
+  - expo-dev-menu@58.0.9
+  - expo-manifests@58.0.1
 
 ## 58.0.8 — 2026-09-28
 
@@ -18,7 +52,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Add __expo_* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add \__expo_\* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.6 — 2026-09-23
 

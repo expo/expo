@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import Testing
 
+@testable import ExpoModulesCore
 @testable import ExpoSQLite
 
 /// Exercises the module-level surface: the constants JavaScript reads, the change-event payload shape
@@ -45,6 +45,23 @@ struct SQLiteModuleTests {
     #expect(module.hasListeners == true)
     module.didStopListening(event: "onDatabaseChange")
     #expect(module.hasListeners == false)
+  }
+
+  @Test
+  func `database change event encodes a row id above 2^53 as a number`() throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    let event = DatabaseChangeEvent(
+      databaseName: "main",
+      databaseFilePath: "/tmp/test.db",
+      tableName: "test",
+      rowId: 9007199254740993,
+      typeId: .insert
+    )
+    // Above 2^53 the number loses precision, like integer columns do, but encoding must not fail: a
+    // payload that fails to encode drops the `onDatabaseChange` event.
+    let encoded = try DatabaseChangeEvent.encode(event, in: runtime)
+    #expect(encoded.getObject().getProperty("rowId").getDouble() == 9007199254740992)
   }
 
   @Test

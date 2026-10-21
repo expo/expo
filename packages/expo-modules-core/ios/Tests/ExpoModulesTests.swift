@@ -115,10 +115,12 @@ struct ExpoModulesTests {
     // Invoke the throwing function and return the error (eval shouldn't rethrow here)
     let error = try runtime.eval("try { expo.modules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
 
-    // We just check if it contains the description — they won't be equal for the following reasons:
-    // - the `exceptionToThrow` is just the root cause, in fact it returns `FunctionCallException`
-    // - the debug description contains the file and line number, so it's hard to mock the `FunctionCallException`
+    // We just check if it contains the description — they won't be equal because the `exceptionToThrow`
+    // is just the root cause, in fact it returns `FunctionCallException`.
     // Ideally if we have a better way (error codes/names) to identify them w/o relying on the description that may change over time.
-    #expect(error.getProperty("message").getString().contains(exceptionToThrow.debugDescription))
+    let message = error.getProperty("message").getString()
+    #expect(message.contains(exceptionToThrow.description))
+    // The JS message is the user-facing description, without the native file and line.
+    #expect(!message.contains("(at "))
   }
 }

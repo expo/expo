@@ -1,14 +1,56 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 58.0.10
 
-### 💡 Others
+### Patch Changes
+
+- [iOS] Add `Query.contains()` and `AssetField.MEDIA_SUBTYPES` to filter assets by `MediaSubtype`, for example screenshots or Live Photos. ([#51515](https://github.com/expo/expo/pull/51515) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Add `mediaSubtypes` to `AssetInfo` and `AssetMetadata`, so `Asset.getInfo()` and `Query.exeForMetadata()` return an asset's subtypes. ([#51514](https://github.com/expo/expo/pull/51514) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add the `animation` and `screenRecording` media subtypes. ([#51513](https://github.com/expo/expo/pull/51513) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Fix assets moved with `Album.create` (with `moveAssets` set to `true`) or `album.add` sometimes disappearing from the media library. The file was moved, but its MediaStore entry was deleted, so it only showed up again after a rescan, with a new ID. ([#50817](https://github.com/expo/expo/pull/50817) by [@devonik](https://github.com/devonik))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- Add `Album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47903](https://github.com/expo/expo/pull/47903) by [@Wenszel](https://github.com/Wenszel))
 
 ## 58.0.3 — 2026-09-28
 

@@ -28,6 +28,20 @@
           }
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "${FIREBASE_GOOGLE_QUEST_APP_ID}",
+        "android_client_info": {
+          "package_name": "host.exp.exponent.quest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "${GOOGLE_CLIENT_API_KEY}"
+        }
+      ]
     }
   ],
   "configuration_version": "1"

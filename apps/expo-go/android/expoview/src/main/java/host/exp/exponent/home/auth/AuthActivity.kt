@@ -58,6 +58,12 @@ class AuthActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    val authRequestType = intent.getStringExtra(AUTH_REQUEST_TYPE_KEY)
+    if (authRequestType == null) {
+      cancelAuth()
+      return
+    }
+
     setContent {
       HomeAppTheme(themeSetting = ThemeSetting.Automatic) {
         AuthIndicatorScreen(
@@ -65,9 +71,6 @@ class AuthActivity : AppCompatActivity() {
         )
       }
     }
-
-    val authRequestType = intent.getStringExtra(AUTH_REQUEST_TYPE_KEY)
-      ?: throw IllegalStateException("AuthActivity started without AuthRequestType extra")
 
     wasStarted = true
     openWebBrowserAsync(

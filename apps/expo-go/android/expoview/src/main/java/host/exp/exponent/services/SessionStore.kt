@@ -29,12 +29,20 @@ class SessionStore(
   }
 
   fun activate(id: String) = update { state ->
-    if (state.sessions.any { it.id == id }) state.copy(activeSessionId = id) else state
+    if (state.sessions.any { it.id == id }) {
+      state.copy(activeSessionId = id)
+    } else {
+      state
+    }
   }
 
   fun remove(id: String) = update { state ->
     val remaining = state.sessions.filterNot { it.id == id }
-    val activeId = if (state.activeSessionId == id) remaining.firstOrNull()?.id else state.activeSessionId
+    val activeId = if (state.activeSessionId == id) {
+      remaining.firstOrNull()?.id
+    } else {
+      state.activeSessionId
+    }
     SessionsState(remaining, activeId)
   }
 
@@ -55,13 +63,29 @@ class SessionStore(
       )
       val duplicates = state.sessions.filter { it.id != id && it.userId == profile.userId }
       replacedExisting = duplicates.isNotEmpty()
-      state.copy(sessions = state.sessions.filterNot { it in duplicates }.map { if (it.id == id) updated else it })
+      state.copy(
+        sessions = state.sessions.filterNot { it in duplicates }.map {
+          if (it.id == id) {
+            updated
+          } else {
+            it
+          }
+        }
+      )
     }
     return replacedExisting
   }
 
   fun selectAccount(accountId: String, sessionId: String) = update { state ->
-    state.copy(sessions = state.sessions.map { if (it.id == sessionId) it.copy(selectedAccountId = accountId) else it })
+    state.copy(
+      sessions = state.sessions.map {
+        if (it.id == sessionId) {
+          it.copy(selectedAccountId = accountId)
+        } else {
+          it
+        }
+      }
+    )
   }
 
   fun migrateLegacySession(legacyPreferences: SharedPreferences) {
