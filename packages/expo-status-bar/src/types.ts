@@ -32,6 +32,16 @@ export type StatusBarProps = {
    * @platform ios
    */
   hideTransitionAnimation?: StatusBarAnimation;
+
+  /**
+   * Whether the system may move the status bar into a vertical bar beside the content, as on
+   * iPhone Duo. `'disabled'` keeps the status bar and system bars horizontal while this component
+   * is mounted. When several mounted `StatusBar` components set this prop, the most recently
+   * mounted one applies. Requires iOS 27.1 or later.
+   * @default 'automatic'
+   * @platform ios
+   */
+  verticalBarBehaviorIOS?: VerticalBarBehaviorIOS;
 };
 
 /**
@@ -40,3 +50,10 @@ export type StatusBarProps = {
  * @platform ios
  */
 export type VerticalBarEdgeIOS = 'leading' | 'trailing';
+
+/**
+ * Whether the system may place the status bar in a vertical bar. `'disabled'` keeps the status
+ * bar and system bars horizontal.
+ * @platform ios
+ */
+export type VerticalBarBehaviorIOS = 'automatic' | 'disabled';
