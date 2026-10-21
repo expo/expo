@@ -1,0 +1,24 @@
+{
+  "name": "expo-embedding",
+  "version": "0.0.0-dev",
+  "private": true,
+  "description": "Native dependency metadata for the Expo embedding prototype",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "prepack": "npm run build",
+    "test": "jest --runInBand"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "jest": "30.5.2",
+    "minimatch": "9.0.9"
+  }
+}
