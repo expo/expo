@@ -85,13 +85,13 @@ function Screen(props: InternalTabScreenProps) {
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => {
-    if (!options.disableAutomaticContentInsets && !tabBarHidden) {
+    if (!options.disableAutomaticContentInsets) {
       return (
         <SafeAreaView
           // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
           collapsable={false}
           style={{ flex: 1 }}
-          edges={{ bottom: true }}>
+          edges={{ bottom: !tabBarHidden }}>
           {content}
         </SafeAreaView>
       );
