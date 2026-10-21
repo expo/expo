@@ -127,8 +127,9 @@ export type SetStringOptions = {
    *
    * On Android 8+ (API 26+), the module clears the clipboard at that time, but only while it
    * still holds this copy, so content copied later by the user or another app is kept.
-   * Android doesn't let apps read the clipboard in the background, so an expiry that comes due
-   * while the app is in the background is applied when the app returns to the foreground.
+   * Android doesn't let an app read the clipboard while its window doesn't have focus, so an
+   * expiry that comes due then is applied when the window gains focus again. The expiry is kept
+   * in memory only: if the app process ends before the copy is cleared, the copy stays.
    *
    * @platform android
    * @platform ios
