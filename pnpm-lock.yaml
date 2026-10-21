@@ -2455,8 +2455,8 @@ importers:
         specifier: ^1.6.6
         version: 1.6.8
       xcode:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^4.0.0
+        version: 4.0.0
       xml2js:
         specifier: 0.6.0
         version: 0.6.0
@@ -5009,6 +5009,12 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
+      react-native-reanimated:
+        specifier: 4.7.1
+        version: 4.7.1(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+      react-native-worklets:
+        specifier: 0.13.0
+        version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(react-native@0.88.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
 
   packages/expo-image:
     dependencies:
@@ -15782,11 +15788,6 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
-  uuid@7.0.3:
-    resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -16147,9 +16148,9 @@ packages:
       utf-8-validate:
         optional: true
 
-  xcode@3.0.1:
-    resolution: {integrity: sha512-kCz5k7J7XbJtjABOvkc5lJmkiDh8VhjVCGNiqdKCscmVpdVUpEAyXv1xmCLkQJ5dsHqx3IPO4XW+NTDhU/fatA==}
-    engines: {node: '>=10.0.0'}
+  xcode@4.0.0:
+    resolution: {integrity: sha512-dDaoWzc9EP2fp9FS9PVZUkyvFxY4y1TOV9pcKaKLk++Ei/qb97XDFEVP7GnW7Osii/TzVABJ0jq2F+9/lq0TVA==}
+    engines: {node: '>=14.17.0'}
 
   xcparse@0.0.3:
     resolution: {integrity: sha512-/HgjZ1o81gudtNHt5a/EGEyMa991WZjZqu8ryPWJ1UtG4NRJyQ2AthR8MaqD6nN7UnCe7IcFShMm5oEA/S9nEQ==}
@@ -25611,8 +25612,6 @@ snapshots:
 
   uuid@3.4.0: {}
 
-  uuid@7.0.3: {}
-
   uuid@8.3.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
@@ -26100,10 +26099,9 @@ snapshots:
 
   ws@8.19.0: {}
 
-  xcode@3.0.1:
+  xcode@4.0.0:
     dependencies:
       simple-plist: 1.3.1
-      uuid: 7.0.3
 
   xcparse@0.0.3: {}
 
