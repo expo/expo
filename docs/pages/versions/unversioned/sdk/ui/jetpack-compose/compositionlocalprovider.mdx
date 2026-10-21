@@ -1,13 +1,13 @@
 ---
 title: CompositionLocalProvider
 description: A Jetpack Compose CompositionLocalProvider component for providing composition local values to its children.
-sourceCodeUrl: "https://github.com/expo/expo/tree/main/packages/expo-ui"
-packageName: "@expo/ui"
-platforms: ["android", "expo-go"]
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
 ---
 
-import APISection from "~/components/plugins/APISection";
-import { APIInstallSection } from "~/components/plugins/InstallSection";
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI CompositionLocalProvider matches the official Jetpack Compose [`CompositionLocalProvider`](https://developer.android.com/develop/ui/compose/compositionlocal) API. It provides values to all components inside it, without adding a layout node.
 
@@ -29,21 +29,23 @@ import {
   IconButton,
   Row,
   Text,
-} from "@expo/ui/jetpack-compose";
-import { size } from "@expo/ui/jetpack-compose/modifiers";
-import { useState } from "react";
+} from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
 
 export default function SmallTouchTargetsExample() {
   const [checked, setChecked] = useState(false);
 
   return (
     <Host matchContents>
-      <CompositionLocalProvider values={{ minimumInteractiveComponentSize: 0 }}>
-        <Row horizontalArrangement={{ spacedBy: 8 }} verticalAlignment="center">
+      <CompositionLocalProvider
+        values={{ minimumInteractiveComponentSize: 0 }}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          verticalAlignment="center">
           <IconButton
             modifiers={[size(24, 24)]}
-            onClick={() => console.log("Pressed")}
-          >
+            onClick={() => console.log('Pressed')}>
             <Text>+</Text>
           </IconButton>
           <Checkbox value={checked} onCheckedChange={setChecked} />
@@ -57,7 +59,7 @@ export default function SmallTouchTargetsExample() {
 ## API
 
 ```tsx
-import { CompositionLocalProvider } from "@expo/ui/jetpack-compose";
+import { CompositionLocalProvider } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection
