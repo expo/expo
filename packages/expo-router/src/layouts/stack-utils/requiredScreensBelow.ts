@@ -1,5 +1,5 @@
 'use client';
-import { use, useEffectEvent, useLayoutEffect, useState } from 'react';
+import { use, useEffectEvent, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { matchDynamicName } from '../../matchers';
@@ -105,38 +105,6 @@ function getRouteRequiredScreens(
   return options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
 }
 
-/**
- * Keeps the required screens of the focused route from the render where a deep link or a
- * navigation added the route. A prop change, or a back action to a route that is already in the
- * stack, adds no screens.
- */
-export function useRequiredScreensOnArrival<NavigatorOptions extends object>(
-  descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
-  state: NavigationState
-): PlaceholderDescriptorMap<NavigatorOptions> {
-  const routeKey = state.routes[state.index]?.key;
-  const screens = getRouteRequiredScreens(routeKey, descriptors);
-  const [arrival, setArrival] = useState({ state, screens });
-  let arrivalScreens = arrival.screens;
-  if (arrival.state !== state) {
-    // Preloaded routes above the index are not in the stack yet.
-    const isInStack = arrival.state.routes
-      .slice(0, arrival.state.index + 1)
-      .some((route) => route.key === routeKey);
-    arrivalScreens = isInStack ? undefined : screens;
-    setArrival({ state, screens: arrivalScreens });
-  }
-  const descriptor = routeKey ? descriptors[routeKey] : undefined;
-  if (!routeKey || !descriptor || arrivalScreens === screens) {
-    return descriptors;
-  }
-  const options = {
-    ...descriptor.options,
-    [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]: arrivalScreens,
-  };
-  return { ...descriptors, [routeKey]: { ...descriptor, options } };
-}
-
 /** Adds descriptors for the required screens that the state does not have yet. */
 export function processRequiredScreensDescriptors<
   State extends NavigationState,
@@ -172,31 +140,43 @@ export function processRequiredScreensState<
 }
 
 /**
- * Writes the required screens that the stack rendered into the global navigation state.
- * The reducer runs the same insertion, so the route keys match when the state did not change.
+ * Returns `state` with the required screens of the focused route only when the route is new to the
+ * stack, and syncs them to the global state.
  */
-export function useSyncRequiredScreensBelow(descriptors: PlaceholderDescriptorMap) {
+export function useRequiredScreensBelow<State extends { index: number; routes: { key: string }[] }>(
+  state: State,
+  descriptors: PlaceholderDescriptorMap
+): State {
   const enqueue = useEnqueueRoutingIntent();
-  // The `state` prop of the navigator content already has the added routes. The context has the
-  // state without them, which is what the sync compares against.
-  const state = use(NavigatorStateContext);
-  const screens = state && getRouteRequiredScreens(state.routes[state.index]?.key, descriptors);
-  const next = state && insertRequiredScreensBelow(state, screens);
-  // New keys after a sync mean that screens are still missing, so the effect runs again.
-  const nextRouteKeys =
-    next !== state ? next?.routes.map((route) => route.key).join('\0') : undefined;
+  // `state` already has the routes that the stack processors added. The context has the global
+  // state without them.
+  const globalState = use(NavigatorStateContext);
+  const routeKey = globalState?.routes[globalState.index]?.key;
+  const screens = getRouteRequiredScreens(routeKey, descriptors);
+  const [arrival, setArrival] = useState({ globalState, screens });
+  let arrivalScreens = arrival.screens;
+  if (arrival.globalState !== globalState) {
+    // Preloaded routes above the index are not in the stack yet.
+    const isInStack = arrival.globalState?.routes
+      .slice(0, arrival.globalState.index + 1)
+      .some((route) => route.key === routeKey);
+    arrivalScreens = isInStack ? undefined : screens;
+    setArrival({ globalState, screens: arrivalScreens });
+  }
+  const next = globalState && insertRequiredScreensBelow(globalState, arrivalScreens);
+  const shownRouteKeys = next?.routes.map((route) => route.key).join('\0');
+  const nextRouteKeys = next !== globalState ? shownRouteKeys : undefined;
 
   const sync = useEffectEvent(() => {
-    const routeKey = state?.routes[state.index]?.key;
-    if (!state || !screens || !routeKey) {
+    if (!globalState || !arrivalScreens || !routeKey) {
       return;
     }
-    const payload: SyncRequiredScreensPayload = { routeKey, screens };
+    const payload: SyncRequiredScreensPayload = { routeKey, screens: arrivalScreens };
     enqueue({
       type: 'ACTION',
       payload: {
-        action: { type: SYNC_REQUIRED_SCREENS, payload, target: state.key },
-        originKey: state.key,
+        action: { type: SYNC_REQUIRED_SCREENS, payload, target: globalState.key },
+        originKey: globalState.key,
       },
     });
   });
@@ -206,4 +186,14 @@ export function useSyncRequiredScreensBelow(descriptors: PlaceholderDescriptorMa
       sync();
     }
   }, [nextRouteKeys]);
+
+  // `next` is a new object on each render, so the joined keys keep the result stable.
+  return useMemo(() => {
+    const shownKeys = new Set(shownRouteKeys?.split('\0'));
+    if (shownRouteKeys === undefined || state.routes.every((route) => shownKeys.has(route.key))) {
+      return state;
+    }
+    const routes = state.routes.filter((route) => shownKeys.has(route.key));
+    return { ...state, routes, index: routes.findIndex((route) => route.key === routeKey) };
+  }, [state, shownRouteKeys, routeKey]);
 }
