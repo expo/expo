@@ -1,17 +1,14 @@
-import {
-  ChoiceCriteria,
-  ChoiceQuestion,
-  SystemOneResult,
-  TypeSafeClient,
-  Usage,
-} from '@typesafe-ai/sdk';
+import OpenAI from 'openai';
+import type { Decision, DecisionCreateParams } from 'openai/resources/decisions';
 
 import { getIssueAsync, LabelEvent } from './GitHub';
+
+const MODEL = 'gpt-6-luna';
 
 /**
  * Kinds that map to `null` produce no label, so the issue falls through to a maintainer.
  * The three off-repo kinds (third-party library, react-native core, EAS Build troubleshooting:
- * problems whose fix lives outside expo/expo) stay `null` until the logs show Jev is right about
+ * problems whose fix lives outside expo/expo) stay `null` until the logs show the model is right about
  * them often enough.
  */
 export const TRIAGE_LABELS = {
@@ -52,7 +49,7 @@ export type PlatformKind = keyof typeof PLATFORM_LABELS;
 
 export const PACKAGE_LABEL_PREFIX = '📦 ';
 export const NO_PACKAGE = 'none';
-/** The most options a Jev choice question accepts. */
+/** The most options a Decisions API choice question accepts. */
 const MAX_CHOICE_OPTIONS = 255;
 
 export const DEFAULT_THRESHOLDS = { triage: 0.9, package: 0.9, platform: 0.9 } as const;
@@ -82,18 +79,33 @@ type GitHubIssue = Awaited<ReturnType<typeof getIssueAsync>>;
 export type TriageIssue = Pick<GitHubIssue, 'title' | 'body' | 'author_association' | 'labels'>;
 type IssueState = Pick<TriageIssue, 'title' | 'author_association'> & { body: string };
 
-type IssueQuestions = {
-  triage: ChoiceQuestion<Record<TriageKind, string>>;
-  package: ChoiceQuestion<ChoiceCriteria>;
-  platform: ChoiceQuestion<Record<PlatformKind, string>>;
+/** Each choice maps to its description, or `null` when the choice value says enough. */
+type ChoiceQuestion<K extends string> = {
+  instructions: string;
+  criteria: Record<K, string | null>;
 };
-export type IssueClassification = SystemOneResult<IssueQuestions>['answers'];
+type ChoiceAnswer<K extends string> = {
+  choice: K;
+  confidence: number;
+  probabilities: Partial<Record<K, number>>;
+};
+
+type IssueQuestions = {
+  triage: ChoiceQuestion<TriageKind>;
+  package: ChoiceQuestion<string>;
+  platform: ChoiceQuestion<PlatformKind>;
+};
+export type IssueClassification = {
+  triage: ChoiceAnswer<TriageKind>;
+  package: ChoiceAnswer<string>;
+  platform: ChoiceAnswer<PlatformKind>;
+};
 export type QuestionId = keyof IssueClassification;
 
 export type ClassificationResult = {
   model: string;
   classification: IssueClassification;
-  usage: Usage;
+  usage: Decision.Usage;
 };
 
 export type LabelPlan = {
@@ -101,10 +113,9 @@ export type LabelPlan = {
   suggest: string[];
 };
 
-const TRIAGE_QUESTION: ChoiceQuestion<Record<TriageKind, string>> = {
-  type: 'choice',
+const TRIAGE_QUESTION: ChoiceQuestion<TriageKind> = {
   instructions:
-    'The state is a GitHub issue reported against expo/expo, the repository of the Expo SDK and its tooling. ' +
+    'The input is a GitHub issue as JSON reported against expo/expo, the repository of the Expo SDK and its tooling. ' +
     'Decide which kind of issue it is. Only pick `bug_report` when the author describes concrete, broken behavior in a package maintained in expo/expo.',
   criteria: {
     bug_report: 'A report of broken behavior in a package or tool maintained in expo/expo',
@@ -122,8 +133,7 @@ const TRIAGE_QUESTION: ChoiceQuestion<Record<TriageKind, string>> = {
   },
 };
 
-const PLATFORM_QUESTION: ChoiceQuestion<Record<PlatformKind, string>> = {
-  type: 'choice',
+const PLATFORM_QUESTION: ChoiceQuestion<PlatformKind> = {
   instructions:
     'Decide which platform the issue is about. Pick `multiple_or_unclear` unless the issue is clearly about one platform only.',
   criteria: {
@@ -134,10 +144,10 @@ const PLATFORM_QUESTION: ChoiceQuestion<Record<PlatformKind, string>> = {
   },
 };
 
-function packageQuestion(packageOptions: string[]): ChoiceQuestion<ChoiceCriteria> {
+function packageQuestion(packageOptions: string[]): ChoiceQuestion<string> {
   if (packageOptions.length > MAX_CHOICE_OPTIONS) {
     throw new Error(
-      `Cannot build the package question because the repository has ${packageOptions.length} package options and a Jev choice question accepts at most ${MAX_CHOICE_OPTIONS}. ` +
+      `Cannot build the package question because the repository has ${packageOptions.length} package options and a Decisions API choice question accepts at most ${MAX_CHOICE_OPTIONS}. ` +
         `Remove \`${PACKAGE_LABEL_PREFIX}\` labels for deprecated packages, or split the question by package group in tools/src/IssueTriage.ts.`
     );
   }
@@ -146,7 +156,6 @@ function packageQuestion(packageOptions: string[]): ChoiceQuestion<ChoiceCriteri
     criteria[option] = option === NO_PACKAGE ? 'Not about one specific expo package' : null;
   }
   return {
-    type: 'choice',
     instructions:
       'Decide which expo package the issue is about. Pick the package whose code would have to change to fix the issue. ' +
       `Pick \`${NO_PACKAGE}\` when the issue spans several packages or names none.`,
@@ -185,12 +194,47 @@ export async function classifyIssueAsync(
   issue: TriageIssue,
   packageOptions: string[]
 ): Promise<ClassificationResult> {
-  const client = new TypeSafeClient({ logLevel: 'error' });
-  const { model, answers, usage } = await client.systemOne({
-    state: buildState(issue),
-    questions: buildQuestions(packageOptions),
+  const questions = buildQuestions(packageOptions);
+  const { model, answers, usage } = await new OpenAI().decisions.create({
+    model: MODEL,
+    input: JSON.stringify(buildState(issue)),
+    questions: QUESTION_IDS.map((id) => toDecisionQuestion(id, questions[id])),
   });
-  return { model, classification: answers, usage };
+  return { model, classification: parseAnswers(answers), usage };
+}
+
+function toDecisionQuestion(
+  name: QuestionId,
+  { instructions, criteria }: ChoiceQuestion<string>
+): DecisionCreateParams.QuestionParamChoice {
+  return {
+    type: 'choice',
+    name,
+    instructions,
+    choices: Object.entries(criteria).map(([value, description]) =>
+      description ? { value, description } : { value }
+    ),
+  };
+}
+
+function parseAnswers(answers: Decision['answers']): IssueClassification {
+  const classification: Partial<Record<QuestionId, ChoiceAnswer<string>>> = {};
+  for (const answer of answers) {
+    if (answer.type !== 'choice') {
+      throw new Error(
+        `Cannot classify the issue because the model returned a \`${answer.type}\` answer to the \`${answer.name}\` question instead of a choice. ` +
+          'The model refuses a question when it declines to judge the input. Label the issue by hand.'
+      );
+    }
+    classification[answer.name as QuestionId] = {
+      choice: String(answer.choice),
+      confidence: answer.confidence,
+      probabilities: Object.fromEntries(
+        answer.probabilities.map(({ value, probability }) => [String(value), probability])
+      ),
+    };
+  }
+  return classification as IssueClassification;
 }
 
 type LabelCandidate = {
@@ -206,7 +250,7 @@ export function gateConfidences(classification: IssueClassification): Record<Que
   const { triage, package: pkg, platform } = classification;
   return {
     triage: NOT_ACTIONABLE_KINDS.includes(triage.choice)
-      ? triage.probabilities.question + triage.probabilities.missing_info
+      ? (triage.probabilities.question ?? 0) + (triage.probabilities.missing_info ?? 0)
       : triage.confidence,
     package: pkg.confidence,
     platform: platform.confidence,
@@ -275,7 +319,7 @@ export function formatReport(
   });
 
   return [
-    `### Jev classification of issue #${issueNumber} (${result.model})`,
+    `### Classification of issue #${issueNumber} (${result.model})`,
     '',
     `| question | answer | confidence | ${shadow ? 'would apply' : 'applied'} |`,
     '| --- | --- | --- | --- |',

@@ -36,7 +36,9 @@ type ActionOptions = {
 export default (program: Command) => {
   program
     .command('classify-issue')
-    .description('Classifies a GitHub issue with Jev and reports the labels it would apply.')
+    .description(
+      'Classifies a GitHub issue with the OpenAI Decisions API and reports the labels it would apply.'
+    )
     .option('-i, --issue <number>', 'Number of the issue to classify.')
     .option(
       '--tag',
@@ -65,9 +67,9 @@ async function action(options: ActionOptions) {
     'Export a token with `repo` scope as `GITHUB_TOKEN` and run the command again.'
   );
   requireEnv(
-    'TYPESAFE_API_KEY',
-    'The command classifies the issue with the Jev model hosted by TypeSafe AI, which rejects unauthenticated requests.',
-    'Create a key at https://console.typesafe.ai/keys and export it as `TYPESAFE_API_KEY`.'
+    'OPENAI_API_KEY',
+    'The command classifies the issue with the OpenAI Decisions API, which rejects unauthenticated requests.',
+    'Create a key at https://platform.openai.com/api-keys and export it as `OPENAI_API_KEY`.'
   );
 
   if (options.evaluate) {
@@ -241,7 +243,7 @@ function formatEvaluation(
   failures: number
 ): string {
   const lines = [
-    `### Jev calibration over ${issueCount} closed issues (${model || 'no model'}, ${failures} failed)`,
+    `### Calibration over ${issueCount} closed issues (${model || 'no model'}, ${failures} failed)`,
     '',
     'Truth comes from labels a person applied. Labels from expo-bot and from the Jev backfill are ignored. Issues without such a label are left out of a question.',
   ];
