@@ -90,7 +90,7 @@ class SharedObjectRegistry(runtime: Runtime) {
     if (native.releasesAfterPendingViewUpdates) {
       val choreographer = runCatching { ReactChoreographer.getInstance() }.getOrNull()
       if (choreographer != null) {
-        // Fabric applies the queued view updates in `DISPATCH_UI` callbacks, which run before `IDLE_EVENT` ones.
+        // Runs after Fabric's `DISPATCH_UI` callback, which applies the queued view updates.
         choreographer.postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT) { remove(id) }
         return
       }
