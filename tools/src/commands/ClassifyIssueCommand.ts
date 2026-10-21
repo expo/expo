@@ -274,7 +274,7 @@ function formatEvaluation(
   const lines = [
     `### Calibration over ${issueCount} closed issues (${model || 'no model'}, ${failures} failed)`,
     '',
-    'Truth comes from labels a person applied. Labels from expo-bot and from the Jev backfill are ignored. Issues without such a label are left out of a question.',
+    'Truth comes from labels a person applied. Labels from expo-bot, from the 2026-09-22 backfill, and from issue templates are ignored. Issues without such a label are left out of a question.',
   ];
 
   for (const id of QUESTION_IDS) {

@@ -455,7 +455,7 @@ const BACKFILL_WINDOW = { from: '2026-09-22T20:20:00Z', to: '2026-09-22T20:45:00
 
 /**
  * The labels currently on the issue that a person applied. Labels from the bot account and
- * from the Jev backfill are Jev's own output and must not count as truth. Template labels
+ * from the 2026-09-22 backfill are classifier output and must not count as truth. Template labels
  * applied as the author are not truth either.
  */
 export function humanAppliedLabels(
