@@ -1,5 +1,73 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of creating shared objects in JavaScript and of returning them from native functions. ([#51730](https://github.com/expo/expo/pull/51730) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix shared objects that native code returns to JavaScript again after their earlier JavaScript object was garbage-collected. Their members could throw "Unable to find the native shared object associated with given JavaScript object", or the returned object could belong to another shared object. ([#51854](https://github.com/expo/expo/pull/51854) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.22.0. `@Record` types now read and write their JavaScript properties with less overhead. The new `@JS` option `.withAsync("name")` also binds a synchronous function under that name, as a function that returns a promise and runs on the concurrent thread pool. A `@Record` can now be a `final class`, and a class that isn't `final` or has an inheritance clause gets a build error that says how to fix it. A `@JS init` now reports an argument type that can't be converted from JavaScript at the initializer. ([#51905](https://github.com/expo/expo/pull/51905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a SwiftUI `Host` that mounts during a repeated modal presentation having no safe area. ([#51923](https://github.com/expo/expo/pull/51923) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix hosted React Native content going blank or keeping a stale size after its child view is remounted, for example by a `key` change in an `RNHostView`. ([#51906](https://github.com/expo/expo/pull/51906) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Updated dependencies. ([#51588](https://github.com/expo/expo/pull/51588), [#51835](https://github.com/expo/expo/pull/51835), [#51905](https://github.com/expo/expo/pull/51905))
+  - expo-modules-jsi@58.0.17
+
+## 58.0.23
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of returning `Data` and shared objects to JavaScript. ([#51728](https://github.com/expo/expo/pull/51728) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix a Jetpack Compose `Host` that stays blank when it mounts in a visible list row with `removeClippedSubviews` enabled, for example in a `FlatList`. The `Host` now measures its content when it is attached for the first time. ([#51780](https://github.com/expo/expo/pull/51780) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Update `expo-modules-macros` to 0.21.0. `@Record` types now convert between JavaScript and native code with less overhead and no longer need an app context. `@ExpoModule` and `@SharedObject` now report a build error when two `@JS` members of one object have the same JavaScript name, because JavaScript could reach only one of them. ([#51716](https://github.com/expo/expo/pull/51716) by [@tsapeta](https://github.com/tsapeta))
+- Shared objects now report their class name from `Object.prototype.toString`, for example `[object VideoPlayer]`. React in development builds no longer deep-compares shared objects in props, which threw `ERR_NATIVE_SHARED_OBJECT_NOT_FOUND` when the previous props held a released shared object. `Blob` from `expo-blob` and `File` from `expo-file-system` now report `[object Blob]` and `[object File]`, as on the web. Libraries that detect these types by this tag now treat them as a `Blob` and a `File`. ([#51743](https://github.com/expo/expo/pull/51743) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51728](https://github.com/expo/expo/pull/51728), [#51739](https://github.com/expo/expo/pull/51739), [#51577](https://github.com/expo/expo/pull/51577))
+  - expo-modules-jsi@58.0.16
+
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Fix native memory that grew with each module class under Hermes V1, by about 0.57 MiB per class on React Native 0.86 and 0.87 and about 93 KiB on 0.88. `createClass` evaluated a new JavaScript source for each class, and Hermes keeps memory for every evaluated source until the runtime is destroyed. It now evaluates one class factory for each runtime and calls it for each class. On iOS, this code creates only the four base classes (`SharedObject`, `SharedRef`, `EventEmitter` and `NativeModule`). ([#51582](https://github.com/expo/expo/pull/51582) by [@amillez](https://github.com/amillez))
+- Fix an `-Wunused-result` warning in `Worklet.cpp` on Android when building with `react-native-worklets@0.13`. Running a worklet synchronously now discards its return value while the worklet runtime lock is still held, on Android and iOS. ([#51656](https://github.com/expo/expo/pull/51656) by [@tomekzaw](https://github.com/tomekzaw))
+- Fix the `Do not include this file directly` warnings from `react-native-worklets@0.13` on Android and iOS. The worklets integration now includes the specific `Serializable` headers instead of the deprecated `worklets/SharedItems/Serializable.h`. ([#51664](https://github.com/expo/expo/pull/51664) by [@tomekzaw](https://github.com/tomekzaw))
+- Updated dependencies. ([#51583](https://github.com/expo/expo/pull/51583))
+  - expo-modules-jsi@58.0.15
+
+## 58.0.21
+
+### Patch Changes
+
+- [Web] Fix `globalThis.expo` missing on web when Rolldown or `vite build` on Vite 8 drops `ensureNativeModulesAreInstalled` and the polyfill it imports. The module is now listed in `sideEffects`. ([#51624](https://github.com/expo/expo/pull/51624) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.20
+
+### Patch Changes
+
+- Change the optional `react-native-worklets` peer dependency to `0.13.0`, the version bundled with SDK 58. `npm install` no longer fails with `ERESOLVE` when the bundled `react-native-worklets` version is installed. Earlier `react-native-worklets` versions do not support React Native 0.88. ([#51493](https://github.com/expo/expo/pull/51493) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Speed up module registration at app launch by classifying definition elements without protocol conformance lookups. ([#51456](https://github.com/expo/expo/pull/51456) by [@Kudo](https://github.com/Kudo))
+- [iOS] Reduced the overhead of emitting events without a payload. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Speed up app launch by computing default module, class and view names without protocol conformance lookups. ([#51455](https://github.com/expo/expo/pull/51455) by [@Kudo](https://github.com/Kudo))
+- [iOS] Publish a headers XCFramework for `ExpoModulesCore` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesCoreHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51243](https://github.com/expo/expo/pull/51243), [#51562](https://github.com/expo/expo/pull/51562), [#51565](https://github.com/expo/expo/pull/51565), [#51564](https://github.com/expo/expo/pull/51564), [#51560](https://github.com/expo/expo/pull/51560), [#51558](https://github.com/expo/expo/pull/51558))
+  - expo-modules-jsi@58.0.14
+
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Fix slow cold launches in brownfield apps where the `ExpoModulesProvider` lookup scanned `Bundle.allFrameworks` inside `+load`. The lookup now tries the framework that contains ExpoModulesCore before falling back to the scan. ([#51481](https://github.com/expo/expo/pull/51481) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Update `expo-modules-macros` to 0.20.0, which binds `@JS` functions and setters that return nothing through the `Void` overload, so they no longer build an `undefined` value on each call. ([#51548](https://github.com/expo/expo/pull/51548) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduced the overhead of emitting module events. ([#51553](https://github.com/expo/expo/pull/51553) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51496](https://github.com/expo/expo/pull/51496), [#51499](https://github.com/expo/expo/pull/51499), [#51498](https://github.com/expo/expo/pull/51498), [#51371](https://github.com/expo/expo/pull/51371))
+  - expo-modules-jsi@58.0.13
+
 ## 58.0.17
 
 ### Patch Changes

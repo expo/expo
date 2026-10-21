@@ -30,9 +30,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
-    expect.stringMatching(/\/2g\/dist\/2g\.js$/),
-    expect.stringMatching(/\/2g\/dist\/chunks\/clean-chunk\.js$/),
-    expect.stringMatching(/\/2g\/dist\/chunks\/pretty-chunk\.js$/),
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/prebuild/index.js',
     '@expo/cli/build/src/utils/args.js',

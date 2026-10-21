@@ -17,6 +17,8 @@
 
 const fs = require('fs');
 
+const { spmUpdateCommand } = require('./commands');
+
 /**
  * Pod-name families already covered by the SwiftPM graph: Expo's own modules
  * (contributed by this plugin) and React Native's products (contributed by RN).
@@ -239,7 +241,7 @@ function renderPrebuildAvailable({ podName, packageName, moduleRoot, productName
       `It declares "${productName}" in its spm.config.json, so it does not need a Package.swift — the Expo prebuild pipeline builds it. The artifact is just missing.`,
       `Build it — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
       `    et prebuild ${packageName}`,
-      `Then re-run \`npx react-native spm update\`. A published ${packageName} that ships prebuilds/output/<flavor>/xcframeworks is picked up with no local build.`,
+      `Then re-run \`${spmUpdateCommand()}\`. A published ${packageName} that ships prebuilds/output/<flavor>/xcframeworks is picked up with no local build.`,
     ],
     moduleRoot
   );
@@ -510,12 +512,12 @@ function renderPartiallyPrecompiled({
   const precompile = [
     `To precompile all of them, ${productStep}. Omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
     `    et prebuild ${packageName}`,
-    `   Then re-run \`npx react-native spm update\`.`,
+    `   Then re-run \`${spmUpdateCommand()}\`.`,
   ];
   const remedies = [
     ...(sourceOnly ? [] : [precompile]),
     [
-      `To build it from source instead, delete the prebuilt ${siblings} artifacts — ${artifacts}, under debug/xcframeworks and release/xcframeworks — from each directory below, then re-run \`npx react-native spm update\`. The plugin searches them in this order and uses the first one that has an artifact, so one left behind anywhere is picked up again:`,
+      `To build it from source instead, delete the prebuilt ${siblings} artifacts — ${artifacts}, under debug/xcframeworks and release/xcframeworks — from each directory below, then re-run \`${spmUpdateCommand()}\`. The plugin searches them in this order and uses the first one that has an artifact, so one left behind anywhere is picked up again:`,
       ...artifactDirs.map((dir) => `    ${dir}`),
     ],
     [remedy.exclude(packageName)],
@@ -711,7 +713,7 @@ function renderRootConflictWarning(entries) {
         `      built by this plugin: ${moduleRoot}`,
         `      imported by your app: ${autolinkedRoot}`,
         `  Both are real directories, not one directory reached through a symlink, so the copies can be different versions. The plugin builds the first one; your app's JavaScript imports the second. When the two disagree it usually surfaces at runtime, as a missing method or "Cannot find native module" — and two copies of different versions can fail the build instead.`,
-        `  Run \`npm ls ${packageName}\` (or \`yarn why\` / \`pnpm why\`) to find what pulls in the second copy, deduplicate it with \`npm dedupe\` (or \`yarn dedupe\` / \`pnpm dedupe\`), then re-run \`npx react-native spm update\`.`,
+        `  Run \`npm ls ${packageName}\` (or \`yarn why\` / \`pnpm why\`) to find what pulls in the second copy, deduplicate it with \`npm dedupe\` (or \`yarn dedupe\` / \`pnpm dedupe\`), then re-run \`${spmUpdateCommand()}\`.`,
       ].join('\n')
     )
     .join('\n\n');

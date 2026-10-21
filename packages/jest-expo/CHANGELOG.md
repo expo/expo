@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Skip Jest's own stack frames when looking up native module mocks. On Jest 30 this lookup reread Jest's runtime source for every native module and slowed down test runs. ([#51778](https://github.com/expo/expo/pull/51778) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.11
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.10
+
+### Patch Changes
+
+- Accept `jest@^29` again as a peer dependency. ([#51462](https://github.com/expo/expo/pull/51462) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.9
 
 ### Patch Changes

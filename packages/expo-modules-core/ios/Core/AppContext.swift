@@ -230,24 +230,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
-  /**
-   Creates a new JavaScript object with the class prototype associated with the given native class.
-   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-   */
+  /// Creates a new JavaScript object with the class prototype associated with the given native class.
+  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
-    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      throw JavaScriptClassNotFoundException()
-    }
-    return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
+    let runtime = try self.runtime
+    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+      return runtime.createObject(prototype: prototype)
     }
   }
 
@@ -691,11 +685,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
           return
         }
-        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
-        // holds for the intended path, where the native state dies as the runtime finalizes on
-        // its own thread. A future cross-runtime sharing path that could drop this state's last
-        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
-        // hop back to the JS thread here first.
+        // Hermes runs this on its finalizer thread while the JS thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and `destroy()` can release JS objects
+        // here. Don't send that work to another thread: it would run after Hermes frees its
+        // values. A future cross-runtime sharing path that could drop this state's last JSI slot
+        // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
+        // would need to hop to the JS thread here first.
         nativeState.appContext.destroy()
       }
     }
@@ -764,7 +759,27 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       return providerClass.init()
     }
 
-    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    // [2] Fallback to the framework that contains ExpoModulesCore itself (brownfield use case).
+    // Brownfield apps often prelink React Native and Expo into one dynamic framework; the
+    // generated provider is then compiled into that framework, so its Swift module is the
+    // framework's name and the main-bundle lookups above miss. Trying this bundle first avoids
+    // the `Bundle.allFrameworks` scan below, which materializes a bundle for every loaded
+    // framework and runs inside `+load` on every cold launch.
+    let coreBundle = Bundle(for: AppContext.self)
+    if coreBundle.bundlePath != Bundle.main.bundlePath {
+      let coreBundleNames = [
+        coreBundle.infoDictionary?["CFBundleExecutable"],
+        coreBundle.infoDictionary?["CFBundleName"]
+      ].compactMap { $0 as? String }
+
+      for providerClassName in moduleProviderClassNames(withName: providerName, bundleNames: coreBundleNames) {
+        if let providerClass = NSClassFromString(providerClassName) as? ModulesProvider.Type {
+          return providerClass.init()
+        }
+      }
+    }
+
+    // [3] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       let frameworkBundleNames = [
         bundle.infoDictionary?["CFBundleExecutable"],
@@ -778,7 +793,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }
     }
 
-    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [4] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 

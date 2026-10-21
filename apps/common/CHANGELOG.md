@@ -1,5 +1,54 @@
 # expo-apps-common
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814))
+  - expo-router@58.0.25
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51797](https://github.com/expo/expo/pull/51797), [#51774](https://github.com/expo/expo/pull/51774))
+  - expo-router@58.0.24
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51676](https://github.com/expo/expo/pull/51676))
+  - expo-router@58.0.22
+
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-router@58.0.21
+
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51542](https://github.com/expo/expo/pull/51542), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598))
+  - expo-router@58.0.20
+
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51485](https://github.com/expo/expo/pull/51485), [#51446](https://github.com/expo/expo/pull/51446), [#51508](https://github.com/expo/expo/pull/51508), [#51068](https://github.com/expo/expo/pull/51068), [#51464](https://github.com/expo/expo/pull/51464))
+  - expo-router@58.0.19
+
 ## 0.0.3
 
 ### Patch Changes

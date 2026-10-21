@@ -1,5 +1,117 @@
 # expo-app
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814), [#51996](https://github.com/expo/expo/pull/51996), [#51928](https://github.com/expo/expo/pull/51928), [#51927](https://github.com/expo/expo/pull/51927))
+  - expo@58.0.17
+  - expo-router@58.0.25
+  - expo-status-bar@58.0.4
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - expo-brownfield@58.0.16
+  - expo-constants@58.0.13
+  - expo-dev-menu@58.0.11
+  - expo-device@58.0.5
+  - expo-font@58.0.9
+  - expo-glass-effect@58.0.4
+  - expo-linking@58.0.14
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.6
+  - expo-web-browser@58.0.6
+
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823), [#51805](https://github.com/expo/expo/pull/51805))
+  - expo-brownfield@58.0.15
+  - expo-font@58.0.9
+  - expo@58.0.16
+
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51755](https://github.com/expo/expo/pull/51755), [#51742](https://github.com/expo/expo/pull/51742), [#51797](https://github.com/expo/expo/pull/51797), [#51774](https://github.com/expo/expo/pull/51774))
+  - expo@58.0.15
+  - expo-image@58.0.16
+  - expo-router@58.0.24
+  - expo-dev-menu@58.0.11
+
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51649](https://github.com/expo/expo/pull/51649))
+  - expo-router@58.0.23
+  - expo@58.0.14
+  - expo-brownfield@58.0.14
+
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51676](https://github.com/expo/expo/pull/51676), [#51691](https://github.com/expo/expo/pull/51691))
+  - expo-router@58.0.22
+  - expo-splash-screen@58.0.10
+  - expo-image@58.0.15
+  - expo@58.0.13
+  - expo-dev-menu@58.0.11
+
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51639](https://github.com/expo/expo/pull/51639))
+  - expo-glass-effect@58.0.4
+  - expo@58.0.12
+  - expo-router@58.0.21
+  - expo-dev-menu@58.0.11
+
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51615](https://github.com/expo/expo/pull/51615), [#51542](https://github.com/expo/expo/pull/51542), [#51302](https://github.com/expo/expo/pull/51302), [#51448](https://github.com/expo/expo/pull/51448), [#51590](https://github.com/expo/expo/pull/51590), [#51450](https://github.com/expo/expo/pull/51450), [#51598](https://github.com/expo/expo/pull/51598), [#51540](https://github.com/expo/expo/pull/51540))
+  - expo@58.0.11
+  - expo-router@58.0.20
+  - expo-system-ui@58.0.6
+  - expo-image@58.0.15
+  - expo-dev-menu@58.0.11
+  - expo-constants@58.0.12
+  - expo-brownfield@58.0.13
+  - expo-device@58.0.5
+  - expo-font@58.0.8
+  - expo-glass-effect@58.0.3
+  - expo-linking@58.0.13
+  - expo-splash-screen@58.0.9
+  - expo-status-bar@58.0.3
+  - expo-symbols@58.0.4
+  - expo-web-browser@58.0.6
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51489](https://github.com/expo/expo/pull/51489), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51485](https://github.com/expo/expo/pull/51485), [#51446](https://github.com/expo/expo/pull/51446), [#51508](https://github.com/expo/expo/pull/51508), [#51068](https://github.com/expo/expo/pull/51068), [#51464](https://github.com/expo/expo/pull/51464))
+  - expo@58.0.10
+  - expo-router@58.0.19
+  - expo-image@58.0.14
+  - expo-brownfield@58.0.13
+  - expo-dev-menu@58.0.11
+  - expo-constants@58.0.12
+  - expo-device@58.0.5
+  - expo-font@58.0.8
+  - expo-glass-effect@58.0.3
+  - expo-linking@58.0.13
+  - expo-splash-screen@58.0.9
+  - expo-status-bar@58.0.3
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.5
+  - expo-web-browser@58.0.6
+
 ## 1.0.3
 
 ### Patch Changes

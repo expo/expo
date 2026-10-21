@@ -1,9 +1,9 @@
 {
   "branches": {
     "main": {
-      "publish": "next",
+      "publish": "latest",
       "canary": "canary",
-      "allowMajor": true
+      "allowMajor": false
     },
     "sdk-58": {
       "publish": null,

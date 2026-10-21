@@ -632,9 +632,8 @@ func genericDecodeWideInteger<T: FixedWidthInteger>(_ value: borrowing JavaScrip
   return try genericDecodeInteger(value.getDouble(), as: T.self)
 }
 
-/// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path stays zero-copy
-/// and pays a single tag check (see the owning overload); only a `bigint` materializes an owning value
-/// (the borrowed value exposes no BigInt accessor), which is acceptable on this rare branch.
+/// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path pays a single tag
+/// check (see the owning overload).
 @JavaScriptActor
 func genericDecodeWideInteger<T: FixedWidthInteger>(
   _ value: borrowing JavaScriptUnownedValue,
@@ -646,7 +645,7 @@ func genericDecodeWideInteger<T: FixedWidthInteger>(
       // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`.
       return try genericDecodeInteger(value.asDouble(), as: T.self)
     }
-    return try genericDecodeBigInt(value.copied(in: runtime).getBigInt(), as: T.self)
+    return try genericDecodeBigInt(value.getBigInt(in: runtime), as: T.self)
   }
   return try genericDecodeInteger(value.getDouble(), as: T.self)
 }

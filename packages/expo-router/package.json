@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "58.0.18",
+  "version": "58.0.25",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -299,15 +299,15 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",
-    "@react-native/normalize-colors": "0.88.0-rc.4",
+    "@react-native/normalize-colors": "0.88.0",
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
     "nanoid": "^3.3.18",
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
-    "react-native-drawer-layout": "^4.2.2",
-    "react-native-screens": "^4.29.0 || ^5.0.0-alpha.3",
+    "react-native-drawer-layout": "^4.2.12",
+    "react-native-screens": "^4.30.0 || ^5.0.0-alpha.3",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "standard-navigation": "^0.0.5"
@@ -352,7 +352,7 @@
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
-    "react-native-screens": "^4.29.0 || ^5.0.0-alpha.3",
+    "react-native-screens": "^4.30.0 || ^5.0.0-alpha.3",
     "react-native-web": "*",
     "react-native-worklets": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"

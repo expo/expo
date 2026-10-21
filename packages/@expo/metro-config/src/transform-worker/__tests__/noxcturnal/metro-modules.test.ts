@@ -1022,6 +1022,7 @@ it.each([
             optimize: {
               constantFolding: true,
               deadCodeElimination: true,
+              moduleContext: true,
             },
           },
         },
@@ -1559,7 +1560,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     source: `
       var values = [process.env.EXPO_OS, process['env']['EXPO_OS'], process.env.EXPO_SERVER, process.env.NODE_ENV, __DEV__, Platform.OS];
       var registry = import.meta.url;
-      var router = [process.env.EXPO_PROJECT_ROOT, process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
+      var router = [process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
       var selected = Platform.select({ web: 'web', native: 'native', ios: 'ios' });
       function shadow(process, Platform, __DEV__) {
         return [process.env.EXPO_OS, Platform.OS, __DEV__];
@@ -1585,7 +1586,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     `var values = ["ios", "ios", false, "production", false, "ios"]`
   );
   expect(result.result.code).toContain('globalThis.__ExpoImportMetaRegistry.url');
-  expect(result.result.code).toContain(`var router = ["/app", "../../app", "sync"]`);
+  expect(result.result.code).toContain(`var router = ["../../app", "sync"]`);
   expect(result.result.code).toContain(`var selected = 'ios'`);
   expect(result.result.code).toContain('return [process.env.EXPO_OS, Platform.OS, __DEV__]');
   expect(result.result.code).toContain(`process.env.NODE_ENV = 'test'`);
@@ -1679,7 +1680,6 @@ it('resolves only encountered public and Router environment properties', async (
           process.env[key],
           (() => { const process = { env: { EXPO_PUBLIC_NOXCTURNAL_I19: 'shadow' } }; return process.env.EXPO_PUBLIC_NOXCTURNAL_I19; })(),
           process.env.EXPO_ROUTER_APP_ROOT,
-          process['env'].EXPO_ROUTER_ABS_APP_ROOT
         ];
       `,
       options: options({
@@ -1696,7 +1696,6 @@ it('resolves only encountered public and Router environment properties', async (
     expect(result.result.code).toContain('process.env[key]');
     expect(result.result.code).toContain('EXPO_PUBLIC_NOXCTURNAL_I19: "shadow"');
     expect(result.result.code).toContain('"../../../routes"');
-    expect(result.result.code).toContain('"/app/routes"');
   } finally {
     if (previous === undefined) delete process.env.EXPO_PUBLIC_NOXCTURNAL_I19;
     else process.env.EXPO_PUBLIC_NOXCTURNAL_I19 = previous;
@@ -2468,26 +2467,60 @@ it('preserves constructor semantics for a member of a default import', async () 
   expect(result.result.code).toContain(`new Animated.default.Value(1)`);
 });
 
-it("loads Babel runtime helpers through Metro's default-import ABI", async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived();`,
-    options: options({
-      dev: true,
-      experimentalImportSupport: true,
-      unstable_transformProfile: 'default',
-    }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
-  });
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
-  expect(result.result.code).toMatch(
-    /construct: _\$\$_IMPORT_DEFAULT\(_dependencyMap\[\d+\], "@babel\/runtime\/helpers\/construct"\)/
-  );
-});
+it.each(['CommonJS', 'ES module'])(
+  'loads %s Babel runtime helpers through Metro',
+  async (format) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived('value');`,
+      options: options({
+        dev: true,
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'default',
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
+    const construct = requireFromMetroConfig('@babel/runtime/helpers/construct');
+    class Base {
+      constructor(readonly value: string) {}
+    }
+    const load = (name: string) => {
+      if (name === './Base') return Base;
+      if (name === '@babel/runtime/helpers/construct') {
+        return format === 'ES module' ? { __esModule: true, default: construct } : construct;
+      }
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    expect(factory).toBeDefined();
+    const module = { exports: {} };
+    factory!(
+      globalThis,
+      load,
+      (name: string) => {
+        const value = load(name);
+        return value.__esModule ? value.default : value;
+      },
+      () => {
+        throw new Error('Unexpected namespace import');
+      },
+      module,
+      module.exports,
+      result.dependencies.map(({ name }) => name)
+    );
+    expect(module.exports).toBeInstanceOf(Base);
+    expect(module.exports).toMatchObject({ value: 'value' });
+    expect(module.exports.constructor.name).toBe('Derived');
+  }
+);
 
 it('lowers named, namespace, and export-all re-exports with live getters', async () => {
   const result = await transformFileFullyWithNoxcturnal({

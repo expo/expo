@@ -1,5 +1,113 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- Resolve `expo/tsconfig.base` in tools that follow `package.json` `exports`. ([#51751](https://github.com/expo/expo/pull/51751) by [@daemosity](https://github.com/daemosity))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
+
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
+
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- Updated dependencies. ([#50388](https://github.com/expo/expo/pull/50388), [#51872](https://github.com/expo/expo/pull/51872), [#51946](https://github.com/expo/expo/pull/51946), [#51986](https://github.com/expo/expo/pull/51986), [#51730](https://github.com/expo/expo/pull/51730), [#51854](https://github.com/expo/expo/pull/51854), [#51905](https://github.com/expo/expo/pull/51905), [#51923](https://github.com/expo/expo/pull/51923), [#51906](https://github.com/expo/expo/pull/51906), [#51504](https://github.com/expo/expo/pull/51504), [#51937](https://github.com/expo/expo/pull/51937), [#52008](https://github.com/expo/expo/pull/52008), [#51868](https://github.com/expo/expo/pull/51868), [#51932](https://github.com/expo/expo/pull/51932), [#51714](https://github.com/expo/expo/pull/51714), [#51913](https://github.com/expo/expo/pull/51913))
+  - expo-modules-autolinking@58.0.14
+  - @expo/cli@58.1.14
+  - @expo/config-plugins@58.0.10
+  - expo-modules-core@58.0.24
+  - @expo/fingerprint@0.21.6
+  - @expo/metro-config@58.0.16
+  - @expo/log-box@58.0.13
+  - @expo/config@58.0.7
+  - expo-constants@58.0.13
+  - babel-preset-expo@58.0.19
+  - @expo/local-build-cache-provider@58.0.7
+  - expo-asset@58.0.18
+
+## 58.0.16
+
+### Patch Changes
+
+- Fix web `ViewStyle` and `TextStyle` types disagreeing on `cursor`, `transitionDuration`, and `userSelect`. ([#51805](https://github.com/expo/expo/pull/51805) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51823](https://github.com/expo/expo/pull/51823))
+  - expo-file-system@58.0.10
+  - expo-font@58.0.9
+  - @expo/cli@58.1.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Add the `expo-modules` command, which runs `expo-modules-cli`. Modules that declare `expo` as a dependency can run it without depending on `expo-modules-cli`. ([#51755](https://github.com/expo/expo/pull/51755) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#51797](https://github.com/expo/expo/pull/51797), [#51712](https://github.com/expo/expo/pull/51712), [#51728](https://github.com/expo/expo/pull/51728), [#51780](https://github.com/expo/expo/pull/51780), [#51716](https://github.com/expo/expo/pull/51716), [#51743](https://github.com/expo/expo/pull/51743), [#51663](https://github.com/expo/expo/pull/51663), [#51771](https://github.com/expo/expo/pull/51771), [#51687](https://github.com/expo/expo/pull/51687))
+  - expo-asset@58.0.17
+  - @expo/metro-config@58.0.15
+  - expo-modules-core@58.0.23
+  - expo-modules-cli@0.3.1
+  - babel-preset-expo@58.0.18
+  - @expo/cli@58.1.12
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51582](https://github.com/expo/expo/pull/51582), [#51656](https://github.com/expo/expo/pull/51656), [#51664](https://github.com/expo/expo/pull/51664))
+  - expo-modules-core@58.0.22
+  - @expo/cli@58.1.11
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51624](https://github.com/expo/expo/pull/51624))
+  - expo-modules-core@58.0.21
+  - babel-preset-expo@58.0.17
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51626](https://github.com/expo/expo/pull/51626), [#51493](https://github.com/expo/expo/pull/51493))
+  - @expo/cli@58.1.10
+  - expo-modules-core@58.0.20
+  - babel-preset-expo@58.0.16
+
+## 58.0.11
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Upgrade `react-native-svg` to 15.16.0. ([#51615](https://github.com/expo/expo/pull/51615) by [@jakex7](https://github.com/jakex7))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51613](https://github.com/expo/expo/pull/51613), [#51601](https://github.com/expo/expo/pull/51601), [#51456](https://github.com/expo/expo/pull/51456), [#51560](https://github.com/expo/expo/pull/51560), [#51455](https://github.com/expo/expo/pull/51455), [#51302](https://github.com/expo/expo/pull/51302), [#51243](https://github.com/expo/expo/pull/51243), [#51558](https://github.com/expo/expo/pull/51558), [#51602](https://github.com/expo/expo/pull/51602), [#51540](https://github.com/expo/expo/pull/51540))
+  - @expo/cli@58.1.9
+  - @expo/metro-config@58.0.14
+  - babel-preset-expo@58.0.15
+  - expo-modules-core@58.0.19
+  - expo-asset@58.0.16
+
+## 58.0.10
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Add missing `expo/build/winter` exports entry. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51477](https://github.com/expo/expo/pull/51477), [#51481](https://github.com/expo/expo/pull/51481), [#51548](https://github.com/expo/expo/pull/51548), [#51546](https://github.com/expo/expo/pull/51546), [#50406](https://github.com/expo/expo/pull/50406), [#51553](https://github.com/expo/expo/pull/51553), [#51549](https://github.com/expo/expo/pull/51549), [#51536](https://github.com/expo/expo/pull/51536), [#51526](https://github.com/expo/expo/pull/51526), [#51023](https://github.com/expo/expo/pull/51023), [#51347](https://github.com/expo/expo/pull/51347), [#51338](https://github.com/expo/expo/pull/51338), [#51517](https://github.com/expo/expo/pull/51517), [#51344](https://github.com/expo/expo/pull/51344))
+  - expo-modules-autolinking@58.0.13
+  - expo-modules-core@58.0.18
+  - @expo/cli@58.1.8
+  - @expo/metro-config@58.0.13
+  - babel-preset-expo@58.0.14
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - expo-constants@58.0.12
+  - @expo/local-build-cache-provider@58.0.6
+  - expo-asset@58.0.15
+
 ## 58.0.9
 
 ### Patch Changes

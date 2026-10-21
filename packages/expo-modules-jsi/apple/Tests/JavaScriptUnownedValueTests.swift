@@ -117,4 +117,62 @@ struct JavaScriptUnownedValueTests {
       _ = try buffer.unownedValue(at: 1).asArray(in: runtime)
     }
   }
+
+  @Test
+  func `recognizes functions, typed arrays and array buffers`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("(() => 1)").ref(),
+      try runtime.eval("new Uint8Array(4)").ref(),
+      try runtime.eval("new ArrayBuffer(8)").ref(),
+      try runtime.eval("({})").ref(),
+      7
+    )
+    #expect(buffer.unownedValue(at: 0).isFunction() == true)
+    #expect(buffer.unownedValue(at: 1).isTypedArray() == true)
+    #expect(buffer.unownedValue(at: 2).isArrayBuffer() == true)
+
+    #expect(buffer.unownedValue(at: 0).isTypedArray() == false)
+    #expect(buffer.unownedValue(at: 1).isArrayBuffer() == false)
+    #expect(buffer.unownedValue(at: 2).isFunction() == false)
+    #expect(buffer.unownedValue(at: 3).isFunction() == false)
+    #expect(buffer.unownedValue(at: 3).isTypedArray() == false)
+    #expect(buffer.unownedValue(at: 3).isArrayBuffer() == false)
+    #expect(buffer.unownedValue(at: 4).isFunction() == false)
+    #expect(buffer.unownedValue(at: 4).isTypedArray() == false)
+    #expect(buffer.unownedValue(at: 4).isArrayBuffer() == false)
+  }
+
+  @Test
+  func `getTypedArray and getArrayBuffer read the borrowed object`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("new Int16Array([1, 2, 3])").ref(),
+      try runtime.eval("new ArrayBuffer(8)").ref()
+    )
+    let typedArray = buffer.unownedValue(at: 0).getTypedArray(in: runtime)
+    #expect(typedArray.kind == .Int16Array)
+    #expect(typedArray.length == 3)
+    #expect(typedArray.byteLength == 6)
+
+    let arrayBuffer = buffer.unownedValue(at: 1).getArrayBuffer(in: runtime)
+    #expect(arrayBuffer.size == 8)
+  }
+
+  @Test
+  func `getBigInt reads the borrowed BigInt`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("-9007199254740993n").ref())
+    #expect(try buffer.unownedValue(at: 0).getBigInt(in: runtime).asInt64() == -9_007_199_254_740_993)
+  }
+
+  @Test
+  func `kind matches the kind of the owning value`() throws {
+    let sources = ["undefined", "null", "true", "1.5", "10n", "Symbol('s')", "'text'", "(() => 1)", "({})", "[1]"]
+    for source in sources {
+      let value = try runtime.eval(source)
+      let expected = value.kind
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value.ref())
+      #expect(buffer.unownedValue(at: 0).kind == expected, "kind of \(source)")
+    }
+  }
 }

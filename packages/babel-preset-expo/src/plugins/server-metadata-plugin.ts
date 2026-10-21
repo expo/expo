@@ -22,7 +22,10 @@ export function serverMetadataPlugin(api: ConfigAPI & typeof import('@babel/core
     name: 'expo-server-metadata',
     visitor: {
       ExportNamedDeclaration(path, state) {
-        if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+        if (
+          !routerAbsoluteRoot ||
+          !isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)
+        ) {
           return;
         }
 

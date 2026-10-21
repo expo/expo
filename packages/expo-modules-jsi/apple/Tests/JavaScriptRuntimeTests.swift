@@ -216,6 +216,60 @@ struct JavaScriptRuntimeTests {
     withExtendedLifetime(scheduler) {}
   }
 
+  @Test
+  func `schedule drops the work when the runtime is gone by the time it runs`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let didRun = InlineRunFlag()
+
+    await scheduler.run {
+      var runtime: JavaScriptRuntime? = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      // Queued behind this block, so it runs after the runtime below is gone.
+      runtime?.schedule {
+        didRun.value = true
+      }
+      runtime = nil
+    }
+    await scheduler.run {}
+
+    #expect(didRun.value == false)
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `execute throws RuntimeLostError when the host drops the task`() async throws {
+    let testRuntime = await ReleasableTestRuntime(dispatch: dropOnTestRuntime)
+    let runtime = try #require(testRuntime.runtime)
+
+    // Called off the runtime's JavaScript thread, so each call schedules a task that the host drops.
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { 1 }
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { () async in 1 }
+    }
+    // The blocking overloads aren't available in async contexts, so they run on a thread of their own.
+    let blockingResults = await withCheckedContinuation { (continuation: CheckedContinuation<[Bool], Never>) in
+      Thread.detachNewThread {
+        continuation.resume(returning: [
+          isRuntimeLostError { try runtime.execute { 1 } },
+          isRuntimeLostError { try runtime.execute { () async in 1 } },
+        ])
+      }
+    }
+    #expect(blockingResults == [true, true])
+    await testRuntime.tearDown()
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
@@ -829,6 +883,57 @@ struct JavaScriptRuntimeTests {
     #expect(result[3].getBool() == true)
   }
 
+  // MARK: - Void host functions
+
+  @Test
+  func `void host function runs its closure and returns undefined`() throws {
+    let fn = runtime.createFunction("record") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+      try this.asObject(in: runtime).setProperty("seen", value: arguments[0])
+    }
+    runtime.global().setProperty("record", value: fn.asValue())
+
+    let result = try runtime.eval("var target = {}; [record.call(target, 3), target.seen]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].getInt() == 3)
+  }
+
+  @Test
+  func `throwing void host function propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "void failure" }
+    }
+
+    let fn = runtime.createFunction("failing") {
+      (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) throws -> Void in
+      throw TestError()
+    }
+    runtime.global().setProperty("failing", value: fn.asValue())
+
+    let result = try runtime.eval("try { failing(); 'no error' } catch (e) { e.message }")
+
+    #expect(result.getString().contains("void failure"))
+  }
+
+  @Test
+  func `setProperty with a void closure installs a function returning undefined`() throws {
+    let object = runtime.createObject()
+    object.setProperty("bump") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) -> Void in
+      let target = try this.asObject(in: runtime)
+      target.setProperty("calls", value: JavaScriptValue(runtime, target.getProperty("calls").getInt() + 1))
+    }
+    object.setProperty("calls", value: JavaScriptValue(runtime, 0))
+    runtime.global().setProperty("counter", value: object.asValue())
+
+    let result = try runtime.eval("[counter.bump(), counter.bump(), counter.calls]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].isUndefined() == true)
+    #expect(result[2].getInt() == 2)
+  }
+
   // MARK: - Async functions
 
   @Test
@@ -1036,6 +1141,30 @@ struct JavaScriptRuntimeTests {
     }
 
     #expect(klass.asObject().getProperty("name").getString() == "MyClass")
+  }
+
+  @Test
+  func `classes from the shared factory are independent`() throws {
+    let first = try runtime.createClass(name: "First") { this, _ in
+      this.getObject().setProperty("kind", value: "first")
+      return this
+    }
+    let second = try runtime.createClass(name: "Second") { this, _ in
+      this.getObject().setProperty("kind", value: "second")
+      return this
+    }
+    runtime.global().setProperty("First", value: first.asValue())
+    runtime.global().setProperty("Second", value: second.asValue())
+
+    let result = try runtime.eval(
+      """
+      First !== Second && First.prototype !== Second.prototype
+        && First.name === 'First' && Second.name === 'Second'
+        && new First().kind === 'first' && new Second().kind === 'second'
+        && !(new First() instanceof Second)
+      """
+    )
+    #expect(result.getBool() == true)
   }
 
   @Test
@@ -1280,5 +1409,15 @@ private func onSyncOffThread<R: Sendable>(
         continuation.resume(throwing: error)
       }
     }
+  }
+}
+
+/// Whether `body` throws ``JavaScriptCallback/RuntimeLostError``.
+private func isRuntimeLostError(_ body: () throws -> Int) -> Bool {
+  do {
+    _ = try body()
+    return false
+  } catch {
+    return error is JavaScriptCallback.RuntimeLostError
   }
 }

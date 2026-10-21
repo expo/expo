@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix LocationTaskConsumer.didReceiveBroadcast crashing when the user revoked permissions and the task consumer tried getting the lastLocation. ([#51689](https://github.com/expo/expo/pull/51689) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.16
+
+### Patch Changes
+
+- [Android] Don't crash when the foreground service of a location task can't be started, for example when the location permission was revoked while the task stayed registered. The task now keeps running without the service instead of crashing the app on every launch. ([#51216](https://github.com/expo/expo/pull/51216) by [@krisoft20](https://github.com/krisoft20))
+- [Android] Add the TypeScript interface for the location foreground service: `ensureBackgroundSessionStarted`, `stopBackgroundSession` and `getBackgroundSessionStatus`.
+
+  Add `getNotificationPermissions`, `requestNotificationPermissions` and the `useNotificationPermissions` hook for the service's notification.
+
+  Add `LocationUpdatesHandle.status()`, and the `canDeliverUpdates` and `areUpdatesAllowed` fields on `PositionWatchStatus`.
+
+  ([#51320](https://github.com/expo/expo/pull/51320) by [@HubertBer](https://github.com/HubertBer))
+
+- Updated dependencies.
+  - @expo/image-utils@0.12.5
+
 ## 58.0.15
 
 ### Patch Changes

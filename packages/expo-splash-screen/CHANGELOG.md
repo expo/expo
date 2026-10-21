@@ -1,5 +1,26 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51986](https://github.com/expo/expo/pull/51986))
+  - @expo/config-plugins@58.0.10
+
+## 58.0.10
+
+### Patch Changes
+
+- [Android] Fix the main activity being kept in memory after it is destroyed. ([#51691](https://github.com/expo/expo/pull/51691) by [@zoontek](https://github.com/zoontek))
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config-plugins@58.0.9
+  - @expo/image-utils@0.12.5
+
 ## 58.0.8
 
 ### Patch Changes

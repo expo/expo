@@ -66,10 +66,11 @@ test('queues an incoming deep link using its extracted app path', async () => {
   expect(getPendingIntents()).toEqual([
     {
       type: 'NAVIGATE_TO_HREF',
+      actionId: expect.any(Number),
       payload: {
         href: '/home?from=link',
         originalHref: 'example://home?from=link',
-        options: { event: 'NAVIGATE' },
+        options: { event: 'NAVIGATE', __internal__popToNavigator: true },
       },
     },
   ]);

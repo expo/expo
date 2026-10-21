@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "58.1.7",
+  "version": "58.1.14",
   "description": "The Expo CLI",
   "keywords": [
     "cli",
@@ -53,7 +53,7 @@
     "test:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
-    "2g": "^1.0.0",
+    "2g": "^1.0.1",
     "@expo/code-signing-certificates": "^0.0.7",
     "@expo/config": "workspace:~",
     "@expo/config-plugins": "workspace:~",
@@ -64,7 +64,7 @@
     "@expo/json-file": "workspace:^",
     "@expo/log-box": "workspace:^",
     "@expo/log-box-utils": "workspace:^",
-    "@expo/metro": "~58.0.0-rc.0",
+    "@expo/metro": "~58.0.0",
     "@expo/metro-config": "workspace:*",
     "@expo/metro-file-map": "workspace:^",
     "@expo/osascript": "workspace:^",
@@ -78,9 +78,9 @@
     "@expo/spawn-async": "^1.8.0",
     "@expo/ws-tunnel": "^2.0.1",
     "@expo/xcpretty": "^4.4.6",
-    "@react-native/asset-utils": "0.88.0-rc.4",
-    "@react-native/dev-middleware": "0.88.0-rc.4",
-    "@react-native/js-polyfills": "0.88.0-rc.4",
+    "@react-native/asset-utils": "0.88.0",
+    "@react-native/dev-middleware": "0.88.0",
+    "@react-native/js-polyfills": "0.88.0",
     "accepts": "^1.3.8",
     "agent-cli-detector": "0.1.7",
     "arg": "^5.0.2",
@@ -151,7 +151,7 @@
     "devtools-protocol": "^0.0.1113120",
     "eslint": "^9.18.0",
     "expect": "^30.0.0",
-    "expo-atlas": "^0.4.1",
+    "expo-atlas": "^0.5.0",
     "expo-modules-autolinking": "workspace:*",
     "expo-router": "workspace:*",
     "find-process": "^1.4.7",

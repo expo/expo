@@ -323,7 +323,8 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 @OptimizedRecord
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
-  @Field val role: SemanticRoleType? = null
+  @Field val role: SemanticRoleType? = null,
+  @Field val enabled: Boolean = true
 ) : Record
 
 internal enum class MenuAnchorType(val value: String) : Enumerable {
@@ -831,6 +832,7 @@ object ModifierRegistry {
       }
       Modifier.toggleable(
         value = params.value,
+        enabled = params.enabled,
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )

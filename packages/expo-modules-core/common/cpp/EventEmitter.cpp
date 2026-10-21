@@ -41,10 +41,11 @@ size_t Listeners::listenersCount(const std::string& eventName) noexcept {
 }
 
 void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept {
-  if (!listenersMap.contains(eventName)) {
+  auto entry = listenersMap.find(eventName);
+  if (entry == listenersMap.end()) {
     return;
   }
-  ListenersList &listenersList = listenersMap[eventName];
+  ListenersList &listenersList = entry->second;
   size_t listSize = listenersList.size();
 
   if (listSize == 0) {
@@ -102,8 +103,11 @@ NativeState::~NativeState() {
 }
 
 NativeState::Shared NativeState::get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing) {
-  if (object.hasNativeState<NativeState>(runtime)) {
-    return object.getNativeState<NativeState>(runtime);
+  // The untyped `hasNativeState` is a single runtime call. The state is then fetched once, and its type is checked.
+  if (object.hasNativeState(runtime)) {
+    if (NativeState::Shared state = std::dynamic_pointer_cast<NativeState>(object.getNativeState(runtime))) {
+      return state;
+    }
   }
   if (createIfMissing) {
     NativeState::Shared state = std::make_shared<NativeState>();

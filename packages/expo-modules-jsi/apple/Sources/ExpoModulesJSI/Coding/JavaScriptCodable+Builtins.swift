@@ -4,7 +4,8 @@
 //
 // `Void` is intentionally not here: it is the empty tuple `()`, which cannot be extended to conform
 // to a protocol (the same reason it is not `AnyArgument`). A `() -> Void` function's `undefined`
-// return is emitted directly by the macro, which knows the return type statically.
+// return is emitted directly by the macro, which knows the return type statically. Where a type is
+// needed instead, `JavaScriptUndefined` stands for `undefined`.
 
 // MARK: - JavaScriptValue (identity)
 

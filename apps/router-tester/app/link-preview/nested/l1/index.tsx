@@ -1,10 +1,12 @@
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Links } from '@/components/link-preview/links';
 
 export default function L1Index() {
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={{
         flex: 1,
         gap: 24,
@@ -14,6 +16,6 @@ export default function L1Index() {
       }}>
       <Text style={{ color: '#000', fontSize: 24 }}>This is L1</Text>
       <Links />
-    </View>
+    </SafeAreaView>
   );
 }

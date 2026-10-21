@@ -55,7 +55,7 @@ The limit applies to the plan of the account that owns the project. When a time 
 
 | Command                         | What it shows                                                                |
 | ------------------------------- | ---------------------------------------------------------------------------- |
-| `eas workflow:insights`         | Run counts, success rate, and per-workflow trends                            |
+| `eas workflow:insights`         | Run counts, success rate, run durations, and per-workflow trends             |
 | `eas workflow:insights:maestro` | Pass and flake rates for your Maestro flows, or the history of a single flow |
 
 Both commands accept these flags:
@@ -100,11 +100,11 @@ Command flags:
 
 The output has three parts:
 
-- **Overview**: Total runs, success rate, active workflows, and failed runs, each with the change from the previous period.
+- **Overview**: Total runs, success rate, active workflows, failed runs, and the average and P75 (75th percentile) run duration. Each metric shows the change from the previous period. A run's duration counts from creation to finish, so it includes time spent waiting for a runner or an approval. The durations leave out canceled runs and show `n/a` when no other run finished in the period.
 - **Runs over time**: Total, successful, failed, and canceled runs per period. Periods are whole UTC intervals, and their size follows the length of the time range. The table lists only the periods that had runs and says so in its heading when it left some out. The table does not appear when nothing ran in the range.
-- **Workflows**: The workflows with the most runs in the time range, with their run counts, success rate, and last run. The **Workflow** column shows the file name, so you can pass a row straight to `--workflow`.
+- **Workflows**: The workflows with the most runs in the time range, with their run counts, success rate, average and P75 duration, and last run. The **Workflow** column shows the file name, so you can pass a row straight to `--workflow`.
 
-With `--json`, these parts are the `overview`, `runsOverTime`, and `workflows` keys, alongside `project`, `timespan`, and `filters` when a filter is set. Each overview metric is an object with `current` and `previous` values. `runsOverTime` is an object with `granularity` and a `buckets` array that keeps every period, including the empty ones the table leaves out. Each entry in `workflows` carries `fileName` next to the `name` from the workflow file, and `hasMoreWorkflows` tells you whether `--limit` cut the table short.
+With `--json`, these parts are the `overview`, `runsOverTime`, and `workflows` keys, alongside `project`, `timespan`, and `filters` when a filter is set. Each overview metric is an object with `current` and `previous` values. The durations are `avgDurationMs` and `p75DurationMs`, in milliseconds, both in `overview` and on each entry in `workflows`. A duration that the table shows as `n/a` is null in JSON, and the output leaves out null keys. Read the durations with a fallback, such as `jq '.overview.p75DurationMs.current // "n/a"'`. `runsOverTime` is an object with `granularity` and a `buckets` array that keeps every period, including the empty ones the table leaves out. Each entry in `workflows` carries `fileName` next to the `name` from the workflow file, and `hasMoreWorkflows` tells you whether `--limit` cut the table short.
 
 ## `eas workflow:insights:maestro`
 
@@ -121,6 +121,9 @@ Shows the same overview and flows table as the Maestro tab. Use it to find the f
     '# Only failed runs of flows tagged smoke',
     '$ eas workflow:insights:maestro --status FAILED --tag smoke',
     '',
+    '# Only flows that ran on Android',
+    '$ eas workflow:insights:maestro --platform android',
+    '',
     '# The history of one flow, by its path in the repository',
     '$ eas workflow:insights:maestro --flow .maestro/login.yml --days 30',
   ]}
@@ -128,6 +131,7 @@ Shows the same overview and flows table as the Maestro tab. Use it to find the f
 
 Command flags:
 
+- `--platform <platform>`: Only include flow runs on this platform. One of `android` or `ios`. Repeat the flag for both. Runs without a recorded platform show as **Unknown** in the output. That covers runs from before platform tracking began and flows run from a custom job. This flag leaves them out. Also applies to `--flow`.
 - `--status <status>`: Only include flow runs with this status. One of `PASSED`, `FLAKY`, or `FAILED`, where `PASSED` means passed on the first attempt. Repeat the flag for several statuses.
 - `--tag <tag>`: Only include flow runs with this tag. Repeat the flag for several tags.
 - `--search <text>`: Only list flows whose path contains this text. It narrows the flows table alone, so the overview still covers every flow the other filters match.
@@ -135,7 +139,9 @@ Command flags:
 - `--sort-direction <direction>`: `desc` (default) or `asc`.
 - `--flow <path>`: Show one flow's history instead of the overview. Takes the exact path from the **Flow** column, and cannot be combined with `--status`, `--tag`, `--search`, `--sort`, or `--sort-direction`.
 
-The overview shows Maestro runs, pass rate, flaky flows, and average duration, each with the change from the previous period. A flaky run counts as a pass, so a flow can show a high pass rate together with a non-zero flake rate. Below the overview, runs over time uses the same buckets as `eas workflow:insights`. The flows table lists each flow with its runs, pass rate, fails, and flake rate. The table also shows P90 (90th percentile) duration, last run, and the status of that last run. With `--json`, these are the `totals`, `runsOverTime`, and `flows` keys. `totalFlows` and `hasMoreFlows` tell you how many flows matched and whether `--limit` cut the table short.
+The overview shows Maestro runs, pass rate, flaky flows, and average duration, each with the change from the previous period. A flaky run counts as a pass, so a flow can show a high pass rate together with a non-zero flake rate. A **By platform** section follows, with the runs and distinct flows per platform (Android, iOS, or Unknown), also compared with the previous period. Below the overview, runs over time uses the same buckets as `eas workflow:insights`. The flows table lists each flow with its runs, pass rate, fails, and flake rate. The table also shows P90 (90th percentile) duration, last run, and the status of that last run.
+
+With `--json`, these are the `totals`, `runsOverTime`, and `flows` keys. The platform breakdown is the `totals.platforms` array. Each entry has `platform` (`ANDROID` or `IOS`, absent for Unknown), `totalRuns`, and `distinctFlows`. `totalFlows` and `hasMoreFlows` tell you how many flows matched and whether `--limit` cut the table short.
 
 With `--flow`, the output starts with that flow's runs, pass rate, flaky runs, and P90 duration. It then lists the flow's runs over time, its five most common error patterns, and its most recent runs. `--limit` applies to the recent runs. With `--json`, look for the `totals`, `errorPatterns`, and `recentRuns` keys, plus `totalRecentRuns` and `hasMoreRecentRuns`.
 

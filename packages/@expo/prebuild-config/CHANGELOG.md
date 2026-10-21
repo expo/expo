@@ -1,5 +1,30 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50388](https://github.com/expo/expo/pull/50388), [#51986](https://github.com/expo/expo/pull/51986))
+  - expo-modules-autolinking@58.0.14
+  - @expo/config-plugins@58.0.10
+  - @expo/config@58.0.7
+
+## 58.0.14
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51477](https://github.com/expo/expo/pull/51477))
+  - expo-modules-autolinking@58.0.13
+  - @expo/config@58.0.6
+  - @expo/config-plugins@58.0.9
+  - @expo/image-utils@0.12.5
+
 ## 58.0.12
 
 ### Patch Changes

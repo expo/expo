@@ -1,9 +1,11 @@
 import ExpoModulesCore
+import ExpoModulesWorklets
 
 private let hingeChangeEvent = "hingeChange"
 
 public class ExpoHingeModule: Module {
   private let observer = HingeObserver()
+  private let workletListeners = HingeWorkletListeners()
   private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
@@ -19,12 +21,27 @@ public class ExpoHingeModule: Module {
       return observer.hinge?.dictionary
     }
 
+    Function("addWorkletListener") { (worklet: Worklet) -> Int in
+      let id = workletListeners.add(worklet)
+      DispatchQueue.main.async { [workletListeners, observer, weak appContext] in
+        workletListeners.dispatch(id, with: observer.hinge, appContext: appContext)
+      }
+      return id
+    }
+
+    Function("removeWorkletListener") { (id: Int) in
+      workletListeners.remove(id)
+    }
+
     OnCreate {
       observer.onChange = { [weak self] hinge in
-        guard let self, self.hasListeners else {
+        guard let self else {
           return
         }
-        self.sendEvent(hingeChangeEvent, ["hinge": hinge?.dictionary ?? nil])
+        self.workletListeners.dispatch(hinge, appContext: self.appContext)
+        if self.hasListeners {
+          self.sendEvent(hingeChangeEvent, ["hinge": hinge?.dictionary ?? nil])
+        }
       }
       Task { @MainActor in
         observer.attach()
@@ -39,6 +56,7 @@ public class ExpoHingeModule: Module {
     }
 
     OnDestroy {
+      workletListeners.removeAll()
       Task { @MainActor in
         observer.detach()
       }

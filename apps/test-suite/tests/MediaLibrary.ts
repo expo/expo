@@ -8,6 +8,7 @@ import {
   AssetField,
   AlbumType,
   AssetUriVersion,
+  MediaSubtype,
   addListener,
   removeAllListeners,
 } from 'expo-media-library';
@@ -21,6 +22,7 @@ const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
 const rotatedJpgPath = require('../assets/rotated_image.jpg');
+const screenshotPngPath = require('../assets/screenshot.png');
 
 export async function test(t: any) {
   let localUris: string[];
@@ -30,6 +32,7 @@ export async function test(t: any) {
   let mp4FileLocalUri: string;
   let exifJpgFileLocalUri: string;
   let rotatedImageLocalUri: string;
+  let screenshotPngLocalUri: string;
 
   t.beforeAll(async () => {
     const permissionResponse = await requestPermissionsAsync();
@@ -50,6 +53,7 @@ export async function test(t: any) {
     mp4FileLocalUri = await loadAssetLocalUri(mp4Path, 'MP4');
     exifJpgFileLocalUri = await loadAssetLocalUri(exifJpgPath, 'EXIF JPG');
     rotatedImageLocalUri = await loadAssetLocalUri(rotatedJpgPath, 'Rotated Image');
+    screenshotPngLocalUri = await loadAssetLocalUri(screenshotPngPath, 'Screenshot PNG');
     localUris = [pngFileLocalUri, jpgFileLocalUri, mp4FileLocalUri];
   });
 
@@ -606,7 +610,20 @@ export async function test(t: any) {
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
       t.expect(info.isFavorite).toBe(await asset.getFavorite());
+      if (Platform.OS === 'ios') {
+        t.expect(info.mediaSubtypes).toEqual(await asset.getMediaSubtypes());
+      } else {
+        t.expect(info.mediaSubtypes).toBeUndefined();
+      }
     });
+
+    if (Platform.OS === 'ios') {
+      t.it('returns the screenshot subtype in asset info for a screenshot', async () => {
+        const asset = await createImageAsset(screenshotPngLocalUri);
+        const info = await asset.getInfo();
+        t.expect(info.mediaSubtypes).toEqual([MediaSubtype.SCREENSHOT]);
+      });
+    }
 
     t.it('returns correctly oriented shape for rotated image', async () => {
       const rotatedAsset = await createImageAsset(rotatedImageLocalUri);
@@ -791,7 +808,39 @@ export async function test(t: any) {
       }
     });
 
+    if (Platform.OS === 'ios') {
+      t.it('media subtype filter works correctly', async () => {
+        // given
+        const albumName = createAlbumName('media subtype filter');
+        const screenshotAsset = await Asset.create(screenshotPngLocalUri);
+        const plainAsset = await Asset.create(pngFileLocalUri);
+        assetsContainer.push(screenshotAsset, plainAsset);
+        const album = await Album.create(albumName, [screenshotAsset, plainAsset]);
+        albumsContainer.push(album);
+
+        // when
+        const screenshots = await new Query()
+          .album(album)
+          .contains(AssetField.MEDIA_SUBTYPES, MediaSubtype.SCREENSHOT)
+          .exe();
+        const livePhotos = await new Query()
+          .album(album)
+          .contains(AssetField.MEDIA_SUBTYPES, MediaSubtype.LIVE_PHOTO)
+          .exe();
+
+        // then
+        t.expect(screenshots.map((a) => a.id)).toEqual([screenshotAsset.id]);
+        t.expect(livePhotos).toEqual([]);
+      });
+    }
+
     if (Platform.OS !== 'ios') {
+      t.it('media subtype filter throws', () => {
+        t.expect(() =>
+          new Query().contains(AssetField.MEDIA_SUBTYPES, MediaSubtype.SCREENSHOT)
+        ).toThrow();
+      });
+
       t.it('mediatype audio works correctly', async () => {
         // given
         const asset = await Asset.create(mp3FileLocalUri);
@@ -1006,7 +1055,26 @@ export async function test(t: any) {
       t.expect(result.modificationTime).toBeGreaterThan(0);
       t.expect(result.width).toBeGreaterThan(0);
       t.expect(result.isFavorite).toBe(false);
+      if (Platform.OS === 'ios') {
+        t.expect(result.mediaSubtypes).toEqual([]);
+      } else {
+        t.expect(result.mediaSubtypes).toBeUndefined();
+      }
     });
+
+    if (Platform.OS === 'ios') {
+      t.it('exeForMetadata returns the screenshot subtype for a screenshot', async () => {
+        const asset = await Asset.create(screenshotPngLocalUri);
+        assetsContainer.push(asset);
+        const albumName = createAlbumName('exeForMetadata returns the screenshot subtype');
+        const album = await Album.create(albumName, [asset]);
+        albumsContainer.push(album);
+
+        const [result] = await new Query().album(album).exeForMetadata();
+
+        t.expect(result.mediaSubtypes).toEqual([MediaSubtype.SCREENSHOT]);
+      });
+    }
 
     t.it('exeForMetadata works correctly for videos', async () => {
       // given

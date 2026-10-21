@@ -39,7 +39,7 @@ import {
 
 If you set your own padding on the view, it will be added to the padding from the safe area.
 
-> **info** If you are targeting web, you must set up `SafeAreaProvider` as described in the [Context](#context) section.
+> **info** On web, see the [Context](#context) section for Expo Router behavior and provider setup.
 
 ```jsx
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -144,7 +144,11 @@ Represent the hook result.
 
 ### Context
 
-To use safe area context, you need to add `SafeAreaProvider` in your app root component.
+Expo Router sets up safe area context automatically. On web, `useSafeAreaInsets()` and `useSafeAreaFrame()` return zero values under Expo Router's provider. `SafeAreaView` does not add safe-area spacing. This applies to all web rendering modes. Android and iOS behavior is unchanged.
+
+Use [CSS for web safe-area spacing](/develop/user-interface/safe-areas/#usage-with-web).
+
+Without Expo Router, add `SafeAreaProvider` in your app root component when using the library's components or hooks. This provider supports web measurements, but CSS remains the recommended approach for web spacing.
 
 > You may need to add it in other places too, including at the root of any modals any routes when using `react-native-screen`.
 
@@ -174,7 +178,7 @@ function Component() {
 
 If you can, use `SafeAreaView`. It's implemented natively so when rotating the device, there is no delay from the asynchronous bridge.
 
-To speed up the initial render, you can import `initialWindowMetrics` from this package and set as the `initialMetrics` prop on the provider as described in Web SSR. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
+To speed up the initial render, you can import `initialWindowMetrics` from this package and set it as the `initialMetrics` prop on the provider as shown below. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
 
 ```jsx
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
@@ -186,26 +190,13 @@ function App() {
 
 ### Web SSR
 
-If you are doing server side rendering on the web, you can use `initialSafeAreaInsets` to inject values based on the device the user has, or simply pass zero. Otherwise, insets measurement will break rendering your page content since it is async.
+For server-side rendering (SSR), follow the [web stylesheet setup and hydration guidance](/develop/user-interface/safe-areas/#usage-with-web).
 
-### Migrating from CSS
+### Platform-specific safe-area spacing
 
-#### Before
+#### Android and iOS
 
-In a web-only app, you would use CSS environment variables to get the size of the screen's safe area insets.
-
-```css styles.css
-div {
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-right: env(safe-area-inset-right);
-}
-```
-
-#### After
-
-Universally, the hook `useSafeAreaInsets()` can provide access to this information.
+Use `SafeAreaView` or the `useSafeAreaInsets()` hook for native safe-area spacing. The hook provides inset values you can apply to a view:
 
 ```jsx App.js
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -224,3 +215,7 @@ function App() {
   );
 }
 ```
+
+#### Web
+
+Use CSS environment variables for web safe-area spacing, including in apps that also target Android and iOS. See the [CSS example](/develop/user-interface/safe-areas/#usage-with-web).

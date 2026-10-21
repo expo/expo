@@ -54,6 +54,7 @@ function getBaseUrl() {
 }
 
 const polyfillSymbol = Symbol.for('expo.polyfillFetchWithWindowLocation');
+const builtinSymbol = Symbol.for('expo.builtin');
 
 export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]?: boolean }) {
   if (fetch[polyfillSymbol]) {
@@ -78,6 +79,13 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
   };
 
   _fetch[polyfillSymbol] = true;
+  if ((fetch as any)[builtinSymbol] === true) {
+    Object.defineProperty(_fetch, builtinSymbol, {
+      value: true,
+      enumerable: false,
+      configurable: false,
+    });
+  }
 
   return _fetch;
 }

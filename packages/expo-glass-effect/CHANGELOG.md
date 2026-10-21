@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Type the `ref` prop of `GlassView` and `GlassContainer` as the `View` instance type. With the strict React Native types, a ref from `useRef<ComponentRef<typeof View>>()` now type-checks. ([#51639](https://github.com/expo/expo/pull/51639) by [@juliusmarminge](https://github.com/juliusmarminge))
+
 ## 58.0.3
 
 ### Patch Changes

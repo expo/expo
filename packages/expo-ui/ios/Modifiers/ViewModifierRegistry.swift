@@ -1973,6 +1973,10 @@ extension ViewModifierRegistry {
       return try TintModifier(from: params, appContext: appContext)
     }
 
+    register("selectedSegmentTintColor") { params, appContext, _ in
+      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
+    }
+
     register("hidden") { params, appContext, _ in
       return try HiddenModifier(from: params, appContext: appContext)
     }

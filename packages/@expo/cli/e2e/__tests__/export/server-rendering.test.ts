@@ -290,14 +290,21 @@ describe('exports server', () => {
         return true;
       });
       expect(links.length).toBe(
-        // Global CSS, CSS Module
-        4
+        // Safe-area CSS, global CSS, and CSS Module (preload + stylesheet)
+        6
       );
 
       const linkStrings = links.map((l) => l.toString());
 
       expect(linkStrings).toEqual(
         expect.arrayContaining([
+          // Safe-area CSS (preload + stylesheet)
+          expect.stringMatching(
+            /<link rel="preload" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+          ),
+          expect.stringMatching(
+            /<link rel="stylesheet" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css">/
+          ),
           // Global CSS (preload + stylesheet)
           expect.stringMatching(
             /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/

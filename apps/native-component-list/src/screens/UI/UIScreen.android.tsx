@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'CompositionLocalProvider component',
+    route: 'ui/composition-local-provider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CompositionLocalProviderScreen'));
+    },
+  },
+  {
     name: 'Card component',
     route: 'ui/card',
     options: {},
@@ -440,6 +448,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
+  {
+    name: 'TopAppBar component',
+    route: 'ui/top-app-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TopAppBarScreen'));
     },
   },
   {

@@ -1,6 +1,6 @@
 {
   "name": "@expo/internal-scripts",
-  "version": "58.0.1",
+  "version": "58.0.4",
   "private": true,
   "description": "An internal package for internal expo/expo monorepo scripts",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/internal-scripts#readme",
@@ -62,7 +62,7 @@
   },
   "dependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@react-native/jest-preset": "0.88.0-rc.4",
+    "@react-native/jest-preset": "0.88.0",
     "@swc-contrib/mut-cjs-exports": "^14.13.0",
     "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",

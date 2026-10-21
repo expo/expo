@@ -4,7 +4,9 @@ import { Text } from 'react-native';
 
 import { router } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import {
   unstable_enablePerformanceIntegration,
   unstable_performance,
@@ -15,7 +17,9 @@ import type {
   RouterPageFocusedMark,
   RouterPerformanceMark,
 } from '../performance';
+import { CommonActions } from '../react-navigation/routers';
 import { renderRouter } from '../testing-library';
+import { lazyModule } from './lazyModule';
 
 describe('router performance marks', () => {
   const cleanups: (() => void)[] = [];
@@ -46,6 +50,20 @@ describe('router performance marks', () => {
       if (entry.name === 'expo-router:page-focused') {
         entries.push(entry);
         onEntry?.(entry);
+      }
+    });
+    return entries;
+  }
+
+  function observePreloadAndFocus(pathname: string) {
+    const entries: { name: string; screenId: string }[] = [];
+    observe((entry) => {
+      if (
+        (entry.name === 'expo-router:page-preloaded' ||
+          entry.name === 'expo-router:page-focused') &&
+        entry.detail.pathname === pathname
+      ) {
+        entries.push({ name: entry.name, screenId: entry.detail.screenId });
       }
     });
     return entries;
@@ -95,6 +113,72 @@ describe('router performance marks', () => {
     expect(order).toEqual(['home-committed', 'pageFocused']);
   });
 
+  it('does not mark a first push into a nested stack as a preload', async () => {
+    const entries = observePreloadAndFocus('/examples/nested-stack/heavy');
+
+    await renderRouter(
+      {
+        _layout: () => <Stack />,
+        'examples/nested-stack/_layout': () => <Stack />,
+        'examples/nested-stack/index': () => <Text>Nested stack</Text>,
+        'examples/nested-stack/heavy': () => <Text testID="heavy-content">Heavy</Text>,
+      },
+      { initialUrl: '/examples/nested-stack' }
+    );
+
+    await act(() => router.push('/examples/nested-stack/heavy'));
+
+    expect(screen.getByTestId('heavy-content')).toBeVisible();
+    expect(entries.map((entry) => entry.name)).toEqual(['expo-router:page-focused']);
+  });
+
+  it('marks a prefetch into an unmounted nested stack as a preload, then focuses it on push', async () => {
+    const entries = observePreloadAndFocus('/nested/heavy');
+
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      'nested/_layout': () => <Stack />,
+      'nested/heavy': () => <Text testID="heavy-content">Heavy</Text>,
+    });
+
+    await act(() => router.prefetch('/nested/heavy'));
+    expect(screen).toHavePathname('/');
+    expect(entries.map((entry) => entry.name)).toEqual(['expo-router:page-preloaded']);
+
+    await act(() => router.push('/nested/heavy'));
+    expect(screen.getByTestId('heavy-content')).toBeVisible();
+    expect(entries.map((entry) => entry.name)).toEqual([
+      'expo-router:page-preloaded',
+      'expo-router:page-focused',
+    ]);
+    expect(entries.at(1)?.screenId).toBe(entries.at(0)?.screenId);
+  });
+
+  it('marks an eagerly mounted inactive tab as a preload, then focuses it on activation', async () => {
+    const entries = observePreloadAndFocus('/other');
+
+    await renderRouter({
+      _layout: () => (
+        <Tabs screenOptions={{ lazy: false }}>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="other" />
+        </Tabs>
+      ),
+      index: () => <Text testID="home-content">Home</Text>,
+      other: () => <Text testID="other-content">Other</Text>,
+    });
+
+    expect(entries.map((entry) => entry.name)).toEqual(['expo-router:page-preloaded']);
+
+    await act(() => router.navigate('/other'));
+    expect(screen.getByTestId('other-content')).toBeVisible();
+    expect(entries.map((entry) => entry.name)).toEqual([
+      'expo-router:page-preloaded',
+      'expo-router:page-focused',
+    ]);
+  });
+
   it('does not mark page-focused again on plain re-renders of the focused screen', async () => {
     const entries = observePageFocused();
 
@@ -115,6 +199,10 @@ describe('router performance marks', () => {
 
   it('marks page-focused again when the screen is re-focused after a push/pop', async () => {
     const entries = observePageFocused();
+    const preloaded: string[] = [];
+    observe((entry) => {
+      if (entry.name === 'expo-router:page-preloaded') preloaded.push(entry.detail.pathname);
+    });
 
     await renderRouter({
       _layout: () => <Stack />,
@@ -133,6 +221,8 @@ describe('router performance marks', () => {
     await act(() => router.back());
     expect(screen.getByTestId('home-content')).toBeVisible();
     expect(entries.map((entry) => entry.detail.pathname)).toEqual(['/']);
+    // Neither navigation is a preload.
+    expect(preloaded).toEqual([]);
   });
 
   it('marks action-dispatched with the action type before the target page is focused', async () => {
@@ -152,9 +242,100 @@ describe('router performance marks', () => {
     const [focus] = unstable_performance.getEntriesByName(
       'expo-router:page-focused'
     ) as RouterPageFocusedMark[];
-    expect(action?.detail).toEqual({ actionType: 'PUSH' });
+    expect(action?.detail).toEqual({ actionType: 'PUSH', actionId: expect.any(Number) });
     expect(focus?.detail.pathname).toBe('/details');
     expect(focus!.startTime).toBeGreaterThanOrEqual(action!.startTime);
+  });
+
+  function observeActionIds() {
+    const log: { name: string; actionId: number }[] = [];
+    observe((entry) => {
+      if (
+        entry.name === 'expo-router:action-enqueued' ||
+        entry.name === 'expo-router:action-dispatched'
+      ) {
+        log.push({ name: entry.name, actionId: entry.detail.actionId });
+      }
+    });
+    return log;
+  }
+
+  it('marks action-enqueued before the queued action is reduced, with the id of its action-dispatched mark', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => {
+      router.push('/details');
+      expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    });
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
+  });
+
+  it('marks action-enqueued for synchronous dispatches', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: () => <Text testID="details-content">Details</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('details')));
+
+    expect(screen.getByTestId('details-content')).toBeVisible();
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: expect.any(Number) },
+      { name: 'expo-router:action-dispatched', actionId: log[0]?.actionId },
+    ]);
+  });
+
+  it('marks only action-enqueued for an unhandled action', async () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+    });
+    const log = observeActionIds();
+
+    await act(() => router.back());
+
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'GO_BACK'"));
+    expect(log).toEqual([{ name: 'expo-router:action-enqueued', actionId: expect.any(Number) }]);
+    error.mockRestore();
+  });
+
+  it('keeps the action id of a navigation that waits for a layout to load', async () => {
+    const layout = lazyModule({ default: () => <Stack /> });
+    await renderRouter({
+      index: () => <Text testID="index" />,
+      other: () => <Text testID="other" />,
+      'profile/_layout': layout.load,
+      'profile/[id]': () => <Text testID="profile-id" />,
+    });
+    await act(() => router.push('/other'));
+    const log = observeActionIds();
+
+    await act(() => router.push('/profile/1'));
+    await act(() => navigationRef.current!.dispatchSync({ type: 'GO_BACK' }));
+    await act(async () => layout.resolve());
+
+    expect(screen.getByTestId('profile-id')).toBeVisible();
+    const [push, back] = log.map(({ actionId }) => actionId);
+    expect(log).toEqual([
+      { name: 'expo-router:action-enqueued', actionId: push },
+      { name: 'expo-router:action-enqueued', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: back },
+      { name: 'expo-router:action-dispatched', actionId: push },
+    ]);
+    expect(push).not.toBe(back);
   });
 
   it('marks action-dispatched even when an internal listener throws', async () => {

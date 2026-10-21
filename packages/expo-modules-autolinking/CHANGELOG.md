@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`. ([#50388](https://github.com/expo/expo/pull/50388) by [@vitalyster](https://github.com/vitalyster))
+
+## 58.0.13
+
+### Patch Changes
+
+- Fix autolinking choosing a different copy of a duplicated native module between runs when it is reachable at more than one dependency depth, which also made the `@expo/fingerprint` hash unstable. A resolved module no longer lists its own path among its duplicates. ([#51477](https://github.com/expo/expo/pull/51477) by [@jszumski](https://github.com/jszumski))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+
 ## 58.0.12
 
 ### Patch Changes

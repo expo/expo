@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Fix `useImage` releasing the previous image while it was still rendered. In development builds, this made React throw `ERR_NATIVE_SHARED_OBJECT_NOT_FOUND` and stop rendering after the source changed. ([#51742](https://github.com/expo/expo/pull/51742) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.15
+
+### Patch Changes
+
+- Use `AssetRegistry` from public API instead of Metro entry point. ([#51302](https://github.com/expo/expo/pull/51302) by [@byCedric](https://github.com/byCedric))
+
 ## 58.0.14
 
 ### Patch Changes

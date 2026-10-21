@@ -1,5 +1,55 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Write the generated `jsi` module map under `EXPO_CUSTOM_BUILD_ROOT` when it is set, so a custom build writes nothing into the package directory. Without it, the module map stays at `apple/.generated/module.modulemap`. ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Publish the `ExpoModulesJSI` ABI descriptor with the package, at `prebuilds/abi/ExpoModulesJSI/arm64-apple-ios-simulator.abi.json`. ([#51835](https://github.com/expo/expo/pull/51835) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
+
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
+
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- [iOS] Add `JavaScriptObject.setProperty(_:value:)` and `JavaScriptObject.withUnownedProperty(_:_:)` overloads that take a `JavaScriptPropNameID`. `JavaScriptPropNameID.init(_:string:)` now borrows the runtime, so code that only borrows a runtime can create property names without copying it. ([#51905](https://github.com/expo/expo/pull/51905) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of converting `Date` and `Data` values between JavaScript and native code, and of `JavaScriptRuntime.createObject(prototype:)`. The global functions that these conversions call are now looked up once per runtime and cached. ([#51728](https://github.com/expo/expo/pull/51728) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] The `dealloc` closure of `JavaScriptRuntime.createHostObject` is now `@Sendable` instead of `@JavaScriptActor`, because the engine can call it on any thread. `JavaScriptActor.assumeIsolated` no longer checks the thread name in debug builds. The check failed on reload, because Hermes runs the runtime's teardown on its finalizer thread. ([#51739](https://github.com/expo/expo/pull/51739) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove all `weak` references to `JavaScriptRuntime`, which makes every retain and release of the runtime faster. `JavaScriptRuntime.schedule`, `runOrSchedule` and `execute` now drop the work when the runtime is gone by the time it runs, and `execute` throws `RuntimeLostError` then. ([#51577](https://github.com/expo/expo/pull/51577) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix native memory growth under Hermes V1 for each class created with `JavaScriptRuntime.createClass`, of about 0.57 MiB per class on React Native 0.86 and 0.87 and about 93 KiB on 0.88. `createClass` now evaluates one class factory per runtime instead of a new JavaScript source for each class, because Hermes keeps memory for every evaluated source until the runtime is destroyed. ([#51583](https://github.com/expo/expo/pull/51583) by [@amillez](https://github.com/amillez))
+
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Publish a headers XCFramework for `ExpoModulesJSI` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesJSIHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Make `JavaScriptValue.getBigInt()` about 7× faster by reading the runtime through its handle, and make the `JavaScriptBigInt` initializers take the runtime as `borrowing`, so callers no longer retain it: `init(_:fromInt64:)` and `init(_:fromUint64:)` are about 3× faster. `init(_:string:)` caches the global `BigInt` function and passes the string without an arguments buffer, which makes it up to 2.3× faster; it is now isolated to `JavaScriptActor`. ([#51562](https://github.com/expo/expo/pull/51562) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make calling a `JavaScriptCallback` with arguments faster. The arguments are encoded straight into the arguments buffer without a reference and a copy each, and the function is no longer copied on every call. ([#51565](https://github.com/expo/expo/pull/51565) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make creating and resolving a `JavaScriptPromise` faster. Resolving no longer allocates an arguments buffer, the initializers borrow the runtime instead of retaining it, and the promise keeps its values without an extra allocation each. ([#51564](https://github.com/expo/expo/pull/51564) by [@tsapeta](https://github.com/tsapeta))
+- Added `JavaScriptUndefined`, the native counterpart of JavaScript's `undefined` for `JavaScriptCodable` APIs. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Encode Swift arrays to JS arrays about 35% faster, and Swift sets to JS sets about 25% faster. ([#51496](https://github.com/expo/expo/pull/51496) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptUnownedValue` `@frozen`, so modules that decode `@JS` function arguments know its layout and no longer ask its type metadata for it. Host functions with arguments are faster, by about 8 to 12% with eight arguments. This changes the ABI of `ExpoModulesJSI`. ([#51499](https://github.com/expo/expo/pull/51499) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `createFunction` and `setProperty(_:function:)` overloads taking a `VoidFunctionClosure`, for host functions that return nothing to JavaScript. They make such calls faster because they skip creating and writing the result value. ([#51498](https://github.com/expo/expo/pull/51498) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the `ExpoModulesJSI` xcframework slice staying built against another Xcode's SDK. The slice cache now includes the Xcode build, so switching between Xcode releases that share a Swift compiler (such as Xcode 27.0 and 27.1) rebuilds it, and the rebuild uses the app build's `DEVELOPER_DIR` and `TOOLCHAINS` instead of the Xcode selected with `xcode-select` and the default toolchain. ([#51371](https://github.com/expo/expo/pull/51371) by [@mwolson](https://github.com/mwolson))
+
 ## 58.0.12
 
 ### Patch Changes

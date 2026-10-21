@@ -74,6 +74,11 @@ struct JavaScriptDecodableKindsTests {
   }
 
   @Test
+  func `JavaScriptUndefined accepts only undefined`() throws {
+    try expectDecodableKinds(JavaScriptUndefined.self, accept: ["undefined"])
+  }
+
+  @Test
   func `floating-point types accept only numbers`() throws {
     try expectDecodableKinds(Double.self, accept: Self.numbers)
     try expectDecodableKinds(Float.self, accept: Self.numbers)

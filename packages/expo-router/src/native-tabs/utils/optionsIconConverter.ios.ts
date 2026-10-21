@@ -1,10 +1,13 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { PlatformIconIOS } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { IconRenderingMode, NativeTabOptions } from '../types';
 import type { AwaitedIcon } from './icon';
-import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
+import {
+  applyIconSrcOptions,
+  applySelectedColor,
+  type ScreensPropsIcon,
+} from './optionsIconConverter.shared';
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('sf' in props && props.sf) {
@@ -68,22 +71,16 @@ export function resolveIconRenderingMode(
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined,
   renderingMode?: IconRenderingMode
-): PlatformIconIOS | undefined {
+): Extract<ScreensPropsIcon, { platform: 'ios' }> | undefined {
   if (icon && 'sf' in icon && icon.sf) {
-    return {
-      type: 'sfSymbol',
-      name: icon.sf,
-    };
+    return { platform: 'ios', icon: { type: 'sfSymbol', name: icon.sf } };
   }
   // Asset catalog icons have to be resolved natively with `[UIImage imageNamed:]`.
   // Passing the name to the image loader as a `{ uri }` source happens to work for
   // image sets, but symbol sets can never be produced that way. Tinting is then
   // controlled by the asset's "Render As" setting in the asset catalog, not `renderingMode`.
   if (icon && 'xcasset' in icon && icon.xcasset) {
-    return {
-      type: 'xcasset',
-      name: icon.xcasset,
-    };
+    return { platform: 'ios', icon: { type: 'xcasset', name: icon.xcasset } };
   }
   const imageSource = getIconImageSource(icon);
   if (!imageSource) {
@@ -91,9 +88,9 @@ export function convertOptionsIconToScreensPropsIcon(
   }
   const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
   if (effectiveRenderingMode === 'original') {
-    return { type: 'imageSource', imageSource };
+    return { platform: 'ios', icon: { type: 'imageSource', imageSource } };
   }
-  return { type: 'templateSource', templateSource: imageSource };
+  return { platform: 'ios', icon: { type: 'templateSource', templateSource: imageSource } };
 }
 
 // Mirrors the precedence in `convertOptionsIconToScreensPropsIcon` — SF Symbols and asset

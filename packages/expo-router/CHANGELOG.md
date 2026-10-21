@@ -1,5 +1,67 @@
 # Changelog
 
+## 58.0.25
+
+### Patch Changes
+
+- Warn in development when a modal route is the first screen in a native stack and renders as a card. ([#51803](https://github.com/expo/expo/pull/51803) by [@Ubax](https://github.com/Ubax))
+- Pad `TabList` from `expo-router/ui` by the left and right safe area insets, so tab triggers stay clear of the iPhone Duo rail and landscape cutouts. ([#51813](https://github.com/expo/expo/pull/51813) by [@huntie](https://github.com/huntie))
+- Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
+- Lay out the JavaScript top tab bar inside the left and right safe area insets, so tabs stay clear of the iPhone Duo rail and landscape cutouts. Override the insets with the `safeAreaInsets` prop on `TopTabs`. ([#51814](https://github.com/expo/expo/pull/51814) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51868](https://github.com/expo/expo/pull/51868), [#51545](https://github.com/expo/expo/pull/51545))
+  - @expo/log-box@58.0.13
+  - @expo/metro-runtime@58.0.15
+
+## 58.0.24
+
+### Patch Changes
+
+- Export the `ExtendedRouter` and `RouterExtensionMembers` types. The public `extendRouter`, `extendRouterActions`, and `RouterExtension` APIs reference them, so custom routers can now type the routers and extension members they create. ([#51797](https://github.com/expo/expo/pull/51797) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [Web] Stop the "Bundling..." toast from logging the `useNativeDriver` warning in development. ([#51774](https://github.com/expo/expo/pull/51774) by [@miniware9](https://github.com/miniware9))
+
+## 58.0.23
+
+### Patch Changes
+
+- Fix a deep link to a screen inside an existing navigator, such as a tab, stacking a second copy of that navigator on top of a presented modal or sheet instead of returning to it. Inside nested stacks a deep link again returns to a screen that is already there, as it did before SDK 58. ([#51649](https://github.com/expo/expo/pull/51649) by [@expo-bot](https://github.com/expo-bot))
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
+
+## 58.0.22
+
+### Patch Changes
+
+- [iOS] Fix the zoom transition when a screen opened with `Link.AppleZoom` is closed with `router.back()`. ([#51676](https://github.com/expo/expo/pull/51676) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51639](https://github.com/expo/expo/pull/51639))
+  - expo-glass-effect@58.0.4
+
+## 58.0.20
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Disable automatic safe-area measurements on web to preserve streamed content during hydration. ([#51542](https://github.com/expo/expo/pull/51542) by [@hassankhan](https://github.com/hassankhan))
+- Replace ambiguous `null` and `undefined` return values with `RouterActionHandling` enum. ([#51448](https://github.com/expo/expo/pull/51448) by [@Ubax](https://github.com/Ubax))
+- Fix a crash when swiping the drawer on React Native 0.88. ([#51590](https://github.com/expo/expo/pull/51590) by [@Ubax](https://github.com/Ubax))
+- [iOS] Use native header appearance on iOS 26+ by default. Call `enableLegacyHeaderAppearance()` to restore the previous appearance. ([#51450](https://github.com/expo/expo/pull/51450) by [@Ubax](https://github.com/Ubax))
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.19
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.0. ([#51489](https://github.com/expo/expo/pull/51489) by [@Ubax](https://github.com/Ubax))
+- Add the `expo-router:action-enqueued` performance mark, recorded when a navigation action is queued. ([#51485](https://github.com/expo/expo/pull/51485) by [@Ubax](https://github.com/Ubax))
+- Fixed the first push to a screen being reported as `pagePreloaded`. ([#51446](https://github.com/expo/expo/pull/51446) by [@Ubax](https://github.com/Ubax))
+- [Internal] Return platform-tagged icons from the NativeTabs icon converter so tab icons type-check with `react-native-screens` 4.30.0. ([#51508](https://github.com/expo/expo/pull/51508) by [@Ubax](https://github.com/Ubax))
+- Replace the experimental `unstable_navigationEvents` API with `unstable_performance` and `unstable_PerformanceObserver`. ([#51068](https://github.com/expo/expo/pull/51068) by [@Ubax](https://github.com/Ubax))
+- Added a development warning when `navigation.isFocused()` is called during render. ([#51464](https://github.com/expo/expo/pull/51464) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.18
 
 ### Patch Changes

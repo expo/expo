@@ -12,6 +12,8 @@ Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
 - For web apps, remove [deprecated server flags](#remove-deprecated-server-flags), review the [async route defaults](#review-async-route-defaults), and move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html). Review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"` and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
+- If your web app uses `SafeAreaView` or safe-area hooks for spacing, [migrate to CSS safe-area insets](#use-css-for-web-safe-area-spacing).
+- For iOS apps that use `Stack`, review the [native header appearance on iOS 26 and later](#review-the-ios-header-appearance).
 - For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
@@ -19,6 +21,10 @@ Use the following checklist to find the sections that apply to your app:
 > **info** This guide covers the changes most likely to require application updates. See the [`expo-router` changelog](https://github.com/expo/expo/blob/main/packages/expo-router/CHANGELOG.md#5800--2026-09-10) for the complete list of SDK 58 changes.
 
 ## Common migrations
+
+### Use CSS for web safe-area spacing
+
+Replace web spacing based on `SafeAreaView` or `useSafeAreaInsets()` with CSS. Follow the [safe-area guide's web instructions](/develop/user-interface/safe-areas/#usage-with-web) for setup and SDK 58 behavior changes.
 
 ### Review server rendering behavior
 
@@ -388,6 +394,42 @@ To navigate somewhere other than the blocked destination, retain the `disablePre
 
 > **warning** Always update the boolean passed to `usePreventRemove` when calling `disablePrevention()`. If it remains `true`, the hook warns and does not re-enable prevention until the boolean changes.
 
+### Review the iOS header appearance
+
+In SDK 58, `Stack` headers on iOS 26 and later use the system bar appearance by default. The header is transparent with Liquid Glass, and screen content goes under the header. The default value of `headerTransparent` is `{ ios: true, android: false, web: false }`. On iOS, this default applies only when Liquid Glass is available and the screen does not set `headerStyle.backgroundColor` or `headerBackground`. Earlier iOS versions keep the opaque header. Apps that turn off Liquid Glass also keep the opaque header. Android headers are unchanged.
+
+If content is hidden under the header, add `contentInsetAdjustmentBehavior="automatic"` to the root `ScrollView`, `FlatList`, or `SectionList` of the screen:
+
+```tsx app/index.tsx
+import { ScrollView, Text } from 'react-native';
+
+export default function Home() {
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <Text>Home</Text>
+    </ScrollView>
+  );
+}
+```
+
+For a screen without a scroll view, set `headerTransparent: false` in its options. The header is then opaque, and the screen content starts below it. Do not use `SafeAreaView` from `react-native-safe-area-context` to move content below the header. It applies only the status bar inset. With a transparent header, content stays under the header. With an opaque header, `SafeAreaView` adds a second top inset.
+
+On iOS 26 and later, headers now use the system fonts instead of the theme fonts. To keep a custom font, set `fontFamily` in `headerTitleStyle`, `headerBackTitleStyle`, or `headerLargeTitleStyle`.
+
+To restore the previous header appearance on iOS 26 and later for all screens, call `enableLegacyHeaderAppearance()` at the top level of the root layout:
+
+```tsx app/_layout.tsx
+import { enableLegacyHeaderAppearance, Stack } from 'expo-router';
+
+enableLegacyHeaderAppearance();
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+`enableLegacyHeaderAppearance()` is deprecated. In a future release, the native iOS header appearance becomes the only behavior and this function will be removed.
+
 ## Advanced migrations
 
 ### Update `navigation.dispatch`
@@ -534,7 +576,23 @@ The base stack and tab routers handle `PUSH`. If an extension overrides `getStat
 +};`}
 />
 
-Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `null` when the router cannot handle an action.
+Set `affectedRouteKey` to the route selected or changed by that specific action, which is not always the focused route. Return `RouterActionHandling.Unhandled` when the router cannot handle an action. Returning `null` is deprecated.
+
+#### Check handled actions with `isActionHandled`
+
+Built-in routers and routers created with `extendRouter` or `extendRouterActions` now return `RouterActionHandling.Unhandled` instead of `null` when they do not handle an action. Replace `null` checks on a `getStateForAction` result with `isActionHandled`:
+
+<DiffBlock
+  raw={`diff --git a/custom-router.ts b/custom-router.ts
+--- a/custom-router.ts
++++ b/custom-router.ts
+@@ -1,4 +1,4 @@
+ const result = baseRouter.getStateForAction(state, action);
+-if (result === null) {
++if (!isActionHandled(result)) {
+   return result;
+ }`}
+/>
 
 #### Extend a built-in router
 
@@ -544,6 +602,7 @@ Set `affectedRouteKey` to the route selected or changed by that specific action,
 import {
   attachRouteState,
   extendRouter,
+  RouterActionHandling,
   StackRouter,
   type CommonNavigationAction,
   type StackActionType,
@@ -554,15 +613,11 @@ type CustomAction = {
   payload: { name: string; params?: object };
 };
 
-const CustomStackRouter = extendRouter(StackRouter, ({ baseRouter, nextKey }) => ({
-  getStateForAction(
-    state,
-    action: CommonNavigationAction | StackActionType | CustomAction,
-    config
-  ) {
+const CustomStackRouter = extendRouter(StackRouter, ({ nextKey }) => ({
+  getStateForAction(state, action: CommonNavigationAction | StackActionType | CustomAction) {
     if (action.type === 'CUSTOM-ACTION') {
       if (!state.routeNames.includes(action.payload.name)) {
-        return null;
+        return RouterActionHandling.Unhandled;
       }
 
       const route = attachRouteState(
@@ -586,12 +641,12 @@ const CustomStackRouter = extendRouter(StackRouter, ({ baseRouter, nextKey }) =>
       };
     }
 
-    return baseRouter.getStateForAction(state, action, config);
+    return RouterActionHandling.Delegate;
   },
 }));
 ```
 
-Use `extendRouterActions` when only `getStateForAction` needs customization. Return `undefined` from its reducer to delegate an action. When overriding `getStateForAction` with `extendRouter`, delegate unhandled actions to `baseRouter` as shown above.
+Use `extendRouterActions` when only `getStateForAction` needs customization. Its reducer returns the same values. Returning `null` or `undefined` instead of a `RouterActionHandling` value is deprecated and logs a warning in development.
 
 #### Make the router type optional when appropriate
 

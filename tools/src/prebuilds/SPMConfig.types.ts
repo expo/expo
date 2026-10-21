@@ -247,6 +247,14 @@ export interface SPMProduct {
   podName: string;
   /** When set, the product is built by an external script rather than the SPM generator. */
   customBuild?: CustomBuild;
+  /** When true, the prebuild also writes `<Product>Headers.xcframework`: a compile-only copy of
+   * the product (headers, module map, Swift interfaces) around a stub static library, for apps
+   * that compile against the product while React Native links and embeds the real framework. */
+  headersXCFramework?: boolean;
+  /** When true, `prepack` publishes the product's release `arm64-apple-ios-simulator.abi.json` at
+   * `prebuilds/abi/<Product>/`, so the Swift ABI check has a baseline for a product whose release
+   * binary is not in the npm package. */
+  publishAbiDescriptor?: boolean;
   /** When true, the product is never prebuilt as an xcframework — the prebuild flow
    * skips it entirely (it does not generate sources, build, or resolve its
    * externalDependencies). The product remains declared so autolinking

@@ -98,7 +98,8 @@ describe('Changesets release prerequisites', () => {
         'sdk-58'
       )
     );
-    await assert.doesNotReject(assertNoMajorChangesetsAsync(changesets, 'main'));
+    await assert.rejects(assertNoMajorChangesetsAsync(changesets, 'main'), /major\.md/);
+    await assert.doesNotReject(assertNoMajorChangesetsAsync(changesets, 'feature'));
   });
 
   it('runs the pinned CLI transparently for Changesets Action integration', async () => {
@@ -135,7 +136,11 @@ describe('Changesets release prerequisites', () => {
       '--tag',
       'sdk-57',
     ]);
-    assert.deepEqual(await getStablePublishArgsAsync('main', stable), ['publish', '--tag', 'next']);
+    assert.deepEqual(await getStablePublishArgsAsync('main', stable), [
+      'publish',
+      '--tag',
+      'latest',
+    ]);
     assert.deepEqual(await getStablePublishArgsAsync('main', prerelease), ['publish']);
     await assert.rejects(getStablePublishArgsAsync('sdk-58', stable), /not enabled/);
     assert.equal(await getReleaseTagAsync('sdk-57', 'canary'), 'canary-sdk-57');

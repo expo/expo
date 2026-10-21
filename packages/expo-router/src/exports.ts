@@ -101,10 +101,13 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
+  isActionHandled,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from './react-navigation/routers';
 export { NativeStackView } from './react-navigation/native-stack';
+export { enableLegacyHeaderAppearance } from './react-navigation/native-stack/views/headerAppearance';
 export type {
   NativeStackDescriptorMap,
   NativeStackViewState,
@@ -112,6 +115,7 @@ export type {
 export type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  ExtendedRouter,
   NavigationAction,
   NavigationState,
   Router,
@@ -122,6 +126,7 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionMembers,
   RouterExtensionOptions,
   RouterFactory,
   StackActionType,
@@ -144,6 +149,7 @@ export type {
   RouterPageFocusedMark,
   RouterPageBlurredMark,
   RouterPageRemovedMark,
+  RouterActionEnqueuedMark,
   RouterActionDispatchedMark,
   RouterPerformanceMark,
   RouterPerformanceMarkByName,

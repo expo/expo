@@ -16,10 +16,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // Safe to use unowned: the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
   //
-  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
-  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
-  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
-  // native-side cost of a no-op host function call. `unowned(unsafe)` is a plain pointer store/load.
+  // `unowned(unsafe)` rather than `unowned`: a plain pointer store and load, with no reference
+  // counting on every buffer construction and destruction.
   internal unowned(unsafe) let runtime: JavaScriptRuntime
 
   // The start of the storage, type-erased because `facebook.jsi.Value` is not a public type.
@@ -150,6 +148,30 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity),
       ownsMemory: true
     )
+  }
+
+  /// Allocates an owning buffer of `count` undefined values, which ``emplace(_:at:)`` then replaces.
+  /// Allocates nothing for zero values.
+  @usableFromInline
+  internal static func allocateUndefined(in runtime: JavaScriptRuntime, count: Int) -> JavaScriptValuesBuffer {
+    if count == 0 {
+      return JavaScriptValuesBuffer(runtime, start: nil, count: 0)
+    }
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: count)
+    for index in 0..<count {
+      buffer.initializeElement(at: index, to: .undefined())
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// Moves `value` into the buffer at `index`, without a clone. The slot must hold a value that owns
+  /// nothing, such as the `undefined` that ``allocateUndefined(in:count:)`` puts there.
+  @usableFromInline
+  internal func emplace(_ value: consuming JavaScriptValue, at index: Int) {
+    guard (0..<count).contains(index) else {
+      FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
+    }
+    JavaScriptValue.write(value, to: bufferPointer.baseAddress! + index)
   }
 
   /// Allocates new values buffer with the given JS representables.

@@ -1,5 +1,48 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Bump to `noxcturnal@^0.1.7` ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Update to `noxcturnal@^0.1.8` ([#52008](https://github.com/expo/expo/pull/52008) by [@kitten](https://github.com/kitten))
+- Fix Babel transforms using the process `BABEL_ENV` instead of the bundle's mode. ([#51872](https://github.com/expo/expo/pull/51872) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve project-relative filenames against the app root in Noxcturnal plugins for React Server references, server actions, DOM components, Router export detection, and Router environment values. Preserve project-relative module IDs. ([#51932](https://github.com/expo/expo/pull/51932) by [@kitten](https://github.com/kitten))
+- Pass the app root to Noxcturnal so diagnostic filenames resolve correctly when Metro runs from a workspace root. ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Add asset transformer through noxcturnal for `experiments.noxcturnalTransformWorker` ([#51714](https://github.com/expo/expo/pull/51714) by [@kitten](https://github.com/kitten))
+- Switch default React Compiler panic threshold for Noxcturnal to `none` to match `babel-plugin-react-compiler`. ([#51913](https://github.com/expo/expo/pull/51913) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+  - @expo/config@58.0.7
+
+## 58.0.15
+
+### Patch Changes
+
+- Update to `noxcturnal@^0.1.4` for `experiments.noxcturnalTransformWorker`. This updates Flow erasure support, React Compiler transforms, and internal dependencies, and improves performance slightly. ([#51712](https://github.com/expo/expo/pull/51712) by [@kitten](https://github.com/kitten))
+- Avoid unnecessary noxcturnal bailout for modules with a `use client` directive for client bundles. ([#51663](https://github.com/expo/expo/pull/51663) by [@kitten](https://github.com/kitten))
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Fix edge-cases in root dependency resolution for `expo-router`, `react-native/setup-env`, and `expo/build/winter` runtime resolution. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Refactor package version cache key resolution and resolve `react-native-worklets` version optionally through `react-native-reanimated`. ([#51526](https://github.com/expo/expo/pull/51526) by [@kitten](https://github.com/kitten))
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+  - @expo/config@58.0.6
+
 ## 58.0.12
 
 ### Patch Changes

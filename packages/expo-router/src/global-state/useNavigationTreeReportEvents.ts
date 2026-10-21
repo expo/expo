@@ -95,9 +95,11 @@ export function useNavigationTreeReportEvents(
             }
             break;
           case 'action-dispatched':
-            // TODO(@ubax): emit an event when the action is enqueued.
             // `mark` does not throw, so it runs first and a throwing listener cannot skip it.
-            mark('expo-router:action-dispatched', { actionType: event.action.type });
+            mark('expo-router:action-dispatched', {
+              actionType: event.action.type,
+              actionId: event.actionId,
+            });
             internalNavigationEvents.emit('actionDispatched', {
               actionType: event.action.type,
               payload: event.action.payload,
