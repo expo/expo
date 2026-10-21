@@ -29,12 +29,14 @@ internal class HingeWorkletListeners {
 
   @MainThread
   fun dispatch(hinge: HingeState?, runtime: () -> WorkletRuntime) {
-    invoke(synchronized(lock) { listeners.values.toList() }, hinge, runtime)
+    val worklets = synchronized(lock) { listeners.values.toList() }
+    invoke(worklets, hinge, runtime)
   }
 
   @MainThread
   fun dispatch(id: Int, hinge: HingeState?, runtime: () -> WorkletRuntime) {
-    invoke(listOfNotNull(synchronized(lock) { listeners[id] }), hinge, runtime)
+    val worklet = synchronized(lock) { listeners[id] } ?: return
+    invoke(listOf(worklet), hinge, runtime)
   }
 
   private fun invoke(worklets: List<Worklet>, hinge: HingeState?, runtime: () -> WorkletRuntime) {
