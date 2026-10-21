@@ -224,7 +224,6 @@ async function listClosedIssuesAsync(limit: number): Promise<TriageIssueWithNumb
 
 type TriageIssueWithNumber = TriageIssue & {
   number: number;
-  created_at: string;
   user: { login: string } | null;
 };
 
@@ -303,7 +302,7 @@ function formatEvaluation(
     '',
     '#### would close',
     '',
-    `Only the ${wouldCloseTally.closable} issues that the live step could close: no team author, and no triaged label right after the issue opened.`,
+    `Only the ${wouldCloseTally.closable} issues that the live step could close: no team author, no triage label from the issue template, and no triage label from the bot.`,
     '',
     '| label | n | agree | agree % | no truth |',
     '| --- | --- | --- | --- | --- |'

@@ -142,17 +142,22 @@ describe('closeBlocker', () => {
 });
 
 describe('couldCloseWhenOpened', () => {
-  const opened = '2026-09-23T09:00:00Z';
-  const issue = { created_at: opened, author_association: 'NONE' };
-  const event = (label: string, createdAt: string) => ({ actor: 'someone', label, createdAt });
+  const issue = { user: { login: 'reporter' }, author_association: 'NONE' };
+  const event = (actor: string, label: string) => ({
+    actor,
+    label,
+    createdAt: '2026-09-23T09:00:01Z',
+  });
 
-  it('is false when the live guard would have held back closing labels', () => {
+  it('counts only labels that exist before the live step runs', () => {
     assert.equal(couldCloseWhenOpened(issue, []), true);
     assert.equal(couldCloseWhenOpened({ ...issue, author_association: 'MEMBER' }, []), false);
-    const template = [event('invalid issue: question', '2026-09-23T09:00:01Z')];
+    const template = [event('reporter', 'invalid issue: question')];
     assert.equal(couldCloseWhenOpened(issue, template), false);
-    const later = [event('Issue accepted', '2026-09-24T09:00:00Z')];
-    assert.equal(couldCloseWhenOpened(issue, later), true);
+    const validator = [event('expo-bot', 'incomplete issue: missing or invalid repro')];
+    assert.equal(couldCloseWhenOpened(issue, validator), false);
+    const maintainer = [event('brentvatne', 'Issue accepted')];
+    assert.equal(couldCloseWhenOpened(issue, maintainer), true);
   });
 });
 

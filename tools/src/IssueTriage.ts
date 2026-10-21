@@ -335,20 +335,20 @@ export function closeBlocker(
   return isTeamAuthor(authorAssociation) ? 'from an Expo member' : null;
 }
 
-/** The live step runs within about a minute of the issue opening. */
-const OPENED_WINDOW_MS = 10 * 60 * 1000;
-
 /**
- * Whether the live step could have closed the issue: the labels it had right after it opened
- * and its author pass `closeBlocker`.
+ * Whether the live step could have closed the issue. Only template labels from the author and
+ * labels from the bot exist before the step runs. Maintainers label the issue later.
  */
 export function couldCloseWhenOpened(
-  issue: { created_at: string; author_association: string },
+  issue: { user: { login: string } | null; author_association: string },
   events: LabelEvent[]
 ): boolean {
-  const openedAt = Date.parse(issue.created_at);
   const labels = events
-    .filter((event) => Date.parse(event.createdAt) - openedAt < OPENED_WINDOW_MS)
+    .filter(
+      (event) =>
+        BOT_ACTORS.includes(event.actor) ||
+        (event.actor === issue.user?.login && TEMPLATE_LABELS.includes(event.label))
+    )
     .map((event) => event.label);
   return closeBlocker('open', labels, issue.author_association) === null;
 }
