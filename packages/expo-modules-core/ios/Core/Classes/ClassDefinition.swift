@@ -89,9 +89,10 @@ public final class ClassDefinition: ObjectDefinition {
 
     let prototype = klass.getProperty("prototype").getObject()
 
-    // Bind the macro's `@JS` members onto the prototype.
+    // Bind the macro's `@JS` members: instance members onto the prototype, static members onto the constructor.
     if let sharedObjectType {
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
+      try sharedObjectType._decorateSharedObject(constructor: klass, in: appContext.runtime)
     }
 
     // Register the prototype of the JS class for its associated native type.
