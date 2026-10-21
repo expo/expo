@@ -76,6 +76,15 @@ class RouterToolbarItemView: RouterViewWithLogger {
       return
     }
 
+    // On iOS 26, a custom view's item can keep its old background when its tint or style changes
+    // in place, so it gets a new item.
+    if customView != nil,
+      item.tintColor != customTintColor || item.style != (barButtonItemStyle ?? .plain)
+    {
+      rebuildBarButtonItem()
+      return
+    }
+
     // Update content properties (title, image, etc.) for normal buttons
     applyContentProperties(to: item)
 
