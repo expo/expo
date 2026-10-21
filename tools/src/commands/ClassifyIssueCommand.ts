@@ -23,6 +23,7 @@ import {
   QUESTION_IDS,
   QuestionId,
   TriageIssue,
+  wouldClose,
 } from '../IssueTriage';
 import logger from '../Logger';
 
@@ -101,12 +102,13 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closing: bo
     logger.warn(`Issue #${issueNumber} is closed, reporting only.`);
     apply = false;
   }
-  if (apply && closing && isAlreadyTriaged(issue.state, labelNames(issue.labels))) {
-    logger.warn(`Issue #${issueNumber} is already triaged, holding back closing labels.`);
-    closing = false;
-  }
-  if (apply && closing && isTeamAuthor(issue.author_association)) {
-    logger.warn(`Issue #${issueNumber} is from an Expo member, holding back closing labels.`);
+  const blockedBy = isAlreadyTriaged(issue.state, labelNames(issue.labels))
+    ? 'already triaged'
+    : isTeamAuthor(issue.author_association)
+      ? 'from an Expo member'
+      : null;
+  if (apply && closing && blockedBy) {
+    logger.warn(`Issue #${issueNumber} is ${blockedBy}, holding back closing labels.`);
     closing = false;
   }
   const plan = planLabels(result.classification, { closing: !apply || closing });
@@ -114,7 +116,8 @@ async function classifyOneAsync(issueNumber: number, apply: boolean, closing: bo
     await addIssueLabelsAsync(issueNumber, plan.apply);
   }
 
-  const report = formatReport(issueNumber, result, plan, !apply);
+  const close = wouldClose(result.classification, blockedBy);
+  const report = formatReport(issueNumber, result, plan, !apply, close);
   console.log(report);
   appendStepSummary(report);
 }

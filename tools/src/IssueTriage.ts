@@ -287,6 +287,11 @@ function labelCandidates(classification: IssueClassification): LabelCandidate[] 
   return candidates;
 }
 
+function passes(candidate: LabelCandidate, thresholds: Thresholds): boolean {
+  const threshold = LABEL_THRESHOLDS[candidate.label] ?? thresholds[candidate.question];
+  return candidate.confidence >= threshold;
+}
+
 export function planLabels(
   classification: IssueClassification,
   { thresholds = DEFAULT_THRESHOLDS, closing = true }: PlanOptions = {}
@@ -295,27 +300,42 @@ export function planLabels(
   const suggest: string[] = [];
 
   for (const candidate of labelCandidates(classification)) {
-    const allowed = closing || !CLOSING_LABELS.includes(candidate.label);
-    const threshold = LABEL_THRESHOLDS[candidate.label] ?? thresholds[candidate.question];
-    const target = allowed && candidate.confidence >= threshold ? apply : suggest;
-    target.push(candidate.label);
+    if (!closing && CLOSING_LABELS.includes(candidate.label)) {
+      continue;
+    }
+    (passes(candidate, thresholds) ? apply : suggest).push(candidate.label);
   }
 
   return { apply, suggest };
+}
+
+/** The closing label that `--close-invalid` would apply, and the guard that holds it back. */
+export type CloseDecision = { label: string; confidence: number; blockedBy: string | null };
+
+export function wouldClose(
+  classification: IssueClassification,
+  blockedBy: string | null
+): CloseDecision | null {
+  const candidate = labelCandidates(classification).find((c) => CLOSING_LABELS.includes(c.label));
+  if (!candidate || !passes(candidate, DEFAULT_THRESHOLDS)) {
+    return null;
+  }
+  return { label: candidate.label, confidence: candidate.confidence, blockedBy };
 }
 
 export function formatReport(
   issueNumber: number,
   result: ClassificationResult,
   plan: LabelPlan,
-  shadow: boolean
+  shadow: boolean,
+  close: CloseDecision | null
 ): string {
   const labels = new Map(labelCandidates(result.classification).map((c) => [c.question, c.label]));
+  const confidences = gateConfidences(result.classification);
   const rows = (Object.keys(result.classification) as QuestionId[]).map((id) => {
-    const answer = result.classification[id];
     const label = labels.get(id);
     const applied = label && plan.apply.includes(label) ? label : '';
-    return `| ${id} | ${answer.choice} | ${answer.confidence.toFixed(2)} | ${applied} |`;
+    return `| ${id} | ${result.classification[id].choice} | ${confidences[id].toFixed(2)} | ${applied} |`;
   });
 
   return [
@@ -325,8 +345,17 @@ export function formatReport(
     '| --- | --- | --- | --- |',
     ...rows,
     '',
+    `would close: ${formatCloseDecision(close)}`,
     `suggest: ${plan.suggest.length > 0 ? plan.suggest.join(', ') : 'none'}`,
   ].join('\n');
+}
+
+function formatCloseDecision(close: CloseDecision | null): string {
+  if (!close) {
+    return 'no';
+  }
+  const label = `${close.label} (${close.confidence.toFixed(2)})`;
+  return close.blockedBy ? `no, held back (${close.blockedBy}): ${label}` : label;
 }
 
 /**

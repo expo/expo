@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import {
   agreements,
   buildQuestions,
+  formatReport,
   gateConfidences,
   humanAppliedLabels,
   IssueClassification,
@@ -13,6 +14,7 @@ import {
   packageOptionsFromLabels,
   planLabels,
   QuestionId,
+  wouldClose,
 } from './IssueTriage';
 
 type Choices = {
@@ -94,7 +96,7 @@ describe('planLabels', () => {
     });
     assert.deepEqual(planLabels(jev, { closing: false }), {
       apply: ['📦 expo-video', 'Android'],
-      suggest: ['invalid issue: feature request'],
+      suggest: [],
     });
     const docs = planLabels(classification({ triage: ['documentation', 0.95] }), {
       closing: false,
@@ -102,6 +104,47 @@ describe('planLabels', () => {
     assert.deepEqual(docs.apply, ['docs']);
     const redirect = planLabels(classification({ triage: ['third_party_library', 0.99] }));
     assert.deepEqual(redirect, { apply: [], suggest: [] });
+  });
+});
+
+describe('wouldClose', () => {
+  it('returns the closing label that passes its threshold', () => {
+    const summed = wouldClose(
+      classification({ triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }] }),
+      null
+    );
+    assert.equal(summed?.label, 'invalid issue: question');
+    assert.ok(Math.abs((summed?.confidence ?? 0) - 0.95) < 1e-9);
+    assert.equal(wouldClose(classification({ triage: ['feature_request', 0.94] }), null), null);
+    assert.equal(wouldClose(classification({ triage: ['documentation', 0.99] }), null), null);
+  });
+
+  it('keeps the reason a guard holds the label back', () => {
+    const decision = wouldClose(
+      classification({ triage: ['feature_request', 0.96] }),
+      'from an Expo member'
+    );
+    assert.equal(decision?.blockedBy, 'from an Expo member');
+  });
+});
+
+describe('formatReport', () => {
+  it('shows the close decision and the gate confidence', () => {
+    const jev = classification({
+      triage: ['question', 0.55, { question: 0.55, missing_info: 0.4 }],
+    });
+    const result = { model: 'gpt-6-luna', classification: jev, usage: {} as never };
+    const report = formatReport(1, result, planLabels(jev, { closing: false }), false, {
+      label: 'invalid issue: question',
+      confidence: 0.95,
+      blockedBy: 'from an Expo member',
+    });
+    assert.match(report, /\| triage \| question \| 0\.95 \| {2}\|/);
+    assert.match(
+      report,
+      /would close: no, held back \(from an Expo member\): invalid issue: question \(0\.95\)/
+    );
+    assert.match(report, /suggest: none/);
   });
 });
 
