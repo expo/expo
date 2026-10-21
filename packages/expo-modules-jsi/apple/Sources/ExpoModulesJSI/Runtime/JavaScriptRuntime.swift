@@ -300,6 +300,48 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return JavaScriptArray(self, facebook.jsi.Array(pointee, length))
   }
 
+  /// Creates an array of `count` values, where `element` returns the value at each index. The values
+  /// are pushed to the array in chunks, with one engine call per chunk on React Native 0.86 and later.
+  @usableFromInline
+  internal final func createArray(count: Int, _ element: (_ index: Int) throws -> JavaScriptValue) throws
+    -> JavaScriptValue
+  {
+    guard count > 0 else {
+      return createArray(length: 0).takeValue()
+    }
+    var array = expo.createArrayForPushing(pointee, count)
+    // `withUnsafeTemporaryAllocation` keeps a buffer of up to 1 KiB on the stack and allocates a larger
+    // one on the heap.
+    let chunkCapacity = 1024 / MemoryLayout<facebook.jsi.Value>.stride
+    try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: min(count, chunkCapacity)) { chunk in
+      let start = chunk.baseAddress!
+      var pushed = 0
+      var pending = 0
+      do {
+        for index in 0..<count {
+          // A local `var` takes the returned value in place. Passing the call result straight to a
+          // `consuming` parameter moves it once more, and each move of a `jsi::Value` calls into the engine.
+          var value = try element(index)
+          expo.emplaceValue(start + pending, &value.pointee)
+          pending += 1
+          if pending == chunk.count {
+            expo.pushValues(pointee, array, pushed, start, pending)
+            pushed += pending
+            pending = 0
+          }
+        }
+      } catch {
+        // The values in the buffer were never pushed to the array.
+        expo.destroyValues(start, pending)
+        throw error
+      }
+      if pending > 0 {
+        expo.pushValues(pointee, array, pushed, start, pending)
+      }
+    }
+    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+  }
+
   // MARK: - Creating functions
 
   /// Type of the closure that is passed to the `createFunction` function.

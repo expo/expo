@@ -66,6 +66,58 @@ inline void setValueAtIndex(jsi::IRuntime &runtime, const jsi::Array &array, siz
   array.setValueAtIndex(runtime, index, value);
 }
 
+/**
+ Destroys `count` values in place. `jsi::Value::~Value()` is out-of-line in the engine library, so it's
+ called only for a value that holds an engine handle.
+ */
+inline void destroyValues(jsi::Value *_Nonnull values, size_t count) noexcept {
+  for (size_t i = 0; i < count; i++) {
+    jsi::Value &value = values[i];
+    if (!value.isUndefined() && !value.isNull() && !value.isBool() && !value.isNumber()) {
+      value.~Value();
+    }
+  }
+}
+
+/**
+ Creates an array for `pushValues` to fill with `length` values. React Native 0.86 added `IRuntime::push`,
+ so there the array starts empty and grows with each push. On older versions it starts with all `length`
+ slots, which `pushValues` sets by index.
+ */
+inline jsi::Array createArrayForPushing(jsi::IRuntime &runtime, size_t length) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  (void)length;
+  return jsi::Array(runtime, 0);
+#else
+  return jsi::Array(runtime, length);
+#endif
+}
+
+/**
+ Pushes `count` values to the end of an array from `createArrayForPushing` that already holds `index` values,
+ then destroys them, so the memory can take the next values. On React Native 0.86 and later this is one engine
+ call.
+ */
+inline void pushValues(
+  jsi::IRuntime &runtime,
+  const jsi::Array &array,
+  size_t index,
+  jsi::Value *_Nonnull values,
+  size_t count
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  (void)index;
+  runtime.push(array, values, count);
+#else
+  for (size_t i = 0; i < count; i++) {
+    array.setValueAtIndex(runtime, index + i, values[i]);
+  }
+#endif
+  destroyValues(values, count);
+}
+
 inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long length) {
   auto oldLength = (int)array.size(runtime);
   auto newLength = (int)length;
@@ -221,6 +273,25 @@ inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
  */
 inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
   ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Moves the value at `source` into the slot. Placement new, like the helpers above: the slot must hold a
+ value that owns nothing. A value without an engine handle (undefined, null, a boolean or a number) is
+ copied with the inline constructors, which skips the out-of-line `jsi::Value` move.
+ */
+inline void emplaceValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  if (source->isNumber()) {
+    ::new (slot) jsi::Value(source->getNumber());
+  } else if (source->isBool()) {
+    ::new (slot) jsi::Value(source->getBool());
+  } else if (source->isNull()) {
+    ::new (slot) jsi::Value(nullptr);
+  } else if (source->isUndefined()) {
+    ::new (slot) jsi::Value();
+  } else {
+    ::new (slot) jsi::Value(std::move(*source));
+  }
 }
 
 /**

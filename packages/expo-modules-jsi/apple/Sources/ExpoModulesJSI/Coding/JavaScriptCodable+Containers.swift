@@ -50,12 +50,9 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
   public static func encode(_ value: [Element], in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    let jsArray = runtime.createArray(length: value.count)
-    // The array is created with one slot per element, so every index is in bounds.
-    for (index, element) in value.enumerated() {
-      jsArray.setValueUnchecked(try Element.encode(element, in: runtime), at: index)
+    return try runtime.createArray(count: value.count) { index in
+      return try Element.encode(value[index], in: runtime)
     }
-    return jsArray.takeValue()
   }
 }
 
