@@ -905,6 +905,29 @@ it('redirects router.push from a filesystem route without a trigger', async () =
   expect(screen.getByTestId('goto-index')).toHaveProp('isFocused', true);
 });
 
+it('redirects a filesystem route without a trigger to the initially focused tab with initialRoute backBehavior', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs options={{ backBehavior: 'initialRoute' }}>
+          <TabList>
+            <TabTrigger name="index" href="/" />
+            <TabTrigger name="visible" href="/visible" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => null,
+      visible: () => null,
+      hidden: () => null,
+    },
+    { initialUrl: '/visible' }
+  );
+
+  await act(() => router.push('/hidden'));
+  expect(screen).toHavePathname('/visible');
+});
+
 it('removes a redirected filesystem route from tab history', async () => {
   await renderRouter({
     _layout: () => (

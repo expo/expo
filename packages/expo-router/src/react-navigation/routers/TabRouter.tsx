@@ -52,7 +52,7 @@ export type TabRouterOptions = DefaultRouterOptions & {
   /**
    * Control how going back should behave
    * - `firstRoute` - return to the first defined route
-   * - `initialRoute` - return to the route from `initialRouteName`
+   * - `initialRoute` - return to the route from `initialRouteName`, else the route focused on mount
    * - `order` - return to the route defined before the focused route
    * - `history` - return to last visited route; if the same route is visited multiple times, the older entries are dropped from the history
    * - `fullHistory` - return to last visited route; doesn't drop duplicate entries unlike `history` - matches behavior of web pages
@@ -237,6 +237,19 @@ const getRouteHistory = (
   return history;
 };
 
+// Without `initialRouteName`, the initially focused route is the first history entry. It stays
+// there across navigation and is saved with the state.
+const getInitialRouteName = (
+  state: TabNavigationStateWithHistory,
+  initialRouteName: string | undefined
+) => {
+  if (initialRouteName !== undefined) {
+    return initialRouteName;
+  }
+  const initialKey = state.history.find((item) => item.type === TYPE_ROUTE)?.key;
+  return state.routes.find((route) => route.key === initialKey)?.name;
+};
+
 export const ensureStateHistory = (
   state: TabNavigationState<ParamListBase>,
   backBehavior: BackBehavior,
@@ -258,7 +271,7 @@ export const ensureStateHistory = (
       ? focusedRoute === undefined
         ? []
         : [{ type: TYPE_ROUTE, key: focusedRoute.key }]
-      : getRouteHistory(routes, index, backBehavior, initialRouteName);
+      : getRouteHistory(routes, index, backBehavior, initialRouteName ?? focusedRoute?.name);
 
   if (backBehavior === 'fullHistory' && focusedRoute !== undefined) {
     history[history.length - 1] = {
@@ -382,7 +395,7 @@ function tabRouterExtension({
         return state;
       }
 
-      return changeIndex(state, index, backBehavior, initialRouteName);
+      return changeIndex(state, index, backBehavior, getInitialRouteName(state, initialRouteName));
     },
 
     getStateForAction(inputState, action, options) {
@@ -464,7 +477,12 @@ function tabRouterExtension({
               (route) => route.key === routes[index]!.key
             );
             history = [
-              ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+              ...getRouteHistory(
+                orderedRoutes,
+                orderedIndex,
+                backBehavior,
+                getInitialRouteName(state, initialRouteName)
+              ),
               ...history.filter((item) => item.type !== 'route'),
             ];
           } else if (!history.some((item) => item.type === 'route')) {
@@ -548,7 +566,8 @@ function tabRouterExtension({
             },
             index,
             backBehavior,
-            initialRouteName
+            // Read from the previous routes, because `getId` can re-key the initial route.
+            getInitialRouteName(state, initialRouteName)
           );
 
           const result =
@@ -608,11 +627,10 @@ function tabRouterExtension({
 
           if (backBehavior === 'firstRoute') {
             backTargetName = state.routeNames[0];
-          } else if (backBehavior === 'initialRoute') {
-            backTargetName =
-              initialRouteName !== undefined && state.routeNames.includes(initialRouteName)
-                ? initialRouteName
-                : state.routeNames[0];
+          } else if (backBehavior === 'initialRoute' && initialRouteName !== undefined) {
+            backTargetName = state.routeNames.includes(initialRouteName)
+              ? initialRouteName
+              : state.routeNames[0];
           } else if (backBehavior === 'order') {
             const declaredIndex = state.routeNames.indexOf(focusedRoute.name);
             backTargetName = declaredIndex > 0 ? state.routeNames[declaredIndex - 1] : undefined;
@@ -747,7 +765,12 @@ function tabRouterExtension({
             const routeHistory =
               focusedIndex === -1
                 ? []
-                : getRouteHistory(orderedRoutes, focusedIndex, backBehavior, initialRouteName);
+                : getRouteHistory(
+                    orderedRoutes,
+                    focusedIndex,
+                    backBehavior,
+                    getInitialRouteName(state, initialRouteName)
+                  );
 
             // TODO: Refactor history handling together with web state synchronization.
             history = [...routeHistory, ...history.filter((item) => item.type !== 'route')];

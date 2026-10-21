@@ -170,6 +170,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   }
 
   const initialRouteName = getValidInitialRouteName(routeNode);
+  const backBehavior = rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
@@ -194,7 +195,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       triggerMap,
       id: contextKey,
       initialRouteName,
-      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
+      backBehavior,
     },
     { activityDefaultThreshold: 1 }
   );
@@ -233,7 +234,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const NavigationContent = useComponent((children: React.ReactNode) => (
     // Headless tabs have no guards, so shadow parent guards whose route names may collide.
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
-      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabVisibilityRedirect state={state} backBehavior={backBehavior} descriptors={descriptors} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
           <NavigatorContext.Provider value={navigatorContextValue}>
@@ -249,9 +250,11 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
 function TabVisibilityRedirect({
   state,
+  backBehavior,
   descriptors,
 }: {
   state: TabNavigationState<any>;
+  backBehavior: TabRouterOptions['backBehavior'];
   descriptors: PlaceholderDescriptorMap;
 }) {
   const stateWithPlaceholders = useMemo(
@@ -262,6 +265,8 @@ function TabVisibilityRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,
     focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
+    backBehavior,
+    history: stateWithPlaceholders.history,
     descriptors,
   });
   return null;

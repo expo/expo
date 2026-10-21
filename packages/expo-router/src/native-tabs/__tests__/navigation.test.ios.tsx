@@ -248,6 +248,29 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('redirects to the initially focused tab when navigating to a route without a visible tab', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+        notSpecified: () => <View testID="not-specified" />,
+      },
+      { initialUrl: '/second' }
+    );
+
+    await act(() => router.push('/notSpecified'));
+
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen.queryByTestId('not-specified')).toBeNull();
+    expect(screen).toHavePathname('/second');
+  });
+
   it('removes a replaced route from tab history', async () => {
     await renderRouter({
       _layout: () => (

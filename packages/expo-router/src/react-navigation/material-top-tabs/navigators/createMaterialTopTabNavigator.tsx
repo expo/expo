@@ -5,6 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { ParamListBase, TabNavigationState, TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -17,6 +18,7 @@ export interface MaterialTopTabNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
+  history: TabNavigationState<ParamListBase>['history'];
   preload: (name: string) => void;
   navigateToTabSync: (name: string, params: object | undefined) => void;
 }
@@ -27,7 +29,7 @@ export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig
 type ContentArgs = NavigatorContentProps<
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
-  MaterialTopTabNavigationConfig,
+  MaterialTopTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior'>,
   MaterialTopTabNavigatorCreateProps
 >;
 
@@ -39,6 +41,8 @@ function MaterialTopTabNavigatorContent({
   isPreloaded: _isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
   routeNames,
+  history,
+  backBehavior,
   preload,
   navigateToTabSync,
   ...rest
@@ -47,6 +51,8 @@ function MaterialTopTabNavigatorContent({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
+    backBehavior,
+    history,
     descriptors,
   });
   // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety

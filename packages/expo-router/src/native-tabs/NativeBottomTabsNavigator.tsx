@@ -43,6 +43,7 @@ export interface NativeTabsNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
+  history: TabNavigationState<ParamListBase>['history'];
   preload: (name: string) => void;
   navigateSync: (name: string) => void;
 }
@@ -78,6 +79,8 @@ export function createNativeTabsProps(
 function NativeTabsContent({
   state,
   routeNames,
+  history,
+  backBehavior,
   descriptors,
   actions: _actions,
   emitter,
@@ -118,6 +121,8 @@ function NativeTabsContent({
     routes,
     routeNames,
     focusedRouteKey: routes[state.index]?.key,
+    backBehavior,
+    history,
     descriptors,
   });
   const visibleTabs = useMemo(

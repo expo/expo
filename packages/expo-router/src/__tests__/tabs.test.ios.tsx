@@ -333,6 +333,61 @@ it('works with goBack', async () => {
   expect(screen.getByTestId('one')).toBeVisible();
 });
 
+it('goes back to the initially focused tab with initialRoute backBehavior', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs backBehavior="initialRoute">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
+      one: () => <Text testID="one">One</Text>,
+      two: () => <Text testID="two">Two</Text>,
+      three: () => <Text testID="three">Three</Text>,
+    },
+    {
+      initialUrl: '/two',
+    }
+  );
+
+  expect(screen.getByTestId('two')).toBeVisible();
+
+  await act(() => router.push('/three'));
+  await act(() => router.push('/one'));
+
+  expect(screen.getByTestId('one')).toBeVisible();
+
+  await act(() => router.back());
+
+  expect(screen.getByTestId('two')).toBeVisible();
+});
+
+it('redirects a route without a tab to the first tab with the default backBehavior', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      one: () => <Text testID="one">One</Text>,
+      two: () => <Text testID="two">Two</Text>,
+      notSpecified: () => <Text testID="not-specified">Not specified</Text>,
+    },
+    {
+      initialUrl: '/two',
+    }
+  );
+
+  await act(() => router.push('/notSpecified'));
+
+  expect(screen.getByTestId('one')).toBeVisible();
+  expect(screen).toHavePathname('/one');
+});
+
 it('works with goBack (history)', async () => {
   await renderRouter(
     {
