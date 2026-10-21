@@ -64,6 +64,13 @@ const DEFAULT_EVALUATE_LIMIT = 100;
 const EVALUATE_CONCURRENCY = 8;
 
 async function action(options: ActionOptions) {
+  if (options.evaluate && (options.issue || options.tag || options.closeInvalid)) {
+    throw new Error(
+      'Flag `--evaluate` cannot be combined with `--issue`, `--tag`, or `--close-invalid`. ' +
+        '`--evaluate` classifies many closed issues and never adds labels, so the command would ignore those flags. ' +
+        'Run `et classify-issue --evaluate [limit]` alone, or `et classify-issue --issue <number>` to classify one issue.'
+    );
+  }
   requireEnv(
     'GITHUB_TOKEN',
     'The command reads the issue and the repository labels through the GitHub API, which rejects unauthenticated requests.',
