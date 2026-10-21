@@ -153,7 +153,7 @@ export const validateBuildPhases = (
       phase in pbxproj.objects &&
       pbxproj.objects[phase].isa === 'PBXShellScriptBuildPhase' &&
       (pbxproj.objects[phase] as PBXShellScriptBuildPhase).name ===
-        'Bundle React Native code and images'
+        'Bundle Expo brownfield code and images'
   );
   expect(bundlePhase).toBeDefined();
 };

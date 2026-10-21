@@ -30,3 +30,16 @@ Once artifacts are published to Maven Local, open the `android/` project in Andr
 ## iOS
 
 After building xcframeworks, the `add_xcframeworks.rb` script (in the E2E scripts) adds the Swift Package containing the frameworks to the Xcode project. You can also add them manually via Xcode's "Add Package Dependencies" with a local package path.
+
+### SwiftUI scene smoke test
+
+The iOS app owns an `ExpoHost` and shares it with both the new `ExpoScene` views and the existing brownfield views. The default host loads the embedded bundle in Debug and Release.
+
+1. Build and launch the Debug app with Metro stopped. Dismiss the development menu if it opens. Confirm the custom React Native component renders.
+2. Open **Expo scenes**. Confirm **First**, **Second**, and **Summary** display the same runtime identifier.
+3. Increment **First**. Confirm **Second** keeps its own local count.
+4. Change the native stepper. Confirm all three scenes receive the new value and **First** keeps its local count.
+5. Increment **Second**, then turn **Show second counter** off and on. Confirm **Second** starts at zero while **First** keeps its count and the runtime identifier stays the same.
+6. Navigate back and reopen the screen. Confirm local counts reset and the runtime identifier stays the same.
+
+Also check the existing React Native screen, native dismissal, and shared-state screen after changing the host. For live JavaScript development, create the host with `.developmentServer` in Debug and run Metro.

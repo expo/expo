@@ -48,6 +48,64 @@ Run `npx expo prebuild` after adding the plugin to your `app.json` file to gener
 
 For projects that don't use CNG please follow the manual steps at [How to add Expo to an existing native (brownfield) app](https://docs.expo.dev/brownfield/get-started/).
 
+## SwiftUI scenes in an isolated iOS app
+
+The generated framework exposes `ExpoHost` and `ExpoScene`. A host loads one JavaScript bundle and shares its React runtime across scenes. Each mounted scene has its own React component state. JavaScript globals and native modules are shared.
+
+Register each component in your JavaScript entry file:
+
+```tsx
+import 'expo';
+import { AppRegistry } from 'react-native';
+
+import Support from './Support';
+import OrderDetails from './OrderDetails';
+
+AppRegistry.registerComponent('Support', () => Support);
+AppRegistry.registerComponent('OrderDetails', () => OrderDetails);
+```
+
+After rebuilding and adding the generated package to Xcode, create one host in your SwiftUI app. Replace `MyBrownfield` with your framework's module name:
+
+```swift
+import SwiftUI
+import MyBrownfield
+
+@main
+struct MyApp: App {
+  @UIApplicationDelegateAdaptor var delegate: ExpoBrownfieldAppDelegate
+  @StateObject private var expo = ExpoHost()
+
+  var body: some Scene {
+    WindowGroup {
+      VStack {
+        ExpoScene(name: "Support")
+        ExpoScene(name: "OrderDetails", props: ["orderId": "123"])
+      }
+      .expoHost(expo)
+    }
+  }
+}
+```
+
+`ExpoScene` is a SwiftUI `View`. Give it a frame when placing it in a scroll view or another container that does not provide a bounded size. Props must contain values that can be represented in JavaScript: strings, numbers, booleans, arrays, dictionaries, or `NSNull`. Updating props preserves the mounted component's state. Changing the scene name or host remounts it. Removing a scene unmounts its React root while the app retains the host.
+
+`ExpoHost()` starts lazily and loads `main.jsbundle` from the generated framework in both Debug and Release. The framework build embeds JavaScript and assets by default, including Debug simulator builds. Rebuild the framework to update this embedded content. No running Metro server is required to open it.
+
+For live JavaScript development, select Metro when creating the host in a Debug build:
+
+```swift
+@StateObject private var expo = ExpoHost(bundleSource: .developmentServer)
+```
+
+Run `npx expo start` in the Expo project. This mode does not silently fall back to the embedded bundle. Runtime bundle switching and full `expo-dev-client` support are not included; use `expo-dev-menu` with the isolated integration.
+
+To keep the previous build behavior, set `ios.embeddedBundle: false` in the `expo-brownfield` plugin options and run prebuild again. Debug builds may then require Metro; do not use the default embedded host without supplying an embedded bundle.
+
+Existing `ReactNativeView` and `ReactNativeViewController` integrations can share the new host by calling `ReactNativeHostManager.shared.initialize(host: expo)` before creating their first view. The existing `initialize(turboModuleClasses:)` entry point keeps its previous bundle selection. Supply custom TurboModule classes to `ExpoHost` when using the new entry point.
+
+The app remains responsible for navigation and lifecycle forwarding. `ExpoScene` does not subscribe to the legacy global `popToNative` notification, which cannot identify which of several scenes should dismiss. Use native navigation around the scene. Keep existing app-delegate forwarding when your app already has a delegate.
+
 ## Using Prebuilt modules on iOS
 
 Enable [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/)'s `ios.usePrecompiledModules` so `pod install` downloads each Expo module as a prebuilt `.xcframework` instead of building it from source. `build:ios` automatically detects those xcframeworks in `ios/Pods/` and bundles them into the output Swift Package alongside the brownfield framework, React, Hermes, and `ReactNativeDependencies`.

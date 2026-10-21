@@ -9,6 +9,10 @@ struct ContentView: View {
         NavigationStack {
             List {
                 Section(header: Text("Screens")) {
+                    NavigationLink("Expo scenes") {
+                        NamedScenesView()
+                    }
+                    .accessibilityIdentifier("openExpoScenes")
                     NavigationLink(destination: ReactNativeView(), label: {
                         HStack {
                             Image(systemName: "atom")

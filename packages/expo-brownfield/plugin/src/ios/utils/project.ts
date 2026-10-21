@@ -41,27 +41,49 @@ export const configureBuildPhases = (
   target: Target,
   targetName: string,
   projectName: string,
-  files: string[] = []
+  files: string[] = [],
+  embeddedBundle: boolean = true
 ) => {
-  const mainTarget = findNativeTargetSection(
-    project,
-    (target) => target.productType === Constants.Target.ApplicationProductType
-  );
-
-  const bundlePhase = mainTarget.buildPhases.find((phase) =>
-    phase.comment.includes(Constants.BuildPhase.RNBundlePhase)
-  );
-  if (!bundlePhase) {
-    throw new Error(
-      `'${Constants.BuildPhase.RNBundlePhase}' build phase cannot be found in main target build phases`
+  if (embeddedBundle) {
+    project.addBuildPhase(
+      [],
+      Constants.BuildPhase.Script,
+      'Bundle Expo brownfield code and images',
+      target.uuid,
+      {
+        shellPath: '/bin/bash',
+        shellScript: `set -e
+for env_file in "$PROJECT_DIR/.xcode.env" "$PROJECT_DIR/.xcode.env.local"; do
+  if [[ -f "$env_file" ]]; then
+    source "$env_file"
+  fi
+done
+export NODE_BINARY="\${NODE_BINARY:-node}"
+export PROJECT_ROOT="\${PROJECT_ROOT:-$PROJECT_DIR/..}"
+cd "$PROJECT_ROOT"
+BROWNFIELD_DIR="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('expo-brownfield/package.json'))")"
+/bin/bash "$BROWNFIELD_DIR/scripts/ios/bundle.sh"
+`,
+      },
+      Constants.Utils.XCEmptyString
     );
-  }
+  } else {
+    const mainTarget = findNativeTargetSection(
+      project,
+      (target) => target.productType === Constants.Target.ApplicationProductType
+    );
 
-  const destTarget = findNativeTargetSection(
-    project,
-    (target) => target.productType !== Constants.Target.ApplicationProductType
-  );
-  destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
+    const bundlePhase = mainTarget.buildPhases.find((phase) =>
+      phase.comment.includes(Constants.BuildPhase.RNBundlePhase)
+    );
+    if (!bundlePhase) {
+      throw new Error(
+        `'${Constants.BuildPhase.RNBundlePhase}' build phase cannot be found in main target build phases`
+      );
+    }
+
+    target.pbxNativeTarget.buildPhases.push(bundlePhase);
+  }
 
   project.addBuildPhase(
     files,
