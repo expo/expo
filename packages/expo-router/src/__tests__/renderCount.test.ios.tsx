@@ -16,7 +16,7 @@ const noop = () => {};
 describe('Tabs render counts', () => {
   // noop = no hook
   it.each([noop, useNavigation, useRouter])(
-    'when %p hook is used, screens are not rerendered when params do not change',
+    'when %p hook is used, screens are not rerendered on focus',
     async (hook) => {
       const layoutRender = jest.fn();
       const indexRender = jest.fn();
