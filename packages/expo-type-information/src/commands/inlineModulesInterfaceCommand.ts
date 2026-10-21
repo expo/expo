@@ -2,7 +2,7 @@ import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import { TypeInferenceOption } from '../typeInformation';
+import { TypeInferenceOption } from '../typeInformation.types';
 import { scanFilesRecursively, taskAll } from '../utils';
 import {
   debounce,
