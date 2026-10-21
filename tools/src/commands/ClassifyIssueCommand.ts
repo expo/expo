@@ -134,6 +134,7 @@ async function evaluateAsync(limit: number) {
   let model = '';
   let inputTokens = 0;
   let failures = 0;
+  let firstFailure = '';
 
   const pending = issues.entries();
   const worker = async () => {
@@ -148,7 +149,9 @@ async function evaluateAsync(limit: number) {
         ]);
       } catch (error) {
         failures += 1;
-        logger.warn(`${prefix} skipped: ${error instanceof Error ? error.message : error}`);
+        const message = error instanceof Error ? error.message : String(error);
+        firstFailure ||= message;
+        logger.warn(`${prefix} skipped: ${message}`);
         continue;
       }
       model = result.model;
@@ -191,6 +194,14 @@ async function evaluateAsync(limit: number) {
   );
   console.log(report);
   appendStepSummary(report);
+
+  if (failures > 0) {
+    throw new Error(
+      `The evaluation could not classify ${failures} of ${issues.length} issues, so the numbers above leave them out. ` +
+        `The first error was: ${firstFailure} ` +
+        'Fix the cause, such as an OpenAI rate limit, and run the evaluation again, or pass a smaller limit.'
+    );
+  }
 }
 
 async function listClosedIssuesAsync(limit: number): Promise<TriageIssueWithNumber[]> {
