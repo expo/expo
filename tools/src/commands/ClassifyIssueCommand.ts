@@ -98,16 +98,16 @@ async function action(options: ActionOptions) {
   );
 }
 
-async function classifyOneAsync(issueNumber: number, apply: boolean, closeInvalid: boolean) {
+async function classifyOneAsync(issueNumber: number, tag: boolean, closeInvalid: boolean) {
   const [issue, labelNamesInRepo] = await Promise.all([
     getIssueAsync(issueNumber),
     listRepoLabelNamesAsync(),
   ]);
   const result = await classifyIssueAsync(issue, packageOptionsFromLabels(labelNamesInRepo));
 
-  if (apply && issue.state !== 'open') {
+  const apply = tag && issue.state === 'open';
+  if (tag && !apply) {
     logger.warn(`Issue #${issueNumber} is closed, reporting only.`);
-    apply = false;
   }
   const blockedBy = closeBlocker(issue.state, labelNames(issue.labels), issue.author_association);
   if (closeInvalid && blockedBy) {
