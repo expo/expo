@@ -1,5 +1,104 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Fix screen readers not announcing the label of a labeled universal `Switch` or `Checkbox`. ([#51896](https://github.com/expo/expo/pull/51896) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Fix touches not reaching the content of `MaskedView`. ([#51988](https://github.com/expo/expo/pull/51988) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Fix `RNHostView` showing the previous, emptied child after its child is remounted, for example by a `key` change. ([#51914](https://github.com/expo/expo/pull/51914) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add `CompositionLocalProvider` with `minimumInteractiveComponentSize`, so Material components can be smaller than the 48dp minimum touch target. ([#51954](https://github.com/expo/expo/pull/51954) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add `colorOverrides` to the Jetpack Compose `Host`. It replaces individual Material 3 color roles in the palette from `colorScheme` and `seedColor`. Compose children and `useMaterialColors()` use the result. ([#51650](https://github.com/expo/expo/pull/51650) by [@juliusmarminge](https://github.com/juliusmarminge))
+- [iOS] Fix the graphical `DatePicker` keeping a wrong height when it appears after launch, for example in a sheet. ([#51958](https://github.com/expo/expo/pull/51958) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Lay out children of a horizontal universal `ScrollView` in a row. They were stacked vertically. ([#51888](https://github.com/expo/expo/pull/51888) by [@itisrmk](https://github.com/itisrmk))
+- [iOS] Add a `presentationBackground` prop to `BottomSheet` that fills the sheet with a view, so a material stays translucent on iOS 26 and later. ([#51971](https://github.com/expo/expo/pull/51971) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Update `README.md` with the package overview, entry points, available components and installation instructions. ([#50024](https://github.com/expo/expo/pull/50024) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix hosted React Native content going blank or keeping a stale size after its child view is remounted, for example by a `key` change in an `RNHostView`. ([#51906](https://github.com/expo/expo/pull/51906) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Add `accessibilityLabel` to the community `SegmentedControl`, so screen readers announce a name for the control. ([#51899](https://github.com/expo/expo/pull/51899) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Support `tintColor` in the community `SegmentedControl`. ([#51904](https://github.com/expo/expo/pull/51904) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add the Jetpack Compose `TopAppBar` component with `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots, `colors`, and `windowInsets`. ([#51651](https://github.com/expo/expo/pull/51651) by [@juliusmarminge](https://github.com/juliusmarminge))
+- [web] Fix the universal `Text` ignoring the `colorScheme` of its `Host`. Its default color followed the browser color scheme, so a `Text` in a dark `Host` was black in a light browser. It now uses the `Host` foreground color and keeps the old color when no `Host` is on the page. A light `Host` now also gets the light colors when the browser or an outer `Host` is dark. ([#51698](https://github.com/expo/expo/pull/51698) by [@expo-bot](https://github.com/expo-bot))
+- Fix bottom sheet modals closing on iOS when the snap point count changes. ([#51889](https://github.com/expo/expo/pull/51889) by [@Fizzbow](https://github.com/Fizzbow))
+- [iOS] Stop the community `PagerView` from pressing a `Pressable` on a page when a swipe starts or ends on it, or when a tap stops a moving page. The pager now takes the touch from its pages while it scrolls, like React Native's `ScrollView`. This needs iOS 18 or later. ([#51799](https://github.com/expo/expo/pull/51799) by [@julian-gargicevich](https://github.com/julian-gargicevich))
+- [Web] Put a labeled `Switch` at the trailing edge of its row, as on Android and iOS. ([#51867](https://github.com/expo/expo/pull/51867) by [@miniware9](https://github.com/miniware9))
+
+## 58.0.21
+
+### Patch Changes
+
+- [iOS] Fix `List.ForEach` with `data` and a `children` render function. With recycling, `List` ignored the `moveDisabled` and `deleteDisabled` modifiers on a row. With `recycling={false}`, dragging a row did not reorder it or call `onMove`, and `onDelete` received the wrong index. ([#51704](https://github.com/expo/expo/pull/51704) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Web] Stop the community `SegmentedControl` from logging the `useNativeDriver` warning when it mounts. ([#51775](https://github.com/expo/expo/pull/51775) by [@miniware9](https://github.com/miniware9))
+
+## 58.0.20
+
+### Patch Changes
+
+- [iOS] Add an `alignment` prop to the SwiftUI `Host`. It sets where the content sits in the host when their sizes differ. A `matchContents` host anchored to the trailing edge of its row can now keep that edge still while its content animates to a new width. ([#51617](https://github.com/expo/expo/pull/51617) by [@maxlapides](https://github.com/maxlapides))
+
+## 58.0.19
+
+### Patch Changes
+
+- Add `accessibilityLabel`, `accessibilityHint` (iOS) and `testID` to the community `Slider`. The drop-in dropped them, so VoiceOver and TalkBack announced a slider by its value alone and end-to-end tools could not find it. iOS applies them as SwiftUI accessibility modifiers, Android as the `semantics` and `testID` modifiers, and web as `aria-label` and `data-testid`. ([#51632](https://github.com/expo/expo/pull/51632) by [@brentvatne](https://github.com/brentvatne))
+- [iOS] Stop shipping a precompiled iOS framework. `ArrangementView` and `onHingeChange` now work on iOS 27.1 without `buildFromSource` when the app is built with Xcode 27.1 or later. ([#51636](https://github.com/expo/expo/pull/51636) by [@brentvatne](https://github.com/brentvatne))
+
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Speed up app launch by naming the SwiftUI views without protocol conformance lookups. ([#51459](https://github.com/expo/expo/pull/51459) by [@Kudo](https://github.com/Kudo))
+- Fix Android universal TextInput placeholders ignoring textStyle. ([#51563](https://github.com/expo/expo/pull/51563) by [@sync](https://github.com/sync))
+- [iOS] Fix `Form` and `List` sections in a `Host` starting 20pt inside the large title beside the iPhone Duo's rail, where iOS drops its content margin. This works around a SwiftUI bug and applies only on an edge where the inset comes from a bar beside the content. ([#51606](https://github.com/expo/expo/pull/51606) by [@huntie](https://github.com/huntie))
+
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix the universal `ListItem` ignoring `testID`. The prop was never passed to Compose, so end-to-end tools such as Maestro could not find list rows on Android. It is now applied as the `testID` modifier, like the universal `Button` and `Checkbox` do. ([#51480](https://github.com/expo/expo/pull/51480) by [@devonik](https://github.com/devonik))
+- [Android] Bump Jetpack Compose UI and Foundation to 1.12.1 and Material3 to 1.5.0-beta01. Add `preferredItemWidth` to `HorizontalCenteredHeroCarousel` and deprecate `maxItemWidth`, matching the Material3 rename. Add `TimePickerElementColors` props without the `Unselected` infix (for example `clockDialContentColor`) and deprecate the old names. ([#51426](https://github.com/expo/expo/pull/51426) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the community `BottomSheet` clipping its content when the sheet is narrower than the window, as on iPhone Duo. When the sheet sized itself to its content, the content was pinned to the window width and centered in the sheet, so its leading edge was cut off. The content now takes its width from the sheet and its height from the content. `presentationSizing` takes a `fitted` option (`{ horizontal, vertical }`) to fit a sheet to its content on one axis only. ([#51319](https://github.com/expo/expo/pull/51319) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix an `RNHostView` that ignores touches when a Compose button with a ripple in the same `Host` was pressed earlier. The ripple container that Compose adds was found first during React Native's touch-target search, so the touch went to the `Host` instead of the hosted view. ([#51237](https://github.com/expo/expo/pull/51237) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Fixed `measure()` of views hosted in `RNHostView` inside SwiftUI and Jetpack Compose containers. ([#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Added a development warning when a `Host` renders directly inside another `Host` without an `RNHostView`. The universal `BottomSheet` no longer adds its own `Host` when it renders inside one. ([#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `measure()` of views hosted in `RNHostView` when SwiftUI insets the `Host`'s content, for example by the safe area. ([#50727](https://github.com/expo/expo/pull/50727) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix the community `MenuView` opening detached above its anchor near the bottom of the screen, and add a `properties` prop to the Jetpack Compose `DropdownMenu`. ([#51412](https://github.com/expo/expo/pull/51412) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix a numeric `width()` modifier crashing the app on launch with `FieldCastException: Cannot cast value for field 'width'` since the `IntrinsicSize` support added in 57.0.22 / 58.0.9. JS numbers reach the modifier record as `Double`, which matched neither branch of `Either<Int, IntrinsicSizeType>`; the field is now `Either<Double, IntrinsicSizeType>`, so numeric widths convert again and `width(IntrinsicSize.Min|Max)` keeps working. ([#51322](https://github.com/expo/expo/pull/51322) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `cornerRadius` and `opacity` to `Chart`'s `pieStyle`. Pie slices could not have rounded corners, and their opacity was fixed at 0.8, so a chart drawn in solid colors always looked washed out. Both default to the previous behavior. Rounded corners let a single-slice donut work as a progress ring with rounded ends. ([#51351](https://github.com/expo/expo/pull/51351) by [@jsg2021](https://github.com/jsg2021))
+
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix `Chart` ignoring `lineStyle.width` on line charts. The line mark applied `.lineStyle` twice (once for the dash pattern, once for the width), and the first one wins, so lines always rendered at 1 pt. The width and the dash pattern are now set in one `StrokeStyle`. ([#51283](https://github.com/expo/expo/pull/51283) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
+- [Android] Fix a `Pressable` (or any JS responder) being cancelled when a `MaskedView`, or any other component that renders a `Host`, is laid over it. Once React Native grants the JS responder, the responder's view intercepts the touch stream and sends `ACTION_CANCEL` to its native children, including that `Host`. The `Host` reported this cancel as Compose claiming the gesture, which cancelled the press it belonged to. Holds longer than about 30 ms never fired `onPress`. ([#51163](https://github.com/expo/expo/pull/51163) by [@1kuko3](https://github.com/1kuko3))
+- Fix iOS `Picker` not reporting a selection that equals the last `selection` prop when the user changes it again before the prop updates. ([#51196](https://github.com/expo/expo/pull/51196) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fix the community `DateTimePicker` reading `value` as a UTC day while `minimumDate`/`maximumDate` use the device-local day. In non-UTC timezones the picker could select and return the wrong day — one before `minimumDate`. `value`'s local calendar day is now sent to Material3 as a UTC day, and the picked day is returned as a local date that keeps `value`'s time of day. ([#50941](https://github.com/expo/expo/pull/50941) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Add `ArrangementView` component and `arrangementViewStyle`, `splitArrangementLayoutRatio`, `splitArrangementLayoutSize`, `splitArrangementFixedLayoutSize`, and `overlayArrangementEdge` modifiers. ([#50893](https://github.com/expo/expo/pull/50893) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `TimePickerDialog` ignoring `elementColors.containerColor`. ([#51116](https://github.com/expo/expo/pull/51116) by [@expo-bot](https://github.com/expo-bot))
+- [iOS][tvOS] Fix the tvOS build failing to compile with `'inlineLarge' is unavailable in tvOS` when `@expo/ui` is linked. `ToolbarTitleDisplayMode.inlineLarge` is unavailable on tvOS, but the `inlineLarge` case of the `toolbarTitleDisplayMode` modifier was only gated behind an OS version check that listed `tvOS 18.0`, so it was compiled into the tvOS slice. It is now guarded by platform and returns `nil` on tvOS. The same check also required iOS 18.0 / macOS 15.0, so `inlineLarge` silently fell back to `automatic` on iOS 17 and macOS 14 even though it is available there; it now applies on those versions. ([#51007](https://github.com/expo/expo/pull/51007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] `onHingeChange` also accepts a callback from `useWorkletCallback`, which runs on the UI thread to track the hinge angle without a JS-thread round trip. ([#50910](https://github.com/expo/expo/pull/50910) by [@huntie](https://github.com/huntie))
+- [iOS] Added the `onHingeChange` modifier, which reports the device hinge angle and status on iPhone Duo (iOS 27.1+). ([#50909](https://github.com/expo/expo/pull/50909) by [@huntie](https://github.com/huntie))
+- Added the `useWorkletCallback` hook, which wraps a worklet function so a modifier that accepts one can run it synchronously on the UI thread. ([#51108](https://github.com/expo/expo/pull/51108) by [@huntie](https://github.com/huntie))
+
 ## 58.0.12
 
 ### Patch Changes

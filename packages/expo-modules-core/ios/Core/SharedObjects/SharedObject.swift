@@ -36,6 +36,12 @@ open class SharedObject: AnySharedObject {
    */
   public init() {}
 
+  /// The value of `nativeRefType` on the JavaScript object, or `nil` when the object does not conform to
+  /// `AnySharedRef`.
+  internal var sharedRefType: String? {
+    return (self as? AnySharedRef)?.nativeRefType
+  }
+
   /**
    A function that will be called before the object is removed from the registry.
    */
@@ -94,7 +100,7 @@ open class SharedObject: AnySharedObject {
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
   @JavaScriptActor
-  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+  open class func _constructSharedObject(this: borrowing JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
     return nil
   }
 }

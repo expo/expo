@@ -1,7 +1,7 @@
 ---
 title: Querying with EAS CLI
 sidebar_title: EAS CLI
-description: Query EAS Observe metrics, events, and sessions from the terminal with the eas observe commands.
+description: Query EAS Observe metrics, events, errors, and sessions from the terminal with the eas observe commands.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -42,13 +42,16 @@ Some data is available only on certain plans. When your account's plan does not 
 | `eas observe:routes`          | Navigation metrics grouped by route name                            |
 | `eas observe:session`         | The full event timeline for one session                             |
 | `eas observe:events`          | User-defined events logged with `Observe.logEvent`                  |
+| `eas observe:errors`          | Errors grouped by fingerprint, or the occurrences of one error      |
+| `eas observe:event`           | One metric, event, or error, looked up by ID                        |
 | `eas observe:versions`        | App versions with their build numbers and update IDs                |
 
-Every command accepts these flags:
+Every command accepts these flags, except `observe:event`, which accepts only `--project-id`, `--json`, and `--non-interactive`:
 
 - `--platform android` or `--platform ios`: filter by platform. Both are included by default. Not available on `observe:session`, which already targets one session.
 - `--days <number>`: show data from the last N days.
 - `--start <ISO date>` and `--end <ISO date>`: set an explicit time range. Mutually exclusive with `--days`.
+- `--environment <name>`: filter by environment, such as `production`.
 - `--project-id <id>`: query a project without running inside its directory.
 - `--json`: machine-readable output. Implies `--non-interactive`.
 - `--non-interactive`: fail instead of prompting.
@@ -129,7 +132,7 @@ Command flags:
 - `--sort <order>`: one of `oldest` (default), `newest`, `slowest`, or `fastest`.
 - `--limit <number>`: samples per page. Defaults to 10, capped at 100.
 - `--after <cursor>`: the `endCursor` from a previous run.
-- `--app-version <version>`: filter by app version.
+- `--app-version <version>` and `--build-number <number>`: filter to one release.
 - `--update-id <id>`: filter by EAS Update ID.
 
 When more results are available, the command prints the flag needed to fetch the next page. JSON output adds `sessionId`, `easClientId`, and any custom params attached to the sample.
@@ -210,11 +213,42 @@ Command flags:
 
 - `--all-events`: list every event instead of the name summary. Cannot be combined with an event name.
 - `--session-id <id>`: filter to one session. For the full timeline, including metrics, use `observe:session`.
-- `--app-version <version>`: filter by app version.
+- `--app-version <version>` and `--build-number <number>`: filter to one release.
 - `--update-id <id>`: filter by EAS Update ID.
 - `--limit <number>` and `--after <cursor>`: paginate the results.
 
 Querying a name that has no events prints the available names for the same time range, which makes typos easy to spot.
+
+## `eas observe:errors`
+
+Shows [errors](/eas/observe/errors/) grouped by fingerprint, with event, user, and session counts for each.
+
+<Terminal
+  cmd={[
+    '# Fatal errors from the last 7 days',
+    '$ eas observe:errors --severity fatal --days 7',
+    '',
+    '# Occurrences of one error, with stack traces',
+    '$ eas observe:errors --fingerprint <fingerprint>',
+  ]}
+/>
+
+Command flags:
+
+- `--fingerprint <fingerprint>`: show the occurrences of one error, with stack traces. The fingerprint is in the first column of the grouped output.
+- `--severity <level>`: one of `fatal` or `error`. Ignored with `--fingerprint`.
+- `--app-version <version>` and `--build-number <number>`: filter to one release.
+- `--update-id <id>`: filter by EAS Update ID.
+- `--limit <number>`: occurrences per page. Defaults to 10, capped at 100. Requires `--fingerprint`.
+- `--after <cursor>`: the `endCursor` from a previous run. Requires `--fingerprint`.
+
+## `eas observe:event`
+
+Shows one metric sample, event, or error by its ID.
+
+<Terminal cmd={['$ eas observe:event <event-id>']} />
+
+The event ID is a required positional argument. IDs are included in the `--json` output of `observe:metrics`, `observe:events`, and `observe:session`, and in the occurrences from `observe:errors --fingerprint`.
 
 ## `eas observe:versions`
 

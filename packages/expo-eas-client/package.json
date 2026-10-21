@@ -33,9 +33,9 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

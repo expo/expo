@@ -1,7 +1,7 @@
 import { screen, fireEvent } from '@testing-library/react-native';
-import { act, useState } from 'react';
+import { act, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
-import { Tabs } from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/StackClient';
@@ -25,8 +25,9 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => ReactNode>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 
 afterEach(() => router.setTransitionMode('preload-only'));
 
@@ -37,18 +38,18 @@ describe('Native Bottom Tabs Navigation', () => {
 
   function lastHostSelectedKey() {
     const calls = TabsHost.mock.calls;
-    return calls[calls.length - 1][0].navStateRequest.selectedScreenKey;
+    return calls[calls.length - 1]![0].navStateRequest.selectedScreenKey;
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].screenKey).toBe('second');
     expect(lastHostSelectedKey()).toBe('index');
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toBe('index');
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toBe('second');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].screenKey).toBe('second');
     expect(lastHostSelectedKey()).toBe('second');
   }
 

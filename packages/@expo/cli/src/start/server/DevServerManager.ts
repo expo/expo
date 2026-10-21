@@ -1,3 +1,4 @@
+import { updateEventLoggerMetadata } from '2g';
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import assert from 'assert';
@@ -32,6 +33,16 @@ const BUNDLERS = {
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
   private devServers: BundlerDevServer[] = [];
+  private updateServerMetadata(ready: boolean) {
+    if (this.options.isExporting || this.options.headless) return;
+    const server = ready ? this.getDefaultDevServer() : null;
+    updateEventLoggerMetadata({
+      ready,
+      devServerUrl: server?.getDevServerUrl() ?? null,
+      port: server?.getInstance()?.location.port ?? null,
+      runtimeUrl: server?.isTargetingNative() ? server.getNativeRuntimeUrl() : null,
+    });
+  }
 
   static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
     const devServerManager = new DevServerManager(projectRoot, startOptions);
@@ -167,12 +178,14 @@ export class DevServerManager {
       urlCreator.defaults.scheme = nextScheme;
     }
 
+    this.updateServerMetadata(true);
     debugEvent('runtime_mode_switched', { mode: nextMode });
     return true;
   }
 
   /** Start all dev servers. */
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
+    if (!this.devServers.length) this.updateServerMetadata(false);
     const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const platformBundlers = getPlatformBundlers(this.projectRoot, exp);
 
@@ -185,6 +198,7 @@ export class DevServerManager {
       });
       await server.startAsync(options ?? this.options);
       this.devServers.push(server);
+      this.updateServerMetadata(true);
     }
 
     return exp;
@@ -224,6 +238,7 @@ export class DevServerManager {
 
   /** Stop all development servers. */
   async stopAsync(): Promise<void> {
+    this.updateServerMetadata(false);
     await Promise.allSettled([
       this.notifier?.stopObserving(),
       // Stop all dev servers

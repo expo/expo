@@ -13,7 +13,7 @@ Command-line tools for developing Expo modules, available as `expo-modules`.
 
 ### `expo-modules generate-types [packageDir]`
 
-Generates TypeScript types for the native API an Expo module exports to JavaScript. It scans the package's Swift sources for `@ExpoModule`, `@SharedObject`, `@Record`, and `@Union` types annotated with the Expo Modules macros, and for `Enumerable` enums, and writes them to one TypeScript file per package, `src/native.types.ts` by default, which the package compiles along with its other sources. Modules extend `NativeModule` and shared objects extend `SharedObject`, both imported from `expo`. The `@Event` declarations of a class become an exported `<Name>Events` type passed to its base class, the same shape hand-written modules use. A shared object without a `@JS init` gets a private constructor, since only native code creates its instances. `Enumerable` enums become TS enums with the Swift case names and raw values, and `@Union` types the union of their member types. The command leaves the file untouched when it already holds the generated content, only replaces a file that starts with its own header, so it never overwrites a hand-written file, and removes such a file when the package no longer exports anything.
+Generates TypeScript types for the native API an Expo module exports to JavaScript. It scans the package's Swift sources for `@ExpoModule`, `@SharedObject`, `@Record`, and `@Union` types annotated with the Expo Modules macros, and for `Enumerable` enums, and writes them to one TypeScript file per package, `src/native.types.ts` by default, which the package compiles along with its other sources. Modules extend `NativeModule` and shared objects extend `SharedObject`, both imported from `expo`. The `@Event` declarations of a class become an exported `<Name>Events` type passed to its base class, the same shape hand-written modules use. A shared object without a `@JS init` gets a private constructor, since only native code creates its instances. `Enumerable` enums become TS enums with the Swift case names and raw values, and `@Union` types the union of their member types. A type nested in another type is declared under its own name, without the names of the types around it (`Encoding` for `DigestOptions.Encoding`). The command leaves the file untouched when it already holds the generated content, only replaces a file that starts with its own header, so it never overwrites a hand-written file, and removes such a file when the package no longer exports anything.
 
 ```sh
 expo-modules generate-types packages/expo-video
@@ -21,10 +21,12 @@ expo-modules generate-types packages/expo-video
 
 The scanner is a macOS binary, so this command runs on macOS only. Support for Linux is planned.
 
+The command scans with the `expo-modules-macros` version that the package's `expo-modules-core` depends on, the same version the iOS build compiles the macros with. It finds that version through the `expo` package, so `expo` must be installed in the package, which every Expo module has as a peer dependency.
+
 Options:
 
 - `-o, --out <path>`: the TypeScript file to write, relative to the package directory. Defaults to `src/native.types.ts`.
-- `--scanner <path>`: path to the Expo Modules scanner executable. Defaults to the scanner bundled with the CLI.
+- `--scanner <path>`: path to the Expo Modules scanner executable. Defaults to the scanner that ships with the `expo-modules-macros` version that `expo-modules-core` depends on.
 - `--check`: verify that the file is up to date without writing it. Exits with code 1 when the file is missing, outdated, or no longer needed, so a CI job can catch a stale committed file.
 
 After writing, the command lists every declaration with its kind, TypeScript name, and the Swift file it came from, grouped by file. A Swift type the scanner cannot express in TypeScript renders as `unknown`, and the command prints a warning naming the Swift file and member so the gap is visible.

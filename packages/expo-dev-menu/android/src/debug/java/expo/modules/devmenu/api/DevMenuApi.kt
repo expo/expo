@@ -17,7 +17,6 @@ import expo.modules.devmenu.GoHomeAction
 import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
-import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
@@ -89,15 +88,6 @@ object DevMenuApi {
   }
 
   fun uninstallDefaultShakeDetector(devSupportManager: DevSupportManager) {
-    if (devSupportManager !is DevSupportManagerBase) {
-      Log.w("DevMenu", "DevSupportManager is not an instance of DevSupportManagerBase. Skipping uninstallation of the default shake detector.")
-      return
-    }
-
-    DevMenuShakeDetectorListenerSwapper()
-      .swapShakeDetectorListener(
-        devSupportManager,
-        newListener = {}
-      )
+    devSupportManager.shakeGestureEnabled = false
   }
 }

@@ -19,8 +19,9 @@ Pod::Spec.new do |s|
   s.header_dir     = 'ExpoModulesTestCore'
 
   # Test specs depend on this pod to pull in the JS runtime that ExpoModulesCore requires when running
-  # tests, and to share the benchmark runner (see `Benchmarks`).
-  s.source_files   = 'Benchmarks/**/*.swift'
+  # tests, to share the benchmark runner (see `Benchmarks`), and to give tests a runtime with a
+  # JavaScript thread (see `Runtime`).
+  s.source_files   = '{Benchmarks,Runtime}/**/*.swift'
   s.dependency 'ExpoModulesCore'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],
@@ -29,5 +30,12 @@ Pod::Spec.new do |s|
     s.dependency 'React-jsc'
   else
     s.dependency 'React-hermes'
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.swift'
+    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
+    # user_target_xcconfig (-lc++), so link the C++ runtime explicitly.
+    test_spec.libraries = 'c++'
   end
 end

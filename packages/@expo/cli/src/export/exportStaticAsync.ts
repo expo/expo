@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ExpoConfig } from '@expo/config';
+import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
@@ -33,6 +34,7 @@ import {
 } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
+  getGranularAssetsForRoute,
   serialAssetsToStaticContentAssets,
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
@@ -413,8 +415,7 @@ export async function exportFromServerAsync(
         loaderReferences,
       });
 
-      const toAssetUrl = (filename: string) =>
-        baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
+      const toAssetUrl = (filename: string) => getChunkUrl(baseUrl, filename);
 
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
@@ -425,11 +426,22 @@ export async function exportFromServerAsync(
         );
 
       const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
-      const orderedJsAssets = assetsRequiresSort(jsArtifacts);
+      const isGranular = jsArtifacts.some(
+        (asset) => asset.metadata.chunkingStrategy === 'granular'
+      );
+      const orderedJsAssets = isGranular
+        ? getGranularAssetsForRoute(jsArtifacts)
+        : assetsRequiresSort(jsArtifacts);
       const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
       const asyncJs = orderedJsAssets.filter((asset) => asset.metadata.isAsync);
 
-      const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
+      const topLevelJs = new Set(
+        isGranular ? syncJs.filter((asset) => !asset.metadata.entryPaths?.length) : syncJs
+      );
+      const topLevelJsAssets = [...topLevelJs].map((asset) => toAssetUrl(asset.filename));
+      const fallbackJsAssets = syncJs
+        .filter((asset) => !topLevelJs.has(asset))
+        .map((asset) => toAssetUrl(asset.filename));
 
       const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
 
@@ -437,6 +449,16 @@ export async function exportFromServerAsync(
       const routeAssets = new Map<string, string[]>();
       for (const { route } of htmlRoutes) {
         if (!route.entryPoints || !Array.isArray(route.entryPoints)) {
+          continue;
+        }
+
+        if (isGranular) {
+          routeAssets.set(
+            route.contextKey,
+            getGranularAssetsForRoute(jsArtifacts, route.entryPoints)
+              .filter((asset) => !topLevelJs.has(asset))
+              .map((asset) => toAssetUrl(asset.filename))
+          );
           continue;
         }
 
@@ -468,7 +490,7 @@ export async function exportFromServerAsync(
         callback: (manifest) => {
           manifest.assets = {
             css: cssAssets,
-            js: syncJsAssets,
+            js: topLevelJsAssets,
             favicon: faviconAsset?.href,
           };
           manifest.rendering = {
@@ -476,8 +498,12 @@ export async function exportFromServerAsync(
             file: '_expo/server/render.js',
           };
 
-          for (const route of manifest.htmlRoutes) {
-            const asyncChunks = routeAssets.get(route.file);
+          const routes = isGranular
+            ? [...manifest.htmlRoutes, ...manifest.notFoundRoutes]
+            : manifest.htmlRoutes;
+          for (const route of routes) {
+            const asyncChunks =
+              routeAssets.get(route.file) ?? (isGranular ? fallbackJsAssets : undefined);
             if (asyncChunks) {
               route.assets = { css: [], js: asyncChunks };
             }

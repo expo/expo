@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -51,6 +52,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
+import expo.modules.ui.colors.withOverrides
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -68,6 +70,7 @@ internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
 internal data class HostProps(
   val colorScheme: MutableState<ExpoColorScheme?> = mutableStateOf(null),
   val seedColor: MutableState<android.graphics.Color?> = mutableStateOf(null),
+  val colorOverrides: MutableState<Map<String, android.graphics.Color>?> = mutableStateOf(null),
   val layoutDirection: MutableState<ExpoLayoutDirection> = mutableStateOf(ExpoLayoutDirection.LeftToRight),
   val useViewportSizeMeasurement: MutableState<Boolean> = mutableStateOf(false),
   val ignoreSafeAreaKeyboardInsets: MutableState<Boolean> = mutableStateOf(false),
@@ -120,6 +123,26 @@ internal class HostView(context: Context, appContext: AppContext) :
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
 
+  /**
+   * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
+   * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
+   * the JS responder's view intercepting the stream, which cancels its native children.
+   */
+  internal var isDispatchingCancelFromParent = false
+    private set
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      return super.dispatchTouchEvent(ev)
+    }
+    isDispatchingCancelFromParent = true
+    try {
+      return super.dispatchTouchEvent(ev)
+    } finally {
+      isDispatchingCancelFromParent = false
+    }
+  }
+
   @Composable
   override fun ComposableScope.Content() {
     val context = LocalContext.current
@@ -132,9 +155,10 @@ internal class HostView(context: Context, appContext: AppContext) :
     val seededScheme = remember(seedArgb, isDark) {
       seedArgb?.let { seedColorScheme(it, isDark) }
     }
-    val colorScheme = seededScheme
+    val baseColorScheme = seededScheme
       ?: props.colorScheme.value?.toColorScheme(context)
       ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val colorScheme = baseColorScheme.withOverrides(props.colorOverrides.value.orEmpty())
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     // Material3's `MaterialTheme` does not provide `LocalContentColor` — only `Surface` does — so

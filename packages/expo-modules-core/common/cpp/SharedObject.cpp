@@ -74,6 +74,27 @@ void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser) {
   prototype.setProperty(runtime, "release", releaseFunction);
   prototype.setProperty(runtime, "toJSON", toJSONFunction);
 
+  // React in development deep-compares props whose `Object.prototype.toString` is `[object Object]`.
+  // That reads every property getter, and a getter throws when its shared object was released.
+  // The tag is the name of the object's class, so subclasses, also those defined in JS, report their own.
+  jsi::Symbol toStringTag = runtime.global()
+    .getPropertyAsObject(runtime, "Symbol")
+    .getProperty(runtime, "toStringTag")
+    .getSymbol(runtime);
+  defineProperty(runtime, &prototype, toStringTag, common::PropertyDescriptor {
+    .configurable = true,
+    .get = [](jsi::Runtime &runtime, jsi::Object thisObject) {
+      jsi::Value constructor = thisObject.getProperty(runtime, "constructor");
+      if (constructor.isObject()) {
+        jsi::Value name = constructor.getObject(runtime).getProperty(runtime, "name");
+        if (name.isString() && !name.getString(runtime).utf8(runtime).empty()) {
+          return name;
+        }
+      }
+      return jsi::Value(jsi::String::createFromAscii(runtime, "SharedObject"));
+    }
+  });
+
   // This property should be deprecated, but it's still used when passing as a view prop.
   defineProperty(runtime, &prototype, "__expo_shared_object_id__", common::PropertyDescriptor {
     .get = [](jsi::Runtime &runtime, jsi::Object thisObject) {

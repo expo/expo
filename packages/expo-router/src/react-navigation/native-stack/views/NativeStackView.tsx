@@ -20,6 +20,7 @@ import type {
   NativeStackViewState,
 } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
+import { getPlatformHeaderTransparent } from './headerAppearance';
 
 type Props = {
   state: NativeStackViewState;
@@ -71,13 +72,14 @@ export function NativeStackView({
           headerBackIcon,
           headerBackImageSource,
           headerLeft,
-          headerTransparent,
+          headerTransparent: headerTransparentOption,
           headerBackTitle,
           presentation,
           contentStyle,
           ...rest
         } = options;
 
+        const headerTransparent = getPlatformHeaderTransparent(headerTransparentOption);
         const nextPresentation = nextDescriptor?.options.presentation;
 
         const routeIsPreloaded = isPreloaded(route.key);

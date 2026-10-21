@@ -13,7 +13,7 @@ struct JavaScriptUnownedDecodeTests {
 
   private func unowned<T: JavaScriptDecodable>(_ type: T.Type, from source: String) throws -> T {
     let value = try runtime.eval(source)
-    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value)
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value.ref())
     return try T.decode(buffer.unownedValue(at: 0), in: runtime)
   }
 
@@ -83,6 +83,28 @@ struct JavaScriptUnownedDecodeTests {
     #expect(try Date.decode(runtime.eval("1000"), in: runtime) == Date(timeIntervalSince1970: 1))
     #expect(try Date.decode(runtime.eval("'1970-01-01T00:00:02Z'"), in: runtime) == Date(timeIntervalSince1970: 2))
     #expect(try Date.decode(runtime.eval("new Date(3000)"), in: runtime) == Date(timeIntervalSince1970: 3))
+  }
+
+  // MARK: - Values without an owning copy
+
+  @Test
+  func `wide integers decode a borrowed BigInt`() throws {
+    #expect(try unowned(Int64.self, from: "-9007199254740993n") == -9_007_199_254_740_993)
+    #expect(try unowned(UInt64.self, from: "18446744073709551615n") == UInt64.max)
+  }
+
+  @Test
+  func `decodeAny decodes a borrowed BigInt`() throws {
+    let value = try runtime.eval("42n")
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: value.ref())
+    #expect(try JavaScriptValue.decodeAny(buffer.unownedValue(at: 0), in: runtime) as? Int64 == 42)
+  }
+
+  @Test
+  func `Set decodes a borrowed Set, an array and a scalar`() throws {
+    #expect(try unowned(Set<Int>.self, from: "new Set([1, 2, 3])") == [1, 2, 3])
+    #expect(try unowned(Set<Int>.self, from: "[1, 2, 2]") == [1, 2])
+    #expect(try unowned(Set<Int>.self, from: "7") == [7])
   }
 }
 

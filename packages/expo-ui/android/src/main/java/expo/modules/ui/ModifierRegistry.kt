@@ -147,7 +147,7 @@ internal enum class IntrinsicSizeType(val value: String) : Enumerable {
 
 @OptimizedRecord
 internal data class ComposeWidthParams(
-  @Field val width: Either<Int, IntrinsicSizeType>? = null
+  @Field val width: Either<Double, IntrinsicSizeType>? = null
 ) : Record
 
 @OptimizedRecord
@@ -323,7 +323,8 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 @OptimizedRecord
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
-  @Field val role: SemanticRoleType? = null
+  @Field val role: SemanticRoleType? = null,
+  @Field val enabled: Boolean = true
 ) : Record
 
 internal enum class MenuAnchorType(val value: String) : Enumerable {
@@ -496,7 +497,7 @@ object ModifierRegistry {
       if (width?.`is`(IntrinsicSizeType::class) == true) {
         Modifier.width(width.second().toComposeIntrinsicSize())
       } else {
-        Modifier.width((width?.first() ?: 0).dp)
+        Modifier.width((width?.first() ?: 0.0).dp)
       }
     }
 
@@ -831,6 +832,7 @@ object ModifierRegistry {
       }
       Modifier.toggleable(
         value = params.value,
+        enabled = params.enabled,
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )

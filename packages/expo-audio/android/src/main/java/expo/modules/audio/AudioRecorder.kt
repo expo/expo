@@ -46,6 +46,7 @@ class AudioRecorder(
   var startTime = 0L
   var isRecording = false
   var isPaused = false
+  private var isPausedBySystem = false
   private var recordingTimerJob: Job? = null
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
@@ -109,6 +110,7 @@ class AudioRecorder(
   }
 
   fun record() {
+    isPausedBySystem = false
     if (useForegroundService) {
       serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
         throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
@@ -157,12 +159,26 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
+    isPausedBySystem = false
     recordingTimerJob?.cancel()
     recordingTimerJob = null
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+  }
+
+  fun pauseForSystem() {
+    if (isRecording) {
+      pauseRecording()
+      isPausedBySystem = true
+    }
+  }
+
+  fun resumeAfterSystemPause() {
+    if (isPausedBySystem && isPaused) {
+      record()
+    }
   }
 
   private fun scheduleRecordingStop() {

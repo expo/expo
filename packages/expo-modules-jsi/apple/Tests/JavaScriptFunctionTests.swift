@@ -246,7 +246,7 @@ struct JavaScriptFunctionTests {
     let result = try fn.call(arguments: 21)
 
     #expect(result.isObject() == true)
-    #expect(result.is("Promise"))
+    #expect(result.is("Promise") == true)
   }
 
   @Test
@@ -305,7 +305,7 @@ struct JavaScriptFunctionTests {
     try runtime.eval("globalThis.checkArgs = function(a, b) { return [a === null, b === undefined]; };")
 
     let fn = try runtime.global().getPropertyAsFunction("checkArgs")
-    let result = try fn.call(arguments: JavaScriptValue.null, JavaScriptValue.undefined)
+    let result = try fn.call(arguments: JavaScriptValue.null().ref(), JavaScriptValue.undefined().ref())
     let array = result.getArray()
 
     #expect(try array.getValue(at: 0).getBool() == true)

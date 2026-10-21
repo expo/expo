@@ -107,66 +107,34 @@ class VideoManager {
 
   private func setAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()
-    let audioMixingMode = findAudioMixingMode()
-    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = audioSession.categoryOptions
+    let policy = AudioSessionPolicy.evaluate(
+      category: audioSession.category,
+      mode: audioSession.mode,
+      options: audioSession.categoryOptions,
+      players: videoPlayers.allObjects.map { player in
+        AudioSessionPolicy.PlayerState(
+          isPlaying: player.isPlaying,
+          isMuted: player.isMuted,
+          showNowPlayingNotification: player.showNowPlayingNotification,
+          audioMixingMode: player.audioMixingMode
+        )
+      }
+    )
 
-    let isOutputtingAudio = videoPlayers.allObjects.contains { player in
-      player.isPlaying && !player.isMuted
-    }
-    let anyPlayerShowsNotification = videoPlayers.allObjects.contains { player in
-      player.showNowPlayingNotification
-    }
-
-    let shouldMixOverride = audioMixingMode == .mixWithOthers
-    let doNotMixOverride = audioMixingMode == .doNotMix
-    let shouldDuckOthers = audioMixingMode == .duckOthers && isOutputtingAudio
-
-    // The now playing notification won't be shown if we allow the audio to mix with others
-    let autoShouldMix = !isOutputtingAudio && !anyPlayerShowsNotification
-    let shouldMixWithOthers = shouldMixOverride || autoShouldMix
-
-    if shouldMixWithOthers && !shouldDuckOthers && !doNotMixOverride {
-      audioSessionCategoryOptions.insert(.mixWithOthers)
-    } else {
-      audioSessionCategoryOptions.remove(.mixWithOthers)
-    }
-
-    if shouldDuckOthers && !doNotMixOverride {
-      audioSessionCategoryOptions.insert(.duckOthers)
-    } else {
-      audioSessionCategoryOptions.remove(.duckOthers)
-    }
-
-    if audioSession.categoryOptions != audioSessionCategoryOptions || audioSession.category != .playback || audioSession.mode != .moviePlayback {
+    if audioSession.categoryOptions != policy.options || audioSession.category != policy.category || audioSession.mode != policy.mode {
       do {
-        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
+        try audioSession.setCategory(policy.category, mode: policy.mode, options: policy.options)
       } catch {
         log.warn("[expo-video] Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
       }
     }
 
-    // Make sure audio session is active if any video is playing
-    if isOutputtingAudio || doNotMixOverride {
+    if policy.shouldActivate {
       do {
         try audioSession.setActive(true)
       } catch {
         log.warn("[expo-video] Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
-  }
-
-  private func findAudioMixingMode() -> AudioMixingMode? {
-    let playingPlayers = videoPlayers.allObjects.filter({ player in
-      player.isPlaying
-    })
-    var audioMixingMode: AudioMixingMode = .mixWithOthers
-
-    if playingPlayers.isEmpty {
-      return nil
-    }
-    for videoPlayer in playingPlayers where (audioMixingMode.priority()) < videoPlayer.audioMixingMode.priority() {
-      audioMixingMode = videoPlayer.audioMixingMode
-    }
-    return audioMixingMode
   }
 }

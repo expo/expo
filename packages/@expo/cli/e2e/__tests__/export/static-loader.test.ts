@@ -281,6 +281,7 @@ describe.each(
         { namedRegex: '^/\\(group\\)/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
@@ -306,6 +307,7 @@ describe.each(
         { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
@@ -335,7 +337,7 @@ describe.each(
     }
   );
 
-  it('renders meta tags from loader data in HTML', async () => {
+  it('renders route metadata in HTML', async () => {
     const response = await server.fetchAsync('/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());

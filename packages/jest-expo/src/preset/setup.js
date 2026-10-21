@@ -216,6 +216,10 @@ function attemptLookup(moduleName) {
       return true;
     }
 
+    // Jest's own files never call requireNativeModule, and reading them dominates the lookup cost.
+    if (/[\\/]node_modules[\\/](?:@jest[\\/]|jest-[^\\/]+[\\/])/.test(line.fileName)) {
+      return false;
+    }
     if (!fs.existsSync(line.fileName)) {
       return false;
     }

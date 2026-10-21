@@ -79,7 +79,18 @@ private final class MacroNamedCounter: SharedObject {
   }
 }
 
-@ExpoModule(classes: [MacroCounter.self, MacroNamedCounter.self])
+/// Exposes `@JS` members but no `@JS init`, and the module registers it with no DSL
+/// `Constructor`, so nothing can build its native instance from JavaScript.
+@SharedObject
+private final class MacroUnconstructableCounter: SharedObject {
+  @JS
+  func ping() -> String {
+    return "pong"
+  }
+}
+
+@ExpoModule(
+  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -116,7 +127,48 @@ private struct MacroSharedObjectTests {
     #expect(try runtime.eval("'MacroNamedCounter' in expo.modules.MacroSharedObjectModule").asBool() == false)
   }
 
+  @Test
+  func `Object.prototype.toString tags an instance with its class name`() throws {
+    // React in development deep-compares props only when this returns `[object Object]`.
+    register(MacroSharedObjectModule(appContext: appContext))
+    let tag = try runtime.eval(
+      """
+      Object.prototype.toString.call(new expo.modules.MacroSharedObjectModule.MacroCounter(1))
+      """)
+    #expect(try tag.asString() == "[object MacroCounter]")
+  }
+
+  @Test
+  func `Object.prototype.toString tags an instance of a JS subclass with the subclass name`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let tag = try runtime.eval(
+      """
+      class JSCounter extends expo.modules.MacroSharedObjectModule.MacroCounter {}
+      Object.prototype.toString.call(new JSCounter(1))
+      """)
+    #expect(try tag.asString() == "[object JSCounter]")
+  }
+
   // MARK: - Construction
+
+  @Test
+  func `constructing a class that cannot build its native instance throws`() throws {
+    // Both construction paths are skipped for such a class, so without the throw JavaScript would
+    // get an object with no native instance and fail later, at the first member access.
+    register(MacroSharedObjectModule(appContext: appContext))
+    let threw = try runtime.eval(
+      """
+      (() => {
+        try {
+          new expo.modules.MacroSharedObjectModule.MacroUnconstructableCounter()
+          return false
+        } catch (error) {
+          return String(error).includes('MacroUnconstructableCounter')
+        }
+      })()
+      """)
+    #expect(try threw.asBool() == true)
+  }
 
   @Test
   func `@JS init constructs the instance from JS arguments`() throws {

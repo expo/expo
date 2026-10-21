@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
@@ -17,6 +18,14 @@ import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;
 type HashSource = HashSources[number];
 type FingerprintDiff = Awaited<ReturnType<typeof diffFingerprintChangesAsync>>;
+
+// The config loader runs in the `node` on PATH, so that Node decides whether the load hook exists.
+const itWithHooks =
+  execFileSync('node', ['-p', "typeof require('module').registerHooks"], {
+    encoding: 'utf8',
+  }).trim() === 'function'
+    ? it
+    : it.skip;
 
 function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | FingerprintSource>(
   source: T
@@ -203,6 +212,58 @@ describe('managed project test', () => {
     expect(hash2).toEqual(hash2CLI);
 
     expect(hash).not.toBe(hash2);
+  });
+
+  itWithHooks('should hash the ES modules a dynamic config loads its plugins from', async () => {
+    const configPath = path.join(projectRoot, 'app.config.js');
+    const pluginsDir = path.join(projectRoot, 'plugins');
+    const labelPath = path.join(pluginsDir, 'label.mjs');
+    await fs.mkdir(pluginsDir, { recursive: true });
+    await fs.writeFile(labelPath, `export const label = 'first';\n`);
+    await fs.writeFile(
+      path.join(pluginsDir, 'with-label.mjs'),
+      [
+        `import { label } from './label.mjs';`,
+        ``,
+        `export function describeLabel() {`,
+        `  return label;`,
+        `}`,
+        ``,
+        `export default function withLabel(config) {`,
+        `  return config;`,
+        `}`,
+        ``,
+      ].join('\n')
+    );
+    await fs.writeFile(
+      configPath,
+      [
+        `const withLabel = require('./plugins/with-label.mjs').default;`,
+        ``,
+        `module.exports = ({ config }) => ({ ...config, plugins: [...(config.plugins ?? []), withLabel] });`,
+        ``,
+      ].join('\n')
+    );
+    try {
+      const sources = await getHashSourcesAsync(
+        projectRoot,
+        await normalizeOptionsAsync(projectRoot)
+      );
+      expect(sources).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: 'file', filePath: 'plugins/with-label.mjs' }),
+          expect.objectContaining({ type: 'file', filePath: 'plugins/label.mjs' }),
+        ])
+      );
+
+      const hash = await createProjectHashAsync(projectRoot);
+      await fs.writeFile(labelPath, `export const label = 'second';\n`);
+      const hash2 = await createProjectHashAsync(projectRoot);
+      expect(hash).not.toBe(hash2);
+    } finally {
+      await fs.rm(configPath, { force: true });
+      await fs.rm(pluginsDir, { force: true, recursive: true });
+    }
   });
 
   it('diffFingerprintChangesAsync - should return diff after adding native library', async () => {

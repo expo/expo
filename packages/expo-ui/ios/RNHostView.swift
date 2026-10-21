@@ -47,6 +47,24 @@ struct RNHostView: ExpoSwiftUI.View {
           isEnabled: !props.layoutRoot
         )
       )
+      .onAppear {
+        updateTouchHandler()
+      }
+      .onChange(of: props.children?.first?.childIdentity) { _ in
+        updateTouchHandler()
+      }
+      .onDisappear {
+        touchHandler.detach()
+      }
+  }
+
+  // Follows the current child, which Fabric can replace or remount while this view stays.
+  private func updateTouchHandler() {
+    if props.layoutRoot, let view = firstChildUIView {
+      touchHandler.attach(to: view)
+    } else {
+      touchHandler.detach()
+    }
   }
 
   @ViewBuilder
@@ -59,14 +77,6 @@ struct RNHostView: ExpoSwiftUI.View {
         shadowNodeProxy: props.shadowNodeProxy
       ) {
         Children()
-      }
-      .onAppear {
-        if props.layoutRoot {
-          touchHandler.attach(to: childUIView)
-        }
-      }
-      .onDisappear {
-        touchHandler.detach()
       }
     } else if matchesContents {
       // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
@@ -82,14 +92,6 @@ struct RNHostView: ExpoSwiftUI.View {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
-        .onAppear {
-          if props.layoutRoot, let view = firstChildUIView {
-            touchHandler.attach(to: view)
-          }
-        }
-        .onDisappear {
-          touchHandler.detach()
-        }
     }
   }
 
@@ -107,14 +109,17 @@ struct RNHostView: ExpoSwiftUI.View {
 private struct PublishContentOriginModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   let isEnabled: Bool
+  @Environment(\.expoHostingView) private var hostingView
 
   func body(content: Content) -> some View {
     if isEnabled {
       content
-        .onGeometryChange(for: CGRect.self) { proxy in
-          proxy.frame(in: .named(expoHostCoordinateSpace))
-        } action: { frame in
-          shadowNodeProxy.setContentOrigin?(frame.origin)
+        .onGeometryChange(for: CGPoint?.self) { proxy in
+          originInHost(proxy)
+        } action: { origin in
+          if let origin {
+            shadowNodeProxy.setContentOrigin?(origin)
+          }
         }
         .onDisappear {
           shadowNodeProxy.clearContentOrigin?()
@@ -122,6 +127,18 @@ private struct PublishContentOriginModifier: ViewModifier {
     } else {
       content
     }
+  }
+
+  // Relative to the `Host`'s UIKit view, which Yoga laid out, so a safe-area inset is included.
+  private func originInHost(_ proxy: GeometryProxy) -> CGPoint? {
+    #if os(macOS)
+    return proxy.frame(in: .named(expoHostCoordinateSpace)).origin
+    #else
+    guard let hostView = hostingView?.view, let window = hostView.window else {
+      return nil
+    }
+    return hostView.convert(proxy.frame(in: .global).origin, from: window)
+    #endif
   }
 }
 
@@ -158,6 +175,7 @@ private final class RNHostTouchHandler: ObservableObject {
 // An axis that is not matched fills the parent and reports its size to the Yoga node instead
 private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   @StateObject private var observer: Observer
+  let childUIView: UIView
   let horizontal: Bool
   let vertical: Bool
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
@@ -171,6 +189,7 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
     @ViewBuilder content: () -> Content
   ) {
     _observer = StateObject(wrappedValue: Observer(view: childUIView))
+    self.childUIView = childUIView
     self.horizontal = horizontal
     self.vertical = vertical
     self.shadowNodeProxy = shadowNodeProxy
@@ -178,6 +197,14 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   }
 
   var body: some SwiftUI.View {
+    sizedContent
+      .onChange(of: childUIView) { newView in
+        observer.observe(newView)
+      }
+  }
+
+  @ViewBuilder
+  private var sizedContent: some SwiftUI.View {
     if horizontal && vertical {
       content
         .frame(width: observer.size.width, height: observer.size.height)
@@ -208,6 +235,12 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
 
     init(view: UIView) {
       self.size = view.bounds.size
+      observe(view)
+    }
+
+    func observe(_ view: UIView) {
+      kvoToken?.invalidate()
+      size = view.bounds.size
       kvoToken = view.observe(\.bounds) { [weak self] view, _ in
         MainActor.assumeIsolated {
           self?.size = view.bounds.size

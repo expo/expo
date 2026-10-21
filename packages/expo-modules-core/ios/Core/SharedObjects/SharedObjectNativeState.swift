@@ -20,7 +20,7 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
   /// The JS object paired with the native object in each runtime, keyed by runtime identity and held
   /// weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes, or
   /// worklet contexts), each with its own JS counterpart.
-  private var pairedObjects: [JavaScriptRuntime.ID: JavaScriptRef<JavaScriptWeakObject>] = [:]
+  private var pairedObjects: [JavaScriptRuntime.ID: JavaScriptWeakObject.Ref] = [:]
 
   internal init(native: SharedObject, factory: @escaping JavaScriptNativeState.Factory) {
     self.native = native

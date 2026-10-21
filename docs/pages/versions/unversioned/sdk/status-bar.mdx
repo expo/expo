@@ -127,6 +127,29 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+### Vertical bar on iPhone Duo
+
+> **important** The vertical bar APIs need iOS 27.1 or later and a build made with Xcode 27.1 or later. On older builds and systems, `useVerticalBarEdgeIOS` returns `null` and `verticalBarBehaviorIOS` has no effect.
+
+iPhone Duo defaults to placing the status bar in a vertical bar beside your content instead of along the top. Use `useVerticalBarEdgeIOS` to find which edge the vertical bar is on, for example to keep custom controls clear of it. It returns `'leading'`, `'trailing'`, or `null`. On devices and in orientations without a vertical bar (including iPhone Duo), it returns `null`. The value updates when the device rotates or unfolds.
+
+```tsx
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
+
+export default function Screen() {
+  const verticalBarEdge = useVerticalBarEdgeIOS();
+  // 'leading' | 'trailing' | null
+}
+```
+
+To keep the status bar and other system bars horizontal, set `verticalBarBehaviorIOS="disabled"` on a mounted `StatusBar`. Reserve this for screens that work better with horizontal bars, such as a full-screen video player. The edge that `useVerticalBarEdgeIOS` reports stays the same while the vertical bar is disabled.
+
+```tsx
+<StatusBar verticalBarBehaviorIOS="disabled" />
+```
+
+When several mounted `StatusBar` components set this prop, the most recently mounted one applies.
+
 ## API
 
 ```js

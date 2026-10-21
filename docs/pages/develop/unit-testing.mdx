@@ -376,6 +376,12 @@ You can also use different flows to run your tests. Below are a few example scri
 
 For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest documentation.
 
+## Migrate tests to SDK 58
+
+In SDK 58 and later, `jest-expo` requires Jest 30. When upgrading an existing app, update `jest` and `@types/jest` along with `jest-expo`.
+
+For Expo Router tests, also update `@testing-library/react-native` to version 14 or later and follow the [Router testing migration guide](/router/migrate/sdk-57-to-58/#update-router-tests).
+
 ## Additional information
 
 <BoxLink

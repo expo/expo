@@ -10,6 +10,7 @@ import path from 'path';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
+import { SwiftPMUnsupportedError } from './error';
 import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
@@ -126,7 +127,7 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage }: { npmPackage?: string | null }
+  { npmPackage, swiftpm }: { npmPackage?: string | null; swiftpm?: boolean }
 ): Promise<string> {
   const projectName = path.basename(projectRoot);
 
@@ -146,6 +147,10 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
+  if (swiftpm) {
+    await assertSwiftPMSupportedAsync(projectRoot, 'template');
+  }
+
   const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
 
   try {
@@ -163,7 +168,7 @@ export async function extractAndPrepareTemplateAppAsync(
     throw error;
   }
 
-  await sanitizeTemplateAsync(projectRoot);
+  await sanitizeTemplateAsync(projectRoot, { swiftpm });
 
   return projectRoot;
 }
@@ -385,9 +390,36 @@ function templateHasNativeCode(root: string): boolean {
 }
 
 /**
+ * Throw a `SwiftPMUnsupportedError` when the extracted project depends on a React Native version
+ * older than 0.88. Versions that cannot be read here are left for `expo prebuild` to reject.
+ */
+export async function assertSwiftPMSupportedAsync(
+  projectRoot: string,
+  source: 'template' | 'example'
+): Promise<void> {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return;
+  }
+  const { dependencies } = await JsonFile.readAsync<{ dependencies?: Record<string, string> }>(
+    packageJsonPath
+  );
+  const reactNativeVersion = dependencies?.['react-native'];
+  const [, major, minor] = reactNativeVersion?.match(/(\d+)\.(\d+)/) ?? [];
+  // Nightlies are versioned `0.0.0-<date>-<sha>`, so a minor of 0 is not an old release.
+  if (reactNativeVersion && Number(major) === 0 && Number(minor) >= 1 && Number(minor) < 88) {
+    const projectDir = path.relative(process.cwd(), projectRoot) || path.basename(projectRoot);
+    throw new SwiftPMUnsupportedError(source, reactNativeVersion, projectDir);
+  }
+}
+
+/**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
-export async function sanitizeTemplateAsync(projectRoot: string) {
+export async function sanitizeTemplateAsync(
+  projectRoot: string,
+  { swiftpm = false }: { swiftpm?: boolean } = {}
+) {
   const projectName = path.basename(projectRoot);
 
   debug(`Sanitizing template or example app (projectName: ${projectName})`);
@@ -411,9 +443,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     }
   }
 
-  const defaultConfig: ExpoConfig = {
+  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema yet.
+  const defaultConfig: ExpoConfig & { experiments?: { swiftPackageManager?: boolean } } = {
     name: projectName,
     slug: projectName,
+    ...(swiftpm && { experiments: { swiftPackageManager: true } }),
   };
 
   const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {

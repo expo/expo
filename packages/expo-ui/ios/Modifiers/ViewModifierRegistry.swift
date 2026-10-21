@@ -1864,10 +1864,11 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
     case .inline:
       return .inline
     case .inlineLarge:
-      if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
-        return .inlineLarge
-      }
+#if os(tvOS)
       return nil
+#else
+      return .inlineLarge
+#endif
     case .large:
 #if os(iOS)
       return .large
@@ -1970,6 +1971,10 @@ extension ViewModifierRegistry {
 
     register("tint") { params, appContext, _ in
       return try TintModifier(from: params, appContext: appContext)
+    }
+
+    register("selectedSegmentTintColor") { params, appContext, _ in
+      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
     }
 
     register("hidden") { params, appContext, _ in
@@ -2085,6 +2090,26 @@ extension ViewModifierRegistry {
 
     register("navigationSplitViewColumnWidth") { params, appContext, _ in
       return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
+    register("arrangementViewStyle") { params, appContext, _ in
+      return try ArrangementViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutRatio") { params, appContext, _ in
+      return try SplitArrangementLayoutRatioModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutSize") { params, appContext, _ in
+      return try SplitArrangementLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementFixedLayoutSize") { params, appContext, _ in
+      return try SplitArrangementFixedLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("overlayArrangementEdge") { params, appContext, _ in
+      return try OverlayArrangementEdgeModifier(from: params, appContext: appContext)
     }
 
     register("accessibilityLabel") { params, appContext, _ in
@@ -2359,6 +2384,14 @@ extension ViewModifierRegistry {
       return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("searchable") { params, appContext, eventDispatcher in
+      return try SearchableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("searchToolbarBehavior") { params, appContext, _ in
+      return try SearchToolbarBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
@@ -2513,6 +2546,10 @@ extension ViewModifierRegistry {
 
     register("onScrollGeometryChange") { params, appContext, eventDispatcher in
       return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onHingeChange") { params, appContext, eventDispatcher in
+      return try OnHingeChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

@@ -1,5 +1,35 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Add `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` to `AudioLockScreenOptions` to customize the lock screen skip intervals. Both default to 10 seconds and are clamped to at least 0.1 seconds. ([#44804](https://github.com/expo/expo/pull/44804) by [@radko93](https://github.com/radko93))
+
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Re-apply `preferredForwardBufferDuration` when the player item is replaced or a loop item is queued. ([#50468](https://github.com/expo/expo/pull/50468) by [@rmotafreitas](https://github.com/rmotafreitas))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Request audio focus when playback is started from the notification, the lock screen or a media button, so it pauses for an incoming call like playback started from JS. ([#50745](https://github.com/expo/expo/pull/50745) by [@enavermate](https://github.com/enavermate))
+
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Fix `currentDate` call in `replace()` freezing the app for up to several seconds while the new source loads. ([#50724](https://github.com/expo/expo/pull/50724) by [@tomKFM](https://github.com/tomKFM))
+
+## 58.0.6
+
+### Patch Changes
+
+- [iOS][Android] Fixed recorders that the user paused starting to record again when the app returned to the foreground. On iOS, this also happened to recorders that were only prepared, and when an audio interruption ended. Now only recordings that the system paused are resumed. ([#51048](https://github.com/expo/expo/pull/51048) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.5
 
 ### Patch Changes

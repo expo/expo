@@ -27,12 +27,13 @@ function valueOf(argv, flag) {
 }
 
 describe('generateModulesProvider', () => {
-  it('always passes the target, app root and platform', () => {
+  it('always passes the target, app root and platforms', () => {
     const argv = argvFor({});
     expect(argv[1]).toBe('generate-modules-provider');
     expect(valueOf(argv, '--target')).toMatch(/ExpoModulesProvider\.swift$/);
     expect(valueOf(argv, '--app-root')).toBe(path.join(os.tmpdir(), 'app'));
     expect(valueOf(argv, '--platform')).toBe('apple');
+    expect(valueOf(argv, '--target-platform')).toBe('ios');
   });
 
   it('passes the app target name, entitlements and Podfile properties when resolved', () => {

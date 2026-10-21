@@ -18,7 +18,8 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
-  internal let pointee: facebook.jsi.Array
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed array.
+  internal var pointee: facebook.jsi.Array
 
   /// Creates a new JavaScript array with the specified length.
   ///
@@ -75,74 +76,6 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     self.pointee = pointee
   }
 
-  /// Creates a new JavaScript array initialized with the provided array of values.
-  ///
-  /// This initializer allows you to create a JavaScript array from a Swift array of
-  /// `JavaScriptValue` elements. This is particularly useful when you already have
-  /// a collection of values and want to avoid the syntactic overhead of spreading them
-  /// as variadic arguments.
-  ///
-  /// - Parameters:
-  ///   - runtime: The JavaScript runtime in which to create the array
-  ///   - items: A Swift array of `JavaScriptValue` elements to populate the array with
-  ///
-  /// ## Examples
-  ///
-  /// ```swift
-  /// // Create from an existing array
-  /// let values = [JavaScriptValue.number(1), .number(2), .number(3)]
-  /// let array = JavaScriptArray(runtime, items: values)
-  ///
-  /// // Create from a mapped collection
-  /// let numbers = [1, 2, 3, 4, 5]
-  /// let jsValues = numbers.map { JavaScriptValue.number(Double($0)) }
-  /// let array = JavaScriptArray(runtime, items: jsValues)
-  /// ```
-  ///
-  /// - Note: Due to limitations in Swift/C++ interop with `std::initializer_list`, this
-  ///   implementation creates an empty array first and then populates it element by element,
-  ///   rather than using JSI's `createWithElements` method directly.
-  /// - SeeAlso: `init(_:items:)` for the variadic argument version
-  public init(_ runtime: borrowing JavaScriptRuntime, items: [JavaScriptValue]) {
-    self.init(runtime, length: items.count)
-
-    for (i, item) in items.enumerated() {
-      self[i] = item
-    }
-  }
-
-  /// Creates a new JavaScript array initialized with the provided values.
-  ///
-  /// This convenience initializer allows you to create a JavaScript array from a variable
-  /// number of `JavaScriptValue` arguments. The array is created with the appropriate length
-  /// and populated with the provided values in order.
-  ///
-  /// - Parameters:
-  ///   - runtime: The JavaScript runtime in which to create the array
-  ///   - items: A variadic list of `JavaScriptValue` elements to populate the array with
-  ///
-  /// ## Examples
-  ///
-  /// ```swift
-  /// // Create an empty array
-  /// let empty = JavaScriptArray(runtime, items: )
-  ///
-  /// // Create an array with values
-  /// let numbers = JavaScriptArray(runtime, items: .number(1), .number(2), .number(3))
-  ///
-  /// // Mix different value types
-  /// let mixed = JavaScriptArray(runtime,
-  ///   items: .string("hello"), .number(42), .bool(true))
-  /// ```
-  ///
-  /// - Note: This variadic version internally creates a Swift array and delegates to the
-  ///   array-based initializer. If you already have an array of values, consider using
-  ///   `init(_:items:)` directly for cleaner syntax.
-  /// - SeeAlso: `init(_:items:)` for the array version
-  public init(_ runtime: borrowing JavaScriptRuntime, items: JavaScriptValue...) {
-    self.init(runtime, items: items)
-  }
-
   /// Creates a new JavaScript array from variadic arguments of any types conforming to `JavaScriptRepresentable`.
   ///
   /// This generic initializer uses Swift's parameter pack feature to accept a variable number of
@@ -174,9 +107,9 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///
   /// - Note: This initializer automatically converts each item to a `JavaScriptValue` using
   ///   its `toJavaScriptValue(in:)` method, providing compile-time type safety.
-  /// - Note: Unlike the `JavaScriptValue` variadic initializer, this version accepts heterogeneous
-  ///   types directly without requiring explicit `JavaScriptValue` wrapping.
-  /// - SeeAlso: `init(_:items:)` for the `JavaScriptValue` array version
+  /// - Note: Parameter packs accept copyable types only, so a non-copyable value goes through its
+  ///   `ref()`. To fill an array from a Swift collection of values, create it with `init(_:length:)`
+  ///   and assign the elements through the subscript.
   public init<each T: JavaScriptRepresentable>(_ runtime: borrowing JavaScriptRuntime, items: repeat each T) {
     var length: Int = 0
     for _ in repeat each items {
@@ -261,9 +194,20 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// Returns the value at the given index without bounds-checking. Used by the iteration
   /// helpers (`map`, `forEach`, `reduce`, `filter`, `enumerated`) which iterate
   /// `0..<length` and never produce an out-of-range index. Skipping the redundant bounds
-  /// check avoids a weak-runtime load on every element on the hot path.
+  /// check avoids a call into the engine for the array's length on every element.
   internal func getValueUnchecked(at index: Int, in jsiRuntime: facebook.jsi.IRuntime) -> JavaScriptValue {
     return JavaScriptValue(runtimeHandle, pointee.getValueAtIndex(jsiRuntime, index))
+  }
+
+  /// Sets the value at the given index without bounds-checking or growing the array. The caller
+  /// guarantees that `index` is below the length, for example when filling an array created with
+  /// a known length.
+  @usableFromInline
+  internal func setValueUnchecked(_ value: borrowing JavaScriptValue, at index: Int) {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    expo.setValueAtIndex(jsiRuntime, pointee, index, value.pointee)
   }
 
   /// Sets the element at the specified index.
@@ -301,7 +245,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// ```swift
   /// let array = try runtime.eval("[1, 2, 3]").getArray()
   /// let value = array[1]           // JavaScriptValue(2)
-  /// let outOfRange = array[10]     // JavaScriptValue.undefined
+  /// let outOfRange = array[10]     // JavaScriptValue.undefined()
   /// ```
   ///
   /// ## Setting Values
@@ -320,7 +264,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   are filled with `undefined`, matching JavaScript's behavior.
   public subscript(index: Int) -> JavaScriptValue {
     get {
-      return (try? self.getValue(at: index)) ?? .undefined
+      return (try? self.getValue(at: index)) ?? .undefined()
     }
     nonmutating set {
       guard let jsiRuntime else {
@@ -446,7 +390,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Throws: Any error thrown by the `transform` closure.
   /// - Note: This method uses Swift's standard `map` semantics and follows the `rethrows`
   ///   pattern, meaning it only throws if the transform closure throws.
-  public func map<T>(_ transform: (_ value: JavaScriptValue) throws -> T) rethrows -> [T] {
+  public func map<T>(_ transform: (_ value: borrowing JavaScriptValue) throws -> T) rethrows -> [T] {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -496,7 +440,14 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
+    assert(runtime?.isOnOwningThread() ?? true, "A JavaScript value was copied off its runtime's JavaScript thread")
     return JavaScriptValue(runtimeHandle, expo.valueFromArray(jsiRuntime, pointee))
+  }
+
+  /// Moves the array into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  @usableFromInline
+  internal consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromArray(&pointee))
   }
 
   /// Converts the array to a `JavaScriptObject`.
@@ -549,24 +500,21 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
 // equivalent functionality without requiring protocol conformance.
 
 extension JavaScriptArray {
-  /// Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
-  ///
-  /// - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
-  public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
+  /// Calls the given closure on each element in the array together with its index, similar to
+  /// iterating `Sequence.enumerated()`. Named apart from `forEach(_:)` so a trailing closure is never
+  /// ambiguous between the two.
+  public func forEachIndexed(_ body: (_ index: Int, _ element: borrowing JavaScriptValue) throws -> Void) rethrows {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
-    var result: [(offset: Int, element: JavaScriptValue)] = []
-    result.reserveCapacity(count)
     for index in 0..<count {
-      result.append((offset: index, element: getValueUnchecked(at: index, in: jsiRuntime)))
+      try body(index, getValueUnchecked(at: index, in: jsiRuntime))
     }
-    return result
   }
 
   /// Calls the given closure on each element in the array.
-  public func forEach(_ body: (JavaScriptValue) throws -> Void) rethrows {
+  public func forEach(_ body: (borrowing JavaScriptValue) throws -> Void) rethrows {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -576,24 +524,11 @@ extension JavaScriptArray {
     }
   }
 
-  /// Returns an array of elements satisfying the given predicate.
-  public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
-    guard let jsiRuntime else {
-      FatalError.runtimeLost()
-    }
-    let count = self.length
-    var result: [JavaScriptValue] = []
-    for index in 0..<count {
-      let value = getValueUnchecked(at: index, in: jsiRuntime)
-      if try isIncluded(value) {
-        result.append(value)
-      }
-    }
-    return result
-  }
-
   /// Returns the result of combining the elements using the given closure.
-  public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, JavaScriptValue) throws -> Result)
+  public func reduce<Result>(
+    _ initialResult: Result,
+    _ nextPartialResult: (Result, borrowing JavaScriptValue) throws -> Result
+  )
     rethrows -> Result
   {
     guard let jsiRuntime else {
@@ -605,5 +540,45 @@ extension JavaScriptArray {
       result = try nextPartialResult(result, getValueUnchecked(at: index, in: jsiRuntime))
     }
     return result
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptArray` argument receives the JS value unconverted, like `JavaScriptValue`, but checked for
+// its kind: decoding anything else throws a `TypeError`. The typed wrapper is what the macros steer to
+// in place of a free-form `[Any]`.
+//
+// The unowned overload is the one a host function argument takes: it reads the kind off the borrowed
+// `jsi::Value` and clones it straight into the wrapper, where the default would first clone it into an
+// owning `JavaScriptValue` and then again into the wrapper.
+extension JavaScriptArray: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArray
+  {
+    return try value.asArray()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArray
+  {
+    return try value.asArray(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptArray, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }

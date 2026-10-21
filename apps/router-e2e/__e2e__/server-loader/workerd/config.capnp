@@ -14,6 +14,7 @@ const server :Workerd.Worker = (
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
     (name = "_expo/loaders/index.js", commonJsModule = embed "_expo/loaders/index.js"),
     (name = "_expo/loaders/env.js", commonJsModule = embed "_expo/loaders/env.js"),
+    (name = "_expo/loaders/large-suspense.js", commonJsModule = embed "_expo/loaders/large-suspense.js"),
     (name = "_expo/loaders/meta.js", commonJsModule = embed "_expo/loaders/meta.js"),
     (name = "_expo/loaders/nested/index.js", commonJsModule = embed "_expo/loaders/nested/index.js"),
     (name = "_expo/loaders/second.js", commonJsModule = embed "_expo/loaders/second.js"),

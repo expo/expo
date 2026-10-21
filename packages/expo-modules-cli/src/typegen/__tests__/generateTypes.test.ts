@@ -1,11 +1,18 @@
+import { SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION } from 'expo-modules-macros';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 import { generateTypes } from '../generateTypes';
 
+// The scanned paths are not real packages, so scan with the macros this CLI is developed against.
+jest.mock('../../scanner/resolveMacros', () => ({
+  ...jest.requireActual('../../scanner/resolveMacros'),
+  resolveMacros: () => jest.requireActual('expo-modules-macros'),
+}));
+
 const sampleScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: {
     records: [
       {
@@ -27,14 +34,17 @@ const sampleScan = {
         jsName: 'Player',
         file: '/pkg/ios/Demo.swift',
         events: [],
-        constructorParameters: [
-          {
-            label: 'options',
-            name: 'options',
-            type: { kind: 'ref', name: 'Options', typeof: 'object' },
-            optional: false,
-          },
-        ],
+        initializer: {
+          parameters: [
+            {
+              label: 'options',
+              name: 'options',
+              type: { kind: 'ref', name: 'Options', typeof: 'object' },
+              optional: false,
+            },
+          ],
+          platforms: [{ name: 'iOS' }],
+        },
         functions: [],
         properties: [],
       },
@@ -64,7 +74,7 @@ const sampleScan = {
 };
 
 const emptyScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: { records: [], sharedObjects: [], modules: [], enums: [], unions: [] },
   stats: { durationMs: 0.5, filesParsed: 0, filesScanned: 0 },
 };

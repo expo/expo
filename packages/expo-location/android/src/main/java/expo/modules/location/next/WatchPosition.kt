@@ -1,6 +1,7 @@
 package expo.modules.location.next
 
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -11,14 +12,22 @@ import expo.modules.location.next.locationProviders.WatchUpdate
 import kotlin.time.Duration
 
 @OptimizedRecord
+class PositionWatchError(
+  @Field val code: String,
+  @Field val message: String
+) : Record
+
+@OptimizedRecord
 class PositionChangedEvent(
   @Field val data: Position? = null,
-  @Field val error: String? = null
+  @Field val error: PositionWatchError? = null
 ) : Record
 
 private fun WatchUpdate.toEvent(): PositionChangedEvent = when (this) {
   is WatchUpdate.Fix -> PositionChangedEvent(data = position)
-  is WatchUpdate.Failure -> PositionChangedEvent(error = cause.message ?: cause.toString())
+  is WatchUpdate.Failure -> cause.toCodedException().let {
+    PositionChangedEvent(error = PositionWatchError(code = it.code, message = it.message ?: it.toString()))
+  }
 }
 
 class PositionWatchStatus(
@@ -27,12 +36,14 @@ class PositionWatchStatus(
   @Field val isHandleAlive: Boolean = false,
   @Field val isStarted: Boolean = false,
   @Field val isPaused: Boolean = false,
+  @Field val areUpdatesAllowed: Boolean = true,
   @Field val isInForeground: Boolean = true
 ) : Record
 
 class PausableWatchSession(
   initialParameters: WatchPositionParameters,
-  private val session: PositionUpdatesSession
+  private val session: PositionUpdatesSession,
+  private var areUpdatesAllowed: Boolean
 ) {
 
   private var activeParameters: WatchPositionParameters = initialParameters
@@ -41,13 +52,12 @@ class PausableWatchSession(
   var isPaused: Boolean = false
   var isStarted: Boolean = false
   var isReleased: Boolean = false
-  var isInForeground: Boolean = true
 
   private var onEvent: ((PositionChangedEvent) -> Unit)? = null
 
   @Synchronized
   private fun handleLocationUpdatesRequest(): Throwable? {
-    val shouldBeActive = !isPaused && isStarted && !isReleased && isInForeground
+    val shouldBeActive = !isPaused && isStarted && !isReleased && areUpdatesAllowed
     val shouldRequestUpdates = !session.isSubscribed() && shouldBeActive
     val onEvent = this.onEvent
     if (shouldRequestUpdates && onEvent != null) {
@@ -91,8 +101,8 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun onLifecycleChange(isInForeground: Boolean) {
-    this.isInForeground = isInForeground
+  fun setUpdatesAllowed(allowed: Boolean) {
+    this.areUpdatesAllowed = allowed
     emitEventOnFailure(handleLocationUpdatesRequest())
   }
 
@@ -129,13 +139,14 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun status(): PositionWatchStatus {
+  fun status(isInForeground: Boolean): PositionWatchStatus {
     return PositionWatchStatus(
       isSubscribed = session.isSubscribed(),
       canDeliverUpdates = session.canDeliverUpdates(),
       isHandleAlive = !isReleased,
       isStarted = isStarted,
       isPaused = isPaused,
+      areUpdatesAllowed = areUpdatesAllowed,
       isInForeground = isInForeground
     )
   }
