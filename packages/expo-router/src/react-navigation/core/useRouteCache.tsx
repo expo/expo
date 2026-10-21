@@ -7,7 +7,8 @@ import type { RouteProp } from './types';
 
 type RouteCache = Map<string, RouteProp<ParamListBase>>;
 
-// Navigating with the same param values gives a new params object. Compare params by value so the screen does not render again.
+// Navigating with the same param values creates a new `params` object, so compare params by value.
+// Nested objects and arrays are still compared by identity.
 function isRouteEqual(a: RouteProp<ParamListBase>, b: RouteProp<ParamListBase>) {
   const { params: aParams, ...aRest } = a;
   const { params: bParams, ...bRest } = b;
