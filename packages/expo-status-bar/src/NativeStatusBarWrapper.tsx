@@ -165,20 +165,40 @@ StatusBar.setVerticalBarBehaviorIOS = (behavior: VerticalBarBehaviorIOS): void =
  * @platform ios
  */
 export function useVerticalBarEdgeIOS(): VerticalBarEdgeIOS | null {
-  const [edge, setEdge] = React.useState(StatusBar.getVerticalBarEdgeIOS);
+  return React.useSyncExternalStore(
+    subscribeToVerticalBarEdge,
+    getVerticalBarEdgeSnapshot,
+    getVerticalBarEdgeSnapshot
+  );
+}
 
-  React.useEffect(() => {
-    if (!ExpoStatusBar) {
-      return;
+let cachedVerticalBarEdge: VerticalBarEdgeIOS | null | undefined;
+let verticalBarEdgeSubscription: { remove(): void } | null = null;
+const verticalBarEdgeListeners = new Set<() => void>();
+
+function subscribeToVerticalBarEdge(listener: () => void): () => void {
+  verticalBarEdgeListeners.add(listener);
+  if (ExpoStatusBar && !verticalBarEdgeSubscription) {
+    verticalBarEdgeSubscription = ExpoStatusBar.addListener('onVerticalBarEdgeChange', (event) => {
+      cachedVerticalBarEdge = event.edge;
+      verticalBarEdgeListeners.forEach((notify) => notify());
+    });
+  }
+  return () => {
+    verticalBarEdgeListeners.delete(listener);
+    if (verticalBarEdgeListeners.size === 0) {
+      verticalBarEdgeSubscription?.remove();
+      verticalBarEdgeSubscription = null;
+      cachedVerticalBarEdge = undefined;
     }
-    const subscription = ExpoStatusBar.addListener('onVerticalBarEdgeChange', (event) =>
-      setEdge(event.edge)
-    );
-    setEdge(ExpoStatusBar.getVerticalBarEdge());
-    return () => subscription.remove();
-  }, []);
+  };
+}
 
-  return edge;
+function getVerticalBarEdgeSnapshot(): VerticalBarEdgeIOS | null {
+  if (cachedVerticalBarEdge === undefined) {
+    cachedVerticalBarEdge = StatusBar.getVerticalBarEdgeIOS();
+  }
+  return cachedVerticalBarEdge;
 }
 
 function styleToBarStyle(
