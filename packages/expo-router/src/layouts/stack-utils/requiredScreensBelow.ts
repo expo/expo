@@ -81,44 +81,33 @@ function createMissingRoute<State extends NavigationState>(
   return { key: minter.mint(name), name, ...(params && { params }) } as State['routes'][number];
 }
 
-// Same params object in render and reducer, so the route cache reuses the route.
-const pathParamsCache = new WeakMap<object, Map<string, UnknownInputParams | undefined>>();
-
 /** Copies the focused route params that fill the dynamic segments of `name`. */
 function getPathParams(name: string, focusedParams: object | undefined) {
   if (!focusedParams) {
     return undefined;
   }
-  const cached = pathParamsCache.get(focusedParams) ?? new Map();
-  pathParamsCache.set(focusedParams, cached);
-  if (!cached.has(name)) {
-    // Route params are always a plain record.
-    const params = focusedParams as Record<string, unknown>;
-    const entries = name.split('/').flatMap((segment) => {
-      const param = matchDynamicName(segment)?.name;
-      return param !== undefined && params[param] !== undefined ? [[param, params[param]]] : [];
-    });
-    // The values come from the focused route's path params, which have the input param types.
-    cached.set(
-      name,
-      entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined
-    );
-  }
-  return cached.get(name);
+  // Route params are always a plain record.
+  const params = focusedParams as Record<string, unknown>;
+  const entries = name.split('/').flatMap((segment) => {
+    const param = matchDynamicName(segment)?.name;
+    return param !== undefined && params[param] !== undefined ? [[param, params[param]]] : [];
+  });
+  // The values come from the focused route's path params, which have the input param types.
+  return entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined;
 }
 
-function getFocusedRequiredScreens(
-  state: NavigationState,
+function getRouteRequiredScreens(
+  routeKey: string | undefined,
   descriptors: PlaceholderDescriptorMap
 ): readonly RequiredScreenBelow[] | undefined {
-  const focusedKey = state.routes[state.index]?.key;
   // The stack screen props add this internal option; it is not in the public option types.
-  const options = focusedKey
-    ? (descriptors[focusedKey]?.options as InternalNavigationOptions | undefined)
+  const options = routeKey
+    ? (descriptors[routeKey]?.options as InternalNavigationOptions | undefined)
     : undefined;
   return options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
 }
 
+/** Adds descriptors for the required screens that the state does not have yet. */
 export function processRequiredScreensDescriptors<
   State extends NavigationState,
   NavigatorOptions extends object,
@@ -127,7 +116,10 @@ export function processRequiredScreensDescriptors<
   state: State,
   describe: DescribePlaceholderRoute<NavigatorOptions>
 ): PlaceholderDescriptorMap<NavigatorOptions> {
-  const next = insertRequiredScreensBelow(state, getFocusedRequiredScreens(state, descriptors));
+  const next = insertRequiredScreensBelow(
+    state,
+    getRouteRequiredScreens(state.routes[state.index]?.key, descriptors)
+  );
   if (next === state) {
     return descriptors;
   }
@@ -138,11 +130,15 @@ export function processRequiredScreensDescriptors<
   };
 }
 
+/** Adds the required screens to the state that the stack renders. */
 export function processRequiredScreensState<
   State extends NavigationState,
   NavigatorOptions extends object,
 >(state: State, descriptors: PlaceholderDescriptorMap<NavigatorOptions>): State {
-  return insertRequiredScreensBelow(state, getFocusedRequiredScreens(state, descriptors));
+  return insertRequiredScreensBelow(
+    state,
+    getRouteRequiredScreens(state.routes[state.index]?.key, descriptors)
+  );
 }
 
 /**
@@ -154,7 +150,7 @@ export function useSyncRequiredScreensBelow(descriptors: PlaceholderDescriptorMa
   // The `state` prop of the navigator content already has the added routes. The context has the
   // state without them, which is what the sync compares against.
   const state = use(NavigatorStateContext);
-  const screens = state && getFocusedRequiredScreens(state, descriptors);
+  const screens = state && getRouteRequiredScreens(state.routes[state.index]?.key, descriptors);
   const next = state && insertRequiredScreensBelow(state, screens);
   // New keys after a sync mean that screens are still missing, so the effect runs again.
   const nextRouteKeys =
