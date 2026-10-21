@@ -671,7 +671,7 @@ it('warns when the layout uses an anchor', async () => {
     );
 
     expect(warn).toHaveBeenCalledWith(
-      'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are not fully supported and may be removed in a future release.'
+      'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are deprecated and may be removed in a future release.'
     );
   } finally {
     warn.mockRestore();
