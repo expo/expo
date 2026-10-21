@@ -517,7 +517,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
   /**
    * The list of localizations (`knownRegions`) in the Xcode project, as language IDs such as
    * `en`, `pl`, or `zh-Hans`. This list replaces the existing list in the Xcode project.
-   * `Base` and the development region are always included.
+   * The list always includes `Base` and the development region.
    *
    * @example
    * ```json
