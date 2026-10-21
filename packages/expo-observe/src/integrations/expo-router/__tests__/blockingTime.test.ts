@@ -96,16 +96,16 @@ describe('createNavigationBlockingTime', () => {
     expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
     expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledWith({ type: 'longtask' });
 
-    blockingTime.start();
-    blockingTime.start();
+    blockingTime.start(1000);
+    blockingTime.start(1000);
     expect(MockPerformanceObserver.latest.observe).toHaveBeenCalledTimes(1);
   });
 
   it('sums blocking portions of long tasks inside the two-second window', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
     MockPerformanceObserver.latest.emit(
       longTask(1010, 120),
       longTask(1200, 40),
@@ -120,8 +120,8 @@ describe('createNavigationBlockingTime', () => {
   it('counts only the blocking portion that overlaps the window', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
     MockPerformanceObserver.latest.emit(
       longTask(900, 200),
       longTask(2950, 200),
@@ -137,8 +137,8 @@ describe('createNavigationBlockingTime', () => {
   it('flushes queued entries before reporting and reports once', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
     MockPerformanceObserver.latest.takeRecords.mockReturnValueOnce([longTask(1100, 110)]);
 
     endWindow();
@@ -148,9 +148,44 @@ describe('createNavigationBlockingTime', () => {
     expect(onMeasured).toHaveBeenCalledTimes(1);
   });
 
+  it('counts a long task reported before the window opens', () => {
+    const onMeasured = jest.fn();
+    const blockingTime = createNavigationBlockingTime(onMeasured)!;
+    MockPerformanceObserver.latest.emit(longTask(1000, 500));
+    now = 1600;
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1500);
+
+    endWindow();
+    expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0.45 });
+  });
+
+  it('ends the window two seconds after the navigation time', () => {
+    const onMeasured = jest.fn();
+    const blockingTime = createNavigationBlockingTime(onMeasured)!;
+    now = 1600;
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1600);
+    now = 3100;
+    MockPerformanceObserver.latest.emit(longTask(2900, 200));
+    jest.advanceTimersByTime(1400);
+    expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0.05 });
+  });
+
+  it('sets the metric when the focus is inside the window but the callback runs later', () => {
+    const onMeasured = jest.fn();
+    const blockingTime = createNavigationBlockingTime(onMeasured)!;
+    blockingTime.start(1000);
+    now = 3100;
+    blockingTime.setMetric(metric, 2900);
+
+    endWindow();
+    expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0 });
+  });
+
   it('does not report a navigation without a metric', () => {
     const onMeasured = jest.fn();
-    createNavigationBlockingTime(onMeasured)!.start();
+    createNavigationBlockingTime(onMeasured)!.start(1000);
     endWindow();
     expect(onMeasured).not.toHaveBeenCalled();
   });
@@ -158,9 +193,8 @@ describe('createNavigationBlockingTime', () => {
   it('does not set the metric after the window ends', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    now = 3001;
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 3001);
     endWindow();
     expect(onMeasured).not.toHaveBeenCalled();
   });
@@ -168,9 +202,9 @@ describe('createNavigationBlockingTime', () => {
   it('keeps the first metric of a navigation', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
-    blockingTime.setMetric({ ...metric, routeName: '/c' });
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
+    blockingTime.setMetric({ ...metric, routeName: '/c' }, 1000);
     endWindow();
     expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0 });
   });
@@ -178,11 +212,11 @@ describe('createNavigationBlockingTime', () => {
   it('ends the previous window early when a new navigation starts', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
     now = 1200;
-    blockingTime.start();
-    blockingTime.setMetric({ ...metric, routeName: '/c' });
+    blockingTime.start(1200);
+    blockingTime.setMetric({ ...metric, routeName: '/c' }, 1200);
     expect(onMeasured).not.toHaveBeenCalled();
 
     // The task that started the second navigation is reported after it ends.
@@ -201,12 +235,12 @@ describe('createNavigationBlockingTime', () => {
   it('cancels the window and stops observing in the background', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
 
     changeAppState('background');
     expect(MockPerformanceObserver.latest.disconnect).toHaveBeenCalledTimes(1);
-    blockingTime.start();
+    blockingTime.start(1000);
     endWindow();
     expect(onMeasured).not.toHaveBeenCalled();
 
@@ -219,8 +253,8 @@ describe('createNavigationBlockingTime', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
     expect(MockPerformanceObserver.latest.observe).not.toHaveBeenCalled();
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
     endWindow();
     expect(onMeasured).not.toHaveBeenCalled();
 
@@ -233,8 +267,8 @@ describe('createNavigationBlockingTime', () => {
     jest.mocked(AppState.addEventListener).mockReturnValueOnce({ remove });
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
-    blockingTime.start();
-    blockingTime.setMetric(metric);
+    blockingTime.start(1000);
+    blockingTime.setMetric(metric, 1000);
 
     blockingTime.dispose();
     endWindow();
