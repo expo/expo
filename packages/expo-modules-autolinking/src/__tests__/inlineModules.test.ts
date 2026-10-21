@@ -398,6 +398,32 @@ describe('androidInlineModules.ts', () => {
       expect(error).toHaveBeenCalledWith(expect.stringContaining('EEXIST'));
     });
 
+    it('copies the file when symlinks are not permitted', async () => {
+      const mockMirror: InlineModulesMirror = {
+        files: [{ filePath: '/src/nested/SimpleModule.kt', watchedDir: '/src' }],
+        kotlinClasses: [],
+        swiftModuleClassNames: [],
+      };
+
+      vol.fromJSON({
+        '/src/nested/SimpleModule.kt': 'package valid.files',
+      });
+
+      const symlink = jest
+        .spyOn(fs.promises, 'symlink')
+        .mockRejectedValue(
+          Object.assign(new Error('EPERM: operation not permitted'), { code: 'EPERM' })
+        );
+
+      await createSymlinksToKotlinFiles('/build/mirror', mockMirror);
+      symlink.mockRestore();
+
+      expect(error).not.toHaveBeenCalled();
+      expect(vol.readFileSync('/build/mirror/nested/SimpleModule.kt', 'utf8')).toBe(
+        'package valid.files'
+      );
+    });
+
     it('creates the mirror directory structure and symlinks original module files', async () => {
       const mockMirror: InlineModulesMirror = {
         files: [
