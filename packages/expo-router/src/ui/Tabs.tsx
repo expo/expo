@@ -22,7 +22,7 @@ import {
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
-import { useInitialRouteBackBehaviorWarning } from '../standard-navigation/useInitialRouteBackBehaviorWarning';
+import { useBackBehaviorInitialRoute } from '../standard-navigation/useBackBehaviorInitialRoute';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -62,9 +62,10 @@ export type UseTabsOptions = Omit<
   backBehavior?: TabRouterOptions['backBehavior'];
   /**
    * The name of the tab that going back returns to when `backBehavior` is `initialRoute`. When the
-   * tabs mount, they add this tab to the start of the history, unless the tab is focused or already
-   * in the history. It takes precedence over the layout anchor. With `history`, going back also
-   * reaches it after the visited tabs. Changes after the tabs mount are ignored.
+   * tabs mount, they add this tab to the start of the history, unless it is already in the history.
+   * The tab screen mounts only when going back reaches it. It takes precedence over the layout
+   * anchor. With `history` and `fullHistory`, going back also reaches it after the visited tabs. Changes after the
+   * tabs mount are ignored.
    */
   backBehaviorInitialRoute?: string;
 };
@@ -172,7 +173,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const contextKey = useContextKey();
   const linking = use(LinkingContext).options;
   const routeInfo = useRouteInfo();
-  useInitialRouteBackBehaviorWarning(rest);
 
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
@@ -215,6 +215,11 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  useBackBehaviorInitialRoute({
+    backBehavior: rest.backBehavior,
+    backBehaviorInitialRoute: rest.backBehaviorInitialRoute,
+    navigation,
+  });
   const descriptors = useMemo(
     () =>
       appendMissingPlaceholderTabDescriptors(

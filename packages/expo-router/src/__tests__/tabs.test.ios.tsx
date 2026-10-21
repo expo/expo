@@ -367,6 +367,84 @@ it('goes back to backBehaviorInitialRoute with initialRoute backBehavior', async
   expect(screen).toHavePathname('/two');
 });
 
+it('goes back to backBehaviorInitialRoute when the app opens on it', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs backBehavior="initialRoute" backBehaviorInitialRoute="two">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
+      one: () => <Text testID="one">One</Text>,
+      two: () => <Text testID="two">Two</Text>,
+      three: () => <Text testID="three">Three</Text>,
+    },
+    {
+      initialUrl: '/two',
+    }
+  );
+
+  await act(() => router.push('/three'));
+  await act(() => router.back());
+
+  expect(screen.getByTestId('two')).toBeVisible();
+  expect(screen).toHavePathname('/two');
+});
+
+it('does not mount the backBehaviorInitialRoute screen at launch', async () => {
+  const Two = jest.fn(() => <Text testID="two">Two</Text>);
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs backBehavior="initialRoute" backBehaviorInitialRoute="two">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
+      one: () => <Text testID="one">One</Text>,
+      two: Two,
+      three: () => <Text testID="three">Three</Text>,
+    },
+    {
+      initialUrl: '/three',
+    }
+  );
+
+  expect(Two).not.toHaveBeenCalled();
+});
+
+it('warns once when backBehaviorInitialRoute is not a route of the navigator', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs backBehavior="initialRoute" backBehaviorInitialRoute="four">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      one: () => <Text testID="one">One</Text>,
+      two: () => <Text testID="two">Two</Text>,
+    },
+    {
+      initialUrl: '/two',
+    }
+  );
+
+  await act(() => router.push('/one'));
+
+  expect(warn).toHaveBeenCalledTimes(1);
+  expect(warn).toHaveBeenCalledWith(
+    `The navigator at "./_layout.js" sets \`backBehaviorInitialRoute\` to "four", but it has no route with that name, so going back ignores it. Set \`backBehaviorInitialRoute\` to one of these routes: one, two.`
+  );
+  warn.mockRestore();
+});
+
 it('goes back to the anchor with initialRoute backBehavior', async () => {
   // The layout sets `backBehavior: 'initialRoute'` without `backBehaviorInitialRoute`, which warns.
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});

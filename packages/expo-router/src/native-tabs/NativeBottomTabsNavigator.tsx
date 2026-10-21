@@ -5,6 +5,7 @@ import React, { use, useCallback, useMemo, useRef } from 'react';
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
   CommonActions,
+  NavigationHelpersContext,
   type ParamListBase,
   type TabNavigationState,
   type TabRouterOptions,
@@ -18,7 +19,7 @@ import type {
   StandardNavigatorContentProps,
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
-import { useInitialRouteBackBehaviorWarning } from '../standard-navigation/useInitialRouteBackBehaviorWarning';
+import { useBackBehaviorInitialRoute } from '../standard-navigation/useBackBehaviorInitialRoute';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
@@ -100,6 +101,8 @@ function NativeTabsContent({
   rippleColor,
   disableIndicator,
   labelVisibilityMode,
+  backBehavior,
+  backBehaviorInitialRoute,
   ...rest
 }: StandardNavigatorContentProps<
   NativeTabOptions,
@@ -113,6 +116,11 @@ function NativeTabsContent({
     );
   }
 
+  useBackBehaviorInitialRoute({
+    backBehavior,
+    backBehaviorInitialRoute,
+    navigation: use(NavigationHelpersContext),
+  });
   const { routes } = state;
 
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
@@ -228,12 +236,21 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   Omit<InternalNativeTabsProps, 'screenListeners'>,
   TabRouterOptions,
   NativeTabsNavigatorCreateProps
->(NativeTabsContent, NativeBottomTabsRouter, {
-  activityDefaultThreshold: 1,
-  processDescriptors: appendMissingPlaceholderTabDescriptors,
-  processState: appendMissingPlaceholderTabRoutes,
-  createProps: createNativeTabsProps,
-});
+>(
+  NativeTabsContent,
+  // The default is applied here, so the content still sees the `backBehavior` the layout set.
+  (options) =>
+    NativeBottomTabsRouter({
+      ...options,
+      backBehavior: options.backBehavior ?? defaultBackBehavior,
+    }),
+  {
+    activityDefaultThreshold: 1,
+    processDescriptors: appendMissingPlaceholderTabDescriptors,
+    processState: appendMissingPlaceholderTabRoutes,
+    createProps: createNativeTabsProps,
+  }
+);
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   const triggerChildren = useMemo(
@@ -246,10 +263,8 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     [props.children]
   );
   const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
-  useInitialRouteBackBehaviorWarning(props);
 
   const {
-    backBehavior = defaultBackBehavior,
     labelStyle,
     iconColor,
     blurEffect,
@@ -319,8 +334,6 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
         nonTriggerChildren={nonTriggerChildren}
         tabConfigurationKey={tabConfigurationKey}
         screenOptions={screenOptions}
-        // Passed to TabRouter
-        backBehavior={backBehavior}
       />
     </IsWithinNativeNavigator>
   );

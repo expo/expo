@@ -40,7 +40,12 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * List of previously visited route keys and drawer open status.
    */
-  history?: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
+  history?: (
+    | { type: 'route'; key: string }
+    | { type: 'drawer'; status: DrawerStatus }
+    // Internal. See `TabNavigationState['history']`.
+    | { type: 'initialRoute'; name: string; key?: undefined }
+  )[];
 };
 
 export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {

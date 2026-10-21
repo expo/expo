@@ -68,9 +68,9 @@ export type TabRouterOptions = DefaultRouterOptions & {
   /**
    * The name of the route that going back returns to when `backBehavior` is `initialRoute`. When
    * the navigator mounts, it adds this route to the start of the history, unless the route is
-   * focused or already in the history. It takes precedence over the layout anchor. With `history`
-   * and `fullHistory`, going back also reaches it after the visited routes. Other back behaviors
-   * ignore it. Changes after the navigator mounts are ignored.
+   * already in the history. The screen mounts only when going back reaches it. It takes precedence
+   * over the layout anchor. With `history` and `fullHistory`, going back also reaches it after the
+   * visited routes. Other back behaviors ignore it. Changes after the navigator mounts are ignored.
    */
   backBehaviorInitialRoute?: string;
 };
@@ -84,9 +84,13 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
    */
   type?: 'tab';
   /**
-   * List of previously visited route keys. `initial` marks the entry that `ADD_INITIAL_ROUTE` added.
+   * List of previously visited route keys.
    */
-  history?: { type: 'route'; key: string; params?: object | undefined; initial?: true }[];
+  history?: (
+    | { type: 'route'; key: string; params?: object | undefined }
+    // Internal. `ADD_INITIAL_ROUTE` names its route, so the screen mounts only when going back to it.
+    | InitialRouteHistoryItem
+  )[];
 };
 
 export type TabActionHelpers<ParamList extends ParamListBase> = {
@@ -117,6 +121,14 @@ export type TabActionHelpers<ParamList extends ParamListBase> = {
         : [screen: RouteName, params: ParamList[RouteName]]
       : never
   ): void;
+};
+
+// `key` and `params` stay readable on every history entry.
+type InitialRouteHistoryItem = {
+  type: 'initialRoute';
+  name: string;
+  key?: undefined;
+  params?: undefined;
 };
 
 type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
@@ -198,15 +210,21 @@ export const TabActions = {
 
 type TabHistoryItem = NonNullable<TabNavigationState<ParamListBase>['history']>[number];
 
-const getInitialRouteEntry = (history: readonly { type: string; initial?: true }[]) =>
-  history.find((item): item is TabHistoryItem => item.type === TYPE_ROUTE && item.initial === true);
+const TYPE_INITIAL_ROUTE = 'initialRoute' as const;
+
+const isInitialRouteItem = (item: { type: string }): item is InitialRouteHistoryItem =>
+  item.type === TYPE_INITIAL_ROUTE;
+
+// Entries other than routes and the initial route, like the drawer status, stay after the routes.
+const isOtherHistoryItem = (item: { type: string }) =>
+  item.type !== TYPE_ROUTE && item.type !== TYPE_INITIAL_ROUTE;
 
 const getRouteHistory = (
   routes: Route<string>[],
   index: number,
   backBehavior: BackBehavior,
   initialRouteName: string | undefined,
-  initialEntry?: TabHistoryItem
+  initialItem?: InitialRouteHistoryItem
 ): TabHistoryItem[] => {
   if (routes.length === 0) {
     return [];
@@ -238,13 +256,9 @@ const getRouteHistory = (
       }
       break;
     case 'initialRoute':
-      if (initialEntry && routes.some((route) => route.key === initialEntry.key)) {
-        if (initialEntry.key === routes[index]!.key) {
-          history[0] = initialEntry;
-        } else {
-          history.unshift(initialEntry);
-        }
-        break;
+      if (initialItem) {
+        // The initial route entry also stands for its route when that route is focused.
+        return routes[index]!.name === initialItem.name ? [initialItem] : [initialItem, ...history];
       }
       // A missing initial route is not in history. `GO_BACK` creates it.
       initialRouteIndex = routes.findIndex((route) => route.name === initialRouteName);
@@ -290,7 +304,8 @@ export const ensureStateHistory = (
 
   if (backBehavior === 'fullHistory' && focusedRoute !== undefined) {
     history[history.length - 1] = {
-      ...history[history.length - 1]!,
+      type: TYPE_ROUTE,
+      key: focusedRoute.key,
       params: focusedRoute.params,
     };
   }
@@ -314,7 +329,11 @@ const changeIndex = (
 
     if (backBehavior === 'history') {
       // Remove the existing key from the history to de-duplicate it
-      history = history.filter((it) => (it.type === 'route' ? it.key !== currentRoute.key : false));
+      history = history.filter((it) =>
+        it.type === 'route'
+          ? it.key !== currentRoute.key
+          : isInitialRouteItem(it) && it.name !== currentRoute.name
+      );
     } else if (backBehavior === 'fullHistory') {
       const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
 
@@ -342,7 +361,7 @@ const changeIndex = (
       orderedIndex,
       backBehavior,
       initialRouteName ?? state.routeNames[0],
-      getInitialRouteEntry(history)
+      history.find(isInitialRouteItem)
     );
   }
 
@@ -459,8 +478,10 @@ function tabRouterExtension({
           const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
           const index = Math.max(focusedIndex, 0);
           const routeKeys = routes.map((route) => route.key);
-          let history = state.history.filter(
-            (item) => item.type !== 'route' || routeKeys.includes(item.key)
+          let history = state.history.filter((item) =>
+            item.type === 'route'
+              ? routeKeys.includes(item.key)
+              : !isInitialRouteItem(item) || routeNames.includes(item.name)
           );
 
           if (
@@ -468,7 +489,7 @@ function tabRouterExtension({
             (backBehavior === 'history' || backBehavior === 'fullHistory')
           ) {
             const currentRoute = routes[index]!;
-            const nonRouteHistory = history.filter((item) => item.type !== 'route');
+            const nonRouteHistory = history.filter(isOtherHistoryItem);
             let routeHistory = history.filter((item) => item.type === 'route');
 
             if (backBehavior === 'history') {
@@ -478,6 +499,7 @@ function tabRouterExtension({
             }
 
             history = [
+              ...history.filter(isInitialRouteItem),
               ...routeHistory,
               {
                 type: TYPE_ROUTE,
@@ -503,14 +525,15 @@ function tabRouterExtension({
                 orderedIndex,
                 backBehavior,
                 initialRouteName ?? routeNames[0],
-                getInitialRouteEntry(history)
+                history.find(isInitialRouteItem)
               ),
-              ...history.filter((item) => item.type !== 'route'),
+              ...history.filter(isOtherHistoryItem),
             ];
           } else if (!history.some((item) => item.type === 'route')) {
             history = [
+              ...history.filter(isInitialRouteItem),
               ...getRouteHistory(routes, index, backBehavior, initialRouteName),
-              ...history.filter((item) => item.type !== 'route'),
+              ...history.filter(isOtherHistoryItem),
             ];
           }
 
@@ -617,7 +640,8 @@ function tabRouterExtension({
               if (historyItemIndex !== -1) {
                 updatedHistory = [...state.history];
                 updatedHistory[historyItemIndex] = {
-                  ...updatedHistory[historyItemIndex]!,
+                  type: TYPE_ROUTE,
+                  key: focusedRoute.key,
                   params: focusedRoute.params,
                 };
               }
@@ -648,7 +672,7 @@ function tabRouterExtension({
 
           if (backBehavior === 'firstRoute') {
             backTargetName = state.routeNames[0];
-          } else if (backBehavior === 'initialRoute' && !getInitialRouteEntry(state.history)) {
+          } else if (backBehavior === 'initialRoute' && !state.history.some(isInitialRouteItem)) {
             // Without an `ADD_INITIAL_ROUTE` entry, the target is still created when it is missing.
             backTargetName =
               initialRouteName !== undefined && state.routeNames.includes(initialRouteName)
@@ -681,6 +705,19 @@ function tabRouterExtension({
           }
 
           const previousHistoryItem = state.history[state.history.length - 2];
+
+          if (previousHistoryItem?.type === TYPE_INITIAL_ROUTE) {
+            const { routes, index } = addRouteIfMissing(
+              state.routes,
+              previousHistoryItem.name,
+              () => ({ name: previousHistoryItem.name, key: nextKey(previousHistoryItem.name) })
+            );
+            return {
+              state: { ...state, routes, index, history: state.history.slice(0, -1) },
+              affectedRouteKey: routes[index]!.key,
+            };
+          }
+
           const previousKey = previousHistoryItem?.key;
           const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
@@ -714,43 +751,36 @@ function tabRouterExtension({
 
         case 'ADD_INITIAL_ROUTE': {
           const { name } = action.payload;
-          const focusedKey = state.routes[state.index]?.key;
+          const focusedRoute = state.routes[state.index];
+          const isFocused = focusedRoute?.name === name;
           if (
             (backBehavior !== 'initialRoute' &&
               backBehavior !== 'history' &&
               backBehavior !== 'fullHistory') ||
             !state.routeNames.includes(name) ||
-            state.routes[state.index]?.name === name ||
-            state.history.some(
-              (item) =>
-                item.type === TYPE_ROUTE &&
-                state.routes.some((route) => route.key === item.key && route.name === name)
-            )
+            state.history.some(isInitialRouteItem) ||
+            (!isFocused &&
+              state.history.some(
+                (item) =>
+                  item.type === TYPE_ROUTE &&
+                  state.routes.some((route) => route.key === item.key && route.name === name)
+              ))
           ) {
-            return { state, affectedRouteKey: focusedKey };
+            return { state, affectedRouteKey: focusedRoute?.key };
           }
 
-          const { routes, index } = addRouteIfMissing(state.routes, name, () => ({
-            name,
-            key: nextKey(name),
-          }));
-          const entry: TabHistoryItem = {
-            type: TYPE_ROUTE,
-            key: routes[index]!.key,
-            initial: true,
-          };
-          // `initialRoute` keeps one back entry, so the new entry replaces the one from `initialRouteName`.
-          const history =
-            backBehavior === 'initialRoute'
-              ? [
-                  entry,
-                  ...state.history.filter(
-                    (item) => item.type !== TYPE_ROUTE || item.key === focusedKey
-                  ),
-                ]
-              : [entry, ...state.history];
+          // `initialRoute` keeps one back entry, so the new entry replaces the one from
+          // `initialRouteName`. A focused route is replaced by the entry that stands for it.
+          const history = [
+            { type: TYPE_INITIAL_ROUTE, name },
+            ...state.history.filter(
+              (item) =>
+                item.type !== TYPE_ROUTE ||
+                (item.key === focusedRoute?.key ? !isFocused : backBehavior !== 'initialRoute')
+            ),
+          ];
 
-          return { state: { ...state, routes, history }, affectedRouteKey: focusedKey };
+          return { state: { ...state, history }, affectedRouteKey: focusedRoute?.key };
         }
 
         case 'PRELOAD': {
@@ -834,11 +864,11 @@ function tabRouterExtension({
                     focusedIndex,
                     backBehavior,
                     initialRouteName ?? state.routeNames[0],
-                    getInitialRouteEntry(history)
+                    history.find(isInitialRouteItem)
                   );
 
             // TODO: Refactor history handling together with web state synchronization.
-            history = [...routeHistory, ...history.filter((item) => item.type !== 'route')];
+            history = [...routeHistory, ...history.filter(isOtherHistoryItem)];
           }
 
           return {

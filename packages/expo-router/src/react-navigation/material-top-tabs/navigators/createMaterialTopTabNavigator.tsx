@@ -1,12 +1,13 @@
 'use client';
 // TODO: Rename this file to `createStandardMaterialTopTabNavigator.tsx` in a follow-up.
+import { use } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
-import { useInitialRouteBackBehaviorWarning } from '../../../standard-navigation/useInitialRouteBackBehaviorWarning';
+import { useBackBehaviorInitialRoute } from '../../../standard-navigation/useBackBehaviorInitialRoute';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { TabRouterOptions } from '../../native';
+import { NavigationHelpersContext, type TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -49,7 +50,11 @@ function MaterialTopTabNavigatorContent({
   backBehaviorInitialRoute,
   ...rest
 }: ContentArgs) {
-  useInitialRouteBackBehaviorWarning({ backBehavior, backBehaviorInitialRoute });
+  useBackBehaviorInitialRoute({
+    backBehavior,
+    backBehaviorInitialRoute,
+    navigation: use(NavigationHelpersContext),
+  });
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,

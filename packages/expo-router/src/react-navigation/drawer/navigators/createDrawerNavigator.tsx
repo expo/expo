@@ -3,7 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
-import { useInitialRouteBackBehaviorWarning } from '../../../standard-navigation/useInitialRouteBackBehaviorWarning';
+import { useBackBehaviorInitialRoute } from '../../../standard-navigation/useBackBehaviorInitialRoute';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type { DrawerNavigationState, DrawerRouterOptions, ParamListBase } from '../../native';
@@ -57,7 +57,7 @@ function DrawerNavigatorContent({
   backBehavior,
   backBehaviorInitialRoute,
 }: ContentArgs) {
-  useInitialRouteBackBehaviorWarning({ backBehavior, backBehaviorInitialRoute });
+  useBackBehaviorInitialRoute({ backBehavior, backBehaviorInitialRoute, navigation });
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,
