@@ -150,7 +150,6 @@ class RouterToolbarItemView: RouterViewWithLogger {
       } else {
         item.image = nil
       }
-      item.tintColor = customTintColor
       if let titleStyle {
         RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
       } else {
@@ -160,6 +159,10 @@ class RouterToolbarItemView: RouterViewWithLogger {
   }
 
   private func applyCommonProperties(to item: UIBarButtonItem) {
+    // A custom view's item takes the tint too, so a prominent one's background is the tint.
+    if type != .searchBar {
+      item.tintColor = customTintColor
+    }
     if #available(iOS 26.0, *) {
       item.hidesSharedBackground = hidesSharedBackground
       item.sharesBackground = sharesBackground
