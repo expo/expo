@@ -72,6 +72,7 @@ export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';
 export * from './Column';
+export * from './CompositionLocalProvider';
 export * from './FlowRow';
 export { useNativeState, useWorkletCallback, type WorkletCallback } from '../State';
 export type { ViewEvent } from '../types';
