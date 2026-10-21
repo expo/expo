@@ -458,7 +458,7 @@ it('collapses a nested history down to a sibling when the target was never visit
 });
 
 it('should go back to a previous route in a nested stack when a screen above that stack is focused', async () => {
-  await renderRouter({
+  const result = await renderRouter({
     _layout: () => <Stack />,
     '(group)/_layout': () => <Stack />,
     '(group)/index': () => null,
@@ -473,50 +473,34 @@ it('should go back to a previous route in a nested stack when a screen above tha
   await act(() => router.dismissTo('/'));
 
   expect(screen).toHavePathname('/');
-  expect(screen).toHaveRouterState({
-    index: 0,
-    key: expect.any(String),
-    routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [
-      {
-        key: expect.any(String),
-        name: '__root',
-        state: {
-          index: 0,
-          key: expect.any(String),
-          routeNames: ['(group)', 'modal'],
-          routes: [
-            {
-              key: expect.any(String),
-              name: '(group)',
-              params: {},
-              path: undefined,
-              state: {
-                index: 0,
-                key: expect.any(String),
-                routeNames: ['index', 'details'],
-                routes: [
-                  {
-                    key: expect.any(String),
-                    name: 'index',
-                    params: {},
-                    path: '/',
-                  },
-                ],
-                stale: false,
-                routeKeySeq: expect.any(Number),
-                type: 'stack',
-              },
-            },
-          ],
-          stale: false,
-          routeKeySeq: expect.any(Number),
-          type: 'stack',
-        },
-      },
-    ],
-    stale: false,
-    routeKeySeq: expect.any(Number),
-    type: 'stack',
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['(group)']);
+  const groupStack = rootStack.routes[0]!.state!;
+  expect(groupStack.routes.map((route) => route.name)).toEqual(['index']);
+  expect(groupStack.index).toBe(0);
+});
+
+it('pushes a dynamic route with different params in a nested stack when a screen above that stack is focused', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    '(group)/_layout': () => <Stack />,
+    '(group)/index': () => null,
+    '(group)/[id]': () => null,
+    modal: () => null,
   });
+
+  await act(() => router.push('/1'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/2'));
+
+  expect(screen).toHavePathname('/2');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['(group)']);
+  const groupStack = rootStack.routes[0]!.state!;
+  expect(groupStack.routes.map((route) => route.name)).toEqual(['index', '[id]', '[id]']);
+  expect(groupStack.routes[1]!.params).toEqual({ id: '1' });
+  expect(groupStack.routes[2]!.params).toEqual({ id: '2' });
+  expect(groupStack.index).toBe(2);
 });

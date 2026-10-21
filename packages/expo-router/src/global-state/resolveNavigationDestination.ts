@@ -183,8 +183,7 @@ function createResolvedAction({
     internalParams,
     parentChain,
     previewKey: action.payload.__internal__PreviewKey,
-    // `POP_TO` only pops in the navigator it targets. The navigators below it navigate, which
-    // pushes unless `pop` is set, so `dismissTo` would add a second screen instead of going back.
+    // Navigators below the `POP_TO` target get `NAVIGATE`, which pushes unless `pop` is set.
     pop: pop === true || action.type === 'POP_TO',
   });
 
