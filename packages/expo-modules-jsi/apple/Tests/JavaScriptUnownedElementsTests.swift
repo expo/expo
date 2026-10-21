@@ -50,6 +50,14 @@ struct JavaScriptUnownedElementsTests {
   }
 
   @Test
+  func `withUnownedProperty lends the property by PropNameID and undefined for a missing one`() throws {
+    let object = try runtime.eval("({ answer: 42, 'café': 'expo' })").getObject()
+    #expect(object.withUnownedProperty(JavaScriptPropNameID(runtime, string: "answer")) { $0.getDouble() } == 42)
+    #expect(object.withUnownedProperty(JavaScriptPropNameID(runtime, string: "café")) { $0.getString() } == "expo")
+    #expect(object.withUnownedProperty(JavaScriptPropNameID(runtime, string: "missing")) { $0.isUndefined() })
+  }
+
+  @Test
   func `containers decode nested values through the unowned path`() throws {
     let value = try runtime.eval("[[1, 2], [3]]")
     #expect(try [[Int]].decode(value, in: runtime) == [[1, 2], [3]])

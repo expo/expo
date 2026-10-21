@@ -280,6 +280,16 @@ struct JavaScriptObjectTests {
     }
 
     @Test
+    func `set property by PropNameID with JavaScriptValue`() {
+      let object = JavaScriptObject(runtime)
+      let propName = JavaScriptPropNameID(runtime, string: "café")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "hello"))
+      #expect(object.getProperty("café").getString() == "hello")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "again"))
+      #expect(object.getProperty(propName).getString() == "again")
+    }
+
+    @Test
     func `set property with string`() {
       let object = JavaScriptObject(runtime)
       object.setProperty("name", value: "Alice")
