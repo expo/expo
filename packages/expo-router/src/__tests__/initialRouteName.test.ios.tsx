@@ -5,6 +5,7 @@ import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
 /**
@@ -278,4 +279,39 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     routeKeySeq: expect.any(Number),
     type: 'stack',
   });
+});
+
+it('does not anchor a stack group to the route named like the group', async () => {
+  const result = await renderRouter(
+    {
+      '(home)/_layout': () => <Stack />,
+      '(home)/home': () => <Text testID="home" />,
+      '(home)/index': () => <Text testID="index" />,
+    },
+    { initialUrl: '/' }
+  );
+
+  const groupState = result.getRouterState()!.routes[0]!.state!.routes[0]!.state!;
+  expect(groupState.routes.map(({ name }) => name)).toEqual(['index']);
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('does not anchor a tabs group to the route named like the group', async () => {
+  const result = await renderRouter(
+    {
+      '(home)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="home" />
+          <Tabs.Screen name="index" />
+        </Tabs>
+      ),
+      '(home)/home': () => <Text testID="home" />,
+      '(home)/index': () => <Text testID="index" />,
+    },
+    { initialUrl: '/' }
+  );
+
+  const groupState = result.getRouterState()!.routes[0]!.state!.routes[0]!.state!;
+  expect(groupState.routes.map(({ name }) => name)).toEqual(['index']);
+  expect(screen.getByTestId('index')).toBeVisible();
 });
