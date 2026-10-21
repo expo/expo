@@ -2,4 +2,4 @@
 '@expo/config': patch
 ---
 
-Avoid duplicate array entries in modifyConfigAsync.
+Avoid duplicate entries in `updates` arrays, such as `updates.assetPatternsToBeBundled`, when `modifyConfigAsync` merges modifications.

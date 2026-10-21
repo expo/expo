@@ -333,7 +333,7 @@ export async function modifyConfigAsync(
 
     // Verify that the dynamic config is using the static config
     const newConfig = getConfig(projectRoot, readOptions);
-    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    const newConfighasModifications = hasConfigModifications(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {
         type: 'success',
@@ -358,8 +358,9 @@ export async function modifyConfigAsync(
 
 /**
  * Append the source items to the target array, then remove duplicate entries, keeping the first
- * occurrence. Expo config arrays (permissions, asset patterns, intent filters) are sets, so a
- * modification that repeats existing values, or contains a value twice, doesn't write it twice.
+ * occurrence. Used only for `updates`, whose arrays are sets: `eas update:configure` sends the
+ * existing `updates` object back with a new `url`, and the default merge would write each existing
+ * entry twice. Other arrays keep the default merge, because plugins can depend on it.
  */
 function mergeArraysWithoutDuplicates(target: unknown[], source: unknown[]): unknown[] {
   const result: unknown[] = [];
@@ -379,11 +380,15 @@ function mergeConfigModifications(
   config: ProjectConfig,
   { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
-  const modifiedExpoConfig: ExpoConfig = deepMerge(
-    config.rootConfig.expo || config.rootConfig,
-    modifications,
-    { arrayMerge: mergeArraysWithoutDuplicates }
-  );
+  const baseConfig: Partial<ExpoConfig> = config.rootConfig.expo || config.rootConfig;
+  const modifiedExpoConfig: ExpoConfig = deepMerge(baseConfig, modifications);
+  if (isPlainObject(modifications.updates)) {
+    modifiedExpoConfig.updates = deepMerge(
+      isPlainObject(baseConfig.updates) ? baseConfig.updates : {},
+      modifications.updates,
+      { arrayMerge: mergeArraysWithoutDuplicates }
+    );
+  }
 
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list
@@ -448,21 +453,44 @@ function mergeConfigModifications(
   return finalizedConfig as AppJSONConfig;
 }
 
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * `updates` arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so they are compared
+ * as sets. Arrays everywhere else are compared item by item, in order.
+ */
+function hasConfigModifications(modifications: Partial<ExpoConfig>, config: ExpoConfig): boolean {
+  const { updates, ...otherModifications } = modifications;
+  if (!isMatchingObject(otherModifications, config)) {
+    return false;
+  }
+  if (!('updates' in modifications)) {
+    return true;
+  }
+  if (!isPlainObject(updates)) {
+    return isMatchingObject<Record<string, any>>({ updates }, config);
+  }
+  return isPlainObject(config.updates) && isMatchingObject(updates, config.updates, true);
+}
+
 function isMatchingObject<T extends Record<string, any>>(
   expectedValues: T,
-  actualValues: T
+  actualValues: T,
+  matchArraysAsSets = false
 ): boolean {
   for (const key in expectedValues) {
     if (!expectedValues.hasOwnProperty(key)) {
       continue;
     }
 
-    if (Array.isArray(expectedValues[key])) {
+    if (matchArraysAsSets && Array.isArray(expectedValues[key])) {
       if (!isMatchingArray(expectedValues[key], actualValues[key])) {
         return false;
       }
     } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key], matchArraysAsSets)) {
         return false;
       }
     } else {
@@ -475,8 +503,8 @@ function isMatchingObject<T extends Record<string, any>>(
 }
 
 /**
- * Arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so an expected array matches
- * when each of its items is in the actual array, regardless of order or repeated items.
+ * An expected array matches when each of its items is in the actual array, regardless of order or
+ * repeated items.
  */
 function isMatchingArray(expectedItems: unknown[], actualItems: unknown): boolean {
   if (!Array.isArray(actualItems)) {
@@ -485,7 +513,7 @@ function isMatchingArray(expectedItems: unknown[], actualItems: unknown): boolea
   return expectedItems.every((expected) =>
     actualItems.some((actual) =>
       typeof expected === 'object' && expected !== null
-        ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual)
+        ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual, true)
         : expected === actual
     )
   );

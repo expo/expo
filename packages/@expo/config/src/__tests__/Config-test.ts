@@ -431,110 +431,130 @@ describe(modifyConfigAsync, () => {
     expect(written.expo.updates.assetPatternsToBeBundled).toEqual(['app/**/*.png', 'assets/**/*']);
   });
 
-  it('appends only new array entries when modifying static config', async () => {
-    const intentFilter = { action: 'VIEW', data: [{ scheme: 'myapp' }] };
-    createProject('/static-arrays-append', {
+  it('appends only new updates array entries when modifying static config', async () => {
+    createProject('/static-updates-append', {
       'app.json': JSON.stringify({
         ...appFile,
-        android: { permissions: ['CAMERA'], intentFilters: [intentFilter] },
+        updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
       }),
     });
 
-    const { config } = await modifyConfigAsync('/static-arrays-append', {
-      android: {
-        permissions: ['CAMERA', 'RECORD_AUDIO'],
-        intentFilters: [{ action: 'VIEW', data: [{ scheme: 'myapp' }] }],
-      },
+    const { config } = await modifyConfigAsync('/static-updates-append', {
+      updates: { assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'] },
     });
 
-    expect(config?.android?.permissions).toEqual(['CAMERA', 'RECORD_AUDIO']);
-    expect(config?.android?.intentFilters).toEqual([intentFilter]);
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['app/**/*.png', 'assets/**/*']);
   });
 
-  it('removes duplicate entries within the modification', async () => {
-    createProject('/static-arrays-modification-duplicates', {
+  it('removes duplicate updates array entries within the modification', async () => {
+    createProject('/static-updates-modification-duplicates', {
       'app.json': JSON.stringify(appFile),
     });
 
-    const { config } = await modifyConfigAsync('/static-arrays-modification-duplicates', {
-      android: { permissions: ['CAMERA', 'CAMERA'] },
+    const { config } = await modifyConfigAsync('/static-updates-modification-duplicates', {
+      updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
     });
 
-    expect(config?.android?.permissions).toEqual(['CAMERA']);
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['assets/**/*']);
   });
 
-  it('removes duplicate entries already in a modified array', async () => {
-    createProject('/static-arrays-existing-duplicates', {
+  it('removes duplicate entries already in a modified updates array', async () => {
+    createProject('/static-updates-existing-duplicates', {
       'app.json': JSON.stringify({
         ...appFile,
-        android: { permissions: ['CAMERA', 'CAMERA'] },
+        updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
       }),
     });
 
-    const { config } = await modifyConfigAsync('/static-arrays-existing-duplicates', {
-      android: { permissions: ['RECORD_AUDIO'] },
+    const { config } = await modifyConfigAsync('/static-updates-existing-duplicates', {
+      updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
     });
 
-    expect(config?.android?.permissions).toEqual(['CAMERA', 'RECORD_AUDIO']);
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['assets/**/*', 'app/**/*.png']);
   });
 
-  it('succeeds when modifying static with function-like dynamic config, when the modification has duplicate array entries', async () => {
-    createProject('/static-dynamic-function-modification-duplicates', {
+  it('appends arrays outside updates without removing duplicates', async () => {
+    createProject('/static-arrays-outside-updates', {
+      'app.json': JSON.stringify({ ...appFile, android: { permissions: ['CAMERA'] } }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-arrays-outside-updates', {
+      android: { permissions: ['CAMERA', 'RECORD_AUDIO'] },
+    });
+
+    expect(config?.android?.permissions).toEqual(['CAMERA', 'CAMERA', 'RECORD_AUDIO']);
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when the updates modification has duplicate array entries', async () => {
+    createProject('/static-dynamic-function-updates-duplicates', {
       'app.json': JSON.stringify(appFile),
       'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
     });
 
     await expect(
-      modifyConfigAsync('/static-dynamic-function-modification-duplicates', {
-        android: { permissions: ['CAMERA', 'CAMERA'] },
+      modifyConfigAsync('/static-dynamic-function-updates-duplicates', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
       })
     ).resolves.toMatchObject({
       type: 'success',
-      config: { android: { permissions: ['CAMERA'] } },
+      config: { updates: { assetPatternsToBeBundled: ['assets/**/*'] } },
     });
   });
 
-  it('succeeds when modifying static with function-like dynamic config, when appending to an existing array', async () => {
-    createProject('/static-dynamic-function-array-append', {
+  it('succeeds when modifying static with function-like dynamic config, when appending to an existing updates array', async () => {
+    createProject('/static-dynamic-function-updates-append', {
       'app.json': JSON.stringify({
         ...appFile,
-        android: { permissions: ['CAMERA'] },
+        updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
       }),
       'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
     });
 
     await expect(
-      modifyConfigAsync('/static-dynamic-function-array-append', {
-        android: { permissions: ['RECORD_AUDIO'] },
+      modifyConfigAsync('/static-dynamic-function-updates-append', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*'] },
       })
     ).resolves.toMatchObject({
       type: 'success',
-      config: { android: { permissions: ['CAMERA', 'RECORD_AUDIO'] } },
+      config: { updates: { assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'] } },
     });
   });
 
-  it('warns and rolls back when the dynamic config drops a modified array entry', async () => {
-    createProject('/static-dynamic-function-array-dropped', {
+  it('warns and rolls back when the dynamic config drops a modified updates array entry', async () => {
+    createProject('/static-dynamic-function-updates-dropped', {
       'app.json': JSON.stringify(appFile),
       'app.config.js': `module.exports = ({ config }) => ({
         ...config,
-        android: { ...config.android, permissions: [] },
+        updates: { ...config.updates, assetPatternsToBeBundled: [] },
       });`,
     });
 
     await expect(
-      modifyConfigAsync('/static-dynamic-function-array-dropped', {
-        android: { permissions: ['CAMERA'] },
+      modifyConfigAsync('/static-dynamic-function-updates-dropped', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*'] },
       })
     ).resolves.toMatchObject({ type: 'warn', config: null });
 
     expect(
       JSON.parse(
-        vol.readFileSync('/static-dynamic-function-array-dropped/app.json', {
+        vol.readFileSync('/static-dynamic-function-updates-dropped/app.json', {
           encoding: 'utf-8',
         }) as string
       )
     ).toEqual(appFile);
+  });
+
+  it('matches arrays outside updates by index when modifying static with function-like dynamic config', async () => {
+    createProject('/static-dynamic-function-arrays-outside-updates', {
+      'app.json': JSON.stringify({ ...appFile, android: { permissions: ['CAMERA'] } }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-arrays-outside-updates', {
+        android: { permissions: ['RECORD_AUDIO'] },
+      })
+    ).resolves.toMatchObject({ type: 'warn', config: null });
   });
 
   it('warns when modifying dynamic config only', async () => {
