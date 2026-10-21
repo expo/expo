@@ -33,3 +33,10 @@ export type StatusBarProps = {
    */
   hideTransitionAnimation?: StatusBarAnimation;
 };
+
+/**
+ * The edge where the system places the vertical bar, which holds the status bar beside the
+ * content on devices such as iPhone Duo.
+ * @platform ios
+ */
+export type VerticalBarEdgeIOS = 'leading' | 'trailing';
