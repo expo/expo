@@ -38,7 +38,7 @@
   "expo-constants": "~56.0.27",
   "expo-contacts": "~56.0.14",
   "expo-crypto": "~56.0.5",
-  "expo-dev-client": "~56.0.27",
+  "expo-dev-client": "~56.0.28",
   "expo-device": "~56.0.4",
   "expo-document-picker": "~56.0.4",
   "expo-file-system": "~56.0.11",

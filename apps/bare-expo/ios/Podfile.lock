@@ -64,15 +64,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (56.0.27):
+  - expo-dev-client (56.0.28):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (56.0.28):
+  - expo-dev-launcher (56.0.29):
     - EXManifests
-    - expo-dev-launcher/Main (= 56.0.28)
+    - expo-dev-launcher/Main (= 56.0.29)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -101,7 +101,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (56.0.28):
+  - expo-dev-launcher/Main (56.0.29):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -132,7 +132,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (56.0.28):
+  - expo-dev-launcher/Tests (56.0.29):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -167,7 +167,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (56.0.28):
+  - expo-dev-launcher/Unsafe (56.0.29):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -3981,8 +3981,8 @@ SPEC CHECKSUMS:
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
   Expo: db23d0f4917d9bb44fa7f0bfcbc830cb0ce86404
-  expo-dev-client: 1c668265d8b56a81f1206f22844b139f18dc53f7
-  expo-dev-launcher: c9495511723b49f9d1199e0993fd1a523beaddd9
+  expo-dev-client: 6212c10b348fab327aecc059fda6fb888d0ddb87
+  expo-dev-launcher: 2d49dba259f4348c9b9d21a10a1781771d2371d7
   expo-dev-menu: 1b02ba424a4320d73fc26f23fc1926eadec4b0d9
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAgeRange: 9e88382316caa2ef6e3873ae27ccdb1efd127843

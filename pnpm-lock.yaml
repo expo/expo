@@ -4143,7 +4143,7 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~56.0.28
+        specifier: workspace:~56.0.29
         version: link:../expo-dev-launcher
       expo-dev-menu:
         specifier: workspace:~56.0.24
