@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Respect explicit per-platform `null` overrides from project `react-native.config.js` files ([#47545](https://github.com/expo/expo/pull/47545) by [@chownation](https://github.com/chownation))
-
 ### 💡 Others
+
+## 3.0.28 — 2026-10-21
+
+### 🐛 Bug fixes
+
+- Respect explicit per-platform `null` overrides from project `react-native.config.js` files ([#47545](https://github.com/expo/expo/pull/47545) by [@chownation](https://github.com/chownation))
 
 ## 3.0.27 — 2026-08-17
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.14 — 2026-10-21
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.13 — 2026-04-27
 
 ### 🐛 Bug fixes

@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.17):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.37):
+  - Expo (54.0.38):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -331,7 +331,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (54.0.37):
+  - Expo/Tests (54.0.38):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -362,7 +362,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAppleAuthentication (8.0.8):
     - ExpoModulesCore
-  - ExpoAsset (12.0.13):
+  - ExpoAsset (12.0.14):
     - ExpoModulesCore
   - ExpoAudio (1.1.1):
     - ExpoModulesCore
@@ -3590,7 +3590,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 4eb6d80e7f6e07b4db68d2e1a5da58a915825b68
   EXNotifications: 6b4dced0f3dfd0dfb9d7c5d47a5ccd86764fc73c
-  Expo: 5800a69a6693a5fc2a54d57015c73fdc048a3275
+  Expo: 5f739b48b0aff0f76b5c69923a07eb979f27e1e8
   expo-dev-client: 11d439b492da4debb14d8c1d1ac5c725ecc71a37
   expo-dev-launcher: a1fa980e36477563afcbc19e759e76f9bf2d20ad
   expo-dev-menu: 34e1cbb3d6e1408904d341f448be69b158425c60
@@ -3598,7 +3598,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: 33b53a8e2b12c76c03c12ccfb2acd12f1b3cc742
   ExpoAppIntegrity: ad25977bb6613a38e8ad1a56a6aa972c871a872a
   ExpoAppleAuthentication: 31bb6cdc57d7169e5d994fff7ec4b97c62423534
-  ExpoAsset: cc98e16f65a64e58079d9ccad3b5eec2b57b9263
+  ExpoAsset: f6de5ebbc7013d6075fcdbead945f2b42b2bf7f5
   ExpoAudio: 12dd2d82554f4228008ca64851d7064ad9f47533
   ExpoBackgroundFetch: 2e4cc3089620a1b0ad1ec041e20797bfdcaf0541
   ExpoBackgroundTask: 8c89a1486d59f10d3158575dad5e57f1d3fb966d

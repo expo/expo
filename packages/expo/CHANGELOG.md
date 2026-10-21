@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 54.0.38 — 2026-10-21
+
+_This version does not introduce any user-facing changes._
+
 ## 54.0.37 — 2026-08-17
 
 ### 🐛 Bug fixes
