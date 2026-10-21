@@ -425,8 +425,10 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   backBehavior?: 'none' | 'initialRoute' | 'history';
   /**
-   * The name of the tab that going back returns to when `backBehavior` is `initialRoute`. It takes
-   * precedence over the layout anchor. Changes after the tabs mount are ignored.
+   * The name of the tab that going back returns to when `backBehavior` is `initialRoute`. When the
+   * tabs mount, they add this tab to the start of the history, unless the tab is focused or already
+   * in the history. It takes precedence over the layout anchor. With `history`, going back also
+   * reaches it after the visited tabs. Changes after the tabs mount are ignored.
    *
    * @platform android
    */

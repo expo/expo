@@ -1921,11 +1921,101 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
   );
 });
 
-test('handles back action with backBehavior: initialRoute and backBehaviorInitialRoute', () => {
-  const router = TabRouter({
-    backBehavior: 'initialRoute',
-    backBehaviorInitialRoute: 'baz',
+test('goes back to the route from ADD_INITIAL_ROUTE after tab changes with backBehavior: initialRoute', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeGetIdList: {},
+  };
+  let state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'tab',
+    key: 'navigator:tab',
+    index: 0,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [{ key: 'qux-test', name: 'qux' }],
+  };
+
+  state = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'ADD_INITIAL_ROUTE', payload: { name: 'baz' } },
+      options
+    )
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(state).toEqual({
+    stale: false,
+    routeKeySeq: 1,
+    type: 'tab',
+    key: 'navigator:tab',
+    index: 0,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'qux-test', name: 'qux' },
+      { key: 'baz:tab-0', name: 'baz' },
+    ],
+    history: [
+      { type: 'route', key: 'baz:tab-0', initial: true },
+      { type: 'route', key: 'qux-test' },
+    ],
   });
+
+  state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('bar'), options))
+    .state as TabNavigationState<ParamListBase>;
+  state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('qux'), options))
+    .state as TabNavigationState<ParamListBase>;
+  state = expectHandled(router.getStateForAction(state, CommonActions.goBack(), options))
+    .state as TabNavigationState<ParamListBase>;
+
+  expect(state.routes[state.index]).toEqual({ key: 'baz:tab-0', name: 'baz' });
+  expect(state.history).toEqual([{ type: 'route', key: 'baz:tab-0', initial: true }]);
+
+  state = expectHandled(router.getStateForAction(state, TabActions.jumpTo('bar'), options))
+    .state as TabNavigationState<ParamListBase>;
+  state = expectHandled(router.getStateForAction(state, CommonActions.goBack(), options))
+    .state as TabNavigationState<ParamListBase>;
+
+  expect(state.routes[state.index]).toEqual({ key: 'baz:tab-0', name: 'baz' });
+});
+
+test('replaces the initialRouteName entry with the route from ADD_INITIAL_ROUTE with backBehavior: initialRoute', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'bar' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeGetIdList: {},
+  };
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'tab',
+    key: 'navigator:tab',
+    index: 2,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux-test', name: 'qux' },
+    ],
+  };
+
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'ADD_INITIAL_ROUTE', payload: { name: 'baz' } },
+      options
+    )
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(result.history).toEqual([
+    { type: 'route', key: 'baz-test', initial: true },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('ignores ADD_INITIAL_ROUTE for the focused route', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute' });
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeGetIdList: {},
@@ -1937,36 +2027,56 @@ test('handles back action with backBehavior: initialRoute and backBehaviorInitia
     key: 'navigator:tab',
     index: 0,
     routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'qux-test', name: 'qux' }],
+    routes: [{ key: 'baz-test', name: 'baz' }],
+    history: [{ type: 'route', key: 'baz-test' }],
   };
 
-  const barState = expectHandled(router.getStateForAction(state, TabActions.jumpTo('bar'), options))
-    .state as TabNavigationState<ParamListBase>;
-
   expect(
-    expectHandled(router.getStateForAction(barState, CommonActions.goBack(), options)).state
-  ).toEqual({
-    stale: false,
-    routeKeySeq: 2,
-    type: 'tab',
-    key: 'navigator:tab',
-    index: 2,
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'qux-test', name: 'qux' },
-      { key: 'bar:tab-0', name: 'bar' },
-      { key: 'baz:tab-1', name: 'baz' },
-    ],
-    history: [{ type: 'route', key: 'baz:tab-1' }],
-  });
+    expectHandled(
+      router.getStateForAction(
+        state,
+        { type: 'ADD_INITIAL_ROUTE', payload: { name: 'baz' } },
+        options
+      )
+    ).state
+  ).toBe(state);
 });
 
-test('prefers backBehaviorInitialRoute over initialRouteName with backBehavior: initialRoute', () => {
-  const router = TabRouter({
-    backBehavior: 'initialRoute',
-    initialRouteName: 'bar',
-    backBehaviorInitialRoute: 'baz',
-  });
+test('keeps the route from ADD_INITIAL_ROUTE in history on PRELOAD with backBehavior: initialRoute', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeGetIdList: {},
+  };
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'tab',
+    key: 'navigator:tab',
+    index: 1,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux-test', name: 'qux' },
+    ],
+    history: [
+      { type: 'route', key: 'baz-test', initial: true },
+      { type: 'route', key: 'qux-test' },
+    ],
+  };
+
+  const result = expectHandled(
+    router.getStateForAction(state, { type: 'PRELOAD', payload: { name: 'bar' } }, options)
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(result.history).toEqual([
+    { type: 'route', key: 'baz-test', initial: true },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('keeps the route from ADD_INITIAL_ROUTE in history on ROUTE_NAMES_CHANGED with backBehavior: initialRoute', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute' });
   const options: RouterConfigOptions = {
     routeNames: ['bar', 'baz', 'qux'],
     routeGetIdList: {},
@@ -1983,11 +2093,71 @@ test('prefers backBehaviorInitialRoute over initialRouteName with backBehavior: 
       { key: 'baz-test', name: 'baz' },
       { key: 'qux-test', name: 'qux' },
     ],
+    history: [
+      { type: 'route', key: 'baz-test', initial: true },
+      { type: 'route', key: 'qux-test' },
+    ],
   };
 
-  expect(
-    expectHandled(router.getStateForAction(state, CommonActions.goBack(), options)).state
-  ).toEqual({
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz', 'qux', 'quux'] } },
+      options
+    )
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(result.history).toEqual([
+    { type: 'route', key: 'baz-test', initial: true },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('goes back to initialRouteName after the route from ADD_INITIAL_ROUTE is removed with backBehavior: initialRoute', () => {
+  const router = TabRouter({ backBehavior: 'initialRoute', initialRouteName: 'bar' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'qux'],
+    routeGetIdList: {},
+  };
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'tab',
+    key: 'navigator:tab',
+    index: 2,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux-test', name: 'qux' },
+    ],
+    history: [
+      { type: 'route', key: 'baz-test', initial: true },
+      { type: 'route', key: 'qux-test' },
+    ],
+  };
+
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'qux'] } },
+      options
+    )
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(result.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('adds the route from ADD_INITIAL_ROUTE to the start of history with backBehavior: history', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeGetIdList: {},
+  };
+  const state: TabNavigationState<ParamListBase> = {
     stale: false,
     routeKeySeq: 0,
     type: 'tab',
@@ -1996,11 +2166,27 @@ test('prefers backBehaviorInitialRoute over initialRouteName with backBehavior: 
     routeNames: ['bar', 'baz', 'qux'],
     routes: [
       { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz' },
       { key: 'qux-test', name: 'qux' },
     ],
-    history: [{ type: 'route', key: 'baz-test' }],
-  });
+    history: [
+      { type: 'route', key: 'bar-test' },
+      { type: 'route', key: 'qux-test' },
+    ],
+  };
+
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'ADD_INITIAL_ROUTE', payload: { name: 'baz' } },
+      options
+    )
+  ).state as TabNavigationState<ParamListBase>;
+
+  expect(result.history).toEqual([
+    { type: 'route', key: 'baz:tab-0', initial: true },
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
 });
 
 test('handles back action with backBehavior: none', () => {

@@ -489,6 +489,21 @@ export function useNavigationBuilder<
     router,
   });
 
+  // Tab and drawer navigators add `backBehaviorInitialRoute` to their history once, on mount.
+  const [backBehaviorInitialRoute] = React.useState(
+    'backBehaviorInitialRoute' in rest && typeof rest.backBehaviorInitialRoute === 'string'
+      ? rest.backBehaviorInitialRoute
+      : undefined
+  );
+  const addInitialRoute = React.useEffectEvent((name: string) => {
+    navigation.dispatch({ type: 'ADD_INITIAL_ROUTE', payload: { name }, target: state.key });
+  });
+  React.useEffect(() => {
+    if (backBehaviorInitialRoute !== undefined) {
+      addInitialRoute(backBehaviorInitialRoute);
+    }
+  }, [backBehaviorInitialRoute]);
+
   // Declared after `useNavigationHelpers` so that `navigation.getState()` already
   // returns the new state when `state` listeners run.
   React.useEffect(() => {

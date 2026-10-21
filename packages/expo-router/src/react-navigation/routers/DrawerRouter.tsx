@@ -75,12 +75,7 @@ export const DrawerActions = {
 
 function drawerRouterExtension({
   baseRouter: router,
-  options: {
-    defaultStatus = 'closed',
-    backBehavior = 'firstRoute',
-    initialRouteName,
-    backBehaviorInitialRoute,
-  },
+  options: { defaultStatus = 'closed', backBehavior = 'firstRoute', initialRouteName },
 }: RouterExtensionContext<
   DrawerNavigationState<ParamListBase>,
   DrawerActionType | CommonNavigationAction,
@@ -97,7 +92,7 @@ function drawerRouterExtension({
     ensureStateHistory(
       state as unknown as TabNavigationState<ParamListBase>,
       backBehavior,
-      backBehaviorInitialRoute ?? initialRouteName
+      initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
 
   const isDrawerInHistory = (state: DrawerNavigationState<ParamListBase>) =>

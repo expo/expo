@@ -77,7 +77,7 @@ export const ExpoTabRouter = extendRouterActions(
         state = ensureStateHistory(
           state,
           options.backBehavior ?? 'firstRoute',
-          options.backBehaviorInitialRoute ?? options.initialRouteName
+          options.initialRouteName
         );
         return { state, affectedRouteKey: route.key };
       }
