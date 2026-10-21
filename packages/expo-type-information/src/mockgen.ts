@@ -93,6 +93,8 @@ function getBasicTypeMockLiteral(type: BasicType): ts.Expression | undefined {
       return undefined;
     case BasicType.OBJECT:
       return ts.factory.createObjectLiteralExpression();
+    case BasicType.NULL:
+      return ts.factory.createNull();
   }
 }
 
@@ -140,6 +142,7 @@ const CONVERTIBLE_TYPE_MOCK: Record<ConvertibleType, () => ts.Expression> = {
       ts.factory.createBlock([])
     ),
   [ConvertibleType.UINT8_ARRAY]: () => ts.factory.createArrayLiteralExpression([]),
+  [ConvertibleType.SHARED_REF]: () => ts.factory.createObjectLiteralExpression([]),
 };
 
 function getConvertibleTypeMockLiteral(type: ConvertibleType): ts.Expression {
