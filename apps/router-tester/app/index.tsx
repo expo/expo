@@ -25,6 +25,7 @@ const HomeIndex = () => {
         <Section title="Native navigation">
           <CaseLink href="/tabs" text="Native Tabs" />
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
+          <CaseLink href="/tabs-icon-modes" text="Native Tabs Icon Modes" />
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
           <CaseLink href="/toolbar" text="Toolbar" />
