@@ -34,6 +34,7 @@ import {
   type ParamListBase,
   type Route,
 } from '../routers';
+import { CanGoBackContext, getFocusedCanGoBack } from './CanGoBackContext';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
@@ -170,6 +171,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   });
 
   const getRootState = useLatestCallback(() => state);
+  // TODO(@ubax): Back router.canGoBack() with this value (ENG-28350).
+  const focusedCanGoBack = getFocusedCanGoBack(state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -317,13 +320,15 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
             <RootNavigationStateContext.Provider value={state}>
-              <RouterRegistrySettersContext.Provider value={registrySetters}>
-                <EnsureSingleNavigator>
-                  <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                    <ThemeProvider value={theme}>{children}</ThemeProvider>
-                  </NavigationPendingContext>
-                </EnsureSingleNavigator>
-              </RouterRegistrySettersContext.Provider>
+              <CanGoBackContext value={focusedCanGoBack}>
+                <RouterRegistrySettersContext.Provider value={registrySetters}>
+                  <EnsureSingleNavigator>
+                    <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                      <ThemeProvider value={theme}>{children}</ThemeProvider>
+                    </NavigationPendingContext>
+                  </EnsureSingleNavigator>
+                </RouterRegistrySettersContext.Provider>
+              </CanGoBackContext>
               <ImperativeRoutingQueueBridge
                 enqueue={routingQueue.enqueue}
                 setTransitionMode={routingQueue.setTransitionMode}
