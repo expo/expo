@@ -2,12 +2,28 @@ import type { ExpoConfig } from '@expo/config';
 import { env } from 'node:process';
 
 import {
+  createBundleOsPath,
   createBundleUrlPath,
   getAsyncRoutesFromExpoConfig,
   getChunkingStrategyFromExpoConfig,
   getMetroDirectBundleOptions,
   getMetroDirectBundleOptionsForExpoConfig,
+  getMetroOptionsFromUrl,
 } from '../metroOptions';
+
+test('loader and normal server bundles use different filenames for source maps', () => {
+  const options = {
+    mainModuleName: '/app/loader-error',
+    mode: 'development' as const,
+    platform: 'web',
+    environment: 'node' as const,
+    isExporting: false,
+  };
+
+  const loaderPath = createBundleOsPath({ ...options, isLoaderBundle: true });
+  expect(loaderPath).not.toBe(createBundleOsPath(options));
+  expect(getMetroOptionsFromUrl(loaderPath).isLoaderBundle).toBe(true);
+});
 
 describe('chunking options', () => {
   it.each([

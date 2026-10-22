@@ -343,6 +343,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -439,6 +440,10 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.liveBindings', String(false));
   }
 
+  if (isLoaderBundle) {
+    queryParams.append('transform.isLoaderBundle', 'true');
+  }
+
   return queryParams;
 }
 
@@ -488,6 +493,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
     liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
+    isLoaderBundle: isTruthy(getStringParam('transform.isLoaderBundle') ?? 'false'),
   };
 
   return options;
