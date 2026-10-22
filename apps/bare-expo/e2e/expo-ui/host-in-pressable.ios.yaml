@@ -20,14 +20,16 @@ jsEngine: graaljs
 - assertVisible: 'switch = true'
 - assertVisible: 'switchPressable = 0'
 
-- tapOn: 'TextInput'
-- assertVisible: 'textInputFocus = 1'
-- assertVisible: 'textInputPressable = 0'
-- hideKeyboard
-
 - tapOn: 'Plain text'
 - assertVisible: 'textPressable = 1'
 
 - tapOn: 'Hosted Pressable'
 - assertVisible: 'hostedPressable = 1'
 - assertVisible: 'outerPressable = 0'
+
+# Last, so the keyboard doesn't cover the other rows.
+- tapOn: 'TextInput'
+- assertVisible: 'textInputFocus = 1'
+- assertVisible: 'textInputPressable = 0'
+- assertVisible: 'buttonPressable = 0'
+- assertVisible: 'switchPressable = 0'
