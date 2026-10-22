@@ -1,0 +1,304 @@
+---
+title: Using Detour
+description: Add deferred deep linking and link analytics to your React Native app with Detour.
+platforms: ['android', 'ios']
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Link03Icon } from '@expo/styleguide-icons/outline/Link03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+[Detour](https://detour.swmansion.com/) is an SDK for deferred deep linking and link analytics, built by [Software Mansion](https://swmansion.com/). A deferred link behaves like a regular deep link, except that it survives an App Store or Play Store install: a user who taps it without having your app installed is taken to the store, and the app opens on the linked screen the first time they launch it.
+
+Setting that up by hand means creating a project in the Detour dashboard, copying keys, and keeping your signing details in sync with two domain verification files. The EAS CLI integration does all of it for you: it creates an app in the Detour dashboard for your project, installs the SDK, writes your environment variables, adds the link domain to your app config, and sends your app's signing identity from EAS so [Android App Links](/linking/android-app-links/) and [iOS Universal Links](/linking/ios-universal-links/) verify. You can also [set it up manually](#manual-setup) and use the rest of this guide unchanged.
+
+<Prerequisites>
+  <Requirement title="Expo account">
+    Sign up for an [Expo account](https://expo.dev/signup).
+  </Requirement>
+  <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
+  <Requirement title="Expo project linked to EAS">
+    Create an Expo project and link it to EAS with `eas init`.
+  </Requirement>
+</Prerequisites>
+
+## What you'll learn
+
+This guide covers integrating Detour with your Expo project:
+
+- [Install and configure Detour](#install-and-configure-detour) in your React Native app
+- [Handle resolved links](#handle-resolved-links) with Expo Router or React Navigation
+- [Complete the signing identity](#complete-the-signing-identity) so links verify on both platforms
+- [Manage the integration](#manage-the-integration), [analytics](#analytics), and [troubleshooting](#troubleshooting)
+
+## Install and configure Detour
+
+<Step label="1">
+
+### Run the `connect` command
+
+Run the following command in your project directory:
+
+<Terminal cmd={['$ eas integrations:detour:connect']} />
+
+This command:
+
+- Prints a short code and opens your browser to approve the connection. You sign in to Detour (or create an account), compare the code, and choose which **organization** the app belongs to. The approval is what authorizes the rest of the run, and it expires when the run finishes.
+- Reuses the app recorded in your app config. If there isn't one, it lists the organization's apps so you can link an app you already created in the dashboard, or create a new one.
+- Installs the Detour SDK and the Expo modules it depends on.
+- Writes `EXPO_PUBLIC_DETOUR_APP_ID` and `EXPO_PUBLIC_DETOUR_API_KEY` to **.env.local** and to your EAS environment variables across Production, Preview, and Development environments. Both values are publishable, so they're stored with plain text [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables).
+- Adds your link domain to `ios.associatedDomains` and `android.intentFilters`, and records the connection in `extra.detour`, in your [app config](/workflow/configuration/).
+- Sends your app's bundle identifier, package name, Apple Team ID and Android signing certificate fingerprints to Detour, reading them from your EAS credentials. Detour needs them to verify your link domain on both platforms, which is what lets a link open your app instead of the browser.
+
+Re-running `connect` is safe: it reuses the app recorded in `extra.detour`, adds nothing to your app config twice, and prompts before overwriting environment variables.
+
+Because the app id lives in the committed app config, a teammate running `connect` for the first time joins the same Detour app instead of creating a second one.
+
+<Collapsible summary="Running in CI or non-interactively">
+
+Browser approval can't run unattended. Pass `--non-interactive` together with `--app-id` and `--api-key` from **API configuration** in the [Detour dashboard](https://godetour.dev/). This path installs the SDK and writes the environment variables. Creating an app, writing the app config, and sending the signing identity all need an approval.
+
+Use `--overwrite` to replace existing environment variables without prompting.
+
+</Collapsible>
+
+<Collapsible summary="Using a dynamic app config">
+
+The command edits a static [app config](/workflow/configuration/) file. It can't edit a [dynamic app config](/workflow/configuration/#dynamic-configuration), so it prints the entries for you to add, and `--skip-app-config` turns the write off entirely.
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Wrap your app in `<DetourProvider>`
+
+In your root layout file (**app/\_layout.tsx** with Expo Router), wrap your app in `<DetourProvider>`, reading the credentials from the environment variables the command wrote.
+
+```tsx app/_layout.tsx
+import { type Config, DetourProvider } from '@swmansion/react-native-detour';
+import { Slot } from 'expo-router';
+
+const config: Config = {
+  apiKey: process.env.EXPO_PUBLIC_DETOUR_API_KEY!,
+  appID: process.env.EXPO_PUBLIC_DETOUR_APP_ID!,
+};
+
+export default function RootLayout() {
+  return (
+    <DetourProvider config={config}>
+      <Slot />
+    </DetourProvider>
+  );
+}
+```
+
+> **info** The SDK is a no-op on web: `DetourProvider` mounts, link processing is skipped, and `isLinkProcessed` resolves immediately.
+
+</Step>
+
+<Step label="3">
+
+### Create a development build
+
+Link verification is tied to your app's own bundle identifier, package name and signing certificate, none of which Expo Go has. Test with a [development build](/develop/development-builds/introduction/):
+
+<Terminal cmd={['$ eas build --profile development']} />
+
+</Step>
+
+<Step label="4">
+
+### Verify the configuration
+
+Create a link in the Detour dashboard, uninstall your app, and open the link on a device. You should reach the store listing, and after installing and opening the app, the screen the link points at.
+
+Verification of the link domain happens at install time, so always reinstall the app after changing anything about the domain or the signing certificates.
+
+</Step>
+
+## Handle resolved links
+
+How you consume a resolved link depends on your navigation library.
+
+### Expo Router
+
+Read the resolved link with `useDetourContext`, navigate to it, then call `clearLink()`. Render nothing until `isLinkProcessed` is true, so your first screen doesn't flash before a deferred link resolves.
+
+```tsx app/_layout.tsx
+function RootNavigator() {
+  const { isLinkProcessed, link, clearLink } = useDetourContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLinkProcessed || !link) return;
+
+    router.replace({
+      pathname: link.pathname,
+      params: { linkType: link.type, ...link.params },
+    });
+    clearLink();
+  }, [clearLink, isLinkProcessed, link, router]);
+
+  if (!isLinkProcessed) {
+    return null;
+  }
+  return <Stack />;
+}
+```
+
+If your app already handles Universal Links in [`+native-intent.tsx`](/router/advanced/native-intent/), import `createDetourNativeIntentHandler` from `@swmansion/react-native-detour/expo-router` and set `linkProcessingMode: 'deferred-only'` in the provider config. Detour then handles only deferred links and leaves runtime links to your native intent handler, which prevents double-processing.
+
+### React Navigation
+
+Pass Detour's linking adapter to `NavigationContainer`. React Navigation handles routing from there, and `useDetourContext` isn't needed for basic usage.
+
+```tsx App.tsx
+import { NavigationContainer } from '@react-navigation/native';
+import { DETOUR_LINKING_PREFIX, Detour, DetourProvider } from '@swmansion/react-native-detour';
+
+const linking = {
+  prefixes: [DETOUR_LINKING_PREFIX],
+  async getInitialURL() {
+    return await Detour.getInitialURL();
+  },
+  subscribe(listener) {
+    const subscription = Detour.addEventListener('url', ({ url }) => listener(url));
+    return () => subscription.remove();
+  },
+};
+```
+
+## Complete the signing identity
+
+`connect` sends what EAS knows and, at the end of the run, offers to collect what it couldn't. Each missing value stops one half of link verification, so it's worth closing them out before you ship. Answer the prompts, or pass the flags below to skip them.
+
+Two values can't be read from EAS at all:
+
+- **Apple Team ID**, when your Expo account has more than one Apple team. EAS can't tell which one signs this app, and guessing wrong breaks Universal Links silently. Pass it with `--team-id`.
+- **Play App Signing certificate**, when you publish through Google Play. EAS holds your upload key, but Google re-signs the app with its own key, and that's the certificate an installed store build carries. Copy the SHA-256 fingerprint from Play Console under **Test and release → Setup → App integrity → App signing**, and pass it with `--play-signing-cert`. This is a public value, published in your `assetlinks.json`. It is not a key.
+
+The **App Store ID** is read from `ascAppId` in your submit profile in **eas.json**, if you've pinned it there. Otherwise pass it with `--app-store-id`.
+
+<Terminal
+  cmd={[
+    '$ eas integrations:detour:connect --team-id ABCDE12345 --play-signing-cert AA:BB:CC:...',
+  ]}
+/>
+
+These flags belong to an interactive run. Writing the signing identity needs a browser approval, so they can't be combined with `--app-id`, and a CI run has no way to send them. Fill those values in from a run on your own machine, or in the dashboard. The Play App Signing certificate only exists once you've uploaded a bundle, so filling it in weeks after the first `connect` is normal. Verification happens at install time, not before.
+
+## Manage the integration
+
+Check what the connection looks like, and what your link domain actually serves:
+
+<Terminal cmd={['$ eas integrations:detour:status']} />
+
+`status` reads your app config, your environment variables, and the two verification files the operating systems fetch, then reports anything that is missing. It needs no approval.
+
+Open the connected app in the Detour dashboard:
+
+<Terminal cmd={['$ eas integrations:detour:dashboard']} />
+
+Remove the connection from your project:
+
+<Terminal cmd={['$ eas integrations:detour:disconnect']} />
+
+`disconnect` removes the entries it added to your app config, the keys in **.env.local**, and the EAS environment variables. Your Detour app, its links and its analytics are kept, so reconnecting restores the project.
+
+Re-run `connect` after changing your organization's link domain. The domain is written into your committed app config, and nothing updates it there when it changes in Detour. The old domain stops verifying at the next install.
+
+## Analytics
+
+`DetourProvider` logs one retention event, `app_open`, on each cold start, so installs attributed to a link have something to report against. Set `shouldTrackAutomaticEvents: false` in the provider config to turn that off.
+
+You can log your own events with the same module:
+
+```ts
+import { DetourAnalytics, DetourEventNames } from '@swmansion/react-native-detour';
+
+DetourAnalytics.logEvent(DetourEventNames.Purchase);
+```
+
+See the [Detour documentation](https://detour.swmansion.com/docs/) for the full event API.
+
+## Manual setup
+
+<Collapsible summary="Set up Detour without the EAS CLI integration">
+
+Create an app in the [Detour dashboard](https://godetour.dev/) and copy its App ID and publishable API key from **API configuration**. Then install the SDK and its peer dependencies:
+
+<Terminal
+  cmd={[
+    '$ npx expo install @swmansion/react-native-detour expo-application expo-clipboard expo-constants expo-localization expo-device @react-native-async-storage/async-storage',
+  ]}
+/>
+
+Add the credentials to **.env.local**:
+
+```bash .env.local
+EXPO_PUBLIC_DETOUR_APP_ID=your-app-id
+EXPO_PUBLIC_DETOUR_API_KEY=your-api-key
+```
+
+To make them available to EAS Build, add them to your [environment variables](/eas/environment-variables/):
+
+<Terminal
+  cmd={[
+    '$ eas env:set --name EXPO_PUBLIC_DETOUR_APP_ID --value your-app-id --environment production --environment preview --environment development --visibility plaintext',
+  ]}
+/>
+
+Copy the **app.json** snippets from **App configuration** in the dashboard to set up the link domain, and fill in your bundle identifier, package name, Team ID and certificate fingerprints on the same screen. Then continue from [step 2](#install-and-configure-detour).
+
+</Collapsible>
+
+## Troubleshooting
+
+<Collapsible summary="Links open the browser instead of the app">
+
+The link domain isn't verified. On iOS, confirm `ios.associatedDomains` matches your Detour link domain and that your Apple Team ID is set. On Android, confirm the fingerprint Detour has matches the keystore EAS Build actually used. Check it with `eas credentials`, and remember that a store install is signed by Google, not by your upload key.
+
+Verification runs at install time, so reinstall the app after changing either side.
+
+</Collapsible>
+
+<Collapsible summary="Deferred links resolve as empty">
+
+Deferred resolution needs the SDK to run on first launch, before any navigation. Make sure `DetourProvider` is mounted at the root of the app and that you gate your navigator on `isLinkProcessed`.
+
+</Collapsible>
+
+<Collapsible summary="A link is handled twice with Expo Router">
+
+Your `+native-intent.tsx` handler and Detour are both processing runtime links. Set `linkProcessingMode: 'deferred-only'` in the provider config.
+
+</Collapsible>
+
+<Collapsible summary="connect stops with a message about another organization">
+
+Your app config records a Detour app in `extra.detour.appId` that isn't in the organization you approved. Re-run and approve with the organization that owns it, or remove `extra.detour` to connect a different app. The command stops rather than creating a second app for the same project.
+
+</Collapsible>
+
+## Learn more
+
+<BoxLink
+  title="Detour documentation"
+  description="SDK reference, dashboard configuration, and analytics."
+  href="https://detour.swmansion.com/docs/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Linking overview"
+  description="How deep links, Android App Links, and iOS Universal Links work in Expo."
+  href="/linking/overview/"
+  Icon={Link03Icon}
+/>
