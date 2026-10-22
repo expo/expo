@@ -283,6 +283,76 @@ export type AudioEvents = {
   audioSampleUpdate(data: AudioSample): void;
 };
 
+/**
+ * A custom button on an Android recording notification.
+ * @platform android
+ */
+export type RecordingNotificationCustomAction = {
+  /** Unique, non-empty ID. The IDs `pause`, `resume`, and `stop` are reserved. */
+  id: string;
+  /** Text displayed on the button. */
+  title: string;
+};
+
+/**
+ * Options for the foreground service notification shown when `allowsBackgroundRecording` is enabled.
+ * All fields are optional. Each call to `setNotificationOptions` replaces the previous options.
+ * When several recorders share the service, the first registered recorder controls the notification.
+ * @platform android
+ */
+export type RecordingNotificationOptions = {
+  /** Notification title. @default 'Recording audio' */
+  title?: string;
+  /** Body displayed while recording. @default 'Tap to return to app' */
+  recordingBody?: string;
+  /** Body displayed while paused. Defaults to `recordingBody`. */
+  pausedBody?: string;
+  /** Pause button text. @default 'Pause' */
+  pauseButtonTitle?: string;
+  /** Resume button text. @default 'Resume' */
+  resumeButtonTitle?: string;
+  /** Stop button text. @default 'Stop' */
+  stopButtonTitle?: string;
+  /** Notification channel name. Existing user settings are preserved. @default 'Audio Recording' */
+  channelName?: string;
+  /** Notification channel description. @default 'Shows when audio is being recorded in the background' */
+  channelDescription?: string;
+  /** Drawable resource name included in the app's native build. An unknown name uses the system microphone icon. */
+  smallIcon?: string;
+  /** Android RGB color integer, for example `0x4f66f6`. */
+  color?: number;
+  /** Show a button that switches between Pause and Resume. @default false */
+  showPauseResume?: boolean;
+  /** Allow the notification on the lock screen, subject to Android privacy settings. @default false */
+  showOnLockScreen?: boolean;
+  /**
+   * Emit `recordingNotificationAction` for built-in buttons instead of changing recording state.
+   * Subscribe before recording and call `pause()`, `record()`, or `stop()` in your listener.
+   * This allows the app to read the duration or save its data before stopping.
+   * Requires a running JavaScript runtime. Events are not persisted or delivered after process death.
+   * Without this option, Stop ends all recorders using the service, as it does by default.
+   * @default false
+   */
+  handleActionsInJS?: boolean;
+  /**
+   * Custom buttons. They always emit `recordingNotificationAction` and never change recorder state.
+   * Android supports three buttons: Stop, optional Pause/Resume, and up to two custom buttons
+   * (one when `showPauseResume` is enabled). IDs must be unique and titles must be non-empty.
+   */
+  actions?: RecordingNotificationCustomAction[];
+};
+
+/**
+ * An action on the recorder's Android foreground notification.
+ * @platform android
+ */
+export type RecordingNotificationAction = {
+  /** `pause`, `resume`, `stop`, or a custom action ID. */
+  action: string;
+  /** Identifies the prepared recording session that received the action. */
+  sessionId: string;
+};
+
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Initializes a new audio recorder instance with the given source.
@@ -325,6 +395,14 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
    * Pause the recording.
    */
   pause(): void;
+
+  /**
+   * Replaces the Android recording notification options and updates an active notification.
+   * Call before recording to customize the first notification. Pass `{}` to restore defaults.
+   * Does nothing on iOS and web.
+   * @platform android
+   */
+  setNotificationOptions(options: RecordingNotificationOptions): void;
 
   /**
    * Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
@@ -373,10 +451,16 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
 /**
  * Event types that an `AudioRecorder` can emit.
  *
- * These events are used internally by `expo-audio` hooks to provide real-time status updates.
- * Use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
+ * For recording status, use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()`.
+ * For notification actions, subscribe with `recorder.addListener('recordingNotificationAction', listener)`.
  */
 export type RecordingEvents = {
+  /**
+   * Fired for custom notification buttons, or built-in buttons when `handleActionsInJS` is enabled.
+   * Subscribe with `recorder.addListener('recordingNotificationAction', listener)`.
+   * @platform android
+   */
+  recordingNotificationAction: (event: RecordingNotificationAction) => void;
   /** Fired when the recorder's status changes (start/stop/pause/error, and so on). */
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };
