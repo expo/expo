@@ -1,7 +1,7 @@
 ---
 title: Triage a bug report with an AI agent
 sidebar_title: Bug triage
-description: Add an agentic workflow in which a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote iOS Simulator.
+description: Add an agentic workflow in which a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator.
 ---
 
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
@@ -10,6 +10,7 @@ import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 import { BugTriageDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
@@ -18,7 +19,7 @@ import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-ca
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
 
 ## How Bug triage works
 
@@ -180,6 +181,7 @@ set -euo pipefail
 
 : "${BUILD_ID:?No simulator build. Check the build or repack job of this run.}"
 : "${ISSUE_NUMBER:?No issue number. Check the intake job, or pass -F issue_number=<number>.}"
+: "${PLATFORM:?No platform. Set PLATFORM to android or ios in the reproduce job.}"
 
 mkdir -p agent-output/evidence
 node .eas/agents/github.mjs issue "$ISSUE_NUMBER" > /tmp/issue.json
@@ -188,10 +190,11 @@ node .eas/agents/github.mjs issue "$ISSUE_NUMBER" > /tmp/issue.json
   cat .eas/agents/reproduce.md
   printf '\n## Bug report\n\n'
   cat /tmp/issue.json
+  printf '\n## Platform\n\n%s\n' "$PLATFORM"
 } > agent-output/prompt.md
 
 export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-npx --yes eas-cli@latest simulator:start --platform ios --type agent-device \
+npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type agent-device \
   --build-id "$BUILD_ID" --name "Issue #$ISSUE_NUMBER triage" --tag bug-triage \
   --max-duration-minutes 30 --json > /tmp/session.json
 trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
@@ -230,10 +233,10 @@ The script does these tasks in this order:
 
 ### Add the prompt
 
-The job script adds the issue and its comments to the end of this prompt:
+The job script adds the issue, its comments, and the platform to the end of this prompt:
 
 ```md .eas/agents/reproduce.md|wrap
-You try to reproduce a bug report in this project on a remote iOS Simulator. The app is installed and open on the simulator. The bug report is at the end of this prompt.
+You try to reproduce a bug report in this project on a remote Android Emulator or iOS Simulator. The app is installed and open on the device. The bug report and the platform are at the end of this prompt.
 
 1. Read the report. Find the steps, the expected result, and the actual result. You can also read the source code of the project with your file tools.
 2. Follow the steps as a user does. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
@@ -246,7 +249,7 @@ You try to reproduce a bug report in this project on a remote iOS Simulator. The
    - `fill @e4 "text"` types text into a field.
    - `scroll down` scrolls the screen.
    - `screenshot agent-output/evidence/<name>.png` saves a screenshot.
-   - `open <bundle identifier> --platform ios` opens the app again. The app config has the bundle identifier.
+   - `open <app ID> --platform <platform>` opens the app again. The app ID is `android.package` or `ios.bundleIdentifier` in the app config.
 
 3. Save a screenshot after each step.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "REPLICATED: <one sentence>" or "NOT-REPLICATED: <one sentence>". Then list each step that you did and what you saw.
@@ -260,7 +263,7 @@ Write REPLICATED only when you saw the bug yourself. Do not change the files of 
 
 ### Add the TestFlight report formatter
 
-For TestFlight feedback, the workflow uses this script to change the feedback into the text of an issue. The issue does not include the name or the email address of the tester.
+TestFlight is iOS only, so skip this step for Android. For TestFlight feedback, the iOS workflow uses this script to change the feedback into the text of an issue. The issue does not include the name or the email address of the tester.
 
 ```js .eas/agents/feedback-issue.mjs
 import { readFile, writeFile } from 'node:fs/promises';
@@ -316,8 +319,81 @@ Apple signs the links to the screenshots for a limited time, so the links in the
 
 ### Add the EAS workflow
 
+Use the file for the platform that you test. Only the iOS workflow starts on TestFlight feedback.
+
+<Tabs>
+
+<Tab label="Android">
+
 ```yaml .eas/workflows/bug-triage.yml
-name: Bug triage
+name: Bug triage (Android)
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: The number of the issue with the bug report
+        type: string
+        required: true
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build:
+    type: build
+    needs: [get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    params:
+      platform: android
+      profile: preview
+
+  repack:
+    type: repack
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build.outputs.build_id }}
+      profile: preview
+
+  reproduce:
+    needs: [get_build]
+    after: [build, repack]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
+      ISSUE_NUMBER: ${{ inputs.issue_number }}
+      RUN_URL: ${{ workflow.url }}
+      PLATFORM: android
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Reproduce the bug on a remote Android Emulator
+        run: bash .eas/agents/reproduce.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: bug-triage-evidence
+          path: agent-output/evidence/**/*
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+```yaml .eas/workflows/bug-triage.yml
+name: Bug triage (iOS)
 
 on:
   app_store_connect:
@@ -388,6 +464,7 @@ jobs:
       BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
       ISSUE_NUMBER: ${{ inputs.issue_number || after.intake.outputs.issue_number }}
       RUN_URL: ${{ workflow.url }}
+      PLATFORM: ios
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
@@ -401,11 +478,15 @@ jobs:
           path: agent-output/evidence/**/*
 ```
 
+</Tab>
+
+</Tabs>
+
 The jobs do these tasks:
 
-- `intake` runs only for TestFlight feedback. It creates the GitHub issue.
-- `fingerprint`, `get_build`, `build`, and `repack` find or create an iOS Simulator build of the default branch.
-- `reproduce` runs the job script. It gets the issue number from the `intake` job, or from `-F issue_number` in a manual run.
+- `intake` runs only in the iOS workflow, for TestFlight feedback. It creates the GitHub issue.
+- `fingerprint`, `get_build`, `build`, and `repack` find or create a build of the default branch for the remote device.
+- `reproduce` runs the job script. It gets the issue number from `-F issue_number` in a manual run, or from the `intake` job.
 
 </Step>
 
@@ -443,7 +524,7 @@ If your default branch has a different name, change `--ref`.
 
 ## Reproduce a bug from TestFlight feedback
 
-For this path, you need a membership in the Apple Developer Program and an app with a build in TestFlight.
+This path is iOS only. You need a membership in the Apple Developer Program and an app with a build in TestFlight.
 
 1. Connect your App Store Connect app to the EAS project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
 2. Make sure that EAS has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
@@ -479,7 +560,7 @@ For `NOT-REPLICATED`, add the missing steps to the issue. Then run the workflow 
 
 <BoxLink
   title="Test pull requests with an AI agent"
-  description="Agentic CI: a coding agent tests each pull request on a remote iOS Simulator and posts a verdict with evidence."
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
   href="/eas/agentic-workflows/agentic-ci/"
   Icon={Star06Icon}
 />

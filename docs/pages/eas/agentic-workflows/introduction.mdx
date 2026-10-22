@@ -16,7 +16,7 @@ An agentic workflow is an automated workflow in which a coding agent does a task
 
 - **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) starts on a pull request or TestFlight feedback. For an issue, a GitHub Action or a manual run starts it.
 - **A coding agent** does the task, such as a test of a change, a new feature, or a bug fix.
-- **An Expo Simulators session** gives the agent a running app on a remote iOS Simulator. The agent uses the app as a person does and saves evidence.
+- **An Expo Simulators session** gives the agent a running app on a remote Android Emulator or iOS Simulator. The agent uses the app as a person does and saves evidence.
 
 The following diagram shows one run of an agentic workflow. The highlighted steps run on EAS Workflows and Expo Simulators:
 
@@ -26,7 +26,7 @@ The following diagram shows one run of an agentic workflow. The highlighted step
 
 A coding agent can read and change code, but it cannot see if the app works. To see the app, the agent needs a device that runs it.
 
-With Expo Simulators, your workflows can use iOS Simulators on EAS cloud infrastructure. Any job worker can start a session. Then the agent can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
+With Expo Simulators, your workflows can use Android Emulators and iOS Simulators on EAS cloud infrastructure. Any job worker can start a session. Then the agent can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
 
 ## What the agent returns
 
@@ -43,7 +43,7 @@ See the following guides for use cases of agentic workflows with Expo Simulators
 
 <BoxLink
   title="Test pull requests with an AI agent"
-  description="Agentic CI: a coding agent tests each pull request on a remote iOS Simulator and posts a verdict with evidence."
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
   href="/eas/agentic-workflows/agentic-ci/"
   Icon={Star06Icon}
 />
@@ -57,7 +57,7 @@ See the following guides for use cases of agentic workflows with Expo Simulators
 
 <BoxLink
   title="Triage a bug report with an AI agent"
-  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote iOS Simulator."
+  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator."
   href="/eas/agentic-workflows/bug-triage/"
   Icon={Star06Icon}
 />

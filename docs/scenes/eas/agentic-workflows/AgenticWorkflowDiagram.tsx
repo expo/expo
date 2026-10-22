@@ -19,7 +19,7 @@ const AGENTIC_WORKFLOW_STAGES: Stage[] = [
   },
   {
     place: 'Expo Simulators',
-    text: 'A session runs the app on a remote iOS Simulator',
+    text: 'A session runs the app on a cloud simulator',
     onExpo: true,
   },
   {
@@ -46,7 +46,7 @@ const ISSUE_TO_PR_STAGES: Stage[] = [
   },
   {
     place: 'Expo Simulators',
-    text: 'A coding agent tests the change on a remote iOS Simulator',
+    text: 'A coding agent tests the change on a cloud simulator',
     onExpo: true,
   },
   { place: 'GitHub', text: 'A person reviews the verdict and merges the pull request' },
@@ -61,7 +61,7 @@ const BUG_TRIAGE_STAGES: Stage[] = [
   },
   {
     place: 'Expo Simulators',
-    text: 'A coding agent follows the steps of the report on a remote iOS Simulator',
+    text: 'A coding agent follows the steps of the report on a cloud simulator',
     onExpo: true,
   },
   { place: 'GitHub', text: 'The workflow posts the verdict and the evidence on the issue' },

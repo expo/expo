@@ -8,7 +8,25 @@ import { A, P } from '~/ui/components/Text';
   <Requirement title="An Expo project in a GitHub repository">
     The project must use [Continuous Native Generation
     (CNG)](/workflow/continuous-native-generation/), so the repository does not include the
-    **android** and **ios** directories. The app config must set `ios.bundleIdentifier`. A new project does not set it. Add it to **app.json**:
+    **android** and **ios** directories. The app config must set the app ID for the platform that you test. A new project does not set it. Add it to **app.json**:
+
+    <Tabs>
+
+    <Tab label="Android">
+
+    ```json app.json
+    {
+      "expo": {
+        "android": {
+          "package": "com.yourcompany.yourapp"
+        }
+      }
+    }
+    ```
+
+    </Tab>
+
+    <Tab label="iOS">
 
     ```json app.json
     {
@@ -19,6 +37,10 @@ import { A, P } from '~/ui/components/Text';
       }
     }
     ```
+
+    </Tab>
+
+    </Tabs>
 
   </Requirement>
   <Requirement title="EAS CLI">
@@ -70,9 +92,39 @@ import { A, P } from '~/ui/components/Text';
 
 <Step label="1">
 
-### Add an iOS Simulator build profile
+### Add a build profile for the remote device
 
 The workflows install a build from the `preview` profile on each session. Add this profile to **eas.json**:
+
+<Tabs>
+
+<Tab label="Android">
+
+An Android Emulator session runs an APK:
+
+```json eas.json
+{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+```
+
+EAS signs the APK with an Android keystore. Create the keystore one time before the first run. Run this command, select the `preview` profile, and let EAS generate a new keystore:
+
+<Terminal cmd={['$ eas credentials --platform android']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+An iOS Simulator session runs a simulator build. A simulator build is not signed, so it needs no credentials:
 
 ```json eas.json
 {
@@ -88,7 +140,11 @@ The workflows install a build from the `preview` profile on each session. Add th
 }
 ```
 
-The fingerprint job in each workflow uses the same `preview` environment, so the fingerprints match the builds.
+</Tab>
+
+</Tabs>
+
+To test both platforms, add the `android` and the `ios` keys to the same profile. The fingerprint job in each workflow uses the same `preview` environment, so the fingerprints match the builds.
 
 </Step>
 
