@@ -52,8 +52,33 @@ const ISSUE_TO_PR_STAGES: Stage[] = [
   { place: 'GitHub', text: 'A person reviews the verdict and merges the pull request' },
 ];
 
+const BUG_TRIAGE_STAGES: Stage[] = [
+  { place: 'GitHub or TestFlight', text: 'A bug report arrives as an issue or as tester feedback' },
+  {
+    place: 'EAS Workflows',
+    text: 'The workflow files feedback as an issue, and finds or builds the app',
+    onExpo: true,
+  },
+  {
+    place: 'Expo Simulators',
+    text: 'A coding agent follows the steps of the report on a remote iOS Simulator',
+    onExpo: true,
+  },
+  { place: 'GitHub', text: 'The workflow posts the verdict and the evidence on the issue' },
+  {
+    place: 'EAS Workflows',
+    text: 'A replicated bug gets the agent label, and Issue to PR opens a fix',
+    onExpo: true,
+  },
+  { place: 'Your team', text: 'A person reviews the fix and merges it' },
+];
+
 export function AgenticWorkflowDiagram() {
   return <StageDiagram stages={AGENTIC_WORKFLOW_STAGES} />;
+}
+
+export function BugTriageDiagram() {
+  return <StageDiagram stages={BUG_TRIAGE_STAGES} />;
 }
 
 export function IssueToPrDiagram() {

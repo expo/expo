@@ -14,6 +14,7 @@ import { Step } from '~/ui/components/Step';
 
 import { IssueToPrDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
+import GitHubTokenStep from '~/scenes/eas/agentic-workflows/_github-token-step.mdx';
 import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
@@ -55,28 +56,7 @@ Do these steps one time for your project.
 
 <AgenticWorkflowsSetup githubCli />
 
-<Step label="7">
-
-### Add a GitHub token to EAS
-
-The workflow pushes a branch, opens a PR, and adds comments to the issue. It needs a GitHub token for these tasks.
-
-On GitHub, create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new). Under **Repository access**, select only your repository. Give it these permissions:
-
-- **Contents:** Read and write
-- **Issues:** Read and write
-- **Pull requests:** Read and write
-
-In the project dashboard, open **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables). Add these variables to the **preview** environment:
-
-| Name                | Value                                                        | Visibility |
-| ------------------- | ------------------------------------------------------------ | ---------- |
-| `GITHUB_TOKEN`      | The GitHub token                                             | Secret     |
-| `GITHUB_REPOSITORY` | The owner and the name of the repository, such as `acme/app` | Plain text |
-
-The job removes the GitHub token from the environment of the agent. An agent that can run shell commands can still read the variables of the job. So give the token access only to this repository. See [What the agent can do](#what-the-agent-can-do) for more information.
-
-</Step>
+<GitHubTokenStep />
 
 Issue to PR also needs [Agentic CI](/eas/agentic-workflows/agentic-ci/), because Agentic CI tests each PR that the agent opens. Add Agentic CI first.
 
@@ -406,6 +386,13 @@ To ask for another version, change the text of the issue. Then remove the label 
 />
 
 ## Next steps
+
+<BoxLink
+  title="Triage a bug report with an AI agent"
+  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote iOS Simulator."
+  href="/eas/agentic-workflows/bug-triage/"
+  Icon={Star06Icon}
+/>
 
 <BoxLink
   title="Test pull requests with an AI agent"

@@ -63,6 +63,7 @@ exceptions:
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
   - '.*Beta App Review.*'
+  - '.*Bug triage.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'
