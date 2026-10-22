@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.material3.BottomSheetDefaults
@@ -94,6 +95,25 @@ private fun ForwardKeyEventsToActivity(activity: Activity?) {
   }
 }
 
+/**
+ * Material3 shows [ModalBottomSheet] in its own edge-to-edge dialog window, so the sheet's
+ * container already reaches under the navigation bar. With 3-button navigation Android then draws
+ * its contrast scrim over that bar, a translucent white (dark icons) or black (light icons) layer
+ * with a divider line above it, so the bar does not take the sheet's color: a light sheet that is
+ * not pure white gets a whitish bar and a grey line. The sheet itself is the background the
+ * system bar icons are chosen for, so no scrim is needed.
+ */
+@Composable
+private fun MatchNavigationBarToSheet() {
+  val window = (LocalView.current.parent as? DialogWindowProvider)?.window ?: return
+  DisposableEffect(window) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      window.isNavigationBarContrastEnforced = false
+    }
+    onDispose {}
+  }
+}
+
 @Composable
 fun FunctionalComposableScope.ModalBottomSheetContent(
   props: ModalBottomSheetViewProps,
@@ -177,6 +197,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
     ForwardKeyEventsToActivity(appContext.currentActivity)
+    MatchNavigationBarToSheet()
     Children(UIComposableScope(), filter = { !isSlotView(it) })
   }
 
