@@ -65,13 +65,13 @@ Each entry is a screen name from the same `Stack`, such as `'[id]'`. It is not a
 
 When the user opens **/42/comments**, the stack contains `index`, `[id]` with `id` set to `1`, and `[id]/comments` with `id` set to `42`.
 
-- The stack adds a listed screen only when no route at or below the focused screen has the same name and the same path params.
-- The stack adds the screens directly below the focused screen, in the listed order.
-- A screen listed by name gets the matching path params of the focused screen. A screen listed as an object uses only its own `params`. It does not get the path params of the focused screen.
-- The stack skips names that are not routes of the stack.
-- The stack adds the screens only when a deep link or a navigation adds the screen to the stack. A prop change or a back action adds no screens.
-- The stack does not add the required screens of an added screen. List every screen that must be below. For example, if `[id]/comments` lists only `'[id]'`, and `[id]` lists `'index'`, a deep link to **/42/comments** adds only `[id]`.
-- Right after the screen renders, before the stack adds the screens to the navigation state, `router.canGoBack()` returns the previous result.
+The stack adds the required screens when a deep link or a navigation opens the screen. A prop change or a back action adds nothing. Required screens go directly below the screen, in the listed order. If a route with the same name and path params is already below, the stack skips it.
+
+When you list a screen by name, it gets the matching path params of the opened screen. For example, with `'[id]'` instead of the object above, **/42/comments** adds `[id]` with `id` set to `42`. An object entry uses only its own `params`.
+
+The stack does not follow the required screens of a screen that it adds. For example, if `[id]/comments` lists only `'[id]'`, and `[id]` lists `'index'`, a deep link to **/42/comments** gives a stack with only `[id]` and `[id]/comments`. List every screen that you need below.
+
+`router.canGoBack()` returns the previous result during the first render of the screen. The stack adds the required screens to the navigation state after that render.
 
 The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.
 
