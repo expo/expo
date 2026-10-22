@@ -62,6 +62,13 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
   return undefined;
 }
 
+function isScriptOnPage(bundlePath: string): boolean {
+  if (typeof document === 'undefined') return true;
+  return Array.from(document.querySelectorAll('script')).some((script) =>
+    script.src.includes(bundlePath)
+  );
+}
+
 function asyncRequireImpl<T>(
   moduleID: number,
   paths: DependencyMapPaths,
@@ -84,6 +91,15 @@ function asyncRequireImpl<T>(
         `Cannot import module ${moduleName ?? moduleID}: the async bundle loader is unavailable. ` +
           `Load the initial Expo bundle before importing these chunks: ${bundlePath.join(', ')}`
       );
+    }
+    // Requiring a module that isn't registered yet reports a fatal error via `global.ErrorUtils`
+    // (web bundles include the error-guard polyfill) before the `catch` below sees it, so load
+    // the split bundle first unless its script is already on the page
+    if (typeof bundlePath === 'string' && !isScriptOnPage(bundlePath)) {
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) {
+        return maybeLoadBundlePromise.then(importAll);
+      }
     }
     try {
       return importAll();
