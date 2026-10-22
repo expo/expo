@@ -35,8 +35,8 @@ env:
 jobs:
   check-packages:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
-    # Turbo checks packages in parallel (90% of cores), so more vCPUs shorten this job directly.
-    runs-on: blacksmith-16vcpu-ubuntu-2404
+    # Turbo checks packages in parallel across 90% of the cores.
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
         uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
