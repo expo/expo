@@ -37,7 +37,7 @@ For more information about using stack navigator, read the stack layout guide:
 
 ### Required screens below a screen
 
-> **warning** This API is unstable and can change in a minor release.
+> **info** The `unstable_` prefix means that the behavior of this prop can change slightly between releases. The prop is safe to use. A later release will not remove it.
 
 A deep link or a push from another screen can open a screen with nothing below it in the stack. Then the back action leaves the stack. Use the `unstable_requiredScreensBelow` prop of `Stack.Screen` in a layout to list the screens that must be below that screen.
 
@@ -69,7 +69,8 @@ When the user opens **/42/comments**, the stack contains `index`, `[id]` with `i
 - The stack adds the screens directly below the focused screen, in the listed order.
 - A screen listed by name gets the matching path params of the focused screen. A screen listed as an object uses only its own `params`. It does not get the path params of the focused screen.
 - The stack skips names that are not routes of the stack.
-- The stack adds the screens only when a deep link or a navigation adds the screen to the stack. A prop change or a back action adds no screens. The stack does not add the required screens of an added screen, so list every screen that must be below.
+- The stack adds the screens only when a deep link or a navigation adds the screen to the stack. A prop change or a back action adds no screens.
+- The stack does not add the required screens of an added screen. List every screen that must be below. For example, if `[id]/comments` lists only `'[id]'`, and `[id]` lists `'index'`, a deep link to **/42/comments** adds only `[id]`.
 - Right after the screen renders, before the stack adds the screens to the navigation state, `router.canGoBack()` returns the previous result.
 
 The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.

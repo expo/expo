@@ -1282,4 +1282,26 @@ describe('unstable_requiredScreensBelow', () => {
     expect(navigationRef.getRootState()).toMatchObject(stackState('list'));
     expect(Index).not.toHaveBeenCalled();
   });
+
+  it('does not add the required screens of an added screen', async () => {
+    const Index = jest.fn(() => null);
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['list']} />
+            <Stack.Screen name="list" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: Index,
+        list: () => null,
+        details: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+
+    expect(navigationRef.getRootState()).toMatchObject(stackState('list', 'details'));
+    expect(Index).not.toHaveBeenCalled();
+  });
 });
