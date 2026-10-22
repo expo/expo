@@ -1,5 +1,6 @@
 package expo.modules.contacts
 
+import android.net.Uri
 import expo.modules.kotlin.exception.CodedException
 
 class ContactPickingInProgressException :
@@ -23,3 +24,5 @@ class LookupKeyNotFoundException : CodedException("Couldn't find lookup key for 
 class RemoteImageUriException(uri: String) : CodedException("Only file:// URIs are supported for contact images. Provided URI: '$uri'. Download the image first using File.downloadFileAsync from expo-file-system and provide a local file URI.")
 
 class ContactsCheckFailedException : CodedException("Couldn't check if there are any contacts")
+
+class ImageDecodingException(uri: Uri) : CodedException("Couldn't decode the contact image at '$uri'. Make sure the URI points to a readable image file.")
