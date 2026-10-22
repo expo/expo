@@ -12,7 +12,7 @@ concurrency:
 jobs:
   detox_latest_e2e:
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         api-level: [36]

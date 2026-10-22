@@ -33,7 +33,7 @@ jobs:
     # Dependabot's no-secrets rule covers pull_request, not
     # pull_request_target.
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 20
     # Triage is advisory: a failure must never fail the repo's checks.
     continue-on-error: true

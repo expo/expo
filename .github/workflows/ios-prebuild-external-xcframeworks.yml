@@ -41,7 +41,7 @@ concurrency:
 jobs:
   detect:
     name: Detect changed external packages
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       should_run: ${{ steps.detect.outputs.should_run }}
       packages: ${{ steps.detect.outputs.packages }}
@@ -174,7 +174,7 @@ jobs:
     if: >-
       needs.detect.outputs.should_run == 'true' &&
       (github.event_name != 'push' || github.repository == 'expo/expo')
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 120
     permissions:
       contents: read

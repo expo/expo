@@ -33,7 +33,7 @@ jobs:
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name != github.repository ||
       !startsWith(github.head_ref, 'changeset-release/')
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       should_build_ios: ${{ steps.build.outputs.should_run_ios }}
       should_build_android: ${{ steps.build.outputs.should_run_android }}
@@ -133,7 +133,7 @@ jobs:
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     needs: detect-platform-changes
     if: needs.detect-platform-changes.outputs.should_build_ios == 'true'
     permissions:
@@ -240,7 +240,7 @@ jobs:
   ios-test-e2e:
     needs: [ios-build, detect-platform-changes]
     if: needs.detect-platform-changes.outputs.should_test_ios == 'true'
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -342,7 +342,7 @@ jobs:
           fi
 
   android-build:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: detect-platform-changes
     if: needs.detect-platform-changes.outputs.should_build_android == 'true'
     permissions:
@@ -443,7 +443,7 @@ jobs:
   android-test-e2e:
     needs: [android-build, detect-platform-changes]
     if: needs.detect-platform-changes.outputs.should_test_android == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         api-level: [36]

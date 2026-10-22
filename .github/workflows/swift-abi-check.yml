@@ -19,7 +19,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'check: ABI') &&
       (github.event.action == 'synchronize' || github.event.action == 'reopened' ||
        (github.event.action == 'labeled' && github.event.label.name == 'check: ABI'))
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 90
     steps:
       - name: 👀 Checkout
@@ -150,7 +150,7 @@ jobs:
     if: >-
       github.event.action == 'unlabeled' && github.event.label.name == 'check: ABI' &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: 🔍 Find the ABI check comment
         uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0

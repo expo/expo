@@ -43,7 +43,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.repo.full_name != github.repository ||
        !startsWith(github.head_ref, 'changeset-release/'))
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     container: node:24-bookworm
     strategy:
       fail-fast: false
@@ -90,7 +90,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.repo.full_name != github.repository ||
        !startsWith(github.head_ref, 'changeset-release/'))
-    runs-on: windows-2022
+    runs-on: blacksmith-4vcpu-windows-2025
     timeout-minutes: 25
     steps:
       - name: 🪟 Setup Windows
@@ -129,7 +129,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.repo.full_name != github.repository ||
        !startsWith(github.head_ref, 'changeset-release/'))
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       fail-fast: false
       matrix:
@@ -177,7 +177,7 @@ jobs:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
-    runs-on: windows-2022
+    runs-on: blacksmith-4vcpu-windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -243,7 +243,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.repo.full_name != github.repository ||
        !startsWith(github.head_ref, 'changeset-release/'))
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       fail-fast: false
       matrix:
@@ -312,7 +312,7 @@ jobs:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
-    runs-on: windows-2022
+    runs-on: blacksmith-4vcpu-windows-2025
     strategy:
       fail-fast: false
       matrix:

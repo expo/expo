@@ -35,7 +35,7 @@ jobs:
       startsWith(github.event.comment.body, '@expo-bot dismiss') ||
       startsWith(github.event.comment.body, '@expo-bot undismiss')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     # Job-level, NOT workflow-level: `issue_comment` fires for EVERY comment in
     # the repository, and a workflow-level group is claimed at run creation,
     # before the `if:` above can skip the job. A group holds one pending run, so

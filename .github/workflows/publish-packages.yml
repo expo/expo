@@ -36,7 +36,7 @@ jobs:
       github.repository == 'expo/expo' &&
       github.ref_name == 'main' &&
       github.event_name == 'push'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
     outputs:
@@ -70,7 +70,7 @@ jobs:
     name: Create or update version PR
     needs: stable-mode
     if: needs.stable-mode.outputs.mode == 'version'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     env:
       GIT_OPTIONAL_LOCKS: "0"
@@ -191,7 +191,7 @@ jobs:
       !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
       (needs.stable-publish.result == 'success' ||
        (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 120
     concurrency:
       # All SDK branches update the same versions document.

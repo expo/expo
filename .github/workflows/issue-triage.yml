@@ -10,7 +10,7 @@ on:
 
 jobs:
   needs-repro:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'incomplete issue: missing or invalid repro') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -54,7 +54,7 @@ jobs:
             })
 
   needs-info:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'incomplete issue: missing info') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -83,7 +83,7 @@ jobs:
             })
 
   issue-accepted:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       issues: write
     # Only for issues, so an "issue accepted" label on a PR does not post this comment.
@@ -120,7 +120,7 @@ jobs:
             }
 
   question:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: question') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -148,7 +148,7 @@ jobs:
             })
 
   feature-request:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: feature request') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -171,7 +171,7 @@ jobs:
             })
 
   third-party:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: third-party library') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -198,7 +198,7 @@ jobs:
               state: 'closed'
             })
   react-native-core:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: react-native-core') }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -220,7 +220,7 @@ jobs:
               state: 'closed'
             })
   comments-on-closed:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'Comments on closed issue' }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -242,7 +242,7 @@ jobs:
               lock_reason: 'resolved'
             })
   eas-build-troubleshooting:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'invalid issue: EAS Build troubleshooting' }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -264,7 +264,7 @@ jobs:
               state: 'closed'
             })
   version-bump:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'Version bump PR' }}"
     steps:
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0

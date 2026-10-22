@@ -20,7 +20,7 @@ concurrency:
 jobs:
   ios-build:
     if: github.repository == 'expo/expo'
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -88,7 +88,7 @@ jobs:
   ios-test:
     if: github.repository == 'expo/expo'
     needs: ios-build
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -155,7 +155,7 @@ jobs:
 
   android-build:
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -221,7 +221,7 @@ jobs:
   android-test:
     if: github.repository == 'expo/expo'
     needs: android-build
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         api-level: [36]

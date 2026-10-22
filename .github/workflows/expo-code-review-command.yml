@@ -69,7 +69,7 @@ jobs:
       startsWith(github.event.comment.body, '@expo-bot review') ||
       startsWith(github.event.comment.body, '@expo-bot check')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     # Job-level so a comment the gate rejects cannot claim this group at
     # workflow creation. cancel-in-progress must stay FALSE now that the gate
     # is prefix-loose: it admits shapes the parse step rejects (`@expo-bot
