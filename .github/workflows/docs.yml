@@ -27,12 +27,16 @@ env:
 jobs:
   docs:
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    # Deploys block on this job, so use Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
+    runs-on: blacksmith-32vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # Page update dates come from `git log` (scripts/append-dates.js), which only
+          # reads commits and trees, so skip the history's file contents.
           fetch-depth: 30000
+          filter: blob:none
       - name: 🏗️ Setup pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:

@@ -191,7 +191,7 @@ jobs:
       !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
       (needs.stable-publish.result == 'success' ||
        (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 120
     concurrency:
       # All SDK branches update the same versions document.
