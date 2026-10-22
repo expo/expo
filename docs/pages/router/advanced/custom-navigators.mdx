@@ -140,7 +140,7 @@ function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
 
 > **info** `unstable_useReconcileTabHistory` is available in **SDK 58 and later**. It is unstable and may change in a future release.
 
-A navigator that uses `TabRouter` stores the tab that Back goes to in the `history` of its navigation state. Call `unstable_useReconcileTabHistory` in `NavigatorContent` to save the back target in the navigation state after a deep link, so code that reads the state (for example, `useRootNavigationState`) sees it. An unvisited tab uses its route name as the key. Back works without this hook. The built-in tab and drawer navigators already call it.
+A navigator that uses `TabRouter` stores the tab that Back goes to in the `history` of its navigation state. Call `unstable_useReconcileTabHistory` in `NavigatorContent` to save the back target in the navigation state, so code that reads the state sees it.
 
 ```tsx components/Tabs.tsx
 import { unstable_useReconcileTabHistory } from 'expo-router';
