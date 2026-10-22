@@ -51,6 +51,16 @@ const COVERED_POD_PREFIXES = [
  */
 const UNMAPPED_POD_ALLOWLIST = new Set(['sqlite3']);
 
+// Expo apps do not depend on @react-native-community/cli, which provides the
+// `react-native spm` command; React Native's own script is always installed.
+function rerunSpmUpdate() {
+  return `Then run \`${spmUpdateCommand()}\` from your app directory again.`;
+}
+
+/** Where an app sets its `buildFromSource` autolinking option. */
+const BUILD_FROM_SOURCE_OPTION =
+  '`"expo": { "autolinking": { "buildFromSource": [...] } }` (or its `"ios"` section) in your package.json';
+
 /**
  * An error the plugin fails the sync with, namespaced so the failure is
  * attributable to it: what failed, then why and what to do next when known.
@@ -86,7 +96,12 @@ function classifyUnsupported({ pending, coreAvailable }) {
   if (!coreAvailable) {
     return [{ reason: 'core-unavailable', pods: pending.map((p) => p.podName) }];
   }
-  return pending.map(({ refusals, ...subject }) => ({ ...subject, ...mostSpecific(refusals) }));
+  return pending.map(({ refusals, buildFromSourceEntry, ...subject }) => {
+    if (buildFromSourceEntry == null) return { ...subject, ...mostSpecific(refusals) };
+    // The artifact exists; buildFromSource is why it was not linked.
+    const cause = mostSpecific(refusals.filter((r) => r.reason !== 'prebuild-available'));
+    return { ...subject, reason: 'build-from-source-unsupported', buildFromSourceEntry, cause };
+  });
 }
 
 function mostSpecific(refusals) {
@@ -239,9 +254,49 @@ function renderPrebuildAvailable({ podName, packageName, moduleRoot, productName
     `error: Expo module "${packageName}" (pod ${podName}) has no prebuilt XCFramework, so it is not in the Swift Package Manager graph.`,
     [
       `It declares "${productName}" in its spm.config.json, so it does not need a Package.swift — the Expo prebuild pipeline builds it. The artifact is just missing.`,
-      `Build it — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
-      `    et prebuild ${packageName}`,
+      `In the Expo repository, from its root, build it — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
+      `    node tools/bin/expotools.js prebuild ${packageName}`,
       `Then re-run \`${spmUpdateCommand()}\`. A published ${packageName} that ships prebuilds/output/<flavor>/xcframeworks is picked up with no local build.`,
+    ],
+    moduleRoot
+  );
+}
+
+const quotedList = (names) => names.map((name) => `"${name}"`).join(', ');
+
+/** Why a pod cannot be built from source, by the reason it was refused. */
+const SOURCE_BUILD_BLOCKERS = {
+  'mixed-no-manifest': () =>
+    'It mixes Swift and Objective-C/C++ sources and ships no Package.swift, and Swift Package Manager can build such a module only from a manifest that splits the two languages into separate targets.',
+  'no-apple-sources': () =>
+    'It has no `ios` or `apple` source directory for Swift Package Manager to compile.',
+  'needs-manifest-for-linkage': ({ file, line }) =>
+    `Its podspec declares native linkage at ${file}:${line}, and it ships no Package.swift stating that linkage, so a package built from its sources would link less than CocoaPods does.`,
+  'unsupported-target-dependency': ({ dependencies }) =>
+    `Its Package.swift has targets depending on ${quotedList(dependencies.map((d) => d.dependsOn))}, which the package generated from it cannot declare.`,
+  'unsupported-package-dependency': () =>
+    'Its Package.swift declares Swift packages the package generated from it cannot declare.',
+  'unresolvable-target-path': ({ targetNames }) =>
+    `Its Package.swift names targets with no sources on disk: ${quotedList(targetNames)}.`,
+  'not-exported-by-manifest': ({ productName }) =>
+    `Its Package.swift exports no "${productName}" library product.`,
+  'partially-precompiled': ({ precompiledSiblings }) =>
+    `Other pods of the module are linked precompiled (${precompiledSiblings.join(', ')}), and building the module from source would link them a second time.`,
+};
+
+function renderBuildFromSourceUnsupported({
+  podName,
+  packageName,
+  moduleRoot,
+  buildFromSourceEntry,
+  cause,
+}) {
+  return renderBlock(
+    `error: Expo module "${packageName}" (pod ${podName}) is listed in buildFromSource, but Swift Package Manager cannot build it from source.`,
+    [
+      SOURCE_BUILD_BLOCKERS[cause.reason]?.(cause) ??
+        `The plugin found no way to build it from source with Swift Package Manager (reason: ${cause.reason}).`,
+      `Remove "${buildFromSourceEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${podName} or ${packageName}. The module's precompiled XCFramework is then used. ${rerunSpmUpdate()}`,
     ],
     moduleRoot
   );
@@ -510,8 +565,8 @@ function renderPartiallyPrecompiled({
       ? `add a product for ${podName} to ${packageName}'s spm.config.json, then build it`
       : `build ${podName} too — ${packageName}'s spm.config.json already declares "${prebuildProduct.name}"`;
   const precompile = [
-    `To precompile all of them, ${productStep}. Omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
-    `    et prebuild ${packageName}`,
+    `To precompile all of them, ${productStep}. In the Expo repository, from its root, run this — omit --flavor so both Debug and Release are built, since the plugin declares an immutable pair and rejects a half-built one:`,
+    `    node tools/bin/expotools.js prebuild ${packageName}`,
     `   Then re-run \`${spmUpdateCommand()}\`.`,
   ];
   const remedies = [
@@ -601,9 +656,9 @@ function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
     `  Every Expo source module compiles against the ExpoModulesCore framework interface tree; without both flavors the plugin cannot emit any of them.`,
-    `  Build the precompiled core, once per flavor (the flavor name is case-sensitive):`,
-    `      et prebuild -f Debug expo-modules-core expo-modules-jsi`,
-    `      et prebuild -f Release expo-modules-core expo-modules-jsi`,
+    `  In the Expo repository, from its root, build the precompiled core once per flavor (the flavor name is case-sensitive):`,
+    `      node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi`,
+    `      node tools/bin/expotools.js prebuild -f Release expo-modules-core expo-modules-jsi`,
     `  Skipped: ${pods.join(', ')}`,
   ].join('\n');
 }
@@ -626,6 +681,7 @@ function renderDuplicatePodName({ podName, copies }) {
 const REFUSALS = new Map(
   [
     ['duplicate-pod-name', { render: renderDuplicatePodName }],
+    ['build-from-source-unsupported', { render: renderBuildFromSourceUnsupported }],
     ['partially-precompiled', { render: renderPartiallyPrecompiled }],
     ['prebuild-available', { render: renderPrebuildAvailable }],
     ['needs-manifest-for-linkage', { render: renderNeedsManifestForLinkage }],
@@ -804,6 +860,8 @@ function reportUnsupported(entries) {
 
 module.exports = {
   pluginError,
+  BUILD_FROM_SOURCE_OPTION,
+  rerunSpmUpdate,
   UnsupportedModulesError,
   COVERED_POD_PREFIXES,
   UNMAPPED_POD_ALLOWLIST,
