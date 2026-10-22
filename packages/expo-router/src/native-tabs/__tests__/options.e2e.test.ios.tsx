@@ -204,11 +204,11 @@ describe('search role', () => {
     expect(ios?.automaticallyActivatesSearch).toBeUndefined();
   });
 
-  it('forwards automaticallyActivatesSearch={false} for a search tab', async () => {
+  it('disables search activation with disableAutomaticSearchActivation', async () => {
     await renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" role="search" automaticallyActivatesSearch={false} />
+          <NativeTabs.Trigger name="index" role="search" disableAutomaticSearchActivation />
         </NativeTabs>
       ),
       index: () => <View testID="index" />,
@@ -243,7 +243,7 @@ describe('search role', () => {
     });
   });
 
-  it('updates automaticallyActivatesSearch from a screen trigger', async () => {
+  it('updates disableAutomaticSearchActivation from a screen trigger', async () => {
     await renderRouter({
       _layout: () => (
         <NativeTabs>
@@ -252,7 +252,7 @@ describe('search role', () => {
       ),
       index: () => (
         <View testID="index">
-          <NativeTabs.Trigger automaticallyActivatesSearch={false} />
+          <NativeTabs.Trigger disableAutomaticSearchActivation />
         </View>
       ),
     });

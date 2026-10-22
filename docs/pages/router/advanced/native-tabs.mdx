@@ -1095,8 +1095,8 @@ export default function TabLayout() {
 
 </Tabs>
 
-Selecting a search tab activates its search field when the screen has a search bar.
-Set `automaticallyActivatesSearch` to `false` on `NativeTabs.Trigger` to leave the field inactive.
+In SDK 58 and later, selecting a search tab activates its search field when the screen has a search bar.
+Set `disableAutomaticSearchActivation` on `NativeTabs.Trigger` to leave the field inactive.
 On iOS 27, the separate search tab appears only while search activation is enabled.
 
 #### Tabbar search input

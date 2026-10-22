@@ -88,7 +88,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   /**
    * @platform iOS
    */
-  automaticallyActivatesSearch?: boolean;
+  disableAutomaticSearchActivation?: boolean;
   /**
    * @platform android
    * @platform iOS
@@ -695,27 +695,26 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
-   * The `"search"` role is also the system search tab.
-   * On iOS 26 and later it is shown separately from the other tabs.
-   * On iOS 27, that separate placement is shown while `automaticallyActivatesSearch` is enabled.
+   * The `"search"` role makes this tab the system search tab. iOS 26 and later show it separately
+   * from the other tabs. On iOS 27, it appears separately only while search activation is enabled.
    *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
   /**
-   * Controls whether selecting this tab activates its search field.
+   * Prevents selecting this tab from activating its search field.
    *
-   * This prop applies when `role` is `"search"` and the screen has a header search bar.
-   * Selecting the tab focuses the search field.
-   * Dismissing the search returns to the previously selected tab.
+   * By default, when `role` is `"search"` and the screen has a header search bar, selecting
+   * the tab focuses the search field. Dismissing the search returns to the previously selected tab.
+   * Set this prop to `true` to leave the search field inactive.
    *
-   * When `role` is `"search"` and this prop is omitted, search activation is enabled.
-   * On iOS 27, the separate search tab is shown only while search activation is enabled.
+   * On iOS 27, the separate search tab appears only while search activation is enabled.
    *
-   * @platform ios
+   * @default false
+   * @platform ios 26.1+
    */
-  automaticallyActivatesSearch?: boolean;
+  disableAutomaticSearchActivation?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *
