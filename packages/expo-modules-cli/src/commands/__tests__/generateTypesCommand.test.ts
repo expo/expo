@@ -58,6 +58,27 @@ describe(describeWarnings, () => {
       ])
     ).toBe('1 warning:');
   });
+
+  it('counts the dropped doc comments', () => {
+    expect(
+      describeWarnings([
+        {
+          kind: 'dropped',
+          file: '/pkg/src/native.types.ts',
+          location: 'M.a',
+          message:
+            'no longer generated, so its doc comment was dropped. If it was renamed, add the ' +
+            'comment below to the new name',
+        },
+        {
+          kind: 'changed',
+          file: '/pkg/src/native.types.ts',
+          location: 'M.b',
+          message: 'the declaration changed, so check that its doc comment is still accurate',
+        },
+      ])
+    ).toBe('2 warnings, 1 doc comment dropped:');
+  });
 });
 
 describe(describeEmptyScan, () => {

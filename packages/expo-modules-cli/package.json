@@ -38,9 +38,11 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@babel/parser": "^7.20.0",
     "arg": "^5.0.2"
   },
   "devDependencies": {
+    "@babel/types": "^7.20.0",
     "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
