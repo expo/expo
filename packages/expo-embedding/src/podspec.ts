@@ -273,7 +273,9 @@ export async function readPodspec(root: string, path: string): Promise<Record<st
       }
       let destination = attributes;
       if (parts.length === 2 && ['ios', 'tvos', 'osx', 'watchos', 'visionos'].includes(parts[0])) {
-        destination = attributes[parts.shift()!] ??= Object.create(null);
+        const platform = parts.shift()!;
+        attributes[platform] ??= Object.create(null);
+        destination = attributes[platform];
       }
       if (parts.length !== 1) fail(at, 'specification attribute path');
       const method = parts[0];
