@@ -286,16 +286,16 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
     // Update internal state when recording finishes automatically (e.g., from recordForDuration)
-    currentState = .stopped
+    currentState = flag ? .stopped : .error
     resetDurationTracking()
     durationLimitSeconds = nil
 
     emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
-      "hasError": false,
-      "error": nil,
-      "url": recorder.url.absoluteString
+      "hasError": !flag,
+      "error": flag ? nil : "The recording did not finish successfully. Prepare the recorder and record again.",
+      "url": flag ? recorder.url.absoluteString : nil
     ])
   }
 
