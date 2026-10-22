@@ -55,16 +55,6 @@ export async function getPublishedPackagesPlanAsync(
   };
 }
 
-/**
- * A planned version isn't listed on public npm yet. Freshly published versions take a minute or
- * so to show up in `npm view`, so callers can retry this, unlike other registry errors.
- */
-export class UnpublishedVersionError extends Error {}
-
-function isNpmNotFoundError(error: any): boolean {
-  return /"code":\s*"E404"/.test(String(error?.stdout ?? ''));
-}
-
 type SyncOptions = { env: 'staging' | 'production'; dryRun: boolean };
 const defaultDependencies = {
   spawn: async (command: string, args: string[], options?: SpawnOptions) =>
@@ -108,14 +98,9 @@ export async function syncPublishedPackagesAsync(
     for (let index = 0; index < plan.packages.length; index += 8) {
       await Promise.all(
         plan.packages.slice(index, index + 8).map(async (pkg) => {
-          const unpublished = new UnpublishedVersionError(
-            `${pkg.name}@${pkg.version} is not published on public npm`
-          );
-          const published = await dependencies.view(pkg).catch((error) => {
-            throw isNpmNotFoundError(error) ? unpublished : error;
-          });
+          const published = await dependencies.view(pkg);
           if (!(Array.isArray(published) ? published : [published]).includes(pkg.version)) {
-            throw unpublished;
+            throw new Error(`${pkg.name}@${pkg.version} is not published on public npm`);
           }
         })
       );

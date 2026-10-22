@@ -1,15 +1,10 @@
 import { Command } from '@expo/commander';
 
-import logger from '../Logger';
 import { assertCleanWorkingTreeAsync, getReleaseBranchAsync } from '../changesets/Changesets';
 import {
   getPublishedPackagesPlanAsync,
   syncPublishedPackagesAsync,
-  UnpublishedVersionError,
 } from '../changesets/SyncPublishedPackages';
-
-// EX_TEMPFAIL: the publish workflow retries the sync on this exit code only.
-const UNPUBLISHED_VERSION_EXIT_CODE = 75;
 
 export default (program: Command) => {
   program
@@ -26,14 +21,6 @@ export default (program: Command) => {
       }
       await assertCleanWorkingTreeAsync();
       const plan = await getPublishedPackagesPlanAsync();
-      try {
-        await syncPublishedPackagesAsync(plan, { env: options.env, dryRun: options.dryRun });
-      } catch (error) {
-        if (error instanceof UnpublishedVersionError) {
-          logger.warn(error.message);
-          process.exit(UNPUBLISHED_VERSION_EXIT_CODE);
-        }
-        throw error;
-      }
+      await syncPublishedPackagesAsync(plan, { env: options.env, dryRun: options.dryRun });
     });
 };
