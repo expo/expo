@@ -174,7 +174,7 @@ jobs:
     if: >-
       needs.detect.outputs.should_run == 'true' &&
       (github.event_name != 'push' || github.repository == 'expo/expo')
-    runs-on: blacksmith-6vcpu-macos-26
+    runs-on: macos-26
     timeout-minutes: 120
     permissions:
       contents: read

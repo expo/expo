@@ -64,7 +64,7 @@ jobs:
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name != github.repository ||
       !startsWith(github.head_ref, 'changeset-release/')
-    runs-on: blacksmith-6vcpu-macos-26
+    runs-on: macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
