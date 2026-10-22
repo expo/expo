@@ -14,7 +14,7 @@ import { AgenticWorkflowDiagram } from '~/scenes/eas/agentic-workflows/AgenticWo
 
 An agentic workflow is an automated workflow in which a coding agent does a task and checks its own work. Each agentic workflow has three parts:
 
-- **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) starts on a pull request, an issue, or TestFlight feedback.
+- **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) starts on a pull request or TestFlight feedback. For an issue, a GitHub Action or a manual run starts it.
 - **A coding agent** does the task, such as a test of a change, a new feature, or a bug fix.
 - **An Expo Simulators session** gives the agent a running app on a remote iOS Simulator. The agent uses the app as a person does and saves evidence.
 
@@ -26,7 +26,7 @@ The following diagram shows one run of an agentic workflow. The highlighted step
 
 A coding agent can read and change code, but it cannot see if the app works. To see the app, the agent needs a device that runs it.
 
-Using Expo Simulators in your workflows, you can use the iOS Simulators on EAS cloud infrastructure and any job worker can start a session. The agent then can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
+With Expo Simulators, your workflows can use iOS Simulators on EAS cloud infrastructure. Any job worker can start a session. Then the agent can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
 
 ## What the agent returns
 
@@ -34,7 +34,7 @@ The agent does not merge or ship a change. It returns evidence:
 
 - A verdict, such as `PASS` or `FAIL`, with a report of each check.
 - The screenshots that the agent saved.
-- The screen recording of the session, on the session page on EAS dashboard.
+- The screen recording of the session, on the session page on the EAS dashboard.
 - A link that opens the build in a browser preview.
 
 ## Agentic workflow guides

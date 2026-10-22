@@ -337,7 +337,7 @@ Then create the `agent` label:
 
 <Step label="7">
 
-### Push the files
+### Push the workflow
 
 <Terminal
   cmd={[
@@ -367,14 +367,14 @@ The GitHub Action starts the Issue to PR workflow on EAS.
 
 ## Read the result
 
-When the agent finishes, the issue gets a **Issue to PR** comment with a link to the PR:
+When the agent finishes, the issue gets an **Issue to PR** comment with a link to the PR:
 
 - The branch of the PR is `agent/issue-<number>`.
 - The description of the PR is the summary of the agent, and ends with `Closes #<number>`.
 
 Then Agentic CI tests the PR, and posts an **Agentic CI** comment with the verdict. To try the feature yourself, select **Try this build in your browser** in that comment.
 
-If the agent changes no file, the issue gets a comment with the reason. The log of the agent is in the artifacts of the Issue to PR workflow run.
+If the agent changes no file, the issue gets a comment with the reason. The log of the agent is in the Issue to PR workflow run. The Claude Code runner saves it in the artifacts, and the other runners print it to the job log.
 
 To ask for another version, change the text of the issue. Then remove the label and add it again:
 

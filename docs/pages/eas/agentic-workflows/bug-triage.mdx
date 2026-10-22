@@ -18,7 +18,7 @@ import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-ca
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
 
 ## How Bug triage works
 
@@ -226,8 +226,8 @@ The script does these tasks in this order:
 
 1. It reads the issue and its comments, and writes the prompt for the agent.
 2. It starts a session with the build, and runs the agent in the `device` mode.
-3. It stops the session, and posts the verdict and a report on the issue.
-4. For a `REPLICATED` verdict, it adds the `agent` label to the issue.
+3. It posts the verdict and a report on the issue.
+4. For a `REPLICATED` verdict, it adds the `agent` label to the issue. Then it stops the session.
 
 </Step>
 
@@ -416,7 +416,7 @@ The jobs do these tasks:
 
 <Step label="6">
 
-### Push the files
+### Push the workflow
 
 <Terminal
   cmd={[
@@ -466,7 +466,7 @@ When the agent finishes, the issue gets a **Bug triage** comment:
 
 - **Verdict:** `REPLICATED`, `NOT-REPLICATED`, or `INCONCLUSIVE`, with one sentence from the agent. The verdict is `INCONCLUSIVE` when the agent writes no verdict.
 - **Session recording:** the session page on expo.dev, with the screen recording of the session.
-- **Agent report and screenshots:** the workflow run on expo.dev. The screenshots and the log of the agent are in its artifacts.
+- **Agent report and screenshots:** the workflow run on expo.dev. The report and the screenshots are in its artifacts. The Claude Code runner also saves its log there, and the other runners print it to the job log.
 - **Report:** in a folded section, each step of the agent and what it saw.
 
 For a `REPLICATED` bug, the workflow adds the `agent` label. Issue to PR then opens a PR with a fix, and Agentic CI tests it.

@@ -18,7 +18,7 @@ import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-ca
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Agentic CI is an automated workflow in which a coding agent tests a pull request (PR) on a remote iOS Simulator. The advantage is that the agent tests the change that the PR describes. Then it reports back on the PR with a verdict and evidence.
+Agentic CI is an automated workflow in which a coding agent tests a pull request (PR) on a remote iOS Simulator. The agent tests the change that the PR describes. Then it reports back on the PR with a verdict and evidence.
 
 ## How Agentic CI works
 
@@ -29,7 +29,7 @@ When a person opens a PR to `main`, the Agentic CI workflow does these steps:
 3. A coding agent reads the PR, tests the change in the app, and writes a verdict.
 4. The workflow posts the verdict on the PR. The comment links to the session recording, the screenshots, and a browser preview of the build.
 
-Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, which a script does not cover. To learn how the parts work together, see [Introduction to agentic workflows](/eas/agentic-workflows/introduction/).
+Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, even when no script covers it. To learn how the parts work together, see [Introduction to agentic workflows](/eas/agentic-workflows/introduction/).
 
 <AgentPrompt
   title="Add Agentic CI with an AI agent"
@@ -230,7 +230,7 @@ Open a PR to `main` with a change that a user can see in the app. Describe the c
 
 The first run takes longer, because the workflow creates an iOS Simulator build. Later runs use this build again when the native code does not change.
 
-Each run uses an iOS Simulator build or a repack, an Expo Simulators session of up to 30 minutes, and the tokens of your agent. To use less, open a draft PR first, and mark it ready for review when you want a check.
+Each run uses an iOS Simulator build or a repack, an Expo Simulators session of up to 30 minutes, and model tokens of your agent. To use less, open a draft PR first, and mark it ready for review when you want a check.
 
 ## Read the result
 
