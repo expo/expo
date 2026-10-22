@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as Directories from '../Directories';
 import { spawnAsync } from '../Utils';
 import { getPendingChangesetsAsync } from '../changesets/Changesets';
+import { DigesterFinding, isRemovalFinding } from './Digester';
 
 const PRECOMPILED_QUERY =
   '{ packages(filter: { has: { field: TASK_NAME, value: "precompile-ios" } }) { items { name } } }';
@@ -38,11 +39,13 @@ export async function findMissingBumps(
 }
 
 export function packagesToBump(options: {
-  abiBreak: boolean;
+  abiFindings: DigesterFinding[];
   affected: string[];
+  symbolsComplete: boolean;
   all: string[];
 }): string[] {
-  if (options.abiBreak) {
+  const onlyRemovals = options.abiFindings.every(isRemovalFinding);
+  if (!onlyRemovals || (options.abiFindings.length > 0 && !options.symbolsComplete)) {
     return options.all;
   }
   return [...new Set(options.affected)].sort();

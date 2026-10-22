@@ -77,23 +77,46 @@ describe('parsePrecompiledPackages', () => {
 });
 
 describe('packagesToBump', () => {
-  it('requires every precompiled package when the ABI check found a break', () => {
+  const removal = { section: 'Removed Decls', message: 'Func JSOptions.==(_:_:) has been removed' };
+  const finalChange = {
+    section: 'Decl Attribute changes',
+    message: 'Var AppContext.runtime is now without final',
+  };
+  const all = ['expo-camera', 'expo-file-system', 'expo-font'];
+
+  it('requires every precompiled package for a change that is not a removal', () => {
     assert.deepEqual(
       packagesToBump({
-        abiBreak: true,
-        affected: ['expo-font'],
-        all: ['expo-camera', 'expo-font'],
+        abiFindings: [removal, finalChange],
+        affected: [],
+        symbolsComplete: true,
+        all,
       }),
-      ['expo-camera', 'expo-font']
+      all
     );
   });
 
-  it('requires only the affected packages when only symbols are missing', () => {
+  it('requires nothing for removals that no published module imports', () => {
+    assert.deepEqual(
+      packagesToBump({ abiFindings: [removal], affected: [], symbolsComplete: true, all }),
+      []
+    );
+  });
+
+  it('requires every precompiled package for removals when some modules were not checked', () => {
+    assert.deepEqual(
+      packagesToBump({ abiFindings: [removal], affected: [], symbolsComplete: false, all }),
+      all
+    );
+  });
+
+  it('requires only the affected packages when published modules import removed symbols', () => {
     assert.deepEqual(
       packagesToBump({
-        abiBreak: false,
+        abiFindings: [removal],
         affected: ['expo-font', 'expo-camera', 'expo-font'],
-        all: ['expo-camera', 'expo-file-system', 'expo-font'],
+        symbolsComplete: true,
+        all,
       }),
       ['expo-camera', 'expo-font']
     );
