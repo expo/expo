@@ -59,7 +59,29 @@ it('can go back with firstRoute tabs after an unanchored initial deep link', asy
   );
 
   expect(router.canGoBack()).toBe(true);
-  expect(values.at(-1)).toBe(true);
+  expect(values).toEqual([false, true]);
+});
+
+it('cannot go back with firstRoute tabs when the first route is focused', async () => {
+  const values: boolean[] = [];
+  function Layout() {
+    values.push(useCanGoBack());
+    return (
+      <Tabs backBehavior="firstRoute">
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <Text>Index</Text>,
+    second: () => <Text>Second</Text>,
+  });
+
+  expect(router.canGoBack()).toBe(false);
+  expect(values).toEqual([false]);
 });
 
 it('can go back with initialRoute tabs after an unanchored initial deep link', async () => {
@@ -84,7 +106,34 @@ it('can go back with initialRoute tabs after an unanchored initial deep link', a
   );
 
   expect(router.canGoBack()).toBe(true);
-  expect(values.at(-1)).toBe(true);
+  expect(values).toEqual([false, true]);
+});
+
+it('can go back with initialRoute tabs after an anchored initial deep link', async () => {
+  const values: boolean[] = [];
+  function Layout() {
+    values.push(useCanGoBack());
+    return (
+      <Tabs backBehavior="initialRoute">
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+        <Tabs.Screen name="third" />
+      </Tabs>
+    );
+  }
+
+  await renderRouter(
+    {
+      _layout: { unstable_settings: { anchor: 'third' }, default: Layout },
+      index: () => <Text>Index</Text>,
+      second: () => <Text>Second</Text>,
+      third: () => <Text>Third</Text>,
+    },
+    { initialUrl: '/second' }
+  );
+
+  expect(router.canGoBack()).toBe(true);
+  expect(values).toEqual([true]);
 });
 
 it('can go back with order tabs after an unanchored initial deep link', async () => {
@@ -109,7 +158,7 @@ it('can go back with order tabs after an unanchored initial deep link', async ()
   );
 
   expect(router.canGoBack()).toBe(true);
-  expect(values.at(-1)).toBe(true);
+  expect(values).toEqual([false, true]);
 });
 
 it('cannot go back with history tabs after an unanchored initial deep link', async () => {
@@ -134,8 +183,7 @@ it('cannot go back with history tabs after an unanchored initial deep link', asy
   );
 
   expect(router.canGoBack()).toBe(false);
-  expect(values[0]).toBe(false);
-  expect(values.at(-1)).toBe(false);
+  expect(values).toEqual([false]);
 });
 
 it('cannot go back with fullHistory tabs after an unanchored initial deep link', async () => {
@@ -160,8 +208,7 @@ it('cannot go back with fullHistory tabs after an unanchored initial deep link',
   );
 
   expect(router.canGoBack()).toBe(false);
-  expect(values[0]).toBe(false);
-  expect(values.at(-1)).toBe(false);
+  expect(values).toEqual([false]);
 });
 
 it('cannot go back with none tabs after an unanchored initial deep link', async () => {
@@ -186,8 +233,7 @@ it('cannot go back with none tabs after an unanchored initial deep link', async 
   );
 
   expect(router.canGoBack()).toBe(false);
-  expect(values[0]).toBe(false);
-  expect(values.at(-1)).toBe(false);
+  expect(values).toEqual([false]);
 });
 
 it('ignores inactive tab stacks and preloaded screens', async () => {
