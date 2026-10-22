@@ -36,7 +36,8 @@ import type {
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 
-const defaultBackBehavior = 'firstRoute';
+// In Jetpack Compose, the default back behavior is to go back to the initial route.
+const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
 export interface NativeTabsNavigatorCreateProps {
