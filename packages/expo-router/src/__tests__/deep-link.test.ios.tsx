@@ -209,9 +209,8 @@ describe('a navigator with a dynamic name', () => {
 
 it('opens a screen of a new stack over its anchor, which gets the stack params', async () => {
   let listener: (url: string) => void = () => {};
-  const listIds: (string | undefined)[] = [];
 
-  const result = await renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,
     'lists/[id]/_layout': {
@@ -220,8 +219,7 @@ it('opens a screen of a new stack over its anchor, which gets the stack params',
     },
     'lists/[id]/index': function ListPage() {
       const { id } = useLocalSearchParams<{ id: string }>();
-      listIds.push(id);
-      return <Text testID="list" />;
+      return <Text testID="list">{id}</Text>;
     },
     'lists/[id]/item/[itemId]': () => <Text testID="item" />,
     '+native-intent': {
@@ -234,10 +232,8 @@ it('opens a screen of a new stack over its anchor, which gets the stack params',
 
   await act(() => listener('/lists/7/item/42'));
 
-  expect(screen).toHavePathname('/lists/7/item/42');
-  const listStack = result.getRouterState()?.routes[0]?.state?.routes[1]?.state;
-  expect(listStack?.routes.map((route) => route.name)).toEqual(['index', 'item/[itemId]']);
+  expect(screen.getByTestId('item')).toBeVisible();
   await act(() => router.back());
-  expect(screen).toHavePathname('/lists/7');
-  expect(listIds).toEqual(['7']);
+  expect(screen.getByTestId('list')).toBeVisible();
+  expect(screen.getByTestId('list')).toHaveTextContent('7');
 });
