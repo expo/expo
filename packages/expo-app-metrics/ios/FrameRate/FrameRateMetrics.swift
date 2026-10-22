@@ -91,11 +91,22 @@ public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sen
   }
 
   static func metrics(frameDuration: TimeInterval, targetDuration: TimeInterval) -> FrameRateMetrics {
+    guard frameDuration.isFinite, frameDuration > 0,
+      targetDuration.isFinite, targetDuration > 0
+    else {
+      return .zero
+    }
+
     let expectedFrames: UInt
     let droppedFrames: UInt
 
     if frameDuration > (targetDuration + refreshRateDurationThreshold) {
-      expectedFrames = UInt(round(frameDuration / targetDuration))
+      guard let frameCount = UInt(exactly: round(frameDuration / targetDuration)),
+        frameCount > 0
+      else {
+        return .zero
+      }
+      expectedFrames = frameCount
       droppedFrames = expectedFrames - 1
     } else {
       expectedFrames = 1
