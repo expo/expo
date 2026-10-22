@@ -514,8 +514,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Moves the object into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
-  @usableFromInline
-  internal consuming func takeValue() -> JavaScriptValue {
+  public consuming func takeValue() -> JavaScriptValue {
     return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
   }
 
