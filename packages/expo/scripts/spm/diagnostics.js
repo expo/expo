@@ -96,11 +96,14 @@ function classifyUnsupported({ pending, coreAvailable }) {
   if (!coreAvailable) {
     return [{ reason: 'core-unavailable', pods: pending.map((p) => p.podName) }];
   }
-  return pending.map(({ refusals, buildFromSourceEntry, ...subject }) => {
+  return pending.map(({ refusals, buildFromSourceEntry, precompiledIncomplete, ...subject }) => {
     if (buildFromSourceEntry == null) return { ...subject, ...mostSpecific(refusals) };
     // The artifact exists; buildFromSource is why it was not linked.
     const cause = mostSpecific(refusals.filter((r) => r.reason !== 'prebuild-available'));
-    return { ...subject, reason: 'build-from-source-unsupported', buildFromSourceEntry, cause };
+    const reason = precompiledIncomplete
+      ? 'build-from-source-fallback-incomplete'
+      : 'build-from-source-unsupported';
+    return { ...subject, reason, buildFromSourceEntry, cause };
   });
 }
 
@@ -297,6 +300,25 @@ function renderBuildFromSourceUnsupported({
       SOURCE_BUILD_BLOCKERS[cause.reason]?.(cause) ??
         `The plugin found no way to build it from source with Swift Package Manager (reason: ${cause.reason}).`,
       `Remove "${buildFromSourceEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${podName} or ${packageName}. The module's precompiled XCFramework is then used. ${rerunSpmUpdate()}`,
+    ],
+    moduleRoot
+  );
+}
+
+function renderBuildFromSourceFallbackIncomplete({
+  podName,
+  packageName,
+  moduleRoot,
+  buildFromSourceEntry,
+  cause,
+}) {
+  return renderBlock(
+    `error: The buildFromSource entry "${buildFromSourceEntry}" matches Expo module "${packageName}" (pod ${podName}), which Swift Package Manager cannot build from source, and its precompiled XCFramework is incomplete, so it cannot be linked precompiled either.`,
+    [
+      SOURCE_BUILD_BLOCKERS[cause.reason]?.(cause) ??
+        `The plugin found no way to build it from source with Swift Package Manager (reason: ${cause.reason}).`,
+      'A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build it from source, and the plugin links a precompiled XCFramework only when both its Debug and Release flavors are present.',
+      `Reinstall ${packageName} so it ships both flavors, or, in the Expo repository, from its root, build both with \`node tools/bin/expotools.js prebuild ${packageName}\`. ${rerunSpmUpdate()}`,
     ],
     moduleRoot
   );
@@ -682,6 +704,7 @@ const REFUSALS = new Map(
   [
     ['duplicate-pod-name', { render: renderDuplicatePodName }],
     ['build-from-source-unsupported', { render: renderBuildFromSourceUnsupported }],
+    ['build-from-source-fallback-incomplete', { render: renderBuildFromSourceFallbackIncomplete }],
     ['partially-precompiled', { render: renderPartiallyPrecompiled }],
     ['prebuild-available', { render: renderPrebuildAvailable }],
     ['needs-manifest-for-linkage', { render: renderNeedsManifestForLinkage }],
@@ -851,6 +874,28 @@ function renderExtraPodsWarning(pods) {
   ].join('\n');
 }
 
+/**
+ * Modules a buildFromSource pattern matched that are linked precompiled, because Swift
+ * Package Manager cannot build them from source.
+ *
+ * @param fallbacks `{ podName, packageName, entry }` per module, `entry` being the pattern.
+ */
+function renderBuildFromSourceFallbackWarning(fallbacks) {
+  if (!fallbacks.length) return '';
+  const one = fallbacks.length === 1;
+  const them = one ? 'it' : 'them';
+  const entries = [...new Set(fallbacks.map((f) => f.entry))];
+  const modules = fallbacks
+    .map(({ podName, packageName, entry }) => `${podName} (${packageName}, matched by "${entry}")`)
+    .join(', ');
+  return [
+    `warning: buildFromSource matches ${fallbacks.length} Expo ${one ? 'module' : 'modules'} that Swift Package Manager cannot build from source, so ${one ? 'it is' : 'they are'} linked precompiled instead: ${modules}.`,
+    'A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build that module from source; an entry that names a module exactly fails the sync instead.',
+    `To see what blocks a module's source build, list it by its exact pod or npm package name in ${BUILD_FROM_SOURCE_OPTION}: the sync then fails and names the cause.`,
+    `To keep ${them} precompiled without this warning, narrow ${entries.map((e) => `"${e}"`).join(', ')} so that no entry matches ${one ? 'this module' : 'these modules'}. ${rerunSpmUpdate()}`,
+  ].join(' ');
+}
+
 /** Print the report and return the error to throw, or null when nothing is uncovered. */
 function reportUnsupported(entries) {
   if (!entries.length) return null;
@@ -877,5 +922,6 @@ module.exports = {
   renderRootConflictWarning,
   renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
+  renderBuildFromSourceFallbackWarning,
   reportUnsupported,
 };

@@ -62,6 +62,7 @@ const {
   collectRootConflicts,
   pluginError,
   realPathOrSelf,
+  renderBuildFromSourceFallbackWarning,
   renderExtraPodsWarning,
   renderLeftOutCompanionWarning,
   renderPartlyProvidedPackageWarning,
@@ -318,14 +319,16 @@ function uncoveredPod(identity, ...refusals) {
 /**
  * What the passes decided for each pod, keyed by pod name: CocoaPods pod names are
  * unique, so a name two packages list is one pod. `linkedAs` is `'build-phase'`,
- * `'precompiled'`, `'manifest'`, `'pure-swift'` or null. A precompiled record carries its
- * `framework`; `linkPrecompiledPods` documents `buildFromSourceEntry`.
+ * `'precompiled'`, `'manifest'`, `'pure-swift'` or null. ExpoModulesJSI starts as
+ * `'build-phase'` (see `linkExpoModulesJSI`). A precompiled record carries its
+ * `framework`; `linkPrecompiledPods` documents `buildFromSource`.
  */
 function podRecords(identities) {
   const records = new Map();
   for (const identity of identities.values()) {
     if (!records.has(identity.podName)) {
-      records.set(identity.podName, { identity, linkedAs: null });
+      const linkedAs = identity.podName === JSI_POD ? 'build-phase' : null;
+      records.set(identity.podName, { identity, linkedAs });
     }
   }
   return records;
@@ -338,11 +341,10 @@ function podRecords(identities) {
  * instead. Returns that package's directory, or null when expo-modules-jsi is not
  * autolinked.
  */
-function linkExpoModulesJSI(records, outDir, cacheDir, appRoot) {
-  const record = records.get(JSI_POD);
-  if (record == null) return null;
-  record.linkedAs = 'build-phase';
-  const { packageName, moduleRoot, productName } = record.identity;
+function linkExpoModulesJSI(identities, outDir, cacheDir, appRoot) {
+  const identity = [...identities.values()].find((i) => i.podName === JSI_POD);
+  if (identity == null) return null;
+  const { packageName, moduleRoot, productName } = identity;
   const headers = resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir });
   if (headers == null) {
     const searched = headersXCFrameworkDirs(packageName, moduleRoot);
@@ -378,11 +380,13 @@ function buildPhaseJsiRoot(appRoot) {
 }
 
 /**
- * The entry of the app's `buildFromSource` autolinking option that names a pod, or
- * undefined, matched as CocoaPods matches it in `precompiled_modules.rb#build_from_source?`:
- * each entry is a regular expression that must match the whole pod name or npm package name.
- * An entry naming ExpoModulesCore fails the sync, because every source package compiles
- * against the precompiled one.
+ * The entry of the app's `buildFromSource` autolinking option that matches a pod, as
+ * `{ entry, exact }`, or undefined. An entry is exact for a pod when it is, character for
+ * character, the pod name or the npm package name. Any other entry is a pattern, matched as
+ * CocoaPods matches it in `precompiled_modules.rb#build_from_source?`: a regular expression
+ * that must match the whole pod name or npm package name. An exact entry wins over a pattern.
+ * An exact entry for ExpoModulesCore fails the sync, because every source package compiles
+ * against the precompiled one; a pattern matching it leaves it precompiled.
  */
 function buildFromSourceMatcher(patterns) {
   const entries = patterns.map((pattern) => {
@@ -399,18 +403,24 @@ function buildFromSourceMatcher(patterns) {
       );
     }
   });
-  const entryFor = ({ podName, packageName }) =>
-    entries.find(({ expression }) => expression.test(podName) || expression.test(packageName))
-      ?.pattern;
-  const coreEntry = entryFor({ podName: CORE_POD, packageName: CORE_PACKAGE });
-  if (coreEntry != null) {
+  const matchFor = ({ podName, packageName }) => {
+    const exact = patterns.find((pattern) => pattern === podName || pattern === packageName);
+    if (exact != null) return { entry: exact, exact: true };
+    const pattern = entries.find(
+      ({ expression }) => expression.test(podName) || expression.test(packageName)
+    )?.pattern;
+    return pattern != null ? { entry: pattern, exact: false } : undefined;
+  };
+  const coreMatch = matchFor({ podName: CORE_POD, packageName: CORE_PACKAGE });
+  if (coreMatch?.exact) {
+    const coreEntry = coreMatch.entry;
     throw pluginError({
       what: `The buildFromSource entry "${coreEntry}" in your app's Expo autolinking options matches ${CORE_POD} (${CORE_PACKAGE}), which Swift Package Manager cannot build from source.`,
       why: `Under Swift Package Manager, ${CORE_POD} is always linked precompiled: every Expo module built from source compiles against its precompiled interface.`,
       how: `Remove "${coreEntry}" from ${BUILD_FROM_SOURCE_OPTION}, or narrow it so it no longer matches ${CORE_POD} or ${CORE_PACKAGE}. ${rerunSpmUpdate()}`,
     });
   }
-  return entryFor;
+  return matchFor;
 }
 
 /**
@@ -418,19 +428,26 @@ function buildFromSourceMatcher(patterns) {
  * once one flavor exists, the resolver requires and prepares both before RN
  * receives the plugin result. No runtime binary enters the SwiftPM graph.
  * A pod name several packages list is looked up from each of them, in order,
- * until one has an artifact. A pod the app builds from source — buildFromSource names
- * the pod or any package that lists it — is never linked precompiled; when it has an
- * artifact, its record keeps the `buildFromSourceEntry` naming it, for the report should
- * no source route take it. Returns the records it linked, in that order.
+ * until one has an artifact. A pod the app builds from source — buildFromSource matches
+ * the pod or any package that lists it, an exact entry for any of them winning — is never
+ * linked precompiled, unless it is one of `fallbackPods`; when it has an artifact, its
+ * record keeps the `buildFromSource` match, so a pattern can fall back and an exact entry
+ * be reported should no source route take it. A fallback pod whose artifact does not resolve
+ * keeps its match too, marked `precompiledIncomplete`. Returns the records it linked, in that
+ * order.
  *
- * @param buildFromSourceEntry `buildFromSourceMatcher`'s result.
+ * @param matchBuildFromSource `buildFromSourceMatcher`'s result.
+ * @param fallbackPods the matching pattern by pod name, for each pod linked precompiled though
+ *   a pattern matches it.
  */
-function linkPrecompiledPods(identities, records, cacheDir, buildFromSourceEntry) {
-  const entriesByPod = new Map();
+function linkPrecompiledPods(identities, records, cacheDir, matchBuildFromSource, fallbackPods) {
+  const matchesByPod = new Map();
   for (const identity of identities.values()) {
-    const entry = buildFromSourceEntry(identity);
-    if (entry != null && !entriesByPod.has(identity.podName)) {
-      entriesByPod.set(identity.podName, entry);
+    if (fallbackPods.has(identity.podName)) continue;
+    const match = matchBuildFromSource(identity);
+    const known = matchesByPod.get(identity.podName);
+    if (match != null && (known == null || (match.exact && !known.exact))) {
+      matchesByPod.set(identity.podName, match);
     }
   }
   const linked = [];
@@ -442,15 +459,21 @@ function linkPrecompiledPods(identities, records, cacheDir, buildFromSourceEntry
       moduleRoot: identity.moduleRoot,
       frameworkName: identity.productName,
     };
-    const entry = entriesByPod.get(identity.podName);
-    if (entry != null) {
-      if (record.buildFromSourceEntry == null && hasPrecompiledArtifact(lookup)) {
-        record.buildFromSourceEntry = entry;
+    const match = matchesByPod.get(identity.podName);
+    if (match != null) {
+      if (record.buildFromSource == null && hasPrecompiledArtifact(lookup)) {
+        record.buildFromSource = match;
       }
       continue;
     }
     const framework = resolveFlavoredFramework({ ...lookup, cacheDir });
-    if (framework == null) continue;
+    if (framework == null) {
+      if (fallbackPods.has(identity.podName)) {
+        const entry = fallbackPods.get(identity.podName);
+        record.buildFromSource = { entry, exact: false, precompiledIncomplete: true };
+      }
+      continue;
+    }
     Object.assign(record, { identity, linkedAs: 'precompiled', framework });
     linked.push(record);
   }
@@ -574,13 +597,14 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
  * headers/module-interface tree and leave runtime linking entirely to RN.
  *
  * @param emitContext what every emitted package is generated against.
+ * @param dumpManifest `manifestDumper`'s result.
  * @returns `emitted`, one `{ identity, linkedAs, direct, emission }` per package it emitted,
  *   in emission order, `identity` being the pod it was emitted for and `direct` whether a
  *   checked-in manifest is built as it stands; and `refusals`, by
  *   module root and then reason, each a function from an uncovered pod's identity to
  *   its refusal.
  */
-function linkSourceModules(modules, identities, records, emitContext) {
+function linkSourceModules(modules, identities, records, emitContext, dumpManifest) {
   const emitted = [];
   const refusals = new Map();
   // What the branches below read comes from the first pod's module root, so a
@@ -590,15 +614,6 @@ function linkSourceModules(modules, identities, records, emitContext) {
     refusals.set(root, (refusals.get(root) ?? new Map()).set(reason, refusalFor));
   const linkedAs = (identity) => records.get(identity.podName).linkedAs;
   const manifestProductsByRoot = new Map();
-  // By real path: listings can reach one manifest through different symlinks.
-  const dumpsByRealRoot = new Map();
-  const dumpManifest = (moduleRoot, packageName) => {
-    const realRoot = fs.realpathSync(moduleRoot);
-    if (!dumpsByRealRoot.has(realRoot)) {
-      dumpsByRealRoot.set(realRoot, dumpModuleManifest(moduleRoot, packageName));
-    }
-    return dumpsByRealRoot.get(realRoot);
-  };
   for (const mod of modules) {
     const pods = (mod.pods ?? []).map((pod) => identities.get(pod));
     if (!pods.length || pods.every(linkedAs)) continue;
@@ -668,6 +683,124 @@ function linkSourceModules(modules, identities, records, emitContext) {
   return { emitted, refusals };
 }
 
+/** `dumpModuleManifest`, run at most once per real module root. */
+function manifestDumper() {
+  // By real path: listings can reach one manifest through different symlinks.
+  const dumpsByRealRoot = new Map();
+  return (moduleRoot, packageName) => {
+    const realRoot = fs.realpathSync(moduleRoot);
+    if (!dumpsByRealRoot.has(realRoot)) {
+      dumpsByRealRoot.set(realRoot, dumpModuleManifest(moduleRoot, packageName));
+    }
+    return dumpsByRealRoot.get(realRoot);
+  };
+}
+
+/**
+ * Both passes, over fresh pod records, with the pods in `fallbackPods` linked precompiled
+ * though a buildFromSource pattern matches them.
+ *
+ * @param sourceContext `{ react, outDir, codegenPkgPath, jsiHeadersPkgPath }`: what every
+ *   emitted package is generated against, besides what pass 1 decides.
+ */
+function linkPasses(
+  fallbackPods,
+  { modules, identities, cacheDir, matchBuildFromSource, dumpManifest, sourceContext }
+) {
+  const records = podRecords(identities);
+  const precompiled = linkPrecompiledPods(
+    identities,
+    records,
+    cacheDir,
+    matchBuildFromSource,
+    fallbackPods
+  );
+  // The SwiftPM packages those modules link ship as their own XCFrameworks, and
+  // RN takes them in the same flat array. They join before the interface tree is
+  // built, so source modules compile against their headers too.
+  const dependencyFrameworks = resolveSpmDependencyFrameworks(
+    precompiled.map(({ identity: { podName, moduleRoot, spmPackages } }) => ({
+      podName,
+      moduleRoot,
+      spmDependencies: spmPackages.map((pkg) => pkg.productName),
+    }))
+  );
+  const flavoredFrameworks = [...precompiled.map((r) => r.framework), ...dependencyFrameworks].sort(
+    (a, b) => byteOrder(a.id, b.id)
+  );
+  assertDistinctFlavoredFrameworks(flavoredFrameworks);
+  const coreRecord = precompiled.find((r) => r.identity.podName === CORE_POD) ?? null;
+  const coreSource = coreRecord && frameworkSource(coreRecord.framework);
+  const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
+  const frameworkSearchPath =
+    precompiled.length > 0
+      ? prepareCompileInterfaces(
+          flavoredFrameworks,
+          path.join(sourceContext.outDir, 'compile-interfaces')
+        )
+      : null;
+
+  const core = coreRecord?.identity ?? null;
+  const coreAvailable = core != null && frameworkSearchPath != null;
+  let sourceModules = { emitted: [], refusals: new Map() };
+  if (coreAvailable) {
+    let resolvedMacroFlags = null;
+    let resolvedCoreHeadersXCFramework = null;
+    sourceModules = linkSourceModules(
+      modules,
+      identities,
+      records,
+      {
+        ...sourceContext,
+        frameworkSearchPath,
+        minimumIosDeploymentTarget: core.iosDeploymentTarget,
+        satisfiedDependencies,
+        // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
+        // Lazy: an install that emits no source package needs no macro plugin.
+        get macroFlags() {
+          return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
+        },
+        get macroTool() {
+          return macroPluginTool(core.moduleRoot);
+        },
+        // Lazy: only a direct module needs the headers, and only then must they exist.
+        get coreHeadersXCFramework() {
+          return (resolvedCoreHeadersXCFramework ??= resolveCoreHeaders(
+            core,
+            coreSource,
+            cacheDir
+          ));
+        },
+      },
+      dumpManifest
+    );
+  }
+  return {
+    records,
+    precompiled,
+    flavoredFrameworks,
+    coreRecord,
+    coreSource,
+    satisfiedDependencies,
+    coreAvailable,
+    sourceModules,
+  };
+}
+
+/**
+ * Removes the packages an earlier round of `linkPasses` emitted that the last round did not,
+ * so no package the sync dropped is left beside the ones it links.
+ *
+ * @param emittedByRound `sourceModules.emitted` of each round, the last round last.
+ */
+function removeDiscardedEmissions(emittedByRound) {
+  const packagePath = ({ emission }) => emission.packageDep.path;
+  const kept = new Set(emittedByRound.at(-1).map(packagePath));
+  for (const discarded of new Set(emittedByRound.slice(0, -1).flat().map(packagePath))) {
+    if (!kept.has(discarded)) fs.rmSync(discarded, { recursive: true, force: true });
+  }
+}
+
 /**
  * The emitted products React Native links, and a label for each one an unmet
  * `autolinkWhen` condition withholds. Only a checked-in manifest's products are
@@ -725,9 +858,10 @@ function summarizeRecords(
     );
   const pending = [...records.values()]
     .filter((r) => r.linkedAs == null)
-    .map(({ identity, buildFromSourceEntry }) => ({
+    .map(({ identity, buildFromSource }) => ({
       ...uncoveredPod(identity, ...refusalsFor(identity)),
-      buildFromSourceEntry,
+      buildFromSourceEntry: buildFromSource?.entry,
+      precompiledIncomplete: buildFromSource?.precompiledIncomplete,
     }));
 
   // What the resolved dependencies already carry is not uncovered, their subspecs
@@ -872,7 +1006,7 @@ module.exports = function expoSpmPlugin(context) {
   const appRoot = context.projectRoot;
   configureSpmUpdateCommand({ appRoot, reactNativeRoot: appReactNativeRoot(context, appRoot) });
   const { modules, extraDependencies, buildFromSource = [] } = resolveExpoModules(appRoot);
-  const buildFromSourceEntry = buildFromSourceMatcher(buildFromSource);
+  const matchBuildFromSource = buildFromSourceMatcher(buildFromSource);
   const metadata = readPrebuiltMetadata(appRoot);
   const autolinkedRoots = collectAutolinkedRoots(autolinking);
   const identities = resolvePodIdentities(modules, metadata, autolinkedRoots);
@@ -909,30 +1043,50 @@ module.exports = function expoSpmPlugin(context) {
     ? codegenCandidate
     : null;
 
-  const records = podRecords(identities);
-  const jsiHeadersPkgPath = linkExpoModulesJSI(records, outDir, artifactCacheDir, appRoot);
-  const precompiled = linkPrecompiledPods(
+  const jsiHeadersPkgPath = linkExpoModulesJSI(identities, outDir, artifactCacheDir, appRoot);
+  const passOptions = {
+    modules,
     identities,
+    cacheDir: artifactCacheDir,
+    matchBuildFromSource,
+    dumpManifest: manifestDumper(),
+    sourceContext: { react, outDir, codegenPkgPath, jsiHeadersPkgPath },
+  };
+  // A pod a buildFromSource pattern matches is linked precompiled when no source route takes
+  // it, as ExpoModulesCore never is. Linking one changes what pass 2 decides — a sibling pod's
+  // route, the products already satisfied, the interface tree — so both passes run again until
+  // no other pod falls back. Transitional: needed until every Expo module, ExpoModulesCore
+  // included, has a checked-in Package.swift that SwiftPM can build from source.
+  const fallbackEntries = new Map();
+  const coreMatch = matchBuildFromSource({ podName: CORE_POD, packageName: CORE_PACKAGE });
+  if (coreMatch != null) fallbackEntries.set(CORE_POD, coreMatch.entry);
+  const emittedByRound = [];
+  let passes;
+  let fallingBack;
+  do {
+    passes = linkPasses(fallbackEntries, passOptions);
+    emittedByRound.push(passes.sourceModules.emitted);
+    fallingBack = [...passes.records.values()].filter(
+      (r) =>
+        r.linkedAs == null &&
+        r.buildFromSource?.exact === false &&
+        !fallbackEntries.has(r.identity.podName)
+    );
+    for (const { identity, buildFromSource } of fallingBack) {
+      fallbackEntries.set(identity.podName, buildFromSource.entry);
+    }
+  } while (fallingBack.length > 0);
+  removeDiscardedEmissions(emittedByRound);
+  const {
     records,
-    artifactCacheDir,
-    buildFromSourceEntry
-  );
-  // The SwiftPM packages those modules link ship as their own XCFrameworks, and
-  // RN takes them in the same flat array. They join before the interface tree is
-  // built, so source modules compile against their headers too.
-  const dependencyFrameworks = resolveSpmDependencyFrameworks(
-    precompiled.map(({ identity: { podName, moduleRoot, spmPackages } }) => ({
-      podName,
-      moduleRoot,
-      spmDependencies: spmPackages.map((pkg) => pkg.productName),
-    }))
-  );
-  const flavoredFrameworks = [...precompiled.map((r) => r.framework), ...dependencyFrameworks].sort(
-    (a, b) => byteOrder(a.id, b.id)
-  );
-  assertDistinctFlavoredFrameworks(flavoredFrameworks);
-  const coreRecord = precompiled.find((r) => r.identity.podName === CORE_POD) ?? null;
-  const coreSource = coreRecord && frameworkSource(coreRecord.framework);
+    precompiled,
+    flavoredFrameworks,
+    coreRecord,
+    coreSource,
+    satisfiedDependencies,
+    coreAvailable,
+    sourceModules,
+  } = passes;
   const mixedModules =
     coreRecord &&
     mixedSourcesReport(
@@ -948,44 +1102,6 @@ module.exports = function expoSpmPlugin(context) {
   if (mixedModules != null) {
     const { what, why, how } = mixedModules;
     console.warn(`[expo-spm-plugin] WARNING: ${what} ${why} ${how}`);
-  }
-  const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
-  const frameworkSearchPath =
-    precompiled.length > 0
-      ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
-      : null;
-
-  const core = coreRecord?.identity ?? null;
-  const coreAvailable = core != null && frameworkSearchPath != null;
-  let sourceModules = { emitted: [], refusals: new Map() };
-  if (coreAvailable) {
-    let resolvedMacroFlags = null;
-    let resolvedCoreHeadersXCFramework = null;
-    sourceModules = linkSourceModules(modules, identities, records, {
-      react,
-      frameworkSearchPath,
-      outDir,
-      codegenPkgPath,
-      jsiHeadersPkgPath,
-      minimumIosDeploymentTarget: core.iosDeploymentTarget,
-      satisfiedDependencies,
-      // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
-      // Lazy: an install that emits no source package needs no macro plugin.
-      get macroFlags() {
-        return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
-      },
-      get macroTool() {
-        return macroPluginTool(core.moduleRoot);
-      },
-      // Lazy: only a direct module needs the headers, and only then must they exist.
-      get coreHeadersXCFramework() {
-        return (resolvedCoreHeadersXCFramework ??= resolveCoreHeaders(
-          core,
-          coreSource,
-          artifactCacheDir
-        ));
-      },
-    });
   }
 
   // Anything still uncovered has no xcframework and no way to be built from
@@ -1013,6 +1129,16 @@ module.exports = function expoSpmPlugin(context) {
     'not supported',
     summary.pending.map((p) => p.podName)
   );
+  const fellBack = precompiled
+    .filter((r) => fallbackEntries.has(r.identity.podName))
+    .map(({ identity: { podName, packageName } }) => ({
+      podName,
+      packageName,
+      entry: fallbackEntries.get(podName),
+    }));
+  if (fellBack.length > 0) {
+    console.warn(renderBuildFromSourceFallbackWarning(fellBack));
+  }
   if (summary.unmappedDeps.length > 0) {
     console.warn(renderUnmappedDependencyWarning(summary.unmappedDeps));
   }

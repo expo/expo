@@ -137,7 +137,7 @@ function emitDirectPackage({
   const link = path.join(directDir, packageName);
   fs.mkdirSync(path.dirname(link), { recursive: true });
   relativeSymlink(moduleRoot, link);
-  fs.rmSync(path.join(outDir, 'expo-source', packageName), { recursive: true, force: true });
+  fs.rmSync(path.join(outDir, 'expo-source', manifest.name), { recursive: true, force: true });
 
   return {
     ok: {

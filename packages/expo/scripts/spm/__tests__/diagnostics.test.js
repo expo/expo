@@ -18,6 +18,7 @@ const {
   renderRootConflictWarning,
   renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
+  renderBuildFromSourceFallbackWarning,
 } = require('../diagnostics');
 const { spmUpdateCommand } = require('../commands');
 const { resolvePodIdentities, uncoveredPod } = require('../plugin');
@@ -290,9 +291,69 @@ describe('a pod buildFromSource names that cannot be built from source', () => {
     expect(text).toContain('Remove "ExpoBad" from');
   });
 
+  describe('when a pattern links it precompiled and its XCFramework is incomplete', () => {
+    const incomplete = { ...forced(null), precompiledIncomplete: true };
+
+    it('is refused naming the entry, with what blocks the source build as the cause', () => {
+      expect(classify(incomplete)).toEqual([
+        {
+          ...subject,
+          reason: 'build-from-source-fallback-incomplete',
+          buildFromSourceEntry: 'expo-b.*',
+          cause: { reason: 'mixed-no-manifest', productName: 'ExpoBad' },
+        },
+      ]);
+    });
+
+    it('says what failed, why, and how to complete the XCFramework', () => {
+      expect(renderUnsupportedReport(classify(incomplete))).toBe(
+        [
+          'error: The buildFromSource entry "expo-b.*" matches Expo module "expo-bad" (pod ExpoBad), which Swift Package Manager cannot build from source, and its precompiled XCFramework is incomplete, so it cannot be linked precompiled either.',
+          '  It mixes Swift and Objective-C/C++ sources and ships no Package.swift, and Swift Package Manager can build such a module only from a manifest that splits the two languages into separate targets.',
+          '  A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build it from source, and the plugin links a precompiled XCFramework only when both its Debug and Release flavors are present.',
+          `  Reinstall expo-bad so it ships both flavors, or, in the Expo repository, from its root, build both with \`node tools/bin/expotools.js prebuild expo-bad\`. Then run \`${spmUpdateCommand()}\` from your app directory again.`,
+          '  Module path: /m/expo-bad',
+        ].join('\n')
+      );
+    });
+  });
+
   it('counts the pod once', () => {
     expect(new UnsupportedModulesError(classify(forced(null))).message).toMatch(
       /^1 Expo native module /
+    );
+  });
+});
+
+describe('modules a buildFromSource pattern matches that are linked precompiled instead', () => {
+  const option =
+    '`"expo": { "autolinking": { "buildFromSource": [...] } }` (or its `"ios"` section) in your package.json';
+  const core = { podName: 'ExpoModulesCore', packageName: 'expo-modules-core', entry: '.*' };
+
+  it('renders nothing when no module fell back', () => {
+    expect(renderBuildFromSourceFallbackWarning([])).toBe('');
+  });
+
+  it('names the module and the entry that matched it', () => {
+    expect(renderBuildFromSourceFallbackWarning([core])).toBe(
+      'warning: buildFromSource matches 1 Expo module that Swift Package Manager cannot build from source, so it is linked precompiled instead: ExpoModulesCore (expo-modules-core, matched by ".*"). ' +
+        'A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build that module from source; an entry that names a module exactly fails the sync instead. ' +
+        `To see what blocks a module's source build, list it by its exact pod or npm package name in ${option}: the sync then fails and names the cause. ` +
+        `To keep it precompiled without this warning, narrow ".*" so that no entry matches this module. Then run \`${spmUpdateCommand()}\` from your app directory again.`
+    );
+  });
+
+  it('names every module, and each entry once', () => {
+    const text = renderBuildFromSourceFallbackWarning([
+      core,
+      { podName: 'ExpoMixed', packageName: 'expo-mixed', entry: 'expo-.*' },
+      { podName: 'ExpoOther', packageName: 'expo-other', entry: 'expo-.*' },
+    ]);
+    expect(text).toContain(
+      'buildFromSource matches 3 Expo modules that Swift Package Manager cannot build from source, so they are linked precompiled instead: ExpoModulesCore (expo-modules-core, matched by ".*"), ExpoMixed (expo-mixed, matched by "expo-.*"), ExpoOther (expo-other, matched by "expo-.*").'
+    );
+    expect(text).toContain(
+      'To keep them precompiled without this warning, narrow ".*", "expo-.*" so that no entry matches these modules.'
     );
   });
 });
