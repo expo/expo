@@ -1,6 +1,7 @@
 import { screen, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
+import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { Tabs } from '../layouts/Tabs';
@@ -204,4 +205,39 @@ describe('a navigator with a dynamic name', () => {
     await link('/users/2');
     expect(rootRoutes()).toEqual(['index', 'users/1', 'sheet', 'users/2']);
   });
+});
+
+it('opens a screen of a new stack over its anchor, which gets the stack params', async () => {
+  let listener: (url: string) => void = () => {};
+  const listIds: (string | undefined)[] = [];
+
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    'lists/[id]/_layout': {
+      default: () => <Stack />,
+      unstable_settings: { anchor: 'index' },
+    },
+    'lists/[id]/index': function ListPage() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      listIds.push(id);
+      return <Text testID="list" />;
+    },
+    'lists/[id]/item/[itemId]': () => <Text testID="item" />,
+    '+native-intent': {
+      legacy_subscribe(listenerFn) {
+        listener = listenerFn;
+        return () => {};
+      },
+    },
+  });
+
+  await act(() => listener('/lists/7/item/42'));
+
+  expect(screen).toHavePathname('/lists/7/item/42');
+  const listStack = result.getRouterState()?.routes[0]?.state?.routes[1]?.state;
+  expect(listStack?.routes.map((route) => route.name)).toEqual(['index', 'item/[itemId]']);
+  await act(() => router.back());
+  expect(screen).toHavePathname('/lists/7');
+  expect(listIds).toEqual(['7']);
 });
