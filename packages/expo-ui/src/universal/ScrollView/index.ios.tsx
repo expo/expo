@@ -34,7 +34,8 @@ export function ScrollView({
   const scrollModifiers = transformToModifiers(
     Object.keys(styleWithoutPadding).length > 0 ? (styleWithoutPadding as typeof style) : undefined,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'ScrollView' }
   );
 
   // SwiftUI ScrollView centers content by default. Stretch content to fill

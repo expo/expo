@@ -149,7 +149,7 @@ export function TextInput({
 
   const modifiers: ModifierConfig[] = [
     ...(userModifiers ?? []),
-    ...transformToModifiers(style, {}, undefined, { textStyle }),
+    ...transformToModifiers(style, {}, undefined, { componentName: 'TextInput', textStyle }),
   ];
   if (editable === false) modifiers.push(disabledMod(true));
   if (keyboardType) modifiers.push(keyboardTypeMod(mapKeyboardType(keyboardType)));

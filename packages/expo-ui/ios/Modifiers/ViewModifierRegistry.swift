@@ -1921,6 +1921,10 @@ extension ViewModifierRegistry {
       return try FrameModifier(from: params, appContext: appContext)
     }
 
+    register("universalLayout") { params, appContext, _ in
+      return try UniversalLayoutModifier(from: params, appContext: appContext)
+    }
+
     register("padding") { params, appContext, _ in
       return try PaddingModifier(from: params, appContext: appContext)
     }
