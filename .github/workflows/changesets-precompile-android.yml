@@ -60,31 +60,23 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
-      - name: 🔍 Read the Android toolchain versions
-        id: android-toolchain
-        # Same versions as `et prepare-precompile-android` (tools/src/prebuilds/AndroidToolchain.ts).
+      - name: 🔍 Read the NDK version
+        id: ndk
+        # The NDK version that `et prepare-precompile-android` installs
+        # (tools/src/prebuilds/AndroidToolchain.ts). The runner image already has the platform and
+        # build tools, and restoring over those root-owned directories fails.
         run: |
           catalog="$(node -p "path.join(path.dirname(require.resolve('react-native/package.json', { paths: ['apps/bare-expo'] })), 'gradle/libs.versions.toml')")"
-          read_version() { sed -nE "s/^$1 *= *[\"']([^\"']+)[\"'].*/\1/p" "$catalog"; }
-          ndk="$(read_version ndkVersion)"
-          compile_sdk="$(read_version compileSdk)"
-          build_tools="$(read_version buildTools)"
-          platform="android-$compile_sdk"
-          if [[ "$compile_sdk" != *.* ]] && (( compile_sdk >= 37 )); then platform="$platform.0"; fi
-          {
-            echo "key=${RUNNER_OS}-android-sdk-ndk-${ndk}-${platform}-build-tools-${build_tools}"
-            echo "paths<<EOF"
-            echo "$ANDROID_HOME/ndk/$ndk"
-            echo "$ANDROID_HOME/platforms/$platform"
-            echo "$ANDROID_HOME/build-tools/$build_tools"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-      - name: ♻️ Restore Android SDK components
+          version="$(sed -nE "s/^ndkVersion *= *[\"']([^\"']+)[\"'].*/\1/p" "$catalog")"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "path=$ANDROID_HOME/ndk/$version" >> "$GITHUB_OUTPUT"
+      - name: ♻️ Restore Android NDK
         # Saved only after a successful job, so a corrupt sdkmanager download is never cached.
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: ${{ steps.android-toolchain.outputs.paths }}
-          key: ${{ steps.android-toolchain.outputs.key }}
+          path: ${{ steps.ndk.outputs.path }}
+          key: ${{ runner.os }}-android-ndk-${{ steps.ndk.outputs.version }}
       - name: 🏗️ Precompile embedded Maven repositories
         # Every package builds in its own Gradle process, and they contend for the shared Gradle
         # user home: at 16 concurrent builds the precompile took 23.1 min with the CPUs ~90% idle,
