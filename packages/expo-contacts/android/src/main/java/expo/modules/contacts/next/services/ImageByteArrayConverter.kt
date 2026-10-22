@@ -8,9 +8,9 @@ import java.io.ByteArrayOutputStream
 
 class ImageByteArrayConverter(private val contentResolver: ContentResolver) {
   fun toByteArray(uri: Uri): ByteArray {
-    val bitmap = ContactPhotoDecoder.decodeDownsampled(contentResolver, uri)
+    val bitmap = ContactPhotoDecoder.decode(contentResolver, uri)
     val stream = ByteArrayOutputStream()
-    bitmap!!.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream)
     return stream.toByteArray()
   }
 }

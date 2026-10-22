@@ -591,6 +591,6 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    return ContactPhotoDecoder.decodeDownsampled(context.contentResolver, photoUri.toUri())!!
+    return ContactPhotoDecoder.decode(context.contentResolver, photoUri.toUri())
   }
 }
