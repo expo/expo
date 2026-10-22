@@ -12,12 +12,16 @@ internal final class ImageLoader {
   )
 
   func load(_ source: ImageSource, options: ImageLoadOptions) async throws -> UIImage {
-    // `maxSize` isn't applied to asset catalog images: the catalog already serves the variant for the screen scale.
+    // `maxSize` isn't applied to asset catalog images. Downscaling a bundled asset through
+    // `loadAsync` is not a case worth a resize path here, see the known gaps in the docs.
     if let image = assetCatalogImage(for: source.uri) {
-      if let tintColor = options.tintColor {
-        return image.withTintColor(tintColor)
+      guard let tintColor = options.tintColor else {
+        return image
       }
-      return image
+      // `withTintColor` returns a new image without the format set by `assetCatalogImage`.
+      let tinted = image.withTintColor(tintColor)
+      tinted.sd_imageFormat = image.sd_imageFormat
+      return tinted
     }
 
     // This loader uses only the disk cache. We may want to give more control on this, but the memory cache

@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 internal import React
+internal import SDWebImage
 
 /**
  Loads a bundled packager image from React Native's asset catalog.
@@ -14,10 +15,22 @@ internal import React
  hasn't opted in, so those sources keep their regular loading path.
  */
 func assetCatalogImage(for url: URL?) -> UIImage? {
-  guard usesAssetCatalog, let url, url.isFileURL, RCTAssetCatalogNameForURL(url) != nil else {
+  guard usesAssetCatalog, let url, url.isFileURL, RCTAssetCatalogNameForURL(url) != nil,
+    let image = RCTImageFromLocalAssetURL(url) else {
     return nil
   }
-  return RCTImageFromLocalAssetURL(url)
+  // `Assets.car` stores images in Core UI's own encoding, so the `CGImage` has no UTType
+  // for SDWebImage to derive the format from.
+  image.sd_imageFormat = assetCatalogImageFormat(for: url)
+  return image
+}
+
+/**
+ The format of a catalog image, from the extension of the packager URL. React Native only puts
+ png, jpg and jpeg files in the catalog (`RCTAssetCatalogNameForURL` returns `nil` for others).
+ */
+private func assetCatalogImageFormat(for url: URL) -> SDImageFormat {
+  return url.pathExtension.lowercased() == "png" ? .PNG : .JPEG
 }
 
 // React Native reads the key with `boolValue`, which also accepts string values such as "YES".

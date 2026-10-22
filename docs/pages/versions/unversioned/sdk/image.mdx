@@ -145,6 +145,32 @@ export default function AppIcon() {
 }
 ```
 
+### Using React Native's asset catalog
+
+> **info** Requires React Native 0.88 or newer.
+
+On iOS, React Native can compile the PNG and JPEG images you `require()` into an asset catalog instead of copying them into the app as loose files. App Store thinning then removes the scales a device doesn't need. To turn it on, set the `RCTUseAssetCatalog` key in your app config and make a clean build. Incremental builds keep the loose files from a previous build, so clean the build folder after changing the key.
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "RCTUseAssetCatalog": true
+      }
+    }
+  }
+}
+```
+
+The `Image` component loads catalog images the same way it loads loose files, with a few limitations:
+
+- `Image.prefetch`, `Image.generateBlurhashAsync`, `Image.generateThumbhashAsync`, and `Image.writeToCacheAsync` read the file at the source path, which doesn't exist in the app, so they fail for catalog images.
+- `Image.loadAsync` ignores the `maxWidth` and `maxHeight` options and returns the image at the bundled size.
+- Animated PNGs are compiled into a single frame, since asset catalogs don't support animation.
+
+GIF and WebP files are not compiled into the catalog, so they are not affected.
+
 ## API
 
 ```js
