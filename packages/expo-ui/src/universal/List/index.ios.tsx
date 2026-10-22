@@ -19,4 +19,6 @@ export function List({ children, onRefresh, testID }: ListProps) {
 
 List.ForEach = ListForEach;
 
+export { ListForEach } from './ListForEach';
+
 export * from './types';

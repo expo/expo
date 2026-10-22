@@ -195,6 +195,7 @@ export default function ListItemCompoundExample() {
 
 Wrap the render function in `useCallback`. A recycled row keeps its local state (`useState`) when it shows another item. Keep row state outside the row, or reset it when the item changes. You can put static rows before and after `List.ForEach` in the same `List`.
 
+```tsx ListForEachExample.tsx
 import { useCallback } from 'react';
 import { Host, List, ListItem } from '@expo/ui';
 
