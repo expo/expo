@@ -80,6 +80,9 @@ export function unstable_useReconcileTabHistory() {
     'unstable_useReconcileTabHistory is not implemented in React Server Components yet'
   );
 }
+export function useCanGoBack() {
+  throw new Error('useCanGoBack is not implemented in React Server Components yet');
+}
 export function useUnstableGlobalHref() {
   throw new Error('useUnstableGlobalHref is not implemented in React Server Components yet');
 }

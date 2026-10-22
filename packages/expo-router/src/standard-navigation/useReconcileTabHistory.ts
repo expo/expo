@@ -3,6 +3,7 @@
 import { use } from 'react';
 
 import { findStateByKey } from '../global-state/stateUtils';
+import { hasBackTarget } from '../react-navigation/core/CanGoBackContext';
 import { NavigationHelpersContext } from '../react-navigation/core/NavigationHelpersContext';
 import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
@@ -66,9 +67,4 @@ export function useReconcileTabHistory(navigator?: {
       target: committed.key,
     });
   }, [committed, navigation, state]);
-}
-
-// A navigator without `history` falls back to its index.
-function hasBackTarget(state: NavigationState) {
-  return state.history != null ? state.history.length > 1 : state.index > 0;
 }
