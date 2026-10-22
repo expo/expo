@@ -147,8 +147,6 @@ export default function AppIcon() {
 
 ### Using React Native's asset catalog
 
-> **info** Available in **SDK 58 and later**.
-
 On iOS, React Native can compile the PNG and JPEG images you `require()` into an asset catalog instead of copying them into the app as individual files. Apple's app thinning then removes the scales a device does not need. To enable it, set the `RCTUseAssetCatalog` key under [`ios.infoPlist`](../config/app/#infoplist) in your [app config](/workflow/configuration/) and make a clean build. Incremental builds keep the files from a previous build, so clean the build folder after you change the key.
 
 ```json app.json
