@@ -221,7 +221,9 @@ jobs:
       !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
       (needs.stable-publish.result == 'success' ||
        (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    # GitHub-hosted, not Blacksmith: `npm dist-tag add` authenticates with npm trusted publishing
+    # (OIDC), which npm only supports on GitHub-hosted runners.
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     concurrency:
       # All SDK branches update the same versions document.
@@ -244,20 +246,34 @@ jobs:
       - run: npm install --global npm@^11.21.0
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm turbo run build --filter=expotools...
+      # Both syncs retry every minute until they succeed or the job times out. Every write they make
+      # (dist-tags, native modules, versions) is idempotent, so retrying after any failure is safe.
       - name: Sync staging versions from this main commit
-        run: pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}
+        run: |
+          attempt=1
+          until pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
+            echo "::warning::Staging sync attempt $attempt failed; retrying in 1 minute."
+            sleep 60
+            attempt=$((attempt + 1))
+          done
         env:
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
           EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
       - name: Sync production versions from this main commit
         run: |
+          set -o pipefail
+          log="$RUNNER_TEMP/sync-production.log"
           attempt=1
-          echo "Production sync attempt $attempt."
-          until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
-            echo "Attempt $attempt failed; retrying in 10 minutes."
-            sleep 600
+          until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }} 2>&1 | tee "$log"; do
+            # Freshly published versions take a minute or so to show up in `npm view`; flag
+            # anything else so it stands out in the run summary.
+            if grep -qE 'is not published on public npm|E404' "$log"; then
+              echo "Production sync attempt $attempt: published versions aren't on npm yet; retrying in 1 minute."
+            else
+              echo "::warning::Production sync attempt $attempt failed with an unexpected error; retrying in 1 minute."
+            fi
+            sleep 60
             attempt=$((attempt + 1))
-            echo "Production sync attempt $attempt."
           done
         env:
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
