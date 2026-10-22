@@ -118,6 +118,88 @@ it('sets tabBarHiddenAnimationEnabled to false when disableHiddenAnimation is tr
   expect(TabsHost.mock.calls[0]![0].ios?.tabBarHiddenAnimationEnabled).toBe(false);
 });
 
+describe('sidebarPreferredPlacement', () => {
+  it('forwards the placement with tabSidebar mode when sidebarAdaptable is true', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs sidebarAdaptable sidebarPreferredPlacement="sidebar">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabSidebar');
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarSidebarPreferredPlacement).toBe('sidebar');
+  });
+
+  it('uses tabSidebar mode when sidebarAdaptable is not set', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs sidebarPreferredPlacement="tabBar">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabSidebar');
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarSidebarPreferredPlacement).toBe('tabBar');
+  });
+
+  it('warns in dev and keeps tabBar mode when sidebarAdaptable is false', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs sidebarAdaptable={false} sidebarPreferredPlacement="sidebar">
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsHost).toHaveBeenCalledTimes(1);
+      expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabBar');
+      expect(warnSpy).toHaveBeenCalledWith(
+        'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+          'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+          'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('warns in dev when sidebarAdaptable is false and the placement is automatic', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs sidebarAdaptable={false} sidebarPreferredPlacement="automatic">
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(warnSpy).toHaveBeenCalledWith(
+        'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+          'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+          'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});
+
 describe('unstable_nativeProps', () => {
   it('forwards top-level raw props to Tabs.Host', async () => {
     await renderRouter({

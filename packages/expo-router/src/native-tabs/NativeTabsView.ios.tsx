@@ -25,8 +25,14 @@ import {
 } from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =
-    props;
+  const {
+    minimizeBehavior,
+    tabs,
+    sidebarAdaptable,
+    sidebarPreferredPlacement,
+    nonTriggerChildren,
+    unstable_nativeProps,
+  } = props;
   // `ios`/`android` are the only platform-nested keys on `TabsHostProps`. We drop the inactive
   // platform's slice so users writing universal code don't pass Android-only props to the iOS host.
   const {
@@ -80,8 +86,25 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     return null;
   }
 
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    sidebarAdaptable === false &&
+    sidebarPreferredPlacement
+  ) {
+    console.warn(
+      'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+        'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+        'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
+    );
+  }
+
+  // The placement works only in `tabSidebar` mode, so setting it enables that mode.
   const tabBarControllerMode: NonNullable<TabsHostProps['ios']>['tabBarControllerMode'] =
-    sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
+    sidebarAdaptable === false
+      ? 'tabBar'
+      : sidebarAdaptable || sidebarPreferredPlacement
+        ? 'tabSidebar'
+        : 'automatic';
 
   return (
     <TabsHostWrapper
@@ -89,6 +112,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
+        tabBarSidebarPreferredPlacement: sidebarPreferredPlacement,
         bottomAccessory: bottomAccessoryFn,
         tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
         ...rawIosProps,

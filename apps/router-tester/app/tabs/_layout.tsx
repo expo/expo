@@ -1,4 +1,4 @@
-import { NativeTabs } from 'expo-router/native-tabs';
+import { NativeTabs, type NativeTabsProps } from 'expo-router/native-tabs';
 import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router/react-navigation';
 import { useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
@@ -14,14 +14,24 @@ export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [disableHiddenAnimation, setDisableHiddenAnimation] = useState(false);
+  const [sidebarPreferredPlacement, setSidebarPreferredPlacement] =
+    useState<NativeTabsProps['sidebarPreferredPlacement']>();
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <TabBarHiddenContext.Provider
-        value={{ hidden, setHidden, disableHiddenAnimation, setDisableHiddenAnimation }}>
+        value={{
+          hidden,
+          setHidden,
+          disableHiddenAnimation,
+          setDisableHiddenAnimation,
+          sidebarPreferredPlacement,
+          setSidebarPreferredPlacement,
+        }}>
         <NativeTabs
           hidden={hidden}
           disableHiddenAnimation={disableHiddenAnimation}
+          sidebarPreferredPlacement={sidebarPreferredPlacement}
           minimizeBehavior="onScrollDown"
           rippleColor="#a6c1ee"
           labelVisibilityMode="labeled"
