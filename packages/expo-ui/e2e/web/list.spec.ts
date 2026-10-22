@@ -1,7 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-// Data rows of the universal List screen render as `#<id>: <name>`. The static
-// `#42: Slot form (compound children)` row has parentheses, so it does not match.
+// Matches `#<id>: <name>` data rows, not the static `#42: Slot form (compound children)` row.
 const DATA_ROW = /^#\d+: [A-Za-z ]+$/;
 const ITEM_COUNT = 1008;
 
@@ -12,7 +11,6 @@ async function gotoList(page: Page) {
   });
 }
 
-// Returns the ids of the data rows in the viewport, from top to bottom.
 async function visibleRowIds(page: Page): Promise<number[]> {
   const rows = await page.getByText(DATA_ROW).evaluateAll((nodes) =>
     nodes.map((node) => {
@@ -63,7 +61,6 @@ test('List.ForEach shows every row in order while scrolling to the end', async (
   expect(ids.at(-1)).toBe(ITEM_COUNT);
   expect(await page.getByText(DATA_ROW).count()).toBeLessThan(100);
 
-  // Scroll back to the top through rows that were measured on the way down.
   for (let step = 0; step < 200; step++) {
     await page.mouse.wheel(0, -1500);
     await nextFrames(page);

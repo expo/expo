@@ -20,11 +20,8 @@ import { ListScrollContext } from './ListScrollContext';
 import type { ListForEachProps } from './types';
 
 type RowSizes = {
-  /** Remeasures every mounted row. */
   measureAll: () => void;
-  /** Registers the measure function of a mounted row. Returns the unregister function. */
   register: (measure: () => void) => () => void;
-  /** Stores the measured height of an item. */
   report: (itemKey: string, height: number) => void;
 };
 
@@ -34,7 +31,7 @@ function asHTMLElement(value: unknown): HTMLElement | null {
   return typeof HTMLElement !== 'undefined' && value instanceof HTMLElement ? value : null;
 }
 
-// Returns the index of the item at `offset`, clamped to the data set.
+// Index of the item at `offset`, clamped to the data.
 function getIndexAt(offsets: Float64Array, offset: number): number {
   let low = 0;
   let high = offsets.length - 2;
@@ -47,8 +44,7 @@ function getIndexAt(offsets: Float64Array, offset: number): number {
 }
 
 /**
- * Renders one row for each item of `data`.
- * Mounts only the rows near the visible range, and reuses them while the list scrolls.
+ * Renders one row for each item of `data`, and reuses rows while the list scrolls.
  */
 export function ListForEach<T>({ recycling = true, ...props }: ListForEachProps<T>) {
   return recycling ? <RecycledListForEach {...props} /> : <StaticListForEach {...props} />;
@@ -106,14 +102,14 @@ function RecycledListForEach<T>({
     };
   }, [heights]);
 
-  // `offsets[index]` is the top of item `index`; the last entry is the total height.
+  // `offsets[i]` is the top of item `i`; the last entry is the total height.
   const offsets = useMemo(() => {
     const result = new Float64Array(itemKeys.length + 1);
     itemKeys.forEach((itemKey, index) => {
       result[index + 1] = result[index]! + (heights.get(itemKey) ?? estimatedItemSize);
     });
     return result;
-    // `heightsVersion` changes when `heights` changes.
+    // `heightsVersion` tracks changes to `heights`.
   }, [itemKeys, estimatedItemSize, heights, heightsVersion]);
 
   const latest = useRef({ offsets, revision, onWindowChange });
@@ -150,7 +146,7 @@ function RecycledListForEach<T>({
     };
   }, [updateWindow]);
 
-  // Rows change height when the list width changes, so drop the heights measured at the old width.
+  // Row heights depend on the width.
   useEffect(() => {
     const container = asHTMLElement(containerRef.current);
     if (!container || typeof ResizeObserver === 'undefined') return;
@@ -167,8 +163,7 @@ function RecycledListForEach<T>({
     return () => observer.disconnect();
   }, [heights, rowSizes]);
 
-  // Slot `start % rows.length` holds item `start`, so rotate the pool into item order.
-  // The DOM order then matches the visual order for focus and screen readers.
+  // Rotate the pool from slot order to item order, so the DOM order matches the screen.
   const pivot = rows.length === 0 ? 0 : start % rows.length;
   const orderedRows = [...rows.slice(pivot), ...rows.slice(0, pivot)];
   const end = start + rows.length;

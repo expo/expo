@@ -2,8 +2,7 @@ import { ListForEach as SwiftUIListForEach } from '../../swift-ui/List/ListForEa
 import type { ListForEachProps } from './types';
 
 /**
- * iOS implementation of `List.ForEach`.
- * Delegates to SwiftUI `List.ForEach`, which recycles rows unless `recycling` is `false`.
+ * iOS implementation of `List.ForEach`. Delegates to SwiftUI `List.ForEach`.
  */
 export function ListForEach<T>({
   data,
