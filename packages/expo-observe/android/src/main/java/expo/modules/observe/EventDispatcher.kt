@@ -122,9 +122,7 @@ class EventDispatcher(
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
-    // Only in debug builds, matching iOS (`#if DEBUG` in `DispatchUtils.swift`). The body carries
-    // every event in the batch, including error messages, so release builds must not write it
-    // to logcat.
+    // Debug only, like iOS: the batch body can include error messages.
     if (BuildConfig.DEBUG) {
       Log.d(OBSERVE_TAG, body)
     }
