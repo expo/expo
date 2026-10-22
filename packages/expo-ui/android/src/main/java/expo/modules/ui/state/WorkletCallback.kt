@@ -10,6 +10,8 @@ import expo.modules.kotlin.sharedobjects.SharedObject
  * The view resolves it and executes the worklet on the UI runtime.
  */
 class WorkletCallback : SharedObject() {
+  override val releasesAfterPendingViewUpdates = true
+
   var worklet: Worklet? = null
 
   fun invoke(vararg arguments: Any?) {
