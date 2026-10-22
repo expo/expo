@@ -592,8 +592,17 @@ inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, co
   object.setNativeState(runtime, nativeState);
 }
 
-inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
-  object.setNativeState(runtime, nullptr);
+/**
+ Removes the native state from the object. Returns `false` when the engine refuses, for example when the
+ object is frozen. A C++ exception can't cross into Swift, so it's caught here.
+ */
+inline bool unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
+  try {
+    object.setNativeState(runtime, nullptr);
+    return true;
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
 }
 
 /**

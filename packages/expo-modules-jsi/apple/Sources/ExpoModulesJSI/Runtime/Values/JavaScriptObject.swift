@@ -590,12 +590,20 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
-  /// Unsets the native state of this object.
+  /// Unsets the native state of this object. Does nothing when the engine doesn't allow it, for example when
+  /// the object is frozen; use `tryUnsetNativeState()` to find out.
   public func unsetNativeState() {
+    tryUnsetNativeState()
+  }
+
+  /// Unsets the native state of this object. Returns `false` when the engine doesn't allow it, for example
+  /// when the object is frozen; the native state then stays attached.
+  @discardableResult
+  public func tryUnsetNativeState() -> Bool {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    expo.unsetNativeState(jsiRuntime, pointee)
+    return expo.unsetNativeState(jsiRuntime, pointee)
   }
 
   // MARK: - Memory pressure
