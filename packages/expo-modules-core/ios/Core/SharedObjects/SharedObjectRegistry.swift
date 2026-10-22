@@ -92,9 +92,15 @@ public final class SharedObjectRegistry: Sendable {
 
   /**
    Adds a pair of native and JS shared object to the registry. Assigns a new shared object ID to these objects.
+   Pass `inheritsBaseClass: true` when `jsObject` inherits from `expo.SharedObject.prototype`, whose getter
+   already reads the ID from the native state. A plain object gets the ID as its own property instead.
    */
   @discardableResult
-  internal func add(native nativeObject: SharedObject, javaScript jsObject: borrowing JavaScriptObject) -> SharedObjectId {
+  internal func add(
+    native nativeObject: SharedObject,
+    javaScript jsObject: borrowing JavaScriptObject,
+    inheritsBaseClass: Bool = false
+  ) -> SharedObjectId {
     // Reuse the native state, and with it the ID, only while a live JS object in this runtime holds it.
     // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
     // Otherwise the C++ native state can be in destruction on another thread, and its release must not
@@ -107,10 +113,12 @@ public final class SharedObjectRegistry: Sendable {
     nativeObject.appContext = appContext
 
     // This property should be deprecated, but it's still used when passing as a view prop.
-    // It's already defined in the JS base SharedObject class prototype,
-    // but with the current implementation it's possible to use a raw object for registration.
+    // The base class prototype defines it as a getter, so only a plain object needs its own property.
+    // Defining it calls `Object.defineProperty` in JS, a large part of the cost of pairing.
     // No option set literals here: they build the set through a generic initializer on every call.
-    jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
+    if !inheritsBaseClass {
+      jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
+    }
 
     if let sharedRefType = nativeObject.sharedRefType {
       jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
