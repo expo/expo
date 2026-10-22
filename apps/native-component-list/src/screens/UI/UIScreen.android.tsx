@@ -379,6 +379,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Host in Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
     name: 'ToggleButton component',
     route: 'ui/toggle-button',
     options: {},

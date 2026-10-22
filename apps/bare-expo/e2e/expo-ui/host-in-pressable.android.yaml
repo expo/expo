@@ -1,0 +1,48 @@
+appId: dev.expo.payments
+jsEngine: graaljs
+---
+# https://github.com/expo/expo/issues/52066
+# A finger tap moves a few pixels, so the taps below are short swipes.
+# Each control fills its row, and the points are near each row's center.
+# when devving, start from a different screen so state is reset
+#- openLink: bareexpo://components
+- openLink: bareexpo://components/ui/host-in-pressable
+- extendedWaitUntil:
+    visible: 'button = 0'
+    timeout: 30000
+- waitForAnimationToEnd
+
+- swipe:
+    start: 50%, 40%
+    end: 51%, 40%
+    duration: 200
+- assertVisible: 'button = 1'
+- assertVisible: 'buttonPressable = 0'
+# A still tap must not press the Pressable as well.
+- tapOn:
+    point: 50%, 40%
+- assertVisible: 'button = 2'
+- assertVisible: 'buttonPressable = 0'
+
+- swipe:
+    start: 50%, 54%
+    end: 51%, 54%
+    duration: 200
+- assertVisible: 'textFieldFocus = 1'
+- assertVisible: 'textFieldPressable = 0'
+- hideKeyboard
+
+# Content that doesn't take touches leaves the press to the Pressable.
+- swipe:
+    start: 50%, 67%
+    end: 51%, 67%
+    duration: 200
+- assertVisible: 'cardPressable = 1'
+
+# React Native content in the Host keeps its own press.
+- swipe:
+    start: 50%, 81%
+    end: 51%, 81%
+    duration: 200
+- assertVisible: 'hostedPressable = 1'
+- assertVisible: 'outerPressable = 0'
