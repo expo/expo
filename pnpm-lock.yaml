@@ -5808,6 +5808,9 @@ importers:
       '@types/react-is':
         specifier: ^19.0.0
         version: 19.2.0
+      expect:
+        specifier: ^30.0.0
+        version: 30.5.2
       expect-type:
         specifier: ^1.3.0
         version: 1.3.0
