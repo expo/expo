@@ -54,7 +54,14 @@ internal object ContactPhotoDecoder {
         null,
         null
       )?.use { cursor ->
-        if (cursor.moveToFirst()) cursor.getInt(0).takeIf { it > 0 } else null
+        if (cursor.moveToFirst()) {
+          cursor.getColumnIndex(ContactsContract.DisplayPhoto.DISPLAY_MAX_DIM)
+            .takeIf { it >= 0 }
+            ?.let { cursor.getInt(it) }
+            ?.takeIf { it > 0 }
+        } else {
+          null
+        }
       }
     }.getOrNull() ?: FALLBACK_MAX_DIM
 }
