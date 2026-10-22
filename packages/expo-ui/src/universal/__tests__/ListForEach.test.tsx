@@ -3,6 +3,14 @@ import { View } from 'react-native';
 
 import { List } from '../List';
 
+jest.mock('expo', () => ({
+  ...jest.requireActual('expo'),
+  requireNativeView: () => {
+    const { View } = require('react-native');
+    return View;
+  },
+}));
+
 const keyExtractor = (item: { id: string }) => item.id;
 const data = Array.from({ length: 10_000 }, (_, index) => ({ id: `item-${index}` }));
 
