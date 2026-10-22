@@ -8,7 +8,7 @@
 
 import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import countLines from '@expo/metro/metro/lib/countLines';
-import { relative, dirname } from 'node:path';
+import { basename, dirname, extname, relative } from 'node:path';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
@@ -82,6 +82,19 @@ export async function transform(
   }
 }
 
+/**
+ * Whether a module has an extension that isn't one of the resolver's `sourceExts`.
+ * These are files that Expo CLI resolved as assets without their extension being listed in `assetExts`.
+ */
+function isImplicitAsset(config: ExpoJsTransformerConfig, filename: string): boolean {
+  const sourceExts = config.expo_sourceExts;
+  if (!sourceExts || !extname(filename)) {
+    return false;
+  }
+  const name = basename(filename);
+  return !sourceExts.some((ext) => name.endsWith('.' + ext));
+}
+
 async function transformImpl(
   config: ExpoJsTransformerConfig,
   projectRoot: string,
@@ -89,6 +102,10 @@ async function transformImpl(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
+  if (options.type === 'module' && isImplicitAsset(config, filename)) {
+    // Metro only types files as assets when their extension is in `assetExts`
+    options = { ...options, type: 'asset' };
+  }
   const posixFilename = toPosixPath(filename);
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
