@@ -18,7 +18,14 @@ export default defineConfig({
   // Configure the global timeout to 3m, on Windows increase this to 5m
   timeout: process.platform === 'win32' ? 300_000 : 180_000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [isCI ? ['list', { printSteps: true }] : ['null']],
+  // CI uploads `playwright-report/`, which only the HTML reporter writes. It holds the traces and
+  // the page snapshot of each failure.
+  reporter: isCI
+    ? [
+        ['list', { printSteps: true }],
+        ['html', { open: 'never' }],
+      ]
+    : [['null']],
   // reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
