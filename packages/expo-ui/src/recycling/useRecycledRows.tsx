@@ -53,6 +53,8 @@ export type RecycledRows = {
   revision: number;
   /** The pooled rows to mount, one per slot. */
   rows: ReactElement[];
+  /** Index of the first item in the pool. The row of this item is at slot `start % rows.length`. */
+  start: number;
   /** Applies a native window request. */
   onWindowChange: (event: WindowChangeEvent) => void;
   /** Whether a native event was sent for the data currently committed to native. */
@@ -169,6 +171,7 @@ export function useRecycledRows<ItemT>({
     itemKeys,
     revision: current.revision,
     rows,
+    start,
     isCurrentRevision: (revision) => revision === committedRevision.current,
     onWindowChange: (event) => {
       if (
