@@ -1318,13 +1318,23 @@ const styles = StyleSheet.create({
 
 ### Sidebar placement
 
-> **info** This feature is available in SDK 59 and later. To use it, compile your app with Xcode 27 or higher. The placement has an effect on iOS 27 and later.
+> **info** This feature is available in SDK 58 and later. To use it, compile your app with Xcode 27 or higher. The placement has an effect on iOS 27 and later.
 
-With [`sidebarAdaptable`](/versions/latest/sdk/router/native-tabs/#sidebaradaptable), the tab bar can turn into a sidebar. The sidebar shows only in a regular horizontal size class, for example on iPad, and on iOS 27 and later on larger iPhone models in landscape orientation.
+When the device can show only the sidebar or only the tab bar, use the [`sidebarPreferredPlacement`](/versions/latest/sdk/router/native-tabs/#sidebarpreferredplacement) prop to select which one shows.
 
-When only one of them can show, the `sidebarPreferredPlacement` prop selects the sidebar or the tab bar. The values are `'automatic'` (the tab bar), `'sidebar'`, and `'tabBar'`. On iOS 18 and later, any value of this prop enables `sidebarAdaptable` when you do not set it, including `'automatic'`. If you set `sidebarAdaptable` to `false`, this prop has no effect.
+<ContentSpotlight
+  alt="A screenshot of an iPhone in landscape orientation with the tabs in a sidebar."
+  src="/static/images/expo-router/ios-27-sidebar-placement-sidebar.webp"
+  caption="The sidebar placement."
+  className="max-w-[540px]"
+/>
 
-The button that shows the sidebar is visible only on screens with a header. A swipe from the leading edge also shows the sidebar.
+<ContentSpotlight
+  alt="A screenshot of an iPhone in landscape orientation with the tabs in a tab bar."
+  src="/static/images/expo-router/ios-27-sidebar-placement-tab-bar.webp"
+  caption="The tab bar placement."
+  className="max-w-[540px]"
+/>
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/native-tabs';

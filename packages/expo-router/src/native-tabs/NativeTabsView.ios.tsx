@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
+import { useWarnOnce } from '../useDeprecated';
 import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
@@ -57,6 +58,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
 
+  useWarnOnce(
+    'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+      'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+      'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.',
+    sidebarAdaptable === false && sidebarPreferredPlacement !== undefined
+  );
+
   if (
     process.env.NODE_ENV !== 'production' &&
     bottomAccessory &&
@@ -84,18 +92,6 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   if (children.length === 0) {
     return null;
-  }
-
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    sidebarAdaptable === false &&
-    sidebarPreferredPlacement
-  ) {
-    console.warn(
-      'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
-        'The placement has an effect only when the tab bar can turn into a sidebar. ' +
-        'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
-    );
   }
 
   // The placement works only in `tabSidebar` mode, so setting it enables that mode.

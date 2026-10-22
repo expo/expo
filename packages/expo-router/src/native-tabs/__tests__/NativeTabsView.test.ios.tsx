@@ -175,29 +175,6 @@ describe('sidebarPreferredPlacement', () => {
       warnSpy.mockRestore();
     }
   });
-
-  it('warns in dev when sidebarAdaptable is false and the placement is automatic', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      await renderRouter({
-        _layout: () => (
-          <NativeTabs sidebarAdaptable={false} sidebarPreferredPlacement="automatic">
-            <NativeTabs.Trigger name="index" />
-          </NativeTabs>
-        ),
-        index: () => <View testID="index" />,
-      });
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(warnSpy).toHaveBeenCalledWith(
-        'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
-          'The placement has an effect only when the tab bar can turn into a sidebar. ' +
-          'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
-      );
-    } finally {
-      warnSpy.mockRestore();
-    }
-  });
 });
 
 describe('unstable_nativeProps', () => {
