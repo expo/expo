@@ -294,6 +294,26 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('warns when the layout sets an anchor with the default back behavior', async () => {
+    await renderRouter({
+      _layout: {
+        unstable_settings: { anchor: 'second' },
+        default: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+      },
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      'The navigator at "./_layout.js" sets the anchor "second", but its `backBehavior` is "firstRoute". Non-stack navigators go back to the anchor only when `backBehavior` is "initialRoute". Set `backBehavior` to "initialRoute", or remove the anchor.'
+    );
+  });
+
   it('respects initialRouteName when redirecting from a route without a visible tab', async () => {
     await renderRouter(
       {

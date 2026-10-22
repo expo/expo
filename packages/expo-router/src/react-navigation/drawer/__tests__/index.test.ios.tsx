@@ -278,6 +278,6 @@ test('warns when a drawer layout uses an anchor', async () => {
   );
 
   expect(warnSpy).toHaveBeenCalledWith(
-    'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are deprecated and may be removed in a future release.'
+    'The navigator at "./_layout.js" sets the anchor "a", but its `backBehavior` is "firstRoute". Non-stack navigators go back to the anchor only when `backBehavior` is "initialRoute". Set `backBehavior` to "initialRoute", or remove the anchor.'
   );
 });

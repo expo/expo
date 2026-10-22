@@ -671,8 +671,35 @@ it('warns when the layout uses an anchor', async () => {
     );
 
     expect(warn).toHaveBeenCalledWith(
-      'The navigator at "./_layout.js" sets the anchor "a". Anchors in non-stack navigators are deprecated and may be removed in a future release.'
+      'The navigator at "./_layout.js" sets the anchor "a", but its `backBehavior` is "firstRoute". Non-stack navigators go back to the anchor only when `backBehavior` is "initialRoute". Set `backBehavior` to "initialRoute", or remove the anchor.'
     );
+  } finally {
+    warn.mockRestore();
+  }
+});
+
+it('does not warn when the layout uses an anchor with the initialRoute back behavior', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  try {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'a' },
+          default: () => (
+            <Tabs backBehavior="initialRoute">
+              <Tabs.Screen name="a" />
+              <Tabs.Screen name="b" />
+            </Tabs>
+          ),
+        },
+        a: () => null,
+        b: () => null,
+      },
+      { initialUrl: '/b' }
+    );
+
+    expect(warn).not.toHaveBeenCalled();
   } finally {
     warn.mockRestore();
   }

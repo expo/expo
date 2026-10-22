@@ -31,7 +31,7 @@ export default function Layout() {
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
 
-> **warning** Anchors are fully supported only in stack navigators. Tabs, native tabs, drawer, and top tabs log a warning when their layout sets `anchor`, and support there may be removed in a future release.
+> **info** Tabs, native tabs, drawer, and top tabs go back to the `anchor` only when `backBehavior` is `initialRoute`. If the layout sets `anchor` with a different `backBehavior`, the navigator logs a warning.
 
 When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
 

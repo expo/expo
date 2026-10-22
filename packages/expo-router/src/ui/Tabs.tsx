@@ -171,6 +171,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   }
 
   const initialRouteName = getValidInitialRouteName(routeNode);
+  const backBehavior = rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
@@ -195,7 +196,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       triggerMap,
       id: contextKey,
       initialRouteName,
-      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
+      backBehavior,
     },
     { activityDefaultThreshold: 1 }
   );
@@ -234,7 +235,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const NavigationContent = useComponent((children: React.ReactNode) => (
     // Headless tabs have no guards, so shadow parent guards whose route names may collide.
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
-      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabVisibilityRedirect state={state} descriptors={descriptors} backBehavior={backBehavior} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
           <NavigatorContext.Provider value={navigatorContextValue}>
@@ -251,15 +252,17 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 function TabVisibilityRedirect({
   state,
   descriptors,
+  backBehavior,
 }: {
   state: TabNavigationState<any>;
   descriptors: PlaceholderDescriptorMap;
+  backBehavior: TabRouterOptions['backBehavior'];
 }) {
   const stateWithPlaceholders = useMemo(
     () => appendMissingPlaceholderTabRoutes(state, descriptors),
     [descriptors, state]
   );
-  useNonStackAnchorWarning();
+  useNonStackAnchorWarning(backBehavior);
   useVisibleTabsWithRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,

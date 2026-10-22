@@ -112,7 +112,7 @@ function NativeTabsContent({
     );
   }
 
-  useNonStackAnchorWarning();
+  useNonStackAnchorWarning(rest.backBehavior);
   const { routes } = state;
 
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
