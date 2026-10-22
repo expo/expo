@@ -24,6 +24,7 @@ const HomeIndex = () => {
         <Text style={styles.subtitle}>Current Path: {pathname}</Text>
         <Section title="Native navigation">
           <CaseLink href="/tabs" text="Native Tabs" />
+          <CaseLink href="/music-demo" text="Native Tabs Music Demo" />
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
