@@ -155,9 +155,8 @@ export async function deleteItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<void> {
   ensureValidKey(key);
-  warnIfBooleanRequireAuthentication(options);
 
-  await ExpoSecureStore.deleteValueWithKeyAsync(key, options);
+  await ExpoSecureStore.deleteValueWithKeyAsync(key, normalizeOptions(options));
 }
 
 // @needsAudit
@@ -183,8 +182,7 @@ export async function getItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<string | null> {
   ensureValidKey(key);
-  warnIfBooleanRequireAuthentication(options);
-  return await ExpoSecureStore.getValueWithKeyAsync(key, options);
+  return await ExpoSecureStore.getValueWithKeyAsync(key, normalizeOptions(options));
 }
 
 // @needsAudit
@@ -207,14 +205,13 @@ export async function setItemAsync(
   options: SecureStoreOptions = {}
 ): Promise<void> {
   ensureValidKey(key);
-  warnIfBooleanRequireAuthentication(options);
   if (!isValidValue(value)) {
     throw new Error(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
   }
 
-  await ExpoSecureStore.setValueWithKeyAsync(value, key, options);
+  await ExpoSecureStore.setValueWithKeyAsync(value, key, normalizeOptions(options));
 }
 
 /**
@@ -231,14 +228,13 @@ export async function setItemAsync(
  */
 export function setItem(key: string, value: string, options: SecureStoreOptions = {}): void {
   ensureValidKey(key);
-  warnIfBooleanRequireAuthentication(options);
   if (!isValidValue(value)) {
     throw new Error(
       `Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.`
     );
   }
 
-  return ExpoSecureStore.setValueWithKeySync(value, key, options);
+  return ExpoSecureStore.setValueWithKeySync(value, key, normalizeOptions(options));
 }
 
 /**
@@ -257,8 +253,7 @@ export function setItem(key: string, value: string, options: SecureStoreOptions 
  */
 export function getItem(key: string, options: SecureStoreOptions = {}): string | null {
   ensureValidKey(key);
-  warnIfBooleanRequireAuthentication(options);
-  return ExpoSecureStore.getValueWithKeySync(key, options);
+  return ExpoSecureStore.getValueWithKeySync(key, normalizeOptions(options));
 }
 
 /**
@@ -307,15 +302,25 @@ function isValidValue(value: string) {
 
 let hasWarnedAboutBooleanRequireAuthentication = false;
 
-function warnIfBooleanRequireAuthentication(options: SecureStoreOptions) {
-  if (
-    typeof options.requireAuthentication !== 'boolean' ||
-    hasWarnedAboutBooleanRequireAuthentication
-  ) {
-    return;
+function normalizeOptions(options: SecureStoreOptions): SecureStoreOptions {
+  const { requireAuthentication, ...otherOptions } = options;
+  if (requireAuthentication === undefined) {
+    return otherOptions;
   }
-  hasWarnedAboutBooleanRequireAuthentication = true;
-  console.warn(
-    `SecureStore: passing a boolean to the requireAuthentication option is deprecated and will be removed in the future. Use "none" instead of false and "biometry" instead of true.`
-  );
+  return { ...otherOptions, requireAuthentication: toAuthenticationMethod(requireAuthentication) };
+}
+
+function toAuthenticationMethod(
+  requireAuthentication: AuthenticationMethod | boolean
+): AuthenticationMethod {
+  if (typeof requireAuthentication !== 'boolean') {
+    return requireAuthentication;
+  }
+  if (!hasWarnedAboutBooleanRequireAuthentication) {
+    hasWarnedAboutBooleanRequireAuthentication = true;
+    console.warn(
+      `SecureStore: passing a boolean to the requireAuthentication option is deprecated and will be removed in the future. Use "none" instead of false and "biometry" instead of true.`
+    );
+  }
+  return requireAuthentication ? 'biometry' : 'none';
 }

@@ -5,9 +5,9 @@ import android.content.Context
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import expo.modules.securestore.AuthenticationHelper
+import expo.modules.securestore.AuthenticationMethod
 import expo.modules.securestore.EncryptException
 import expo.modules.securestore.KeyStoreException
-import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import org.json.JSONException
 import org.json.JSONObject
@@ -40,21 +40,12 @@ import javax.crypto.spec.SecretKeySpec
  */
 class HybridAESEncryptor(private var mContext: Context, private val mAESEncryptor: AESEncryptor) : KeyBasedEncryptor<KeyStore.PrivateKeyEntry> {
   private val mSecureRandom: SecureRandom = SecureRandom()
-  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String {
-    val suffix = when {
-      !requireAuthentication -> SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
-      isDeviceCredentialsRequired -> SecureStoreModule.DEVICE_CREDENTIALS_KEYSTORE_SUFFIX
-      else -> SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
-    }
-    return "${getKeyStoreAlias(options)}:$suffix"
-  }
-
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
     return "$RSA_CIPHER:${options.keychainService}"
   }
 
   @Throws(GeneralSecurityException::class)
-  override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.PrivateKeyEntry {
+  override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions, authenticationMethod: AuthenticationMethod): KeyStore.PrivateKeyEntry {
     // This should never be called after we dropped Android SDK 22 support.
     throw KeyStoreException(
       "Tried to initialize HybridAESEncryptor key store entry on Android SDK >= 23. This shouldn't happen. " +

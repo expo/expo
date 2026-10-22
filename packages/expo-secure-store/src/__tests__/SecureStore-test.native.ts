@@ -113,19 +113,19 @@ describe('requireAuthentication option', () => {
     }
   });
 
-  it(`forwards deprecated boolean values and warns once`, async () => {
+  it(`maps deprecated boolean values to authentication methods and warns once`, async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     await SecureStore.setItemAsync('key', 'value', { requireAuthentication: true });
     expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
-      requireAuthentication: true,
+      requireAuthentication: 'biometry',
     });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenLastCalledWith(expect.stringContaining('deprecated'));
 
     await SecureStore.getItemAsync('key', { requireAuthentication: false });
     expect(ExpoSecureStore.getValueWithKeyAsync).toHaveBeenLastCalledWith('key', {
-      requireAuthentication: false,
+      requireAuthentication: 'none',
     });
     expect(warnSpy).toHaveBeenCalledTimes(1);
 

@@ -1,32 +1,8 @@
 package expo.modules.securestore
 
-import expo.modules.kotlin.types.ConvertedValue
-import expo.modules.kotlin.types.Either
-import expo.modules.kotlin.types.IncompatibleValue
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-
-/**
- * Builds the `Either` that the argument converter would produce for a `requireAuthentication` value.
- */
-private fun requireAuthenticationOf(value: Any): Either<Boolean, String> = Either(
-  value,
-  mutableListOf(
-    if (value is Boolean) {
-      ConvertedValue(value)
-    } else {
-      IncompatibleValue
-    },
-    if (value is String) {
-      ConvertedValue(value)
-    } else {
-      IncompatibleValue
-    }
-  ),
-  emptyList()
-)
 
 class SecureStoreOptionsTest {
   @Test
@@ -35,22 +11,15 @@ class SecureStoreOptionsTest {
   }
 
   @Test
-  fun `none disables authentication`() {
-    val options = SecureStoreOptions(requireAuthentication = requireAuthenticationOf("none"))
-
-    assertNull(options.authenticationRequirement)
-  }
-
-  @Test
   fun `write prompt uses the current authentication options`() {
     val options = SecureStoreOptions(
-      requireAuthentication = requireAuthenticationOf(true),
+      requireAuthentication = AuthenticationMethod.BIOMETRY,
       requireConfirmation = false
     )
 
     val promptOptions = options.toAuthenticationPromptOptions()
 
-    assertTrue(promptOptions.isAuthenticationRequired)
+    assertTrue(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 
@@ -58,24 +27,22 @@ class SecureStoreOptionsTest {
   fun `read prompt uses stored authentication and current confirmation options`() {
     val options = SecureStoreOptions(requireConfirmation = false)
 
-    val promptOptions = options.toAuthenticationPromptOptions(
-      authenticationRequirement = AUTHENTICATION_METHOD_BIOMETRY
-    )
+    val promptOptions = options.toAuthenticationPromptOptions(AuthenticationMethod.BIOMETRY)
 
-    assertTrue(promptOptions.isAuthenticationRequired)
+    assertTrue(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 
   @Test
   fun `stored unauthenticated reads remain prompt-free`() {
     val options = SecureStoreOptions(
-      requireAuthentication = requireAuthenticationOf(true),
+      requireAuthentication = AuthenticationMethod.BIOMETRY,
       requireConfirmation = false
     )
 
-    val promptOptions = options.toAuthenticationPromptOptions(authenticationRequirement = null)
+    val promptOptions = options.toAuthenticationPromptOptions(AuthenticationMethod.NONE)
 
-    assertFalse(promptOptions.isAuthenticationRequired)
+    assertFalse(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 }

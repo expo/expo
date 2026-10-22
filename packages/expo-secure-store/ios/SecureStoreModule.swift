@@ -44,8 +44,8 @@ public final class SecureStoreModule: Module {
       // Delete every alias before reporting a failure, so that a failing alias
       // cannot leave the remaining entries behind.
       var statuses = [SecItemDelete(query(with: key, options: options) as CFDictionary)]
-      for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
-        statuses.append(SecItemDelete(query(with: key, options: options, serviceSuffix: suffix) as CFDictionary))
+      for method in AuthenticationMethod.allCases {
+        statuses.append(SecItemDelete(query(with: key, options: options, serviceSuffix: method.serviceSuffix) as CFDictionary))
       }
 
       if let failure = statuses.first(where: { $0 != errSecSuccess && $0 != errSecItemNotFound }) {
@@ -72,8 +72,8 @@ public final class SecureStoreModule: Module {
       throw InvalidKeyException()
     }
 
-    for suffix in ["no-auth", "auth", "auth-deviceCredentials"] {
-      if let item = try searchKeyChain(with: key, options: options, serviceSuffix: suffix) {
+    for method in AuthenticationMethod.allCases {
+      if let item = try searchKeyChain(with: key, options: options, serviceSuffix: method.serviceSuffix) {
         return String(data: item, encoding: .utf8)
       }
     }
@@ -86,18 +86,15 @@ public final class SecureStoreModule: Module {
   }
 
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    let authenticationRequirement = try options.resolvedAuthenticationRequirement()
-    let currentSuffix = options.serviceSuffix(for: authenticationRequirement)
-    var setItemQuery = query(with: key, options: options, serviceSuffix: currentSuffix)
+    let authenticationMethod = options.requireAuthentication
+    var setItemQuery = query(with: key, options: options, serviceSuffix: authenticationMethod.serviceSuffix)
 
     let valueData = value.data(using: .utf8)
     setItemQuery[kSecValueData as String] = valueData
 
     let accessibility = attributeWith(options: options)
 
-    if authenticationRequirement == nil {
-      setItemQuery[kSecAttrAccessible as String] = accessibility
-    } else {
+    if let accessControlFlags = authenticationMethod.accessControlFlags {
       // NSFaceIDUsageDescription is only needed when the authentication prompt can use Face ID.
       // Touch ID and passcode-only devices don't require the plist entry.
       if isFaceIDAvailable() {
@@ -106,7 +103,9 @@ public final class SecureStoreModule: Module {
         }
       }
 
-      setItemQuery[kSecAttrAccessControl as String] = try accessControlWith(options: options)
+      setItemQuery[kSecAttrAccessControl as String] = try accessControl(with: accessControlFlags, options: options)
+    } else {
+      setItemQuery[kSecAttrAccessible as String] = accessibility
     }
 
     let status = SecItemAdd(setItemQuery as CFDictionary, nil)
@@ -114,20 +113,19 @@ public final class SecureStoreModule: Module {
     switch status {
     case errSecSuccess:
       SecItemDelete(query(with: key, options: options) as CFDictionary)
-      for suffix in ["no-auth", "auth", "auth-deviceCredentials"] where suffix != currentSuffix {
-        SecItemDelete(query(with: key, options: options, serviceSuffix: suffix) as CFDictionary)
+      for method in AuthenticationMethod.allCases where method != authenticationMethod {
+        SecItemDelete(query(with: key, options: options, serviceSuffix: method.serviceSuffix) as CFDictionary)
       }
       return true
     case errSecDuplicateItem:
-      return try update(value: value, with: key, options: options)
+      return try update(value: value, with: key, options: options, authenticationMethod: authenticationMethod)
     default:
       throw KeyChainException(status)
     }
   }
 
-  private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    let authenticationRequirement = try options.resolvedAuthenticationRequirement()
-    var query = query(with: key, options: options, serviceSuffix: options.serviceSuffix(for: authenticationRequirement))
+  private func update(value: String, with key: String, options: SecureStoreOptions, authenticationMethod: AuthenticationMethod) throws -> Bool {
+    var query = query(with: key, options: options, serviceSuffix: authenticationMethod.serviceSuffix)
 
     let valueData = Data(value.utf8)
 
@@ -136,8 +134,8 @@ public final class SecureStoreModule: Module {
     // Keychain updates keep the existing access settings by default, so include the
     // requested accessibility setting when one is provided.
     if options.keychainAccessible != nil {
-      if authenticationRequirement != nil {
-        updateDictionary[kSecAttrAccessControl] = try accessControlWith(options: options)
+      if let accessControlFlags = authenticationMethod.accessControlFlags {
+        updateDictionary[kSecAttrAccessControl] = try accessControl(with: accessControlFlags, options: options)
       } else {
         updateDictionary[kSecAttrAccessible] = attributeWith(options: options)
       }
@@ -222,16 +220,12 @@ public final class SecureStoreModule: Module {
     }
   }
 
-  private func accessControlWith(options: SecureStoreOptions) throws -> SecAccessControl {
-    // Device credentials authentication accepts the passcode as a fallback, biometry doesn't.
-    let accessControlFlag: SecAccessControlCreateFlags =
-      try options.requiresDeviceCredentials() ? .userPresence : .biometryCurrentSet
-
+  private func accessControl(with flags: SecAccessControlCreateFlags, options: SecureStoreOptions) throws -> SecAccessControl {
     var error: Unmanaged<CFError>?
     guard let accessControl = SecAccessControlCreateWithFlags(
       kCFAllocatorDefault,
       attributeWith(options: options),
-      accessControlFlag,
+      flags,
       &error
     ) else {
       let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
@@ -264,17 +258,10 @@ public final class SecureStoreModule: Module {
     #if os(tvOS)
     return false
     #else
-    let context = LAContext()
-    var error: NSError?
-    let isBiometricsSupported = context.canEvaluatePolicy(
+    return LAContext().canEvaluatePolicy(
       LAPolicy.deviceOwnerAuthenticationWithBiometrics,
-      error: &error
+      error: nil
     )
-
-    if error != nil {
-      return false
-    }
-    return isBiometricsSupported
     #endif
   }
 }
