@@ -178,7 +178,7 @@ PODS:
     - RNWorklets
   - ExpoNetwork (57.0.3):
     - ExpoModulesCore
-  - ExpoNotifications (57.0.23):
+  - ExpoNotifications (57.0.24):
     - ExpoModulesCore
   - ExpoPrint (57.0.2):
     - ExpoModulesCore
@@ -4621,7 +4621,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorklets: 44a66395ccb9c5683d06fcbfb6b1cc01df62d423
   ExpoModulesWorkletsAdapter: d6f5133963c7f314fa238f7167100ea3fcba3e3a
   ExpoNetwork: cc1e19135ba0756bcaaae8b4acc08db427309306
-  ExpoNotifications: c1cc56be0a720b0c8d658d547a6538c7770e7bd4
+  ExpoNotifications: 27d5bd4b94ed7776a6e73636ef673488500c0a5b
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
   ExpoRouter: 7e81d46cec8d324f07fb13c764d89f1664cc2fef
   ExpoScreenCapture: 9895600e6d3aeeadbdfd776f8d7b309b8fd33a33
