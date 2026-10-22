@@ -50,17 +50,45 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
+      - name: ♻️ Restore Gradle caches
+        # Writable, unlike expo-caches on PRs: this workflow only runs for same-repo release
+        # branches and manual dispatches, and later runs reuse the downloaded dependencies.
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
         with:
-          gradle: 'true'
+          cache-read-only: false
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+      - name: 🔍 Read the Android toolchain versions
+        id: android-toolchain
+        # Same versions as `et prepare-precompile-android` (tools/src/prebuilds/AndroidToolchain.ts).
+        run: |
+          catalog="$(node -p "path.join(path.dirname(require.resolve('react-native/package.json', { paths: ['apps/bare-expo'] })), 'gradle/libs.versions.toml')")"
+          read_version() { sed -nE "s/^$1 *= *[\"']([^\"']+)[\"'].*/\1/p" "$catalog"; }
+          ndk="$(read_version ndkVersion)"
+          compile_sdk="$(read_version compileSdk)"
+          build_tools="$(read_version buildTools)"
+          platform="android-$compile_sdk"
+          if [[ "$compile_sdk" != *.* ]] && (( compile_sdk >= 37 )); then platform="$platform.0"; fi
+          {
+            echo "key=${RUNNER_OS}-android-sdk-ndk-${ndk}-${platform}-build-tools-${build_tools}"
+            echo "paths<<EOF"
+            echo "$ANDROID_HOME/ndk/$ndk"
+            echo "$ANDROID_HOME/platforms/$platform"
+            echo "$ANDROID_HOME/build-tools/$build_tools"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - name: ♻️ Restore Android SDK components
+        # Saved only after a successful job, so a corrupt sdkmanager download is never cached.
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.android-toolchain.outputs.paths }}
+          key: ${{ steps.android-toolchain.outputs.key }}
       - name: 🏗️ Precompile embedded Maven repositories
-        # Each package builds in its own Gradle host with a 3 GB heap and 2 workers
-        # (tools/android-precompile/gradle.properties), so 16 tasks fill 32 vCPUs in ~80 GB.
+        # Every package builds in its own Gradle process, and they contend for the shared Gradle
+        # user home: at 16 concurrent builds the precompile took 23.1 min with the CPUs ~90% idle,
+        # at 4 it took 13.5 min.
         run: |
           echo "Precompiling commit ${{ github.sha }}"
-          expo-turbo run precompile-android --concurrency=16
+          expo-turbo run precompile-android --concurrency=4
