@@ -7,6 +7,7 @@ import resolveFrom from 'resolve-from';
 
 import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
+import { resolveLinkedDependencyPathsAsync } from './utils/LinkedDependencies';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
 const FINGERPRINT_ENV_MODE = 'development';
@@ -39,12 +40,18 @@ export async function getExpoConfigAsync(
     const [
       { config, loadedModules: modulesWithPlugins },
       { loadedModules: modulesWithoutPlugins },
+      linkedDependencyPaths,
     ] = await Promise.all([
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ false),
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ true),
+      resolveLinkedDependencyPathsAsync(path.resolve(projectRoot)),
     ]);
     result.config = config;
-    result.loadedModules = diffLoadedModules(modulesWithPlugins ?? [], modulesWithoutPlugins ?? []);
+    result.loadedModules = diffLoadedModules(
+      modulesWithPlugins ?? [],
+      modulesWithoutPlugins ?? [],
+      linkedDependencyPaths
+    );
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
@@ -83,16 +90,21 @@ async function spawnConfigLoaderAsync(
  * Keep only the config-plugin modules attributable to applying plugins.
  *
  * Anything that also loads when plugins are skipped is the config-loading framework and is dropped.
- * In-repo files are always kept regardless of the diff, so a local plugin imported at the top of
- * `app.config` (which loads during config evaluation, not plugin application) is never lost.
+ * In-repo files and files of linked dependencies are always kept regardless of the diff, so a local
+ * or workspace plugin imported at the top of `app.config` (which loads during config evaluation,
+ * not plugin application) is never lost.
  */
 export function diffLoadedModules(
   withPlugins: LoadedModuleSource[],
-  withoutPlugins: LoadedModuleSource[]
+  withoutPlugins: LoadedModuleSource[],
+  linkedDependencyPaths: string[] = []
 ): LoadedModuleSource[] {
   const skippedKeys = new Set(withoutPlugins.map(getLoadedModuleKey));
   return withPlugins.filter(
-    (source) => isInRepoLoadedModule(source) || !skippedKeys.has(getLoadedModuleKey(source))
+    (source) =>
+      isInRepoLoadedModule(source) ||
+      isInLinkedDependency(source, linkedDependencyPaths) ||
+      !skippedKeys.has(getLoadedModuleKey(source))
   );
 }
 
@@ -106,6 +118,25 @@ function isInRepoLoadedModule(source: LoadedModuleSource): boolean {
   const key = getLoadedModuleKey(source);
   // `..` means the path escaped the project root (e.g. a hoisted or linked dependency).
   return !key.startsWith('..') && !key.includes('node_modules');
+}
+
+/**
+ * Whether a loaded module is a file of a dependency that links to a directory outside
+ * `node_modules`, such as a workspace package. A nested `node_modules` inside that directory holds
+ * the dependency's own dependencies and is excluded.
+ */
+function isInLinkedDependency(
+  source: LoadedModuleSource,
+  linkedDependencyPaths: string[]
+): boolean {
+  if (source.type !== 'file') {
+    return false;
+  }
+  return linkedDependencyPaths.some(
+    (linkedPath) =>
+      source.path.startsWith(`${linkedPath}/`) &&
+      !source.path.slice(linkedPath.length + 1).includes('node_modules')
+  );
 }
 
 /**

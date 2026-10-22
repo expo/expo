@@ -98,4 +98,10 @@ describe(diffLoadedModules, () => {
     const withoutPlugins = [file('../../packages/@expo/config/build/index.js')];
     expect(diffLoadedModules(full, withoutPlugins)).toEqual([]);
   });
+
+  it('should keep a linked dependency file that also loads without plugins', async () => {
+    const full = [file('../../packages/my-plugin/index.js')];
+    const withoutPlugins = [file('../../packages/my-plugin/index.js')];
+    expect(diffLoadedModules(full, withoutPlugins, ['../../packages/my-plugin'])).toEqual(full);
+  });
 });
