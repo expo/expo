@@ -118,9 +118,26 @@ jobs:
       group: publish-packages-stable-${{ github.ref_name }}
       cancel-in-progress: false
     permissions:
+      actions: read
       contents: write
       id-token: write
     steps:
+      - name: Snapshot ongoing Android precompilation
+        id: android-precompile-runs
+        shell: bash
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Snapshot before waiting on anything, so later runs don't extend the wait.
+          run_ids=$(gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow changesets-precompile-android.yml \
+            --branch "changeset-release/$GITHUB_REF_NAME" \
+            --limit 10 \
+            --json databaseId,status \
+            --jq '[.[] | select(.status != "completed") | .databaseId] | join(" ")')
+          echo "run-ids=$run_ids" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # NOTE: The version-commit safeguard compares HEAD against HEAD^.
@@ -161,12 +178,10 @@ jobs:
           test -n "$EXPO_TOKEN"
           runs_file="$RUNNER_TEMP/precompile-runs.json"
 
-          # Snapshot both workflows before waiting, so later runs don't extend the wait.
-          for platform in ios android; do
-            eas workflow:runs \
-              --workflow "changesets-precompile-$platform.yml" \
-              --limit 10 --json || echo '[]'
-          done | jq -s 'add' > "$runs_file"
+          # Snapshot before waiting, so later runs don't extend the wait.
+          eas workflow:runs \
+            --workflow changesets-precompile-ios.yml \
+            --limit 10 --json > "$runs_file" || echo '[]' > "$runs_file"
 
           ongoing_run_ids=$(jq -r '
             .[] | select(.status | IN("SUCCESS", "FAILURE", "CANCELED") | not) | .id
@@ -175,6 +190,21 @@ jobs:
           for run_id in $ongoing_run_ids; do
             echo "Waiting for EAS precompile run $run_id"
             eas workflow:status "$run_id" --wait --non-interactive ||
+              echo "::warning::Run $run_id did not succeed; continuing with local precompilation."
+          done
+
+      - name: Wait for ongoing Android precompilation
+        if: steps.android-precompile-runs.outputs.run-ids != ''
+        shell: bash
+        timeout-minutes: 90
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_IDS: ${{ steps.android-precompile-runs.outputs.run-ids }}
+        run: |
+          for run_id in $RUN_IDS; do
+            echo "Waiting for Android precompile run $run_id"
+            gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status --interval 30 > /dev/null ||
               echo "::warning::Run $run_id did not succeed; continuing with local precompilation."
           done
 

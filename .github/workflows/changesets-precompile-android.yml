@@ -1,0 +1,66 @@
+name: Changesets Precompile Android
+
+# Precompiles Android Maven repositories for the "Version packages" PR into the Turbo remote
+# cache, so `stable-publish` in publish-packages.yml can reuse them instead of building them
+# itself. It waits for in-progress runs of this workflow before publishing.
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+
+concurrency:
+  # Release PRs reuse the same branch; only cancel older runs for the same PR.
+  group: ${{ github.workflow }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  precompile:
+    name: Changesets native precompile (Android)
+    if: >-
+      github.repository == 'expo/expo' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (startsWith(github.head_ref, 'changeset-release/') &&
+        github.event.pull_request.head.repo.full_name == github.repository))
+    # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 60
+    env:
+      RCT_HERMES_V1_ENABLED: '1'
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: expo
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔑 Verify Turbo cache credentials
+        run: test -n "$TURBO_TOKEN" || (echo "TURBO_TOKEN is not set" >&2; exit 1)
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        with:
+          gradle: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+      - name: 🏗️ Precompile embedded Maven repositories
+        # Each package builds in its own Gradle host with a 3 GB heap and 2 workers
+        # (tools/android-precompile/gradle.properties), so 16 tasks fill 32 vCPUs in ~80 GB.
+        run: |
+          echo "Precompiling commit ${{ github.sha }}"
+          expo-turbo run precompile-android --concurrency=16
