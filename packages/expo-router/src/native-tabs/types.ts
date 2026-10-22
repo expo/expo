@@ -405,20 +405,16 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   disableTransparentOnScrollEdge?: boolean;
   /**
-   * When set to `true`, the tab bar can turn into a sidebar. The sidebar shows only in a regular horizontal size class,
-   * for example on iPad, and on iOS 27 and later on larger iPhone models in landscape orientation.
+   * When set to `true`, the tab bar can turn into a sidebar. The sidebar shows only on iPad, and on iOS 27 and later on larger iPhone models in landscape orientation.
    *
    * @platform iOS 18+
    */
   sidebarAdaptable?: boolean;
   /**
    * Selects whether the sidebar or the tab bar shows when only one of them can show.
-   * On iOS 18 and later, setting this prop also enables `sidebarAdaptable` when you do not set it.
-   * When `sidebarAdaptable` is `false`, this prop has no effect.
+   * When `sidebarAdaptable` is not set, this prop also enables it.
    *
-   * The button that shows the sidebar is visible only on screens with a header.
-   * A swipe from the leading edge also shows the sidebar.
-   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/sidebar-swift.class/preferredplacement)
    * @platform iOS 27+
    */
   sidebarPreferredPlacement?: 'automatic' | 'sidebar' | 'tabBar';
