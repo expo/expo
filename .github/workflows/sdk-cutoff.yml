@@ -9,7 +9,7 @@ on:
 
 jobs:
   cut-release:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     # Stated explicitly because the repository default is moving to read-only. This job
     # needs both: `contents: write` to push the new sdk-* branch (that push authenticates
     # with the credentials actions/checkout stores), and `issues: write` for

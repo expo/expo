@@ -43,7 +43,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.repo.full_name != github.repository ||
        !startsWith(github.head_ref, 'changeset-release/'))
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     container: node:24-bookworm
     strategy:
       fail-fast: false
@@ -136,7 +136,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -250,7 +250,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch

@@ -27,7 +27,7 @@ jobs:
        !startsWith(github.head_ref, 'changeset-release/'))
     strategy:
       matrix:
-        os: [blacksmith-6vcpu-macos-15, blacksmith-4vcpu-ubuntu-2404, blacksmith-4vcpu-windows-2025]
+        os: [blacksmith-6vcpu-macos-15, ubuntu-latest, blacksmith-4vcpu-windows-2025]
     runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Checkout
@@ -137,7 +137,7 @@ jobs:
 
   cross-platform-checks:
     needs: test
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: 📥 Download fingerprint (macos)
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -147,7 +147,7 @@ jobs:
       - name: 📥 Download fingerprint (ubuntu)
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: fingerprint-blacksmith-4vcpu-ubuntu-2404
+          name: fingerprint-ubuntu-latest
 
       - name: 📥 Download fingerprint (windows)
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -158,11 +158,11 @@ jobs:
         shell: bash
         run: |
           hash_macos=$(jq -r '.hash' fingerprint-blacksmith-6vcpu-macos-15.json)
-          hash_ubuntu=$(jq -r '.hash' fingerprint-blacksmith-4vcpu-ubuntu-2404.json)
+          hash_ubuntu=$(jq -r '.hash' fingerprint-ubuntu-latest.json)
           hash_windows=$(jq -r '.hash' fingerprint-blacksmith-4vcpu-windows-2025.json)
 
           echo "Hash from fingerprint-blacksmith-6vcpu-macos-15.json: $hash_macos"
-          echo "Hash from fingerprint-blacksmith-4vcpu-ubuntu-2404.json: $hash_ubuntu"
+          echo "Hash from fingerprint-ubuntu-latest.json: $hash_ubuntu"
           echo "Hash from fingerprint-blacksmith-4vcpu-windows-2025.json: $hash_windows"
 
           if [[ "$hash_macos" != "$hash_ubuntu" || "$hash_ubuntu" != "$hash_windows" ]]; then

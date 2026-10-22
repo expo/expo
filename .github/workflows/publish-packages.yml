@@ -36,7 +36,7 @@ jobs:
       github.repository == 'expo/expo' &&
       github.ref_name == 'main' &&
       github.event_name == 'push'
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     outputs:
@@ -70,7 +70,7 @@ jobs:
     name: Create or update version PR
     needs: stable-mode
     if: needs.stable-mode.outputs.mode == 'version'
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       GIT_OPTIONAL_LOCKS: "0"

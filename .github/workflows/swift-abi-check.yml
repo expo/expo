@@ -150,7 +150,7 @@ jobs:
     if: >-
       github.event.action == 'unlabeled' && github.event.label.name == 'check: ABI' &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     steps:
       - name: 🔍 Find the ABI check comment
         uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0

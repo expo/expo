@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   review:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     # OPT-IN ONLY. This repo takes far too many PRs to spin a runner for each one, so the
     # `ai-review` label is required here, not just inside `ecr ci`. Because the workflow
     # triggers on `labeled`, adding the label to an open PR starts the review immediately.

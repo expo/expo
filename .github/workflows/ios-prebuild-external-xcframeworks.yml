@@ -41,7 +41,7 @@ concurrency:
 jobs:
   detect:
     name: Detect changed external packages
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     outputs:
       should_run: ${{ steps.detect.outputs.should_run }}
       packages: ${{ steps.detect.outputs.packages }}

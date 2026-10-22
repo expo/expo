@@ -7,7 +7,7 @@ on:
 jobs:
   close-issues:
     if: github.repository == 'expo/expo'
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-24.04
     # actions/stale labels and closes issues with the default GITHUB_TOKEN, so it needs
     # `issues: write` stated explicitly. It worked until now only because the repository
     # default was "read and write", which we are moving to read-only.
