@@ -18,9 +18,8 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   if (anchors.has(node)) {
     return anchors.get(node);
   }
-  // A layout that failed to load keeps the anchor known without loading it.
   if (collector?.skipped.has(node)) {
-    return getGroupMatchingRouteName(node);
+    return undefined;
   }
   const loaded = loadLayout(node);
   if (loaded instanceof Promise) {
@@ -30,12 +29,6 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   const anchor = readAnchor(node, loaded?.unstable_settings);
   anchors.set(node, anchor);
   return anchor;
-}
-
-/** Returns the child named like the layout's group, which is the anchor unless settings override it. */
-export function getGroupMatchingRouteName(node: RouteNode): string | undefined {
-  return node.children.find((child) => child.route.replace(/\/index$/, '') === node.groupName)
-    ?.route;
 }
 
 /**
@@ -130,24 +123,9 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  let anchor = getGroupMatchingRouteName(node);
-  let anchorGroupName: string | undefined;
-  if (settings) {
-    try {
-      warnIfInitialRouteNameIsUsed(settings, groupName);
-      anchor = settings.anchor ?? settings.initialRouteName ?? anchor;
-    } catch (error) {
-      if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
-        throw error;
-      }
-    }
-
-    if (groupName) {
-      const groupAnchor = settings[groupName]?.anchor ?? settings[groupName]?.initialRouteName;
-      anchor = groupAnchor ?? anchor;
-      anchorGroupName = groupAnchor ? groupName : undefined;
-    }
-  }
+  const layoutAnchor = readLayoutAnchorSetting(settings);
+  const groupAnchor = groupName ? readLayoutAnchorSetting(settings?.[groupName]) : undefined;
+  const anchor = groupAnchor ?? layoutAnchor;
   if (!anchor) {
     return undefined;
   }
@@ -156,7 +134,7 @@ function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) 
     node.children.find((child) => child.route === `${anchor}/index`);
   if (!route) {
     throw new Error(
-      `The initial route name "${anchor}"${anchorGroupName ? ` for group "${anchorGroupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
+      `The initial route name "${anchor}"${groupAnchor ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
         `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
         'Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
@@ -164,15 +142,23 @@ function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) 
   return route.route;
 }
 
-function warnIfInitialRouteNameIsUsed(
-  settings: Record<string, any>,
-  groupName: string | undefined
-) {
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    (settings.initialRouteName !== undefined ||
-      settings[groupName ?? '']?.initialRouteName !== undefined)
-  ) {
+function readLayoutAnchorSetting(settings: Record<string, any> | undefined): string | undefined {
+  if (!settings) {
+    return undefined;
+  }
+  try {
+    warnIfInitialRouteNameIsUsed(settings);
+    return settings.anchor ?? settings.initialRouteName;
+  } catch (error) {
+    if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
+      throw error;
+    }
+    return undefined;
+  }
+}
+
+function warnIfInitialRouteNameIsUsed(settings: Record<string, any>) {
+  if (process.env.NODE_ENV !== 'production' && settings.initialRouteName !== undefined) {
     console.warn(
       '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
     );

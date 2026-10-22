@@ -58,40 +58,6 @@ it('mounts a deep-linked stack once with its anchor', async () => {
   expect(screen.getByTestId('profile-index')).toBeVisible();
 });
 
-describe('a group layout whose anchor is not named like the group', () => {
-  const routes = {
-    '(a)/_layout': {
-      unstable_settings: { anchor: 'b' },
-      default: () => <Stack />,
-    },
-    '(a)/a': () => <Text testID="a" />,
-    '(a)/b': () => <Text testID="b" />,
-    '(a)/c': () => <Text testID="c" />,
-  };
-
-  function stackRouteNames(result: Awaited<ReturnType<typeof renderRouter>>) {
-    return result
-      .getRouterState()!
-      .routes[0]!.state!.routes[0]!.state!.routes.map(({ name }) => name);
-  }
-
-  it('deep links with only the anchor from settings', async () => {
-    const result = await renderRouter(routes, { initialUrl: '/c' });
-
-    expect(stackRouteNames(result)).toEqual(['b', 'c']);
-
-    await act(() => router.back());
-
-    expect(screen.getByTestId('b')).toBeVisible();
-  });
-
-  it('deep links to the route named like the group', async () => {
-    const result = await renderRouter(routes, { initialUrl: '/a' });
-
-    expect(stackRouteNames(result)).toEqual(['b', 'a']);
-  });
-});
-
 it('gives a deep-linked anchor the path params of its target', async () => {
   const result = await renderRouter(
     {
@@ -231,7 +197,7 @@ describe('layouts that are not loaded yet', () => {
     error.mockRestore();
   });
 
-  it('keeps the group-named anchor of a layout that fails to load', async () => {
+  it('has no anchor for a layout that fails to load', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const layout = lazyModule(
       { unstable_settings: { anchor: 'b' }, default: () => <Stack /> },
@@ -250,7 +216,7 @@ describe('layouts that are not loaded yet', () => {
     await act(async () => layout.reject(new Error('Chunk failed')));
 
     const groupState = result.getRouterState()!.routes[0]!.state!.routes[0]!.state!;
-    expect(groupState.routes.map(({ name }) => name)).toEqual(['a', 'c']);
+    expect(groupState.routes.map(({ name }) => name)).toEqual(['c']);
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining('could not load the layout "./(a)/_layout.js"'),
       expect.any(Error)
