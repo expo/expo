@@ -260,6 +260,23 @@ describe('emitDirectPackage', () => {
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
   });
 
+  // That package is written under its SwiftPM package name, which need not be the npm name.
+  it('removes the package an earlier sync generated from the manifest', () => {
+    const generated = path.join(outDir, 'expo-source', 'ExpoHapticsPackage');
+    fs.mkdirSync(generated, { recursive: true });
+    fs.writeFileSync(path.join(generated, 'Package.swift'), '// generated\n');
+    emitDirectPackage({
+      moduleRoot: path.join(root, 'expo-haptics'),
+      packageName: 'expo-haptics',
+      outDir,
+      coreHeadersXCFramework,
+      jsiHeadersPkgPath,
+      macroTool: path.join(root, 'ExpoModulesMacros'),
+      manifest: { ...hapticsManifest, name: 'ExpoHapticsPackage' },
+    });
+    expect(fs.existsSync(generated)).toBe(false);
+  });
+
   it('links the products of the manifest it is given, without dumping it again', () => {
     runDumpPackage.mockClear();
     const { ok } = emit();
