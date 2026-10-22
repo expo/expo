@@ -55,7 +55,7 @@ class GmsLocationProvider(
     return suspendCancellableCoroutine { continuation ->
       this.addOnSuccessListener { continuation.resume(it) }
       this.addOnFailureListener { e ->
-        jsLogger?.warn("GMS location task failed", e)
+        jsLogger?.warn("[expo-location] GMS location task failed", e)
         continuation.resume(null)
       }
       this.addOnCanceledListener { continuation.resume(null) }
@@ -128,7 +128,7 @@ class GmsLocationProvider(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Throwable) {
-      jsLogger?.warn("Could not check the location settings", e)
+      jsLogger?.warn("[expo-location] Could not check the location settings", e)
       return ProviderResult.Unavailable
     }
   }

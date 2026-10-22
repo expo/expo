@@ -205,7 +205,7 @@ private class AndroidPositionUpdatesSession(
       LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
       listener
     }.onFailure {
-      jsLogger?.warn("Could not request location updates from \"$provider\"", it)
+      jsLogger?.warn("[expo-location] Could not request location updates from \"$provider\"", it)
       if (emitError) {
         config.onUpdate(WatchUpdate.Failure(it))
       }

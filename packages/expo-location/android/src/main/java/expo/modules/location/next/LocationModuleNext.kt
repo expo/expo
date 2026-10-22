@@ -43,7 +43,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
-  "Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
+  "[expo-location] Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
     "permission. The service runs and location updates are not throttled, but its notification " +
     "does not appear in the notification drawer."
 class TaskManagerNotFoundException : CodedException("TaskManager module not found")
@@ -360,7 +360,7 @@ class LocationModuleNext : Module() {
         } catch (e: CancellationException) {
           throw e
         } catch (e: Exception) {
-          appContext.jsLogger?.warn("Could not restart the background session after entering the foreground", e)
+          appContext.jsLogger?.warn("[expo-location] Could not restart the background session after entering the foreground", e)
         }
       }
     }
