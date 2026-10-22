@@ -18,7 +18,7 @@ import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-ca
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
 
 ## How Bug triage works
 
@@ -29,7 +29,7 @@ The highlighted steps run on EAS Workflows and Expo Simulators:
 1. For TestFlight feedback, the workflow creates a GitHub issue with the comment of the tester, the device, and links to the screenshots.
 2. It starts an Expo Simulators session with a build of the default branch.
 3. A coding agent follows the steps in the report and writes a verdict: `REPLICATED` or `NOT-REPLICATED`.
-4. The workflow posts the verdict on the issue. For a `REPLICATED` bug, it adds the `agent` label, which starts Issue to PR.
+4. The workflow posts the verdict on the issue. For a `REPLICATED` bug, a person reads the report and adds the `agent` label, which starts Issue to PR.
 
 The agent tests a build of the default branch, not the build that the tester used.
 
@@ -67,7 +67,7 @@ Bug triage also needs [Agentic CI](/eas/agentic-workflows/agentic-ci/) and [Issu
 
 ### Update the GitHub helper
 
-This version of **.eas/agents/github.mjs** adds two commands to the version from Issue to PR: `add-label` and `create-issue`. Replace the file:
+This version of **.eas/agents/github.mjs** adds the `create-issue` command to the version from Issue to PR. Replace the file:
 
 ```js .eas/agents/github.mjs
 import { readFile } from 'node:fs/promises';
@@ -127,10 +127,6 @@ switch (command) {
     });
     break;
   }
-  case 'add-label': {
-    await request('POST', `${repo}/issues/${args[0]}/labels`, { labels: [args[1]] });
-    break;
-  }
   case 'create-issue': {
     const [title, bodyFile, ...labels] = args;
     const issue = await request('POST', `${repo}/issues`, {
@@ -166,7 +162,7 @@ switch (command) {
   }
   default:
     console.error(
-      `Unknown command "${command}". Use issue, comment, add-label, create-issue, open-pull-request, or author-email.`
+      `Unknown command "${command}". Use issue, comment, create-issue, open-pull-request, or author-email.`
     );
     process.exit(1);
 }
@@ -214,12 +210,11 @@ SESSION_URL=$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')
   printf '<details>\n<summary>Report</summary>\n\n'
   tail -n +2 agent-output/evidence/verdict.md 2> /dev/null || true
   printf '\n</details>\n'
+  case "$VERDICT" in
+    REPLICATED:*) printf '\nTo start Issue to PR, read the report, then add the `agent` label.\n' ;;
+  esac
 } > /tmp/comment.md
 node .eas/agents/github.mjs comment "$ISSUE_NUMBER" /tmp/comment.md
-
-case "$VERDICT" in
-  REPLICATED:*) node .eas/agents/github.mjs add-label "$ISSUE_NUMBER" agent ;;
-esac
 ```
 
 The script does these tasks in this order:
@@ -227,7 +222,7 @@ The script does these tasks in this order:
 1. It reads the issue and its comments, and writes the prompt for the agent.
 2. It starts a session with the build, and runs the agent in the `device` mode.
 3. It posts the verdict and a report on the issue.
-4. For a `REPLICATED` verdict, it adds the `agent` label to the issue. Then it stops the session.
+4. For a `REPLICATED` verdict, the comment asks a person to read the report and add the `agent` label. Then it stops the session.
 
 </Step>
 
@@ -469,7 +464,7 @@ When the agent finishes, the issue gets a **Bug triage** comment:
 - **Agent report and screenshots:** the workflow run on expo.dev. The report and the screenshots are in its artifacts. The Claude Code runner also saves its log there, and the other runners print it to the job log.
 - **Report:** in a folded section, each step of the agent and what it saw.
 
-For a `REPLICATED` bug, the workflow adds the `agent` label. Issue to PR then opens a PR with a fix, and Agentic CI tests it.
+For a `REPLICATED` bug, read the report before you add the `agent` label. The report can come from a tester, and the change agent follows the text of the issue. When you add the label, Issue to PR opens a PR with a fix, and Agentic CI tests it.
 
 For `NOT-REPLICATED`, add the missing steps to the issue. Then run the workflow again.
 

@@ -65,12 +65,12 @@ const BUG_TRIAGE_STAGES: Stage[] = [
     onExpo: true,
   },
   { place: 'GitHub', text: 'The workflow posts the verdict and the evidence on the issue' },
+  { place: 'Your team', text: 'A person reads the report and adds the agent label' },
   {
     place: 'EAS Workflows',
-    text: 'A replicated bug gets the agent label, and Issue to PR opens a fix',
+    text: 'Issue to PR opens a fix, and Agentic CI tests it',
     onExpo: true,
   },
-  { place: 'Your team', text: 'A person reviews the fix and merges it' },
 ];
 
 export function AgenticWorkflowDiagram() {
