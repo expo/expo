@@ -805,6 +805,14 @@ export default function HomeScreen() {
 }
 ```
 
+On iOS 18 and later, the tab bar animates when it hides and shows. To hide and show it immediately, set the `disableHiddenAnimation` prop.
+
+```tsx src/app/_layout.tsx
+<NativeTabs hidden={isTabBarHidden} disableHiddenAnimation>
+  {/* Triggers */}
+</NativeTabs>
+```
+
 ### Hiding a tab conditionally
 
 > **warning** Dynamically hiding tabs will remount the navigator and the state will be reset. Change the visibility of the tabs only before the navigator is mounted or when it is not visible to the user.
