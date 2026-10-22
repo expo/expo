@@ -7304,18 +7304,6 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
-      eslint:
-        specifier: ^9.39.4
-        version: 9.39.4(jiti@2.7.0)
-      eslint-config-universe:
-        specifier: workspace:^
-        version: link:../packages/eslint-config-universe
-      eslint-plugin-lodash:
-        specifier: ^7.4.0
-        version: 7.4.0(eslint@9.39.4(jiti@2.7.0))
-      prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
       taskr:
         specifier: 1.1.0
         version: 1.1.0
@@ -12068,12 +12056,6 @@ packages:
     peerDependenciesMeta:
       '@typescript-eslint/parser':
         optional: true
-
-  eslint-plugin-lodash@7.4.0:
-    resolution: {integrity: sha512-Tl83UwVXqe1OVeBRKUeWcfg6/pCW1GTRObbdnbEJgYwjxp5Q92MEWQaH9+dmzbRt6kvYU1Mp893E79nJiCSM8A==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      eslint: '>=2'
 
   eslint-plugin-n@17.24.0:
     resolution: {integrity: sha512-/gC7/KAYmfNnPNOb3eu8vw+TdVnV0zhdQwexsw6FLXbhzroVj20vRn2qL8lDWDGnAQ2J8DhdfvXxX9EoxvERvw==}
@@ -21230,11 +21212,6 @@ snapshots:
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
-
-  eslint-plugin-lodash@7.4.0(eslint@9.39.4(jiti@2.7.0)):
-    dependencies:
-      eslint: 9.39.4(jiti@2.7.0)
-      lodash: 4.18.1
 
   eslint-plugin-n@17.24.0(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3):
     dependencies:
