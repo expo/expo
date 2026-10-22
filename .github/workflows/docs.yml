@@ -27,7 +27,8 @@ env:
 jobs:
   docs:
     if: github.repository == 'expo/expo'
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    # Deploys block on this job, so use Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
+    runs-on: blacksmith-32vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
