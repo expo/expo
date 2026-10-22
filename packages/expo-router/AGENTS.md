@@ -14,6 +14,7 @@ Expo Router turns app files into routes for React Native and web. Judge features
 
 - Put native implementation and tests in `ios/` or `android/` as appropriate; put config plugin changes in `plugin/`. Keep shared JavaScript and TypeScript behavior in `src/`.
 - Use `.ios`, `.android`, `.native`, and `.web` file suffixes for platform-specific implementations and tests. Import implementation modules through their extensionless base path so the resolver selects the matching variant.
+- Keep navigator-specific logic in that navigator or its router, not in shared core such as `useNavigationBuilder`.
 
 ## Build and checks
 

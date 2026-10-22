@@ -690,6 +690,8 @@ Import the base and native stack helpers from `expo-router`. Import the navigato
 
 The `key` on `descriptor.route` can be `undefined` for a declared route that does not yet have a live state route. Update custom navigator code to handle that case.
 
+A custom navigator that uses `TabRouter` needs to call `unstable_useReconcileTabHistory` in its content component, to save the back history in the navigation state. See [Tab back history](/router/advanced/custom-navigators/#tab-back-history).
+
 See [Custom navigators](/router/advanced/custom-navigators/) for standard navigator concepts.
 
 ### Review removed `expo-router/react-navigation` exports
