@@ -5,6 +5,7 @@ description: Add an agentic workflow in which a coding agent tests each pull req
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -13,6 +14,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
+import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
@@ -50,6 +52,8 @@ Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/eas/ag
 Do these steps one time for your project.
 
 <AgenticWorkflowsSetup />
+
+<WhatTheAgentCanDo />
 
 ## Add the Agentic CI workflow
 
@@ -250,6 +254,13 @@ To open these links, sign in to an Expo account that can view the project.
 When the verdict is not `PASS`, the `result` job fails, and the workflow run shows the failure. To test the PR again, push a new commit to its branch.
 
 ## Next steps
+
+<BoxLink
+  title="Build a feature from an issue with an AI agent"
+  description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
+  href="/eas/agentic-workflows/issue-to-pr/"
+  Icon={Star06Icon}
+/>
 
 <BoxLink
   title="Run Expo Simulators sessions in CI"

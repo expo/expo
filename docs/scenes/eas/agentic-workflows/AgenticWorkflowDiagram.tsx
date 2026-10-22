@@ -7,7 +7,7 @@ type Stage = {
   onExpo?: boolean;
 };
 
-const STAGES: Stage[] = [
+const AGENTIC_WORKFLOW_STAGES: Stage[] = [
   {
     place: 'GitHub or TestFlight',
     text: 'A pull request, an issue, or tester feedback starts a workflow',
@@ -31,18 +31,46 @@ const STAGES: Stage[] = [
   { place: 'Your team', text: 'A person reviews the evidence and decides' },
 ];
 
-const DIAGRAM_ALT = STAGES.map(
-  (stage, index) => `${index + 1}. ${stage.text} [${stage.place}]`
-).join('\n→ ');
+const ISSUE_TO_PR_STAGES: Stage[] = [
+  { place: 'GitHub', text: 'A person adds the agent label to an issue' },
+  { place: 'GitHub Actions', text: 'An Action starts the Issue to PR workflow' },
+  {
+    place: 'EAS Workflows',
+    text: 'A coding agent changes the code and opens a pull request',
+    onExpo: true,
+  },
+  {
+    place: 'EAS Workflows',
+    text: 'Agentic CI finds or builds the app and starts a session',
+    onExpo: true,
+  },
+  {
+    place: 'Expo Simulators',
+    text: 'A coding agent tests the change on a remote iOS Simulator',
+    onExpo: true,
+  },
+  { place: 'GitHub', text: 'A person reviews the verdict and merges the pull request' },
+];
 
 export function AgenticWorkflowDiagram() {
+  return <StageDiagram stages={AGENTIC_WORKFLOW_STAGES} />;
+}
+
+export function IssueToPrDiagram() {
+  return <StageDiagram stages={ISSUE_TO_PR_STAGES} />;
+}
+
+function StageDiagram({ stages }: { stages: Stage[] }) {
+  const alt = stages
+    .map((stage, index) => `${index + 1}. ${stage.text} [${stage.place}]`)
+    .join('\n→ ');
   return (
     <div
       className="my-5 rounded-3xl border border-default bg-default p-4"
       data-md="diagram"
-      data-md-alt={DIAGRAM_ALT}>
+      data-md-alt={alt}>
       <div className="flex flex-col items-stretch gap-3 md:flex-row md:gap-2">
-        {STAGES.map((stage, index) => (
+        {stages.map((stage, index) => (
           <Fragment key={stage.text}>
             {index > 0 && <Arrow />}
             <div

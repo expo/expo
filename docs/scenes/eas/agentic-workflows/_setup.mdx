@@ -2,6 +2,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { A, P } from '~/ui/components/Text';
 
 <Prerequisites>
   <Requirement title="An Expo project in a GitHub repository">
@@ -33,6 +34,15 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
     />
 
   </Requirement>
+  {props.githubCli && (
+    <Requirement title="GitHub CLI">
+      <P className="mb-[1.5ch]">
+        This guide uses <A href="https://cli.github.com/">GitHub CLI</A> to add a repository secret,
+        a label, and an issue. Install it, then sign in:
+      </P>
+      <Terminal cmd={['$ gh auth login']} />
+    </Requirement>
+  )}
   <Requirement title="Expo Simulators access">
     The account that owns the project needs Expo Simulators access. In your project directory, link
     the project to EAS and check the access:
@@ -96,7 +106,7 @@ The workflows start on GitHub events and post comments on PRs. Connect your GitH
 
 The jobs start sessions with the access token of a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens). A robot user cannot sign in to Expo, and it can do only what its role allows.
 
-In the account that owns the project, open [**Access tokens**](https://expo.dev/accounts/[account]/settings/access-tokens). Under **Robot users**, create a robot user with the [Developer role](/accounts/account-types/#manage-access). The Developer role is the lowest role that can start and stop sessions. Then create a token for the robot user. See [What the agent can do](#what-the-agent-can-do).
+In the account that owns the project, open [**Access tokens**](https://expo.dev/accounts/[account]/settings/access-tokens). Under **Robot users**, create a robot user with the [Developer role](/accounts/account-types/#manage-access). The Developer role is the lowest role that can start and stop sessions. Then create a token for the robot user. See [What the agent can do](#what-the-agent-can-do) for more information.
 
 Keep this token and the key of your agent out of files, logs, and chat.
 
@@ -245,24 +255,3 @@ exec grok --prompt-file "$1" "${allow[@]}" --disable-web-search --max-turns 80
 If you use Cursor, also add **.cursor/cli.json**.
 
 </Step>
-
-### What the agent can do
-
-The agent reads text from PRs, issues, and TestFlight feedback. Another person can write instructions for the agent in that text. These workflows limit what the agent can do:
-
-- The agent can read each variable of the environment that the job uses, and the session file **.env.eas-simulator**. This file has a token for the current session. Keep no other secrets in that environment. See step 4.
-- EAS does not start `pull_request` workflows for PRs from forks.
-
-Each agent also has its own limits:
-
-| Agent       | Limit in these workflows                                                                                                                                                                                                                                               |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Claude Code | `--allowedTools` allows the file tools and one command. The command is `eas simulator:exec` with agent-device in the `device` mode, and `npx tsc --noEmit` in the `change` mode.                                                                                       |
-| Codex       | The agent can run any command on the EAS worker. Each job runs on its own worker.                                                                                                                                                                                      |
-| Cursor      | The agent can run each command that **.cursor/cli.json** does not deny.                                                                                                                                                                                                |
-| Grok        | `--allow` allows file changes and one command. The command is `eas simulator:exec` with agent-device in the `device` mode, and `npx tsc --noEmit` in the `change` mode. Grok also runs its read-only commands, such as `ls` and `cat`. It does not run other commands. |
-| Other agent | The limits depend on the permission settings of its command-line tool.                                                                                                                                                                                                 |
-
-The code of a PR also runs in the workflow. The `check` job checks out the PR, so a PR can change **.eas/agents/run-agent.sh** and read `EXPO_TOKEN_SIMULATOR`. Each person who can push a branch to the repository can open such a PR.
-
-So use a robot token with the Developer role, not your personal access token. A PR that reads the robot token can do only what the Developer role allows.

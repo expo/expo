@@ -500,6 +500,7 @@ export const eas = [
   makeSection('Agentic workflows', [
     makePage('eas/agentic-workflows/introduction.mdx'),
     makePage('eas/agentic-workflows/agentic-ci.mdx'),
+    makePage('eas/agentic-workflows/issue-to-pr.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
