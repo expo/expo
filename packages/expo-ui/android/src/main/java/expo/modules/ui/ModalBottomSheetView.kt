@@ -105,11 +105,12 @@ private fun ForwardKeyEventsToActivity(activity: Activity?) {
  */
 @Composable
 private fun MatchNavigationBarToSheet() {
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+    return
+  }
   val window = (LocalView.current.parent as? DialogWindowProvider)?.window ?: return
   DisposableEffect(window) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      window.isNavigationBarContrastEnforced = false
-    }
+    window.isNavigationBarContrastEnforced = false
     onDispose {}
   }
 }
