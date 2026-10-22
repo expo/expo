@@ -741,6 +741,7 @@ export interface NativeTabTriggerProps {
    * Shows the tab on its own surface in the tab bar, which stays visible when the tab bar minimizes.
    * Only one tab can be prominent. Has effect only on the layout trigger.
    *
+   * @see The official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/prominenttabidentifier).
    * @default false
    * @platform ios 27+
    */
