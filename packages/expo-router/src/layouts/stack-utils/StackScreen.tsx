@@ -72,10 +72,16 @@ export interface StackScreenProps extends PropsWithChildren {
    * Screens that must be below this screen in the stack. Missing screens are added directly below
    * it when a deep link or a navigation adds it to the stack.
    *
+   * The stack does not add the required screens of an added screen. List every screen that must be
+   * below.
+   *
    * Each entry is a screen name from this navigator, such as `'[id]'`. It is not an href, such as
    * `'/42'`.
    *
    * Only supported when used inside a Layout component.
+   *
+   * The behavior of this prop can change slightly between releases. The prop is safe to use. A
+   * later release will not remove it.
    *
    * @example
    * ```tsx app/_layout.tsx
