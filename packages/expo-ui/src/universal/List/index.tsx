@@ -30,4 +30,6 @@ const styles = StyleSheet.create({
 
 List.ForEach = ListForEach;
 
+export { ListForEach } from './ListForEach';
+
 export * from './types';

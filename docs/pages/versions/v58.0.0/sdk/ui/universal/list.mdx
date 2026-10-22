@@ -193,9 +193,8 @@ export default function ListItemCompoundExample() {
 
 `List.ForEach` renders one row for each item of `data`. It mounts a small pool of rows around the visible range and reuses them while the list scrolls. Rows that are not ready yet show a placeholder of `estimatedItemSize`.
 
-Wrap the render function in `useCallback`. A recycled row keeps its local state (`useState`) when it shows another item, so keep row state outside the row or reset it when the item changes. You can put static rows before and after `List.ForEach` in the same `List`.
+Wrap the render function in `useCallback`. A recycled row keeps its local state (`useState`) when it shows another item. Keep row state outside the row, or reset it when the item changes. You can put static rows before and after `List.ForEach` in the same `List`.
 
-```tsx
 import { useCallback } from 'react';
 import { Host, List, ListItem } from '@expo/ui';
 

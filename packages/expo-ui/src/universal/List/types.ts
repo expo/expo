@@ -42,7 +42,7 @@ export interface ListForEachProps<T> {
   keyExtractor: (item: T, index: number) => string;
 
   /**
-   * Renders a row. Wrap it in `useCallback`.
+   * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
    * A recycled row keeps its local state (`useState`) when it shows another item.
    */
   children: (info: { item: T; index: number }) => ReactElement;
