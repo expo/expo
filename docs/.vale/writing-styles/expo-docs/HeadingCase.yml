@@ -29,6 +29,7 @@ exceptions:
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*Agentic CI.*'
   - '.*AGENTS\.md.*'
   - '.*\bAI\b.*'
   - '.*API.*'

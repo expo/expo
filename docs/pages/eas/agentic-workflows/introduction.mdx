@@ -1,0 +1,49 @@
+---
+title: Introduction to agentic workflows
+sidebar_title: Introduction
+description: Learn how EAS Workflows starts a coding agent that tests your app on a remote simulator and returns evidence.
+---
+
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+import { AgenticWorkflowDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+An agentic workflow is an automated workflow in which a coding agent does a task and checks its own work. Each agentic workflow has three parts:
+
+- **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) starts on a pull request, an issue, or TestFlight feedback.
+- **A coding agent** does the task, such as a test of a change, a new feature, or a bug fix.
+- **An Expo Simulators session** gives the agent a running app on a remote iOS Simulator. The agent uses the app as a person does and saves evidence.
+
+The following diagram shows one run of an agentic workflow. The highlighted steps run on EAS Workflows and Expo Simulators:
+
+<AgenticWorkflowDiagram />
+
+## Why the agent needs a simulator
+
+A coding agent can read and change code, but it cannot see if the app works. To see the app, the agent needs a device that runs it.
+
+Using Expo Simulators in your workflows, you can use the iOS Simulators on EAS cloud infrastructure and any job worker can start a session. The agent then can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
+
+## What the agent returns
+
+The agent does not merge or ship a change. It returns evidence:
+
+- A verdict, such as `PASS` or `FAIL`, with a report of each check.
+- The screenshots that the agent saved.
+- The screen recording of the session, on the session page on EAS dashboard.
+- A link that opens the build in a browser preview.
+
+## Agentic workflow guides
+
+See the following guides for use cases of agentic workflows with Expo Simulators. Each guide shows how to set up a workflow, a coding agent, and an Expo Simulators session:
+
+<BoxLink
+  title="Test pull requests with an AI agent"
+  description="Agentic CI: a coding agent tests each pull request on a remote iOS Simulator and posts a verdict with evidence."
+  href="/eas/agentic-workflows/agentic-ci/"
+  Icon={Star06Icon}
+/>
