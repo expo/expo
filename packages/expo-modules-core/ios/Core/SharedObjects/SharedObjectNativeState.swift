@@ -17,9 +17,14 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
   /// (for example a frozen one, whose native state can't be reset), so lookups check this flag.
   internal private(set) var isReleased = false
 
-  /// The JS object paired with the native object in each runtime, keyed by runtime identity and held
-  /// weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes, or
-  /// worklet contexts), each with its own JS counterpart.
+  /// The JS object paired with the native object in the first runtime it was paired in, held weakly.
+  /// Most native objects are only exposed to one runtime, so that pairing skips the dictionary below.
+  private var firstRuntimeId: JavaScriptRuntime.ID?
+  private var firstPairedObject: JavaScriptWeakObject.Ref?
+
+  /// The JS object paired with the native object in each other runtime, keyed by runtime identity and
+  /// held weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes,
+  /// or worklet contexts), each with its own JS counterpart.
   private var pairedObjects: [JavaScriptRuntime.ID: JavaScriptWeakObject.Ref] = [:]
 
   internal init(native: SharedObject, factory: @escaping JavaScriptNativeState.Factory) {
@@ -35,27 +40,48 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
   /// for having attached this native state to `jsObject` (`jsObject.setNativeState(self)`), which reuses
   /// the shared C++ pointee across runtimes.
   internal func setJavaScriptObject(_ jsObject: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
+    let runtimeId = runtime.id
+
+    // Take the first slot when it's free, already belongs to this runtime, or its JS object is gone.
+    if firstRuntimeId == nil || firstRuntimeId == runtimeId || !Self.isAlive(firstPairedObject) {
+      firstRuntimeId = runtimeId
+      firstPairedObject = jsObject.createWeak().ref()
+      pairedObjects[runtimeId] = nil
+      return
+    }
     // Drop entries whose runtime or JS object has gone away before inserting, so the map doesn't
     // accumulate dead keys for runtimes that paired once and were torn down.
     pruneExpired()
-    pairedObjects[runtime.id] = jsObject.createWeak().ref()
+    pairedObjects[runtimeId] = jsObject.createWeak().ref()
   }
 
   /// Returns the JS object paired with the native object in `runtime`, or `nil` if there is no live
   /// pairing there (none was created, or the JS object has been garbage-collected).
   internal func javaScriptObject(in runtime: JavaScriptRuntime) -> JavaScriptObject? {
-    // Unwrap the ref first so the dictionary subscript's optional doesn't nest with `withValue`'s,
-    // which would form a `JavaScriptObject??` that the non-`Copyable` element can't be wrapped in.
-    guard let ref = pairedObjects[runtime.id] else {
+    let runtimeId = runtime.id
+
+    // Unwrap the ref first so the optional doesn't nest with `withValue`'s, which would form a
+    // `JavaScriptObject??` that the non-`Copyable` element can't be wrapped in.
+    if runtimeId == firstRuntimeId, let ref = firstPairedObject {
+      return ref.withValue { $0?.lock() }
+    }
+    guard !pairedObjects.isEmpty, let ref = pairedObjects[runtimeId] else {
       return nil
     }
     return ref.withValue { $0?.lock() }
   }
 
   private func pruneExpired() {
-    pairedObjects = pairedObjects.filter { _, ref in
-      // Keep the entry only while its weak JS object still resolves; an empty ref is dropped.
-      return ref.withValue { $0?.lock() != nil } ?? false
+    guard !pairedObjects.isEmpty else {
+      return
     }
+    pairedObjects = pairedObjects.filter { _, ref in
+      return Self.isAlive(ref)
+    }
+  }
+
+  /// Whether the weak ref still resolves to a JS object; an empty or missing ref doesn't.
+  private static func isAlive(_ ref: JavaScriptWeakObject.Ref?) -> Bool {
+    return ref?.withValue { $0?.lock() != nil } ?? false
   }
 }
