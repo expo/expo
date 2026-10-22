@@ -172,3 +172,17 @@ Pausing keeps clients on their current update and prevents them from receiving n
 />
 
 Unpause a channel by resuming it. The channel will start serving updates from the branch associated with the channel. Any rollout on the channel will resume. As users open their apps and check for updates, they will receive the newest compatible update as usual.
+
+### Protect a channel
+
+<Terminal
+  cmd={[
+    '$ eas channel:protect [channel-name]',
+    '',
+    '# Example',
+    '$ eas channel:protect production',
+  ]}
+  cmdCopy="eas channel:protect [channel-name]"
+/>
+
+Only members with the Release Manager, Admin, or Owner role can publish updates to a protected channel or change it. To remove protection, run `eas channel:unprotect [channel-name]`. See [Protected channels](/eas/protected-resources/#protected-channels) for the full list of restrictions.

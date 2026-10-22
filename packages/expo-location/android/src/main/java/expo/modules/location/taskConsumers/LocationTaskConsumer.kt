@@ -1,5 +1,6 @@
 package expo.modules.location.taskConsumers
 
+import android.Manifest
 import android.app.PendingIntent
 import android.app.job.JobParameters
 import android.app.job.JobService
@@ -7,12 +8,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.PersistableBundle
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -37,6 +40,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private var mTask: TaskInterface? = null
   private var mPendingIntent: PendingIntent? = null
   private var mService: LocationTaskService? = null
+  private var mServiceConnection: ServiceConnection? = null
   private var mLocationRequest: LocationRequest? = null
   private var mLastReportedLocation: Location? = null
   private var mDeferredDistance = 0.0
@@ -85,9 +89,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       handleLocationUpdate(result.locations)
     } else {
       try {
-        mLocationClient.lastLocation.addOnCompleteListener { task ->
-          task.result?.let { handleLocationUpdate(listOf(it)) }
-        }
+        mLocationClient.lastLocation
+          .addOnSuccessListener { location: Location? ->
+            location?.let { handleLocationUpdate(listOf(it)) }
+          }
+          .addOnFailureListener {
+            Log.e(TAG, "Cannot get last location: " + it.message)
+          }
       } catch (e: SecurityException) {
         Log.e(TAG, "Cannot get last location: " + e.message)
       }
@@ -204,6 +212,11 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
     // Foreground service is requested but not running.
     if (mService == null) {
+      // Android 14+ throws without a location permission, which can expire while the task stays registered.
+      if (!hasLocationPermission()) {
+        Log.w(TAG, "Foreground location task cannot be started without a location permission")
+        return
+      }
       val serviceIntent = Intent(context, LocationTaskService::class.java)
       val extras = Bundle()
       val serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle()
@@ -213,7 +226,15 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       extras.putString("taskName", task.name)
       extras.putBoolean("killService", serviceOptions.getBoolean("killServiceOnDestroy", false))
       serviceIntent.putExtras(extras)
-      context.startForegroundService(serviceIntent)
+      try {
+        context.startForegroundService(serviceIntent)
+      } catch (e: RuntimeException) {
+        if (!isStartRejected(e)) {
+          throw e
+        }
+        Log.w(TAG, "Foreground location task could not be started", e)
+        return
+      }
       context.bindService(
         serviceIntent,
         object : ServiceConnection {
@@ -221,7 +242,22 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService = (service as? ServiceBinder)?.service
             mService?.let {
               it.setParentContext(context)
-              it.startForeground(serviceOptions)
+              try {
+                it.startForeground(serviceOptions)
+              } catch (e: RuntimeException) {
+                if (!isStartRejected(e)) {
+                  throw e
+                }
+                Log.w(TAG, "Foreground location task could not enter the foreground", e)
+                releaseService()
+                return
+              }
+              // The task was unregistered while this bind was pending: didUnregister() found no
+              // service to stop. Stop it now. startForeground() above is still required, since the
+              // service was started with startForegroundService().
+              if (mTask == null) {
+                stopForegroundService()
+              }
             }
           }
 
@@ -229,12 +265,38 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService?.stop()
             mService = null
           }
-        },
+        }.also { mServiceConnection = it },
         Context.BIND_AUTO_CREATE
       )
     } else {
       // Restart the service with new service options.
-      mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      try {
+        mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      } catch (e: RuntimeException) {
+        if (!isStartRejected(e)) {
+          throw e
+        }
+        Log.w(TAG, "Foreground location task could not be restarted", e)
+        releaseService()
+      }
+    }
+  }
+
+  // ForegroundServiceStartNotAllowedException and BackgroundServiceStartNotAllowedException are IllegalStateExceptions.
+  private fun isStartRejected(e: RuntimeException): Boolean {
+    return e is SecurityException || e is IllegalStateException
+  }
+
+  private fun releaseService() {
+    mService?.stop()
+    mService = null
+    mServiceConnection?.let { context.unbindService(it) }
+    mServiceConnection = null
+  }
+
+  private fun hasLocationPermission(): Boolean {
+    return listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION).any {
+      ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
   }
 

@@ -30,9 +30,6 @@ jobs:
           bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
-      - name: 🍺 Install required tools
-        run: |
-          brew install watchman || true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems

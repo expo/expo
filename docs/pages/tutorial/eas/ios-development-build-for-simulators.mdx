@@ -74,19 +74,19 @@ Run the `eas build` command with `ios` as a platform and `ios-simulator` as the 
 This command prompts us with the following questions when we create the build for the first time:
 
 - **What would you like your iOS bundle identifier to be?** Press <kbd>Return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) in **app.json**.
-- **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
+- **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use non-exempt encryption, EAS CLI adds `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` to the [app config](/workflow/configuration/). This value manages the compliance check when you release your app to TestFlight or the App Store. If your own app uses non-exempt encryption, press <kbd>N</kbd> and confirm the follow-up prompt. EAS CLI then leaves the app config unchanged. You set the encryption status in App Store Connect.
 
 After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the EAS dashboard:
 
 <ContentSpotlight
   alt="iOS Simulator build details page"
-  src="/static/images/tutorial/eas/ios-sim-build.png"
+  src="/static/images/tutorial/eas/ios-development-build-for-simulators-details.webp"
   className="max-w-[800px]"
 />
 
 <Collapsible summary="What does a build details page contain?">
 
-The build details page displays the build type, profile, Expo SDK version, app version, build number, last commit hash, and the identity of the developer or account owner who initiated the build.
+The build details page displays the build type, profile, environment, Expo SDK version, app version, and build number. It also displays the fingerprint, the last commit hash, and the identity of the developer or account owner who initiated the build.
 
 In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the iOS build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [iOS build process](/build-reference/ios-builds/).
 
@@ -110,13 +110,13 @@ In the terminal, once the build finishes, EAS CLI prompts us by asking whether w
 
 <ContentSpotlight
   alt="EAS CLI automatically gives option to run a build on iOS Simulator"
-  src="/static/images/tutorial/eas/ios-sim-cli.png"
-  className="max-w-[480px]"
+  src="/static/images/tutorial/eas/ios-development-build-for-simulators-cli.webp"
+  className="max-w-[800px]"
 />
 
 <Collapsible summary="Alternate: Use Expo Orbit">
 
-You can use [Expo Orbit](https://expo.dev/orbit) to install the development build. From **Build artifact** on the EAS dashboard, click **Open with Expo Orbit** to install the development build on the iOS Simulator.
+You can use [Expo Orbit](https://expo.dev/orbit) to install the development build. From **Build artifact** on the EAS dashboard, click **Open with Orbit** to install the development build on the iOS Simulator.
 
 </Collapsible>
 

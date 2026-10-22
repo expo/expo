@@ -85,6 +85,11 @@ export class ExpoModuleConfig {
     return appleConfig?.modules ?? [];
   }
 
+  /** Whether the config declares the Apple modules list. Even an empty list disables scanning. */
+  declaresAppleModules(): boolean {
+    return this.getAppleConfig()?.modules != null;
+  }
+
   /**
    * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
    */

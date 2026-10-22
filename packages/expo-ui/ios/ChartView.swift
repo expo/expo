@@ -59,6 +59,8 @@ struct BarChartStyle: Record {
 struct PieChartStyle: Record {
   @Field var innerRadius: Double = 0.3
   @Field var angularInset: Double = 2.0
+  @Field var cornerRadius: Double = 0.0
+  @Field var opacity: Double = 0.8
 }
 
 struct PointChartStyle: Record {
@@ -115,9 +117,10 @@ public struct ChartView: ExpoSwiftUI.View {
 
   @available(iOS 17.0, tvOS 17.0, *)
   private func createBasePieMark(for dataPoint: ChartDataPoint) -> SectorMark {
-    let style = props.pieStyle ?? PieChartStyle()
-    return SectorMark(angle: .value("Value", dataPoint.y), innerRadius: .ratio(style.innerRadius), angularInset: style.angularInset)
+    return SectorMark(angle: .value("Value", dataPoint.y), innerRadius: .ratio(pieStyle.innerRadius), angularInset: pieStyle.angularInset)
   }
+
+  private var pieStyle: PieChartStyle { props.pieStyle ?? PieChartStyle() }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createAreaMark(for dataPoint: ChartDataPoint) -> some ChartContent {
@@ -212,9 +215,9 @@ public struct ChartView: ExpoSwiftUI.View {
           case .pie:
             if #available(iOS 17.0, tvOS 17.0, *) {
               if hasIndividualColors {
-                createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).opacity(0.8)
+                createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).cornerRadius(CGFloat(pieStyle.cornerRadius)).opacity(pieStyle.opacity)
               } else {
-                createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.xValue)).opacity(0.8)
+                createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.xValue)).cornerRadius(CGFloat(pieStyle.cornerRadius)).opacity(pieStyle.opacity)
               }
             }
           case .rectangle:

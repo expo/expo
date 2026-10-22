@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import { useCallback, useEffect, type ReactNode } from 'react';
 import { Button, Text, View, type NativeSyntheticEvent } from 'react-native';
-import type { TabSelectedEvent, TabsHostProps } from 'react-native-screens';
+import type { TabSelectedEvent, TabsHostProps, TabsScreenProps } from 'react-native-screens';
 
 import { useRouter } from '../../../../hooks';
 import { router } from '../../../../imperative-api';
@@ -244,11 +244,12 @@ it('does not pop to top for native tabPress events', async () => {
   );
 
   await act(() => router.push('/home/second'));
+  // `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
   const screens = (
     jest.requireMock('react-native-screens') as typeof import('react-native-screens') & {
       __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
     }
-  ).Tabs.Screen as jest.MockedFunction<typeof import('react-native-screens').Tabs.Screen>;
+  ).Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
   const homeTabKey = screens.mock.calls.at(-1)![0].screenKey!;
   await act(() =>
     (

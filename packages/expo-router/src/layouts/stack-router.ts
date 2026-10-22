@@ -13,6 +13,7 @@ import {
   type PartialRoute,
   type PartialState,
   type Route,
+  RouterActionHandling,
   type RouterConfigOptions,
   type StackActionType,
   type StackNavigationState,
@@ -23,6 +24,7 @@ import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackR
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
 
@@ -88,7 +90,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
       state = ensureStateType(state, 'stack');
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Unhandled;
       }
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -126,7 +128,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = getIdFunction();
@@ -214,7 +216,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               routeGetIdList,
             });
           }
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
 
@@ -255,10 +257,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
           const actionResult = original.getStateForAction(state, action, options);
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
           const affectedRouteKey = actionResult.affectedRouteKey;

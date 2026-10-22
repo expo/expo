@@ -2,6 +2,7 @@
 
 package expo.modules.ui
 
+import android.os.Handler
 import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
@@ -77,6 +78,8 @@ class ExpoUIModule : Module() {
       // Tags restart in the next app context, so an entry whose view was never torn down would be
       // read by an unrelated view after a reload.
       NativeStatePropsGetter().clearAllContentOrigins()
+      // React Native destroys modules on a background thread, but `ZeroContentOrigins` is UI-thread only.
+      Handler(Looper.getMainLooper()).post { ZeroContentOrigins.clear() }
 
       imageLoader?.close()
       imageLoader = null
@@ -484,6 +487,12 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<CompositionLocalProviderProps>("CompositionLocalProviderView") {
+      Content { props ->
+        CompositionLocalProviderContent(props)
+      }
+    }
+
     ExpoUIView<LayoutProps>("BoxView") {
       Content { props ->
         BoxContent(props)
@@ -527,6 +536,12 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DockedSearchBarContent(props) { onQueryChange(it) }
+      }
+    }
+
+    ExpoUIView<TopAppBarProps>("TopAppBarView") {
+      Content { props ->
+        TopAppBarContent(props)
       }
     }
 

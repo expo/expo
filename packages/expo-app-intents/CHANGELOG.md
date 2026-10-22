@@ -1,5 +1,61 @@
 # Changelog
 
+## 0.5.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51896](https://github.com/expo/expo/pull/51896), [#51988](https://github.com/expo/expo/pull/51988), [#51914](https://github.com/expo/expo/pull/51914), [#51954](https://github.com/expo/expo/pull/51954), [#51650](https://github.com/expo/expo/pull/51650), [#51958](https://github.com/expo/expo/pull/51958), [#51888](https://github.com/expo/expo/pull/51888), [#51971](https://github.com/expo/expo/pull/51971), [#50024](https://github.com/expo/expo/pull/50024), [#51906](https://github.com/expo/expo/pull/51906), [#51899](https://github.com/expo/expo/pull/51899), [#51904](https://github.com/expo/expo/pull/51904), [#51651](https://github.com/expo/expo/pull/51651), [#51698](https://github.com/expo/expo/pull/51698), [#51889](https://github.com/expo/expo/pull/51889), [#51799](https://github.com/expo/expo/pull/51799), [#51867](https://github.com/expo/expo/pull/51867))
+  - @expo/ui@58.0.22
+
+## 0.5.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51704](https://github.com/expo/expo/pull/51704), [#51775](https://github.com/expo/expo/pull/51775))
+  - @expo/ui@58.0.21
+
+## 0.5.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51617](https://github.com/expo/expo/pull/51617))
+  - @expo/ui@58.0.20
+
+## 0.5.8
+
+### Patch Changes
+
+- Updated dependencies. ([#51632](https://github.com/expo/expo/pull/51632), [#51636](https://github.com/expo/expo/pull/51636))
+  - @expo/ui@58.0.19
+
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51606](https://github.com/expo/expo/pull/51606))
+  - @expo/ui@58.0.18
+
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies. ([#51480](https://github.com/expo/expo/pull/51480), [#51426](https://github.com/expo/expo/pull/51426))
+  - @expo/ui@58.0.17
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51368](https://github.com/expo/expo/pull/51368), [#51319](https://github.com/expo/expo/pull/51319), [#51237](https://github.com/expo/expo/pull/51237), [#50715](https://github.com/expo/expo/pull/50715), [#50727](https://github.com/expo/expo/pull/50727), [#51412](https://github.com/expo/expo/pull/51412), [#51322](https://github.com/expo/expo/pull/51322), [#51351](https://github.com/expo/expo/pull/51351))
+  - @expo/ui@58.0.16
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51283](https://github.com/expo/expo/pull/51283), [#51274](https://github.com/expo/expo/pull/51274), [#51163](https://github.com/expo/expo/pull/51163), [#51196](https://github.com/expo/expo/pull/51196), [#50369](https://github.com/expo/expo/pull/50369))
+  - @expo/ui@58.0.15
+
 ## 0.5.3
 
 ### Patch Changes

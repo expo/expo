@@ -12,6 +12,11 @@ final class PositionUpdatesLiveSource {
           guard !Task.isCancelled else {
             break
           }
+          // Drop once iOS 17 support ends: from iOS 18 CLLocationUpdate reports this itself through authorizationDeniedGlobally.
+          if #unavailable(iOS 18.0), !CLLocationManager.locationServicesEnabled() {
+            continuation.finish(throwing: LocationServicesDisabledGlobally())
+            return
+          }
           if #available(iOS 18.0, *), let failure = LocationUpdateDiagnostics(update).unrecoverableFailure() {
             continuation.finish(throwing: failure)
             return

@@ -25,7 +25,7 @@ This guide shows how to set up e2e in an Expo project and run it on your compute
 <VideoBoxLink
   videoId="2OFB4B7Vy10"
   title="Introduction to Verification Engineering"
-  description="Set up e2e on your computer, then run it on each pull request with EAS Workflows and EAS Simulator."
+  description="Set up e2e on your computer, then run it on each pull request with EAS Workflows and Expo Simulators."
 />
 
 ---
@@ -412,15 +412,15 @@ For agent steps:
 
 </Step>
 
-## Run e2e on EAS Simulator
+## Run e2e on Expo Simulators
 
-EAS Simulator runs Android Emulators and iOS Simulators on EAS infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an EAS Simulator session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+Expo Simulators runs Android Emulators and iOS Simulators on EAS infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
 
-> **important** EAS Simulator is a limited-access preview. For more information, see the [EAS Simulator documentation](/preview/eas-simulator/introduction/).
+> **important** Expo Simulators is a limited-access preview. For more information, see the [Expo Simulators documentation](/preview/simulators/introduction/).
 
 <Step label="1">
 
-### Install the EAS Simulator integration
+### Install the Expo Simulators integration
 
 Install `@e2e-dev/eas` as a development dependency:
 
@@ -433,7 +433,7 @@ Install `@e2e-dev/eas` as a development dependency:
   }}
 />
 
-Link your project to EAS and check that your account can use EAS Simulator:
+Link your project to EAS and check that your account can use Expo Simulators:
 
 <Terminal cmd={['$ eas init', '$ eas simulator:availability --json']} />
 
@@ -461,9 +461,9 @@ Record the build ID from the command output, or find a completed simulator build
 
 <Step label="3">
 
-### Create an e2e configuration for EAS Simulator
+### Create an e2e configuration for Expo Simulators
 
-Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that gets its device from EAS Simulator through `easSimulators()`:
+Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that gets its device from Expo Simulators through `easSimulators()`:
 
 ```ts e2e.eas.config.ts
 import type { E2EConfig } from 'e2e';
@@ -495,7 +495,7 @@ Replace `<your-eas-project-id>` with the `extra.eas.projectId` value from your a
 
 `videoTouches: false` turns off the touch indicator in video recordings. On a remote iOS Simulator, the indicator takes minutes to draw, so e2e saves no video.
 
-Each session counts toward your EAS Simulator usage. This configuration keeps `workers: 1` from **e2e.config.ts**, so a run uses one session.
+Each session counts toward your Expo Simulators usage. This configuration keeps `workers: 1` from **e2e.config.ts**, so a run uses one session.
 
 </Step>
 

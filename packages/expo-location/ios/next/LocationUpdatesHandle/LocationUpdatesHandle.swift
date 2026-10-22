@@ -36,11 +36,15 @@ final class LocationUpdatesHandle: SharedObject {
   }
 
   func stop() throws {
-    try taskManager().unregisterTask(withName: taskName, consumerClass: LocationUpdatesTaskConsumer.self)
+    let taskManager = try taskManager()
+    guard taskManager.task(withName: taskName, hasConsumerOf: LocationUpdatesTaskConsumer.self) else {
+      return
+    }
+    taskManager.unregisterTask(withName: taskName, consumerClass: LocationUpdatesTaskConsumer.self)
   }
 
   func hasStarted() throws -> Bool {
-    return try taskManager().hasRegisteredTask(withName: taskName)
+    return try taskManager().task(withName: taskName, hasConsumerOf: LocationUpdatesTaskConsumer.self)
   }
 
   private func taskManager() throws -> EXTaskManagerInterface {

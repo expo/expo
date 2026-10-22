@@ -156,6 +156,7 @@ const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
   { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
   { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
   { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
+  { pattern: /^\/preview\/eas-simulator\/(.*)$/, replacement: '/preview/simulators/$1' },
 ];
 
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
@@ -631,9 +632,13 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Based on Algolia 404 report 2026-04-01
   '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
-  '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
+
+  // After removing SDK 54, the last version with expo-av reference pages
+  '/versions/latest/sdk/av/': '/versions/latest/sdk/audio/',
+  '/versions/latest/sdk/audio-av/': '/versions/latest/sdk/audio/',
+  '/versions/latest/sdk/video-av/': '/versions/latest/sdk/video/',
 
   // After archiving Configure JS engines guide
   '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',

@@ -16,7 +16,7 @@ internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable
 }
 
 extension JSIRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     guard let jsiRuntime = value.jsiRuntime else {
       FatalError.runtimeLost()
     }
@@ -89,7 +89,7 @@ extension CGFloat: JSIRepresentableNumber {}
 
 extension String: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> String {
-    return String(jsiString: value.getString(runtime), in: runtime)
+    return String(jsiStringValue: value, in: runtime)
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {

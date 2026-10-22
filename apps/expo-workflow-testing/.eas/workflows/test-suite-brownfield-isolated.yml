@@ -13,6 +13,7 @@ on:
       - '!**/__mocks__/**'
       - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
   pull_request:
@@ -26,6 +27,7 @@ on:
       - '!**/__mocks__/**'
       - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
       - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
 
@@ -35,7 +37,7 @@ concurrency:
 
 defaults:
   tools:
-    node: 22.14.0
+    node: 22.23.4
     pnpm: '12.2.1'
 
 jobs:

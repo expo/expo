@@ -569,10 +569,13 @@
 # Based on Algolia 404 report 2026-04-01
 /versions/latest/sdk/secure-store /versions/latest/sdk/securestore 301
 /versions/latest/sdk/secure-store/ /versions/latest/sdk/securestore 301
-/versions/latest/sdk/av /versions/v54.0.0/sdk/av 301
-/versions/latest/sdk/av/ /versions/v54.0.0/sdk/av 301
 /versions/latest/sdk/ui/jetpack-compose/floatingactionbutton /versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton 301
 /versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/ /versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton 301
+
+# After removing SDK 54, the last version with expo-av reference pages
+/versions/latest/sdk/av /versions/latest/sdk/audio 301
+/versions/latest/sdk/av/ /versions/latest/sdk/audio 301
+/versions/latest/sdk/av.md /versions/latest/sdk/audio.md 301
 
 # TextInput renamed to TextField
 /versions/latest/sdk/ui/jetpack-compose/textinput /versions/latest/sdk/ui/jetpack-compose/textfield 301
@@ -673,6 +676,7 @@
 /versions/v51.0.0 /versions/latest 301
 /versions/v52.0.0 /versions/latest 301
 /versions/v53.0.0 /versions/latest 301
+/versions/v54.0.0 /versions/latest 301
 
 # The -next and -av SDK pages were promoted to the stable slug. The -av pages
 # kept their name only through v54, the -next pages only through v55.
@@ -732,6 +736,116 @@
 /eas-update/continuous-deployment/ /eas/workflows/examples/introduction 301
 /eas-update/continuous-deployment.md /eas/workflows/examples/introduction.md 301
 
+# After renaming EAS Simulator to Expo Simulators
+/preview/eas-simulator/introduction /preview/simulators/introduction 301
+/preview/eas-simulator/introduction/ /preview/simulators/introduction 301
+/preview/eas-simulator/introduction.md /preview/simulators/introduction.md 301
+/preview/eas-simulator/get-started /preview/simulators/get-started 301
+/preview/eas-simulator/get-started/ /preview/simulators/get-started 301
+/preview/eas-simulator/get-started.md /preview/simulators/get-started.md 301
+/preview/eas-simulator/how-to/start-a-session /preview/simulators/how-to/start-a-session 301
+/preview/eas-simulator/how-to/start-a-session/ /preview/simulators/how-to/start-a-session 301
+/preview/eas-simulator/how-to/start-a-session.md /preview/simulators/how-to/start-a-session.md 301
+/preview/eas-simulator/how-to/install-your-app /preview/simulators/how-to/install-your-app 301
+/preview/eas-simulator/how-to/install-your-app/ /preview/simulators/how-to/install-your-app 301
+/preview/eas-simulator/how-to/install-your-app.md /preview/simulators/how-to/install-your-app.md 301
+/preview/eas-simulator/how-to/drive-the-device /preview/simulators/how-to/drive-the-device 301
+/preview/eas-simulator/how-to/drive-the-device/ /preview/simulators/how-to/drive-the-device 301
+/preview/eas-simulator/how-to/drive-the-device.md /preview/simulators/how-to/drive-the-device.md 301
+/preview/eas-simulator/how-to/iterate-on-your-code /preview/simulators/how-to/iterate-on-your-code 301
+/preview/eas-simulator/how-to/iterate-on-your-code/ /preview/simulators/how-to/iterate-on-your-code 301
+/preview/eas-simulator/how-to/iterate-on-your-code.md /preview/simulators/how-to/iterate-on-your-code.md 301
+/preview/eas-simulator/how-to/capture-evidence /preview/simulators/how-to/capture-evidence 301
+/preview/eas-simulator/how-to/capture-evidence/ /preview/simulators/how-to/capture-evidence 301
+/preview/eas-simulator/how-to/capture-evidence.md /preview/simulators/how-to/capture-evidence.md 301
+/preview/eas-simulator/how-to/organize-sessions /preview/simulators/how-to/organize-sessions 301
+/preview/eas-simulator/how-to/organize-sessions/ /preview/simulators/how-to/organize-sessions 301
+/preview/eas-simulator/how-to/organize-sessions.md /preview/simulators/how-to/organize-sessions.md 301
+/preview/eas-simulator/how-to/verify-a-change-with-an-agent /preview/simulators/how-to/verify-a-change-with-an-agent 301
+/preview/eas-simulator/how-to/verify-a-change-with-an-agent/ /preview/simulators/how-to/verify-a-change-with-an-agent 301
+/preview/eas-simulator/how-to/verify-a-change-with-an-agent.md /preview/simulators/how-to/verify-a-change-with-an-agent.md 301
+/preview/eas-simulator/how-to/work-without-a-mac /preview/simulators/how-to/work-without-a-mac 301
+/preview/eas-simulator/how-to/work-without-a-mac/ /preview/simulators/how-to/work-without-a-mac 301
+/preview/eas-simulator/how-to/work-without-a-mac.md /preview/simulators/how-to/work-without-a-mac.md 301
+/preview/eas-simulator/how-to/review-a-pull-request /preview/simulators/how-to/review-a-pull-request 301
+/preview/eas-simulator/how-to/review-a-pull-request/ /preview/simulators/how-to/review-a-pull-request 301
+/preview/eas-simulator/how-to/review-a-pull-request.md /preview/simulators/how-to/review-a-pull-request.md 301
+/preview/eas-simulator/how-to/run-in-ci /preview/simulators/how-to/run-in-ci 301
+/preview/eas-simulator/how-to/run-in-ci/ /preview/simulators/how-to/run-in-ci 301
+/preview/eas-simulator/how-to/run-in-ci.md /preview/simulators/how-to/run-in-ci.md 301
+/preview/eas-simulator/how-to/hand-off-a-session /preview/simulators/how-to/hand-off-a-session 301
+/preview/eas-simulator/how-to/hand-off-a-session/ /preview/simulators/how-to/hand-off-a-session 301
+/preview/eas-simulator/how-to/hand-off-a-session.md /preview/simulators/how-to/hand-off-a-session.md 301
+/preview/eas-simulator/works-with/overview /preview/simulators/works-with/overview 301
+/preview/eas-simulator/works-with/overview/ /preview/simulators/works-with/overview 301
+/preview/eas-simulator/works-with/overview.md /preview/simulators/works-with/overview.md 301
+/preview/eas-simulator/works-with/expo-and-react-native /preview/simulators/works-with/expo-and-react-native 301
+/preview/eas-simulator/works-with/expo-and-react-native/ /preview/simulators/works-with/expo-and-react-native 301
+/preview/eas-simulator/works-with/expo-and-react-native.md /preview/simulators/works-with/expo-and-react-native.md 301
+/preview/eas-simulator/works-with/expo-go /preview/simulators/works-with/expo-go 301
+/preview/eas-simulator/works-with/expo-go/ /preview/simulators/works-with/expo-go 301
+/preview/eas-simulator/works-with/expo-go.md /preview/simulators/works-with/expo-go.md 301
+/preview/eas-simulator/works-with/native-ios-and-android /preview/simulators/works-with/native-ios-and-android 301
+/preview/eas-simulator/works-with/native-ios-and-android/ /preview/simulators/works-with/native-ios-and-android 301
+/preview/eas-simulator/works-with/native-ios-and-android.md /preview/simulators/works-with/native-ios-and-android.md 301
+/preview/eas-simulator/works-with/flutter /preview/simulators/works-with/flutter 301
+/preview/eas-simulator/works-with/flutter/ /preview/simulators/works-with/flutter 301
+/preview/eas-simulator/works-with/flutter.md /preview/simulators/works-with/flutter.md 301
+/preview/eas-simulator/works-with/unity-and-hybrid /preview/simulators/works-with/unity-and-hybrid 301
+/preview/eas-simulator/works-with/unity-and-hybrid/ /preview/simulators/works-with/unity-and-hybrid 301
+/preview/eas-simulator/works-with/unity-and-hybrid.md /preview/simulators/works-with/unity-and-hybrid.md 301
+/preview/eas-simulator/works-with/appium /preview/simulators/works-with/appium 301
+/preview/eas-simulator/works-with/appium/ /preview/simulators/works-with/appium 301
+/preview/eas-simulator/works-with/appium.md /preview/simulators/works-with/appium.md 301
+/preview/eas-simulator/works-with/maestro /preview/simulators/works-with/maestro 301
+/preview/eas-simulator/works-with/maestro/ /preview/simulators/works-with/maestro 301
+/preview/eas-simulator/works-with/maestro.md /preview/simulators/works-with/maestro.md 301
+/preview/eas-simulator/reference/session-types /preview/simulators/reference/session-types 301
+/preview/eas-simulator/reference/session-types/ /preview/simulators/reference/session-types 301
+/preview/eas-simulator/reference/session-types.md /preview/simulators/reference/session-types.md 301
+/preview/eas-simulator/reference/cli /preview/simulators/reference/cli 301
+/preview/eas-simulator/reference/cli/ /preview/simulators/reference/cli 301
+/preview/eas-simulator/reference/cli.md /preview/simulators/reference/cli.md 301
+/preview/eas-simulator/reference/rest-api /preview/simulators/reference/rest-api 301
+/preview/eas-simulator/reference/rest-api/ /preview/simulators/reference/rest-api 301
+/preview/eas-simulator/reference/rest-api.md /preview/simulators/reference/rest-api.md 301
+/preview/eas-simulator/reference/devices /preview/simulators/reference/devices 301
+/preview/eas-simulator/reference/devices/ /preview/simulators/reference/devices 301
+/preview/eas-simulator/reference/devices.md /preview/simulators/reference/devices.md 301
+/preview/eas-simulator/reference/usage-and-billing /preview/simulators/reference/usage-and-billing 301
+/preview/eas-simulator/reference/usage-and-billing/ /preview/simulators/reference/usage-and-billing 301
+/preview/eas-simulator/reference/usage-and-billing.md /preview/simulators/reference/usage-and-billing.md 301
+/preview/eas-simulator/reference/security-and-data /preview/simulators/reference/security-and-data 301
+/preview/eas-simulator/reference/security-and-data/ /preview/simulators/reference/security-and-data 301
+/preview/eas-simulator/reference/security-and-data.md /preview/simulators/reference/security-and-data.md 301
+/preview/eas-simulator/how-it-works/sessions /preview/simulators/how-it-works/sessions 301
+/preview/eas-simulator/how-it-works/sessions/ /preview/simulators/how-it-works/sessions 301
+/preview/eas-simulator/how-it-works/sessions.md /preview/simulators/how-it-works/sessions.md 301
+/preview/eas-simulator/how-it-works/security-model /preview/simulators/how-it-works/security-model 301
+/preview/eas-simulator/how-it-works/security-model/ /preview/simulators/how-it-works/security-model 301
+/preview/eas-simulator/how-it-works/security-model.md /preview/simulators/how-it-works/security-model.md 301
+/preview/eas-simulator/how-it-works/network-inspection /preview/simulators/how-it-works/network-inspection 301
+/preview/eas-simulator/how-it-works/network-inspection/ /preview/simulators/how-it-works/network-inspection 301
+/preview/eas-simulator/how-it-works/network-inspection.md /preview/simulators/how-it-works/network-inspection.md 301
+/preview/eas-simulator/how-it-works/builds-and-bundles /preview/simulators/how-it-works/builds-and-bundles 301
+/preview/eas-simulator/how-it-works/builds-and-bundles/ /preview/simulators/how-it-works/builds-and-bundles 301
+/preview/eas-simulator/how-it-works/builds-and-bundles.md /preview/simulators/how-it-works/builds-and-bundles.md 301
+/preview/eas-simulator/how-it-works/agent-targeting /preview/simulators/how-it-works/agent-targeting 301
+/preview/eas-simulator/how-it-works/agent-targeting/ /preview/simulators/how-it-works/agent-targeting 301
+/preview/eas-simulator/how-it-works/agent-targeting.md /preview/simulators/how-it-works/agent-targeting.md 301
+/preview/eas-simulator/how-it-works/devices-compared /preview/simulators/how-it-works/devices-compared 301
+/preview/eas-simulator/how-it-works/devices-compared/ /preview/simulators/how-it-works/devices-compared 301
+/preview/eas-simulator/how-it-works/devices-compared.md /preview/simulators/how-it-works/devices-compared.md 301
+/preview/eas-simulator/how-it-works/session-lifetime /preview/simulators/how-it-works/session-lifetime 301
+/preview/eas-simulator/how-it-works/session-lifetime/ /preview/simulators/how-it-works/session-lifetime 301
+/preview/eas-simulator/how-it-works/session-lifetime.md /preview/simulators/how-it-works/session-lifetime.md 301
+/preview/eas-simulator/troubleshooting /preview/simulators/troubleshooting 301
+/preview/eas-simulator/troubleshooting/ /preview/simulators/troubleshooting 301
+/preview/eas-simulator/troubleshooting.md /preview/simulators/troubleshooting.md 301
+/preview/eas-simulator/limitations /preview/simulators/limitations 301
+/preview/eas-simulator/limitations/ /preview/simulators/limitations 301
+/preview/eas-simulator/limitations.md /preview/simulators/limitations.md 301
+
 # EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
@@ -775,9 +889,10 @@
 /eas/using-environment-variables/ /eas/environment-variables 301
 /eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
 /versions/v50.0.0/* /versions/latest/:splat 301
-/versions/v52.0.0/* /versions/latest/:splat 301
 /versions/v51.0.0/* /versions/latest/:splat 301
+/versions/v52.0.0/* /versions/latest/:splat 301
 /versions/v53.0.0/* /versions/latest/:splat 301
+/versions/v54.0.0/* /versions/latest/:splat 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.

@@ -1,6 +1,17 @@
 ---
 model: anthropic/claude-opus-5-5
 description: Logic and correctness bugs in changed TypeScript and JavaScript — empty or absent state made reachable, unreachable new code, error behavior flipping between crash and silent-wrong, async and lifecycle mistakes, and tests that do not prove their own name.
+# TypeScript, JavaScript, and `package.json` files for the dependency and lockfile check.
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.cjs"
+  - "**/*.mts"
+  - "**/*.cts"
+  - "**/package.json"
 ---
 
 # Correctness — TypeScript & JavaScript

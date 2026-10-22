@@ -10,10 +10,13 @@
 - [📚 Updating Documentation](#-updating-documentation)
 - [🦋 Recording Package Changes](#-recording-package-changes)
 - [📝 Writing a Commit Message](#-writing-a-commit-message)
+- [📬 Opening a pull request](#-opening-a-pull-request)
 - [🔎 Before Submitting](#-before-submitting)
   - [Extra Credit](#extra-credit-1)
 
 Thanks for your interest in contributing! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
+
+Coding agents must read [AGENTS.md](./AGENTS.md) before they edit. Pull request size and wording are in [Opening a pull request](#-opening-a-pull-request).
 
 We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of Expo Go (in `apps/expo-go`). The Expo Go app is difficult to set up and requires API tokens.
 
@@ -173,9 +176,11 @@ options.
 
 > You'll need write about how you tested your changes in the PR under the **Test Plan** section.
 
-The best way to get your changes merged is to build good tests for them! We have three different kinds of tests: unit-tests, automated E2E tests, and demos (adding tests that you notice are missing is a great way to become my friend 🥳)!
+A test belongs in the diff when it fails before the change and passes after it. We have three kinds of tests: unit tests, automated end-to-end tests, and demos. A test for behavior that is missing today is welcome when it fails on the current code.
 
 ### ✅ Unit Testing
+
+Add a unit test when it fails before your change and passes after it. Do not add a test that already passes. Do not add a test that only checks a mock of the code you changed.
 
 1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
 2. Any new bridged native functions have to be added to the [jest-expo](https://github.com/expo/expo/blob/main/packages/jest-expo/src/preset/expoModules.js) package to ensure they are mocked. To help you do this more easily, we've written a tool and a guide on how to do this. Check out [Generating Jest Mocks](https://github.com/expo/expo/blob/main/guides/Generating%20Jest%20Mocks.md)!
@@ -214,8 +219,127 @@ Note: Running docs pnpm commands requires a specific version of Node. You can fi
 
 Commit messages are most useful when formatted like so: `[platform][api] Title`. For example, if you fix a bug in the package `expo-video` for iOS, you could write: `[ios][video] Fixed black screen bug that appears on older devices`.
 
+## 📬 Opening a pull request
+
+Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, `Screenshots`, and `Checklist`. Delete the HTML comments when you fill them in.
+
+Keep the pull request small enough to read in one pass. Limit a code change to one published package, plus its changeset. Put a documentation change that can land alone in its own pull request. CI also finishes faster when docs are separate. See [Before Submitting](#-before-submitting).
+
+If the change has more than one reason, split it into a stack:
+
+1. Each pull request in the stack does one thing.
+2. Set the base branch of each pull request to the branch of the previous one.
+3. In `How`, list the stack in order and say which pull request this one is.
+4. After a pull request merges, retarget the next one to `main`.
+
+### Title
+
+Use `[package] Do this thing`. A platform tag is not required.
+
+Write the title in Simplified Technical English. You do not need the ASD-STE100 specification. Follow these rules:
+
+- One short line.
+- Start with a verb, such as `Fix`, `Add`, or `Stop`.
+- Say the result.
+- Use the same words in the title and the body.
+
+Example: `[camera] Reapply the preview scale when the stream starts`
+
+Use the same sentence rules in `Why`, `How`, and `Test Plan`. Use short sentences. Put one fact in each sentence. Use active voice. Use one word for one thing.
+
+### Why
+
+State the problem. Then state the root cause.
+
+- The problem is what a user or a caller sees.
+- The root cause is the code path that causes the problem.
+
+### How
+
+Answer this question: how did you build this feature or fix this bug, and why?
+
+- Describe each solution you considered. Use one or two sentences for each.
+- For each solution, state the performance impact.
+- Say why you believe this is the right fix, and why you did not pick the others.
+- Say what the diff changes.
+- If the report is about some devices only, limit the change to those devices. If every device must get the change, say why.
+
+### Test Plan
+
+Say what you ran, where you ran it, and the result.
+
+- Give the command, or the device or simulator, and the result.
+- If there is no automated test, give the steps a reviewer can repeat.
+- If you did not run a test, say that and open the pull request as a draft.
+
+### Screenshots
+
+If the change affects what a person sees, add a `Before` heading and an `After` heading for each platform it affects: Android, iOS, or web. An Android-only change needs Android screenshots. Do the same for an iOS-only or web-only change. Shared code needs a pair for every platform that runs it. Do not use an iOS Simulator screenshot for a platform you did not run. Take the before screenshot first. Then make the change. Then take the after screenshot. Put each image under its heading, at full width. Do not put the images in a table. Name the device, simulator, or browser on the line after each image. If you cannot run an affected platform, name it and say why. If nothing visible changes, write `No UI change.`
+
+### Comments in the diff
+
+Do not add a comment that repeats the code. Keep a comment only when the code cannot show the constraint. A platform bug, a required call order, or a value you must not change are examples. Put the history of the bug in `Why`, not in a comment. Delete a comment that your change makes false.
+
+### Example
+
+```md
+# Why
+
+getDocumentAsync stays pending when the document picker fails to open.
+
+The module stores the promise before startActivityForResult. That call throws, and nothing rejects the promise.
+
+# How
+
+How did you build this feature or fix this bug and why?
+
+Two solutions were possible.
+
+1. Store the promise after startActivityForResult returns. This adds no timer and no extra work on the success path.
+2. Add a timeout that rejects the promise. The timeout runs for every open picker, and it can reject a picker that is still open.
+
+This pull request uses solution 1. The failure is synchronous, so the extra timeout is not needed. That is the right fix.
+
+The diff moves the pendingPromise write to after a successful startActivityForResult call.
+
+# Test Plan
+
+Android emulator, API 34. No unit test covers this path.
+
+1. Call getDocumentAsync when no activity can handle ACTION_OPEN_DOCUMENT.
+2. Confirm the promise rejects.
+3. Call getDocumentAsync again and confirm the picker opens.
+
+Before this change, the second call did nothing. After this change, the promise rejects and the next call opens the picker.
+
+# Screenshots
+
+This change is Android only. iOS and web do not run this path.
+
+### Android
+
+#### Before
+
+![The document picker does not open](https://github.com/user-attachments/assets/11111111-1111-4111-8111-111111111111)
+
+Android emulator, API 34. The second call does not open the picker.
+
+#### After
+
+![The document picker opens](https://github.com/user-attachments/assets/22222222-2222-4222-8222-222222222222)
+
+Android emulator, API 34. The promise rejects, and the next call opens the picker.
+
+# Checklist
+
+- [x] I added a changeset and followed [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
+- [ ] This diff will work correctly for `npx expo prebuild` & EAS Build (eg: updated a module plugin).
+- [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
+```
+
 ## 🔎 Before Submitting
 
+- Write the pull request with [Opening a pull request](#-opening-a-pull-request).
 - Remember to add a changeset containing a concise description of any user-facing changes using `pnpm changeset` for the packages you've changed. This is especially helpful for breaking changes!
 
 To keep CI green, please make sure of the following:

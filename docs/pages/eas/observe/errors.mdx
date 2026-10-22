@@ -5,8 +5,9 @@ description: Record JavaScript errors and native crashes from your app and inves
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. Source maps for EAS Update and more are still to come.
+> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
 
 The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
@@ -123,9 +124,9 @@ The agent uses the prompt to map the stack trace onto your source and to pull mo
 
 ## Symbolicated stack traces
 
-In a production app, your JavaScript is bundled and minified. Stack traces point at line and column positions in the generated bundle, not in your source files. A source map translates those positions back. When a source map is stored for a build, the dashboard shows the original file, line, and column for each frame, and links the build the error came from next to the stack trace.
+In a production app, your JavaScript is bundled and minified. Stack traces point at line and column positions in the generated bundle, not in your source files. A source map translates those positions back. When a source map is stored for a build or an update, the dashboard shows the original file, line, and column for each frame, and links the build or the update the error came from next to the stack trace.
 
-If no source map is stored for the build, the dashboard shows the reported stack trace as-is. Frames then reference positions in the minified bundle, such as `index.android.bundle:1:481231`, and are difficult to map back to your code.
+If no source map is stored for the build or the update, the dashboard shows the reported stack trace as-is. Frames then reference positions in the minified bundle, such as `index.android.bundle:1:481231`, and are difficult to map back to your code.
 
 ### Upload source maps with EAS Build
 
@@ -143,9 +144,19 @@ To store a source map for each build, set `uploadSourceMaps` to `true` in the bu
 
 With this setting, EAS Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
 
-> **Note**: Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
+> **info** Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
 
 The source code embedded in the source map (`sourcesContent`) is removed before upload. Only file names and position mappings are stored. If the upload fails, the build still completes and shows a warning in the build logs.
+
+### Upload source maps with EAS Update
+
+> **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
+
+To store source maps for an update, pass `--upload-source-maps` to `eas update` command:
+
+<Terminal cmd={['$ eas update --upload-source-maps']} />
+
+With this flag, EAS CLI uploads the Android and iOS source maps produced when your update's JavaScript is bundled, so JavaScript stack traces from that update are symbolicated.
 
 ### Native stack traces
 
@@ -173,5 +184,4 @@ Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform
 
 Error reporting is in preview, and the following are not available yet:
 
-- **Source maps for EAS Update**: errors from an app running an OTA update show the unsymbolicated stack trace.
 - **Symbolication for native crashes**: uploading debug symbols, such as Android ProGuard mappings and iOS dSYMs, is not supported yet.

@@ -19,6 +19,7 @@ const {
   renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
 } = require('../diagnostics');
+const { spmUpdateCommand } = require('../commands');
 const { resolvePodIdentities, uncoveredPod } = require('../plugin');
 const { podspecDependencies } = require('../podspec');
 
@@ -763,6 +764,7 @@ describe('a module installed twice', () => {
     expect(report).toContain('/app/node_modules/some-lib/node_modules/expo-camera');
     expect(report).toContain('npm ls expo-camera');
     expect(report).toContain('dedupe');
+    expect(report).toContain(spmUpdateCommand());
     expect(report).toContain("your app's JavaScript imports the second");
     expect(report).toContain('usually surfaces at runtime');
     expect(report).toContain('can fail the build');

@@ -12,6 +12,7 @@ import * as path from 'path';
 import type { Dependency as ExpoTransformDependency } from '../../../transform-worker/collect-dependencies';
 import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+import type { ChunkingStrategy } from '../../serializerAssets';
 
 export const projectRoot = '/app';
 
@@ -92,6 +93,8 @@ export async function microBundle({
   options?: {
     dev?: boolean;
     lazy?: boolean;
+    /** Include weak-only modules to preserve older test fixtures. */
+    legacyTraverseWeakDependencies?: boolean;
     platform?: string;
     baseUrl?: string;
     output?: 'static';
@@ -103,6 +106,7 @@ export async function microBundle({
     inlineSourceMaps?: boolean;
     minify?: boolean;
     splitChunks?: boolean;
+    chunkingStrategy?: ChunkingStrategy;
     treeshake?: boolean;
     optimize?: boolean;
     inlineRequires?: boolean;
@@ -171,6 +175,8 @@ export async function microBundle({
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
+      // Resolve every edge, even if its target was already visited.
+      onResolve?.(absPath);
       if (visited.has(absPath)) {
         const mod = modules.get(absPath);
         if (mod && parent?.path) mod.inverseDependencies.add(parent.path);
@@ -181,7 +187,6 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      onResolve?.(absPath);
       const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
@@ -197,7 +202,10 @@ export async function microBundle({
 
         try {
           const resolved = resolve(id, dep.data.name);
-          if (options.lazy && dep.data.data.asyncType != null) {
+          if (
+            (dep.data.data.asyncType === 'weak' && !options.legacyTraverseWeakDependencies) ||
+            (options.lazy && dep.data.data.asyncType != null)
+          ) {
             // @ts-expect-error
             dep.absolutePath = path.join(projectRoot, resolved);
             continue;
@@ -266,6 +274,7 @@ export async function microBundle({
               output: options.output,
               includeSourceMaps: options.sourceMaps,
               splitChunks: options.splitChunks,
+              chunkingStrategy: options.chunkingStrategy,
               // NOTE(cedric): exporting mode should always be provided explicitly, but we can't easily do that in the tests
               exporting: !dev,
             }
@@ -285,7 +294,7 @@ export async function microBundle({
       getRunModuleStatement(moduleId: number | string) {
         return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
       },
-      includeAsyncPaths: dev,
+      includeAsyncPaths: options.lazy ?? dev,
       shouldAddToIgnoreList(_module: Module) {
         return false;
       },

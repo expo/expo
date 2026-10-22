@@ -24,14 +24,26 @@ export function ScrollView({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'ScrollView' }
   );
 
+  // verticalScroll and horizontalScroll clear the main-axis max before measure.
+  // A percentage on the scroll axis has no definite parent, so it is ignored.
+  // The cross axis still resolves.
   if (direction === 'horizontal') {
-    return <Row modifiers={[...modifiers, horizontalScroll()]}>{children}</Row>;
+    return (
+      <Row resolvesChildPercentages modifiers={[...modifiers, horizontalScroll()]}>
+        {children}
+      </Row>
+    );
   }
 
-  return <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>;
+  return (
+    <Column resolvesChildPercentages modifiers={[...modifiers, verticalScroll()]}>
+      {children}
+    </Column>
+  );
 }
 
 export * from './types';

@@ -1,8 +1,5 @@
 {
   "platforms": ["apple", "android", "devtools"],
-  "apple": {
-    "modules": ["SQLiteModule"]
-  },
   "android": {
     "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy",
     "publication": {

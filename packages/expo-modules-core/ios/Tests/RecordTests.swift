@@ -96,7 +96,7 @@ struct RecordTests {
 
       let asDict = record.toDictionary(appContext: appContext)
       #expect(asDict["a"] as? Double == 1.0)
-      #expect((asDict["b"] as? JavaScriptValue)?.kind == .undefined)
+      #expect((asDict["b"] as? ConvertedJavaScriptValue)?.takeValue().kind == .undefined)
     }
 
     @Test

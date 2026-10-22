@@ -27,6 +27,7 @@ jest.mock('../flavored-frameworks', () => ({
     frameworkName === 'ExpoModulesCore' ? { id: 'ExpoModulesCore', name: 'ExpoModulesCore' } : null
   ),
   resolveSpmDependencyFrameworks: jest.fn(() => []),
+  resolveHeadersXCFramework: jest.fn(() => null),
   prepareCompileInterfaces: jest.fn(() => '/abs/interfaces'),
 }));
 // The module-root walk stays real; it is spied on so a test can assert that a
@@ -50,12 +51,14 @@ const {
 } = require('../cli');
 const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
+const { spmUpdateCommand } = require('../commands');
 const { UnsupportedModulesError } = require('../diagnostics');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
   artifactBaseDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
 } = require('../flavored-frameworks');
 const {
@@ -132,6 +135,8 @@ function restoreModuleMocks() {
   );
   resolveSpmDependencyFrameworks.mockReset();
   resolveSpmDependencyFrameworks.mockReturnValue([]);
+  resolveHeadersXCFramework.mockReset();
+  resolveHeadersXCFramework.mockReturnValue(null);
   prepareCompileInterfaces.mockImplementation(() => '/abs/interfaces');
 }
 
@@ -319,8 +324,25 @@ describe('the module registry', () => {
 
     expect(run).toThrow(/ExpoModulesProvider\.swift/);
     expect(run).toThrow(/expo-modules-autolinking exited with code 1/);
-    expect(run).toThrow(/react-native spm/);
+    expect(run).toThrow(spmUpdateCommand());
     expect(printed(logs.warn)).not.toContain('ExpoModulesProvider');
+  });
+
+  // Workspaces hoist react-native above the app, where node_modules/react-native is missing.
+  it("names the update command through the app's react-native, relative to the app root", () => {
+    generateModulesProvider.mockImplementation(() => {
+      throw new Error('expo-modules-autolinking exited with code 1');
+    });
+    const hoistedApp = () =>
+      runPlugin(tmp, {
+        projectRoot: path.join(tmp, 'apps', 'mobile'),
+        appRoot: path.join(tmp, 'apps', 'mobile', 'ios'),
+        reactNativeRoot: path.join(tmp, 'node_modules', 'react-native'),
+      });
+
+    expect(hoistedApp).toThrow(
+      '`node ../../node_modules/react-native/scripts/setup-apple-spm.js update`'
+    );
   });
 
   it('fails the sync when generation writes no provider although modules resolved', () => {
@@ -3567,5 +3589,188 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
     expect(logs.error).toHaveBeenCalledTimes(1);
     expect(report).toContain('"ExpoCameraBarcodeScanning"');
     expect(report).toContain('"ExpoScanner"');
+  });
+});
+
+// npm never ships the ExpoModulesJSI binary: it must be compiled against the app's
+// React Native. Source packages compile against its headers XCFramework, and an app
+// build phase builds, links and embeds the real framework.
+describe('ExpoModulesJSI', () => {
+  captureConsole();
+
+  /**
+   * Writes the expo-modules-jsi `versions`: `headers` into the headers' stamp, `autolinked`
+   * into the autolinked package, and `built` into the copy the build phase's launcher reaches
+   * through expo and expo-modules-core. Returns that copy's directory.
+   */
+  function writeJsiVersions(tmp, headersXCFramework, { headers, autolinked, built }) {
+    const writePackage = (dir, name, version) => {
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name, version }));
+      return dir;
+    };
+    fs.writeFileSync(
+      path.join(headersXCFramework, 'expo-package.json'),
+      JSON.stringify({ name: 'expo-modules-jsi', version: headers })
+    );
+    writePackage(path.join(tmp, 'expo-modules-jsi'), 'expo-modules-jsi', autolinked);
+    const expo = writePackage(path.join(tmp, 'app', 'node_modules', 'expo'), 'expo', '1.0.0');
+    const core = writePackage(
+      path.join(expo, 'node_modules', 'expo-modules-core'),
+      'expo-modules-core',
+      '1.0.0'
+    );
+    return writePackage(
+      path.join(core, 'node_modules', 'expo-modules-jsi'),
+      'expo-modules-jsi',
+      built
+    );
+  }
+
+  /**
+   * Runs the plugin for core, expo-asset and, with `withJsi`, expo-modules-jsi. `versions`
+   * stamps the headers and installs versions as `writeJsiVersions` describes.
+   */
+  function syncApp({ withJsi = true, headers = 'resolved', versions } = {}) {
+    const tmp = makeTempDir('expo-spm-jsi-');
+    const outDir = path.join(tmp, 'out');
+    const headersXCFramework = path.join(tmp, 'npm', 'ExpoModulesJSIHeaders.xcframework');
+    fs.mkdirSync(headersXCFramework, { recursive: true });
+    fs.writeFileSync(path.join(headersXCFramework, 'Info.plist'), '<plist/>');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const jsi = pureSwiftModule(path.join(tmp, 'expo-modules-jsi'), 'ExpoModulesJSI', spec());
+    const asset = pureSwiftModule(path.join(tmp, 'expo-asset'), 'ExpoAsset', spec());
+    const builtJsiRoot =
+      versions == null ? null : writeJsiVersions(tmp, headersXCFramework, versions);
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(core),
+        ...(withJsi ? [['expo-modules-jsi', [['ExpoModulesJSI', jsi]]]] : []),
+        ['expo-asset', [['ExpoAsset', asset]]],
+      ])
+    );
+    // A Debug/Release JSI pair exists, as in a monorepo prebuild or an older package.
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'ExpoModulesJSI'].includes(frameworkName)
+        ? { id: frameworkName, frameworkName }
+        : null
+    );
+    resolveHeadersXCFramework.mockReset();
+    resolveHeadersXCFramework.mockReturnValue(headers === 'resolved' ? headersXCFramework : null);
+    providerWrittenTo(outDir);
+    let result = null;
+    const thrown = thrownBy(() => {
+      result = runPlugin(tmp);
+    });
+    const assetManifest = () =>
+      fs.readFileSync(
+        path.join(outDir, 'expo', 'expo-source', 'ExpoAsset', 'Package.swift'),
+        'utf8'
+      );
+    return { tmp, outDir, headersXCFramework, builtJsiRoot, result, thrown, assetManifest };
+  }
+
+  afterAll(restoreModuleMocks);
+
+  describe('when expo-modules-jsi is autolinked', () => {
+    let app;
+
+    beforeAll(() => {
+      app = syncApp();
+    });
+
+    it('never links it as a precompiled framework, even when a Debug/Release pair exists', () => {
+      expect(app.thrown).toBeNull();
+      expect(app.result.flavoredFrameworks.map((f) => f.frameworkName)).toEqual([
+        'ExpoModulesCore',
+      ]);
+      expect(resolvedFor('expo-modules-jsi')).toBeUndefined();
+    });
+
+    it("looks the headers up from the package's own lookup bases, into the plugin cache", () => {
+      expect(resolveHeadersXCFramework).toHaveBeenCalledWith({
+        packageName: 'expo-modules-jsi',
+        moduleRoot: path.join(app.tmp, 'expo-modules-jsi'),
+        productName: 'ExpoModulesJSI',
+        cacheDir: path.join(app.tmp, 'app', 'ios', 'build', 'expo-xcframeworks'),
+      });
+    });
+
+    it('emits the headers package over the resolved XCFramework', () => {
+      const pkgDir = path.join(app.outDir, 'expo', 'ExpoModulesJSIHeaders');
+      expect(fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8')).toContain(
+        '.linkedFramework("ExpoModulesJSI")'
+      );
+      expect(fs.readlinkSync(path.join(pkgDir, 'ExpoModulesJSIHeaders.xcframework'))).toBe(
+        app.headersXCFramework
+      );
+    });
+
+    it('makes every emitted source package depend on the headers package', () => {
+      const pkgDir = path.join(app.outDir, 'expo', 'ExpoModulesJSIHeaders');
+      expect(app.assetManifest()).toContain(
+        `.package(name: "ExpoModulesJSIHeaders", path: "${pkgDir}")`
+      );
+      expect(app.assetManifest()).toContain(
+        '.product(name: "ExpoModulesJSIHeaders", package: "ExpoModulesJSIHeaders")'
+      );
+    });
+
+    it('adds the build phase', () => {
+      expect(app.result.scriptPhases.map((p) => p.id)).toContain('expo-modules-jsi.build');
+    });
+  });
+
+  describe('when its headers are missing everywhere', () => {
+    it('fails the sync, saying what is missing, why it is needed and how to get it', () => {
+      const { thrown } = syncApp({ headers: 'missing' });
+      expect(thrown).toBeInstanceOf(Error);
+      expect(thrown.message).toContain('ExpoModulesJSIHeaders');
+      expect(thrown.message).toMatch(/only the headers/);
+      expect(thrown.message).toMatch(/reinstall/i);
+      expect(thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+    });
+  });
+
+  // The build phase compiles the framework from the installed sources, so headers of another
+  // version leave a source package referencing a symbol the framework lacks.
+  describe('when its headers are stamped with a version', () => {
+    it('fails the sync when the autolinked expo-modules-jsi is another version', () => {
+      const app = syncApp({ versions: { headers: '2.0.0', autolinked: '1.0.0', built: '2.0.0' } });
+      expect(app.thrown).toBeInstanceOf(Error);
+      for (const part of [app.headersXCFramework, '2.0.0', '1.0.0']) {
+        expect(app.thrown.message).toContain(part);
+      }
+      expect(app.thrown.message).toContain(path.join(app.tmp, 'expo-modules-jsi'));
+      expect(app.thrown.message).toMatch(/et prebuild expo-modules-jsi/);
+    });
+
+    it('fails the sync when the copy the build phase builds is another version', () => {
+      const app = syncApp({ versions: { headers: '1.0.0', autolinked: '1.0.0', built: '1.1.0' } });
+      expect(app.thrown).toBeInstanceOf(Error);
+      expect(app.thrown.message).toContain(app.builtJsiRoot);
+      expect(app.thrown.message).toContain('1.1.0');
+    });
+
+    it('syncs when every copy is that version', () => {
+      const app = syncApp({ versions: { headers: '1.0.0', autolinked: '1.0.0', built: '1.0.0' } });
+      expect(app.thrown).toBeNull();
+    });
+  });
+
+  describe('when expo-modules-jsi is not autolinked', () => {
+    let app;
+
+    beforeAll(() => {
+      app = syncApp({ withJsi: false });
+    });
+
+    it('adds no headers package, no dependency on one and no build phase', () => {
+      expect(app.thrown).toBeNull();
+      expect(resolveHeadersXCFramework).not.toHaveBeenCalled();
+      expect(fs.existsSync(path.join(app.outDir, 'expo', 'ExpoModulesJSIHeaders'))).toBe(false);
+      expect(app.assetManifest()).not.toContain('ExpoModulesJSIHeaders');
+      expect(app.result.scriptPhases.map((p) => p.id)).not.toContain('expo-modules-jsi.build');
+    });
   });
 });

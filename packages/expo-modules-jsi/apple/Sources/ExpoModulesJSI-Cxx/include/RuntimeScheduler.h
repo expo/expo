@@ -44,6 +44,8 @@ private:
 
   std::atomic<int> refCount{1};
 
+  std::atomic<bool> runtimeAlive{true};
+
   RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
       : nativeScheduler(scheduler), scheduleFn(fn) {}
 
@@ -89,6 +91,22 @@ public:
     } else {
       callback();
     }
+  }
+
+  /**
+   Whether the runtime that owns this scheduler may still be alive. Safe to call from any thread.
+   `false` is final. `true` may already be stale off the JavaScript thread, so a scheduled task must
+   check the runtime again on that thread.
+   */
+  bool isRuntimeAlive() const noexcept {
+    return runtimeAlive.load(std::memory_order_acquire);
+  }
+
+  /**
+   Marks the runtime as gone. Called from the runtime's `deinit`.
+   */
+  void markRuntimeGone() noexcept {
+    runtimeAlive.store(false, std::memory_order_release);
   }
 
   void retain() {

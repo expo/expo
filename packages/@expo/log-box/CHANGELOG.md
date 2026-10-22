@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Fix `window.ReactNativeWebView.injectedObjectJson is not a function` error in the log box WebView on Android and iOS. ([#51868](https://github.com/expo/expo/pull/51868) by [@krystofwoldrich-agent](https://github.com/krystofwoldrich-agent))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51185](https://github.com/expo/expo/pull/51185))
+  - @expo/log-box-utils@58.0.2
+
 ## 58.0.11
 
 ### Patch Changes

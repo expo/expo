@@ -6,6 +6,7 @@ import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
 import logger from '../Logger';
+import { resolveCheckedInHeaderDirectoriesAsync } from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
 import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
@@ -1048,7 +1049,7 @@ const composeFrameworkWithXCodeAsync = async (
  * @param product SPM product information
  * @returns Collected header file paths, target module names map, and set of modules needing textual headers
  */
-const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
+export const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
   frameworkOutputPath: string
@@ -1067,13 +1068,17 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   const targetModuleNames = new Map<string, string[]>(); // moduleName -> header files (with relative paths)
   const textualHeaderModules = new Set<string>(); // modules that need textual headers
 
+  const checkedInHeaderPaths = await resolveCheckedInHeaderDirectoriesAsync(pkg, product);
+
   for (const target of product.targets) {
     if (target.type === 'swift' || target.type === 'framework') {
       continue;
     }
     spinner.info(`Processing target ${target.name}...`);
 
-    const targetHeaderFilesPath = SPMGenerator.getHeaderFilesPath(pkg, product, target);
+    const targetHeaderFilesPath =
+      checkedInHeaderPaths.get(target.name) ??
+      SPMGenerator.getHeaderFilesPath(pkg, product, target);
 
     // Recursively collect all header files including from subdirectories
     const collectHeadersRecursively = async (

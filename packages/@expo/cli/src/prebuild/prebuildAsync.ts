@@ -21,6 +21,7 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { assertNoSwiftPMMarker, isSwiftPMEnabled, setupSwiftPMAsync } from './setupSwiftPM';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 
 export type PrebuildResults = {
@@ -43,7 +44,7 @@ export type PrebuildResults = {
  * 1. Create native projects (ios, android).
  * 2. Install node modules.
  * 3. Apply config to native projects.
- * 4. Install CocoaPods.
+ * 4. Install CocoaPods, or set up Swift Package Manager for iOS instead.
  */
 export async function prebuildAsync(
   projectRoot: string,
@@ -67,7 +68,8 @@ export async function prebuildAsync(
     skipDependencyUpdate?: string[];
   }
 ): Promise<PrebuildResults | null> {
-  const { platforms } = getConfig(projectRoot).exp;
+  const initialExp = getConfig(projectRoot).exp;
+  const { platforms } = initialExp;
   if (platforms?.length) {
     // Filter out platforms that aren't in the app.json.
     const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
@@ -106,6 +108,12 @@ export async function prebuildAsync(
   options.platforms = ensureValidPlatforms(options.platforms);
   // Assert if no platforms are left over after filtering.
   assertPlatforms(options.platforms);
+
+  const useSwiftPM = options.platforms.includes('ios') && isSwiftPMEnabled(initialExp);
+  if (options.platforms.includes('ios') && !useSwiftPM) {
+    // Runs after `--clean`, which already removed the marker with the ios directory.
+    assertNoSwiftPMMarker(projectRoot);
+  }
 
   const donePrebuild = event.span();
 
@@ -181,10 +189,12 @@ export async function prebuildAsync(
     throw error;
   }
 
-  // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (useSwiftPM) {
+    event('pods:installed', { ms: 0, skipped: true });
+    await setupSwiftPMAsync(projectRoot, { install: !!options.install });
+  } else if (options.platforms.includes('ios') && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();

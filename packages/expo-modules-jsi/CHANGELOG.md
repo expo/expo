@@ -1,5 +1,91 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Write the generated `jsi` module map under `EXPO_CUSTOM_BUILD_ROOT` when it is set, so a custom build writes nothing into the package directory. Without it, the module map stays at `apple/.generated/module.modulemap`. ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Publish the `ExpoModulesJSI` ABI descriptor with the package, at `prebuilds/abi/ExpoModulesJSI/arm64-apple-ios-simulator.abi.json`. ([#51835](https://github.com/expo/expo/pull/51835) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
+
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
+
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- [iOS] Add `JavaScriptObject.setProperty(_:value:)` and `JavaScriptObject.withUnownedProperty(_:_:)` overloads that take a `JavaScriptPropNameID`. `JavaScriptPropNameID.init(_:string:)` now borrows the runtime, so code that only borrows a runtime can create property names without copying it. ([#51905](https://github.com/expo/expo/pull/51905) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of converting `Date` and `Data` values between JavaScript and native code, and of `JavaScriptRuntime.createObject(prototype:)`. The global functions that these conversions call are now looked up once per runtime and cached. ([#51728](https://github.com/expo/expo/pull/51728) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] The `dealloc` closure of `JavaScriptRuntime.createHostObject` is now `@Sendable` instead of `@JavaScriptActor`, because the engine can call it on any thread. `JavaScriptActor.assumeIsolated` no longer checks the thread name in debug builds. The check failed on reload, because Hermes runs the runtime's teardown on its finalizer thread. ([#51739](https://github.com/expo/expo/pull/51739) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove all `weak` references to `JavaScriptRuntime`, which makes every retain and release of the runtime faster. `JavaScriptRuntime.schedule`, `runOrSchedule` and `execute` now drop the work when the runtime is gone by the time it runs, and `execute` throws `RuntimeLostError` then. ([#51577](https://github.com/expo/expo/pull/51577) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix native memory growth under Hermes V1 for each class created with `JavaScriptRuntime.createClass`, of about 0.57 MiB per class on React Native 0.86 and 0.87 and about 93 KiB on 0.88. `createClass` now evaluates one class factory per runtime instead of a new JavaScript source for each class, because Hermes keeps memory for every evaluated source until the runtime is destroyed. ([#51583](https://github.com/expo/expo/pull/51583) by [@amillez](https://github.com/amillez))
+
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Publish a headers XCFramework for `ExpoModulesJSI` with the package, at `prebuilds/output/headers/xcframeworks/ExpoModulesJSIHeaders.tar.gz`. ([#51243](https://github.com/expo/expo/pull/51243) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Make `JavaScriptValue.getBigInt()` about 7× faster by reading the runtime through its handle, and make the `JavaScriptBigInt` initializers take the runtime as `borrowing`, so callers no longer retain it: `init(_:fromInt64:)` and `init(_:fromUint64:)` are about 3× faster. `init(_:string:)` caches the global `BigInt` function and passes the string without an arguments buffer, which makes it up to 2.3× faster; it is now isolated to `JavaScriptActor`. ([#51562](https://github.com/expo/expo/pull/51562) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make calling a `JavaScriptCallback` with arguments faster. The arguments are encoded straight into the arguments buffer without a reference and a copy each, and the function is no longer copied on every call. ([#51565](https://github.com/expo/expo/pull/51565) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make creating and resolving a `JavaScriptPromise` faster. Resolving no longer allocates an arguments buffer, the initializers borrow the runtime instead of retaining it, and the promise keeps its values without an extra allocation each. ([#51564](https://github.com/expo/expo/pull/51564) by [@tsapeta](https://github.com/tsapeta))
+- Added `JavaScriptUndefined`, the native counterpart of JavaScript's `undefined` for `JavaScriptCodable` APIs. ([#51560](https://github.com/expo/expo/pull/51560) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `isFunction()`, `isTypedArray()`, `isArrayBuffer()`, `getTypedArray(in:)`, `getArrayBuffer(in:)`, `getBigInt(in:)` and `kind` to `JavaScriptUnownedValue`. `Data`, typed arrays, `ArrayBuffer` and integers from a `BigInt` now decode function arguments without copying them into an owning `JavaScriptValue`: a `Data` argument is about 10% faster to decode, and an `Int64` from a `BigInt` about 8× faster. ([#51558](https://github.com/expo/expo/pull/51558) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Encode Swift arrays to JS arrays about 35% faster, and Swift sets to JS sets about 25% faster. ([#51496](https://github.com/expo/expo/pull/51496) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptUnownedValue` `@frozen`, so modules that decode `@JS` function arguments know its layout and no longer ask its type metadata for it. Host functions with arguments are faster, by about 8 to 12% with eight arguments. This changes the ABI of `ExpoModulesJSI`. ([#51499](https://github.com/expo/expo/pull/51499) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `createFunction` and `setProperty(_:function:)` overloads taking a `VoidFunctionClosure`, for host functions that return nothing to JavaScript. They make such calls faster because they skip creating and writing the result value. ([#51498](https://github.com/expo/expo/pull/51498) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the `ExpoModulesJSI` xcframework slice staying built against another Xcode's SDK. The slice cache now includes the Xcode build, so switching between Xcode releases that share a Swift compiler (such as Xcode 27.0 and 27.1) rebuilds it, and the rebuild uses the app build's `DEVELOPER_DIR` and `TOOLCHAINS` instead of the Xcode selected with `xcode-select` and the default toolchain. ([#51371](https://github.com/expo/expo/pull/51371) by [@mwolson](https://github.com/mwolson))
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Fix a launch crash (`Symbol not found: _swift_allocateMetadataPack`) in apps that use precompiled Expo modules and build with Xcode 27. `ExpoModulesJSI` no longer exports Swift runtime symbols, so the precompiled `ExpoModulesCore` no longer depends on them. ([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix the `Build ExpoModulesJSI xcframework` build phase reporting `the following command failed with exit code 0 but produced no further output` on a cold build with Xcode 27. The package now builds with unused results (`NoUsage`) as errors, so a new one fails at the line that causes it. ([#51451](https://github.com/expo/expo/pull/51451) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.11
+
+### Patch Changes
+
+- [iOS] Conform `JavaScriptObject` and `JavaScriptArray` to `JavaScriptCodable`, so they can be `@JS` arguments and results. ([#51373](https://github.com/expo/expo/pull/51373) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptCallback`, a JavaScript function that native code can keep and call later from any thread, and `JavaScriptValue.isThenable()`. Bindings generated for `@JS` functions use `JavaScriptCallback` to pass a closure argument. ([#51037](https://github.com/expo/expo/pull/51037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptValue` a non-copyable struct. This is a breaking change for Swift code that uses `JavaScriptValue` directly:
+
+  - Values are moved, not shared. Pass them as `borrowing` or `consuming` parameters, and call `copy()` where a second owned value is needed.
+  - `JavaScriptValue.undefined` and `JavaScriptValue.null` are functions now: write `.undefined()` and `.null()`.
+  - A `JavaScriptValue` can no longer be an argument or a result of a `Function`, `AsyncFunction`, `Property` or `Field` definition. Declare the function with the `@JS` macro instead (in an `@ExpoModule` or `@SharedObject` class) and take the value as `borrowing JavaScriptValue`, or use a typed argument.
+  - To keep a value in an array, an escaping closure or another place that takes copyable types only, wrap it with `value.ref()` and read it back with `take()` or `withUnwrappedValue(_:)`.
+  - `JavaScriptArray.init(_:items:)`, `JavaScriptArray.enumerated()`, `JavaScriptArray.filter(_:)` and `JavaScriptValuesBuffer.copying(in:values:)` with an array of values are removed. Use the parameter pack initializer, `forEach`, `forEachIndexed`, `reduce`, or the `[JavaScriptValue.Ref]` overload.
+
+  ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+- [iOS] Add ref-based alternatives to the `JavaScriptValue` container APIs: `JavaScriptArray.forEachIndexed(_:)`, `JavaScriptPromise.resolve(_: JavaScriptValue)` and `JavaScriptValuesBuffer.copying(in:values: [JavaScriptValue.Ref])`. ([#50977](https://github.com/expo/expo/pull/50977) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Read strings from `JavaScriptValue` and `JavaScriptUnownedValue` without cloning the engine string handle, which saves a few nanoseconds on every string argument and `getString()` call. ([#51438](https://github.com/expo/expo/pull/51438) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] [Internal] Remove `copy runtime` where a borrowed `JavaScriptRuntime` is passed to a function, which already borrows its parameters. ([#51439](https://github.com/expo/expo/pull/51439) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptFunction`, `JavaScriptArrayBuffer`, `JavaScriptTypedArray`, `JavaScriptBigInt`, `JavaScriptWeakObject` and `JavaScriptPropNameID` hold the runtime handle instead of a weak reference to the runtime, and clone the engine value once in `JavaScriptValue.getFunction()`, `JavaScriptValue.getArrayBuffer()` and `JavaScriptFunction.asObject()`. Calling a JavaScript function from Swift is about twice as fast. ([#51435](https://github.com/expo/expo/pull/51435) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Read the properties of a typed array through property names cached per runtime, which makes `JavaScriptValue.getTypedArray()` about twice as fast. `getTypedArray()` is now isolated to `JavaScriptActor`, like `asTypedArray()`. ([#51436](https://github.com/expo/expo/pull/51436) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Fix blocking `JavaScriptRuntime.execute` calls using a full CPU core while they wait for the JavaScript thread. ([#51129](https://github.com/expo/expo/pull/51129) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `Conformance of 'Bool' to 'JavaScriptRepresentable' is unavailable` build errors with Xcode 27.1 (Swift 6.4). Swift 6.4 printed placeholder conformances marked `@available(*, unavailable)` into the public `.swiftinterface`, and the leftover attributes attached to the next declaration. ([#51234](https://github.com/expo/expo/pull/51234) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.9
 
 ### Patch Changes

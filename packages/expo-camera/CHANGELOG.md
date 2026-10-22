@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Fixed blurry close-ups on iPhones with a macro-capable ultra-wide camera by using the multi-lens back camera by default. ([#51801](https://github.com/expo/expo/pull/51801) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.9
 
 ### Patch Changes

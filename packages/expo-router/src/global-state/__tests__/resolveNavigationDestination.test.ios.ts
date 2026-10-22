@@ -5,6 +5,7 @@ import {
   type NavigationAction,
   type NavigationState,
 } from '../../react-navigation/routers';
+import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 import type { RouterRegistry } from '../routerRegistry';
 import { node } from './__fixtures__/routeNode';
@@ -230,7 +231,7 @@ test('preloads a parent without focusing it and resolves its child', () => {
     registry,
     action: { type: 'PRELOAD', payload: {} },
   });
-  const result = registry.get('root-stack')!.reduce(stack, action)!;
+  const result = expectHandled(registry.get('root-stack')!.reduce(stack, action));
 
   expect(result.state.index).toBe(0);
   expect(result.affectedRouteKey).not.toBe('home-key');
@@ -552,7 +553,7 @@ test('committing a reopened nested preview promotes only its owning stack route'
     registry,
     action: { type: 'NAVIGATE', payload: { __internal__PreviewKey: 'l1:2' } },
   });
-  const result = registry.get(root.key)!.reduce(root, action)!;
+  const result = expectHandled(registry.get(root.key)!.reduce(root, action));
   expect(result.affectedRouteKey).toBe('l1:2');
   expect(result.state.index).toBe(1);
   const destination = result.state.routes[1]!;

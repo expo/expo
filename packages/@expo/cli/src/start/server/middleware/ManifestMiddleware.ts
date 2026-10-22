@@ -3,7 +3,6 @@ import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { respond } from 'expo-server/adapter/http';
 import { posix } from 'node:path';
-import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
@@ -308,7 +307,7 @@ export abstract class ManifestMiddleware<
           // without the `assets/` subpath redirect.
           return shouldUseRelativeManifestUrls
             ? toAssetUrlPath(assetPath)
-            : resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], assetPath);
+            : bundleUrl!.match(/^https?:\/\/.*?\//)![0] + toAssetUrlPath(assetPath);
         }
         const assetUrlPath = 'assets/' + toAssetUrlPath(assetPath);
         return shouldUseRelativeManifestUrls

@@ -1,5 +1,11 @@
 ---
 description: Accuracy of documentation and JSDoc — platform claims that do not match the implementation, code samples that would not run, API names and options that no longer exist, and version or locale copies left inconsistent.
+# `docs/`, package `README.md` files, and the TypeScript in `src/` that carries JSDoc.
+paths:
+  - "docs/**"
+  - "packages/**/README.md"
+  - "packages/**/src/**/*.ts"
+  - "packages/**/src/**/*.tsx"
 ---
 
 # Documentation accuracy

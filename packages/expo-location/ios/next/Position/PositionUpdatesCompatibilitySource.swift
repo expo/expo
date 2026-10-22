@@ -1,7 +1,9 @@
 import CoreLocation
 
 final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDelegate {
-  private lazy var manager = CLLocationManager()
+  var makeManager: () -> CLLocationManager = { CLLocationManager() }
+  var isLocationServicesEnabled: () -> Bool = CLLocationManager.locationServicesEnabled
+  private lazy var manager = makeManager()
   private var continuation: AsyncThrowingStream<CLLocation?, Error>.Continuation?
 
   func updates(for profile: Profile, allowsBackgroundUpdates: Bool = false) -> PositionUpdatesSource {
@@ -33,6 +35,12 @@ final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDeleg
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     switch error {
     case CLError.locationUnknown:
+      return
+    case CLError.denied where !isLocationServicesEnabled():
+      continuation?.finish(throwing: LocationServicesDisabledGlobally())
+    case CLError.denied where manager.authorizationStatus == .authorizedWhenInUse:
+      // The system sends CLError.denied when an app with whenInUse permission moves to the background.
+      // Updates resume on their own once the app returns to the foreground, so this error is ignored.
       return
     case CLError.denied:
       continuation?.finish(throwing: LocationAuthorizationDenied())
