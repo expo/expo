@@ -1,8 +1,6 @@
 package expo.modules.securestore
 
 import android.content.Context
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.core.content.ContextCompat
@@ -18,14 +16,14 @@ class AuthenticationPrompt(
   context: Context,
   title: String,
   requireConfirmation: Boolean,
-  isDeviceCredentialsRequired: Boolean
+  authenticationMethod: AuthenticationMethod
 ) {
   private var executor: Executor = ContextCompat.getMainExecutor(context)
   private var promptInfo = buildAuthenticationPromptInfo(
     context,
     title,
     requireConfirmation,
-    isDeviceCredentialsRequired
+    authenticationMethod
   )
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
@@ -76,19 +74,13 @@ internal fun buildAuthenticationPromptInfo(
   context: Context,
   title: String,
   requireConfirmation: Boolean = true,
-  isDeviceCredentialsRequired: Boolean = false
+  authenticationMethod: AuthenticationMethod = AuthenticationMethod.BIOMETRY
 ): PromptInfo = PromptInfo.Builder().apply {
   setTitle(title)
-  setAllowedAuthenticators(
-    if (isDeviceCredentialsRequired) {
-      BIOMETRIC_STRONG or DEVICE_CREDENTIAL
-    } else {
-      BIOMETRIC_STRONG
-    }
-  )
+  setAllowedAuthenticators(authenticationMethod.promptAuthenticators)
   setConfirmationRequired(requireConfirmation)
   // A negative button is not allowed (and throws) when DEVICE_CREDENTIAL is an allowed authenticator.
-  if (!isDeviceCredentialsRequired) {
+  if (authenticationMethod != AuthenticationMethod.DEVICE_CREDENTIALS) {
     setNegativeButtonText(context.getString(android.R.string.cancel))
   }
 }.build()

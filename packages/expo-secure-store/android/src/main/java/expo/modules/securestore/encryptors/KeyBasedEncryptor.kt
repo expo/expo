@@ -1,6 +1,7 @@
 package expo.modules.securestore.encryptors
 
 import expo.modules.securestore.AuthenticationHelper
+import expo.modules.securestore.AuthenticationMethod
 import expo.modules.securestore.SecureStoreOptions
 import org.json.JSONException
 import org.json.JSONObject
@@ -12,12 +13,13 @@ enum class KeyPurpose {
   DECRYPT
 }
 interface KeyBasedEncryptor<E : KeyStore.Entry> {
-  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String
+  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, authenticationMethod: AuthenticationMethod): String =
+    "${getKeyStoreAlias(options)}:${authenticationMethod.keystoreSuffix}"
 
   fun getKeyStoreAlias(options: SecureStoreOptions): String
 
   @Throws(GeneralSecurityException::class)
-  fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): E
+  fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions, authenticationMethod: AuthenticationMethod): E
 
   @Throws(GeneralSecurityException::class, JSONException::class)
   suspend fun createEncryptedItem(

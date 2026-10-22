@@ -32,7 +32,7 @@ class SecureStoreWriteTest {
     assertTrue(sharedPreferencesDir.setWritable(false))
     try {
       assertThrows(WriteException::class.java) {
-        saveEncryptedItem(JSONObject().put("ciphertext", "v2"), prefs, "keychain-key", "key", null, "keychain")
+        saveEncryptedItem(JSONObject().put("ciphertext", "v2"), prefs, "keychain-key", "key", AuthenticationMethod.NONE, "keychain")
       }
       assertEquals("v1", prefs.getString("keychain-key", null))
     } finally {

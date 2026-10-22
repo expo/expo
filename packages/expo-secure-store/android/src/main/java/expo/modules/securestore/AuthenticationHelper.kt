@@ -21,7 +21,7 @@ class AuthenticationHelper(
   private var isAuthenticating = false
 
   internal suspend fun authenticateCipher(cipher: Cipher, options: AuthenticationPromptOptions): Cipher {
-    if (options.isAuthenticationRequired) {
+    if (options.authenticationMethod.isAuthenticationRequired) {
       return openAuthenticationPrompt(cipher, options).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
@@ -42,7 +42,7 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      if (options.isDeviceCredentialsRequired) {
+      if (options.authenticationMethod == AuthenticationMethod.DEVICE_CREDENTIALS) {
         assertDeviceSecurity()
       } else {
         assertBiometricsSupport()
@@ -56,7 +56,7 @@ class AuthenticationHelper(
         context,
         options.authenticationPrompt,
         options.requireConfirmation,
-        options.isDeviceCredentialsRequired
+        options.authenticationMethod
       )
 
       return withContext(Dispatchers.Main.immediate) {
@@ -68,9 +68,13 @@ class AuthenticationHelper(
     }
   }
 
-  fun assertDeviceSecurity() {
+  fun isDeviceSecure(): Boolean {
     val manager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-    if (!manager.isDeviceSecure) {
+    return manager.isDeviceSecure
+  }
+
+  fun assertDeviceSecurity() {
+    if (!isDeviceSecure()) {
       throw AuthenticationException(
         "A secure lock screen (PIN, pattern, or password) is required for device credential authentication, but the device has none. Ask the user to set a screen lock, or check canUseDeviceCredentialsAuthentication() before you use 'deviceCredentials'."
       )
