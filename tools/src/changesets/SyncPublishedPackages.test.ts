@@ -9,6 +9,7 @@ import {
   getPublishedPackagesPlanAsync,
   PublishedPackagesPlan,
   syncPublishedPackagesAsync,
+  UnpublishedVersionError,
 } from './SyncPublishedPackages';
 
 const plan: PublishedPackagesPlan = {
@@ -94,7 +95,24 @@ describe('sync-published-packages', () => {
     deps.view = async () => '58.0.0';
     await assert.rejects(
       syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
-      /not published on public npm/
+      (error) =>
+        error instanceof UnpublishedVersionError &&
+        /not published on public npm/.test(error.message)
+    );
+    assert.deepEqual(deps.writes, []);
+    assert.deepEqual(deps.commands, [['npm', '--version']]);
+  });
+
+  it('treats npm 404s for a planned version as not published yet', async () => {
+    const deps = dependencies();
+    deps.view = async () => {
+      throw Object.assign(new Error('npm view exited with non-zero code: 1'), {
+        stdout: '{\n  "error": {\n    "code": "E404",\n    "summary": "No match found"\n  }\n}',
+      });
+    };
+    await assert.rejects(
+      syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
+      UnpublishedVersionError
     );
     assert.deepEqual(deps.writes, []);
     assert.deepEqual(deps.commands, [['npm', '--version']]);
@@ -109,7 +127,10 @@ describe('sync-published-packages', () => {
     };
     await assert.rejects(
       syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
-      /Registry unavailable/
+      (error) =>
+        error instanceof Error &&
+        !(error instanceof UnpublishedVersionError) &&
+        /Registry unavailable/.test(error.message)
     );
     assert.equal(calls, plan.packages.length);
     assert.deepEqual(deps.writes, []);

@@ -221,14 +221,20 @@ jobs:
           EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
       - name: Sync production versions from this main commit
         run: |
-          attempt=1
-          echo "Production sync attempt $attempt."
-          until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
-            echo "Attempt $attempt failed; retrying in 10 minutes."
-            sleep 600
-            attempt=$((attempt + 1))
+          # Exit code 75 means npm doesn't list a published version yet, which usually clears
+          # within a couple of minutes. Retry only that; any other failure ends the job.
+          for attempt in $(seq 1 90); do
             echo "Production sync attempt $attempt."
+            status=0
+            pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }} || status=$?
+            if [ "$status" -ne 75 ]; then
+              exit "$status"
+            fi
+            echo "Published versions aren't on npm yet; retrying in 1 minute."
+            sleep 60
           done
+          echo "::error::Published versions still aren't on npm after 90 attempts."
+          exit 1
         env:
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
           EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
