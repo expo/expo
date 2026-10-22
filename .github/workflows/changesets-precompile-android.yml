@@ -22,7 +22,7 @@ jobs:
     if: >-
       github.repository == 'expo/expo' &&
       (github.event_name == 'workflow_dispatch' ||
-       (startsWith(github.head_ref, 'changeset-release/') &&
+       (github.head_ref == '@brent/precompile-android-blacksmith' || startsWith(github.head_ref, 'changeset-release/') &&
         github.event.pull_request.head.repo.full_name == github.repository))
     # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
     runs-on: blacksmith-32vcpu-ubuntu-2404
@@ -63,4 +63,4 @@ jobs:
         # (tools/android-precompile/gradle.properties), so 16 tasks fill 32 vCPUs in ~80 GB.
         run: |
           echo "Precompiling commit ${{ github.sha }}"
-          expo-turbo run precompile-android --concurrency=16
+          expo-turbo run precompile-android --concurrency=16 --force
