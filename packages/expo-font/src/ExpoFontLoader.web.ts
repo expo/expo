@@ -219,9 +219,6 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
       );
     }
 
-    // WebKit re-parses the sheet when the <style> is moved or its text changes, which stalls
-    // pending `document.fonts.load()` calls. Attach the <style> once, then add rules with
-    // `insertRule`.
     const style = getStyleElement();
     if (!style.isConnected) {
       document.head!.appendChild(style);
