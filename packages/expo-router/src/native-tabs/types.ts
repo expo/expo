@@ -86,6 +86,10 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   role?: NativeTabsTabBarItemRole;
   /**
+   * @platform iOS
+   */
+  disableAutomaticSearchActivation?: boolean;
+  /**
    * @platform android
    * @platform iOS
    */
@@ -706,10 +710,29 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
+   * The `"search"` role makes this tab the system search tab
+   * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
+   * Do not change `role` after the tab renders.
+   *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * When set to `true`, selecting the search tab does not activate its search field.
+   *
+   * By default, selecting a tab with `role="search"` focuses the header search bar
+   * of the stack nested in the tab and opens the keyboard.
+   *
+   * This prop has an effect only when `role` is `"search"`.
+   * On iOS 27, setting this prop to `true` also removes the separate placement of the search tab.
+   * A screen-level trigger applies this prop only after the screen first renders.
+   * To affect the first selection, set it on the layout trigger.
+   *
+   * @default false
+   * @platform ios 26.1+
+   */
+  disableAutomaticSearchActivation?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *

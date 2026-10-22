@@ -183,6 +183,13 @@ function Screen(props: InternalTabScreenProps) {
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
+        // On by default: on iOS 27, UIKit detaches the search tab only while activation is on.
+        ...(options.role === 'search'
+          ? {
+              role: 'search',
+              automaticallyActivatesSearch: !options.disableAutomaticSearchActivation,
+            }
+          : {}),
         overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
         ...shared.nativeIosOverrides,
       }}
