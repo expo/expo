@@ -11,8 +11,8 @@ These rules apply to every reviewer and are concatenated onto your role prompt.
   touch.
 - **Do not judge the diff in isolation.** Before reporting, read the surrounding
   source with your file/read/grep tools and trace the relevant execution path.
-  If you cannot substantiate a concrete failure or exploit path, do not report it,
-  unless your role prompt sets a different bar.
+  If you cannot substantiate a concrete failure or exploit path, do not report it.
+  The `general` reviewer is the one exception: its role prompt sets its own bar.
 - Ground your judgment in this repo's own conventions, summarized below, rather than
   generic best-practices.
 <!-- @ref-ignore AGENTS.md CLAUDE.md -->
@@ -138,8 +138,9 @@ firehose. When in doubt, stay silent.
 **For now, report only `critical` and `warning` findings. Do not emit
 `suggestion`-level items at all.**
 
-Your role prompt can set a different bar for what you report, how many findings you
-report, and which severities you use. When it does, follow your role prompt.
+The `general` reviewer is the one exception to these rules. Its role prompt sets a
+different bar for what it reports, how many findings it reports, and which severities it
+uses. If you are the `general` reviewer, follow your role prompt.
 
 <!-- @ref LLP 0009#prompt-rules-for-adopters [implements] — ASD-STE100 prose rules; evidence/quoted code stays verbatim -->
 ## Write findings in Simplified Technical English
