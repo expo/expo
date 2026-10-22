@@ -684,7 +684,7 @@ it('does not warn when the layout uses an anchor with the initialRoute back beha
   try {
     await renderRouter(
       {
-        _layout: {
+        'inner/_layout': {
           unstable_settings: { anchor: 'a' },
           default: () => (
             <Tabs backBehavior="initialRoute">
@@ -693,10 +693,10 @@ it('does not warn when the layout uses an anchor with the initialRoute back beha
             </Tabs>
           ),
         },
-        a: () => null,
-        b: () => null,
+        'inner/a': () => null,
+        'inner/b': () => null,
       },
-      { initialUrl: '/b' }
+      { initialUrl: '/inner/b' }
     );
 
     expect(warn).not.toHaveBeenCalled();
