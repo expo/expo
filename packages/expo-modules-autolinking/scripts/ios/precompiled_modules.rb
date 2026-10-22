@@ -279,6 +279,12 @@ module Expo
             def t.build_type
               Pod::BuildType.static_library
             end
+          else
+            # @react-native-firebase's `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!` calls
+            # `build_type`, which CocoaPods keeps private, on every RNFB pod, downgraded or not.
+            def t.build_type
+              super
+            end
           end
         end
       end

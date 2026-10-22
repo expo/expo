@@ -27,13 +27,18 @@ require ARGV.fetch(0)
 input = JSON.parse(STDIN.read)
 `;
 
-const podsToDowngradeScript = `${rubyPrelude}
+const fakePodTargetsScript = `${rubyPrelude}
 Dependency = Struct.new(:name)
 RootSpec = Struct.new(:dependencies, :attributes_hash)
 FakePodTarget = Struct.new(:name, :pod_name, :root_spec, :built, :linkage, :recursive_dependent_targets) do
   def should_build?; built; end
   def build_as_dynamic?; linkage == 'dynamic'; end
   def build_as_static?; linkage == 'static'; end
+
+  # Private, as in Pod::Target.
+  private def build_type
+    :"#{linkage}_framework"
+  end
 end
 
 targets = {}
@@ -44,7 +49,9 @@ end
 input['targets'].each do |t|
   targets[t['name']].recursive_dependent_targets = t.fetch('recursiveDependencies', []).map { |name| targets.fetch(name) }
 end
+`;
 
+const podsToDowngradeScript = `${fakePodTargetsScript}
 result = Expo::PrecompiledModules.pods_to_downgrade(
   targets.values,
   linkage: input['linkage'].to_sym,
@@ -204,6 +211,53 @@ function rubyAvailable(): boolean {
     const { pods, messages } = podsToDowngrade(['ForcedStatic']);
     expect(pods).toEqual(podsDowngradedToday);
     expect(messages).toEqual([expect.stringContaining('ForcedStatic')]);
+  });
+});
+
+(rubyAvailable() ? describe : describe.skip)('precompiled modules pre-install build types', () => {
+  const preInstallScript = `${fakePodTargetsScript}
+module Pod
+  class BuildType
+    def self.static_library; :static_library; end
+  end
+end
+
+ENV['EXPO_USE_PRECOMPILED_MODULES'] = '1'
+ENV['USE_FRAMEWORKS'] = 'dynamic'
+ENV.delete('RCT_USE_PREBUILT_RNCORE')
+# Stages xcframeworks on disk; not part of the linkage decision.
+Expo::PrecompiledModules.define_singleton_method(:ensure_shared_spm_deps) { |_installer| }
+Expo::PrecompiledModules.spm_dependency_pods.merge(input['spmDependencyPods'])
+
+Podfile = Struct.new(:framework_modules_to_patch)
+Installer = Struct.new(:pod_targets, :podfile)
+Expo::PrecompiledModules.perform_pre_install(Installer.new(targets.values, Podfile.new(input['frameworkModulesToPatch'])))
+
+build_types = targets.values.map do |t|
+  begin
+    [t.name, t.public_send(:build_type).to_s]
+  rescue NoMethodError => e
+    [t.name, e.message]
+  end
+end
+puts JSON.generate(build_types.to_h)
+`;
+
+  // @react-native-firebase's post_install reads `build_type` on every pod whose name starts with RNFB.
+  it('makes build_type public on pods kept as frameworks, with their original value', () => {
+    const buildTypes = runRuby<Record<string, string>>(preInstallScript, {
+      targets: appPodTargets,
+      frameworkModulesToPatch: ['ForcedStatic', 'ExpoModulesCore'],
+      spmDependencyPods: ['stripe-react-native'],
+    });
+    expect(buildTypes).toMatchObject({
+      'stripe-react-native': 'dynamic_framework',
+      ReactCodegen: 'dynamic_framework',
+      'React-Core-prebuilt': 'dynamic_framework',
+      RNScreens: 'static_library',
+      ExpoModulesCore: 'static_library',
+      SDWebImage: 'dynamic_framework',
+    });
   });
 });
 
