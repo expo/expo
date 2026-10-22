@@ -50,7 +50,7 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 350
     # Job-level only: a verify failure must never fail the repo's checks, but
     # the STEP must fail honestly — a step-level continue-on-error here hid an

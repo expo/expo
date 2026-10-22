@@ -20,7 +20,7 @@ concurrency:
 jobs:
   ios-build:
     if: github.repository == 'expo/expo'
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -88,7 +88,7 @@ jobs:
   ios-test:
     if: github.repository == 'expo/expo'
     needs: ios-build
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -155,13 +155,13 @@ jobs:
 
   android-build:
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -221,13 +221,13 @@ jobs:
   android-test:
     if: github.repository == 'expo/expo'
     needs: android-build
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
