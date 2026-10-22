@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import CoreMotion
+import UIKit
 
 internal func getAttitudeReferenceFrame() -> CMAttitudeReferenceFrame {
   let referenceFrames = CMMotionManager.availableAttitudeReferenceFrames()
