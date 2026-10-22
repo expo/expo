@@ -111,6 +111,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarSidebarPreferredPlacement: preferredPlacement,
         bottomAccessory: bottomAccessoryFn,
         tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
+        prominentScreenKey: getProminentScreenKey(tabs),
         ...rawIosProps,
       }}
       tabBarHidden={props.hidden}
@@ -121,6 +122,18 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       {children}
     </TabsHostWrapper>
   );
+}
+
+// `tabs` holds only visible tabs, so a hidden tab can never be prominent.
+function getProminentScreenKey(tabs: NativeTabsViewProps['tabs']): string | undefined {
+  const [prominentTab, ...otherProminentTabs] = tabs.filter((tab) => tab.options.prominent);
+  if (process.env.NODE_ENV !== 'production' && prominentTab && otherProminentTabs.length > 0) {
+    console.warn(
+      `NativeTabs supports only one prominent tab, so only the "${prominentTab.name}" tab is prominent. ` +
+        `Remove \`prominent\` from these tabs: ${otherProminentTabs.map((tab) => `"${tab.name}"`).join(', ')}.`
+    );
+  }
+  return prominentTab?.name;
 }
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {

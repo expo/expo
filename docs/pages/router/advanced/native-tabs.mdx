@@ -1355,6 +1355,34 @@ export default function TabLayout() {
 }
 ```
 
+### Prominent tab
+
+> **info** This feature is available in SDK 59 and later. To use it, compile your app with Xcode 27 or higher. The prominent tab has an effect on iOS 27 and later.
+
+A prominent tab shows on its own surface in the tab bar. It stays visible when the tab bar minimizes, for example with [`minimizeBehavior`](/versions/latest/sdk/router/native-tabs/#minimizebehavior) set to `"onScrollDown"`. To make a tab prominent, set the `prominent` prop on its `NativeTabs.Trigger` in the layout file.
+
+Only one tab can be prominent. When more than one trigger sets `prominent`, the first visible one is prominent and Expo Router shows a warning in development. A hidden tab cannot be prominent. Expo Router ignores `prominent` on a trigger inside a tab screen.
+
+When no trigger sets `prominent`, iOS makes the search tab prominent while its search activation is on.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="compose" prominent>
+        <NativeTabs.Trigger.Label>Compose</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="square.and.pencil" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
 ### Keyboard avoidance on Android
 
 > **info** This feature is available in SDK 56 and later.
