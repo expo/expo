@@ -70,3 +70,30 @@ test('List.ForEach shows every row in order while scrolling to the end', async (
   }
   await expect(page.getByText('#1: Avocado toast', { exact: true })).toBeVisible();
 });
+
+test('List.ForEach keeps rows in place when rows above it are measured', async ({ page }) => {
+  await gotoList(page);
+  const scroller = await page
+    .getByText('#1: Avocado toast', { exact: true })
+    .evaluateHandle((node) => {
+      let element: HTMLElement | null = node as HTMLElement;
+      while (element && getComputedStyle(element).overflowY !== 'auto') {
+        element = element.parentElement;
+      }
+      return element!;
+    });
+  // Jump past rows that were never measured.
+  await scroller.evaluate((element) => element.scrollTo(0, 30_000));
+  await nextFrames(page);
+
+  const id = (await visibleRowIds(page))[2]!;
+  const row = page.getByText(new RegExp(`^#${id}: `));
+  let top = (await row.boundingBox())!.y;
+  for (let step = 0; step < 6; step++) {
+    await scroller.evaluate((element) => element.scrollBy(0, -100));
+    await nextFrames(page);
+    const nextTop = (await row.boundingBox())!.y;
+    expect(nextTop - top).toBeCloseTo(100, 0);
+    top = nextTop;
+  }
+});

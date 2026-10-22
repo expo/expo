@@ -31,6 +31,19 @@ function asHTMLElement(value: unknown): HTMLElement | null {
   return typeof HTMLElement !== 'undefined' && value instanceof HTMLElement ? value : null;
 }
 
+function getScrollParent(node: HTMLElement): Element | null {
+  for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+    const { overflowY } = getComputedStyle(parent);
+    if (
+      (overflowY === 'auto' || overflowY === 'scroll') &&
+      parent.scrollHeight > parent.clientHeight
+    ) {
+      return parent;
+    }
+  }
+  return document.scrollingElement;
+}
+
 // Index of the item at `offset`, clamped to the data.
 function getIndexAt(offsets: Float64Array, offset: number): number {
   let low = 0;
@@ -112,12 +125,14 @@ function RecycledListForEach<T>({
     // `heightsVersion` tracks changes to `heights`.
   }, [itemKeys, estimatedItemSize, heights, heightsVersion]);
 
-  const latest = useRef({ offsets, revision, onWindowChange });
-  latest.current = { offsets, revision, onWindowChange };
+  const latest = useRef({ itemKeys, offsets, revision, onWindowChange });
+  latest.current = { itemKeys, offsets, revision, onWindowChange };
+  // The first visible item and its offset, from the last window update.
+  const anchor = useRef<{ itemKeys: string[]; index: number; offset: number } | null>(null);
 
   const updateWindow = useCallback(() => {
     const container = asHTMLElement(containerRef.current);
-    const { offsets, revision, onWindowChange } = latest.current;
+    const { itemKeys, offsets, revision, onWindowChange } = latest.current;
     if (!container || offsets.length < 2) return;
     const containerTop = container.getBoundingClientRect().top;
     let top = 0;
@@ -130,21 +145,44 @@ function RecycledListForEach<T>({
     }
     const first = getIndexAt(offsets, top - containerTop);
     const last = getIndexAt(offsets, bottom - containerTop);
+    anchor.current = { itemKeys, index: first, offset: offsets[first]! };
     onWindowChange({ first, last: Math.max(first, last), revision });
   }, [listRef]);
 
-  useLayoutEffect(updateWindow, [updateWindow, offsets, revision]);
+  useLayoutEffect(() => {
+    // Rows measured above the first visible row move it, so scroll by the same amount.
+    const container = asHTMLElement(containerRef.current);
+    const previous = anchor.current;
+    if (container && previous?.itemKeys === itemKeys) {
+      const delta = offsets[previous.index]! - previous.offset;
+      const scrollParent = delta === 0 ? null : getScrollParent(container);
+      if (scrollParent) scrollParent.scrollTop += delta;
+    }
+    updateWindow();
+  }, [updateWindow, itemKeys, offsets, revision]);
 
   useEffect(() => {
-    if (!asHTMLElement(containerRef.current)) return;
+    const container = asHTMLElement(containerRef.current);
+    if (!container) return;
+    const onScroll = (event: Event) => {
+      if (event.target instanceof Node && !event.target.contains(container)) return;
+      updateWindow();
+    };
     const options = { capture: true, passive: true };
-    window.addEventListener('scroll', updateWindow, options);
+    window.addEventListener('scroll', onScroll, options);
     window.addEventListener('resize', updateWindow);
     return () => {
-      window.removeEventListener('scroll', updateWindow, options);
+      window.removeEventListener('scroll', onScroll, options);
       window.removeEventListener('resize', updateWindow);
     };
   }, [updateWindow]);
+
+  useEffect(() => {
+    const live = new Set(itemKeys);
+    for (const itemKey of heights.keys()) {
+      if (!live.has(itemKey)) heights.delete(itemKey);
+    }
+  }, [heights, itemKeys]);
 
   // Row heights depend on the width.
   useEffect(() => {

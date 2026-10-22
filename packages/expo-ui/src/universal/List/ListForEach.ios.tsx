@@ -4,22 +4,6 @@ import type { ListForEachProps } from './types';
 /**
  * iOS implementation of `List.ForEach`. Delegates to SwiftUI `List.ForEach`.
  */
-export function ListForEach<T>({
-  data,
-  keyExtractor,
-  children,
-  recycling,
-  overscanCount,
-  estimatedItemSize,
-}: ListForEachProps<T>) {
-  return (
-    <SwiftUIListForEach
-      data={data}
-      keyExtractor={keyExtractor}
-      recycling={recycling}
-      overscanCount={overscanCount}
-      estimatedItemSize={estimatedItemSize}>
-      {children}
-    </SwiftUIListForEach>
-  );
+export function ListForEach<T>(props: ListForEachProps<T>) {
+  return <SwiftUIListForEach {...props} />;
 }
