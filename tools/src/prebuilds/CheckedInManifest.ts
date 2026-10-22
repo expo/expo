@@ -168,6 +168,68 @@ function manifestError(product: string, target: string, what: string, how: strin
   );
 }
 
+/**
+ * A manifest built directly in an app reaches Expo and React Native headers through local
+ * packages that autolinking writes next to its `direct/` symlink, so their `.package(path:)`
+ * locations do not resolve from the package directory. et prebuild already provides the same
+ * modules as spm.config.json dependencies, so each stand-in product becomes a by-name dependency
+ * on that config name, which the reachability check then requires the config to declare.
+ * Keyed by package identity, then product name.
+ */
+const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
+  expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
+  xcframeworks: { ReactHeaders: 'React' },
+};
+
+function directBuildStandIns(
+  packageName: string,
+  localStandInPackages: ReadonlySet<string>
+): Record<string, string> | undefined {
+  const identity = packageName.toLowerCase();
+  return localStandInPackages.has(identity) ? DIRECT_BUILD_STAND_INS[identity] : undefined;
+}
+
+function substituteDirectBuildStandIns(dumped: DumpedManifest): {
+  manifest: DumpedManifest;
+  localStandInPackages: ReadonlySet<string>;
+} {
+  const standInIdentity = (dependency: unknown) => {
+    const entry = isRecord(dependency) ? sole(dependency.fileSystem) : undefined;
+    const identity = isRecord(entry) ? entry.identity : undefined;
+    return typeof identity === 'string' && Object.hasOwn(DIRECT_BUILD_STAND_INS, identity)
+      ? identity
+      : null;
+  };
+  const localStandInPackages = new Set(
+    records(dumped.dependencies).flatMap((dependency) => standInIdentity(dependency) ?? [])
+  );
+  // A by-name dependency cannot carry moduleAliases, so such a product stays as it is for the
+  // moduleAliases check to reject, as does a product with no stand-in.
+  const substitute = (dependency: DumpedDependency): DumpedDependency => {
+    if (!dependency.product) return dependency;
+    const [productName, packageName, moduleAliases, condition] = dependency.product;
+    const standIns = directBuildStandIns(packageName, localStandInPackages);
+    return standIns && Object.hasOwn(standIns, productName) && moduleAliases == null
+      ? { byName: [standIns[productName], condition] }
+      : dependency;
+  };
+  // Shapes other than lists pass through untouched, so the later checks still report them.
+  const manifest = {
+    ...dumped,
+    dependencies: Array.isArray(dumped.dependencies)
+      ? dumped.dependencies.filter((dependency) => !standInIdentity(dependency))
+      : dumped.dependencies,
+    targets: Array.isArray(dumped.targets)
+      ? dumped.targets.map((target) =>
+          Array.isArray(target.dependencies)
+            ? { ...target, dependencies: target.dependencies.map(substitute) }
+            : target
+        )
+      : dumped.targets,
+  };
+  return { manifest, localStandInPackages };
+}
+
 function dependencyName(dependency: DumpedDependency): string | null {
   return dependency.byName?.[0] ?? dependency.target?.[0] ?? dependency.product?.[0] ?? null;
 }
@@ -928,9 +990,9 @@ export async function resolveCheckedInManifestAsync(
     manifestError(product.name, firstTargetName, what, how)
   );
 
-  let manifest: DumpedManifest;
+  let dumped: DumpedManifest;
   try {
-    manifest = await dumpManifest(root);
+    dumped = await dumpManifest(root);
   } catch (error) {
     throw manifestError(
       product.name,
@@ -939,6 +1001,7 @@ export async function resolveCheckedInManifestAsync(
       'Fix the manifest so `swift package dump-package` succeeds.'
     );
   }
+  const { manifest, localStandInPackages } = substituteDirectBuildStandIns(dumped);
   if (manifest.name !== expectedPackageName) {
     throw manifestError(
       product.name,
@@ -1048,6 +1111,18 @@ export async function resolveCheckedInManifestAsync(
       if (!dependency.product) continue;
       const [productName, packageName] = dependency.product;
       const dependencyLabel = `.product(name: "${productName}", package: "${packageName}")`;
+      const standIns = directBuildStandIns(packageName, localStandInPackages);
+      if (standIns) {
+        const supported = Object.keys(standIns)
+          .map((name) => `.product(name: "${name}", package: "${packageName}")`)
+          .join(' or ');
+        throw manifestError(
+          product.name,
+          target.name,
+          `it depends on ${dependencyLabel}, but et prebuild can stand in only for ${supported} from that package when it builds a direct manifest, because the local path package does not resolve from the package directory.`,
+          `Use ${supported} instead, or depend on "${productName}" by name and list it in externalDependencies in spm.config.json.`
+        );
+      }
       // The generated manifest names the package the way SPMPackage.ts does, and SwiftPM matches
       // it against the package identity regardless of letter case.
       const configuredPackageNames = (product.spmPackages ?? [])
