@@ -18,23 +18,15 @@ permissions:
 
 jobs:
   precompile:
-    name: Changesets native precompile (Android, ${{ matrix.variant }})
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - variant: concurrency-16
-            concurrency: 16
-          - variant: concurrency-4
-            concurrency: 4
+    name: Changesets native precompile (Android)
     if: >-
       github.repository == 'expo/expo' &&
       (github.event_name == 'workflow_dispatch' ||
-       (github.head_ref == '@brent/precompile-android-blacksmith' || startsWith(github.head_ref, 'changeset-release/') &&
+       (startsWith(github.head_ref, 'changeset-release/') &&
         github.event.pull_request.head.repo.full_name == github.repository))
     # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
     runs-on: blacksmith-32vcpu-ubuntu-2404
-    timeout-minutes: 90
+    timeout-minutes: 60
     env:
       RCT_HERMES_V1_ENABLED: '1'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -66,30 +58,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
-      - name: 🧪 Start machine sampling
-        run: |
-          nproc; free -g; df -h /tmp | tail -1
-          nohup vmstat -n -t 10 > "$RUNNER_TEMP/vmstat.log" 2>&1 &
       - name: 🏗️ Precompile embedded Maven repositories
-        timeout-minutes: 80
-        env:
-          EXPO_PRECOMPILE_ANDROID_PROFILE_DIR: ${{ github.workspace }}/.turbo/gradle-profiles
+        # Each package builds in its own Gradle host with a 3 GB heap and 2 workers
+        # (tools/android-precompile/gradle.properties), so 16 tasks fill 32 vCPUs in ~80 GB.
         run: |
           echo "Precompiling commit ${{ github.sha }}"
-          expo-turbo run precompile-android --concurrency=${{ matrix.concurrency }} --force --summarize \
-            --log-order=stream --env-mode=loose
-      - name: 📊 Summarize machine usage
-        if: always()
-        run: |
-          awk 'NR>2 && $13 ~ /^[0-9]+$/ { n++; us+=$13; sy+=$14; id+=$15; wa+=$16; r+=$1; if ($4/1048576 < minfree || n==1) minfree=$4/1048576; so+=$8 }
-            END { if (n) printf "samples=%d avg: user=%.0f%% sys=%.0f%% idle=%.0f%% iowait=%.0f%% runnable=%.1f min-free=%.1fGB swap-out=%d\n", n, us/n, sy/n, id/n, wa/n, r/n, minfree, so }' "$RUNNER_TEMP/vmstat.log"
-          cp "$RUNNER_TEMP/vmstat.log" .turbo/ 2>/dev/null || true
-      - name: 💾 Upload timings
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: precompile-timings-${{ matrix.variant }}
-          path: |
-            .turbo/runs/*.json
-            .turbo/vmstat.log
-            .turbo/gradle-profiles/**
+          expo-turbo run precompile-android --concurrency=16
