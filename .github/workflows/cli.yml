@@ -27,6 +27,8 @@ on:
     paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
+  # Runs every job, including the Windows ones that otherwise only run on main and the schedule.
+  workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -176,7 +178,8 @@ jobs:
   jest-windows:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+      (github.event_name == 'schedule' && github.repository == 'expo/expo') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: blacksmith-4vcpu-windows-2025
     strategy:
       fail-fast: false
@@ -311,7 +314,8 @@ jobs:
   playwright-windows:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+      (github.event_name == 'schedule' && github.repository == 'expo/expo') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: blacksmith-4vcpu-windows-2025
     strategy:
       fail-fast: false
