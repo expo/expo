@@ -5,7 +5,8 @@ import { AppRegistry } from 'react-native';
 import ExpoTaskManager from './ExpoTaskManager';
 
 // On Android, TaskService starts this headless task in native code to keep JS timers
-// alive during background task execution, and finishes it natively once the task is done.
+// alive during background task execution, and finishes it natively once the task is done
+// (or after a timeout).
 // The JS side must never settle: a resolved promise makes AppRegistry call
 // notifyTaskFinished, which ends the task right away and pauses timers again.
 if (Platform.OS === 'android') {
