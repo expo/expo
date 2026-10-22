@@ -504,6 +504,10 @@ if (state.type === 'tab') {
 }
 ```
 
+#### Expect unvisited tabs in `history`
+
+Tab and drawer `history` lists the tab that Back goes to, also after a deep link. A tab that the user has not visited yet has no route in `state.routes`. Its `history` entry uses the route name as the key. Do not expect every `history` key to match a route in `state.routes`.
+
 #### Read stack preloaded routes from `routes`
 
 `StackNavigationState.preloadedRoutes` is removed. Preloaded routes are appended to `state.routes` after the focused index:
@@ -689,6 +693,8 @@ The `createStackNavigator` export is removed from `expo-router/js-stack`. This d
 Import the base and native stack helpers from `expo-router`. Import the navigator-specific helpers from the corresponding `expo-router/js-stack`, `expo-router/js-tabs`, `expo-router/js-top-tabs`, or `expo-router/native-tabs` entry point.
 
 The `key` on `descriptor.route` can be `undefined` for a declared route that does not yet have a live state route. Update custom navigator code to handle that case.
+
+A custom navigator that uses `TabRouter` can call `unstable_useReconcileTabHistory` in its content component. The hook saves the back history in the navigation state after a deep link. See [Tab back history](/router/advanced/custom-navigators/#tab-back-history).
 
 See [Custom navigators](/router/advanced/custom-navigators/) for standard navigator concepts.
 

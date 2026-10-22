@@ -75,6 +75,11 @@ export function useRootNavigation() {
 export function useRootNavigationState() {
   throw new Error('useRootNavigationState is not implemented in React Server Components yet');
 }
+export function unstable_useReconcileTabHistory() {
+  throw new Error(
+    'unstable_useReconcileTabHistory is not implemented in React Server Components yet'
+  );
+}
 export function useUnstableGlobalHref() {
   throw new Error('useUnstableGlobalHref is not implemented in React Server Components yet');
 }
