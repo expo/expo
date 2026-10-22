@@ -283,10 +283,9 @@ puts JSON.generate('recorded' => Expo::PrecompiledModules.spm_dependency_pods.to
 
   it('records the root names of pods that call spm_dependency and forwards each call once', () => {
     const pods = ['stripe-react-native', 'Foo/Bar', 'Foo/Baz'];
-    const { recorded, calls } = runRuby<{ recorded: string[]; calls: unknown[] }>(
-      recordingScript,
-      { pods }
-    );
+    const { recorded, calls } = runRuby<{ recorded: string[]; calls: unknown[] }>(recordingScript, {
+      pods,
+    });
     expect(recorded).toEqual(['stripe-react-native', 'Foo']);
     expect(calls).toEqual(
       pods.map((pod) => ({
