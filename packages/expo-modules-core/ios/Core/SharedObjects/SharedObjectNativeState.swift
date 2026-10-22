@@ -20,7 +20,7 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
   /// The JS object paired with the native object in the first runtime it was paired in, held weakly.
   /// Most native objects are only exposed to one runtime, so that pairing skips the dictionary below.
   private var firstRuntimeId: JavaScriptRuntime.ID?
-  private var firstPairedObject: JavaScriptWeakObject.Ref?
+  private var firstPairedObject: JavaScriptWeakObject?
 
   /// The JS object paired with the native object in each other runtime, keyed by runtime identity and
   /// held weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes,
@@ -43,10 +43,12 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
     let runtimeId = runtime.id
 
     // Take the first slot when it's free, already belongs to this runtime, or its JS object is gone.
-    if firstRuntimeId == nil || firstRuntimeId == runtimeId || !Self.isAlive(firstPairedObject) {
+    if firstRuntimeId == nil || firstRuntimeId == runtimeId || !isFirstPairedObjectAlive() {
       firstRuntimeId = runtimeId
-      firstPairedObject = jsObject.createWeak().ref()
-      pairedObjects[runtimeId] = nil
+      firstPairedObject = jsObject.createWeak()
+      if !pairedObjects.isEmpty {
+        pairedObjects[runtimeId] = nil
+      }
       return
     }
     // Drop entries whose runtime or JS object has gone away before inserting, so the map doesn't
@@ -62,8 +64,13 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
 
     // Unwrap the ref first so the optional doesn't nest with `withValue`'s, which would form a
     // `JavaScriptObject??` that the non-`Copyable` element can't be wrapped in.
-    if runtimeId == firstRuntimeId, let ref = firstPairedObject {
-      return ref.withValue { $0?.lock() }
+    if runtimeId == firstRuntimeId {
+      switch firstPairedObject {
+      case .some(let weakObject):
+        return weakObject.lock()
+      case .none:
+        return nil
+      }
     }
     guard !pairedObjects.isEmpty, let ref = pairedObjects[runtimeId] else {
       return nil
@@ -77,6 +84,15 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
     }
     pairedObjects = pairedObjects.filter { _, ref in
       return Self.isAlive(ref)
+    }
+  }
+
+  private func isFirstPairedObjectAlive() -> Bool {
+    switch firstPairedObject {
+    case .some(let weakObject):
+      return weakObject.lock() != nil
+    case .none:
+      return false
     }
   }
 

@@ -105,7 +105,10 @@ public final class SharedObjectRegistry: Sendable {
     // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
     // Otherwise the C++ native state can be in destruction on another thread, and its release must not
     // apply to `jsObject`, so the native object gets a new native state and ID.
-    let pairedObject = pairedObjectHoldingNativeState(of: nativeObject)
+    // Loaded once: each read of the weak reference to the app context costs an atomic operation.
+    let appContext = self.appContext
+    let runtime = try? appContext?.runtime
+    let pairedObject = pairedObjectHoldingNativeState(of: nativeObject, in: runtime)
     let existingNativeState = pairedObject != nil ? nativeObject.nativeState : nil
     let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
 
@@ -166,7 +169,7 @@ public final class SharedObjectRegistry: Sendable {
     // The registry is scoped to its app context, so the JS object being paired here lives in that
     // context's runtime. Record the pairing under that runtime so the native object can recover this
     // JS counterpart via `native.nativeState?.javaScriptObject(in:)`.
-    if let runtime = try? appContext?.runtime {
+    if let runtime {
       nativeState.setJavaScriptObject(jsObject, in: runtime)
     }
 
@@ -259,8 +262,8 @@ public final class SharedObjectRegistry: Sendable {
 
   /// Returns the JS object paired with the native object in this registry's runtime, if it is alive and
   /// still holds the native object's native state.
-  private func pairedObjectHoldingNativeState(of nativeObject: SharedObject) -> JavaScriptObject? {
-    guard let runtime = try? appContext?.runtime,
+  private func pairedObjectHoldingNativeState(of nativeObject: SharedObject, in runtime: JavaScriptRuntime?) -> JavaScriptObject? {
+    guard let runtime,
       let nativeState = unreleasedNativeState(of: nativeObject),
       let pairedObject = nativeState.javaScriptObject(in: runtime),
       pairedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState
