@@ -1,0 +1,33 @@
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+# A SwiftUI control inside a Pressable takes the tap. The Pressable fires only for content that
+# doesn't handle touches, and React Native content in the Host keeps its own press.
+# when devving, start from a different screen so state is reset
+#- openLink: bareexpo://components
+- openLink: bareexpo://components/ui/host-in-pressable
+- extendedWaitUntil:
+    visible: 'button = 0'
+    timeout: 30000
+
+- tapOn:
+    id: 'button'
+- assertVisible: 'button = 1'
+- assertVisible: 'buttonPressable = 0'
+
+- tapOn:
+    id: 'switch'
+- assertVisible: 'switch = true'
+- assertVisible: 'switchPressable = 0'
+
+- tapOn: 'TextInput'
+- assertVisible: 'textInputFocus = 1'
+- assertVisible: 'textInputPressable = 0'
+- hideKeyboard
+
+- tapOn: 'Plain text'
+- assertVisible: 'textPressable = 1'
+
+- tapOn: 'Hosted Pressable'
+- assertVisible: 'hostedPressable = 1'
+- assertVisible: 'outerPressable = 0'
