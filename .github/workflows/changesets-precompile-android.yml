@@ -22,7 +22,7 @@ jobs:
     if: >-
       github.repository == 'expo/expo' &&
       (github.event_name == 'workflow_dispatch' ||
-       (github.head_ref == '@brent/precompile-android-blacksmith' || startsWith(github.head_ref, 'changeset-release/') &&
+       (startsWith(github.head_ref, 'changeset-release/') &&
         github.event.pull_request.head.repo.full_name == github.repository))
     # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
     runs-on: blacksmith-32vcpu-ubuntu-2404
