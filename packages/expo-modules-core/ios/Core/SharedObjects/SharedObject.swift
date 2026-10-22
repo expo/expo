@@ -39,7 +39,26 @@ open class SharedObject: AnySharedObject {
   /// The value of `nativeRefType` on the JavaScript object, or `nil` when the object does not conform to
   /// `AnySharedRef`.
   internal var sharedRefType: String? {
+    guard Self.conformsToAnySharedRef(Swift.type(of: self)) else {
+      return nil
+    }
     return (self as? AnySharedRef)?.nativeRefType
+  }
+
+  /// Whether each `SharedObject` class conforms to `AnySharedRef`. A failing `as? AnySharedRef` walks the
+  /// whole class hierarchy on every call, so the result is looked up once per class.
+  private static let anySharedRefConformances = Mutex([ObjectIdentifier: Bool]())
+
+  private static func conformsToAnySharedRef(_ type: SharedObject.Type) -> Bool {
+    let key = ObjectIdentifier(type)
+    return anySharedRefConformances.withLock { conformances in
+      if let conforms = conformances[key] {
+        return conforms
+      }
+      let conforms = type is AnySharedRef.Type
+      conformances[key] = conforms
+      return conforms
+    }
   }
 
   /**
