@@ -45,6 +45,28 @@ describe('spmUpdateCommand', () => {
     }
   });
 
+  it('keeps the name of a react-native that is itself a symlink, as pnpm installs it', () => {
+    const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-commands-')));
+    try {
+      const store = path.join(root, 'node_modules', '.pnpm', 'react-native@0.88.0', 'node_modules');
+      fs.mkdirSync(path.join(store, 'react-native'), { recursive: true });
+      fs.symlinkSync(
+        path.join(store, 'react-native'),
+        path.join(root, 'node_modules', 'react-native')
+      );
+
+      configureSpmUpdateCommand({
+        appRoot: root,
+        reactNativeRoot: path.join(root, 'node_modules', 'react-native'),
+      });
+      expect(spmUpdateCommand()).toBe(
+        'node node_modules/react-native/scripts/setup-apple-spm.js update'
+      );
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('returns to the default when configured with nothing', () => {
     configureSpmUpdateCommand({
       appRoot: '/repo/apps/mobile',

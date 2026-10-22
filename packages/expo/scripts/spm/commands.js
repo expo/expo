@@ -27,7 +27,12 @@ function configureSpmUpdateCommand({ appRoot, reactNativeRoot } = {}) {
   reactNativeDir =
     appRoot == null || reactNativeRoot == null
       ? DEFAULT_REACT_NATIVE_DIR
-      : path.relative(realPath(appRoot), realPath(reactNativeRoot)).split(path.sep).join('/');
+      : path.relative(realPath(appRoot), realParentPath(reactNativeRoot)).split(path.sep).join('/');
+}
+
+// Resolving react-native itself would name pnpm's versioned store path instead of the link.
+function realParentPath(dir) {
+  return path.join(realPath(path.dirname(dir)), path.basename(dir));
 }
 
 // The shell resolves `..` against the real directory, and require.resolve returns real paths, so a
