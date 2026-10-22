@@ -165,6 +165,8 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
         '--project-cache-dir',
         path.join(workRoot, 'project-cache'),
         ...properties,
+        // [tmp] Gradle profile reports for the precompile timing experiment.
+        ...(process.env.EXPO_PRECOMPILE_ANDROID_PROFILE_DIR ? ['--profile'] : []),
       ],
       { cwd: EXPO_DIR, stdio: 'inherit' }
     );
@@ -190,6 +192,16 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
       fs.writeJson(path.join(outputRoot, 'publication.json'), manifest, { spaces: 2 }),
     ]);
   } finally {
+    // [tmp] Keep the Gradle profile reports for the precompile timing experiment.
+    const profileDir = process.env.EXPO_PRECOMPILE_ANDROID_PROFILE_DIR;
+    if (profileDir) {
+      await fs
+        .copy(
+          path.join(hostRoot, 'build/reports/profile'),
+          path.join(profileDir, moduleDirectoryName(pkg.packageName))
+        )
+        .catch(() => {});
+    }
     await fs.remove(workRoot);
   }
 }

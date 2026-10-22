@@ -22,7 +22,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [baseline, kotlin-in-process, kotlin-daemon-8g]
+        include:
+          - variant: concurrency-16
+            concurrency: 16
+          - variant: concurrency-4
+            concurrency: 4
     if: >-
       github.repository == 'expo/expo' &&
       (github.event_name == 'workflow_dispatch' ||
@@ -30,7 +34,7 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository))
     # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
     runs-on: blacksmith-32vcpu-ubuntu-2404
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       RCT_HERMES_V1_ENABLED: '1'
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -62,29 +66,18 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
-      - name: 🧪 Apply experiment variant
-        env:
-          VARIANT: ${{ matrix.variant }}
+      - name: 🧪 Start machine sampling
         run: |
-          props=tools/android-precompile/gradle.properties
-          case "$VARIANT" in
-            kotlin-in-process)
-              sed -i 's/-Xmx3g/-Xmx4g/' "$props"
-              printf '\nkotlin.compiler.execution.strategy=in-process\n' >> "$props"
-              ;;
-            kotlin-daemon-8g)
-              sed -i 's/kotlin.daemon.jvmargs=-Xmx1g/kotlin.daemon.jvmargs=-Xmx8g/' "$props"
-              ;;
-          esac
-          cat "$props"
-          nproc; free -g; df -h "$RUNNER_TEMP" /tmp | tail -2
+          nproc; free -g; df -h /tmp | tail -1
           nohup vmstat -n -t 10 > "$RUNNER_TEMP/vmstat.log" 2>&1 &
       - name: 🏗️ Precompile embedded Maven repositories
-        # Each package builds in its own Gradle host with a 3 GB heap and 2 workers
-        # (tools/android-precompile/gradle.properties), so 16 tasks fill 32 vCPUs in ~80 GB.
+        timeout-minutes: 80
+        env:
+          EXPO_PRECOMPILE_ANDROID_PROFILE_DIR: ${{ github.workspace }}/.turbo/gradle-profiles
         run: |
           echo "Precompiling commit ${{ github.sha }}"
-          expo-turbo run precompile-android --concurrency=16 --force --summarize
+          expo-turbo run precompile-android --concurrency=${{ matrix.concurrency }} --force --summarize \
+            --log-order=stream --env-mode=loose
       - name: 📊 Summarize machine usage
         if: always()
         run: |
@@ -99,3 +92,4 @@ jobs:
           path: |
             .turbo/runs/*.json
             .turbo/vmstat.log
+            .turbo/gradle-profiles/**
