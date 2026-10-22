@@ -16,6 +16,7 @@ export default function Layout() {
   const [disableHiddenAnimation, setDisableHiddenAnimation] = useState(false);
   const [sidebarPreferredPlacement, setSidebarPreferredPlacement] =
     useState<NativeTabsProps['sidebarPreferredPlacement']>();
+  const [prominent, setProminent] = useState(false);
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -27,6 +28,8 @@ export default function Layout() {
           setDisableHiddenAnimation,
           sidebarPreferredPlacement,
           setSidebarPreferredPlacement,
+          prominent,
+          setProminent,
         }}>
         <NativeTabs
           hidden={hidden}
@@ -67,7 +70,7 @@ export default function Layout() {
             <NativeTabs.Trigger.Label hidden />
             <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled">
+          <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled" prominent={prominent}>
             <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
             <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
             <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
