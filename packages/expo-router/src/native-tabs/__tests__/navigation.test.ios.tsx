@@ -269,6 +269,31 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/second');
   });
 
+  it('goes back to the first tab by default when the layout sets an anchor', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'second' },
+          default: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" />
+              <NativeTabs.Trigger name="second" />
+              <NativeTabs.Trigger name="third" />
+            </NativeTabs>
+          ),
+        },
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+        third: () => <View testID="third" />,
+      },
+      { initialUrl: '/third' }
+    );
+
+    await act(() => router.back());
+
+    expect(screen).toHavePathname('/');
+  });
+
   it('respects initialRouteName when redirecting from a route without a visible tab', async () => {
     await renderRouter(
       {
