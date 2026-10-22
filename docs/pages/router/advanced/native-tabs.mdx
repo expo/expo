@@ -395,10 +395,12 @@ export default function TabLayout() {
 
 > **important** Icon rendering mode is available in SDK 55 and later.
 
-When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
+When using the `src` prop for custom images, you can control how the icon is rendered with the `renderingMode` prop:
 
-- **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
-- **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
+- **`template`**: The icon is drawn in the tab's icon color. This is ideal for single-color icons that should match your app's color scheme.
+- **`original`**: The icon keeps its own colors. This is useful for icons with gradients or multiple colors.
+
+An image with an opaque background renders as a solid shape with `template`, so use an image with a transparent background.
 
 <Tabs>
 
@@ -417,7 +419,7 @@ export default function TabLayout() {
           renderingMode="original"
         />
       </NativeTabs.Trigger>
-      {/* Icon rendered as a template (default behavior) */}
+      {/* Icon rendered as a template */}
       <NativeTabs.Trigger name="simple">
         <NativeTabs.Trigger.Icon
           src={require('../../../assets/simple_icon.png')}
@@ -446,7 +448,7 @@ export default function TabLayout() {
           renderingMode="original"
         />
       </NativeTabs.Trigger>
-      {/* Icon rendered as a template (default behavior) */}
+      {/* Icon rendered as a template */}
       <NativeTabs.Trigger name="simple">
         <NativeTabs.Trigger.Icon
           src={require('../../../assets/simple_icon.png')}
@@ -472,7 +474,7 @@ export default function TabLayout() {
       <NativeTabs.Trigger name="colorful">
         <Icon src={require('../../../assets/colorful_icon.png')} renderingMode="original" />
       </NativeTabs.Trigger>
-      {/* Icon rendered as a template (default behavior) */}
+      {/* Icon rendered as a template */}
       <NativeTabs.Trigger name="simple">
         <Icon src={require('../../../assets/simple_icon.png')} renderingMode="template" />
       </NativeTabs.Trigger>
@@ -485,7 +487,50 @@ export default function TabLayout() {
 
 </Tabs>
 
-> **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
+> **info** In SDK 58 and earlier, the `renderingMode` prop only affects iOS, and Android tints all image icons.
+
+##### Rendering modes on Android and for SF Symbols
+
+> **info** This feature is available in SDK 59 and later.
+
+The `renderingMode` prop works on iOS and Android:
+
+| Value      | iOS image             | iOS SF Symbol  | Android              |
+| ---------- | --------------------- | -------------- | -------------------- |
+| `template` | Drawn in icon color   | Monochrome     | Tinted               |
+| `original` | Keeps its own colors  | Multicolor     | Keeps its own colors |
+| Not set    | Depends on icon color | System default | Tinted               |
+
+On iOS, "Depends on icon color" means `template` in a tab state that has an icon color (from `iconColor`, `tintColor`, or `selectedColor`), and `original` in a state without one.
+
+To use a different mode for the selected state, pass an object with `default` and `selected` keys:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="weather">
+        {/* Single-color symbol by default, multicolor symbol when selected */}
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'cloud.sun', selected: 'cloud.sun.fill' }}
+          renderingMode={{ default: 'template', selected: 'original' }}
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        {/* The same image, tinted by default and in its own colors when selected */}
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/avatar.png')}
+          renderingMode={{ default: 'template', selected: 'original' }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+`md` icons are white glyphs, so they render white with `original`.
 
 #### Asset catalog icons (iOS)
 
@@ -1899,38 +1944,6 @@ export default function TabLayout() {
 </Collapsible>
 
 ## Known limitations
-
-<Collapsible summary="The default and selected icons share one rendering mode on iOS">
-
-On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
-
-The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state. A color implies `'template'` rendering, while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
-
-To render both icons the same way, set a color for both states, or set `renderingMode` on the `Icon`:
-
-```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/native-tabs';
-
-export default function TabLayout() {
-  return (
-    // `iconColor` applies to both states, so both icons render as templates
-    <NativeTabs iconColor={{ default: 'gray', selected: 'black' }}>
-      <NativeTabs.Trigger name="settings">
-        <NativeTabs.Trigger.Icon
-          src={{
-            default: require('../assets/setting_icon.png'),
-            selected: require('../assets/selected_setting_icon.png'),
-          }}
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-```
-
-This limitation doesn't apply to SF Symbols, which the system always tints.
-
-</Collapsible>
 
 <Collapsible summary="A limit of 5 tabs on Android">
 

@@ -1,19 +1,67 @@
 import { isValidElement, type ReactElement } from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
+import type { TabsScreenIconAndroid, TabsScreenIconIOS } from 'react-native-screens';
 
-import type { SrcIcon } from '../common/elements';
-import type { IconRenderingMode, NativeTabOptions } from '../types';
+import type { NativeTabsTriggerIconProps } from '../common/elements';
+import type { IconRenderingMode, NativeTabOptions, SymbolOrImageSource } from '../types';
 import { convertComponentSrcToImageSource } from './icon';
 
 export type ScreensPropsIcon =
-  | { platform: 'ios'; icon: PlatformIconIOS }
-  | { platform: 'android'; icon: PlatformIconAndroid };
+  | { platform: 'ios'; icon: TabsScreenIconIOS }
+  | { platform: 'android'; icon: TabsScreenIconAndroid };
 
-export function applyIconSrcOptions(options: NativeTabOptions, props: SrcIcon) {
-  const icon = convertIconSrcToIconOption(props);
-  options.icon = icon?.icon;
-  options.selectedIcon = icon?.selectedIcon;
+type PerState<T> = T | { default?: T; selected: T };
+
+export function applyIconSrcOptions(
+  options: NativeTabOptions,
+  src: PerState<ImageSourcePropType | ReactElement>,
+  renderingMode: NativeTabsTriggerIconProps['renderingMode']
+) {
+  applyIconStates(options, src, convertSrcOrComponentToSrc, renderingMode);
+}
+
+/**
+ * Sets `icon` and `selectedIcon` from a prop that holds one value or `{ default, selected }`,
+ * and adds the rendering mode of each state.
+ */
+export function applyIconStates<T>(
+  options: NativeTabOptions,
+  value: PerState<T>,
+  toIcon: (value: T) => SymbolOrImageSource | undefined,
+  renderingMode: PerState<IconRenderingMode> | undefined
+) {
+  const icons = getStates(value);
+  const modes = getStates(renderingMode);
+  const defaultIcon = icons.default ? toIcon(icons.default) : undefined;
+  // A mode set only for the selected state needs a selected icon. Reuse the converted default
+  // icon, because a second conversion loads a vector icon twice.
+  const selectedIcon = icons.selected
+    ? toIcon(icons.selected)
+    : modes.selected
+      ? defaultIcon
+      : undefined;
+
+  options.icon = withRenderingMode(defaultIcon, modes.default);
+  options.selectedIcon = withRenderingMode(selectedIcon, modes.selected ?? modes.default);
+}
+
+function withRenderingMode(
+  icon: SymbolOrImageSource | undefined,
+  renderingMode: IconRenderingMode | undefined
+): SymbolOrImageSource | undefined {
+  if (icon && renderingMode) {
+    return { ...icon, renderingMode };
+  }
+  return icon;
+}
+
+function getStates<T>(value: PerState<T> | undefined): { default?: T; selected?: T } {
+  if (value && typeof value === 'object' && 'selected' in value) {
+    // Icon values and modes never have a `selected` key, so this is the `{ default, selected }` form.
+    return value as { default?: T; selected: T };
+  }
+  // Not the `{ default, selected }` form, so it is a single value.
+  return { default: value as T | undefined };
 }
 
 export function applySelectedColor(
@@ -25,38 +73,11 @@ export function applySelectedColor(
   }
 }
 
-function convertIconSrcToIconOption(
-  icon: SrcIcon | undefined
-): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
-  if (icon && icon.src) {
-    const { defaultIcon, selected } =
-      typeof icon.src === 'object' && 'selected' in icon.src
-        ? { defaultIcon: icon.src.default, selected: icon.src.selected }
-        : { defaultIcon: icon.src };
-
-    const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
-    options.selectedIcon = convertSrcOrComponentToSrc(selected, {
-      renderingMode: icon.renderingMode,
-    });
-    return options;
-  }
-
-  return undefined;
-}
-
 function convertSrcOrComponentToSrc(
-  src: ImageSourcePropType | ReactElement | undefined,
-  options: {
-    renderingMode: IconRenderingMode | undefined;
+  src: ImageSourcePropType | ReactElement
+): SymbolOrImageSource | undefined {
+  if (isValidElement(src)) {
+    return convertComponentSrcToImageSource(src);
   }
-) {
-  if (src) {
-    if (isValidElement(src)) {
-      return convertComponentSrcToImageSource(src, options.renderingMode);
-    } else {
-      return { src, renderingMode: options.renderingMode };
-    }
-  }
-  return undefined;
+  return { src };
 }
