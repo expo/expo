@@ -493,6 +493,7 @@ private class TouchDispatchingRootViewGroup(
       notifyAncestorRootViews { it.onChildStartedNativeGesture(null, ev) }
     }
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      nearestHostView()?.downReachedReactContent = true
       // Ancestor React roots (the surface root, outer hosts) also see this gesture and dispatch a
       // duplicate JS touch stream in their own coordinate space. Their moves land outside the
       // host-relative responder region and break `Pressable`. Tell them a native child owns the
@@ -544,14 +545,18 @@ private class TouchDispatchingRootViewGroup(
    * reporting it as a native one would cancel the press it belongs to.
    */
   private fun isCancelFromReactNative(): Boolean {
+    return nearestHostView()?.isDispatchingCancelFromParent ?: false
+  }
+
+  private fun nearestHostView(): HostView? {
     var current: ViewParent? = parent
     while (current != null) {
       if (current is HostView) {
-        return current.isDispatchingCancelFromParent
+        return current
       }
       current = current.parent
     }
-    return false
+    return null
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
