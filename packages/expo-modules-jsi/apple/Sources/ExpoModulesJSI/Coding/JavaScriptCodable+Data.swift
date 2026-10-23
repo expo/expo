@@ -53,7 +53,7 @@ internal func makeJavaScriptUint8Array(
   let runtimeHandle = runtime.handle
   let jsiRuntime = runtime.pointee
   return try data.withUnsafeBytes { bytes in
-    // The helper copies every byte, and on some React Native versions it doesn't zero the memory first.
+    // The helper copies every byte, and for larger data it doesn't zero the memory first.
     precondition(bytes.isEmpty || bytes.baseAddress != nil, "Data that isn't empty has no base address")
     return try capturingCppErrors {
       return JavaScriptValue(
