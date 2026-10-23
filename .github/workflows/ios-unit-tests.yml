@@ -3,6 +3,7 @@ name: iOS Unit Tests
 on:
   workflow_dispatch: {}
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: &trigger_paths
       - .github/workflows/ios-unit-tests.yml
       - packages/**/ios/**
@@ -24,6 +25,8 @@ concurrency:
 
 jobs:
   build:
+    # Draft pull requests skip this paid macOS job. Marking the pull request ready for review runs it.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 75
     steps:
