@@ -54,6 +54,13 @@ enum class RecordingDirectory(val value: String) : Enumerable {
 }
 
 @OptimizedRecord
+data class RecordingNotificationButton(
+  @Field val id: String,
+  @Field val title: String? = null,
+  @Field val preventDefault: Boolean = false
+) : Record
+
+@OptimizedRecord
 class RecordingNotificationOptions(
   @Field val title: String = "Recording audio",
   @Field val recordingBody: String = "Tap to return to app",
@@ -66,8 +73,67 @@ class RecordingNotificationOptions(
   @Field val smallIcon: String? = null,
   @Field val color: Color? = null,
   @Field val showPauseResume: Boolean = false,
-  @Field val showOnLockScreen: Boolean = false
-) : Record
+  @Field val showOnLockScreen: Boolean = false,
+  @Field val buttons: List<RecordingNotificationButton>? = null
+) : Record {
+  fun validate() {
+    val buttons = buttons ?: return
+    if (buttons.size > 3) {
+      throw InvalidRecordingNotificationButtonsException("Android supports at most three notification buttons. Remove a button.")
+    }
+    if (buttons.none { it.id == "stop" }) {
+      throw InvalidRecordingNotificationButtonsException("The recording notification needs a Stop button. Include a button with ID 'stop'.")
+    }
+    if (buttons.any { it.id.isBlank() || it.title?.isBlank() == true || (it.id !in listOf("pause", "resume", "stop") && it.title == null) }) {
+      throw InvalidRecordingNotificationButtonsException("Each button needs a non-empty ID. Give each custom button a non-empty title.")
+    }
+    val ids = buttons.map {
+      if (it.id == "resume") {
+        "pause"
+      } else {
+        it.id
+      }
+    }
+    if (ids.distinct().size != ids.size) {
+      throw InvalidRecordingNotificationButtonsException("Button IDs must be unique. Pause and Resume share one button, so include only one of them.")
+    }
+  }
+
+  internal fun resolvedButtons(paused: Boolean): List<RecordingNotificationButton> {
+    val configured = buttons ?: buildList {
+      if (showPauseResume) {
+        add(RecordingNotificationButton("pause"))
+      }
+      add(RecordingNotificationButton("stop"))
+    }
+    return configured.map { button ->
+      when (button.id) {
+        "pause", "resume" -> {
+          val id = if (paused) {
+            "resume"
+          } else {
+            "pause"
+          }
+          val defaultTitle = if (paused) {
+            resumeButtonTitle
+          } else {
+            pauseButtonTitle
+          }
+          button.copy(
+            id = id,
+            title = if (button.id == id) {
+              button.title ?: defaultTitle
+            } else {
+              defaultTitle
+            }
+          )
+        }
+        "stop" -> button.copy(title = button.title ?: stopButtonTitle)
+        else -> button
+      }
+    }
+  }
+}
 
 @OptimizedRecord
 class Metadata(

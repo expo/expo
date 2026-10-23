@@ -54,16 +54,46 @@ class AudioRecorder(
   var notificationSessionId = UUID.randomUUID().toString()
     private set
 
-  internal fun handleNotificationAction(action: String, sessionId: String) {
+  @Volatile
+  private var hasNotificationActionListeners = false
+
+  override fun onStartListeningToEvent(eventName: String) {
+    super.onStartListeningToEvent(eventName)
+    if (eventName == "recordingNotificationAction") {
+      hasNotificationActionListeners = true
+    }
+  }
+
+  override fun onStopListeningToEvent(eventName: String) {
+    super.onStopListeningToEvent(eventName)
+    if (eventName == "recordingNotificationAction") {
+      hasNotificationActionListeners = false
+    }
+  }
+
+  internal fun handleNotificationAction(action: String, sessionId: String, onStop: () -> Unit = { stopRecording() }) {
     if (!isPrepared || sessionId != notificationSessionId) {
       return
     }
-    when (action) {
-      "pause" -> if (notificationOptions.showPauseResume && isRecording) {
-        pauseRecording()
+    val button = notificationOptions.resolvedButtons(isPaused).firstOrNull { it.id == action } ?: return
+    if (button.preventDefault && action == "stop" && !hasNotificationActionListeners) {
+      appContext?.jsLogger?.warn("The recording notification Stop button prevents native stopping, but no recordingNotificationAction listener is registered. Recording will continue. Add a listener that calls stop(), or remove preventDefault.")
+    }
+    if (!button.preventDefault) {
+      when (action) {
+        "pause" -> if (isRecording) {
+          pauseRecording()
+        }
+        "resume" -> if (isPaused) {
+          record()
+        }
+        "stop" -> onStop()
       }
-      "resume" -> if (notificationOptions.showPauseResume && isPaused) {
-        record()
+    }
+    appContext?.mainQueue?.launch {
+      // Native Stop clears isPrepared. Its event must still reach the listener.
+      if (sessionId == notificationSessionId) {
+        emit("recordingNotificationAction", mapOf("action" to action, "sessionId" to sessionId, "defaultPrevented" to button.preventDefault))
       }
     }
   }
