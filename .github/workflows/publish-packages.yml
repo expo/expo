@@ -74,6 +74,7 @@ jobs:
     timeout-minutes: 30
     env:
       GIT_OPTIONAL_LOCKS: "0"
+      GIT_TRACE2_EVENT: /tmp/git-trace2.json
     concurrency:
       group: publish-packages-version-${{ github.ref_name }}
       cancel-in-progress: true
@@ -81,6 +82,25 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      # Records when .git/index.lock appears and disappears for the rest of the job, with the
+      # processes that run when it appears. Trace2 records only git processes.
+      - name: Watch the Git index lock
+        run: |
+          nohup bash -c '
+            held=0
+            while :; do
+              if [ -e "$1" ]; then
+                if [ "$held" = 0 ]; then
+                  held=1
+                  { echo "$(date -u +%T.%N) created"; ps -ef --forest; } >> /tmp/index-lock-watch.log
+                fi
+              elif [ "$held" = 1 ]; then
+                held=0
+                echo "$(date -u +%T.%N) removed" >> /tmp/index-lock-watch.log
+              fi
+              sleep 0.05
+            done
+          ' _ "$GITHUB_WORKSPACE/.git/index.lock" > /dev/null 2>&1 < /dev/null &
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # NOTE: Changesets automatically deepens the clone for older changeset entries.
@@ -94,17 +114,73 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Prerequisites
-        run: |
-          pnpm turbo run build --filter=expotools...
-          rm -f .git/index.lock
+        run: pnpm turbo run build --filter=expotools...
+      # changesets/action fails while .git/index.lock exists.
+      # Deleting the lock while a Git process still holds it can corrupt the index.
+      - name: Wait for the Git index lock
+        run: &wait_for_index_lock |
+          for i in $(seq 1 30); do
+            [ -e .git/index.lock ] || exit 0
+            pgrep -a -x git && rc=0 || rc=$?
+            if [ "$rc" -eq 1 ]; then
+              echo "Removing a stale .git/index.lock. No Git process is running."
+              rm -f .git/index.lock
+              exit 0
+            elif [ "$rc" -ne 0 ]; then
+              echo "::error::pgrep failed with exit code $rc, so this step cannot tell whether .git/index.lock is stale. Re-run the job."
+              exit 1
+            fi
+            [ "$i" -eq 30 ] || sleep 1
+          done
+          echo "::error::.git/index.lock still exists after 30 seconds while the git processes listed above run. Check the 'Print Git index lock diagnostics' step for when the lock appeared, then re-run the job."
+          exit 1
       - name: Create release PR
+        id: release
+        continue-on-error: true
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
-        with:
+        with: &changesets_inputs
           github-token: ${{ github.token }}
           version-script: pnpm expotools version-packages
           commit-message: Version packages (${{ github.ref_name }})
           pr-title: Version packages (${{ github.ref_name }})
           pr-base-branch: ${{ github.ref_name }}
+      - name: Wait for the Git index lock before retrying
+        if: steps.release.outcome == 'failure'
+        run: *wait_for_index_lock
+      # changesets/action runs `git checkout -b` when `git checkout` does not print
+      # "Switched to a new branch". The first attempt may have created the branch already.
+      - name: Reset the checkout before retrying
+        if: steps.release.outcome == 'failure'
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git checkout --force "$BRANCH"
+          git clean -fd
+          if git show-ref --verify --quiet "refs/heads/changeset-release/$BRANCH"; then
+            git branch -D "changeset-release/$BRANCH"
+          fi
+      - name: Create release PR (retry)
+        if: steps.release.outcome == 'failure'
+        uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
+        with: *changesets_inputs
+      - name: Print Git index lock diagnostics
+        if: failure() || steps.release.outcome == 'failure'
+        run: |
+          echo "::warning::A step in this job failed. The 'Print Git index lock diagnostics' step prints when .git/index.lock appeared and which processes ran."
+          echo "::group::Index lock watcher"
+          cat /tmp/index-lock-watch.log || true
+          echo "::endgroup::"
+          echo "::group::Git processes (trace2)"
+          # A git process that stops in the middle of a write leaves an incomplete line.
+          jq -c -n -R '
+            [inputs | fromjson?]
+            | (map(select(.event == "start" and .argv[1] == "config") | .sid)) as $skip
+            | .[]
+            | select(.event == "start" or .event == "cmd_ancestry" or .event == "exit")
+            | select(.sid as $sid | $skip | index($sid) | not)
+            | {time, sid, event, argv, ancestry, code}
+          ' /tmp/git-trace2.json || true
+          echo "::endgroup::"
 
   stable-publish:
     name: Publish stable packages
