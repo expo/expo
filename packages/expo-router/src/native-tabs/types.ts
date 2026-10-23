@@ -411,7 +411,7 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   sidebarAdaptable?: boolean;
   /**
-   * Selects whether the sidebar or the tab bar shows when only one of them can show.
+   * Selects whether the sidebar or the tab bar shows.
    * When `sidebarAdaptable` is not set, this prop also enables it.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/sidebar-swift.class/preferredplacement)
