@@ -102,12 +102,11 @@ public struct JavaScriptArrayBuffer: ~Copyable {
 
   // MARK: - Memory pressure
 
-  /// Sets the external memory pressure of this array buffer to its size, so the garbage collector counts
-  /// its native memory, for example after `createArrayBuffer(size:initializeToZero:reportsMemory:)` with
-  /// `reportsMemory: false`. It does nothing for any other array buffer, such as one that JavaScript
-  /// allocated or one that wraps native memory, because the runtime already counts that memory or its owner
-  /// reports it. An amount that the runtime rejects is ignored.
-  public func updateExternalMemoryPressure() {
+  /// Sets the external memory pressure of this array buffer to its size, for a buffer created with
+  /// `reportsMemory: false`. It does nothing for an array buffer that doesn't own its memory, because the
+  /// runtime already counts that memory or its owner reports it. An amount that the runtime rejects is ignored.
+  @usableFromInline
+  internal func updateExternalMemoryPressure() {
     guard ownsMemory else {
       return
     }
