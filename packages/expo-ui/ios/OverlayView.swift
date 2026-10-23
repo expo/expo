@@ -23,7 +23,7 @@ public struct OverlayView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private var baseContent: some View {
-    ForEach(props.children?.withoutSlots() ?? [], id: \.childIdentity) { child in
+    ForEach(props.children?.withoutSlots() ?? [], id: \.childIdentity.key) { child in
       let view: any View = child.childView
       AnyView(view)
     }
