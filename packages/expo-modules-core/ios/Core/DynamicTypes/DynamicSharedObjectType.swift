@@ -78,7 +78,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       }
 
       // Add newly created objects to the registry.
-      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true)
 
       return jsObject.asValue()
     }
