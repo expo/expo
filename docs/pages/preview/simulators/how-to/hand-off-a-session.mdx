@@ -44,7 +44,7 @@ If you plan to share a session, set a maximum duration when you start it, so tha
 
 Add `--public-link` to this command when the person does not have access to the project.
 
-To share a session that is already running, share the browser preview URL or session page URL that it already has. The session page URL always requires an Expo login with access to the project. The browser preview URL also requires one, unless the session started with `--public-link`. Tell the person when the session stops. Activity in the browser preview does not reset the idle timer, so use `--max-duration-minutes`, not `--max-idle-time-minutes`, to limit a session that a person controls. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+To share a session that is already running, share the browser preview URL or session page URL that it already has. The session page URL always requires an Expo login with access to the project. The browser preview URL also requires one, unless the session started with `--public-link`. Tell the person when the session stops. On current iOS workers, browser input resets the idle timer, but watching does not. Android preview input does not reset it. Set `--max-duration-minutes` for a review and omit the idle timeout if the person needs time to watch. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
 Open the browser preview URL in a desktop browser. Do not open it on the remote device, because it is a browser stream and not a deep link. For who can open the preview, see [Expo Simulators security model](/preview/simulators/how-it-works/security-model/).
 

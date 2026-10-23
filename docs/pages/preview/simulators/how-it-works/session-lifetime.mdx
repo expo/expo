@@ -9,7 +9,7 @@ import { FAQ } from '~/ui/components/FAQ';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An Expo Simulators session runs until you stop it or until it reaches a limit. The **maximum duration** is a hard stop time. The optional **idle timeout** stops the session after a period without controller activity. Set a limit on each session that you do not watch, so that it does not run longer than you need.
+An Expo Simulators session runs until you stop it or until it reaches a limit. The **maximum duration** is a hard stop time. The optional **idle timeout** stops the session after a period without session activity. Set a limit on each session that you do not watch, so that it does not run longer than you need.
 
 ## Maximum duration
 
@@ -24,16 +24,18 @@ The session timer starts when the session is ready. The job that runs the sessio
 
 ## Idle timeout
 
-Pass `--max-idle-time-minutes` to stop the session after that many minutes without controller activity. Without this flag, the session has no idle timeout.
+Pass `--max-idle-time-minutes` to stop the session after that many minutes without session activity. Without this flag, the session has no idle timeout.
 
 | Rule                                   | Detail                                                                                                                                           |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium                                                                                         |
-| Activity that does not reset the timer | Use of the browser preview                                                                                                                       |
+| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and direct simulator actions also count.                         |
+| Activity that does not reset the timer | Watching the preview or receiving video frames. Android browser input does not reset the timer.                                                  |
 | Session types without idle timeout     | `web-preview-only`                                                                                                                               |
 | Allowed values                         | A positive number smaller than the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one. |
 
-For a session that a person uses in the browser preview, limit the session with the maximum duration. The idle timeout can stop the session while the person uses it.
+Current iOS workers check both controller activity and serve-sim input or device actions. They check for activity about every five seconds. Older workers can report only controller activity. Watching the preview does not keep a session alive.
+
+For a review session, set `--max-duration-minutes`. Omit the idle timeout if a person needs time to watch without interacting. On Android, omit it when a person uses only the browser preview. A `web-preview-only` session does not enforce an idle timeout.
 
 ## Ways that a session stops
 

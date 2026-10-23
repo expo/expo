@@ -128,7 +128,7 @@ Every session type includes a live browser preview. Open the browser preview URL
 
 The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
-Browser preview activity does not reset the idle timer. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+On iOS, controller commands, browser input, and direct simulator actions reset the idle timer on current workers. Watching the preview does not count. On Android, only controller activity resets it. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
 ## Common questions
 
