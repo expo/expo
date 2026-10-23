@@ -63,6 +63,16 @@ export default function TextScreen() {
           <Text modifiers={[font({ family: 'Inter-Regular', size: 15 })]}>Inter Regular Font</Text>
         </Section>
 
+        <Section title="Small Caps and Leading">
+          <Text modifiers={[font({ textStyle: 'body', smallCaps: true })]}>Small Caps Text</Text>
+          <Text modifiers={[font({ textStyle: 'body', leading: 'tight' })]}>
+            Tight leading puts the lines of this paragraph closer together than standard leading.
+          </Text>
+          <Text modifiers={[font({ textStyle: 'body', leading: 'loose' })]}>
+            Loose leading puts the lines of this paragraph further apart than standard leading.
+          </Text>
+        </Section>
+
         <Section title="System Font Weights">
           <Text modifiers={[font({ weight: 'ultraLight', size: 16 })]}>Ultra Light Weight</Text>
           <Text modifiers={[font({ weight: 'thin', size: 16 })]}>Thin Weight</Text>
