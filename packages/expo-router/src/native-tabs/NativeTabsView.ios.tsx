@@ -30,7 +30,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     minimizeBehavior,
     tabs,
     sidebarAdaptable,
-    sidebarPreferredPlacement,
+    preferredPlacement,
     nonTriggerChildren,
     unstable_nativeProps,
   } = props;
@@ -59,10 +59,10 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
 
   useWarnOnce(
-    'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+    'NativeTabs ignores `preferredPlacement` because `sidebarAdaptable` is `false`. ' +
       'The placement has an effect only when the tab bar can turn into a sidebar. ' +
-      'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.',
-    sidebarAdaptable === false && sidebarPreferredPlacement !== undefined
+      'Remove `sidebarAdaptable={false}` to use the placement, or remove `preferredPlacement`.',
+    sidebarAdaptable === false && preferredPlacement !== undefined
   );
 
   if (
@@ -98,7 +98,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const tabBarControllerMode: NonNullable<TabsHostProps['ios']>['tabBarControllerMode'] =
     sidebarAdaptable === false
       ? 'tabBar'
-      : sidebarAdaptable || sidebarPreferredPlacement
+      : sidebarAdaptable || preferredPlacement
         ? 'tabSidebar'
         : 'automatic';
 
@@ -108,7 +108,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
-        tabBarSidebarPreferredPlacement: sidebarPreferredPlacement,
+        tabBarSidebarPreferredPlacement: preferredPlacement,
         bottomAccessory: bottomAccessoryFn,
         tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
         ...rawIosProps,

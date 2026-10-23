@@ -118,11 +118,11 @@ it('sets tabBarHiddenAnimationEnabled to false when disableHiddenAnimation is tr
   expect(TabsHost.mock.calls[0]![0].ios?.tabBarHiddenAnimationEnabled).toBe(false);
 });
 
-describe('sidebarPreferredPlacement', () => {
+describe('preferredPlacement', () => {
   it('forwards the placement with tabSidebar mode when sidebarAdaptable is true', async () => {
     await renderRouter({
       _layout: () => (
-        <NativeTabs sidebarAdaptable sidebarPreferredPlacement="sidebar">
+        <NativeTabs sidebarAdaptable preferredPlacement="sidebar">
           <NativeTabs.Trigger name="index" />
         </NativeTabs>
       ),
@@ -138,7 +138,7 @@ describe('sidebarPreferredPlacement', () => {
   it('uses tabSidebar mode when sidebarAdaptable is not set', async () => {
     await renderRouter({
       _layout: () => (
-        <NativeTabs sidebarPreferredPlacement="tabBar">
+        <NativeTabs preferredPlacement="tabBar">
           <NativeTabs.Trigger name="index" />
         </NativeTabs>
       ),
@@ -156,7 +156,7 @@ describe('sidebarPreferredPlacement', () => {
     try {
       await renderRouter({
         _layout: () => (
-          <NativeTabs sidebarAdaptable={false} sidebarPreferredPlacement="sidebar">
+          <NativeTabs sidebarAdaptable={false} preferredPlacement="sidebar">
             <NativeTabs.Trigger name="index" />
           </NativeTabs>
         ),
@@ -167,9 +167,9 @@ describe('sidebarPreferredPlacement', () => {
       expect(TabsHost).toHaveBeenCalledTimes(1);
       expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabBar');
       expect(warnSpy).toHaveBeenCalledWith(
-        'NativeTabs ignores `sidebarPreferredPlacement` because `sidebarAdaptable` is `false`. ' +
+        'NativeTabs ignores `preferredPlacement` because `sidebarAdaptable` is `false`. ' +
           'The placement has an effect only when the tab bar can turn into a sidebar. ' +
-          'Remove `sidebarAdaptable={false}` to use the placement, or remove `sidebarPreferredPlacement`.'
+          'Remove `sidebarAdaptable={false}` to use the placement, or remove `preferredPlacement`.'
       );
     } finally {
       warnSpy.mockRestore();

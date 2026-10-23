@@ -9,18 +9,18 @@ export const TabBarHiddenContext = createContext<{
   setHidden: (hidden: boolean) => void;
   disableHiddenAnimation: boolean;
   setDisableHiddenAnimation: (disable: boolean) => void;
-  sidebarPreferredPlacement: NativeTabsProps['sidebarPreferredPlacement'];
-  setSidebarPreferredPlacement: (placement: NativeTabsProps['sidebarPreferredPlacement']) => void;
+  preferredPlacement: NativeTabsProps['preferredPlacement'];
+  setPreferredPlacement: (placement: NativeTabsProps['preferredPlacement']) => void;
 }>({
   hidden: false,
   setHidden: () => {},
   disableHiddenAnimation: false,
   setDisableHiddenAnimation: () => {},
-  sidebarPreferredPlacement: undefined,
-  setSidebarPreferredPlacement: () => {},
+  preferredPlacement: undefined,
+  setPreferredPlacement: () => {},
 });
 
-const SIDEBAR_PLACEMENTS: NativeTabsProps['sidebarPreferredPlacement'][] = [
+const SIDEBAR_PLACEMENTS: NativeTabsProps['preferredPlacement'][] = [
   undefined,
   'automatic',
   'sidebar',
@@ -33,12 +33,12 @@ export function TabBarHiddenToggle() {
     setHidden,
     disableHiddenAnimation,
     setDisableHiddenAnimation,
-    sidebarPreferredPlacement,
-    setSidebarPreferredPlacement,
+    preferredPlacement,
+    setPreferredPlacement,
   } = useContext(TabBarHiddenContext);
   const nextPlacement =
     SIDEBAR_PLACEMENTS[
-      (SIDEBAR_PLACEMENTS.indexOf(sidebarPreferredPlacement) + 1) % SIDEBAR_PLACEMENTS.length
+      (SIDEBAR_PLACEMENTS.indexOf(preferredPlacement) + 1) % SIDEBAR_PLACEMENTS.length
     ];
 
   return (
@@ -56,9 +56,9 @@ export function TabBarHiddenToggle() {
         onValueChange={setDisableHiddenAnimation}
       />
       <Button
-        title={`Sidebar placement: ${sidebarPreferredPlacement ?? 'not set'}`}
+        title={`Sidebar placement: ${preferredPlacement ?? 'not set'}`}
         testID="sidebar-placement-button"
-        onPress={() => setSidebarPreferredPlacement(nextPlacement)}
+        onPress={() => setPreferredPlacement(nextPlacement)}
       />
     </>
   );

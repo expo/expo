@@ -1320,7 +1320,7 @@ const styles = StyleSheet.create({
 
 > **info** This feature is available in SDK 58 and later. To use it, compile your app with Xcode 27 or higher. The placement has an effect on iOS 27 and later.
 
-When the device can show only the sidebar or only the tab bar, use the [`sidebarPreferredPlacement`](/versions/latest/sdk/router/native-tabs/#sidebarpreferredplacement) prop to select which one shows.
+When the device can show only the sidebar or only the tab bar, use the [`preferredPlacement`](/versions/latest/sdk/router/native-tabs/#preferredplacement) prop to select which one shows.
 
 <ContentSpotlight
   alt="A screenshot of an iPhone in landscape orientation with the tabs in a sidebar."
@@ -1341,7 +1341,7 @@ import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
-    <NativeTabs sidebarPreferredPlacement="sidebar">
+    <NativeTabs preferredPlacement="sidebar">
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>

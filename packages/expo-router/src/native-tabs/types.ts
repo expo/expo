@@ -417,7 +417,7 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/sidebar-swift.class/preferredplacement)
    * @platform iOS 27+
    */
-  sidebarPreferredPlacement?: 'automatic' | 'sidebar' | 'tabBar';
+  preferredPlacement?: 'automatic' | 'sidebar' | 'tabBar';
   /**
    * When set to `true`, the tab bar hides and shows without animation when `hidden` changes.
    *

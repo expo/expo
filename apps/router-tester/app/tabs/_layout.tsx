@@ -14,8 +14,8 @@ export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [disableHiddenAnimation, setDisableHiddenAnimation] = useState(false);
-  const [sidebarPreferredPlacement, setSidebarPreferredPlacement] =
-    useState<NativeTabsProps['sidebarPreferredPlacement']>();
+  const [preferredPlacement, setPreferredPlacement] =
+    useState<NativeTabsProps['preferredPlacement']>();
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -25,13 +25,13 @@ export default function Layout() {
           setHidden,
           disableHiddenAnimation,
           setDisableHiddenAnimation,
-          sidebarPreferredPlacement,
-          setSidebarPreferredPlacement,
+          preferredPlacement,
+          setPreferredPlacement,
         }}>
         <NativeTabs
           hidden={hidden}
           disableHiddenAnimation={disableHiddenAnimation}
-          sidebarPreferredPlacement={sidebarPreferredPlacement}
+          preferredPlacement={preferredPlacement}
           minimizeBehavior="onScrollDown"
           rippleColor="#a6c1ee"
           labelVisibilityMode="labeled"
