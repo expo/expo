@@ -1,5 +1,15 @@
 # minimal-tester
 
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50723](https://github.com/expo/expo/pull/50723), [#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661))
+  - expo-image@58.0.17
+  - expo@58.0.18
+  - expo-dev-client@58.0.15
+  - expo-updates@58.0.18
+
 ## 1.0.11
 
 ### Patch Changes

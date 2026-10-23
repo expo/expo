@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [Android] Use jsLogger for logging where possible, add more logs in silent failure spots. ([#51987](https://github.com/expo/expo/pull/51987) by [@HubertBer](https://github.com/HubertBer))
+
 ## 58.0.18
 
 ### Patch Changes

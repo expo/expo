@@ -1,5 +1,22 @@
 # @expo/home
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#50401](https://github.com/expo/expo/pull/50401), [#52093](https://github.com/expo/expo/pull/52093), [#50723](https://github.com/expo/expo/pull/50723), [#51934](https://github.com/expo/expo/pull/51934), [#52045](https://github.com/expo/expo/pull/52045), [#52057](https://github.com/expo/expo/pull/52057), [#52060](https://github.com/expo/expo/pull/52060), [#52059](https://github.com/expo/expo/pull/52059), [#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661), [#51118](https://github.com/expo/expo/pull/51118), [#51119](https://github.com/expo/expo/pull/51119), [#52047](https://github.com/expo/expo/pull/52047), [#51117](https://github.com/expo/expo/pull/51117), [#51120](https://github.com/expo/expo/pull/51120), [#52053](https://github.com/expo/expo/pull/52053), [#51961](https://github.com/expo/expo/pull/51961), [#51955](https://github.com/expo/expo/pull/51955), [#51987](https://github.com/expo/expo/pull/51987), [#51897](https://github.com/expo/expo/pull/51897), [#51939](https://github.com/expo/expo/pull/51939), [#51940](https://github.com/expo/expo/pull/51940), [#52005](https://github.com/expo/expo/pull/52005), [#51992](https://github.com/expo/expo/pull/51992), [#52018](https://github.com/expo/expo/pull/52018), [#52049](https://github.com/expo/expo/pull/52049), [#52136](https://github.com/expo/expo/pull/52136), [#52010](https://github.com/expo/expo/pull/52010), [#52036](https://github.com/expo/expo/pull/52036))
+  - expo-contacts@58.0.9
+  - expo-font@58.0.10
+  - expo-image@58.0.17
+  - @expo/ui@58.0.23
+  - expo-router@58.0.26
+  - expo@58.0.18
+  - expo-media-library@58.0.12
+  - expo-location@58.0.19
+  - expo-sqlite@58.0.14
+  - expo-updates@58.0.18
+  - expo-dev-menu@58.0.11
+
 ## 0.0.12
 
 ### Patch Changes

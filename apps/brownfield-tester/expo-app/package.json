@@ -1,6 +1,6 @@
 {
   "name": "expo-app",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "private": true,
   "main": "index.js",
   "scripts": {

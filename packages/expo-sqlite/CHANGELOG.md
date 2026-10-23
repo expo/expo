@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Register the `NativeStatement` and `NativeSession` classes through `@ExpoModule(classes:)`. ([#52136](https://github.com/expo/expo/pull/52136) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.13
 
 ### Patch Changes
