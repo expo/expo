@@ -282,19 +282,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Creates a new array buffer of the given size. When `initializeToZero` is `false`, the memory is left
-  /// uninitialized, so write every byte before the buffer is visible to JavaScript.
+  /// uninitialized, so write every byte before the buffer is visible to JavaScript. Otherwise JavaScript
+  /// can read bytes that earlier allocations left in that memory, which can hold data from elsewhere in
+  /// the app. When `reportsMemory` is `false`, report the memory with `setExternalMemoryPressure(_:)`
+  /// after you create the other objects you need.
   @usableFromInline
-  internal func createArrayBuffer(size: Int, initializeToZero: Bool) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero)
-    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
-  }
-
-  /// Creates a new array buffer of the given size with uninitialized memory, and does not report that
-  /// memory to the garbage collector. Write every byte before the buffer is visible to JavaScript, and
-  /// report the memory with `setExternalMemoryPressure(_:)` after you create the other objects you need.
-  @usableFromInline
-  internal func createUnreportedArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, false, false)
+  internal func createArrayBuffer(size: Int, initializeToZero: Bool, reportsMemory: Bool) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, reportsMemory)
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
 

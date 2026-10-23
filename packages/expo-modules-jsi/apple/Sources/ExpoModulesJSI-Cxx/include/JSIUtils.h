@@ -511,19 +511,10 @@ inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, b
 }
 
 /**
- * Creates a new array buffer of the given size and reports its memory to the garbage collector. When
- * `initializeToZero` is false, the memory is left uninitialized and the caller must write every byte
- * before JavaScript can read the buffer.
- */
-inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, bool initializeToZero) {
-  return createArrayBuffer(runtime, size, initializeToZero, true);
-}
-
-/**
  * Creates a new array buffer of the given size with zero-initialized memory.
  */
 inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
-  return createArrayBuffer(runtime, size, true);
+  return createArrayBuffer(runtime, size, true, true);
 }
 
 /**
