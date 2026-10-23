@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix browser back after `setParams` or `replace` remounting the route tree and losing React state. ([#52127](https://github.com/expo/expo/pull/52127) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 57.0.29 — 2026-10-21
