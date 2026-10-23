@@ -817,7 +817,6 @@ class AudioModule : Module() {
       }
 
       Function("setNotificationOptions") { recorder: AudioRecorder, options: RecordingNotificationOptions ->
-        options.validate()
         recorder.notificationOptions = options
         recorder.serviceConnection.recordingServiceBinder?.service?.updateNotification()
       }

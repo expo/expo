@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
@@ -18,6 +19,7 @@ import expo.modules.audio.AudioRecorder
 import expo.modules.audio.RecordingNotificationOptions
 import expo.modules.audio.getRecordingServiceErrorMessage
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.ColorCompat
 import java.lang.ref.WeakReference
 
 private const val TAG = "AudioRecordingService"
@@ -41,7 +43,6 @@ class AudioRecordingService : Service() {
   override fun onCreate() {
     super.onCreate()
     Log.d(TAG, "Service onCreate()")
-    createNotificationChannelIfNeeded()
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -61,7 +62,7 @@ class AudioRecordingService : Service() {
     return START_NOT_STICKY
   }
 
-  private fun createNotificationChannelIfNeeded(options: RecordingNotificationOptions = RecordingNotificationOptions()) {
+  private fun createNotificationChannelIfNeeded(options: RecordingNotificationOptions) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
       // Recreating a channel updates its name without overriding the user's settings.
@@ -113,7 +114,7 @@ class AudioRecordingService : Service() {
           it.notificationSessionId == sessionId && it.isPrepared
       } ?: return
       val actionId = intent.getStringExtra(EXTRA_ACTION_ID) ?: return
-      if (actionId == "stop" && !recorder.notificationOptions.handleActionsInJS) {
+      if (actionId == "stop") {
         // The default Stop button has always stopped every recorder using this service.
         stopRecordingAndService()
       } else {
@@ -122,15 +123,12 @@ class AudioRecordingService : Service() {
     }
   }
 
-  @SuppressLint("DiscouragedApi") // The app supplies its own drawable resource name.
   private fun buildNotification(): Notification {
     val recorder = notificationRecorder()
     val options = recorder?.notificationOptions ?: RecordingNotificationOptions()
     val paused = recorder?.isPaused == true
     createNotificationChannelIfNeeded(options)
-    val icon = options.smallIcon?.let {
-      resources.getIdentifier(it, "drawable", packageName)
-    }?.takeIf { it != 0 } ?: android.R.drawable.ic_btn_speak_now
+    val icon = getRecordingNotificationIcon(this, options.smallIcon)
     val contentIntent = packageManager.getLaunchIntentForPackage(packageName)?.let { appIntent ->
       PendingIntent.getActivity(
         this,
@@ -162,7 +160,7 @@ class AudioRecordingService : Service() {
           NotificationCompat.VISIBILITY_SECRET
         }
       )
-    options.color?.let { builder.setColor(it) }
+    options.color?.let { builder.setColor(ColorCompat.toArgb(it)) }
     if (recorder != null) {
       if (options.showPauseResume) {
         builder.addAction(
@@ -185,9 +183,6 @@ class AudioRecordingService : Service() {
             recorder
           )
         )
-      }
-      options.actions.forEach {
-        builder.addAction(0, it.title, actionPendingIntent(it.id, recorder))
       }
       builder.addAction(android.R.drawable.ic_delete, options.stopButtonTitle, actionPendingIntent("stop", recorder))
     }
@@ -291,4 +286,24 @@ class AudioRecordingService : Service() {
     private const val EXTRA_SESSION_ID = "sessionId"
     private const val EXTRA_ACTION_ID = "actionId"
   }
+}
+
+@SuppressLint("DiscouragedApi") // The app supplies its own drawable resource name.
+internal fun getRecordingNotificationIcon(context: Context, smallIcon: String?): Int {
+  if (smallIcon != null) {
+    val icon = context.resources.getIdentifier(smallIcon, "drawable", context.packageName)
+    if (icon != 0) {
+      return icon
+    }
+    Log.w(TAG, "Recording notification icon '$smallIcon' was not found. Include the drawable in the native build and keep it when shrinking resources. Using a fallback icon.")
+  }
+  val metadataIcon = try {
+    context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+      .metaData?.getInt("expo.modules.audio.foreground_service_icon", 0) ?: 0
+  } catch (e: PackageManager.NameNotFoundException) {
+    0
+  }
+  return metadataIcon.takeIf { it != 0 }
+    ?: context.resources.getIdentifier("notification_icon", "drawable", context.packageName).takeIf { it != 0 }
+    ?: android.R.drawable.ic_btn_speak_now
 }

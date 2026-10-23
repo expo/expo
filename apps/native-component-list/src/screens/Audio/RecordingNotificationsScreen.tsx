@@ -6,7 +6,7 @@ import {
   useAudioRecorder,
   useAudioRecorderState,
 } from 'expo-audio';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
@@ -16,11 +16,11 @@ import AudioPlayer from './AudioPlayer';
 
 export default function RecordingNotificationsScreen() {
   const [title, setTitle] = useState('Voice memo');
-  const [handleActionsInJS, setHandleActionsInJS] = useState(false);
-  const [events, setEvents] = useState<string[]>([]);
+  const [body, setBody] = useState('Your voice memo is recording');
+  const [color, setColor] = useState('#4f66f6');
+  const [showPauseResume, setShowPauseResume] = useState(true);
   const [uri, setUri] = useState<string>();
   const [busy, setBusy] = useState(false);
-  const stopping = useRef(false);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY, (status) => {
     if (status.isFinished && !status.hasError && status.url) {
       setUri(status.url);
@@ -28,45 +28,10 @@ export default function RecordingNotificationsScreen() {
   });
   const state = useAudioRecorderState(recorder);
 
-  const stop = useCallback(async () => {
-    if (stopping.current) {
-      return;
-    }
-    stopping.current = true;
-    try {
-      // Read the final duration before stop resets the recorder.
-      const duration = recorder.currentTime;
-      await recorder.stop();
-      setEvents((events) => [`Saved ${duration.toFixed(1)}s recording`, ...events].slice(0, 10));
-    } finally {
-      stopping.current = false;
-    }
-  }, [recorder]);
-
-  useEffect(() => {
-    const subscription = recorder.addListener('recordingNotificationAction', (event) => {
-      setEvents((events) =>
-        [`${event.action} at ${recorder.currentTime.toFixed(1)}s`, ...events].slice(0, 10)
-      );
-      try {
-        if (event.action === 'pause' && recorder.isRecording) {
-          recorder.pause();
-        } else if (event.action === 'resume' && !recorder.isRecording) {
-          recorder.record();
-        } else if (event.action === 'stop') {
-          stop().catch((error: Error) => Alert.alert('Stop failed', error.message));
-        }
-      } catch (error) {
-        Alert.alert('Notification action failed', String(error));
-      }
-    });
-    return () => subscription.remove();
-  }, [recorder, stop]);
-
   const applyOptions = () => {
     recorder.setNotificationOptions({
       title,
-      recordingBody: 'Your voice memo is recording',
+      recordingBody: body,
       pausedBody: 'Your voice memo is paused',
       pauseButtonTitle: 'Pause memo',
       resumeButtonTitle: 'Resume memo',
@@ -74,11 +39,9 @@ export default function RecordingNotificationsScreen() {
       channelName: 'Voice memos',
       channelDescription: 'Voice memo recording controls',
       smallIcon: 'notification_icon',
-      color: 0x4f66f6,
-      showPauseResume: true,
+      color,
+      showPauseResume,
       showOnLockScreen: true,
-      handleActionsInJS,
-      actions: [{ id: 'bookmark', title: 'Bookmark' }],
     });
   };
 
@@ -98,7 +61,6 @@ export default function RecordingNotificationsScreen() {
       await setAudioModeAsync({ allowsBackgroundRecording: true });
       applyOptions();
       setUri(undefined);
-      setEvents([]);
       await recorder.prepareToRecordAsync();
       recorder.record();
     } catch (error) {
@@ -112,8 +74,8 @@ export default function RecordingNotificationsScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       <HeadingText>Recording notification</HeadingText>
       <BodyText>
-        Start a memo, then open the notification shade or lock the screen. Try Pause, Resume,
-        Bookmark, and Finish. Bookmark reports the current recording time without stopping.
+        Edit the title, body, or accent color, then start a memo and open the notification shade.
+        Apply options while recording, or try the native Pause, Resume, and Finish buttons.
       </BodyText>
       <BodyText>Notification title</BodyText>
       <TextInput
@@ -122,15 +84,34 @@ export default function RecordingNotificationsScreen() {
         onChangeText={setTitle}
         style={styles.input}
       />
+      <BodyText>Notification body</BodyText>
+      <TextInput
+        accessibilityLabel="Notification body"
+        value={body}
+        onChangeText={setBody}
+        style={styles.input}
+      />
+      <BodyText>Accent color</BodyText>
+      <TextInput
+        accessibilityLabel="Accent color"
+        value={color}
+        onChangeText={setColor}
+        style={styles.input}
+      />
       <View style={styles.row}>
-        <BodyText>Handle built-in actions in JavaScript</BodyText>
-        <Switch value={handleActionsInJS} onValueChange={setHandleActionsInJS} />
+        <BodyText>Show native Pause and Resume</BodyText>
+        <Switch value={showPauseResume} onValueChange={setShowPauseResume} />
       </View>
-      <BodyText>
-        JavaScript mode reads the duration before stopping. It requires a running JavaScript
-        runtime. Native mode handles Pause, Resume, and Finish without a JavaScript listener.
-      </BodyText>
-      <Button title="Apply notification options" onPress={applyOptions} />
+      <Button
+        title="Apply notification options"
+        onPress={() => {
+          try {
+            applyOptions();
+          } catch (error) {
+            Alert.alert('Notification options failed', String(error));
+          }
+        }}
+      />
       <Button
         title="Restore default notification"
         onPress={() => recorder.setNotificationOptions({})}
@@ -138,17 +119,15 @@ export default function RecordingNotificationsScreen() {
       <Button title="Start memo" onPress={start} disabled={state.canRecord || busy} />
       <Button
         title="Stop memo"
-        onPress={() => stop().catch((error: Error) => Alert.alert('Stop failed', error.message))}
-        disabled={!state.canRecord || stopping.current}
+        onPress={() =>
+          recorder.stop().catch((error: Error) => Alert.alert('Stop failed', error.message))
+        }
+        disabled={!state.canRecord || busy}
       />
       <BodyText>
         {state.isRecording ? 'Recording' : state.canRecord ? 'Paused' : 'Stopped'}:{' '}
         {(state.durationMillis / 1000).toFixed(1)}s
       </BodyText>
-      <HeadingText>Notification actions</HeadingText>
-      {events.map((event, index) => (
-        <BodyText key={index}>{event}</BodyText>
-      ))}
       {uri ? (
         <>
           <HeadingText>Last recording</HeadingText>

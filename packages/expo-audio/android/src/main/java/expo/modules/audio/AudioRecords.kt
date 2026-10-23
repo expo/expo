@@ -1,5 +1,6 @@
 package expo.modules.audio
 
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
@@ -53,12 +54,6 @@ enum class RecordingDirectory(val value: String) : Enumerable {
 }
 
 @OptimizedRecord
-class RecordingNotificationCustomAction(
-  @Field val id: String,
-  @Field val title: String
-) : Record
-
-@OptimizedRecord
 class RecordingNotificationOptions(
   @Field val title: String = "Recording audio",
   @Field val recordingBody: String = "Tap to return to app",
@@ -69,30 +64,10 @@ class RecordingNotificationOptions(
   @Field val channelName: String = "Audio Recording",
   @Field val channelDescription: String = "Shows when audio is being recorded in the background",
   @Field val smallIcon: String? = null,
-  @Field val color: Int? = null,
+  @Field val color: Color? = null,
   @Field val showPauseResume: Boolean = false,
-  @Field val showOnLockScreen: Boolean = false,
-  @Field val handleActionsInJS: Boolean = false,
-  @Field val actions: List<RecordingNotificationCustomAction> = emptyList()
-) : Record {
-  fun validate() {
-    require(
-      actions.size <= if (showPauseResume) {
-        1
-      } else {
-        2
-      }
-    ) {
-      "The recording notification supports three buttons, including Stop and optional Pause/Resume. Reduce the number of custom actions."
-    }
-    require(actions.all { it.id.isNotBlank() && it.title.isNotBlank() && it.id !in listOf("pause", "resume", "stop") }) {
-      "Custom recording notification actions need a non-empty ID and title. Use IDs other than pause, resume, and stop."
-    }
-    require(actions.map { it.id }.distinct().size == actions.size) {
-      "Custom recording notification action IDs must be unique. Use a different ID for each action."
-    }
-  }
-}
+  @Field val showOnLockScreen: Boolean = false
+) : Record
 
 @OptimizedRecord
 class Metadata(

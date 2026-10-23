@@ -7,7 +7,6 @@ import io.mockk.every
 import io.mockk.Runs
 import io.mockk.just
 import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.junit.Assert.assertFalse
@@ -59,45 +58,6 @@ class AudioRecorderNotificationTest {
   }
 
   @Test
-  fun javascriptHandledPauseLeavesTheRecorderRunning() {
-    val recorder = makeRecorder()
-    recorder.notificationOptions = RecordingNotificationOptions(showPauseResume = true, handleActionsInJS = true)
-
-    recorder.handleNotificationAction("pause", recorder.notificationSessionId)
-
-    assertTrue(recorder.isRecording)
-    assertFalse(recorder.isPaused)
-  }
-
-  @Test
-  fun javascriptHandledStopKeepsDurationAvailableToTheApp() {
-    val recorder = makeRecorder()
-    recorder.notificationOptions = RecordingNotificationOptions(handleActionsInJS = true)
-
-    recorder.handleNotificationAction("stop", recorder.notificationSessionId)
-
-    assertTrue(recorder.isPrepared)
-    assertTrue(recorder.isRecording)
-  }
-
-  @Test
-  fun customActionDoesNotChangeRecordingState() {
-    val recorder = makeRecorder()
-    val sessionId = recorder.notificationSessionId
-    recorder.notificationOptions = RecordingNotificationOptions(
-      actions = listOf(RecordingNotificationCustomAction(id = "bookmark", title = "Bookmark"))
-    )
-
-    recorder.handleNotificationAction("bookmark", sessionId)
-
-    assertTrue(recorder.isRecording)
-    assertFalse(recorder.isPaused)
-    verify {
-      recorder.emit("recordingNotificationAction", mapOf("action" to "bookmark", "sessionId" to sessionId))
-    }
-  }
-
-  @Test
   fun staleSessionAndUnconfiguredPauseCannotControlRecorder() {
     val recorder = makeRecorder()
 
@@ -111,33 +71,5 @@ class AudioRecorderNotificationTest {
     recorder.isPrepared = false
     recorder.handleNotificationAction("pause", recorder.notificationSessionId)
     assertTrue(recorder.isRecording)
-  }
-
-  @Test(expected = IllegalArgumentException::class)
-  fun customActionsCannotUseBuiltInIds() {
-    RecordingNotificationOptions(
-      actions = listOf(RecordingNotificationCustomAction(id = "stop", title = "Save"))
-    ).validate()
-  }
-
-  @Test(expected = IllegalArgumentException::class)
-  fun customActionsCannotExceedAndroidButtonLimit() {
-    RecordingNotificationOptions(
-      showPauseResume = true,
-      actions = listOf(
-        RecordingNotificationCustomAction(id = "bookmark", title = "Bookmark"),
-        RecordingNotificationCustomAction(id = "mark", title = "Mark")
-      )
-    ).validate()
-  }
-
-  @Test(expected = IllegalArgumentException::class)
-  fun customActionIdsMustBeUnique() {
-    RecordingNotificationOptions(
-      actions = listOf(
-        RecordingNotificationCustomAction(id = "bookmark", title = "Bookmark"),
-        RecordingNotificationCustomAction(id = "bookmark", title = "Mark")
-      )
-    ).validate()
   }
 }

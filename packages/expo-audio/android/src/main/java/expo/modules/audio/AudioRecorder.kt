@@ -58,28 +58,14 @@ class AudioRecorder(
     if (!isPrepared || sessionId != notificationSessionId) {
       return
     }
-    val isCustomAction = notificationOptions.actions.any { it.id == action }
-    val isEnabled = when (action) {
-      "pause" -> notificationOptions.showPauseResume && isRecording
-      "resume" -> notificationOptions.showPauseResume && isPaused
-      "stop" -> true
-      else -> isCustomAction
-    }
-    if (!isEnabled) {
-      return
-    }
-    if (isCustomAction || notificationOptions.handleActionsInJS) {
-      appContext?.mainQueue?.launch {
-        if (isPrepared && sessionId == notificationSessionId) {
-          emit("recordingNotificationAction", mapOf("action" to action, "sessionId" to sessionId))
-        }
+    when (action) {
+      "pause" -> if (notificationOptions.showPauseResume && isRecording) {
+        pauseRecording()
       }
-    } else {
-      when (action) {
-        "pause" -> pauseRecording()
-        "resume" -> record()
-        "stop" -> stopRecording()
+      "resume" -> if (notificationOptions.showPauseResume && isPaused) {
+        record()
       }
+      "stop" -> stopRecording()
     }
   }
 
