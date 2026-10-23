@@ -74,7 +74,6 @@ jobs:
     timeout-minutes: 30
     env:
       GIT_OPTIONAL_LOCKS: "0"
-      GIT_TRACE2_EVENT: /tmp/git-trace2.json
     concurrency:
       group: publish-packages-version-${{ github.ref_name }}
       cancel-in-progress: true
@@ -84,8 +83,11 @@ jobs:
     steps:
       # Records when .git/index.lock appears and disappears for the rest of the job, with the
       # processes that run when it appears. Trace2 records only git processes.
-      - name: Watch the Git index lock
+      - name: Trace git and watch the Git index lock
         run: |
+          # The system config also reaches git processes that run with a filtered environment.
+          sudo git config --system trace2.eventTarget /tmp/git-trace2.json
+          # shellcheck disable=SC2016
           nohup bash -c '
             held=0
             while :; do
@@ -124,6 +126,7 @@ jobs:
             pgrep -a -x git && rc=0 || rc=$?
             if [ "$rc" -eq 1 ]; then
               echo "Removing a stale .git/index.lock. No Git process is running."
+              stat -c 'size=%s mtime=%y' .git/index.lock || true
               rm -f .git/index.lock
               exit 0
             elif [ "$rc" -ne 0 ]; then
@@ -164,7 +167,7 @@ jobs:
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
         with: *changesets_inputs
       - name: Print Git index lock diagnostics
-        if: failure() || steps.release.outcome == 'failure'
+        if: ${{ !cancelled() && (failure() || steps.release.outcome == 'failure') }}
         run: |
           echo "::warning::A step in this job failed. The 'Print Git index lock diagnostics' step prints when .git/index.lock appeared and which processes ran."
           echo "::group::Index lock watcher"
@@ -176,9 +179,12 @@ jobs:
             [inputs | fromjson?]
             | (map(select(.event == "start" and .argv[1] == "config") | .sid)) as $skip
             | .[]
-            | select(.event == "start" or .event == "cmd_ancestry" or .event == "exit")
+            | select(
+                (.event | IN("start", "cmd_ancestry", "exit", "signal")) or .label == "do_write_index"
+              )
             | select(.sid as $sid | $skip | index($sid) | not)
-            | {time, sid, event, argv, ancestry, code}
+            | {time, sid, event, argv, ancestry, code, signo, label, msg}
+            | with_entries(select(.value != null))
           ' /tmp/git-trace2.json || true
           echo "::endgroup::"
 
