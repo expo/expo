@@ -142,6 +142,50 @@ struct ImageResizingTests {
       #expect(size.height == contentSize.height) // 21
     }
   }
+
+  @Suite("content size is 0x0")
+  struct ContentSizeZeroTests {
+    // Some decoders return an image with no pixels, such as an SVG with a 0x0 canvas.
+    // Scaling it must not produce a NaN size, because that crashes Core Animation
+    // once it reaches the layer geometry. See https://github.com/expo/expo/issues/49690
+    let containerSize = CGSize(width: 350, height: 90)
+    let contentSize = CGSize.zero
+
+    @Test
+    func `contains`() {
+      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .contain)
+      #expect(size.width == containerSize.width)   // 350, not NaN
+      #expect(size.height == containerSize.height) // 90, not NaN
+    }
+
+    @Test
+    func `covers`() {
+      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .cover)
+      #expect(size.width == containerSize.width)   // 350, not NaN
+      #expect(size.height == containerSize.height) // 90, not NaN
+    }
+
+    @Test
+    func `fills`() {
+      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .fill)
+      #expect(size.width == containerSize.width)   // 350
+      #expect(size.height == containerSize.height) // 90
+    }
+
+    @Test
+    func `scales down`() {
+      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .scaleDown)
+      #expect(size.width == containerSize.width)   // 350, not NaN
+      #expect(size.height == containerSize.height) // 90, not NaN
+    }
+
+    @Test
+    func `doesn't resize`() {
+      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .none)
+      #expect(size.width == containerSize.width)   // 350
+      #expect(size.height == containerSize.height) // 90
+    }
+  }
 }
 
 @Suite("local asset names")
