@@ -1162,6 +1162,8 @@ export default function SearchIndex() {
 }
 ```
 
+In SDK 58 and later, selecting a search tab activates its search field when the screen has a search bar. This works on iOS 26.1 and later. To leave the field inactive, set `disableAutomaticSearchActivation` on `NativeTabs.Trigger`. On iOS 27, the search tab appears separately only while search activation is enabled.
+
 #### Tab bar minimize behavior
 
 <ContentSpotlight

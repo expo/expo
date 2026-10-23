@@ -14,6 +14,7 @@ Use the following checklist to find the sections that apply to your app:
 - For web apps, remove [deprecated server flags](#remove-deprecated-server-flags), review the [async route defaults](#review-async-route-defaults), and move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html). Review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"` and the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
 - If your web app uses `SafeAreaView` or safe-area hooks for spacing, [migrate to CSS safe-area insets](#use-css-for-web-safe-area-spacing).
 - For iOS apps that use `Stack`, review the [native header appearance on iOS 26 and later](#review-the-ios-header-appearance).
+- For iOS apps that use `NativeTabs` with a search tab, review the [search tab activation](#review-native-tabs-search-activation-on-ios).
 - For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
@@ -429,6 +430,31 @@ export default function RootLayout() {
 ```
 
 `enableLegacyHeaderAppearance()` is deprecated. In a future release, the native iOS header appearance becomes the only behavior and this function will be removed.
+
+### Review native tabs search activation on iOS
+
+In SDK 58, a `NativeTabs.Trigger` with `role="search"` is a native search tab on iOS 26.1 and later. When the screen has a search bar, selecting this tab activates the search bar of its nested stack and opens the keyboard. See [Tabbar search input](/router/advanced/native-tabs/#tabbar-search-input) for the setup.
+
+To leave the search field inactive when the tab is selected, set `disableAutomaticSearchActivation` on the layout trigger:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search" disableAutomaticSearchActivation>
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+On iOS 27, this prop also removes the separate placement of the search tab.
 
 ## Advanced migrations
 
