@@ -191,7 +191,15 @@ export type AudioLoadOptions = AudioPlayerOptions;
 export type RecordingInput = {
   /** Human-readable name of the audio input device. */
   name: string;
-  /** Type or category of the input device (for example, 'Built-in Microphone', 'External Microphone'). */
+  /**
+   * Type of the input device. Both platforms use the iOS `AVAudioSession.Port` names for common
+   * device types, for example, `MicrophoneBuiltIn`, `MicrophoneWired`, `USBAudio`, `BluetoothLE`,
+   * `LineIn`, `HDMI`, and `CarAudio`.
+   *
+   * On iOS, the value is the `AVAudioSession.Port` raw value, so Bluetooth headsets return `BluetoothHFP`.
+   * On Android, Bluetooth headsets return `BluetoothSCO` or `BluetoothA2DP`, telephony input returns `Telephony`,
+   * and other device types return `Unknown device type`.
+   */
   type: string;
   /** Unique identifier for the input device, used to select the input ('Built-in Microphone', 'External Microphone') for recording. */
   uid: string;
