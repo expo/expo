@@ -15,9 +15,10 @@
 
   // @ref LLP 0009#config-and-prompt-templates [implements] — suggestions off by default, not a schema limit
   "policy": {
-    // Only the `general` agent reports suggestions: shared.md tells every other agent
-    // not to emit them, and coordinator.md drops any that another agent emits.
-    "includeSuggestions": true
+    // Keep findings down to `suggestion`. Only the `general` agent reports suggestions:
+    // shared.md tells every other agent not to emit them, and coordinator.md drops any
+    // that another agent emits.
+    "minSeverity": "suggestion"
     // "maxFindings": 10
   },
 
