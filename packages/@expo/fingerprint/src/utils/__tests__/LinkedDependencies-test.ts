@@ -1,18 +1,17 @@
 import { vol } from 'memfs';
 
-import { resolveLinkedDependencyPathsAsync } from '../LinkedDependencies';
+import { resolveLinkedDependencyPaths } from '../LinkedDependencies';
 
 jest.mock('fs');
-jest.mock('fs/promises');
 
-describe(resolveLinkedDependencyPathsAsync, () => {
+describe(resolveLinkedDependencyPaths, () => {
   const projectRoot = '/repo/apps/app';
 
   afterEach(() => {
     vol.reset();
   });
 
-  it('should return the project-relative real path of a dependency that links outside node_modules', async () => {
+  it('should return the project-relative real path of a dependency that links outside node_modules', () => {
     vol.fromJSON({
       '/repo/apps/app/package.json': JSON.stringify({
         dependencies: { 'my-plugin': 'workspace:*', expo: '^54.0.0', plain: '1.0.0' },
@@ -31,14 +30,14 @@ describe(resolveLinkedDependencyPathsAsync, () => {
     vol.mkdirSync('/repo/node_modules', { recursive: true });
     vol.symlinkSync('/repo/packages/my-dev-plugin', '/repo/node_modules/my-dev-plugin');
 
-    expect(await resolveLinkedDependencyPathsAsync(projectRoot)).toEqual([
+    expect(resolveLinkedDependencyPaths(projectRoot)).toEqual([
       '../../packages/my-dev-plugin',
       '../../packages/my-plugin',
     ]);
   });
 
-  it('should return an empty list when the project has no package.json', async () => {
+  it('should return an empty list when the project has no package.json', () => {
     vol.fromJSON({ '/repo/apps/app/app.json': '{}' });
-    expect(await resolveLinkedDependencyPathsAsync(projectRoot)).toEqual([]);
+    expect(resolveLinkedDependencyPaths(projectRoot)).toEqual([]);
   });
 });

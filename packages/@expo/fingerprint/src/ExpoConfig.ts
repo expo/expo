@@ -7,7 +7,7 @@ import resolveFrom from 'resolve-from';
 
 import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
-import { resolveLinkedDependencyPathsAsync } from './utils/LinkedDependencies';
+import { resolveLinkedDependencyPaths } from './utils/LinkedDependencies';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
 const FINGERPRINT_ENV_MODE = 'development';
@@ -40,17 +40,15 @@ export async function getExpoConfigAsync(
     const [
       { config, loadedModules: modulesWithPlugins },
       { loadedModules: modulesWithoutPlugins },
-      linkedDependencyPaths,
     ] = await Promise.all([
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ false),
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ true),
-      resolveLinkedDependencyPathsAsync(path.resolve(projectRoot)),
     ]);
     result.config = config;
     result.loadedModules = diffLoadedModules(
       modulesWithPlugins ?? [],
       modulesWithoutPlugins ?? [],
-      linkedDependencyPaths
+      resolveLinkedDependencyPaths(path.resolve(projectRoot))
     );
   } catch (e: unknown) {
     if (e instanceof Error) {

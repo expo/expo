@@ -1,14 +1,7 @@
-import { realpath } from 'fs';
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
-import { promisify } from 'util';
 
 import { toPosixPath } from './Path';
-
-// Node resolves a linked module with the JavaScript `fs.realpathSync`, so use the same algorithm.
-// The native `fs/promises` call expands Windows 8.3 names such as `RUNNER~1` and gives a path that
-// the loader's project-relative keys do not share.
-const realpathAsync = promisify(realpath);
 
 const DEPENDENCY_FIELDS = [
   'dependencies',
@@ -21,18 +14,17 @@ const DEPENDENCY_FIELDS = [
  * The project-relative POSIX paths of the dependencies in the project's `package.json` that resolve
  * to a directory outside `node_modules`, such as a linked workspace package in a monorepo.
  */
-export async function resolveLinkedDependencyPathsAsync(projectRoot: string): Promise<string[]> {
-  const dependencyNames = await readDependencyNamesAsync(projectRoot);
-  const linkedPaths = await Promise.all(
-    dependencyNames.map((name) => resolveLinkedDependencyPathAsync(projectRoot, name))
+export function resolveLinkedDependencyPaths(projectRoot: string): string[] {
+  const linkedPaths = readDependencyNames(projectRoot).map((name) =>
+    resolveLinkedDependencyPath(projectRoot, name)
   );
   return [...new Set(linkedPaths.filter((linkedPath) => linkedPath !== null))].sort();
 }
 
-async function readDependencyNamesAsync(projectRoot: string): Promise<string[]> {
+function readDependencyNames(projectRoot: string): string[] {
   let packageJson: Partial<Record<(typeof DEPENDENCY_FIELDS)[number], Record<string, string>>>;
   try {
-    packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
+    packageJson = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
   } catch {
     return [];
   }
@@ -43,14 +35,13 @@ async function readDependencyNamesAsync(projectRoot: string): Promise<string[]> 
  * Find `node_modules/<name>` the way Node resolution does, walking up from the project root.
  * Returns its real path when that path leaves `node_modules`, which means the dependency is a link.
  */
-async function resolveLinkedDependencyPathAsync(
-  projectRoot: string,
-  name: string
-): Promise<string | null> {
+function resolveLinkedDependencyPath(projectRoot: string, name: string): string | null {
   for (let dir = projectRoot; ; dir = path.dirname(dir)) {
     let realPath: string | null = null;
     try {
-      realPath = await realpathAsync(path.join(dir, 'node_modules', name));
+      // Node resolves a link with `fs.realpathSync`, so use the same algorithm.
+      // The native realpath expands Windows 8.3 names such as `RUNNER~1`, which the loader keys keep.
+      realPath = fs.realpathSync(path.join(dir, 'node_modules', name));
     } catch {}
     if (realPath !== null) {
       const relativePath = toPosixPath(path.relative(projectRoot, realPath));
