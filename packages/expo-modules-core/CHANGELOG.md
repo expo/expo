@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Keep `RNHeadlessAppLoader` in R8-minified release builds, so `expo-task-manager` no longer crashes when a task starts while the app is not running. Backport of [#46920](https://github.com/expo/expo/pull/46920). ([#52109](https://github.com/expo/expo/pull/52109) by [@krisoft20](https://github.com/krisoft20))
+
 ### 💡 Others
 
 ## 57.0.24 — 2026-10-21
