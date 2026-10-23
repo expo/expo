@@ -43,20 +43,16 @@ function findPackageName(dir: string, cache: Map<string, string | null>): string
   if (cached !== undefined) {
     return cached;
   }
-  let packageName = readPackageName(path.join(dir, 'package.json'));
+  let packageName: string | null = null;
+  try {
+    // The sync read is fine: the result is cached per directory and few files reach this point.
+    const { name } = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+    packageName = typeof name === 'string' ? name : null;
+  } catch {}
   const parentDir = path.dirname(dir);
   if (packageName === null && parentDir !== dir) {
     packageName = findPackageName(parentDir, cache);
   }
   cache.set(dir, packageName);
   return packageName;
-}
-
-function readPackageName(packageJsonPath: string): string | null {
-  try {
-    const { name } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    return typeof name === 'string' ? name : null;
-  } catch {
-    return null;
-  }
 }
