@@ -135,10 +135,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   }
 
   const iconButton = (
-    <IconButton
-      onClick={() => setExpanded(true)}
-      enabled={!props.disabled}
-      modifiers={[background(backgroundColor)]}>
+    <IconButton onClick={() => setExpanded(true)} enabled={!props.disabled}>
       <Icon
         source={props.source}
         tint={sourceTint}
