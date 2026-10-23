@@ -445,8 +445,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   }
 
   /// Moves the array into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
-  @usableFromInline
-  internal consuming func takeValue() -> JavaScriptValue {
+  public consuming func takeValue() -> JavaScriptValue {
     return JavaScriptValue(runtimeHandle, expo.takeValueFromArray(&pointee))
   }
 
