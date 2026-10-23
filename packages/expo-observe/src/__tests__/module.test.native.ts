@@ -294,6 +294,29 @@ describe('module Proxy', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  it('warns when errorSampleRate is lower than sampleRate', () => {
+    const Observe = loadModule();
+    Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  });
+
+  it('warns when errorSampleRate is set without sampleRate', () => {
+    // An unset `sampleRate` sends every installation, so errors are sent from all of them.
+    const Observe = loadModule();
+    Observe.configure({ errorSampleRate: 0.5 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  });
+
   it('passes the config through to the native module unchanged', () => {
     const Observe = loadModule();
     Observe.configure({ environment: 'test', errorHandlingEnabled: false });

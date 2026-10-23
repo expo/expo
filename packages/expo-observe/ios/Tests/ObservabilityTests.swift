@@ -1,3 +1,4 @@
+import ExpoAppMetrics
 import Testing
 
 @testable import ExpoObserve
@@ -72,5 +73,24 @@ struct ObservabilityShouldDispatchTests {
     #expect(
       ObservabilityManager.shouldDispatch(config: nil, isDev: true, isInSample: true) == false
     )
+  }
+}
+
+@Suite("Observability.sampledLogs")
+struct ObservabilitySampledLogsTests {
+  private let logs = ["info", "js.exception", "native.exception"].map {
+    LogRow(sessionId: "s", timestamp: "2025-01-01T00:00:00Z", severity: "error", name: $0)
+  }
+
+  @Test
+  func `out-of-sample for sampleRate keeps only exception logs`() {
+    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: false)
+    #expect(result.map(\.name) == ["js.exception", "native.exception"])
+  }
+
+  @Test
+  func `in-sample for sampleRate keeps all logs`() {
+    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: true)
+    #expect(result.map(\.name) == ["info", "js.exception", "native.exception"])
   }
 }
