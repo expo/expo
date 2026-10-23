@@ -120,6 +120,7 @@ jobs:
         run: pnpm turbo run build --filter=expotools...
       # changesets/action fails while .git/index.lock exists.
       - name: Wait for the Git index lock
+        continue-on-error: true
         run: bash .github/scripts/wait-for-git-index-lock.sh
       - name: Create release PR
         id: release
@@ -133,6 +134,7 @@ jobs:
           pr-base-branch: ${{ github.ref_name }}
       - name: Wait for the Git index lock before retrying
         if: steps.release.outcome == 'failure'
+        continue-on-error: true
         run: bash .github/scripts/wait-for-git-index-lock.sh
       # changesets/action runs `git checkout -b` when `git checkout` does not print
       # "Switched to a new branch". The first attempt may have created the branch already.
@@ -169,7 +171,7 @@ jobs:
             | (map(select(.event == "start" and .argv[1] == "config") | .sid)) as $skip
             | .[]
             | select(
-                (.event | IN("start", "cmd_ancestry", "exit", "signal")) or .label == "do_write_index"
+                (.event | IN("start", "cmd_ancestry", "exit", "signal", "error")) or .label == "do_write_index"
               )
             | select(.sid as $sid | $skip | index($sid) | not)
             | {time, sid, event, argv, ancestry, code, signo, label, msg}
