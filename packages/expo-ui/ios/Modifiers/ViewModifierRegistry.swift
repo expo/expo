@@ -2504,6 +2504,10 @@ extension ViewModifierRegistry {
       return try ListStyleModifier(from: params, appContext: appContext)
     }
 
+    register("sectionIndexLabel") { params, appContext, _ in
+      return try SectionIndexLabelModifier(from: params, appContext: appContext)
+    }
+
     register("moveDisabled") { params, appContext, _ in
       return try MoveDisabledModifier(from: params, appContext: appContext)
     }
