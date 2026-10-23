@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of creating shared objects in JavaScript and of returning them from native functions. ([#52096](https://github.com/expo/expo/pull/52096) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52095](https://github.com/expo/expo/pull/52095))
+  - expo-modules-jsi@58.0.19
+
 ## 58.0.25
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Updated dependencies. ([#52096](https://github.com/expo/expo/pull/52096))
+  - expo-modules-core@58.0.26
+
 ## 58.0.18
 
 ### Patch Changes
