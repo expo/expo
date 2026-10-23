@@ -21,7 +21,9 @@ function generateItemMarkdown(item, withDescription) {
   return `- [${item.title}](${item.url})${withDescription && item.description ? `: ${item.description}` : ''}\n`;
 }
 
-const FULLY_DESCRIBED_SECTIONS = new Set(['Configuration files']);
+// Regulatory compliance is fully described so the GDPR page's pointer to the DPA and the
+// subprocessor list reaches llms.txt, not only the section's first page.
+const FULLY_DESCRIBED_SECTIONS = new Set(['Configuration files', 'Regulatory compliance']);
 
 function generateSectionMarkdown(section) {
   let content = section.title ? `## ${section.title}\n\n` : '';
