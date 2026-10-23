@@ -511,13 +511,6 @@ inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, b
 }
 
 /**
- * Creates a new array buffer of the given size with zero-initialized memory.
- */
-inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
-  return createArrayBuffer(runtime, size, true, true);
-}
-
-/**
  * Creates a new array buffer that wraps the given native data pointer.
  * The cleanup function is called (with the cleanup context) when the ArrayBuffer is deallocated.
  */

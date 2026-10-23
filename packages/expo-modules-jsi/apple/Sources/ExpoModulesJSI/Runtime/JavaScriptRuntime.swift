@@ -275,25 +275,27 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Creating array buffers
 
-  /// Creates a new array buffer of the given size with zero-initialized memory.
-  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
-    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
-  }
-
-  /// Creates a new array buffer of the given size. When `initializeToZero` is `false`, the memory is left
-  /// uninitialized, so write every byte before the buffer is visible to JavaScript. Otherwise JavaScript
-  /// can read bytes that earlier allocations left in that memory, which can hold data from elsewhere in
-  /// the app. When `reportsMemory` is `false`, report the memory with `setExternalMemoryPressure(_:)`
-  /// after you create the other objects you need.
-  @usableFromInline
-  internal func createArrayBuffer(
+  /// Creates a new array buffer of the given size. By default, its memory is zero-initialized and reported
+  /// to the garbage collector.
+  ///
+  /// When `initializeToZero` is `false`, the memory is left uninitialized, so write every byte before the
+  /// buffer is visible to JavaScript. Otherwise JavaScript can read bytes that earlier allocations left in
+  /// that memory, which can hold data from elsewhere in the app. When `reportsMemory` is `false`, report the
+  /// memory with `JavaScriptObject.setExternalMemoryPressure(_:)` after you create the other objects you need.
+  public func createArrayBuffer(
     size: Int,
     initializeToZero: Bool = true,
     reportsMemory: Bool = true
   ) -> JavaScriptArrayBuffer {
     let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, reportsMemory)
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /// Keeps the ABI symbol of `createArrayBuffer(size:)`, which prebuilt binaries that inlined `Data.encode`
+  /// still call.
+  @usableFromInline
+  internal func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    return createArrayBuffer(size: size, initializeToZero: true, reportsMemory: true)
   }
 
   /// Creates a new array buffer that wraps the given native data pointer.
