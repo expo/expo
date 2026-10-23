@@ -37,13 +37,21 @@ extension Data: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    let arrayBuffer = runtime.createArrayBuffer(size: value.count, initializeToZero: false)
+    let arrayBuffer = runtime.createUnreportedArrayBuffer(size: value.count)
     value.withUnsafeBytes { rawBuffer in
       if let baseAddress = rawBuffer.baseAddress, value.count > 0 {
         memcpy(arrayBuffer.data(), baseAddress, value.count)
       }
     }
-    return try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
+    let uint8Array = try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
+    // Reported only after the `Uint8Array` exists. After the report, Hermes can start a young-generation
+    // collection at the next allocation. If that allocation were the `Uint8Array`, the buffer, which this
+    // function still references, would survive and move to the old generation, which a slower
+    // collection frees.
+    if value.count > 0 {
+      arrayBuffer.asValue().getObject().setExternalMemoryPressure(value.count)
+    }
+    return uint8Array
   }
 }
 
