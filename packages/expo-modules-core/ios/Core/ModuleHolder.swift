@@ -57,8 +57,15 @@ public final class ModuleHolder {
     post(event: .moduleCreate)
   }
 
+  /// Merges the entries from `_synthesizedDefinition()` into the user-authored definition. Only module
+  /// binaries built with earlier `@ExpoModule` macros return any, so other modules take the fast path.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
-    let definition = module.definition()
+    let userDefinition = module.definition()
+    let synthesized = module._synthesizedDefinition()
+    let definition =
+      synthesized.isEmpty
+      ? userDefinition
+      : ModuleDefinition(definitions: synthesized + userDefinition.rawDefinitions)
 
     // A macro module describes its name through the synthesized `_jsName` rather than a `Name(…)`
     // entry, so fill it in here. The definition's name backs `__expo_module_name__` and the view
