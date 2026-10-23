@@ -43,7 +43,7 @@
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },
-    "./prebuiltArtifactPaths": {
+    "./internal/prebuiltArtifactPaths": {
       "types": {
         "expo-source": "./src/prebuiltArtifactPaths.ts",
         "default": "./build/prebuiltArtifactPaths.d.ts"

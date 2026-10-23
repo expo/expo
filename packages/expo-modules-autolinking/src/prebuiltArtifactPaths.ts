@@ -1,14 +1,14 @@
 import path from 'path';
 
 /**
- * Grammar of the prebuilt xcframework artifact layout. The producer (`et prebuild`),
- * the CocoaPods integrator and the remote artifact cache each still encode their own
- * copy; this module is the one they are being migrated onto.
+ * Where precompiled iOS xcframeworks are stored, locally and in the remote artifact store.
+ * `et prebuild` writes artifacts with it (`tools/src/prebuilds/Frameworks.ts`, through the
+ * `internal/prebuiltArtifactPaths` subpath), and `prebuiltMetadata.ts` uses it to tell
+ * consumers where to look. `scripts/ios/precompiled_modules.rb` still has its own copy.
  *
- * Every function here is pure: it turns already-resolved strings into paths.
- * Which base actually holds an artifact depends on the flavor chosen at build
- * time and on what exists on disk, so this module emits ordered candidate bases
- * plus base-relative suffixes and leaves the probing to each caller.
+ * Which base holds an artifact depends on the flavor chosen at build time and on what
+ * exists on disk, so callers get ordered candidate bases plus base-relative suffixes and
+ * do the probing themselves.
  */
 
 export type PrebuiltFlavor = 'debug' | 'release';
@@ -49,7 +49,6 @@ export type ArtifactBaseOptions =
   | (CommonArtifactBaseOptions & { type: 'internal'; versionPrefix?: never })
   | (CommonArtifactBaseOptions & { type: 'external'; versionPrefix?: string | null });
 
-/** The base an already-resolved build path holds its artifacts under. */
 export function getArtifactBase(buildPath: string, versionPrefix?: string | null): string {
   const output = path.join(buildPath, ARTIFACT_OUTPUT_DIR);
   return versionPrefix ? path.join(output, versionPrefix) : output;
@@ -89,7 +88,6 @@ export interface ArtifactSuffixes {
   tarball: string;
 }
 
-/** Base-relative directory holding every product of one flavor. */
 export function getArtifactDirSuffix(flavor: PrebuiltFlavor): string {
   return path.posix.join(flavor, XCFRAMEWORKS_DIR);
 }
@@ -109,11 +107,8 @@ export function getArtifactSuffixes(productName: string, flavor: PrebuiltFlavor)
  * Unlike the suffixes above this is not base-relative: it starts at the package
  * name, and it stays slash-separated because it is also a URL path.
  *
- * The version prefix is always included. The CocoaPods integrator derives this key from
- * the base it resolved the artifact from, so a fall back to the npm-bundled directory
- * silently drops the prefix and points the key at nothing — the remote store is always
- * written with versioned paths. Switching Ruby onto this module fixes that, and changes
- * the key for any consumer that cached the unversioned form.
+ * The version prefix is included even when the artifact was found in an unversioned
+ * base, because the remote store is always written with versioned paths.
  */
 export function getRemoteArtifactKey(
   npmPackage: string,

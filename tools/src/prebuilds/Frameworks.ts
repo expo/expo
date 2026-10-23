@@ -7,7 +7,7 @@ import {
   getArtifactSuffixes,
   getSharedSpmDepSuffix,
   type PrebuiltFlavor,
-} from 'expo-modules-autolinking/prebuiltArtifactPaths';
+} from 'expo-modules-autolinking/internal/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
