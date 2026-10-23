@@ -20,7 +20,7 @@ Coding agents must read [AGENTS.md](./AGENTS.md) before they edit. Pull request 
 
 We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of Expo Go (in `apps/expo-go`). The Expo Go app is difficult to set up and requires API tokens.
 
-The `bare-expo` project includes most of the Expo SDK. It runs the JavaScript code from `apps/test-suite` and `apps/native-component-list`. That allows you to browse the Expo SDK components and APIs and easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request. The iOS jobs run only when the pull request is ready for review, not while it is a draft.
+The `bare-expo` project includes most of the Expo SDK. It runs the JavaScript code from `apps/test-suite` and `apps/native-component-list`. That allows you to browse the Expo SDK components and APIs and easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request. The iOS jobs and the Android e2e and instrumentation tests run only when the pull request is ready for review, not while it is a draft.
 
 Manual smoke tests are included in `apps/native-component-list`, which is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or if there is something very difficult to test in an automated way but would be easy to verify through manual interaction.
 
@@ -223,7 +223,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, `Screenshots`, and `Checklist`. Delete the HTML comments when you fill them in.
 
-Open the pull request as a draft while you work on it. CI does not run the iOS jobs (unit tests, build and e2e) on drafts, because they use paid macOS runners. Mark the pull request ready for review when you want them to run.
+Open the pull request as a draft while you work on it. CI does not run the slow and paid jobs on drafts: the iOS unit tests, the iOS and Android builds and e2e tests, and the Android instrumentation tests. Mark the pull request ready for review when you want them to run.
 
 Keep the pull request small enough to read in one pass. Limit a code change to one published package, plus its changeset. Put a documentation change that can land alone in its own pull request. CI also finishes faster when docs are separate. See [Before Submitting](#-before-submitting).
 
@@ -272,7 +272,7 @@ Say what you ran, where you ran it, and the result.
 
 - Give the command, or the device or simulator, and the result.
 - If there is no automated test, give the steps a reviewer can repeat.
-- If you did not run a test, say that and open the pull request as a draft. CI runs the iOS tests after you mark it ready for review.
+- If you did not run a test, say that and open the pull request as a draft. CI runs the iOS and e2e tests after you mark it ready for review.
 
 ### Screenshots
 

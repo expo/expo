@@ -133,13 +133,13 @@ jobs:
             pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
-      - name: 📝 Note skipped iOS jobs
+      - name: 📝 Note skipped jobs
         if: github.event.pull_request.draft
-        run: echo "iOS jobs don't run on draft pull requests. Mark the pull request ready for review to run them." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "The build and e2e jobs don't run on draft pull requests. Mark the pull request ready for review to run them." >> "$GITHUB_STEP_SUMMARY"
   ios-build:
     runs-on: blacksmith-6vcpu-macos-26
     needs: detect-platform-changes
-    # Draft pull requests skip the paid macOS jobs (ios-test-e2e needs this job, so it skips too).
+    # Draft pull requests skip the build jobs, and so the e2e jobs that need them.
     # Marking the pull request ready for review runs them.
     if: >-
       needs.detect-platform-changes.outputs.should_build_ios == 'true' &&
@@ -352,7 +352,9 @@ jobs:
   android-build:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: detect-platform-changes
-    if: needs.detect-platform-changes.outputs.should_build_android == 'true'
+    if: >-
+      needs.detect-platform-changes.outputs.should_build_android == 'true' &&
+      (github.event_name != 'pull_request' || !github.event.pull_request.draft)
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
