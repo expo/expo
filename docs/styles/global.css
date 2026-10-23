@@ -185,8 +185,10 @@ div.tippy-box {
 /* iOS Safari fills the area under its toolbar with one color when a fixed element touches the
    bottom edge, and it clips fixed elements at the layout viewport bottom, which cuts the card
    shadow. The document does not scroll with the nested scroll layout, so an absolute root stays
-   in place. */
-html.ios-webkit:has([data-nested-scroll-layout]) [data-testid='cookie-banner-root'] {
+   in place. DataGrail renders the banner in the host element and positions it with a :host rule;
+   page styles override that rule on the host. The modal layout is a full-viewport overlay, so it
+   keeps its fixed position. */
+html.ios-webkit:has([data-nested-scroll-layout]) aside.dg-consent-banner:not(.dg-modal) {
   position: absolute;
 }
 
