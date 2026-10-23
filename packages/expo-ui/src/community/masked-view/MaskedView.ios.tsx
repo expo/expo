@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Host } from '../../swift-ui/Host';
 import { Mask } from '../../swift-ui/Mask';
 import { RNHostView } from '../../swift-ui/RNHostView';
+import { getMaskedViewLayout } from './layout';
 import type { MaskedViewProps } from './types';
 
 /**
@@ -11,21 +12,41 @@ import type { MaskedViewProps } from './types';
  */
 export function MaskedView(props: MaskedViewProps) {
   const { maskElement, children, style, ...viewProps } = props;
-  // `style` is applied only to the outer container. Re-applying it inside the
-  // Host/Mask wrappers used to double offsets (`translateX`, `marginLeft`, …)
-  // and transforms because the inner views inherit layout from `absoluteFill`.
+  const { outerStyle, contentStyle, matchContents } = getMaskedViewLayout(style);
+  const mask = (
+    <Mask.Content>
+      <RNHostView>
+        <View style={StyleSheet.absoluteFill}>{maskElement}</View>
+      </RNHostView>
+    </Mask.Content>
+  );
+
+  if (matchContents) {
+    return (
+      <View {...viewProps} style={outerStyle}>
+        <Host matchContents ignoreSafeArea="all">
+          <Mask alignment="topLeading">
+            <RNHostView matchContents>
+              {/* Not flattened, so its padding stays inside the mask. */}
+              <View collapsable={false} style={contentStyle}>
+                {children}
+              </View>
+            </RNHostView>
+            {mask}
+          </Mask>
+        </Host>
+      </View>
+    );
+  }
+
   return (
-    <View {...viewProps} style={style}>
+    <View {...viewProps} style={outerStyle}>
       <Host style={StyleSheet.absoluteFill} ignoreSafeArea="all">
         <Mask alignment="topLeading">
           <RNHostView>
-            <View style={StyleSheet.absoluteFill}>{children}</View>
+            <View style={[StyleSheet.absoluteFill, contentStyle]}>{children}</View>
           </RNHostView>
-          <Mask.Content>
-            <RNHostView>
-              <View style={StyleSheet.absoluteFill}>{maskElement}</View>
-            </RNHostView>
-          </Mask.Content>
+          {mask}
         </Mask>
       </Host>
     </View>
