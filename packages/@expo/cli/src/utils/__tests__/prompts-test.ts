@@ -34,7 +34,7 @@ describe(promptAsync, () => {
     );
 
     expect(write.mock.calls[0]).toEqual([
-      `\x1b]7501;state=blocked:app=expo:kind=auth:msg=${Buffer.from('One-time password').toString('base64')}\x1b\\`,
+      '\x1b]7501;state=blocked:app=expo:kind=auth:msg=T25lLXRpbWUgcGFzc3dvcmQ=\x1b\\',
     ]);
   });
 });
