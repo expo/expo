@@ -136,7 +136,7 @@ On iOS, controller commands, browser input, and actions recorded as session even
 
 <Collapsible summary="Why does a controller command say that the remote daemon is unavailable?">
 
-The controller connection dropped, or the session stopped. A dropped connection also removes the installed app state and the snapshot references. Stop the session if it is still active, start a new session, and repeat the install, open, and drive steps. See [Troubleshoot Expo Simulators](/preview/simulators/troubleshooting/).
+The controller endpoint is unavailable, but the error alone does not prove that the session stopped or that installed apps were removed. Check the original ID with `eas simulator:get --id <session-id> --json`. If the session is still running, check its connection details before replacing it. Stop the original session explicitly if you need a new one. See [Troubleshoot Expo Simulators](/preview/simulators/troubleshooting/#remote-daemon-is-unavailable-or-the-tunnel-endpoint-is-offline).
 
 </Collapsible>
 
