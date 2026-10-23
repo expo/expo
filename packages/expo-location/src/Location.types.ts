@@ -381,6 +381,22 @@ export type LocationHeadingObject = {
    * - `0`: > 50 degrees
    */
   accuracy: number;
+  /**
+   * Heading accuracy in degrees, or `null` when the reading is invalid.
+   * @platform ios
+   */
+  headingAccuracy?: number | null;
+};
+
+/**
+ * Type representing options object that can be passed to `watchHeadingAsync`.
+ */
+export type LocationHeadingOptions = {
+  /**
+   * Minimum heading change, in degrees, between updates. Pass `0` to receive every reading.
+   * @default `1` on iOS, about `2` on Android
+   */
+  headingFilter?: number;
 };
 
 // @needsAudit

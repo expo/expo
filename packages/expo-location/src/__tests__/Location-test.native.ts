@@ -79,6 +79,52 @@ if (Platform.OS === 'android') {
   });
 }
 
+describe('watchHeadingAsync', () => {
+  it(`passes heading options to the native module`, async () => {
+    const watchDeviceHeading = jest.fn(async () => {});
+    mockProperty(ExpoLocation, 'watchDeviceHeading', watchDeviceHeading);
+
+    const subscription = await Location.watchHeadingAsync(jest.fn(), undefined, {
+      headingFilter: 0.5,
+    });
+
+    expect(watchDeviceHeading).toHaveBeenCalledWith(Location._getCurrentWatchId(), {
+      headingFilter: 0.5,
+    });
+    subscription.remove();
+  });
+
+  it(`passes empty options when none are given`, async () => {
+    const watchDeviceHeading = jest.fn(async () => {});
+    mockProperty(ExpoLocation, 'watchDeviceHeading', watchDeviceHeading);
+
+    const subscription = await Location.watchHeadingAsync(jest.fn());
+
+    expect(watchDeviceHeading).toHaveBeenCalledWith(Location._getCurrentWatchId(), {});
+    subscription.remove();
+  });
+
+  it(`receives heading events with unbucketed heading accuracy`, async () => {
+    const callback = jest.fn();
+    mockProperty(
+      ExpoLocation,
+      'watchDeviceHeading',
+      jest.fn(async () => {})
+    );
+
+    const subscription = await Location.watchHeadingAsync(callback);
+    emitNativeHeadingUpdate({ trueHeading: 8, magHeading: 9, accuracy: 3, headingAccuracy: 5 });
+
+    expect(callback).toHaveBeenCalledWith({
+      trueHeading: 8,
+      magHeading: 9,
+      accuracy: 3,
+      headingAccuracy: 5,
+    });
+    subscription.remove();
+  });
+});
+
 describe('reverseGeocodeAsync', () => {
   it(`rejects non-numeric latitude/longitude`, () => {
     // We need to cast these latitude/longitude strings to any type, so TypeScript diagnostics will pass here.
@@ -142,5 +188,12 @@ function emitNativeLocationUpdate(location: any) {
   ExpoLocation.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
+  });
+}
+
+function emitNativeHeadingUpdate(heading: any) {
+  ExpoLocation.emit('Expo.headingChanged', {
+    watchId: Location._getCurrentWatchId(),
+    heading,
   });
 }
