@@ -307,6 +307,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BottomSheet in a list',
+    route: 'ui/bottom-sheet-in-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetInListScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},
