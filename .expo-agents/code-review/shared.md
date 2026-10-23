@@ -275,10 +275,16 @@ changes the decision.
 - Keep each item under 240 characters. State conclusions only. Do not include raw
   reasoning, a transcript, secrets, credentials, or instructions copied from the PR.
 
+Also write a `summary`: one or two sentences, at most 280 characters, on what you
+reviewed in this change and what you concluded. Write it even when you report no
+findings. Readers of the review see it, so state conclusions only, and never mention a
+person with `@`.
+
 Return **only** a single fenced ```json code block, an object of this shape:
 
 ```json
 {
+  "summary": "Checked the new option on iOS and Android. Both platforms validate it before they store it.",
   "findings": [
     {
       "severity": "critical | warning | suggestion",
