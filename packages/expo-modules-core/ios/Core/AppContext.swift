@@ -582,18 +582,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }) {
         instance = cachedInstance
       } else {
-        let built: JavaScriptObject
-        if let classDefinition = self.findClassDefinition(for: typeId) {
-          built = try classDefinition.buildPrototype(
-            in: runtime,
-            appContext: self,
-            basePrototype: sharedObjectBaseProto.getObject()
-          )
-        } else if let classType = self.findClassType(for: typeId) {
-          built = try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: sharedObjectBaseProto.getObject())
-        } else {
-          throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
-        }
+        let built = try self.buildWorkletPrototype(
+          for: type(of: nativeObject),
+          in: runtime,
+          basePrototype: sharedObjectBaseProto.getObject()
+        )
         instance = runtime.createObject(prototype: built)
         prototypeCache.store[typeId] = built.ref()
       }
@@ -603,6 +596,27 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
 
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
+  }
+
+  /**
+   Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
+   that defines it or from a module that registers it in `_classTypes`.
+   */
+  @JavaScriptActor
+  private func buildWorkletPrototype(
+    for nativeType: SharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    basePrototype: consuming JavaScriptObject
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(nativeType)
+
+    if let classDefinition = findClassDefinition(for: typeId) {
+      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+    }
+    if let classType = findClassType(for: typeId) {
+      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+    }
+    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
   }
 
   /**
