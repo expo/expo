@@ -482,8 +482,7 @@ class AudioRecorder(
         type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
         type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
         type == AudioDeviceInfo.TYPE_USB_DEVICE ||
-        type == AudioDeviceInfo.TYPE_USB_HEADSET ||
-        type == AudioDeviceInfo.TYPE_BLE_HEADSET
+        type == AudioDeviceInfo.TYPE_USB_HEADSET
       ) {
         getMapFromDeviceInfo(deviceInfo)
       } else {
@@ -499,7 +498,7 @@ class AudioRecorder(
       throw SetAudioInputNotSupportedException()
     }
 
-    if (deviceInfo != null && (deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || deviceInfo.type == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
+    if (deviceInfo != null && deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         audioManager.setCommunicationDevice(deviceInfo)
       } else {
