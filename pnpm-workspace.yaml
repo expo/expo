@@ -42,6 +42,8 @@ minimumReleaseAgeExclude:
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
+  metro-resolver@0.87.1: patches/metro-resolver@0.87.1.patch
+  metro@0.87.1: patches/metro@0.87.1.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch

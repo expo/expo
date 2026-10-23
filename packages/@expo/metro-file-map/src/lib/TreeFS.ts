@@ -20,6 +20,7 @@ import type {
   FileSystemListener,
   LookupResult,
   MutableFileSystem,
+  OpenedDir,
   Path,
   ProcessFileFunction,
 } from '../types';
@@ -441,6 +442,80 @@ export default class TreeFS implements MutableFileSystem {
       canonicalPath
     );
     return { exists: true, links, realPath, type: 'f', metadata: node };
+  }
+
+  /**
+   * Resolve the directory once for repeated basename lookups. Traversed
+   * symlinks are included in each child's links, including missing children.
+   * Handles must not be reused after filesystem mutations.
+   */
+  openDir(mixedPath: Path): OpenedDir | null {
+    const links = new Set<string>();
+    const result = this.#lookup(this.#normalizePath(mixedPath), links);
+    if (!result.exists || !isDirectory(result.node)) {
+      return null;
+    }
+    const { canonicalPath, node, ancestorOfRootIdx } = result;
+    // Ancestor Maps omit the child leading back toward the project root.
+    const childBasenameTowardRoot =
+      ancestorOfRootIdx != null && ancestorOfRootIdx > 0
+        ? this.#pathUtils.getBasenameOfNthAncestor(ancestorOfRootIdx - 1)
+        : null;
+    const requestedPath = mixedPath.endsWith(path.sep) ? mixedPath.slice(0, -1) : mixedPath;
+    return {
+      realPath: this.#pathUtils.normalToAbsolute(canonicalPath),
+      lookup: (basename: string): LookupResult => {
+        if (
+          basename === childBasenameTowardRoot ||
+          basename.length === 0 ||
+          basename === '.' ||
+          basename === '..' ||
+          basename.includes(path.sep) ||
+          (path.sep !== '/' && basename.includes('/'))
+        ) {
+          // Keep the original path so normalization and symlink tracking agree with lookup.
+          return this.lookup(mixedPath === '' ? basename : requestedPath + path.sep + basename);
+        }
+        let child: MixedNode | null | undefined = node.get(basename);
+        if (child == null && this.#fallbackFilesystem != null) {
+          child = this.#populateFromFilesystem(node, basename, canonicalPath, links.size > 0);
+        }
+        const childCanonicalPath =
+          canonicalPath === '' ? basename : canonicalPath + path.sep + basename;
+        if (child == null) {
+          return {
+            exists: false,
+            links: new Set(links),
+            missing: this.#pathUtils.normalToAbsolute(childCanonicalPath),
+          };
+        } else if (isDirectory(child)) {
+          return {
+            exists: true,
+            links: new Set(links),
+            realPath: this.#pathUtils.normalToAbsolute(childCanonicalPath),
+            type: 'd',
+          };
+        } else if (isRegularFile(child)) {
+          return {
+            exists: true,
+            links: new Set(links),
+            realPath: this.#pathUtils.normalToAbsolute(childCanonicalPath),
+            type: 'f',
+            metadata: child,
+          };
+        }
+        // Use normal traversal for symlink leaves, including cycle detection.
+        const followed = this.lookup(this.#pathUtils.normalToAbsolute(childCanonicalPath));
+        if (links.size === 0) {
+          return followed;
+        }
+        const merged = new Set(links);
+        for (const link of followed.links) {
+          merged.add(link);
+        }
+        return { ...followed, links: merged };
+      },
+    };
   }
 
   getAllFiles(): Path[] {
