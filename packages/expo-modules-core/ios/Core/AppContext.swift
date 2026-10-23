@@ -582,14 +582,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }) {
         instance = cachedInstance
       } else {
-        guard let classDefinition = self.findClassDefinition(for: typeId) else {
+        let built: JavaScriptObject
+        if let classDefinition = self.findClassDefinition(for: typeId) {
+          built = try classDefinition.buildPrototype(
+            in: runtime,
+            appContext: self,
+            basePrototype: sharedObjectBaseProto.getObject()
+          )
+        } else if let classType = self.findClassType(for: typeId) {
+          built = try classType.buildJavaScriptPrototype(in: runtime, basePrototype: sharedObjectBaseProto.getObject())
+        } else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
         }
-        let built = try classDefinition.buildPrototype(
-          in: runtime,
-          appContext: self,
-          basePrototype: sharedObjectBaseProto.getObject()
-        )
         instance = runtime.createObject(prototype: built)
         prototypeCache.store[typeId] = built.ref()
       }
@@ -611,6 +615,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
            sharedObjectType.typeIdentifier == typeId {
           return classDefinition
         }
+      }
+    }
+    return nil
+  }
+
+  /**
+   Finds the `@SharedObject` class for a given native type identifier among the classes that modules register by type.
+   */
+  private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
+    for module in moduleRegistry {
+      if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
+        return classType
       }
     }
     return nil

@@ -111,6 +111,12 @@ open class SharedObject: AnySharedObject {
 
   // MARK: - Macro-synthesized JSI hooks
 
+  /// The name of the class in JavaScript. Overridden by the `@SharedObject` macro with the class name
+  /// or the `@SharedObject("CustomName")` argument. A module registers the class through `_classTypes`.
+  open class var _jsName: String {
+    return unqualifiedTypeName(self)
+  }
+
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
   /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
   @JavaScriptActor
