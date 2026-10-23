@@ -1187,6 +1187,19 @@ internal enum TextLinePattern: String, Enumerable {
   case dashDotDot
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
+internal extension TextLinePattern {
+  func toSwiftUI() -> Text.LineStyle.Pattern {
+    switch self {
+    case .solid: return .solid
+    case .dash: return .dash
+    case .dot: return .dot
+    case .dashDot: return .dashDot
+    case .dashDotDot: return .dashDotDot
+    }
+  }
+}
+
 internal struct TextUnderLine: ViewModifier, Record {
   @Field var isActive: Bool = false
   @Field var pattern: TextLinePattern = .solid
@@ -1635,6 +1648,14 @@ public class ViewModifierRegistry {
         return text.foregroundColor(color)
       }
       return text
+    case "underline":
+      guard #available(iOS 16.0, macOS 13.0, tvOS 16.0, *),
+            let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
+      return text.underline(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
+    case "strikethrough":
+      guard #available(iOS 16.0, macOS 13.0, tvOS 16.0, *),
+            let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
+      return text.strikethrough(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     default:
       #if DEBUG
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
