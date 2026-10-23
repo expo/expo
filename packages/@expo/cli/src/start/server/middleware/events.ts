@@ -10,6 +10,7 @@ declare module '2g' {
     'manifest:no_platform_header': Record<string, never>;
     'manifest:resolved_entry': { path: string };
     'manifest:runtime_version_resolved': { result: string };
+    'manifest:runtime_version_cache_disabled': { error: SerializedError };
   }
 }
 
