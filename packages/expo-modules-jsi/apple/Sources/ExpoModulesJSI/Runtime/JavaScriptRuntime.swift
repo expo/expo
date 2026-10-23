@@ -281,6 +281,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
 
+  /// Creates a new array buffer of the given size. When `initializeToZero` is `false`, the memory is left
+  /// uninitialized, so write every byte before the buffer is visible to JavaScript.
+  @usableFromInline
+  internal func createArrayBuffer(size: Int, initializeToZero: Bool) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
   /// Creates a new array buffer that wraps the given native data pointer.
   /// The cleanup closure is called when the array buffer is garbage collected.
   public func createArrayBuffer(data: UnsafeMutablePointer<UInt8>, size: Int, cleanup: @escaping @Sendable () -> Void)

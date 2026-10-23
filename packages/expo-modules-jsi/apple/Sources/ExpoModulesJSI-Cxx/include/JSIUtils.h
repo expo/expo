@@ -493,10 +493,11 @@ inline uint8_t *arrayBufferData(jsi::IRuntime &runtime, const jsi::ArrayBuffer &
 }
 
 /**
- * Creates a new array buffer of the given size with zero-initialized memory.
+ * Creates a new array buffer of the given size. When `initializeToZero` is false, the memory is left
+ * uninitialized and the caller must write every byte before JavaScript can read the buffer.
  */
-inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
-  uint8_t *data = new uint8_t[size]();
+inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, bool initializeToZero) {
+  uint8_t *data = initializeToZero ? new uint8_t[size]() : new uint8_t[size];
   auto buffer = std::make_shared<MemoryBuffer>(data, size, [data]() { delete[] data; });
   jsi::ArrayBuffer arrayBuffer(runtime, std::move(buffer));
   // Hermes does not count the memory of a buffer that it did not allocate, so without this
@@ -506,6 +507,13 @@ inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
     setExternalMemoryPressure(runtime, arrayBuffer, size);
   }
   return arrayBuffer;
+}
+
+/**
+ * Creates a new array buffer of the given size with zero-initialized memory.
+ */
+inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
+  return createArrayBuffer(runtime, size, true);
 }
 
 /**

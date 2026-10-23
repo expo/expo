@@ -37,7 +37,7 @@ extension Data: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    let arrayBuffer = runtime.createArrayBuffer(size: value.count)
+    let arrayBuffer = runtime.createArrayBuffer(size: value.count, initializeToZero: false)
     value.withUnsafeBytes { rawBuffer in
       if let baseAddress = rawBuffer.baseAddress, value.count > 0 {
         memcpy(arrayBuffer.data(), baseAddress, value.count)
