@@ -150,9 +150,17 @@ class ExpoUIModule : Module() {
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
       }
+    }
 
-      // A presenting Host keeps its children in its presentation root.
-      GroupView<HostView> {
+    View(PresentationHostView::class) {
+      Events("onLayoutContent")
+
+      OnViewDidUpdateProps { view ->
+        view.onViewDidUpdateProps()
+      }
+
+      // React Native mounts the children in the presentation root.
+      GroupView<PresentationHostView> {
         AddChildView { parent, child: View, index ->
           parent.childContainer.addView(child, index)
         }

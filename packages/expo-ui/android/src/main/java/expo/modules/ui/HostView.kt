@@ -5,8 +5,6 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.MotionEvent
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -77,8 +75,7 @@ internal data class HostProps(
   val useViewportSizeMeasurement: MutableState<Boolean> = mutableStateOf(false),
   val ignoreSafeAreaKeyboardInsets: MutableState<Boolean> = mutableStateOf(false),
   val matchContentsHorizontal: MutableState<Boolean?> = mutableStateOf(null),
-  val matchContentsVertical: MutableState<Boolean?> = mutableStateOf(null),
-  val presentsInWindow: MutableState<Boolean> = mutableStateOf(false)
+  val matchContentsVertical: MutableState<Boolean?> = mutableStateOf(null)
 ) : ComposeProps
 
 internal enum class ExpoColorScheme(val value: String) : Enumerable {
@@ -120,7 +117,7 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 }
 
 @SuppressLint("ViewConstructor")
-internal class HostView(context: Context, appContext: AppContext) :
+internal open class HostView(context: Context, appContext: AppContext) :
   ExpoComposeView<HostProps>(context, appContext, withHostingView = true) {
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
@@ -151,10 +148,13 @@ internal class HostView(context: Context, appContext: AppContext) :
     }
   }
 
+  // False when the children render somewhere else, like a presentation root.
+  protected open val rendersChildren: Boolean
+    get() = true
+
   @Composable
   override fun ComposableScope.Content() {
-    // Presented content renders from its presentation root instead.
-    if (presentationRoot != null) {
+    if (!rendersChildren) {
       return
     }
     HostTheme {
@@ -389,7 +389,6 @@ internal class HostView(context: Context, appContext: AppContext) :
   }
 
   internal fun onViewDidUpdateProps() {
-    updatePresentsInWindow()
     val matchContentsHorizontal = props.matchContentsHorizontal.value
     val matchContentsVertical = props.matchContentsVertical.value
     val composeView = findComposeView()
@@ -405,53 +404,6 @@ internal class HostView(context: Context, appContext: AppContext) :
         LayoutParams.MATCH_PARENT
       }
     )
-  }
-
-  // Like React Native's `Modal`, a Host that presents in its own window keeps its children in a root
-  // attached to the activity, so where this view sits, its size, or a list clipping it can't affect them.
-  internal var presentationRoot: PresentationRootView? = null
-    private set
-
-  internal val childContainer: ViewGroup
-    get() = presentationRoot ?: this
-
-  private fun updatePresentsInWindow() {
-    val presentsInWindow = props.presentsInWindow.value
-    if (presentsInWindow == (presentationRoot != null)) {
-      return
-    }
-    if (presentsInWindow) {
-      val content = appContext.currentActivity?.findViewById<ViewGroup>(android.R.id.content) ?: return
-      val root = PresentationRootView(context, appContext, this)
-      moveReactChildren(from = this, to = root)
-      content.addView(root, FrameLayout.LayoutParams(0, 0))
-      presentationRoot = root
-    } else {
-      val root = presentationRoot ?: return
-      presentationRoot = null
-      moveReactChildren(from = root, to = this)
-      removePresentationRoot(root)
-    }
-    recomposeScope?.invalidate()
-  }
-
-  private fun moveReactChildren(from: ViewGroup, to: ViewGroup) {
-    val children = (0 until from.childCount).map { from.getChildAt(it) }.filter { it !is ComposeView }
-    children.forEach {
-      from.removeView(it)
-      to.addView(it, to.childCount - 1)
-    }
-  }
-
-  private fun removePresentationRoot(root: PresentationRootView) {
-    (root.parent as? ViewGroup)?.removeView(root)
-    root.disposeHostedComposition()
-  }
-
-  override fun disposeHostedComposition() {
-    presentationRoot?.let(::removePresentationRoot)
-    presentationRoot = null
-    super.disposeHostedComposition()
   }
 
   private fun findComposeView(): ComposeView {
@@ -473,21 +425,3 @@ internal data class LayoutContentEvent(
   @Field
   val height: Double?
 ) : Record
-
-/**
- * The root a presenting [HostView] mounts its children in, attached to the activity like the dialog
- * root of React Native's `Modal`.
- */
-@SuppressLint("ViewConstructor")
-internal class PresentationRootView(
-  context: Context,
-  appContext: AppContext,
-  private val host: HostView
-) : ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
-  @Composable
-  override fun ComposableScope.Content() {
-    host.HostTheme {
-      Children(this@Content)
-    }
-  }
-}

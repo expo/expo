@@ -105,6 +105,12 @@ const HostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
   'HostView'
 );
 
+// For content that presents in its own window. Its children mount in a root attached to the activity.
+const PresentationHostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
+  'ExpoUI',
+  'PresentationHostView'
+);
+
 export function Host(props: HostProps) {
   const {
     matchContents,
@@ -116,8 +122,10 @@ export function Host(props: HostProps) {
     colorOverrides,
     ref,
     children,
+    presentsInWindow,
     ...restProps
   } = props;
+  const NativeView = presentsInWindow ? PresentationHostNativeView : HostNativeView;
   const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
 
   const systemScheme = useRNColorScheme();
@@ -142,7 +150,7 @@ export function Host(props: HostProps) {
   return (
     <HostPaletteContext.Provider value={palette}>
       <TextInputHostProvider hostRef={hostRef}>
-        <HostNativeView
+        <NativeView
           {...restProps}
           modifiers={modifiers}
           matchContentsVertical={
@@ -160,7 +168,7 @@ export function Host(props: HostProps) {
           }
           ref={mergedRef}>
           <NativeTreeContext.Provider value>{children}</NativeTreeContext.Provider>
-        </HostNativeView>
+        </NativeView>
       </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );

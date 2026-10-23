@@ -51,7 +51,7 @@ describe('BottomSheet', () => {
       </BottomSheet>
     );
 
-    expect(findNativeViewProps('HostView')?.presentsInWindow).toBe(true);
+    expect(findNativeViewProps('PresentationHostView')).toBeDefined();
     expect(findNativeViewProps('RNHostView')).toEqual(
       expect.objectContaining({ matchContentsHorizontal: false, matchContentsVertical: true })
     );
