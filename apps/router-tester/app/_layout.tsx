@@ -1,5 +1,7 @@
 import {
+  Slot,
   Stack,
+  useSegments,
   unstable_enablePerformanceIntegration,
   unstable_PerformanceObserver,
   type RouterPerformanceMark,
@@ -16,6 +18,11 @@ new unstable_PerformanceObserver((list) => {
 }).observe({ type: 'mark' });
 
 export default function Layout() {
+  const segments = useSegments();
+  // SplitView cannot be inside a native navigator, so the split view routes use a Slot root.
+  if (segments[0] === 'split-view') {
+    return <Slot />;
+  }
   return (
     <ThemeProvider
       value={{

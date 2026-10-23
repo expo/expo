@@ -2,9 +2,15 @@ import { Children, isValidElement, type ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Split } from '../optional-libraries/react-native-screens';
+import { SplitViewColumnOptionsView } from './native';
+import type { SplitViewColumnOptions } from './native.types';
 
 export interface SplitViewColumnProps {
   children?: React.ReactNode;
+  /**
+   * Options for the column navigation bar.
+   */
+  options?: SplitViewColumnOptions;
 }
 
 export function SplitViewColumn(props: SplitViewColumnProps) {
@@ -20,9 +26,12 @@ function isSplitColumnNativeChild(child: ReactNode) {
  * as a direct subview. Only the other children are wrapped in a SafeAreaProvider. The result is an array, because
  * Split.Column does not look into fragments.
  */
-export function getSplitColumnChildren(children: ReactNode) {
+export function getSplitColumnChildren(children: ReactNode, options?: SplitViewColumnOptions) {
   const childrenArray = Children.toArray(children);
-  const nativeChildren = childrenArray.filter(isSplitColumnNativeChild);
+  const nativeChildren = [
+    <SplitViewColumnOptionsView key="options" {...options} />,
+    ...childrenArray.filter(isSplitColumnNativeChild),
+  ];
   const otherChildren = childrenArray.filter((child) => !isSplitColumnNativeChild(child));
   if (otherChildren.length === 0) {
     return nativeChildren;

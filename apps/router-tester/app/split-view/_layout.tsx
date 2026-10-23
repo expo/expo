@@ -1,10 +1,12 @@
-import { Link, useGlobalSearchParams } from 'expo-router';
+import { Link, useGlobalSearchParams, useRouter } from 'expo-router';
 import { SplitView } from 'expo-router/unstable-split-view';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PlatformColor, Pressable, ScrollView, Text, View } from 'react-native';
 // Available starting from react-native-screens@4.17.0
 // import { SafeAreaView } from 'react-native-screens/experimental';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { setSpikeConfig, useSpikeConfig } from '../../utils/split-view-spike';
 
 const passkeys = ['Github', 'Google', 'Facebook', 'Twitter', 'Apple', 'Microsoft', 'Amazon'];
 const security = ['Admin1234', 'Root'];
@@ -12,15 +14,33 @@ const security = ['Admin1234', 'Root'];
 const all = [...passkeys, ...security];
 
 export default function Layout() {
+  const config = useSpikeConfig();
+  // The sidebar with the controls is hidden while the inspector is shown, so the inspector unmounts itself.
+  useEffect(() => {
+    if (config.inspector) {
+      const timeout = setTimeout(() => setSpikeConfig({ inspector: false }), 2500);
+      return () => clearTimeout(timeout);
+    }
+  }, [config.inspector]);
   return (
     <SplitView
-      preferredDisplayMode="secondaryOnly"
+      preferredDisplayMode="twoBesideSecondary"
       displayModeButtonVisibility="always"
       // primaryEdge="trailing"
-      showSecondaryToggleButton
-      // showInspector
-      preferredSplitBehavior="tile">
-      <SplitView.Column>
+      showSecondaryToggleButton={config.showSecondaryToggleButton}
+      showInspector={config.inspector}
+      preferredSplitBehavior="tile"
+      detailOptions={{
+        title: 'Detail',
+        headerShown: config.detailHeaderShown,
+        headerLargeTitle: config.headerLargeTitle,
+      }}>
+      <SplitView.Column
+        options={{
+          title: 'Sidebar',
+          headerShown: config.sidebarHeaderShown,
+          headerLargeTitle: config.headerLargeTitle,
+        }}>
         <SafeAreaView
           // edges={{ top: true, left: true }}
           edges={['left', 'top']}
@@ -36,16 +56,24 @@ export default function Layout() {
           <PasscodeCard title="Codes" param="codes" />
           <PasscodeCard title="Security" param="security" />
           <PasscodeCard title="Deleted" param="deleted" />
+          <SpikeControls />
         </SafeAreaView>
       </SplitView.Column>
-      <SplitView.Column>
+      <SplitView.Column
+        options={{
+          title: 'List',
+          headerShown: config.sidebarHeaderShown,
+          headerLargeTitle: config.headerLargeTitle,
+        }}>
         <PasswordElementList />
       </SplitView.Column>
-      <SplitView.Inspector>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Inspector</Text>
-        </View>
-      </SplitView.Inspector>
+      {config.inspector && (
+        <SplitView.Inspector>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Inspector</Text>
+          </View>
+        </SplitView.Inspector>
+      )}
     </SplitView>
   );
 }
@@ -115,5 +143,51 @@ function PasswordElement({ title }: { title: string }) {
         </SafeAreaView>
       </Pressable>
     </Link>
+  );
+}
+
+function SpikeControls() {
+  const config = useSpikeConfig();
+  const router = useRouter();
+  const toggles = [
+    ['toggle-secondary-button', 'showSecondaryToggleButton', config.showSecondaryToggleButton],
+    ['toggle-inspector', 'inspector', config.inspector],
+    ['toggle-detail-header', 'detailHeaderShown', config.detailHeaderShown],
+    ['toggle-sidebar-header', 'sidebarHeaderShown', config.sidebarHeaderShown],
+  ] as const;
+  return (
+    <View style={{ gap: 4, width: '100%' }}>
+      {toggles.map(([label, key, value]) => (
+        <Pressable
+          key={key}
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          // Header options cycle undefined (not set) -> true -> false.
+          onPress={() =>
+            setSpikeConfig({
+              [key]:
+                key === 'showSecondaryToggleButton' || key === 'inspector'
+                  ? !value
+                  : value === undefined
+                    ? true
+                    : value
+                      ? false
+                      : undefined,
+            })
+          }
+          style={{ padding: 6, backgroundColor: PlatformColor('systemGray5') }}>
+          <Text>
+            {key}: {String(value)}
+          </Text>
+        </Pressable>
+      ))}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="spike-back"
+        onPress={() => router.replace('/split-view-spike')}
+        style={{ padding: 6, backgroundColor: PlatformColor('systemGray5') }}>
+        <Text>Back</Text>
+      </Pressable>
+    </View>
   );
 }

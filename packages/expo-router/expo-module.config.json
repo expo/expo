@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule", "RouterToolbarModule"],
+    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule", "RouterToolbarModule", "SplitViewColumnOptionsModule"],
     "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
   },
   "android": {
