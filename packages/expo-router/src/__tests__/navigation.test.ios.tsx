@@ -2012,7 +2012,7 @@ describe('multi-segment dynamic layouts', () => {
   it('reuses the layout when the dynamic params stay the same', async () => {
     await renderRouter(routes, { initialUrl: '/acme/web' });
 
-    await act(() => router.push('/acme/web/settings'));
+    await act(() => router.navigate('/acme/web/settings'));
 
     expect(screen).toHavePathname('/acme/web/settings');
     expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
