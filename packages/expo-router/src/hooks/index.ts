@@ -1,6 +1,7 @@
 export { useRouteInfo } from '../global-state/useRouteInfo';
 export { useRootNavigationState } from './useRootNavigationState';
 export { useCanGoBack } from './useCanGoBack';
+export { useCanDismiss } from './useCanDismiss';
 export { useRootNavigation } from './useRootNavigation';
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useRouter } from './useRouter';
