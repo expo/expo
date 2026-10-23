@@ -1,6 +1,6 @@
 import { Link, Stack, usePathname, useRouter, type Href } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
@@ -27,6 +27,9 @@ const HomeIndex = () => {
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
+          {Platform.OS === 'ios' && (
+            <CaseLink href="/split-view-ui" text="SwiftUI Split View spike" />
+          )}
           <CaseLink href="/toolbar" text="Toolbar" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>

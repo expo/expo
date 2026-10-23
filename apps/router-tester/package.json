@@ -13,6 +13,7 @@
     "test:e2e": "./maestro/test.sh"
   },
   "dependencies": {
+    "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
