@@ -147,10 +147,16 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// - Warning: This bypasses Data's copy-on-write capabilities, effectively allowing
   ///   mutation of the Data from JavaScript code.
   public static func wrap(dataWithoutCopy data: Data) -> ArrayBuffer {
-    let retained = Unmanaged.passRetained(data as NSData)
-    let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
-    return ArrayBuffer(owning: pointer, count: data.count) {
-      retained.release()
+    // `NSData.bytes` returns an inner pointer, so the call retains and autoreleases the `NSData`, which
+    // owns the bytes. Without this pool, the bytes stay alive until the caller's pool drains, which never
+    // happens while a caller such as a JavaScript loop does not return to its run loop. `retained` keeps
+    // the `NSData` alive after this pool drains.
+    return autoreleasepool {
+      let retained = Unmanaged.passRetained(data as NSData)
+      let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
+      return ArrayBuffer(owning: pointer, count: data.count) {
+        retained.release()
+      }
     }
   }
 
