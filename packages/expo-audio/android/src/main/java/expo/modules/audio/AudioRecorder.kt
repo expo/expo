@@ -477,7 +477,14 @@ class AudioRecorder(
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
       val type = deviceInfo.type
-      if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      if (
+        type == AudioDeviceInfo.TYPE_BUILTIN_MIC ||
+        type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+        type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
+        type == AudioDeviceInfo.TYPE_USB_DEVICE ||
+        type == AudioDeviceInfo.TYPE_USB_HEADSET ||
+        type == AudioDeviceInfo.TYPE_BLE_HEADSET
+      ) {
         getMapFromDeviceInfo(deviceInfo)
       } else {
         null
@@ -492,7 +499,7 @@ class AudioRecorder(
       throw SetAudioInputNotSupportedException()
     }
 
-    if (deviceInfo != null && deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+    if (deviceInfo != null && (deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || deviceInfo.type == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         audioManager.setCommunicationDevice(deviceInfo)
       } else {
