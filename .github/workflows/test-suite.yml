@@ -257,6 +257,20 @@ jobs:
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
+      # Blacksmith's macOS VMs have no audio output device. Without one, AVPlayer can't build its
+      # audio pipeline (CoreAudio error -66680), so player items never become ready to play and
+      # the expo-video flows fail. BlackHole is a virtual output device; coreaudiod restarts to load it.
+      # The installer runs as root, so it's pinned by checksum rather than installed through Homebrew.
+      - name: 🔊 Add a virtual audio output device
+        env:
+          BLACKHOLE_VERSION: 0.6.1
+          BLACKHOLE_SHA256: c829afa041a9f6e1b369c01953c8f079740dd1f02421109855829edc0d3c1988
+        run: |
+          pkg="$RUNNER_TEMP/BlackHole2ch.pkg"
+          curl -fsSL -o "$pkg" "https://existential.audio/downloads/BlackHole2ch-$BLACKHOLE_VERSION.pkg"
+          echo "$BLACKHOLE_SHA256  $pkg" | shasum -a 256 -c -
+          sudo installer -pkg "$pkg" -target /
+          sudo killall coreaudiod || true
       - name: 🧹 Cleanup unused simulator runtimes
         run: |
           xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
