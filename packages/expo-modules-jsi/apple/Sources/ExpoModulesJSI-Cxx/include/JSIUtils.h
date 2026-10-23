@@ -468,6 +468,13 @@ inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object 
   }
 }
 
+/**
+ * Sets the external memory pressure of the array buffer. An amount that the runtime rejects is ignored.
+ */
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer, size_t amount) noexcept {
+  setExternalMemoryPressure(runtime, static_cast<const jsi::Object &>(arrayBuffer), amount);
+}
+
 // MARK: - ArrayBuffer
 
 /**

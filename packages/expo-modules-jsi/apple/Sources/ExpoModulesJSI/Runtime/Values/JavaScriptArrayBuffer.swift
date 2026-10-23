@@ -90,6 +90,18 @@ public struct JavaScriptArrayBuffer: ~Copyable {
     return JavaScriptValue(runtimeHandle, expo.valueFromArrayBuffer(jsiRuntime, pointee))
   }
 
+  // MARK: - Memory pressure
+
+  /// Sets the external memory pressure of this array buffer to its size, so the garbage collector counts
+  /// its native memory. Use it for a buffer created with `reportsMemory: false`: the runtime already counts
+  /// the memory of an array buffer that JavaScript allocates. An amount that the runtime rejects is ignored.
+  public func updateExternalMemoryPressure() {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    expo.setExternalMemoryPressure(jsiRuntime, pointee, expo.arrayBufferSize(jsiRuntime, pointee))
+  }
+
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {

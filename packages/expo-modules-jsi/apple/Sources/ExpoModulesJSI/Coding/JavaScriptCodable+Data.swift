@@ -49,7 +49,7 @@ extension Data: JavaScriptCodable {
     // function still references, would survive and move to the old generation, which a slower
     // collection frees.
     if value.count > 0 {
-      arrayBuffer.asValue().getObject().setExternalMemoryPressure(value.count)
+      arrayBuffer.updateExternalMemoryPressure()
     }
     return uint8Array
   }

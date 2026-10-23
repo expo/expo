@@ -280,8 +280,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///
   /// When `initializeToZero` is `false`, the memory is left uninitialized, so write every byte before the
   /// buffer is visible to JavaScript. Otherwise JavaScript can read bytes that earlier allocations left in
-  /// that memory, which can hold data from elsewhere in the app. When `reportsMemory` is `false`, report the
-  /// memory with `JavaScriptObject.setExternalMemoryPressure(_:)` after you create the other objects you need.
+  /// that memory, which can hold data from elsewhere in the app. When `reportsMemory` is `false`, call
+  /// `JavaScriptArrayBuffer.updateExternalMemoryPressure()` after you create the other objects you need.
   public func createArrayBuffer(
     size: Int,
     initializeToZero: Bool = true,
