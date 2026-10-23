@@ -79,15 +79,7 @@ jobs:
               # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
               bare-expo-pods-configuration: 'Debug'
               ccache-variant: 'unit-tests-debug'
-          # The `Build ExpoModulesJSI xcframework` build phase takes ~20s and everything else waits
-          # for it. It skips slices whose recorded source hash still matches, so restoring a stale
-          # cache only means a rebuild.
-          - name: ♻️ Restore ExpoModulesJSI xcframework
-            uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-            with:
-              path: packages/expo-modules-jsi/apple/Products
-              key: ios-unit-tests-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
-              restore-keys: ios-unit-tests-jsi-xcframework-
+              expo-modules-jsi-xcframework: 'true'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
