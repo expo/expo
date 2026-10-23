@@ -149,7 +149,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         // Otherwise the app would fail at runtime with a missing native module.
         if (packagesMissingModules.length > 0) {
           console.error(
-            `error: Scanning for @ExpoModule classes didn't complete (see the warnings above), so the module classes of these packages are missing from the modules provider: ${packagesMissingModules.join(', ')}. Build again to retry the scan, or declare the classes in the package's expo-module.config.json.`
+            `error: Scanning for @ExpoModule classes didn't complete (see the warnings above), so the module classes of these packages are missing from the modules provider: ${packagesMissingModules.join(', ')}. Build again to retry the scan, set EXPO_MODULES_SCAN_TIMEOUT_MS to a longer timeout in milliseconds if the scan timed out, or declare the classes in the package's expo-module.config.json.`
           );
           process.exitCode = 1;
         }
