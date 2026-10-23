@@ -90,6 +90,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
         bottomAccessory: bottomAccessoryFn,
+        tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
         ...rawIosProps,
       }}
       tabBarHidden={props.hidden}

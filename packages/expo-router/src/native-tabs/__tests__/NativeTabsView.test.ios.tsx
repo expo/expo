@@ -103,6 +103,21 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
   expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });
 
+it('sets tabBarHiddenAnimationEnabled to false when disableHiddenAnimation is true', async () => {
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs disableHiddenAnimation>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0]![0].ios?.tabBarHiddenAnimationEnabled).toBe(false);
+});
+
 describe('unstable_nativeProps', () => {
   it('forwards top-level raw props to Tabs.Host', async () => {
     await renderRouter({

@@ -410,6 +410,13 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform iOS 18+
    */
   sidebarAdaptable?: boolean;
+  /**
+   * When set to `true`, the tab bar hides and shows without animation when `hidden` changes.
+   *
+   * @default false
+   * @platform iOS 18+
+   */
+  disableHiddenAnimation?: boolean;
   // #endregion iOS props
   // #region android props
   /**
