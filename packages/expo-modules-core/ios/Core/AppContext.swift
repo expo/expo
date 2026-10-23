@@ -590,7 +590,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
             basePrototype: sharedObjectBaseProto.getObject()
           )
         } else if let classType = self.findClassType(for: typeId) {
-          built = try classType.buildJavaScriptPrototype(in: runtime, basePrototype: sharedObjectBaseProto.getObject())
+          built = try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: sharedObjectBaseProto.getObject())
         } else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
         }
