@@ -299,8 +299,8 @@ describe('module Proxy', () => {
     Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
-      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03). ' +
-        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
+      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
         'Set `errorSampleRate` to at least `sampleRate`.'
     );
   });
@@ -311,8 +311,8 @@ describe('module Proxy', () => {
     Observe.configure({ errorSampleRate: 0.5 });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
-      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1). ' +
-        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
+      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
         'Set `errorSampleRate` to at least `sampleRate`.'
     );
   });

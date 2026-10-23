@@ -76,7 +76,9 @@ export type ObserveConfig = {
    * Errors include unhandled JavaScript errors, errors from `reportError` and
    * `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`.
    *
-   * A value lower than `sampleRate` has no effect beyond `sampleRate`, and a warning is printed.
+   * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
+   * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
+   * `1`.
    *
    * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
    *

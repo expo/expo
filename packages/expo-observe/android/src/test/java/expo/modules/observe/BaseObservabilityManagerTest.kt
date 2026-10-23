@@ -376,6 +376,22 @@ class BaseObservabilityManagerTest {
     assertEquals(-1, logCursor)
   }
 
+  @Test
+  fun `when only errors are in-sample, metrics and spans are not dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
+    coEvery { sessionManager.getMaxSpanId() } returns 42
+    val manager = createManager()
+
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentSpans()
+
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(42) }
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+  }
+
   // endregion
 
   // region Fetching and dispatch tests

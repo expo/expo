@@ -49,8 +49,8 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
   const overallRate = clamp(sampleRate ?? 1);
   if (errorRate < overallRate) {
     console.warn(
-      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}). ` +
-        'Installations in-sample for `sampleRate` always send errors, according to `sampleRate`. ' +
+      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}) and has no effect. ` +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
         'Set `errorSampleRate` to at least `sampleRate`.'
     );
   }
