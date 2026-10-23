@@ -454,6 +454,20 @@ inline void getStringDataFromValue(
   getStringData(runtime, *string, ctx, callback);
 }
 
+// MARK: - Memory pressure
+
+/**
+ * Sets the external memory pressure of the object. An amount that the runtime rejects is ignored.
+ */
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object &object, size_t amount) noexcept {
+  try {
+    object.setExternalMemoryPressure(runtime, amount);
+  } catch (...) {
+    // The pressure is only a hint. Hermes throws for amounts above 32 bits or over its external
+    // memory limit, and a C++ exception that reaches Swift terminates the app.
+  }
+}
+
 // MARK: - ArrayBuffer
 
 /**

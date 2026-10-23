@@ -604,7 +604,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    pointee.setExternalMemoryPressure(jsiRuntime, size)
+    expo.setExternalMemoryPressure(jsiRuntime, pointee, size)
   }
 
   // MARK: - Equality

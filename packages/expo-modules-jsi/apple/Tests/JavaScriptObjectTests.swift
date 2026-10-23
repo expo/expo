@@ -641,6 +641,14 @@ struct JavaScriptObjectTests {
     }
   }
 
+  // MARK: - Memory pressure
+
+  @Test
+  func `set external memory pressure ignores an amount that the runtime rejects`() {
+    let object = runtime.createObject()
+    object.setExternalMemoryPressure(Int(UInt32.max) + 1)
+  }
+
   // MARK: - JavaScriptCodable
 
   @Test
