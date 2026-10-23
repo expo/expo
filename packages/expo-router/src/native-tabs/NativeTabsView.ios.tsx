@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
+import { useWarnOnce } from '../useDeprecated';
 import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
@@ -25,8 +26,14 @@ import {
 } from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =
-    props;
+  const {
+    minimizeBehavior,
+    tabs,
+    sidebarAdaptable,
+    preferredPlacement,
+    nonTriggerChildren,
+    unstable_nativeProps,
+  } = props;
   // `ios`/`android` are the only platform-nested keys on `TabsHostProps`. We drop the inactive
   // platform's slice so users writing universal code don't pass Android-only props to the iOS host.
   const {
@@ -50,6 +57,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 
   const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
+
+  useWarnOnce(
+    'NativeTabs ignores `preferredPlacement` because `sidebarAdaptable` is `false`. ' +
+      'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+      'Remove `sidebarAdaptable={false}` to use the placement, or remove `preferredPlacement`.',
+    sidebarAdaptable === false && preferredPlacement !== undefined
+  );
 
   if (
     process.env.NODE_ENV !== 'production' &&
@@ -80,8 +94,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     return null;
   }
 
+  // The placement works only in `tabSidebar` mode, so setting it enables that mode.
   const tabBarControllerMode: NonNullable<TabsHostProps['ios']>['tabBarControllerMode'] =
-    sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
+    sidebarAdaptable === false
+      ? 'tabBar'
+      : sidebarAdaptable || preferredPlacement
+        ? 'tabSidebar'
+        : 'automatic';
 
   return (
     <TabsHostWrapper
@@ -89,6 +108,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
+        tabBarSidebarPreferredPlacement: preferredPlacement,
         bottomAccessory: bottomAccessoryFn,
         tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
         ...rawIosProps,
