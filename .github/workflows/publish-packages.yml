@@ -84,6 +84,7 @@ jobs:
       # Records when .git/index.lock appears and disappears for the rest of the job, with the
       # processes that run when it appears. Trace2 records only git processes.
       - name: Trace git and watch the Git index lock
+        continue-on-error: true
         run: |
           # The system config also reaches git processes that run with a filtered environment.
           sudo git config --system trace2.eventTarget /tmp/git-trace2.json
@@ -118,30 +119,13 @@ jobs:
       - name: Prerequisites
         run: pnpm turbo run build --filter=expotools...
       # changesets/action fails while .git/index.lock exists.
-      # Deleting the lock while a Git process still holds it can corrupt the index.
       - name: Wait for the Git index lock
-        run: &wait_for_index_lock |
-          for i in $(seq 1 30); do
-            [ -e .git/index.lock ] || exit 0
-            pgrep -a -x git && rc=0 || rc=$?
-            if [ "$rc" -eq 1 ]; then
-              echo "Removing a stale .git/index.lock. No Git process is running."
-              stat -c 'size=%s mtime=%y' .git/index.lock || true
-              rm -f .git/index.lock
-              exit 0
-            elif [ "$rc" -ne 0 ]; then
-              echo "::error::pgrep failed with exit code $rc, so this step cannot tell whether .git/index.lock is stale. Re-run the job."
-              exit 1
-            fi
-            [ "$i" -eq 30 ] || sleep 1
-          done
-          echo "::error::.git/index.lock still exists after 30 seconds while the git processes listed above run. Check the 'Print Git index lock diagnostics' step for when the lock appeared, then re-run the job."
-          exit 1
+        run: bash .github/scripts/wait-for-git-index-lock.sh
       - name: Create release PR
         id: release
         continue-on-error: true
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
-        with: &changesets_inputs
+        with:
           github-token: ${{ github.token }}
           version-script: pnpm expotools version-packages
           commit-message: Version packages (${{ github.ref_name }})
@@ -149,7 +133,7 @@ jobs:
           pr-base-branch: ${{ github.ref_name }}
       - name: Wait for the Git index lock before retrying
         if: steps.release.outcome == 'failure'
-        run: *wait_for_index_lock
+        run: bash .github/scripts/wait-for-git-index-lock.sh
       # changesets/action runs `git checkout -b` when `git checkout` does not print
       # "Switched to a new branch". The first attempt may have created the branch already.
       - name: Reset the checkout before retrying
@@ -165,7 +149,12 @@ jobs:
       - name: Create release PR (retry)
         if: steps.release.outcome == 'failure'
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
-        with: *changesets_inputs
+        with:
+          github-token: ${{ github.token }}
+          version-script: pnpm expotools version-packages
+          commit-message: Version packages (${{ github.ref_name }})
+          pr-title: Version packages (${{ github.ref_name }})
+          pr-base-branch: ${{ github.ref_name }}
       - name: Print Git index lock diagnostics
         if: ${{ !cancelled() && (failure() || steps.release.outcome == 'failure') }}
         run: |
