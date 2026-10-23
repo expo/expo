@@ -497,6 +497,12 @@ export const eas = [
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
   ]),
+  makeSection('Agentic workflows', [
+    makePage('eas/agentic-workflows/introduction.mdx'),
+    makePage('eas/agentic-workflows/agentic-ci.mdx'),
+    makePage('eas/agentic-workflows/issue-to-pr.mdx'),
+    makePage('eas/agentic-workflows/bug-triage.mdx'),
+  ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
