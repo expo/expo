@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
@@ -148,6 +149,25 @@ class ExpoUIModule : Module() {
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
+      }
+
+      // A presenting Host keeps its children in its presentation root.
+      GroupView<HostView> {
+        AddChildView { parent, child: View, index ->
+          parent.childContainer.addView(child, index)
+        }
+        GetChildCount { parent ->
+          parent.childContainer.childCount
+        }
+        GetChildViewAt { parent, index ->
+          parent.childContainer.getChildAt(index)
+        }
+        RemoveChildView { parent, child: View ->
+          parent.childContainer.removeView(child)
+        }
+        RemoveChildViewAt { parent, index ->
+          parent.childContainer.removeViewAt(index)
+        }
       }
     }
 

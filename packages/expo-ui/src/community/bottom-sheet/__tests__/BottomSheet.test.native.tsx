@@ -1,6 +1,6 @@
 import { act, render } from '@testing-library/react-native';
 import { createRef, isValidElement, type ReactNode } from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { BottomSheetModal } from '..';
 import { findNativeViewProps, renderedNativeViews } from '../../../__mocks__/expo';
@@ -44,21 +44,19 @@ describe('BottomSheet', () => {
     });
   });
 
-  itAndroid(
-    'gives the hosted content the window width when the sheet sizes to its content',
-    async () => {
-      await render(
-        <BottomSheet index={0}>
-          <View />
-        </BottomSheet>
-      );
+  itAndroid('takes the width from the sheet when the sheet sizes to its content', async () => {
+    await render(
+      <BottomSheet index={0}>
+        <View />
+      </BottomSheet>
+    );
 
-      expect(findNativeViewProps('RNHostView')).toEqual(
-        expect.objectContaining({ matchContentsHorizontal: true, matchContentsVertical: true })
-      );
-      expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
-    }
-  );
+    expect(findNativeViewProps('HostView')?.presentsInWindow).toBe(true);
+    expect(findNativeViewProps('RNHostView')).toEqual(
+      expect.objectContaining({ matchContentsHorizontal: false, matchContentsVertical: true })
+    );
+    expect(hostedViewStyle()?.width).toBeUndefined();
+  });
 
   it('fills the snap point height when snap points are set', async () => {
     await render(

@@ -82,6 +82,12 @@ export interface HostProps extends PrimitiveBaseProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+  /**
+   * Hosts content that presents in its own window, like a modal sheet. The content then doesn't
+   * depend on where this view sits, how big it is, or whether a list clips it.
+   * @hidden
+   */
+  presentsInWindow?: boolean;
   /** @hidden */
   ref?: Ref<any>;
 }
