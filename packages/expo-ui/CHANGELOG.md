@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [Android] Fix "Cannot use shared object that was already released" errors when a view with a shared object prop, such as the `@expo/ui` `TextInput`, is remounted right after its first render. ([#51934](https://github.com/expo/expo/pull/51934) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Universal `Row` and `Column` on Android resolve a child `width` or `height` percentage, such as `'50%'`, against their own size. ([#51118](https://github.com/expo/expo/pull/51118) by [@Kudo](https://github.com/Kudo))
+- Universal `Row` and `Column` on iOS resolve a child `width` or `height` percentage, such as `'50%'`, against their own size. The default `spacing` of a universal `Row` or `Column` on iOS is now `0`, as on Android and web. ([#51119](https://github.com/expo/expo/pull/51119) by [@Kudo](https://github.com/Kudo))
+- Add `List.ForEach` to the universal `List`. It renders rows from `data` and recycles them on Android, iOS, and web. The web `List` now fills its parent, so it scrolls. ([#52047](https://github.com/expo/expo/pull/52047) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Universal `style.width` and `style.height` accept a percentage of the parent, such as `'50%'`. ([#51117](https://github.com/expo/expo/pull/51117) by [@Kudo](https://github.com/Kudo))
+- On web, a universal `Row` or `Column` with a size on its parent's cross axis no longer stretches, so the parent's alignment can place it. ([#51120](https://github.com/expo/expo/pull/51120) by [@Kudo](https://github.com/Kudo))
+- [Android] Fixed `TextInput` with `secureTextEntry` showing the typed password in the keyboard's suggestion strip. A secure field now asks the keyboard for a password layout and turns off autocorrect. ([#52010](https://github.com/expo/expo/pull/52010) by [@enzomanuelmangano](https://github.com/enzomanuelmangano))
+
 ## 58.0.22
 
 ### Patch Changes

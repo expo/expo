@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Fix apps running out of memory when native functions return large `Data` values to JavaScript in a loop, because the garbage collector did not count the memory of the new array buffers. Also reduce the overhead of converting `Data` values to JavaScript. ([#52125](https://github.com/expo/expo/pull/52125) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduce the overhead of converting Swift arrays to JavaScript arrays. ([#52031](https://github.com/expo/expo/pull/52031) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add an `initializeToZero` option to `JavaScriptRuntime.createArrayBuffer(size:)`. ([#52125](https://github.com/expo/expo/pull/52125) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash in `JavaScriptObject.defineProperty` when the object doesn't accept the property, for example when it's frozen. It now uses `Reflect.defineProperty`, and the object stays unchanged. ([#52133](https://github.com/expo/expo/pull/52133) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash in `JavaScriptObject.setExternalMemoryPressure(_:)` when the runtime rejects the amount, for example an amount above 4 GB. The amount is now ignored. ([#52122](https://github.com/expo/expo/pull/52122) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptObject.takeValue()` and `JavaScriptArray.takeValue()` public. They move an object or an array into a `JavaScriptValue` without the copy that `asValue()` makes. ([#52055](https://github.com/expo/expo/pull/52055) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.17
 
 ### Patch Changes
