@@ -287,7 +287,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// the app. When `reportsMemory` is `false`, report the memory with `setExternalMemoryPressure(_:)`
   /// after you create the other objects you need.
   @usableFromInline
-  internal func createArrayBuffer(size: Int, initializeToZero: Bool, reportsMemory: Bool) -> JavaScriptArrayBuffer {
+  internal func createArrayBuffer(
+    size: Int,
+    initializeToZero: Bool = true,
+    reportsMemory: Bool = true
+  ) -> JavaScriptArrayBuffer {
     let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, reportsMemory)
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
