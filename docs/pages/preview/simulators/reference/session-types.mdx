@@ -49,7 +49,7 @@ The tokens in these values give access to the remote device. Keep them secret. S
 Notes:
 
 - The start flags are `--build-id`, `--build-fingerprint`, `--application-archive-url`, `--expo-go`, `--launch-arg`, and `--open-url`. To connect an Appium client, see [Run Appium tests on a remote Android Emulator or iOS Simulator](/preview/simulators/works-with/appium/).
-- Controller activity from agent-device, Argent, or Appium resets the idle timer. On current iOS workers, browser input and direct simulator actions also count. Watching the preview does not count, and Android browser input does not reset the timer. Use `--max-duration-minutes` to limit a review session. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+- Controller activity from agent-device, Argent, or Appium resets the idle timer. On current iOS workers, browser input and actions recorded as session events also count. Watching the preview does not count, and Android browser input does not reset the timer. Use `--max-duration-minutes` to limit a review session. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 - A `web-preview-only` session does not report activity, so it does not support an idle timeout.
 
 ## Choose a session type

@@ -28,12 +28,12 @@ Pass `--max-idle-time-minutes` to stop the session after that many minutes witho
 
 | Rule                                   | Detail                                                                                                                                           |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and direct simulator actions also count.                         |
+| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and actions recorded as session events also count.                         |
 | Activity that does not reset the timer | Watching the preview or receiving video frames. Android browser input does not reset the timer.                                                  |
 | Session types without idle timeout     | `web-preview-only`                                                                                                                               |
 | Allowed values                         | A positive number smaller than the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one. |
 
-Current iOS workers check both controller activity and serve-sim input or device actions. They check for activity about every five seconds. Older workers can report only controller activity. Watching the preview does not keep a session alive.
+Current iOS workers check controller activity, preview input, and direct actions recorded as session events, such as app launches and screenshots. Changing appearance, permissions, or app files does not reset the timer. They check for activity about every five seconds. Older workers can report only controller activity. Watching the preview does not keep a session alive.
 
 For a review session, set `--max-duration-minutes`. Omit the idle timeout if a person needs time to watch without interacting. On Android, omit it when a person uses only the browser preview. A `web-preview-only` session does not enforce an idle timeout.
 

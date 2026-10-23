@@ -48,7 +48,7 @@ Use these methods to keep usage low:
 | Stop idle sessions                | `--max-idle-time-minutes`, or `maxIdleTimeMinutes`                                       |
 | Find sessions that still run      | `eas simulator:list --status new --status queued --status starting --status in-progress` |
 
-On iOS, controller commands, browser input, and direct simulator actions reset the idle timer on current workers. Watching the preview does not count. On Android, only controller activity resets it. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+On iOS, controller commands, browser input, and actions recorded as session events reset the idle timer on current workers. Watching the preview does not count. On Android, only controller activity resets it. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
 > **warning** `--non-interactive` does not stop the session when the command returns, and a CI job that ends does not stop the session. A session that you do not stop runs until its maximum duration, or until its idle limit if you set one.
 

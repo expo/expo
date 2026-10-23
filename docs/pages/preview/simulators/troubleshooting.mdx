@@ -89,7 +89,7 @@ The session waits for available concurrency on your account. Sessions use the sa
 
 ### A browser preview session stopped while someone used it
 
-Watching the preview does not reset an idle timeout. On current iOS workers, browser input and direct simulator actions count as activity. Android browser input does not. Older workers can report only controller activity.
+Watching the preview does not reset an idle timeout. On current iOS workers, browser input and actions recorded as session events count as activity. Android browser input does not. Older workers can report only controller activity.
 
 For a review session, omit `--max-idle-time-minutes` and set `--max-duration-minutes`. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 

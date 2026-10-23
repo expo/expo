@@ -49,7 +49,7 @@ The start flags `--build-id`, `--build-fingerprint`, `--application-archive-url`
 
 ## Limit the session length
 
-EAS records Appium commands as session events, so a session that uses `--max-idle-time-minutes` stays active while your tests send commands. On current iOS workers, browser input and direct simulator actions also reset the idle timer. Watching the preview does not count. Android browser input does not reset the timer. Use `--max-duration-minutes` to set an upper limit. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+EAS records Appium commands as session events, so a session that uses `--max-idle-time-minutes` stays active while your tests send commands. On current iOS workers, browser input and actions recorded as session events also reset the idle timer. Watching the preview does not count. Android browser input does not reset the timer. Use `--max-duration-minutes` to set an upper limit. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
 ## Use the REST API
 
