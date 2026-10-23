@@ -176,8 +176,9 @@ export interface ObserveIntegrationsConfig {
    *
    * The integration reads the `expo-updates` log when `configure` is called, and reports the
    * entries written since the last report, up to one day back. So errors from an earlier launch,
-   * such as a crash that error recovery handled, are reported on the next launch. A reported error
-   * gets the current session and time. The time of the log entry is not kept.
+   * such as a crash that error recovery handled, are reported on the next launch. After that, it
+   * reports each new entry when `expo-updates` logs it. A reported error gets the current session
+   * and time. The time of the log entry is not kept.
    *
    * The integration reports each distinct message at most once every 15 minutes. It reports at most
    * 20 distinct errors and 20 distinct warnings in any 15-minute period.
