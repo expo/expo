@@ -191,6 +191,13 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
         }
         self?.onPreviewTappedAnimationCompleted()
       }
+    } else {
+      // Without a preview, the menu lifts the link's own view. Tapping that view dismisses the menu,
+      // then opens the link.
+      animator.preferredCommitStyle = .dismiss
+      animator.addCompletion { [weak self] in
+        self?.onPreviewTapped()
+      }
     }
   }
 
