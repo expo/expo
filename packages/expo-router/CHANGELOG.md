@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix browser back after `setParams` or `replace` remounting the route tree and losing React state.
+
 ### 💡 Others
 
 ## 57.0.29 — 2026-10-21
