@@ -43,51 +43,51 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.2
-      # Unit tests run on a single iPhone simulator, so the other platforms' devices can stay.
-      # Deleting them one by one took ~15s.
-      - name: 🧹 Reset simulators
-        run: |
-          xcrun simctl list devices --json
-          xcrun simctl erase all
-          xcrun simctl shutdown all
-          sudo xcodebuild -runFirstLaunch
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: Setup ccache
-        uses: ./.github/actions/setup-ccache
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          ccache: 'true'
-          bare-expo-pods: 'true'
-          # Unit tests build Debug, while Test Suite e2e builds the same app Release. They'd
-          # otherwise share one cache entry, and whichever saved it first would decide which
-          # React.xcframework the other restored. A Release framework in a Debug build fails
-          # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
-          bare-expo-pods-configuration: 'Debug'
-          ccache-variant: 'unit-tests-debug'
-      # The `Build ExpoModulesJSI xcframework` build phase takes ~20s and everything else waits
-      # for it. It skips slices whose recorded source hash still matches, so restoring a stale
-      # cache only means a rebuild.
-      - name: ♻️ Restore ExpoModulesJSI xcframework
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: packages/expo-modules-jsi/apple/Products
-          key: ios-unit-tests-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
-          restore-keys: ios-unit-tests-jsi-xcframework-
+      # These steps don't depend on each other.
+      - parallel:
+          - name: 💎 Setup Ruby and install gems
+            uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+            with:
+              bundler-cache: true
+              ruby-version: 3.2.2
+          - name: 🧹 Reset simulators
+            run: |
+              xcrun simctl list devices --json
+              xcrun simctl erase all
+              xcrun simctl shutdown all
+              sudo xcodebuild -runFirstLaunch
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: Setup ccache
+            uses: ./.github/actions/setup-ccache
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
+            with:
+              ccache: 'true'
+              bare-expo-pods: 'true'
+              # Unit tests build Debug, while Test Suite e2e builds the same app Release. They'd
+              # otherwise share one cache entry, and whichever saved it first would decide which
+              # React.xcframework the other restored. A Release framework in a Debug build fails
+              # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
+              bare-expo-pods-configuration: 'Debug'
+              ccache-variant: 'unit-tests-debug'
+          # The `Build ExpoModulesJSI xcframework` build phase takes ~20s and everything else waits
+          # for it. It skips slices whose recorded source hash still matches, so restoring a stale
+          # cache only means a rebuild.
+          - name: ♻️ Restore ExpoModulesJSI xcframework
+            uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+            with:
+              path: packages/expo-modules-jsi/apple/Products
+              key: ios-unit-tests-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
+              restore-keys: ios-unit-tests-jsi-xcframework-
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
