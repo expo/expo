@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.security.keystore.KeyPermanentlyInvalidatedException
+import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
@@ -21,6 +22,7 @@ import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
 import java.security.KeyStore.SecretKeyEntry
 import javax.crypto.BadPaddingException
+import javax.crypto.Cipher
 
 open class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
@@ -66,6 +68,14 @@ open class SecureStoreModule : Module() {
       }
     }
 
+    AsyncFunction("hasValueWithKeyAsync") { key: String, options: SecureStoreOptions ->
+      return hasItemImpl(key, options)
+    }
+
+    Function("hasValueWithKeySync") { key: String, options: SecureStoreOptions ->
+      return hasItemImpl(key, options)
+    }
+
     Function("canUseBiometricAuthentication") {
       return@Function try {
         authenticationHelper.assertBiometricsSupport()
@@ -96,6 +106,62 @@ open class SecureStoreModule : Module() {
       return readJSONEncodedItem(key, prefs, options)
     }
     return null
+  }
+
+  private fun hasItemImpl(key: String, options: SecureStoreOptions): Boolean {
+    val prefs = getSharedPreferences()
+    val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
+    if (!hasStoredEncryptedItem(prefs, key, keychainAwareKey)) {
+      return false
+    }
+
+    val encryptedItemString = prefs.getString(keychainAwareKey, null) ?: prefs.getString(key, null)
+      ?: return false
+
+    val encryptedItem = try {
+      JSONObject(encryptedItemString)
+    } catch (e: JSONException) {
+      return true
+    }
+
+    val scheme = encryptedItem.optString(SCHEME_PROPERTY).takeIf { it.isNotEmpty() } ?: return true
+    val requireAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false)
+    val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
+
+    return try {
+      when (scheme) {
+        AESEncryptor.NAME -> {
+          val secretKeyEntry = getKeyEntryCompat(
+            SecretKeyEntry::class.java,
+            mAESEncryptor,
+            options,
+            requireAuthentication,
+            usesKeystoreSuffix
+          ) ?: return false
+          isKeyUsableWithoutPrompt {
+            Cipher.getInstance(AESEncryptor.AES_CIPHER).init(Cipher.ENCRYPT_MODE, secretKeyEntry.secretKey)
+          }
+        }
+        HybridAESEncryptor.NAME -> {
+          // The legacy hybrid scheme predates requireAuthentication, so presence of the key entry is
+          // the only signal available here. It cannot report invalidation.
+          getKeyEntryCompat(
+            PrivateKeyEntry::class.java,
+            hybridAESEncryptor,
+            options,
+            requireAuthentication,
+            usesKeystoreSuffix
+          ) != null
+        }
+        else -> true
+      }
+    } catch (e: KeyPermanentlyInvalidatedException) {
+      false
+    } catch (e: CodedException) {
+      throw e
+    } catch (e: Exception) {
+      throw DecryptException(e.message, key, options.keychainService, e)
+    }
   }
 
   private suspend fun readJSONEncodedItem(key: String, prefs: SharedPreferences, options: SecureStoreOptions): String? {
@@ -392,4 +458,23 @@ internal fun removeItem(
   val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
   val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
   return removedFromPrefs && removedFromLegacyPrefs
+}
+
+internal fun hasStoredEncryptedItem(
+  prefs: SharedPreferences,
+  key: String,
+  keychainAwareKey: String
+): Boolean {
+  return prefs.contains(keychainAwareKey) || prefs.contains(key)
+}
+
+internal fun isKeyUsableWithoutPrompt(probe: () -> Unit): Boolean {
+  return try {
+    probe()
+    true
+  } catch (e: KeyPermanentlyInvalidatedException) {
+    false
+  } catch (e: UserNotAuthenticatedException) {
+    true
+  }
 }
