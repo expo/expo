@@ -1377,9 +1377,11 @@ export default function TabLayout() {
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="compose" prominent>
-        <NativeTabs.Trigger.Label>Compose</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="square.and.pencil" />
+      {/* ... */}
+      {/* Shows on its own surface and stays visible when the tab bar minimizes. */}
+      <NativeTabs.Trigger name="radio" prominent>
+        <NativeTabs.Trigger.Icon sf="dot.radiowaves.left.and.right" />
+        <NativeTabs.Trigger.Label>Radio</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
