@@ -10,6 +10,10 @@ public struct JavaScriptArrayBuffer: ~Copyable {
   internal let runtimeHandle: JavaScriptRuntimeHandle
   internal let pointee: facebook.jsi.ArrayBuffer
 
+  /// Whether this array buffer owns its memory: `createArrayBuffer(size:initializeToZero:reportsMemory:)`
+  /// allocated it, and no other array buffer holds it.
+  internal let ownsMemory: Bool
+
   /// The runtime the array buffer belongs to, or `nil` if it has been deallocated. Prefer
   /// ``jsiRuntime`` on hot paths: it costs no reference counting.
   internal var runtime: JavaScriptRuntime? {
@@ -21,9 +25,14 @@ public struct JavaScriptArrayBuffer: ~Copyable {
     return runtimeHandle.pointee
   }
 
-  internal init(_ runtime: borrowing JavaScriptRuntime, _ arrayBuffer: consuming facebook.jsi.ArrayBuffer) {
+  internal init(
+    _ runtime: borrowing JavaScriptRuntime,
+    _ arrayBuffer: consuming facebook.jsi.ArrayBuffer,
+    ownsMemory: Bool = false
+  ) {
     self.runtimeHandle = runtime.handle
     self.pointee = arrayBuffer
+    self.ownsMemory = ownsMemory
   }
 
   /// Creates an array buffer from an existing JSI array buffer, which belongs to the runtime behind
@@ -31,6 +40,7 @@ public struct JavaScriptArrayBuffer: ~Copyable {
   internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ arrayBuffer: consuming facebook.jsi.ArrayBuffer) {
     self.runtimeHandle = runtimeHandle
     self.pointee = arrayBuffer
+    self.ownsMemory = false
   }
 
   /// Returns the size of the array buffer storage in bytes.
@@ -94,10 +104,13 @@ public struct JavaScriptArrayBuffer: ~Copyable {
 
   /// Sets the external memory pressure of this array buffer to its size, so the garbage collector counts
   /// its native memory, for example after `createArrayBuffer(size:initializeToZero:reportsMemory:)` with
-  /// `reportsMemory: false`. An array buffer that JavaScript allocated is skipped, because the runtime
-  /// already counts its memory (before React Native 0.86, the pressure is always set). An amount that the
-  /// runtime rejects is ignored.
+  /// `reportsMemory: false`. It does nothing for any other array buffer, such as one that JavaScript
+  /// allocated or one that wraps native memory, because the runtime already counts that memory or its owner
+  /// reports it. An amount that the runtime rejects is ignored.
   public func updateExternalMemoryPressure() {
+    guard ownsMemory else {
+      return
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }

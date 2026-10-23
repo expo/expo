@@ -288,7 +288,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     reportsMemory: Bool = true
   ) -> JavaScriptArrayBuffer {
     let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, reportsMemory)
-    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer, ownsMemory: true)
   }
 
   /// Keeps the ABI symbol of `createArrayBuffer(size:)`, which prebuilt binaries that inlined `Data.encode`
