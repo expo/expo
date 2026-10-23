@@ -102,6 +102,7 @@ describe(diffLoadedModules, () => {
   it('should keep a linked dependency file that also loads without plugins', async () => {
     const full = [file('../../packages/my-plugin/index.js')];
     const withoutPlugins = [file('../../packages/my-plugin/index.js')];
-    expect(diffLoadedModules(full, withoutPlugins, ['../../packages/my-plugin'])).toEqual(full);
+    const isLinkedDependencyFile = (key: string) => key.startsWith('../../packages/my-plugin/');
+    expect(diffLoadedModules(full, withoutPlugins, isLinkedDependencyFile)).toEqual(full);
   });
 });

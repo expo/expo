@@ -1,43 +1,50 @@
 import { vol } from 'memfs';
 
-import { resolveLinkedDependencyPaths } from '../LinkedDependencies';
+import { createLinkedDependencyMatcher } from '../LinkedDependencies';
 
 jest.mock('fs');
 
-describe(resolveLinkedDependencyPaths, () => {
+describe(createLinkedDependencyMatcher, () => {
   const projectRoot = '/repo/apps/app';
+
+  beforeEach(() => {
+    vol.fromJSON({
+      '/repo/apps/app/package.json': JSON.stringify({
+        dependencies: { 'my-plugin': 'workspace:*', expo: '^54.0.0' },
+      }),
+      '/repo/packages/my-plugin/package.json': JSON.stringify({ name: 'my-plugin' }),
+      '/repo/packages/@expo/config/package.json': JSON.stringify({ name: '@expo/config' }),
+    });
+  });
 
   afterEach(() => {
     vol.reset();
   });
 
-  it('should return the project-relative real path of a dependency that links outside node_modules', () => {
-    vol.fromJSON({
-      '/repo/apps/app/package.json': JSON.stringify({
-        dependencies: { 'my-plugin': 'workspace:*', expo: '^54.0.0', plain: '1.0.0' },
-        devDependencies: { 'my-dev-plugin': 'workspace:*' },
-      }),
-      '/repo/packages/my-plugin/package.json': '{}',
-      '/repo/packages/my-dev-plugin/package.json': '{}',
-      '/repo/node_modules/.pnpm/expo@54.0.0/node_modules/expo/package.json': '{}',
-      '/repo/apps/app/node_modules/plain/package.json': '{}',
-    });
-    vol.symlinkSync('/repo/packages/my-plugin', '/repo/apps/app/node_modules/my-plugin');
-    vol.symlinkSync(
-      '/repo/node_modules/.pnpm/expo@54.0.0/node_modules/expo',
-      '/repo/apps/app/node_modules/expo'
-    );
-    vol.mkdirSync('/repo/node_modules', { recursive: true });
-    vol.symlinkSync('/repo/packages/my-dev-plugin', '/repo/node_modules/my-dev-plugin');
-
-    expect(resolveLinkedDependencyPaths(projectRoot)).toEqual([
-      '../../packages/my-dev-plugin',
-      '../../packages/my-plugin',
-    ]);
+  it('should match a file of a declared dependency outside node_modules', () => {
+    const isLinkedDependencyFile = createLinkedDependencyMatcher(projectRoot);
+    expect(isLinkedDependencyFile('../../packages/my-plugin/index.js')).toBe(true);
+    expect(isLinkedDependencyFile('../../packages/my-plugin/src/deep/util.js')).toBe(true);
   });
 
-  it('should return an empty list when the project has no package.json', () => {
-    vol.fromJSON({ '/repo/apps/app/app.json': '{}' });
-    expect(resolveLinkedDependencyPaths(projectRoot)).toEqual([]);
+  it('should not match a file of a package the project does not declare', () => {
+    const isLinkedDependencyFile = createLinkedDependencyMatcher(projectRoot);
+    expect(isLinkedDependencyFile('../../packages/@expo/config/build/index.js')).toBe(false);
+  });
+
+  it('should not match a file inside a nested node_modules of a declared dependency', () => {
+    const isLinkedDependencyFile = createLinkedDependencyMatcher(projectRoot);
+    expect(isLinkedDependencyFile('../../packages/my-plugin/node_modules/dep/index.js')).toBe(
+      false
+    );
+  });
+
+  it('should match nothing when the project has no package.json', () => {
+    vol.reset();
+    vol.fromJSON({
+      '/repo/packages/my-plugin/package.json': JSON.stringify({ name: 'my-plugin' }),
+    });
+    const isLinkedDependencyFile = createLinkedDependencyMatcher(projectRoot);
+    expect(isLinkedDependencyFile('../../packages/my-plugin/index.js')).toBe(false);
   });
 });

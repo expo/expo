@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { toPosixPath } from './Path';
-
 const DEPENDENCY_FIELDS = [
   'dependencies',
   'devDependencies',
@@ -11,14 +9,23 @@ const DEPENDENCY_FIELDS = [
 ] as const;
 
 /**
- * The project-relative POSIX paths of the dependencies in the project's `package.json` that resolve
- * to a directory outside `node_modules`, such as a linked workspace package in a monorepo.
+ * Create a test for a file of a dependency that the project declares and that lives outside
+ * `node_modules`, such as a linked workspace package in a monorepo. The nearest `package.json`
+ * above the file names its package. Lookups are cached per directory.
  */
-export function resolveLinkedDependencyPaths(projectRoot: string): string[] {
-  const linkedPaths = readDependencyNames(projectRoot).map((name) =>
-    resolveLinkedDependencyPath(projectRoot, name)
-  );
-  return [...new Set(linkedPaths.filter((linkedPath) => linkedPath !== null))].sort();
+export function createLinkedDependencyMatcher(
+  projectRoot: string
+): (relativePosixPath: string) => boolean {
+  const dependencyNames = new Set(readDependencyNames(projectRoot));
+  const packageNameCache = new Map<string, string | null>();
+  return (relativePosixPath) => {
+    if (dependencyNames.size === 0 || relativePosixPath.split('/').includes('node_modules')) {
+      return false;
+    }
+    const dir = path.dirname(path.resolve(projectRoot, relativePosixPath));
+    const packageName = findPackageName(dir, packageNameCache);
+    return packageName !== null && dependencyNames.has(packageName);
+  };
 }
 
 function readDependencyNames(projectRoot: string): string[] {
@@ -31,24 +38,25 @@ function readDependencyNames(projectRoot: string): string[] {
   return DEPENDENCY_FIELDS.flatMap((field) => Object.keys(packageJson[field] ?? {}));
 }
 
-/**
- * Find `node_modules/<name>` the way Node resolution does, walking up from the project root.
- * Returns its real path when that path leaves `node_modules`, which means the dependency is a link.
- */
-function resolveLinkedDependencyPath(projectRoot: string, name: string): string | null {
-  for (let dir = projectRoot; ; dir = path.dirname(dir)) {
-    let realPath: string | null = null;
-    try {
-      // Node resolves a link with `fs.realpathSync`, so use the same algorithm.
-      // The native realpath expands Windows 8.3 names such as `RUNNER~1`, which the loader keys keep.
-      realPath = fs.realpathSync(path.join(dir, 'node_modules', name));
-    } catch {}
-    if (realPath !== null) {
-      const relativePath = toPosixPath(path.relative(projectRoot, realPath));
-      return relativePath.split('/').includes('node_modules') ? null : relativePath;
-    }
-    if (path.dirname(dir) === dir) {
-      return null;
-    }
+function findPackageName(dir: string, cache: Map<string, string | null>): string | null {
+  const cached = cache.get(dir);
+  if (cached !== undefined) {
+    return cached;
+  }
+  let packageName = readPackageName(path.join(dir, 'package.json'));
+  const parentDir = path.dirname(dir);
+  if (packageName === null && parentDir !== dir) {
+    packageName = findPackageName(parentDir, cache);
+  }
+  cache.set(dir, packageName);
+  return packageName;
+}
+
+function readPackageName(packageJsonPath: string): string | null {
+  try {
+    const { name } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    return typeof name === 'string' ? name : null;
+  } catch {
+    return null;
   }
 }
