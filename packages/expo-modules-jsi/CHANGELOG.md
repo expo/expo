@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Add `JavaScriptObject.tryUnsetNativeState()`, which returns `false` when the native state can't be removed, for example from a frozen object. `unsetNativeState()` now ignores that case instead of raising a C++ exception that Swift can't catch. ([#52095](https://github.com/expo/expo/pull/52095) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.18
 
 ### Patch Changes

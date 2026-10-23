@@ -1,5 +1,12 @@
 # observe-tester
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
 ## 1.0.12
 
 ### Patch Changes

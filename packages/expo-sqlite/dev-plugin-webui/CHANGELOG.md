@@ -1,5 +1,12 @@
 # sqlite-inspector-webui
 
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
 ## 0.0.13
 
 ### Patch Changes

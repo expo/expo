@@ -1,5 +1,14 @@
 # notification-tester
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - test-suite@1.0.13
+  - expo@58.0.19
+  - native-component-list@0.0.13
+
 ## 1.0.12
 
 ### Patch Changes
