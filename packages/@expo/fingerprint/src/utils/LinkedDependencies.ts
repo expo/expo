@@ -1,7 +1,14 @@
+import { realpath } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
+import { promisify } from 'util';
 
 import { toPosixPath } from './Path';
+
+// Node resolves a linked module with the JavaScript `fs.realpathSync`, so use the same algorithm.
+// The native `fs/promises` call expands Windows 8.3 names such as `RUNNER~1` and gives a path that
+// the loader's project-relative keys do not share.
+const realpathAsync = promisify(realpath);
 
 const DEPENDENCY_FIELDS = [
   'dependencies',
@@ -43,7 +50,7 @@ async function resolveLinkedDependencyPathAsync(
   for (let dir = projectRoot; ; dir = path.dirname(dir)) {
     let realPath: string | null = null;
     try {
-      realPath = await fs.realpath(path.join(dir, 'node_modules', name));
+      realPath = await realpathAsync(path.join(dir, 'node_modules', name));
     } catch {}
     if (realPath !== null) {
       const relativePath = toPosixPath(path.relative(projectRoot, realPath));
