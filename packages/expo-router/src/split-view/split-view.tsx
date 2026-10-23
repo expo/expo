@@ -9,6 +9,8 @@ import {
   SplitViewInspector,
   type SplitViewColumnProps,
 } from './elements';
+import { SplitViewColumnOptionsView } from './native';
+import type { SplitViewColumnOptions } from './native.types';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -20,9 +22,22 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    * @default false
    */
   activityEnabled?: boolean;
+  /**
+   * Options for the navigation bar of the detail column.
+   *
+   * When `showSecondaryToggleButton` changes, the navigation bar of the detail column can show
+   * without these options for one frame.
+   * @platform ios
+   */
+  detailOptions?: SplitViewColumnOptions;
 }
 
-function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {
+function SplitViewNavigator({
+  children,
+  activityEnabled,
+  detailOptions,
+  ...splitViewHostProps
+}: SplitViewProps) {
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
   }
@@ -60,9 +75,17 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
     return <Slot activityEnabled={activityEnabled} />;
   }
 
+  // In compact width, the columns share one navigation bar. Every column needs an options view,
+  // so the bar follows the column on top, also when that column has no options.
+  const hasOptions =
+    detailOptions !== undefined || columnChildren.some((child) => child.props.options);
+  const emptyOptions = hasOptions ? {} : undefined;
+
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
-    <Split.Column key={child.key}>{getSplitColumnChildren(child.props.children)}</Split.Column>
+    <Split.Column key={child.key}>
+      {getSplitColumnChildren(child.props.children, child.props.options ?? emptyOptions)}
+    </Split.Column>
   ));
 
   // The key is needed, because number of columns cannot be changed dynamically
@@ -71,6 +94,12 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columns}
         <Split.Column>
+          {hasOptions && (
+            <SplitViewColumnOptionsView
+              {...detailOptions}
+              showSecondaryToggleButton={splitViewHostProps.showSecondaryToggleButton}
+            />
+          )}
           <Slot activityEnabled={activityEnabled} />
         </Split.Column>
         {inspectorChildren}

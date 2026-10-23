@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react-native';
+import { screen, within } from '@testing-library/react-native';
 import { Children, isValidElement, type ReactNode } from 'react';
 import { Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -32,7 +32,19 @@ jest.mock('../../optional-libraries/react-native-screens', () => {
         <View testID="Split.Stack">{children}</View>
       )),
       HeaderConfig: jest.fn(() => null),
+      Inspector: jest.fn(({ children }: { children?: ReactNode }) => (
+        <View testID="Split.Inspector">{children}</View>
+      )),
     },
+  };
+});
+
+jest.mock('../native', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  return {
+    SplitViewColumnOptionsView: jest.fn((props: object) => (
+      <View testID="SplitViewColumnOptionsView" {...props} />
+    )),
   };
 });
 
@@ -204,4 +216,78 @@ it('renders a Split.HeaderConfig as a direct child of its Split.Column', async (
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
   ).toEqual([SplitHeaderConfig, SafeAreaProvider]);
+});
+
+it('passes column options and detail options to the options view of their Split.Column', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView
+          showSecondaryToggleButton
+          detailOptions={{ title: 'Detail', headerShown: false }}>
+          <SplitView.Column options={{ title: 'Sidebar', headerLargeTitle: true }}>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+          <SplitView.Inspector>
+            <Text>Inspector</Text>
+          </SplitView.Inspector>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The first Split.Column is the sidebar column. The second is the detail column.
+  const [sidebarColumn, detailColumn] = screen.getAllByTestId('Split.Column');
+  const sidebarOptions = within(sidebarColumn!).getByTestId('SplitViewColumnOptionsView');
+  expect(sidebarOptions.props.title).toBe('Sidebar');
+  expect(sidebarOptions.props.headerLargeTitle).toBe(true);
+  const detailOptions = within(detailColumn!).getByTestId('SplitViewColumnOptionsView');
+  expect(detailOptions.props.title).toBe('Detail');
+  expect(detailOptions.props.headerShown).toBe(false);
+  expect(detailOptions.props.showSecondaryToggleButton).toBe(true);
+  expect(
+    within(screen.getByTestId('Split.Inspector')).queryByTestId('SplitViewColumnOptionsView')
+  ).toBeNull();
+});
+
+it('renders no options view when no column has options', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(screen.queryByTestId('SplitViewColumnOptionsView')).toBeNull();
+});
+
+it('renders an options view in a SplitView.Column without options when the detail has options', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView detailOptions={{ title: 'Detail' }}>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The first Split.Column is the sidebar column.
+  const [sidebarColumn] = screen.getAllByTestId('Split.Column');
+  expect(within(sidebarColumn!).getByTestId('SplitViewColumnOptionsView').props.title).toBe(
+    undefined
+  );
 });

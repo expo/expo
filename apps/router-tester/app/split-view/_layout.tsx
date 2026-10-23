@@ -19,8 +19,9 @@ export default function Layout() {
       // primaryEdge="trailing"
       showSecondaryToggleButton
       // showInspector
-      preferredSplitBehavior="tile">
-      <SplitView.Column>
+      preferredSplitBehavior="tile"
+      detailOptions={{ title: 'Detail' }}>
+      <SplitView.Column options={{ title: 'Passwords', headerLargeTitle: true }}>
         <SafeAreaView
           // edges={{ top: true, left: true }}
           edges={['left', 'top']}
@@ -38,7 +39,7 @@ export default function Layout() {
           <PasscodeCard title="Deleted" param="deleted" />
         </SafeAreaView>
       </SplitView.Column>
-      <SplitView.Column>
+      <SplitView.Column options={{ title: 'List' }}>
         <PasswordElementList />
       </SplitView.Column>
       <SplitView.Inspector>
