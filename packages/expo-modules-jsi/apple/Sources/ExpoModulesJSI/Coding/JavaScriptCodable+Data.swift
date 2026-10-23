@@ -65,7 +65,8 @@ internal func makeJavaScriptUint8Array(
 }
 
 /// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which
-/// is looked up once and cached, so an encode doesn't pay for the global property lookup.
+/// is looked up once and cached, so an encode doesn't pay for the global property lookup. Nothing in this
+/// module calls it; it keeps the ABI symbol for prebuilt binaries whose inlined `Data.encode` still calls it.
 @usableFromInline
 @JavaScriptActor
 internal func makeJavaScriptUint8Array(
