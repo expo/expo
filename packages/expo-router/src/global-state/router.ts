@@ -10,8 +10,8 @@ import {
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
+import { getCanDismiss } from '../react-navigation/core/CanDismissContext';
 import type { Href, RoutePath, RouteInputParams } from '../types';
-import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
@@ -138,20 +138,7 @@ export function canDismiss(): boolean {
     return false;
   }
   // TODO(@ubax): check whether this is still needed
-  let state = navigationRef.getRootState();
-
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    // Seeded states have no `type`; anchors are fully supported only in stacks.
-    if ((state.type ?? 'stack') === 'stack' && getHistoryLength(state) > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
-
-    state = state.routes?.[state.index]?.state as any;
-  }
-
-  return false;
+  return getCanDismiss(navigationRef.getRootState());
 }
 
 export function setParams(
