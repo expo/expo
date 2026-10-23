@@ -85,6 +85,10 @@ One artifact can be up to about 5 GiB.
 
 EAS records the request origin and agent identifiers that a client sends when it creates a session. EAS uses these values for analytics only, not for authorization.
 
+## Network capture files
+
+Network capture can keep request and response bodies and query values without redaction. Header redaction covers common credential headers; it does not remove every possible secret. Keep only the fields that you need and store downloaded HAR files privately. They are separate from EAS session artifacts and must be downloaded before capture ends. See [Record network traffic](/preview/simulators/how-it-works/network-inspection/#record-network-traffic).
+
 ## Artifact downloads
 
 `eas simulator:get --json` returns a `downloadUrl` for each artifact. The download URL contains a long random key and does not require authentication. Treat it as a secret.

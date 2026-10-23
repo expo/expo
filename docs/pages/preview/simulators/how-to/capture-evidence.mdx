@@ -83,6 +83,12 @@ Download the file from its `downloadUrl`:
 
 The `downloadUrl` does not change. Each request to it redirects to a new signed URL that is valid for one hour. If a signed URL expires, request the same `downloadUrl` again. You can get artifacts after the session stops.
 
+### Keep recording metadata
+
+Newer sessions can upload a JSON metadata artifact next to the full-session video. Its display name ends with "metadata", and it identifies the matching video. When present, it records the first frame's wall-clock time and changes to device geometry and orientation. Download it with the video when you need that context for a reproduction.
+
+The metadata upload is separate from the video upload, so a video can exist without metadata. This file describes the screen recording, not a network capture or app log.
+
 ## Read session activity
 
 Sessions that use agent-device, Argent, or Appium record each controller action. Show the activity so far:
@@ -97,9 +103,17 @@ Use `--json` to get the raw event records for a script or an agent. You cannot u
 
 ## Read app logs
 
+For iOS, open the **Logs** drawer in the browser preview before reproducing a problem. Device logs can include output from more than one app. Keep the drawer open for the reproduction.
+
 agent-device has a `logs` command that collects the logs of the app that it opened. Logging is off by default. Open a log window for one reproduction instead of collecting all logs. Read the version-matched help for the syntax:
 
 <Terminal cmd={['$ eas simulator:exec npx agent-device@latest help debugging']} />
+
+## Inspect iOS crash reports
+
+In an iOS browser preview, open **Tools**, then expand **Crashes** before reproducing a problem. Keep it open so the preview can collect the logs that precede a crash. Select a report to inspect it. This is separate from controller activity in `eas simulator:events`, the app logs that a controller collects, and the job logs on expo.dev.
+
+Collect app logs for the reproduction as well. An empty crash list does not show what an app printed or whether a logging connection failed.
 
 ## Find artifacts on expo.dev
 
