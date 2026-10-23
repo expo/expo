@@ -5,9 +5,6 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
-import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.ReactContext
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
@@ -20,8 +17,16 @@ import expo.modules.kotlin.views.ExpoComposeView
  */
 @SuppressLint("ViewConstructor")
 internal class PresentationHostView(context: Context, appContext: AppContext) :
-  HostView(context, appContext), LifecycleEventListener {
-  private var presentationRoot: PresentationRootView? = null
+  HostView(context, appContext) {
+  // Attached to the activity current at mount, as `ReactModalHostView` does. Without one, this view
+  // renders its children inline like a `HostView`. React Native adds the children after this init,
+  // so none need to move.
+  private val presentationRoot: PresentationRootView? =
+    appContext.currentActivity?.findViewById<ViewGroup>(android.R.id.content)?.let { content ->
+      PresentationRootView(context, appContext, this).also {
+        content.addView(it, FrameLayout.LayoutParams(0, 0))
+      }
+    }
 
   internal val childContainer: ViewGroup
     get() = presentationRoot ?: this
@@ -29,45 +34,15 @@ internal class PresentationHostView(context: Context, appContext: AppContext) :
   override val rendersChildren: Boolean
     get() = presentationRoot == null
 
-  init {
-    (context as? ReactContext)?.addLifecycleEventListener(this)
-    attachPresentationRoot()
-  }
-
-  // Without an activity the children stay here, and the root is attached once the host resumes.
-  private fun attachPresentationRoot() {
-    if (presentationRoot != null) {
-      return
-    }
-    val content = appContext.currentActivity?.findViewById<ViewGroup>(android.R.id.content) ?: return
-    val root = PresentationRootView(context, appContext, this)
-    val children = (0 until childCount).map(::getChildAt).filter { it !is ComposeView }
-    children.forEach {
-      removeView(it)
-      // Before the root's own ComposeView, which stays last as in a HostView.
-      root.addView(it, root.childCount - 1)
-    }
-    content.addView(root, FrameLayout.LayoutParams(0, 0))
-    presentationRoot = root
-    recomposeScope?.invalidate()
-  }
-
-  override fun onHostResume() {
-    attachPresentationRoot()
-  }
-
-  override fun onHostPause() = Unit
-
-  override fun onHostDestroy() = Unit
-
+  // Like React Native's `Modal`, an open sheet closes at once when React Native drops this view,
+  // for example when its screen pops.
   override fun disposeHostedComposition() {
-    (context as? ReactContext)?.removeLifecycleEventListener(this)
+    // The root stays the child container, as React Native may still remove children after this.
     presentationRoot?.let {
       // Detach first: the composition is only disposed once its view has left the window.
       (it.parent as? ViewGroup)?.removeView(it)
       it.disposeHostedComposition()
     }
-    presentationRoot = null
     super.disposeHostedComposition()
   }
 }

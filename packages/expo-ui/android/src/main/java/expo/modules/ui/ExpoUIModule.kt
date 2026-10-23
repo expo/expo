@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.toArgb
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.ui.colors.MaterialColorsOptions
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.isSystemInDarkTheme
@@ -145,19 +146,11 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      Events("onLayoutContent")
-
-      OnViewDidUpdateProps { view ->
-        view.onViewDidUpdateProps()
-      }
+      HostViewDefinition()
     }
 
     View(PresentationHostView::class) {
-      Events("onLayoutContent")
-
-      OnViewDidUpdateProps { view ->
-        view.onViewDidUpdateProps()
-      }
+      HostViewDefinition()
 
       // React Native mounts the children in the presentation root.
       GroupView<PresentationHostView> {
@@ -901,5 +894,15 @@ class ExpoUIModule : Module() {
     }
 
     //endregion Expo UI views
+  }
+}
+
+// The parts of a Host view definition that `HostView` and `PresentationHostView` share.
+@Suppress("FunctionName")
+private fun <T : HostView> ViewDefinitionBuilder<T>.HostViewDefinition() {
+  Events("onLayoutContent")
+
+  OnViewDidUpdateProps { view ->
+    view.onViewDidUpdateProps()
   }
 }
