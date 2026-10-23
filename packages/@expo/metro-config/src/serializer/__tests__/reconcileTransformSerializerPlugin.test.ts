@@ -1,16 +1,16 @@
 import { Script } from 'node:vm';
 
-import { serializeToWithGraph } from '../serializer/fork/__tests__/serializer-test-utils';
-import { reconcileTransformSerializerPlugin } from '../serializer/reconcileTransformSerializerPlugin';
-import { treeShakeSerializer } from '../serializer/treeShakeSerializerPlugin';
-import * as worker from '../transform-worker/transform-worker';
+import * as worker from '../../transform-worker/transform-worker';
+import { serializeToWithGraph } from '../fork/__tests__/serializer-test-utils';
+import { reconcileTransformSerializerPlugin } from '../reconcileTransformSerializerPlugin';
+import { treeShakeSerializer } from '../treeShakeSerializerPlugin';
 
-jest.mock('../transform-worker/transform-worker', () => {
-  const worker = jest.requireActual('../transform-worker/transform-worker');
+jest.mock('../../transform-worker/transform-worker', () => {
+  const worker = jest.requireActual('../../transform-worker/transform-worker');
   return { ...worker, transform: jest.fn(worker.transform) };
 });
 
-jest.mock('../utils/findUpPackageJsonPath', () => ({
+jest.mock('../../utils/findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
@@ -21,7 +21,9 @@ it.each([
 ])(
   'wraps JavaScript produced by a CSS transformer (optimize: $optimize, treeshake: $treeshake)',
   async ({ optimize, treeshake }) => {
-    const { transform } = jest.requireActual<typeof worker>('../transform-worker/transform-worker');
+    const { transform } = jest.requireActual<typeof worker>(
+      '../../transform-worker/transform-worker'
+    );
     jest
       .mocked(worker.transform)
       .mockImplementation((config, projectRoot, filename, data, options) => {
