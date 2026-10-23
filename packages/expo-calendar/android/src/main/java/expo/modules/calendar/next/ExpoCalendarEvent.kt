@@ -19,6 +19,8 @@ import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.exceptions.EventNotFoundException
 import expo.modules.calendar.next.exceptions.ExtendedPropertyAccountMissingException
 import expo.modules.calendar.next.exceptions.ExtendedPropertyNameNotSyncSafeException
+import expo.modules.calendar.next.exceptions.ExtendedPropertyNameTooLongException
+import expo.modules.calendar.next.exceptions.ExtendedPropertyValueTooLongException
 import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.mappers.EventMapper
 import expo.modules.calendar.next.mappers.ExpoCalendarEventMapper
@@ -115,7 +117,7 @@ class ExpoCalendarEvent(
 
   suspend fun setExtendedProperty(name: String, value: String) {
     val account = requireOwningAccount()
-    requireSyncSafeName(name, account)
+    requireSyncSafe(name, value, account)
     extendedPropertyRepository.upsert(eventId, account, extendedPropertyMapper.toInput(name, value))
   }
 
@@ -148,24 +150,25 @@ class ExpoCalendarEvent(
   }
 
   /**
-   * Rejects names Google Calendar's sync adapter would drop.
+   * Rejects what Google Calendar's sync adapter would drop or truncate.
    *
-   * The prefix convention belongs to that adapter, not to the calendar provider, so it is enforced
-   * on Google accounts only. Another adapter may keep an unprefixed name, and refusing the write
-   * here would deny something that works.
+   * These rules belong to that adapter, not to the calendar provider, so they are enforced on
+   * Google accounts only. Another adapter may well keep an unprefixed or longer name, and refusing
+   * the write here would deny something that works.
    */
-  private fun requireSyncSafeName(name: String, account: CalendarAccount) {
-    if (!account.isGoogle || ExtendedPropertyName.isSyncSafe(name)) {
+  private fun requireSyncSafe(name: String, value: String, account: CalendarAccount) {
+    if (!account.isGoogle) {
       return
     }
-    throw ExtendedPropertyNameNotSyncSafeException(
-      "Extended property name `$name` has no visibility prefix, and this event belongs to a Google account. " +
-        "Google Calendar's sync adapter keeps only names prefixed `${ExtendedPropertyName.PRIVATE_PREFIX}` or " +
-        "`${ExtendedPropertyName.SHARED_PREFIX}`, and drops the rest on the next sync without reporting an error, " +
-        "so the value would be stored on the device and disappear later. " +
-        "Use `${ExtendedPropertyName.PRIVATE_PREFIX}$name` to keep the value readable by the owning account only, " +
-        "or `${ExtendedPropertyName.SHARED_PREFIX}$name` to share it with the guests of the event."
-    )
+    if (!ExtendedPropertyName.isSyncSafe(name)) {
+      throw ExtendedPropertyNameNotSyncSafeException(name)
+    }
+    if (ExtendedPropertyName.lengthAfterPrefix(name) > ExtendedPropertyName.MAX_LENGTH_AFTER_PREFIX) {
+      throw ExtendedPropertyNameTooLongException(name)
+    }
+    if (value.length > ExtendedPropertyName.MAX_VALUE_LENGTH) {
+      throw ExtendedPropertyValueTooLongException(name)
+    }
   }
 
   fun getOccurrence(options: RecurringEventOptions?): ExpoCalendarEvent {
