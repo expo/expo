@@ -7,8 +7,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.datasource.DataSource
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import expo.modules.audio.service.AudioPlaybackServiceConnection
 import expo.modules.kotlin.AppContext
@@ -22,14 +21,12 @@ class AudioPlaylist(
   context: Context,
   appContext: AppContext,
   initialSources: List<AudioSource>,
-  updateInterval: Double,
-  dataSourceFactory: DataSource.Factory
+  updateInterval: Double
 ) : BaseAudioPlayer(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setHandleAudioBecomingNoisy(true)
-    .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory))
     .build(),
   appContext = appContext,
   updateInterval = updateInterval,
@@ -51,23 +48,23 @@ class AudioPlaylist(
   val currentTrackIndex get() = ref.currentMediaItemIndex
   val trackCount get() = ref.mediaItemCount
 
-  private var createMediaItemForSource: ((AudioSource) -> MediaItem?)? = null
+  private var createMediaSourceForSource: ((AudioSource) -> MediaSource?)? = null
 
   init {
     installPlayerListeners()
     startUpdating()
   }
 
-  fun setMediaItemCreator(creator: (AudioSource) -> MediaItem?) {
-    this.createMediaItemForSource = creator
+  fun setMediaSourceCreator(creator: (AudioSource) -> MediaSource?) {
+    this.createMediaSourceForSource = creator
   }
 
   fun loadInitialPlaylist() {
     val validSources = mutableListOf<AudioSource>()
     sources.forEach { source ->
-      createMediaItemForSource?.invoke(source)?.let { mediaItem ->
+      createMediaSourceForSource?.invoke(source)?.let { mediaSource ->
         validSources.add(source)
-        ref.addMediaItem(mediaItem)
+        ref.addMediaSource(mediaSource)
       }
     }
     sources = validSources
@@ -149,9 +146,9 @@ class AudioPlaylist(
   }
 
   fun add(source: AudioSource) {
-    val mediaItem = createMediaItemForSource?.invoke(source) ?: return
+    val mediaSource = createMediaSourceForSource?.invoke(source) ?: return
     sources.add(source)
-    ref.addMediaItem(mediaItem)
+    ref.addMediaSource(mediaSource)
     sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
@@ -159,9 +156,9 @@ class AudioPlaylist(
     if (index !in 0..trackCount) {
       return
     }
-    val mediaItem = createMediaItemForSource?.invoke(source) ?: return
+    val mediaSource = createMediaSourceForSource?.invoke(source) ?: return
     sources.add(index, source)
-    ref.addMediaItem(index, mediaItem)
+    ref.addMediaSource(index, mediaSource)
     sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
