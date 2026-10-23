@@ -24,6 +24,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: *trigger_paths
 
 concurrency:
@@ -32,10 +33,12 @@ concurrency:
 
 jobs:
   test:
+    # Draft pull requests skip the emulator tests. Marking the pull request ready for review runs them.
     if: >-
       github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name != github.repository ||
-      !startsWith(github.head_ref, 'changeset-release/')
+      (!github.event.pull_request.draft &&
+       (github.event.pull_request.head.repo.full_name != github.repository ||
+        !startsWith(github.head_ref, 'changeset-release/')))
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 150
     env:
