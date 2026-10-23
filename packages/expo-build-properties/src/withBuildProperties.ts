@@ -10,7 +10,12 @@ import {
   withAndroidQueries,
   withAndroidSettingsGradle,
 } from './android';
-import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
+import {
+  withIosBuildProperties,
+  withIosDeploymentTarget,
+  withIosInfoPlist,
+  withIosRegions,
+} from './ios';
 import { withIosSceneSupport } from './iosSceneSupport';
 import type { PluginConfigType } from './pluginConfig';
 import { validateConfig } from './pluginConfig';
@@ -43,6 +48,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
   config = withIosInfoPlist(config, pluginConfig);
+  config = withIosRegions(config, pluginConfig);
   config = withIosSceneSupport(config, pluginConfig);
 
   return config;
