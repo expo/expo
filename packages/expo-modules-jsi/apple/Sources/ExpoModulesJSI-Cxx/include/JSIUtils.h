@@ -469,10 +469,23 @@ inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object 
 }
 
 /**
- * Sets the external memory pressure of the array buffer. An amount that the runtime rejects is ignored.
+ * Sets the external memory pressure of an array buffer that wraps native memory to the buffer's size. An
+ * array buffer that JavaScript allocated is skipped, because the runtime already counts its memory. Before
+ * React Native 0.86, JSI can't tell the two apart, so the pressure is always set.
  */
-inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer, size_t amount) noexcept {
-  setExternalMemoryPressure(runtime, static_cast<const jsi::Object &>(arrayBuffer), amount);
+inline void updateExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer) noexcept {
+  try {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+    // Only an array buffer that wraps native memory has a mutable buffer.
+    if (!arrayBuffer.tryGetMutableBuffer(runtime)) {
+      return;
+    }
+#endif
+    setExternalMemoryPressure(runtime, arrayBuffer, arrayBuffer.size(runtime));
+  } catch (...) {
+    // A C++ exception that reaches Swift terminates the app.
+  }
 }
 
 // MARK: - ArrayBuffer
