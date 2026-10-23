@@ -49,7 +49,7 @@ const removeConsoleConfig =
 const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
-    '@expo/*',
+    '@expo/styleguide',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
@@ -59,8 +59,9 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  agentRules: false,
   experimental: {
-    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
+    optimizePackageImports: ['cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,
     parallelServerBuildTraces: true,
     esmExternals: true,

@@ -219,7 +219,11 @@ data class NetworkRequestSummary(
         .mapNotNull { request ->
           val start = request.timings.responseStart ?: return@mapNotNull null
           val end = request.timings.measuredResponseEnd ?: return@mapNotNull null
-          if (end.time > start.time) start.time to end.time else null
+          if (end.time > start.time) {
+            start.time to end.time
+          } else {
+            null
+          }
         }
         .sortedBy { it.first }
 

@@ -6,6 +6,11 @@
     "modules": ["ExpoUIModule"]
   },
   "android": {
-    "modules": ["expo.modules.ui.ExpoUIModule"]
+    "modules": ["expo.modules.ui.ExpoUIModule"],
+    "publication": {
+      "groupId": "expo.modules.ui",
+      "artifactId": "expo.modules.ui",
+      "repository": "local-maven-repo"
+    }
   }
 }

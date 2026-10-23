@@ -13,9 +13,8 @@ private struct StubUnderlyingError: Error, LocalizedError {
 
 /**
  The message a rejected promise delivers to JavaScript is derived from the exception's `reason`,
- via `String(reflecting:)` -> `Exception.debugDescription`. It is NOT derived from `description`,
- so `Promise.reject(code:description:)` and `Exception(name:description:code:)` silently drop the
- description they are given. These tests pin the behavior the module relies on instead.
+ via `String(reflecting:)` -> `Exception.debugDescription`. These tests check that the underlying
+ error's description reaches that message.
  */
 @Suite("Updates exceptions")
 struct UpdatesExceptionsTests {

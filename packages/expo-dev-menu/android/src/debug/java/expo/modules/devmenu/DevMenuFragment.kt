@@ -34,6 +34,7 @@ import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.fab.MovableFloatingActionButton
 import expo.modules.devmenu.helpers.isAcceptingText
+import expo.modules.devmenu.launch.DevMenuLaunchOverrides
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
@@ -68,7 +69,8 @@ class DevMenuFragment(
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val shouldShowAtLaunch = preferences.showsAtLaunch || !preferences.isOnboardingFinished
+    val shouldShowAtLaunch = DevMenuLaunchOverrides.canLaunchDevMenuOnStart &&
+      (preferences.showsAtLaunch || !preferences.isOnboardingFinished)
     if (shouldShowAtLaunch) {
       showMenuAtLaunch()
     }

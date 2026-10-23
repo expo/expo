@@ -23,7 +23,10 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
     visitor: {
       ExportDefaultDeclaration(path, state) {
         // Early exit if file is not within the `app/` directory
-        if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+        if (
+          !routerAbsoluteRoot ||
+          !isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)
+        ) {
           return;
         }
 
@@ -39,7 +42,10 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
       ExportNamedDeclaration(path, state) {
         // Early exit if file is not within the `app/` directory
-        if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+        if (
+          !routerAbsoluteRoot ||
+          !isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)
+        ) {
           debug('Skipping file outside app directory:', state.file.opts.filename);
           return;
         }

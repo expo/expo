@@ -3,7 +3,8 @@ name: iOS Unit Tests
 on:
   workflow_dispatch: {}
   pull_request:
-    paths:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths: &trigger_paths
       - .github/workflows/ios-unit-tests.yml
       - packages/**/ios/**
       - packages/**/apple/**
@@ -16,17 +17,7 @@ on:
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
-    paths:
-      - .github/workflows/ios-unit-tests.yml
-      - packages/**/ios/**
-      - packages/**/apple/**
-      - apps/bare-expo/ios/**
-      - tools/src/commands/IosNativeUnitTests.ts
-      - tools/src/commands/NativeUnitTests.ts
-      - tools/src/AffectedPackages.ts
-      - Gemfile
-      - Gemfile.lock
-      - '!packages/@expo/cli/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -34,7 +25,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-26
+    # Draft pull requests skip this paid macOS job. Marking the pull request ready for review runs it.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout

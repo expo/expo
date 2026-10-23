@@ -1,6 +1,6 @@
 {
   "name": "expo-test-runner",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Script that enchants test experience.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-test-runner#readme",
   "bugs": {
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
-    "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/node": "^22.14.0"
   }
 }

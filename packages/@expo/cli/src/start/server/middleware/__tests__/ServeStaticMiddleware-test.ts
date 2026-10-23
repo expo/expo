@@ -61,6 +61,23 @@ describe('getHandler', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  it(`serves static content without the query of the request url`, async () => {
+    const next = jest.fn();
+    const req = asReq({ url: '/favicon.ico?v=1#hash', method: 'GET', headers: {} });
+
+    middleware(req, {} as any, next);
+
+    expect(send).toHaveBeenCalledWith(req, '/favicon.ico', { root: '/public' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it(`does not throw for an invalid absolute request url`, async () => {
+    const next = jest.fn();
+    const req = asReq({ url: 'http://localhost:99999/favicon.ico', method: 'GET', headers: {} });
+
+    expect(() => middleware(req, {} as any, next)).not.toThrow();
+  });
+
   // NOTE(EvanBacon): We could change this in the future.
   it(`does not serve static content from the public folder on native`, async () => {
     const next = jest.fn();

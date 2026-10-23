@@ -449,7 +449,11 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
     severityText = resolvedSeverity.severityText,
     body = OTStringValue(stringValue = body ?: ""),
     attributes = attributes,
-    droppedAttributesCount = if (totalDrops > 0) totalDrops else null
+    droppedAttributesCount = if (totalDrops > 0) {
+      totalDrops
+    } else {
+      null
+    }
   )
 }
 
@@ -575,7 +579,13 @@ internal fun otAnyValueFromJsonElement(element: JsonElement): OTAnyValue? {
         return OTAnyValue.Str(element.content)
       }
       element.longOrNull?.let { return OTAnyValue.Int64(it) }
-      element.doubleOrNull?.let { return if (it.isFinite()) OTAnyValue.Dbl(it) else null }
+      element.doubleOrNull?.let {
+        return if (it.isFinite()) {
+          OTAnyValue.Dbl(it)
+        } else {
+          null
+        }
+      }
       null
     }
     is JsonObject -> {

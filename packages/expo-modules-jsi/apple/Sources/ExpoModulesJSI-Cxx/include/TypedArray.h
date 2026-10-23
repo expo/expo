@@ -30,15 +30,25 @@ bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
 /**
  * Returns the `TypedArrayKind` of the given typed-array object, derived from its
- * `constructor.name` (e.g. `Uint8Array`, `Float32Array`).
+ * `constructor.name` (e.g. `Uint8Array`, `Float32Array`). The property names are passed in,
+ * so callers can create them once per runtime.
  */
-TypedArrayKind getTypedArrayKind(jsi::IRuntime &runtime, const jsi::Object &jsObj);
+TypedArrayKind getTypedArrayKind(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj,
+  const jsi::PropNameID &constructorPropName,
+  const jsi::PropNameID &namePropName
+);
 
 /**
  * Returns the underlying `ArrayBuffer` backing the given typed-array object.
  * Throws if the object has no attached ArrayBuffer.
  */
-jsi::ArrayBuffer getTypedArrayBuffer(jsi::IRuntime &runtime, const jsi::Object &jsObj);
+jsi::ArrayBuffer getTypedArrayBuffer(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj,
+  const jsi::PropNameID &bufferPropName
+);
 
 } // namespace expo
 

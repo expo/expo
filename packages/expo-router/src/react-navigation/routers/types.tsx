@@ -163,6 +163,19 @@ type RouterType<State extends NavigationState> = undefined extends State['type']
   ? { type?: State['type'] }
   : { type: State['type'] };
 
+/**
+ * What a router's `getStateForAction` returns when it does not produce a result itself.
+ */
+export enum RouterActionHandling {
+  /**
+   * Lets the base router handle the action. Only an `extendRouter` extension or an
+   * `extendRouterActions` reducer can return it.
+   */
+  Delegate = 'DELEGATE',
+  /** Leaves the action unhandled, so the navigator ignores it. */
+  Unhandled = 'UNHANDLED',
+}
+
 export type Router<
   State extends NavigationState,
   Action extends NavigationAction,
@@ -202,7 +215,8 @@ export type Router<
 
   /**
    * Take the current state and action, and return a new state and the affected route key.
-   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
+   * If the action cannot be handled, return `RouterActionHandling.Unhandled`. Returning `null` is
+   * deprecated. Use `isActionHandled` to check a result. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
@@ -213,7 +227,7 @@ export type Router<
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): RouterActionResult<State> | null;
+  ): RouterActionResult<State> | RouterActionHandling.Unhandled | null;
 
   /**
    * Whether the action should also change focus in parent navigator

@@ -4,6 +4,8 @@ import type { ExpoModifier } from '../../types';
 import { LazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+export { LazyItems, type LazyItemsProps } from '../LazyItems';
+
 /**
  * Content padding values for LazyColumn.
  */

@@ -67,6 +67,11 @@ struct PropertyDescriptor {
 void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor);
 
 /**
+ Defines the property under a symbol key, such as `Symbol.toStringTag`, with the provided descriptor options.
+ */
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const jsi::Symbol &key, const PropertyDescriptor& descriptor);
+
+/**
  Calls `Object.defineProperty(object, name, descriptor)`.
  */
 void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, jsi::Object descriptor);

@@ -1,4 +1,4 @@
-import type { default as AssetSourceResolver } from 'react-native/Libraries/Image/AssetSourceResolver';
+import type { AssetSourceResolver } from 'react-native/unstable-internals-do-not-use';
 
 import { Asset, ANDROID_EMBEDDED_URL_BASE_RESOURCE } from './Asset';
 import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
@@ -16,7 +16,7 @@ if (IS_ENV_WITH_LOCAL_ASSETS) {
         if (asset.uri.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
           // TODO(@kitten): See https://github.com/expo/expo/commit/ec940b57a87d99ab4f1d06d87126e662c3f04f04#r155340943
           // It's unclear whether this is sound since this may be our own AssetSourceResolver, which doesn't have this method
-          // Please compare `AssetSourceResolver` type from `react-native/Libraries/Image/AssetSourceResolver` against `./AssetSourceResolver`
+          // Please compare `AssetSourceResolver` type from `react-native/unstable-internals-do-not-use` against `./AssetSourceResolver`
           return (
             resolver as unknown as AssetSourceResolver
           ).resourceIdentifierWithoutScale() as any;

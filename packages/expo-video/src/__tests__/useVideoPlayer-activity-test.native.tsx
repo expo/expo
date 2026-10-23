@@ -37,21 +37,21 @@ describe('useVideoPlayer inside <Activity>', () => {
       </Activity>
     );
 
-    const screen = render(<App mode="visible" />, { concurrentRoot: true });
+    const screen = await render(<App mode="visible" />);
     await flush();
     expect(setup).toHaveBeenCalledTimes(1);
     const original = setup.mock.calls[0]![0];
     expect(original.playing).toBe(true);
 
     for (let cycle = 0; cycle < 3; cycle++) {
-      screen.rerender(<App mode="hidden" />);
+      await screen.rerender(<App mode="hidden" />);
       await flush();
       expect(release).not.toHaveBeenCalled();
       expect(setup).toHaveBeenCalledTimes(1);
       expect([...players]).toEqual([original]);
       expect(original.playing).toBe(true);
 
-      screen.rerender(<App mode="visible" />);
+      await screen.rerender(<App mode="visible" />);
       await flush();
       expect(setup).toHaveBeenCalledTimes(1);
       expect(release).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('useVideoPlayer inside <Activity>', () => {
       expect(original.playing).toBe(true);
     }
 
-    screen.unmount();
+    await screen.unmount();
     await flush();
     expect(release).toHaveBeenCalledTimes(1);
   });
@@ -78,15 +78,13 @@ describe('useVideoPlayer inside <Activity>', () => {
       </Activity>
     );
 
-    const screen = render(<App mode="visible" source={SOURCE} />, {
-      concurrentRoot: true,
-    });
-    screen.rerender(<App mode="hidden" source={SOURCE} />);
-    screen.rerender(<App mode="hidden" source={OTHER_SOURCE} />);
+    const screen = await render(<App mode="visible" source={SOURCE} />);
+    await screen.rerender(<App mode="hidden" source={SOURCE} />);
+    await screen.rerender(<App mode="hidden" source={OTHER_SOURCE} />);
     await flush();
     expect(replaceAsync).not.toHaveBeenCalled();
 
-    screen.rerender(<App mode="visible" source={OTHER_SOURCE} />);
+    await screen.rerender(<App mode="visible" source={OTHER_SOURCE} />);
     await flush();
     expect(replaceAsync).toHaveBeenCalledTimes(1);
     expect(replaceAsync).toHaveBeenCalledWith({ uri: OTHER_SOURCE });

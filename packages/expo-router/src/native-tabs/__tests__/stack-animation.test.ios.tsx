@@ -57,10 +57,10 @@ beforeEach(() => {
   MockedScreenStackItem.mockClear();
 });
 
-it('disables animation only for the first stack screen reached across tabs', () => {
-  const result = renderRouter(routes, { initialUrl: '/first' });
+it('disables animation only for the first stack screen reached across tabs', async () => {
+  const result = await renderRouter(routes, { initialUrl: '/first' });
 
-  act(() => router.push('/second/details'));
+  await act(() => router.push('/second/details'));
 
   expect(screen).toHavePathname('/second/details');
   expect(latestStackItemProps('details')?.stackAnimation).toBe('none');
@@ -70,7 +70,7 @@ it('disables animation only for the first stack screen reached across tabs', () 
   const details = secondTab.state!.routes.find((route) => route.name === 'details')!;
   expect(details.params).toHaveProperty(INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME, true);
 
-  act(() => latestStackItemProps('details')!.onAppear!({} as never));
+  await act(() => latestStackItemProps('details')!.onAppear!({} as never));
 
   const updatedTabsState = result.getRouterState()!.routes[0]!.state!;
   const updatedSecondTab = updatedTabsState.routes.find((route) => route.name === 'second')!;
@@ -78,16 +78,16 @@ it('disables animation only for the first stack screen reached across tabs', () 
   expect(updatedDetails.params).not.toHaveProperty(INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME);
 
   MockedScreenStackItem.mockClear();
-  act(() => router.push('/second/final'));
+  await act(() => router.push('/second/final'));
 
   expect(screen).toHavePathname('/second/final');
   expect(latestStackItemProps('final')?.stackAnimation).toBeUndefined();
 });
 
-it('keeps the default animation when pushing within the focused tab', () => {
-  renderRouter(routes, { initialUrl: '/second' });
+it('keeps the default animation when pushing within the focused tab', async () => {
+  await renderRouter(routes, { initialUrl: '/second' });
 
-  act(() => router.push('/second/details'));
+  await act(() => router.push('/second/details'));
 
   expect(screen).toHavePathname('/second/details');
   expect(latestStackItemProps('details')?.stackAnimation).toBeUndefined();

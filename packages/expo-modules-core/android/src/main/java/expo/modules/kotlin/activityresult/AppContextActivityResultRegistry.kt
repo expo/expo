@@ -29,6 +29,7 @@ import expo.modules.kotlin.safeGetParcelable
 import expo.modules.kotlin.safeGetParcelableExtra
 import java.io.Serializable
 import java.util.Random
+import java.util.concurrent.CountDownLatch
 
 private const val TAG = "ActivityResultRegistry"
 
@@ -222,6 +223,7 @@ class AppContextActivityResultRegistry(
     return object : AppContextActivityResultLauncher<I, O>() {
       override fun launch(input: I, callback: ActivityResultCallback<O>) {
         val requestCode = keyToRequestCode[key]
+          ?: reregister(key, contract, fallbackCallback)
           ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
 
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)
@@ -238,6 +240,39 @@ class AppContextActivityResultRegistry(
 
       override val contract = contract
     }
+  }
+
+  /**
+   * A registration is bound to one Activity's lifecycle and dropped by its ON_DESTROY,
+   * while launchers outlive the Activity inside the AppContext. Registers [key] again
+   * against the live Activity and returns its request code. register() adds a lifecycle
+   * observer, which androidx requires on the main thread; launch() runs on the module's
+   * IO dispatcher, so the call is marshalled there.
+   */
+  private fun <I : Serializable, O> reregister(
+    key: String,
+    contract: AppContextActivityResultContract<I, O>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
+  ): Int? {
+    val liveActivity = activity
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      register(key, liveActivity, contract, fallbackCallback)
+    } else {
+      val registered = CountDownLatch(1)
+      var failure: Throwable? = null
+      Handler(Looper.getMainLooper()).post {
+        try {
+          register(key, liveActivity, contract, fallbackCallback)
+        } catch (e: Throwable) {
+          failure = e
+        } finally {
+          registered.countDown()
+        }
+      }
+      registered.await()
+      failure?.let { throw it }
+    }
+    return keyToRequestCode[key]
   }
 
   /**

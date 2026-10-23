@@ -1,5 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
+import StoreKit
 import Testing
 import UIKit
 
@@ -13,7 +15,7 @@ struct ApplicationModuleTests {
   let runtime: ExpoRuntime
 
   init() throws {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
@@ -39,7 +41,7 @@ struct ApplicationModuleTests {
     if let displayName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String {
       #expect(try result.asString() == displayName)
     } else {
-      #expect(result.isNull())
+      #expect(result.isNull() == true)
     }
   }
 
@@ -75,7 +77,7 @@ struct ApplicationModuleTests {
     if let expected {
       #expect(try result.asString() == expected)
     } else {
-      #expect(result.isNull())
+      #expect(result.isNull() == true)
     }
   }
 
@@ -87,11 +89,31 @@ struct ApplicationModuleTests {
   }
 
   @Test
+  func `getStoreEnvironmentAsync resolves to null or xcode on the simulator`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getStoreEnvironmentAsync()")
+
+    #expect(try result.isNull() || result.asString() == "xcode")
+  }
+
+  @Test(arguments: [
+    (AppStore.Environment.production, "production"),
+    (AppStore.Environment.sandbox, "sandbox"),
+    (AppStore.Environment.xcode, "xcode"),
+    (AppStore.Environment(rawValue: "Future"), nil),
+  ])
+  func `storeEnvironment maps the StoreKit environment to its JavaScript value`(
+    environment: AppStore.Environment,
+    expected: String?
+  ) {
+    #expect(ApplicationModule.storeEnvironment(environment) == expected)
+  }
+
+  @Test
   func `getPushNotificationServiceEnvironmentAsync resolves to null without a provisioning profile`() async throws {
     let result = try await runtime.evalAsync(
       "expo.modules.ExpoApplication.getPushNotificationServiceEnvironmentAsync()"
     )
 
-    #expect(result.isNull())
+    #expect(result.isNull() == true)
   }
 }

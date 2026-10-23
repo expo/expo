@@ -18,5 +18,9 @@ fun Cursor.getRequiredString(columnIndex: Int): String =
 
 fun Cursor.getNullableInt(columnName: String): Int? {
   val columnIndex = getColumnIndexOrThrow(columnName)
-  return if (isNull(columnIndex)) null else getInt(columnIndex)
+  return if (isNull(columnIndex)) {
+    null
+  } else {
+    getInt(columnIndex)
+  }
 }

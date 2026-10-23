@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fix `getMobileCountryCodeAsync()` and `getMobileNetworkCodeAsync()` throwing a `StringIndexOutOfBoundsException` when the SIM operator is empty or incomplete, for example right after leaving airplane mode. They now resolve to `null` instead. ([#50991](https://github.com/expo/expo/pull/50991) by [@Cedric921](https://github.com/Cedric921))
 
-### 🐛 Bug fixes
+## 58.0.2
 
-### 💡 Others
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.0 — 2026-09-10
 

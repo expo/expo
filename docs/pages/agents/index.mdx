@@ -52,7 +52,7 @@ Three pieces work together to give an AI agent consistent, Expo-specific context
 
 - **Expo Skills:** The `expo` plugin adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, EAS Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
 - **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, EAS Build history, EAS Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code and Codex, the `expo` plugin registers this server, so you do not add it separately.
-- **Project context files:** `create-expo-app` writes **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json** at the project root. These are the first thing the agent reads when you open the project. They point the agent to the documentation for the Expo SDK version your project targets.
+- **Project context files:** `create-expo-app` writes **AGENTS.md** at the project root to point agents to the documentation for the Expo SDK version your project targets. When Claude Code is installed, it also writes **.claude/settings.json** to enable the Expo plugin.
 
 ## Set up Expo Skills and Expo MCP Server
 
@@ -99,15 +99,14 @@ Each per-agent guide covers install, setup, and example prompts for that agent:
 
 ## Project context files for agents
 
-Each agent looks for project context in a different place. Instead of forcing one convention, `create-expo-app` CLI adds the following configuration files to a project's root when you create a new Expo project using the CLI:
+The `create-expo-app` CLI adds **AGENTS.md** to a new project's root. When Claude Code is installed, it also adds **.claude/settings.json**:
 
-| File                      | Read by                                                       | Purpose                                                                                                                             |
-| ------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **AGENTS.md**             | Codex and Cursor directly. Claude Code through **CLAUDE.md**. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
-| **CLAUDE.md**             | Claude Code on startup.                                       | Contains `@AGENTS.md`, which imports **AGENTS.md** into Claude Code's context.                                                      |
-| **.claude/settings.json** | Claude Code on startup.                                       | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
+| File                      | Read by                         | Purpose                                                                                                                             |
+| ------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **AGENTS.md**             | Claude Code, Codex, and Cursor. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
+| **.claude/settings.json** | Claude Code on startup.         | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
 
-Each file targets a different agent convention, so the same project works with Claude Code, Codex, or Cursor without per-agent configuration.
+Add shared project instructions to **AGENTS.md** so Claude Code, Codex, and Cursor read the same context.
 
 ## Set up an existing project
 
@@ -131,16 +130,6 @@ If your project already has an **AGENTS.md**, append the downloaded content to i
 
 <Step label="2">
 
-### Create CLAUDE.md
-
-If you use Claude Code, create **CLAUDE.md** with a single line that imports **AGENTS.md**:
-
-<Terminal cmd={["$ echo '@AGENTS.md' > CLAUDE.md"]} />
-
-</Step>
-
-<Step label="3">
-
 ### Enable the Expo plugin for Claude Code
 
 Create **.claude/settings.json** to enable the official Expo plugin from the Claude Code plugin marketplace:
@@ -157,7 +146,7 @@ This file enables the plugin for everyone who opens the project. Each developer 
 
 </Step>
 
-Commit all three files so every agent session on your team starts from the same project context. Codex and Cursor need only **AGENTS.md**, so steps 2 and 3 apply to Claude Code only.
+Commit both files so every agent session on your team starts from the same project context. Codex and Cursor need only **AGENTS.md**, so step 2 applies to Claude Code only.
 
 ## Verify the setup
 

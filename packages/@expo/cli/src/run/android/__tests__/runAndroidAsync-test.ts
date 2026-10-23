@@ -70,6 +70,28 @@ describe(runAndroidAsync, () => {
     );
   });
 
+  it.each([
+    { variant: 'debug', mode: 'development' },
+    { variant: 'debugOptimized', mode: 'development' },
+    { variant: 'staging', mode: 'production' },
+  ])('uses $mode mode for the $variant variant', async ({ variant, mode }) => {
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runAndroidAsync('/', { variant });
+
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+    expect(startBundlerAsync).toHaveBeenCalledWith('/', expect.objectContaining({ mode }));
+  });
+
   it(`runs android`, async () => {
     vol.fromJSON(
       {

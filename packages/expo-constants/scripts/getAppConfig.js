@@ -14,11 +14,14 @@ const destinationDir = process.argv[3] ?? cwd;
 const platform = process.argv[4];
 // The native build scripts pass 'true' for debug builds only.
 const embedFingerprint = process.argv[5] === 'true';
+const mode = process.argv[6];
 
 (async () => {
   const projectRoot = resolveProjectRoot(possibleProjectRoot);
 
-  require('@expo/env').load(projectRoot);
+  const expoEnv = require('@expo/env');
+  process.env = expoEnv.getOriginalEnv();
+  expoEnv.logLoadedEnv(expoEnv.loadProjectEnv(projectRoot, { mode }));
   process.chdir(projectRoot);
 
   const { exp } = getConfig(projectRoot, {

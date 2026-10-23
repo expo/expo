@@ -69,19 +69,10 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
       return
     }
 
-    if (pendingMessage != null && webSocket != null) {
-      val msg = mapOf(
-        "type" to "log",
-        "level" to when (logLevel) {
-          LogLevel.WARNING -> "warn"
-          LogLevel.ERROR -> "error"
-          LogLevel.INFO -> "info"
-        },
-        "data" to arrayOf(pendingMessage)
-      )
-
+    val message = pendingMessage
+    if (message != null && webSocket != null) {
       try {
-        val json = JSONObject(msg).toString()
+        val json = JSONObject(payload(message, logLevel)).toString()
         webSocket?.send(json)
       } catch (e: JSONException) {
         Log.e(TAG, "Failed to stringify message: ${e.message}")
@@ -99,13 +90,32 @@ class ExponentPackageLogger private constructor(private val appUrl: Uri) {
 
   private fun getMessageSocketUrl(appUrl: Uri): String {
     val host = appUrl.host ?: "localhost"
-    val port = if (appUrl.port > 0) appUrl.port else 8081
-    val scheme = if (appUrl.scheme == "https") "wss" else "ws"
+    val port = if (appUrl.port > 0) {
+      appUrl.port
+    } else {
+      8081
+    }
+    val scheme = if (appUrl.scheme == "https") {
+      "wss"
+    } else {
+      "ws"
+    }
     return "$scheme://$host:$port/hot"
   }
 
   companion object {
     private val TAG = ExponentPackageLogger::class.java.simpleName
+
+    fun payload(message: String, logLevel: LogLevel): Map<String, Any> = mapOf(
+      "type" to "log",
+      "level" to when (logLevel) {
+        LogLevel.WARNING -> "warn"
+        LogLevel.ERROR -> "error"
+        LogLevel.INFO -> "info"
+      },
+      "data" to listOf(message),
+      "mode" to "android"
+    )
 
     /**
      * Sends a message to the packager with the given url.

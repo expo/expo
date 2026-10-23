@@ -112,22 +112,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.platforms = {
-      :ios => '16.4'
-    }
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
-    }
-  end
-
-  s.test_spec 'UITests' do |test_spec|
-    test_spec.requires_app_host = true
-    test_spec.source_files = 'ios/UITests/**/*'
-    test_spec.dependency 'React-CoreModules'
-    test_spec.dependency 'ReactAppDependencyProvider'
-    test_spec.dependency 'React'
-    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
-    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }

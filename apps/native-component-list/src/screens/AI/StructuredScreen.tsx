@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
-import { AIResultPanel, describeGeneration, styles, useAIAction } from './shared';
+import { AIResultPanel, describeGeneration, InputBlock, styles, useAIAction } from './shared';
 
 const TRIP_PROMPT = 'Plan a three day trip to Kyoto in April.';
 
@@ -16,7 +16,7 @@ const TRIP_SCHEMA = schema.object({
 });
 
 export default function StructuredScreen() {
-  const { result, error, run, buttonProps } = useAIAction();
+  const { outcome, pending, run, buttonProps } = useAIAction();
 
   const generateStructured = () =>
     run('structured', async () =>
@@ -25,27 +25,20 @@ export default function StructuredScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <AIResultPanel result={result} error={error} />
-
       <BodyText color="secondary" style={styles.description}>
-        A schema built with the schema helpers constrains the result to an object with a city, a day
-        count from 1 to 5, a season, up to three highlights, and an optional rain-gear flag. A
-        provider with constrained output decodes the schema directly and reports format:
-        constrained, except the browser Prompt API, which cannot apply numeric bounds and so falls
-        back for this schema even while it reports constrainedOutput: supported. Without constrained
-        output the call falls back to validated prompting, reports format: validated, and rejects
-        with ERR_VALIDATION_RETRIES_EXHAUSTED only once the repair attempts run out.
+        Passing a schema to generateAsync returns a typed object that matches it, not free text.
       </BodyText>
 
-      <BodyText color="secondary" style={styles.description}>
-        Prompt: {TRIP_PROMPT}
-      </BodyText>
+      <InputBlock label="prompt">{TRIP_PROMPT}</InputBlock>
+      <InputBlock label="schema">{JSON.stringify(TRIP_SCHEMA, null, 2)}</InputBlock>
 
       <Button
         {...buttonProps('structured')}
         onPress={generateStructured}
         title="Generate a trip plan"
       />
+
+      <AIResultPanel outcome={outcome} dimmed={pending !== null} />
     </ScrollView>
   );
 }

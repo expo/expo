@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type ReactElement } from 'react';
 
 import { useItemKeys } from '../../recycling/useRecycledRows';
 import { type ViewEvent } from '../../types';
@@ -56,7 +57,13 @@ let warnedElements = false;
  * Pass `data` with `keyExtractor`, and render each row from a `children` function.
  * Recycles rows unless `recycling` is `false`.
  */
-export function ListForEach<ItemT>(props: ListForEachProps<ItemT> | ListForEachElementsProps) {
+export function ListForEach<T>(props: ListForEachProps<T>): ReactElement;
+/**
+ * @hidden
+ * @deprecated Pass `data` and `keyExtractor`, and render each row from a `children` function.
+ */
+export function ListForEach(props: ListForEachElementsProps): ReactElement;
+export function ListForEach<T>(props: ListForEachProps<T> | ListForEachElementsProps) {
   if (props.data === undefined) {
     if (__DEV__ && !warnedElements) {
       warnedElements = true;
@@ -87,14 +94,14 @@ function ChildrenListForEach({ children, onDelete, onMove, ...props }: ListForEa
   );
 }
 
-function StaticListForEach<ItemT>({
+function StaticListForEach<T>({
   data,
   keyExtractor,
   children: renderItem,
   overscanCount: _overscanCount,
   estimatedItemSize: _estimatedItemSize,
   ...props
-}: Omit<ListForEachProps<ItemT>, 'recycling'>) {
+}: Omit<ListForEachProps<T>, 'recycling'>) {
   const itemKeys = useItemKeys('List.ForEach', data, keyExtractor);
   return (
     <ChildrenListForEach {...props}>

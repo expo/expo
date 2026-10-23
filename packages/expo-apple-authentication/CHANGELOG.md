@@ -1,14 +1,10 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 - [iOS] Add missing Apple authorization error codes. ([#50572](https://github.com/expo/expo/pull/50572) by [@fobos531](https://github.com/fobos531))
 

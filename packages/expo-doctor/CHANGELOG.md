@@ -1,14 +1,29 @@
 # Changelog
 
-## Unpublished
+## 1.21.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Fix the "Check Expo config (app.json/ app.config.js) schema" check for `ios.icon`. A `.icon` directory was reported as "cannot access file", and a `.png` as "should point to a .icon directory". With the light/dark/tinted object form, the check reported no asset errors at all, not even a missing image or a missing file in another field such as `android.icon`. ([#51635](https://github.com/expo/expo/pull/51635) by [@brentvatne](https://github.com/brentvatne))
 
-### 🐛 Bug fixes
+## 1.21.4
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 1.21.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Exit with a non-zero code when Doctor can't run its checks, for example because the app config fails to load. ([#50325](https://github.com/expo/expo/pull/50325) by [@tahakocal](https://github.com/tahakocal))
+
+## 1.21.2 — 2026-09-28
 
 ### 💡 Others
+
+- [Internal] Type the Metro config loader from `expo/metro-config` and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
 
 ## 1.21.1 — 2026-09-15
 

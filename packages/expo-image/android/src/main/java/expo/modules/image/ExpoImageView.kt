@@ -7,13 +7,16 @@ import android.graphics.PorterDuff
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
+import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.svg.SVGPictureDrawable
 
 @OptIn(UnstableReactNativeAPI::class)
 @SuppressLint("ViewConstructor")
@@ -70,6 +73,8 @@ class ExpoImageView(
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     super.onLayout(changed, left, top, right, bottom)
+
+    updateImageRenderingLayer()
     applyTransformationMatrix()
   }
 
@@ -116,6 +121,35 @@ class ExpoImageView(
   init {
     clipToOutline = true
     scaleType = ScaleType.MATRIX
+  }
+
+  override fun setImageDrawable(drawable: Drawable?) {
+    super.setImageDrawable(drawable)
+
+    updateImageRenderingLayer()
+  }
+
+  private fun updateImageRenderingLayer() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      // On older Android renderers, hardware drawing of the SVG PictureDrawable can appear blurry.
+      // Large views cannot fit in a software layer and would otherwise render blank.
+      // Recheck on layout and when a reused view receives a different image.
+      val maximumDrawingCacheSize = ViewConfiguration.get(context).scaledMaximumDrawingCacheSize
+
+      val svgLayerType = if (
+        drawable is SVGPictureDrawable &&
+        width > 0 && height > 0 &&
+        width.toLong() * height <= maximumDrawingCacheSize / 4 // Each pixel needs four bytes. Divide the limit to avoid overflowing the view area.
+      ) {
+        LAYER_TYPE_SOFTWARE
+      } else {
+        LAYER_TYPE_NONE
+      }
+
+      if (layerType != svgLayerType) {
+        setLayerType(svgLayerType, null)
+      }
+    }
   }
 
   // region Component Props

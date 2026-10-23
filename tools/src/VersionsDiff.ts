@@ -1,8 +1,5 @@
 import * as jsondiffpatch from 'jsondiffpatch';
-
-// `jsondiffpatch.formatters.console` is a module namespace whose `default` export is the
-// ConsoleFormatter class. The type definitions don't expose it, so cast here.
-const ConsoleFormatter: any = (jsondiffpatch.formatters.console as any).default;
+import ConsoleFormatter from 'jsondiffpatch/formatters/console';
 
 /**
  * jsondiffpatch's console formatter prints every unchanged value in full when given the
@@ -11,6 +8,14 @@ const ConsoleFormatter: any = (jsondiffpatch.formatters.console as any).default;
  * unchanged objects and arrays into a one-line placeholder.
  */
 class CollapsingConsoleFormatter extends ConsoleFormatter {
+  // Since 0.7, the formatter prefixes every line of added and deleted values with "+" or "-".
+  // Turn this off to keep the previous output, where colors alone show the change.
+  prepareContext(context: Parameters<ConsoleFormatter['prepareContext']>[0]): void {
+    super.prepareContext(context);
+    context.pushLinePrefix = () => {};
+    context.popLinePrefix = () => {};
+  }
+
   format_unchanged(context: any, _delta: any, left: any): void {
     if (left === undefined) {
       return;
@@ -38,5 +43,5 @@ const formatter = new CollapsingConsoleFormatter();
  * Formats a versions config delta for the console, collapsing sections without changes.
  */
 export function formatVersionsDelta(delta: jsondiffpatch.Delta, original: any): string {
-  return formatter.format(delta, original);
+  return formatter.format(delta, original) ?? '';
 }
