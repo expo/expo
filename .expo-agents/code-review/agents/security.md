@@ -159,6 +159,8 @@ is worth more than five speculative ones.
      path the review checkout lacks) is listed as ignored instead. -->
 <!-- @ref .github/dependabot.yml -->
 <!-- @ref .github/workflows/issue-triage.yml -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/Info.plist -->
 <!-- @ref packages/@expo/cli/src/export/embed/exportServer.ts -->
 <!-- @ref packages/@expo/cli/src/start/doctor/apple/XcodePrerequisite.ts -->
 <!-- @ref packages/@expo/cli/src/start/platforms/android/adb.ts -->

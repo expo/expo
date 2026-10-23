@@ -112,10 +112,20 @@ native file. Prefer zero findings over a low-value one.
 <!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
      per-package directory name, a root file the text does not mean, a submodule
      path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/*.podspec -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/Expo.plist -->
+<!-- @ref glob:**/Info.plist -->
 <!-- @ref glob:**/Podfile.lock -->
 <!-- @ref glob:**/Podfile.properties.json -->
+<!-- @ref glob:**/build.gradle -->
+<!-- @ref glob:**/colors.xml -->
 <!-- @ref glob:**/expo-module.config.json -->
+<!-- @ref glob:**/gradle.properties -->
+<!-- @ref glob:**/settings.gradle -->
 <!-- @ref glob:**/spm.config.json -->
+<!-- @ref glob:**/strings.xml -->
+<!-- @ref glob:**/styles.xml -->
 <!-- @ref glob:packages/*/android/build.gradle -->
 <!-- @ref tools/src/prebuilds/SPMConfig.types.ts -->
 <!-- @ref tools/src/prebuilds/schemas/spm.config.schema.json -->

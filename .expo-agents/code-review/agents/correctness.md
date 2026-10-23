@@ -112,7 +112,9 @@ Prefer zero findings over a low-value one.
 <!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
      per-package directory name, a root file the text does not mean, a submodule
      path the review checkout lacks) is listed as ignored instead. -->
-<!-- @ref packages/expo-router/src/fork/ -->
+<!-- @ref glob:**/Info.plist -->
+<!-- @ref glob:**/android/src/main/AndroidManifest.xml -->
 <!-- @ref glob:packages/expo-router/src/react-navigation/** -->
+<!-- @ref packages/expo-router/src/fork/ -->
 <!-- @ref tools/src/code-review/reviewers/ -->
 <!-- @ref-ignore apps/ -->
