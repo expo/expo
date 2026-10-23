@@ -52,21 +52,31 @@ internal func makeJavaScriptUint8Array(
 ) throws -> JavaScriptValue {
   let runtimeHandle = runtime.handle
   let jsiRuntime = runtime.pointee
-  return try data.withUnsafeBytes { bytes in
-    // The helper copies every byte, and for larger data it doesn't zero the memory first.
-    precondition(bytes.isEmpty || bytes.baseAddress != nil, "Data that isn't empty has no base address")
-    return try capturingCppErrors {
-      return JavaScriptValue(
-        runtimeHandle,
-        expo.createUint8Array(jsiRuntime, bytes.baseAddress?.assumingMemoryBound(to: UInt8.self), bytes.count)
-      )
+  var memory: UnsafeMutablePointer<UInt8>?
+  let uint8Array = try runtime.withCached(
+    JavaScriptRuntime.CacheKeys.uint8ArrayConstructor,
+    { try runtime.global().getPropertyAsFunction("Uint8Array") },
+    { (constructor: borrowing JavaScriptFunction) in
+      return try capturingCppErrors {
+        return JavaScriptValue(
+          runtimeHandle,
+          expo.createUint8Array(jsiRuntime, constructor.pointee, data.count, &memory)
+        )
+      }
     }
+  )
+  // The memory can be uninitialized, so every byte is written before JavaScript gets the array.
+  if let memory {
+    data.copyBytes(to: memory, count: data.count)
+  } else {
+    precondition(data.isEmpty, "The new Uint8Array has no memory to copy the data into")
   }
+  return uint8Array
 }
 
 /// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which
-/// is looked up once and cached, so an encode doesn't pay for the global property lookup. Nothing in this
-/// module calls it; it keeps the ABI symbol for prebuilt binaries whose inlined `Data.encode` still calls it.
+/// is looked up once per runtime and cached. Nothing in this module calls it; it keeps the ABI symbol for
+/// prebuilt binaries whose inlined `Data.encode` still calls it.
 @usableFromInline
 @JavaScriptActor
 internal func makeJavaScriptUint8Array(

@@ -512,10 +512,16 @@ inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, b
 }
 
 /**
- * Creates a `Uint8Array` with a copy of `size` bytes from `bytes`, which may be null only when `size` is 0.
- * The garbage collector counts the memory of the new array.
+ * Creates a `Uint8Array` of `size` bytes and sets `data` to its memory, which may be uninitialized: the
+ * caller must write every byte before JavaScript can read the array. `uint8ArrayConstructor` is the
+ * global `Uint8Array` constructor. The garbage collector counts the memory of the new array.
  */
-inline jsi::Value createUint8Array(jsi::IRuntime &runtime, const uint8_t *_Nullable bytes, size_t size) {
+inline jsi::Value createUint8Array(
+  jsi::IRuntime &runtime,
+  const jsi::Function &uint8ArrayConstructor,
+  size_t size,
+  uint8_t *_Nullable *_Nonnull data
+) {
   return expo::CppError::tryCatch(runtime, [&] {
 #if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
     (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
@@ -523,9 +529,7 @@ inline jsi::Value createUint8Array(jsi::IRuntime &runtime, const uint8_t *_Nulla
     // memory report. The runtime zeroes the memory first, though, and above that size this costs more.
     if (size <= 8 * 1024) {
       jsi::Uint8Array array(runtime, size);
-      if (size > 0) {
-        std::memcpy(array.buffer(runtime).data(runtime), bytes, size);
-      }
+      *data = array.buffer(runtime).data(runtime);
       return jsi::Value(std::move(array));
     }
 #endif
@@ -533,10 +537,8 @@ inline jsi::Value createUint8Array(jsi::IRuntime &runtime, const uint8_t *_Nulla
     // collection at the next allocation, and the buffer that this function holds would survive it and
     // move to the old generation, which a slower collection frees.
     jsi::ArrayBuffer buffer = createArrayBuffer(runtime, size, false, false);
-    if (size > 0) {
-      std::memcpy(buffer.data(runtime), bytes, size);
-    }
-    jsi::Value array = runtime.global().getPropertyAsFunction(runtime, "Uint8Array").callAsConstructor(runtime, buffer);
+    *data = buffer.data(runtime);
+    jsi::Value array = uint8ArrayConstructor.callAsConstructor(runtime, buffer);
     if (size > 0) {
       setExternalMemoryPressure(runtime, buffer, size);
     }

@@ -26,7 +26,7 @@ struct JavaScriptCodableDataTests {
 
   @Test
   func `round-trips empty Data`() throws {
-    // Exercises the `byteLength == 0` decode guard and the `count > 0` encode guard.
+    // Exercises the `byteLength == 0` decode guard and encoding an empty `Data`.
     let decoded = try Data.decode(runtime.eval("new Uint8Array([])"), in: runtime)
     #expect(decoded.isEmpty)
     let encoded = try Data.encode(Data(), in: runtime)
