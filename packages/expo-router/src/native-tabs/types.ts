@@ -90,6 +90,10 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   disableAutomaticSearchActivation?: boolean;
   /**
+   * @platform iOS
+   */
+  prominent?: boolean;
+  /**
    * @platform android
    * @platform iOS
    */
@@ -733,6 +737,15 @@ export interface NativeTabTriggerProps {
    * @platform ios 26.1+
    */
   disableAutomaticSearchActivation?: boolean;
+  /**
+   * Shows the tab on its own surface in the tab bar, which stays visible when the tab bar minimizes.
+   * Only one tab can be prominent. Has effect only on the layout trigger.
+   *
+   * @see The official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/prominenttabidentifier).
+   * @default false
+   * @platform ios 27+
+   */
+  prominent?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *

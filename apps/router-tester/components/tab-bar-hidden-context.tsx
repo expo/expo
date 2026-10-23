@@ -11,6 +11,8 @@ export const TabBarHiddenContext = createContext<{
   setDisableHiddenAnimation: (disable: boolean) => void;
   preferredPlacement: NativeTabsProps['preferredPlacement'];
   setPreferredPlacement: (placement: NativeTabsProps['preferredPlacement']) => void;
+  prominent: boolean;
+  setProminent: (prominent: boolean) => void;
 }>({
   hidden: false,
   setHidden: () => {},
@@ -18,6 +20,8 @@ export const TabBarHiddenContext = createContext<{
   setDisableHiddenAnimation: () => {},
   preferredPlacement: undefined,
   setPreferredPlacement: () => {},
+  prominent: false,
+  setProminent: () => {},
 });
 
 const SIDEBAR_PLACEMENTS: NativeTabsProps['preferredPlacement'][] = [
@@ -35,6 +39,8 @@ export function TabBarHiddenToggle() {
     setDisableHiddenAnimation,
     preferredPlacement,
     setPreferredPlacement,
+    prominent,
+    setProminent,
   } = useContext(TabBarHiddenContext);
   const nextPlacement =
     SIDEBAR_PLACEMENTS[
@@ -59,6 +65,12 @@ export function TabBarHiddenToggle() {
         title={`Sidebar placement: ${preferredPlacement ?? 'not set'}`}
         testID="sidebar-placement-button"
         onPress={() => setPreferredPlacement(nextPlacement)}
+      />
+      <ToggleRow
+        label="Make Dynamic tab prominent"
+        testID="prominent-tab-toggle"
+        value={prominent}
+        onValueChange={setProminent}
       />
     </>
   );

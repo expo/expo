@@ -1355,6 +1355,41 @@ export default function TabLayout() {
 }
 ```
 
+### Prominent tab
+
+> **info** This feature is available in SDK 58 and later. To use it, compile your app with Xcode 27 or higher. The prominent tab has an effect on iOS 27 and later.
+
+A prominent tab shows on its own surface in the tab bar. It stays visible when the tab bar minimizes, for example with [`minimizeBehavior`](/versions/latest/sdk/router/native-tabs/#minimizebehavior) set to `"onScrollDown"`. To make a tab prominent, set the `prominent` prop on its `NativeTabs.Trigger` in the layout file.
+
+In the following recording, the Radio tab is prominent. It stays separate from the other tabs, also when the tab bar minimizes.
+
+<ContentSpotlight
+  alt="A video of a tab bar with a prominent tab on its own surface. The tab bar minimizes on scroll down, and the prominent tab stays visible next to the bottom accessory."
+  file="expo-router/ios-27-prominent-tab.mp4"
+/>
+
+Only one tab can be prominent. When more than one trigger sets `prominent`, the first visible one is prominent and Expo Router shows a warning in development.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      {/* ... */}
+      {/* Shows on its own surface and stays visible when the tab bar minimizes. */}
+      <NativeTabs.Trigger name="radio" prominent>
+        <NativeTabs.Trigger.Icon sf="dot.radiowaves.left.and.right" />
+        <NativeTabs.Trigger.Label>Radio</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
 ### Keyboard avoidance on Android
 
 > **info** This feature is available in SDK 56 and later.
