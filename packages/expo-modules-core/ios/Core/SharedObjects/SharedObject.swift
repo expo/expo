@@ -97,6 +97,11 @@ open class SharedObject: AnySharedObject {
   @JavaScriptActor
   open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
+  /// Binds the class's `static` and `class` `@JS` members onto its JavaScript constructor. Overridden by
+  /// the `@SharedObject` macro.
+  @JavaScriptActor
+  open class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
   @JavaScriptActor
