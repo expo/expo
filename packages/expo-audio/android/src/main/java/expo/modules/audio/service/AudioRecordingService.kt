@@ -114,11 +114,9 @@ class AudioRecordingService : Service() {
           it.notificationSessionId == sessionId && it.isPrepared
       } ?: return
       val actionId = intent.getStringExtra(EXTRA_ACTION_ID) ?: return
-      if (actionId == "stop") {
-        // The default Stop button has always stopped every recorder using this service.
+      recorder.handleNotificationAction(actionId, sessionId) {
+        // The default Stop button stops every recorder using this service.
         stopRecordingAndService()
-      } else {
-        recorder.handleNotificationAction(actionId, sessionId)
       }
     }
   }
@@ -162,29 +160,15 @@ class AudioRecordingService : Service() {
       )
     options.color?.let { builder.setColor(ColorCompat.toArgb(it)) }
     if (recorder != null) {
-      if (options.showPauseResume) {
-        builder.addAction(
-          if (paused) {
-            android.R.drawable.ic_media_play
-          } else {
-            android.R.drawable.ic_media_pause
-          },
-          if (paused) {
-            options.resumeButtonTitle
-          } else {
-            options.pauseButtonTitle
-          },
-          actionPendingIntent(
-            if (paused) {
-              "resume"
-            } else {
-              "pause"
-            },
-            recorder
-          )
-        )
+      options.resolvedButtons(paused).forEach { button ->
+        val icon = when (button.id) {
+          "pause" -> android.R.drawable.ic_media_pause
+          "resume" -> android.R.drawable.ic_media_play
+          "stop" -> android.R.drawable.ic_delete
+          else -> 0
+        }
+        builder.addAction(icon, button.title, actionPendingIntent(button.id, recorder))
       }
-      builder.addAction(android.R.drawable.ic_delete, options.stopButtonTitle, actionPendingIntent("stop", recorder))
     }
     return builder.build()
   }

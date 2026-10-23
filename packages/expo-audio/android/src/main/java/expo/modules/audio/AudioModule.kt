@@ -754,6 +754,8 @@ class AudioModule : Module() {
     }
 
     Class(AudioRecorder::class) {
+      Events("recordingStatusUpdate", "recordingNotificationAction")
+
       Constructor { options: RecordingOptions ->
         val recorder = AudioRecorder(
           appContext.throwingActivity.applicationContext,
@@ -817,6 +819,7 @@ class AudioModule : Module() {
       }
 
       Function("setNotificationOptions") { recorder: AudioRecorder, options: RecordingNotificationOptions ->
+        options.validate()
         recorder.notificationOptions = options
         recorder.serviceConnection.recordingServiceBinder?.service?.updateNotification()
       }
