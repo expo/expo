@@ -498,7 +498,14 @@ inline uint8_t *arrayBufferData(jsi::IRuntime &runtime, const jsi::ArrayBuffer &
 inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
   uint8_t *data = new uint8_t[size]();
   auto buffer = std::make_shared<MemoryBuffer>(data, size, [data]() { delete[] data; });
-  return jsi::ArrayBuffer(runtime, std::move(buffer));
+  jsi::ArrayBuffer arrayBuffer(runtime, std::move(buffer));
+  // Hermes does not count the memory of a buffer that it did not allocate, so without this
+  // pressure the garbage collector does not run for these buffers alone. Only this array buffer
+  // owns the memory.
+  if (size > 0) {
+    setExternalMemoryPressure(runtime, arrayBuffer, size);
+  }
+  return arrayBuffer;
 }
 
 /**
