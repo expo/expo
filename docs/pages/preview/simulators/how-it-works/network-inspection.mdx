@@ -96,7 +96,7 @@ Capture records HTTP and HTTPS requests that an app sends through a `URLSession`
 
 - Relaunch an app that was already running to record its traffic. In agent-device and Argent sessions, capture can start after the installed app's initial launch. In that case, capture misses requests that the app sends only at startup. Relaunching the app might not send them again.
 - Capture does not record traffic from Apple system apps, such as Safari, or requests that use `URLSession.shared`.
-- Network capture is not available on Android, or when the session sends its traffic through your machine with `--egress local`. If you pass both `--network-capture` and `--egress local`, `eas simulator:start` fails with an error.
+- Network capture is not available on Android. Current iOS workers can combine capture with `--egress local`, so captured requests exit through your computer. Both features need worker support; updating EAS CLI does not update a running session.
 
 ### Choose what to keep
 
