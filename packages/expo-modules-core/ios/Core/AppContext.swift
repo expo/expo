@@ -598,10 +598,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
   }
 
-  /**
-   Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-   that defines it or from a module that registers it in `_classTypes`.
-   */
+  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
+  /// that defines it or from a module that registers it in `_classTypes`.
   @JavaScriptActor
   private func buildWorkletPrototype(
     for nativeType: SharedObject.Type,
@@ -634,9 +632,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return nil
   }
 
-  /**
-   Finds the `@SharedObject` class for a given native type identifier among the classes that modules register by type.
-   */
+  /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
+  /// register in `_classTypes`.
   private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
     for module in moduleRegistry {
       if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
