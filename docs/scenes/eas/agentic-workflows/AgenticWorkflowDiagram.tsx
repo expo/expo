@@ -91,16 +91,16 @@ function StageDiagram({ stages }: { stages: Stage[] }) {
     .join('\n→ ');
   return (
     <div
-      className="my-5 rounded-3xl border border-default bg-default p-4"
+      className="@container my-5 rounded-3xl border border-default bg-default p-4"
       data-md="diagram"
       data-md-alt={alt}>
-      <div className="flex flex-col items-stretch gap-3 md:flex-row md:gap-2">
+      <div className="grid grid-cols-1 gap-3 @lg:grid-cols-2 @2xl:grid-cols-3 @5xl:flex @5xl:gap-2">
         {stages.map((stage, index) => (
           <Fragment key={stage.text}>
             {index > 0 && <Arrow />}
             <div
               className={mergeClasses(
-                'relative flex-1 rounded-md border px-2.5 py-2 shadow-xs',
+                'relative min-w-0 flex-1 rounded-md border px-2.5 py-2 shadow-xs',
                 stage.onExpo ? 'border-info bg-info' : 'border-default bg-subtle'
               )}>
               <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-default bg-default text-[10px] font-semibold text-default">
@@ -121,7 +121,7 @@ function StageDiagram({ stages }: { stages: Stage[] }) {
 function Arrow() {
   return (
     <svg
-      className="hidden h-2 w-5 shrink-0 self-center text-icon-secondary md:block"
+      className="hidden h-2 w-5 shrink-0 self-center text-icon-secondary @5xl:block"
       viewBox="0 0 20 8"
       aria-hidden="true">
       <path d="M0 4h17M17 4l-4-3M17 4l-4 3" stroke="currentColor" strokeWidth={1.25} fill="none" />
