@@ -426,12 +426,16 @@ test('replaces the current entry when required screens are synced below the focu
   await act(() =>
     result.result.current.handleAction({
       type: 'SYNC_REQUIRED_SCREENS',
-      payload: { routeKey: 'first', screens: ['second'] },
+      payload: {
+        routeKey: 'first',
+        routes: [{ key: 'second-key', name: 'second' }],
+        routeKeySeq: 1,
+      },
     })
   );
 
-  expect(result.result.current.state.routes.map((route) => route.name)).toEqual([
-    'second',
+  expect(result.result.current.state.routes.map((route) => route.key)).toEqual([
+    'second-key',
     'first',
   ]);
   expect(browserEvents(result)?.map((event) => event.op)).toEqual(['replace', 'replace']);
@@ -450,7 +454,11 @@ test('ignores a required screens sync for a route that is no longer focused', as
   await act(() =>
     result.result.current.handleAction({
       type: 'SYNC_REQUIRED_SCREENS',
-      payload: { routeKey: 'first', screens: ['second'] },
+      payload: {
+        routeKey: 'first',
+        routes: [{ key: 'second-key', name: 'second' }],
+        routeKeySeq: 1,
+      },
     })
   );
 

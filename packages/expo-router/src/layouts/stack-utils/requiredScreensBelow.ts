@@ -1,5 +1,5 @@
 'use client';
-import { use, useEffectEvent, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffectEvent, useLayoutEffect, useMemo, useState } from 'react';
 
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { matchDynamicName } from '../../matchers';
@@ -7,76 +7,87 @@ import {
   INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME,
   type InternalNavigationOptions,
 } from '../../navigationParams';
-import { NavigatorStateContext } from '../../react-navigation/core/useNavigationState';
 import type { NavigationState } from '../../react-navigation/routers';
 import { createRouteKeyMinter } from '../../react-navigation/routers/stateKeys';
-import type {
-  DescribePlaceholderRoute,
-  PlaceholderDescriptorMap,
-} from '../../standard-navigation/types';
+import type { DescribeRouteInternal } from '../../standard-navigation';
+import type { PlaceholderDescriptorMap } from '../../standard-navigation/types';
 import type { UnknownInputParams } from '../../types';
 import { getSingularId } from '../../utils/getSingularId';
-import type { StackScreenProps } from './StackScreen';
-
-type RequiredScreenBelow = NonNullable<StackScreenProps['unstable_requiredScreensBelow']>[number];
 
 export const SYNC_REQUIRED_SCREENS = 'SYNC_REQUIRED_SCREENS';
 
-export type SyncRequiredScreensPayload = {
-  routeKey: string;
-  screens: readonly RequiredScreenBelow[];
-};
+type Route = NavigationState['routes'][number];
 
 /**
- * Adds the missing `screens` directly below the focused route, in the listed order.
- * A screen is missing when no route at or below the focused one has the same name and path params.
+ * Routes to add below the focused route. `routeKeySeq` is the next free key sequence after minting
+ * `routes`.
  */
-export function insertRequiredScreensBelow<State extends NavigationState>(
+type RequiredRoutes = { routes: readonly Route[]; routeKeySeq: number };
+
+export type SyncRequiredScreensPayload = RequiredRoutes & { routeKey: string };
+
+/**
+ * Adds `required` directly below the focused route, in order. Skips a route when a route with the
+ * same name and path params is already at or below the focused one.
+ */
+export function insertRequiredRoutes<State extends NavigationState>(
   state: State,
-  screens: readonly RequiredScreenBelow[] | undefined
+  required: RequiredRoutes | undefined
 ): State {
-  if (!state.routes[state.index] || !screens?.length) {
+  const added = (required?.routes ?? []).filter((route) => !isAtOrBelowFocus(state, route));
+  if (!required || added.length === 0) {
     return state;
   }
-  const minter = createRouteKeyMinter(state);
-  const added = screens.reduce<State['routes'][number][]>((routes, screen) => {
-    const route = createMissingRoute(state, screen, routes, minter);
-    return route ? [...routes, route] : routes;
-  }, []);
-  if (added.length === 0) {
-    return state;
-  }
+  // An action, such as a preload, can mint the key of an added route before the sync. The added
+  // route keeps its key because the stack already rendered it. The other route is dropped, because
+  // a preload is only a hint.
+  const addedKeys = new Set(added.map((route) => route.key));
+  const routes = state.routes.filter((route) => !addedKeys.has(route.key));
+  const index = routes.indexOf(state.routes[state.index]!);
   return {
     ...state,
-    index: state.index + added.length,
-    routeKeySeq: minter.routeKeySeq,
-    routes: state.routes.toSpliced(state.index, 0, ...added),
+    index: index + added.length,
+    routeKeySeq: Math.max(state.routeKeySeq, required.routeKeySeq),
+    // A required route has the base route shape that every navigator state accepts.
+    routes: routes.toSpliced(index, 0, ...(added as State['routes'])),
   };
 }
 
-/**
- * Returns a new route for `screen`. Returns `undefined` when the stack has no such screen, or when
- * it already has a matching route at or below the focused one.
- */
-function createMissingRoute<State extends NavigationState>(
-  state: State,
-  screen: RequiredScreenBelow,
-  added: readonly State['routes'][number][],
-  minter: ReturnType<typeof createRouteKeyMinter>
-): State['routes'][number] | undefined {
-  const { name, params } =
-    typeof screen === 'string'
-      ? { name: screen, params: getPathParams(screen, state.routes[state.index]?.params) }
-      : screen;
-  const id = getSingularId(name, { params });
-  const isPresent = [...state.routes.slice(0, state.index + 1), ...added].some(
-    (route) => route.name === name && getSingularId(name, { params: route.params }) === id
+function isAtOrBelowFocus(
+  state: NavigationState,
+  route: Pick<Route, 'name' | 'params'>,
+  added: readonly Route[] = []
+) {
+  const id = getSingularId(route.name, { params: route.params });
+  return [...state.routes.slice(0, state.index + 1), ...added].some(
+    ({ name, params }) => name === route.name && getSingularId(name, { params }) === id
   );
-  if (isPresent || !state.routeNames.includes(name)) {
+}
+
+/** Creates keyed routes for the required screens of the focused route that the stack misses. */
+function createRequiredRoutes<NavigatorOptions extends object>(
+  state: NavigationState,
+  descriptors: PlaceholderDescriptorMap<NavigatorOptions>
+): RequiredRoutes | undefined {
+  const focused = state.routes[state.index];
+  // The stack screen props add this internal option; it is not in the public option types.
+  const options = focused && (descriptors[focused.key]?.options as InternalNavigationOptions);
+  const screens = options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
+  if (!focused || !screens) {
     return undefined;
   }
-  // A new route has the base route shape that every navigator state accepts.
-  return { key: minter.mint(name), name, ...(params && { params }) } as State['routes'][number];
+  const minter = createRouteKeyMinter(state);
+  const routes = screens.reduce<Route[]>((added, screen) => {
+    const { name, params } =
+      typeof screen === 'string'
+        ? { name: screen, params: getPathParams(screen, focused.params) }
+        : screen;
+    if (!state.routeNames.includes(name) || isAtOrBelowFocus(state, { name, params }, added)) {
+      return added;
+    }
+    return [...added, { key: minter.mint(name), name, ...(params && { params }) }];
+  }, []);
+  return routes.length > 0 ? { routes, routeKeySeq: minter.routeKeySeq } : undefined;
 }
 
 /** Copies the focused route params that fill the dynamic segments of `name`. */
@@ -94,106 +105,75 @@ function getPathParams(name: string, focusedParams: object | undefined) {
   return entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined;
 }
 
-function getRouteRequiredScreens(
-  routeKey: string | undefined,
-  descriptors: PlaceholderDescriptorMap
-): readonly RequiredScreenBelow[] | undefined {
-  // The stack screen props add this internal option; it is not in the public option types.
-  const options = routeKey
-    ? (descriptors[routeKey]?.options as InternalNavigationOptions | undefined)
-    : undefined;
-  return options?.[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME];
-}
-
-/** Adds descriptors for the required screens that the state does not have yet. */
-export function processRequiredScreensDescriptors<
+/**
+ * Adds the required screens of the focused route, with their descriptors, when the route enters
+ * the stack. Then syncs them to the global state. A prop change or a back action adds nothing.
+ */
+export function useRequiredScreensBelow<
   State extends NavigationState,
   NavigatorOptions extends object,
 >(
+  state: State,
   descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
-  state: State,
-  describe: DescribePlaceholderRoute<NavigatorOptions>
-): PlaceholderDescriptorMap<NavigatorOptions> {
-  const next = insertRequiredScreensBelow(
-    state,
-    getRouteRequiredScreens(state.routes[state.index]?.key, descriptors)
-  );
-  if (next === state) {
-    return descriptors;
-  }
-  const added = next.routes.slice(state.index, next.index);
-  return {
-    ...descriptors,
-    ...Object.fromEntries(added.map((route) => [route.key, describe(route, { create: true })])),
-  };
-}
-
-/** Adds the required screens to the state that the stack renders. */
-export function processRequiredScreensState<
-  State extends NavigationState,
-  NavigatorOptions extends object,
->(state: State, descriptors: PlaceholderDescriptorMap<NavigatorOptions>): State {
-  return insertRequiredScreensBelow(
-    state,
-    getRouteRequiredScreens(state.routes[state.index]?.key, descriptors)
-  );
-}
-
-/**
- * Returns `state` with the required screens of the focused route only when the route is new to the
- * stack, and syncs them to the global state.
- */
-export function useRequiredScreensBelow<State extends { index: number; routes: { key: string }[] }>(
-  state: State,
-  descriptors: PlaceholderDescriptorMap
-): State {
+  describe: DescribeRouteInternal<NavigatorOptions>
+) {
   const enqueue = useEnqueueRoutingIntent();
-  // `state` already has the routes that the stack processors added. The context has the global
-  // state without them.
-  const globalState = use(NavigatorStateContext);
-  const routeKey = globalState?.routes[globalState.index]?.key;
-  const screens = getRouteRequiredScreens(routeKey, descriptors);
-  const [arrival, setArrival] = useState({ globalState, screens });
-  let arrivalScreens = arrival.screens;
-  if (arrival.globalState !== globalState) {
-    // Preloaded routes above the index are not in the stack yet.
-    const isInStack = arrival.globalState?.routes
-      .slice(0, arrival.globalState.index + 1)
-      .some((route) => route.key === routeKey);
-    arrivalScreens = isInStack ? undefined : screens;
-    setArrival({ globalState, screens: arrivalScreens });
+  const [arrival, setArrival] = useState(() => ({
+    state,
+    required: createRequiredRoutes(state, descriptors),
+  }));
+  let required = arrival.required;
+  if (arrival.state !== state) {
+    const routeKey = state.routes[state.index]?.key;
+    const previous = arrival.state;
+    if (routeKey === previous.routes[previous.index]?.key) {
+      // Keep the routes that the global state does not have yet, with the same keys. Then a sync
+      // that comes after another action, such as a preload, keeps the screens mounted.
+      const routes = required?.routes.filter((route) => !isAtOrBelowFocus(state, route));
+      required = required && routes?.length ? { ...required, routes } : undefined;
+    } else {
+      // Preloaded routes above the index are not in the stack yet.
+      const isInStack = previous.routes
+        .slice(0, previous.index + 1)
+        .some((route) => route.key === routeKey);
+      required = isInStack ? undefined : createRequiredRoutes(state, descriptors);
+    }
+    setArrival({ state, required });
   }
-  const next = globalState && insertRequiredScreensBelow(globalState, arrivalScreens);
-  const shownRouteKeys = next?.routes.map((route) => route.key).join('\0');
-  const nextRouteKeys = next !== globalState ? shownRouteKeys : undefined;
+
+  const shownState = useMemo(() => insertRequiredRoutes(state, required), [state, required]);
+  const added = shownState.routes.slice(state.index, shownState.index);
+  const addedKeys = added.length > 0 ? added.map((route) => route.key).join('\0') : undefined;
+  const shownDescriptors =
+    added.length > 0
+      ? {
+          ...descriptors,
+          ...Object.fromEntries(
+            added.map((route) => [route.key, describe(route, { create: true })])
+          ),
+        }
+      : descriptors;
 
   const sync = useEffectEvent(() => {
-    if (!globalState || !arrivalScreens || !routeKey) {
+    const routeKey = state.routes[state.index]?.key;
+    if (!required || !routeKey) {
       return;
     }
-    const payload: SyncRequiredScreensPayload = { routeKey, screens: arrivalScreens };
+    const payload: SyncRequiredScreensPayload = { ...required, routeKey };
     enqueue({
       type: 'ACTION',
       payload: {
-        action: { type: SYNC_REQUIRED_SCREENS, payload, target: globalState.key },
-        originKey: globalState.key,
+        action: { type: SYNC_REQUIRED_SCREENS, payload, target: state.key },
+        originKey: state.key,
       },
     });
   });
 
   useLayoutEffect(() => {
-    if (nextRouteKeys !== undefined) {
+    if (addedKeys !== undefined) {
       sync();
     }
-  }, [nextRouteKeys]);
+  }, [addedKeys]);
 
-  // `next` is a new object on each render, so the joined keys keep the result stable.
-  return useMemo(() => {
-    const shownKeys = new Set(shownRouteKeys?.split('\0'));
-    if (shownRouteKeys === undefined || state.routes.every((route) => shownKeys.has(route.key))) {
-      return state;
-    }
-    const routes = state.routes.filter((route) => shownKeys.has(route.key));
-    return { ...state, routes, index: routes.findIndex((route) => route.key === routeKey) };
-  }, [state, shownRouteKeys, routeKey]);
+  return { state: shownState, descriptors: shownDescriptors };
 }

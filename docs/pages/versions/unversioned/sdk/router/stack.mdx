@@ -49,28 +49,21 @@ export default function Layout() {
     <Stack>
       <Stack.Screen name="index" />
       <Stack.Screen name="[id]" />
-      <Stack.Screen
-        name="[id]/comments"
-        unstable_requiredScreensBelow={['index', { name: '[id]', params: { id: '1' } }]}
-      />
+      <Stack.Screen name="[id]/comments" unstable_requiredScreensBelow={['index', '[id]']} />
     </Stack>
   );
 }
 ```
 
-Each entry is a screen name from the same `Stack`, such as `'[id]'`. It is not an href, such as `'/1'`.
+When the user opens `/42/comments`, the stack contains `index`, `[id]` with `id` set to `42`, and `[id]/comments`.
 
-When the user opens `/42/comments`, the stack contains `index`, `[id]` with `id` set to `1`, and `[id]/comments` with `id` set to `42`.
+- Each entry is a screen name from the same `Stack`, not an href.
+- A name entry, such as `'[id]'`, gets the matching path params of the opened screen. An object entry, such as `{ name: '[id]', params: { id: '1' } }`, uses only its own `params`.
+- The stack adds the required screens only when a deep link or a navigation opens the screen. It adds them directly below the screen, in the listed order, and skips a screen that is already below.
+- The stack does not add the required screens of an added screen.
+- The prop works only on a `Stack.Screen` in a layout.
 
-The stack adds the required screens when a deep link or a navigation opens the screen. A prop change or a back action adds nothing. Required screens go directly below the screen, in the listed order. If a route with the same name and path params is already below, the stack skips it.
-
-When you list a screen by name, it gets the matching path params of the opened screen. For example, with `'[id]'` instead of the object above, `/42/comments` adds `[id]` with `id` set to `42`. An object entry uses only its own `params`.
-
-The stack does not follow the required screens of a screen that it adds. For example, if `[id]/comments` lists only `'[id]'`, and `[id]` lists `'index'`, a deep link to `/42/comments` gives a stack with only `[id]` and `[id]/comments`. List every screen that you need below.
-
-During the first render of the screen, `router.canGoBack()` does not count the required screens yet. The stack adds them to the navigation state after that render.
-
-The prop works only on a `Stack.Screen` in a layout. It has no effect on a `Stack.Screen` in a page.
+During the first render of the screen, `router.canGoBack()` does not count the required screens yet.
 
 ## API
 

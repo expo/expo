@@ -69,19 +69,8 @@ export interface StackScreenProps extends PropsWithChildren {
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
 
   /**
-   * Screens that must be below this screen in the stack. When a deep link or a navigation opens
-   * this screen, the stack adds the missing screens directly below it.
-   *
-   * The stack does not add the required screens of an added screen. List every screen that must be
-   * below.
-   *
-   * Each entry is a screen name from this navigator, such as `'[id]'`. It is not an href, such as
-   * `'/42'`. The stack ignores any other entry without a warning.
-   *
-   * Only supported when used inside a Layout component.
-   *
-   * The behavior of this prop can change slightly between releases. The prop is safe to use. A
-   * later release will not remove it.
+   * Screen names from this navigator that must be below this screen. When a deep link or a
+   * navigation opens this screen, the stack adds the missing ones directly below it.
    *
    * @example
    * ```tsx app/_layout.tsx

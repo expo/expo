@@ -1,10 +1,11 @@
 import { act, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import { useState } from 'react';
+import { StrictMode, useEffect, useLayoutEffect, useState } from 'react';
 import { Text } from 'react-native';
 
+import { useRoute } from '../exports';
 import { navigationRef } from '../global-state/navigationRef';
-import { useLocalSearchParams } from '../hooks';
+import { useLocalSearchParams, useRouter } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -1303,5 +1304,120 @@ describe('unstable_requiredScreensBelow', () => {
 
     expect(navigationRef.getRootState()).toMatchObject(stackState('list', 'details'));
     expect(Index).not.toHaveBeenCalled();
+  });
+
+  it('keeps the key and state of a required screen when the opened screen prefetches in a layout effect', async () => {
+    const indexMounts: string[] = [];
+    function Index() {
+      const { key } = useRoute();
+      useEffect(() => {
+        indexMounts.push(key);
+      }, [key]);
+      return null;
+    }
+    function Details() {
+      const { prefetch } = useRouter();
+      useLayoutEffect(() => {
+        prefetch('/other');
+      }, [prefetch]);
+      return null;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: Index,
+        details: Details,
+        other: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+
+    expect(indexMounts).toEqual(['index:0-1']);
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          state: {
+            routes: [{ name: 'index', key: 'index:0-1' }, { name: 'details' }, { name: 'other' }],
+          },
+        },
+      ],
+    });
+  });
+
+  it('drops a preloaded route that has the key of a required screen', async () => {
+    const indexMounts: string[] = [];
+    function Index() {
+      const { key } = useRoute();
+      useEffect(() => {
+        indexMounts.push(key);
+      }, [key]);
+      return null;
+    }
+    function Details() {
+      const { prefetch } = useRouter();
+      useLayoutEffect(() => {
+        prefetch('/');
+      }, [prefetch]);
+      return null;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: Index,
+        details: Details,
+      },
+      { initialUrl: '/details' }
+    );
+
+    expect(indexMounts).toEqual(['index:0-1']);
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          state: {
+            routes: [{ name: 'index', key: 'index:0-1' }, { name: 'details' }],
+          },
+        },
+      ],
+    });
+  });
+
+  it('keeps required screen keys and state without duplicates in StrictMode', async () => {
+    const indexMounts: string[] = [];
+    function Index() {
+      const { key } = useRoute();
+      useEffect(() => {
+        indexMounts.push(key);
+      }, [key]);
+      return null;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="details" unstable_requiredScreensBelow={['index']} />
+          </Stack>
+        ),
+        index: Index,
+        details: () => null,
+      },
+      { initialUrl: '/details', wrapper: StrictMode }
+    );
+
+    // StrictMode runs the mount effect twice for one mount.
+    expect(indexMounts).toEqual(['index:0-1', 'index:0-1']);
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [{ state: { routes: [{ name: 'index', key: 'index:0-1' }, { name: 'details' }] } }],
+    });
   });
 });

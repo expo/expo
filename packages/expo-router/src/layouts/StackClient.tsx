@@ -20,7 +20,7 @@ import {
 } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { IsWithinNativeNavigator, integrateWithRouter } from '../standard-navigation';
+import { IsWithinNativeNavigator, integrateWithRouterInternal } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 import { createNativeStackProps } from './createNativeStackProps';
@@ -36,24 +36,24 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
-import {
-  processRequiredScreensDescriptors,
-  processRequiredScreensState,
-} from './stack-utils/requiredScreensBelow';
+import { useRequiredScreensBelow } from './stack-utils/requiredScreensBelow';
 
-const RNStack = integrateWithRouter<
+const RNStack = integrateWithRouterInternal<
   NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
   NativeStackNavigationConfig,
   StackRouterOptions,
   NativeStackNavigatorCreateProps
->(createStandardNativeStackNavigator, StackRouter, {
-  activityDefaultThreshold: 2,
-  createProps: createNativeStackProps,
-  processDescriptors: processRequiredScreensDescriptors,
-  processState: processRequiredScreensState,
-});
+>(
+  createStandardNativeStackNavigator,
+  StackRouter,
+  {
+    activityDefaultThreshold: 2,
+    createProps: createNativeStackProps,
+  },
+  useRequiredScreensBelow
+);
 
 /**
  * Renders a native stack navigator.
