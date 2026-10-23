@@ -246,6 +246,21 @@ class FileSystemDownloadTask: SharedObject {
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
   private var backgroundSessionHandler: FileSystemBackgroundSessionHandler?
+  private var response: HTTPURLResponse?
+
+  func recordResponse(_ response: URLResponse?) {
+    if let response = response as? HTTPURLResponse {
+      self.response = response
+    }
+  }
+
+  func getResponse() -> [String: Any] {
+    let response = downloadTask?.response as? HTTPURLResponse ?? self.response
+    let headers = response?.allHeaderFields.reduce(into: [String: String]()) { result, entry in
+      result[String(describing: entry.key)] = String(describing: entry.value)
+    } ?? [:]
+    return ["status": response?.statusCode as Any? ?? NSNull(), "headers": headers]
+  }
 
   private func registerBackgroundCompletion(in session: URLSession, options: DownloadTaskOptions?) {
     guard options?.deferBackgroundSessionCompletion == true,
@@ -262,6 +277,7 @@ class FileSystemDownloadTask: SharedObject {
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
+    response = nil
     sessionType = options?.sessionType ?? .background
 
     let session = NetworkTaskSessionManager.shared.session(for: sessionType)
@@ -299,6 +315,7 @@ class FileSystemDownloadTask: SharedObject {
     promise: Promise
   ) {
     isPausing = false
+    response = nil
     sessionType = options?.sessionType ?? sessionType
 
     guard let data = Data(base64Encoded: resumeData) else {
@@ -318,6 +335,7 @@ class FileSystemDownloadTask: SharedObject {
 
   func cancel() {
     isPausing = false
+    recordResponse(downloadTask?.response)
     downloadTask?.cancel()
     cleanup(unregisterDelegate: false)
   }
@@ -372,6 +390,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     totalBytesWritten: Int64,
     totalBytesExpectedToWrite: Int64
   ) {
+    sharedObject?.recordResponse(downloadTask.response)
     let currentTime = Date().timeIntervalSince1970
     let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval ||
       totalBytesWritten == totalBytesExpectedToWrite
@@ -390,6 +409,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     downloadTask: URLSessionDownloadTask,
     didFinishDownloadingTo location: URL
   ) {
+    sharedObject?.recordResponse(downloadTask.response)
     do {
       if let httpResponse = downloadTask.response as? HTTPURLResponse,
          !(200...299).contains(httpResponse.statusCode) {
@@ -427,6 +447,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    sharedObject?.recordResponse(task.response)
     // JS can acknowledge as soon as the promise settles. Register the outcome first
     // so that acknowledgment cannot race finishDownload.
     sharedObject?.finishTask(succeeded: error == nil && downloadedFileUri != nil)

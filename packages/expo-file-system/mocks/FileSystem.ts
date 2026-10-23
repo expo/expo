@@ -14,6 +14,7 @@
  */
 
 import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
+import type { DownloadResponse } from '../src/NetworkTasks.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -810,14 +811,47 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
-  start(_url: string, _to: any, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+  private response: DownloadResponse = { status: null, headers: {} };
+
+  getResponseAsync(): Promise<DownloadResponse> {
+    return Promise.resolve({ ...this.response, headers: { ...this.response.headers } });
+  }
+
+  private async completeDownload(
+    url: string,
+    to: FileSystemFile | FileSystemDirectory
+  ): Promise<string> {
+    this.response = { status: null, headers: {} };
+    // Simulate receiving a successful response after starting a new attempt.
+    await Promise.resolve();
+    this.response = { status: 200, headers: {} };
+    const destination =
+      to instanceof FileSystemDirectory
+        ? new FileSystemFile(
+            joinUri(to.uri, new globalThis.URL(url).pathname.split('/').pop() || 'download')
+          )
+        : to;
+    assertParent(destination.uri, true);
+    return downloadFileAsync(url, destination, undefined, undefined);
+  }
+
+  start(
+    url: string,
+    to: FileSystemFile | FileSystemDirectory,
+    _options?: any
+  ): Promise<string | null> {
+    return this.completeDownload(url, to);
   }
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
-  resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+  resume(
+    url: string,
+    to: FileSystemFile | FileSystemDirectory,
+    _resumeData: string,
+    _options?: any
+  ): Promise<string | null> {
+    return this.completeDownload(url, to);
   }
   release(): void {
     super.release();
