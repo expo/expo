@@ -414,7 +414,9 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     "wrapContentWidth" -> asRecord<WrapContentWidthParams>(converterContext)?.let { GlanceModifier.wrapContentWidth() }
     "wrapContentHeight" -> asRecord<WrapContentHeightParams>(converterContext)?.let { GlanceModifier.wrapContentHeight() }
     "fillMaxSize" -> asRecord<FillMaxSizeParams>(converterContext)?.let { GlanceModifier.fillMaxSize() }
-    "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { GlanceModifier.fillMaxWidth() }
+    "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { params ->
+      fillMaxWidth(params.fraction, converterContext)
+    }
     "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { GlanceModifier.fillMaxHeight() }
     "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
       ?.let { GlanceModifier.background(it) }
@@ -422,6 +424,16 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier
+}
+
+// Glance exposes no fractional fillMaxWidth, so scale the widget width as the closest equivalent.
+private fun fillMaxWidth(fraction: Float, converterContext: ConverterContext): GlanceModifier {
+  val availableWidth = (converterContext as? WidgetConverterContext)?.widgetSize?.width?.value
+    ?.takeIf { it.isFinite() && it > 0f }
+  if (fraction >= 1f || availableWidth == null) {
+    return GlanceModifier.fillMaxWidth()
+  }
+  return GlanceModifier.width(availableWidth.dp * fraction.coerceIn(0f, 1f))
 }
 
 private inline fun <reified T : Record> ModifierType.asRecord(converterContext: ConverterContext): T? {
