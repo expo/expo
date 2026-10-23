@@ -179,8 +179,29 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
       selector: #selector(orientationChanged),
       name: UIDevice.orientationDidChangeNotification,
       object: nil)
+    // Stopping the session (`active` set to false, an interruption) turns the torch off in
+    // hardware, while `torchEnabled` keeps saying it is on and is only re-applied when it changes.
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(sessionDidResume),
+      name: AVCaptureSession.didStartRunningNotification,
+      object: session)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(sessionDidResume),
+      name: AVCaptureSession.interruptionEndedNotification,
+      object: session)
     lifecycleManager?.register(self)
     sessionManager.initializeCaptureSessionInput()
+  }
+
+  @objc func sessionDidResume() {
+    sessionQueue.async { [weak self] in
+      guard let self, self.torchEnabled else {
+        return
+      }
+      self.sessionManager.enableTorch()
+    }
   }
 
   private func setupPreview() {
