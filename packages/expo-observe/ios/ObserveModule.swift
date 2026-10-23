@@ -69,6 +69,18 @@ public final class ObserveModule: Module {
       return self.lastIntegrations
     }
 
+    AsyncFunction("getExpoUpdatesLogCursor") { () async throws -> String? in
+      return try await AppMetricsActor.isolated {
+        return ObserveUserDefaults.expoUpdatesLogCursor
+      }
+    }
+
+    AsyncFunction("setExpoUpdatesLogCursor") { (cursor: String) async throws in
+      try await AppMetricsActor.isolated {
+        ObserveUserDefaults.expoUpdatesLogCursor = cursor
+      }
+    }
+
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(
