@@ -81,21 +81,25 @@ export type ModifiableAttendeeProperties = ExpoCalendarAttendee;
 
 /**
  * Key/value pair attached to an event, stored in Android's `CalendarContract.ExtendedProperties`
- * table. Android events have no field reserved for an app's own data, so apps use this one to keep
- * theirs, such as an identifier tying the event back to one of their own records.
+ * table. Use it to keep your own data on an event, for example the id of a record in your app.
  * @platform android
  */
 export type ExtendedProperty = {
   /**
-   * Name the property is stored under, visibility prefix included. Names prefixed with `private:`
-   * are readable by the account owning the event, names prefixed with `shared:` by the guests of
-   * the event. Both survive a round trip through Google Calendar, while a name carrying neither is
-   * stored on the device and dropped by that sync adapter on the next sync.
+   * Name the property is stored under, prefix included.
+   *
+   * > **Note:** On a Google account the name must start with `private:` or `shared:`;
+   * > the sync adapter drops any other name.
+   * > The visibility of each kind and the size limits are described in
+   * > [Google's extended properties guide](https://developers.google.com/workspace/calendar/api/guides/extended-properties).
    */
   name: string;
   /**
-   * Value stored under `name`. It is stored verbatim, so anything structured has to be serialized
-   * by the caller.
+   * Value stored under `name`.
+   *
+   * > **Note:** On a Google account the
+   * > [size limits](https://developers.google.com/workspace/calendar/api/guides/extended-properties#limits)
+   * > apply, and `setExtendedProperty()` throws rather than letting a longer value be truncated.
    */
   value: string;
 };
@@ -427,20 +431,13 @@ export declare class ExpoCalendarEvent {
   getExtendedProperties(): Promise<ExtendedProperty[]>;
 
   /**
-   * Attaches a key/value pair to this event, replacing the value already stored under the same name.
+   * Stores a key/value pair on this event, replacing the value already stored under the same name.
    *
-   * The property is written as the sync adapter of the account owning the event, because the
-   * calendar provider accepts writes to that table from no one else. Any duplicate already stored
-   * under the same name is removed, so the name is left carrying exactly one value. Writing that way records the
-   * row as already synced, so the event is flagged as locally modified afterwards, and that flag
-   * is what carries the property to the server on the next sync.
+   * > **Note:** On a Google account `name` has to start with `private:` or `shared:`, and both
+   * > `name` and `value` have to stay within Google's size limits, otherwise this method throws.
+   * > See [`ExtendedProperty`](#extendedproperty).
    *
-   * > **Note:** On an event of a calendar owned by a Google account, `name` has to start with
-   * > `private:` or `shared:`. Google Calendar's sync adapter drops any other name on the next
-   * > sync, without an error, so this method rejects it instead of letting the value disappear
-   * > later. The convention is that adapter's, so calendars of any other account accept any name.
-   *
-   * @param name Name to store the value under, visibility prefix included.
+   * @param name Name to store the value under.
    * @param value Value to store.
    *
    * @example
@@ -453,11 +450,16 @@ export declare class ExpoCalendarEvent {
   setExtendedProperty(name: string, value: string): Promise<void>;
 
   /**
-   * Removes every property stored under `name` on this event, and flags the event so that the
-   * removal reaches the server on the next sync.
-   * @param name Name of the property to remove, visibility prefix included.
-   * @return A promise that resolves to `true` when at least one property was removed, and to
-   * `false` when the event carried none under that name.
+   * Removes the property stored under `name` on this event.
+   *
+   * > **Note:** Google Calendar keeps a removed name on the server with an empty value, and it
+   * > still counts toward the
+   * > [limit of properties per event](https://developers.google.com/workspace/calendar/api/guides/extended-properties#limits).
+   * > Reuse names instead of creating one per record.
+   *
+   * @param name Name of the property to remove.
+   * @return A promise that resolves to `true` when the property was removed, and to `false` when
+   * the event had none under that name.
    * @platform android
    */
   deleteExtendedProperty(name: string): Promise<boolean>;
