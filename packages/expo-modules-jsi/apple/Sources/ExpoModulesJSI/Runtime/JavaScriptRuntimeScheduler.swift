@@ -20,6 +20,10 @@ extension JavaScriptRuntime {
     private let pointee: expo.RuntimeScheduler
     private let handle: JavaScriptRuntimeHandle
 
+    /// Releases that `scheduleRelease` collected on the JavaScript thread and that no task runs yet.
+    private var pendingReleases: [@JavaScriptActor (JavaScriptRuntime) -> Void] = []
+    private let pendingReleasesLock = NSLock()
+
     /// Captured at construction time, which runs on the JavaScript thread.
     private let jsThreadID: UInt64 = {
       var id: UInt64 = 0
@@ -220,6 +224,41 @@ extension JavaScriptRuntime {
 
     // For code that runs off the JavaScript thread without holding the runtime, like promises and
     // callbacks. The runtime is read on the JavaScript thread and passed to the closure.
+
+    /// The queue that `scheduleRelease` schedules from when it runs on the JavaScript thread. It is
+    /// serial, so at most one thread waits for React Native's scheduler mutex.
+    private static let releaseQueue = DispatchQueue(label: "expo.modules.jsi.release", qos: .utility)
+
+    /// Schedules the release of a value's state from its `deinit`. On the JavaScript thread, it must not
+    /// schedule directly: React Native's scheduler destroys its queued tasks while it holds the mutex
+    /// that scheduling takes, when a JavaScript error clears the queues, so a value dropped with a task
+    /// would deadlock the JavaScript thread. So it adds the release to a batch, and the release queue
+    /// schedules one task for the batch. The batch is taken before its task is scheduled, so each
+    /// release runs after a resolve or call that was queued before its value was dropped.
+    internal func scheduleRelease(_ body: @escaping @JavaScriptActor (JavaScriptRuntime) -> Void) {
+      guard supportsAsyncScheduling && isOnJavaScriptThread() else {
+        schedule(body)
+        return
+      }
+      let startsBatch = pendingReleasesLock.withLock {
+        pendingReleases.append(body)
+        return pendingReleases.count == 1
+      }
+      guard startsBatch else {
+        return
+      }
+      Self.releaseQueue.async {
+        let batch = self.pendingReleasesLock.withLock {
+          defer { self.pendingReleases.removeAll() }
+          return self.pendingReleases
+        }
+        self.schedule { runtime in
+          for release in batch {
+            release(runtime)
+          }
+        }
+      }
+    }
 
     @inline(__always)
     internal func schedule(

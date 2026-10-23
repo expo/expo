@@ -75,7 +75,7 @@ public final class JavaScriptCallback: Sendable {
     guard scheduler.mayBeAlive else {
       return
     }
-    scheduler.schedule { [longLivedState] runtime in
+    scheduler.scheduleRelease { [longLivedState] runtime in
       runtime.longLivedObjects.remove(longLivedState)
       longLivedState.allowRelease()
     }
