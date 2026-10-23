@@ -1,6 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+internal import ExpoModulesJSI_Cxx
 import Foundation
+internal import jsi
 
 // `Data` converts to and from a JavaScript `Uint8Array`. Decoding copies the typed array's bytes
 // into `Data`; encoding copies the bytes into a new `ArrayBuffer` wrapped in a `Uint8Array`.
@@ -37,22 +39,32 @@ extension Data: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    let arrayBuffer = runtime.createArrayBuffer(size: value.count, initializeToZero: false, reportsMemory: false)
-    value.withUnsafeBytes { rawBuffer in
-      if let baseAddress = rawBuffer.baseAddress, value.count > 0 {
-        memcpy(arrayBuffer.data(), baseAddress, value.count)
-      }
-    }
-    let uint8Array = try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
-    // Reported only after the `Uint8Array` exists. After the report, Hermes can start a young-generation
-    // collection at the next allocation. If that allocation were the `Uint8Array`, the buffer, which this
-    // function still references, would survive and move to the old generation, which a slower
-    // collection frees.
-    if value.count > 0 {
-      arrayBuffer.updateExternalMemoryPressure()
-    }
-    return uint8Array
+    return try makeJavaScriptUint8Array(copying: value, in: runtime)
   }
+}
+
+/// Creates a JS `Uint8Array` with a copy of the given bytes.
+@usableFromInline
+@JavaScriptActor
+internal func makeJavaScriptUint8Array(
+  copying data: Data,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> JavaScriptValue {
+  // Every byte is copied below, so the buffer skips the zero fill, and its memory is reported only after
+  // the `Uint8Array` exists. After the report, Hermes can start a young-generation collection at the next
+  // allocation. If that allocation were the `Uint8Array`, the buffer, which this function still references,
+  // would survive and move to the old generation, which a slower collection frees.
+  let arrayBuffer = JavaScriptArrayBuffer(runtime, expo.createArrayBuffer(runtime.pointee, data.count, false, false))
+  data.withUnsafeBytes { rawBuffer in
+    if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
+      memcpy(arrayBuffer.data(), baseAddress, data.count)
+    }
+  }
+  let uint8Array = try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
+  if data.count > 0 {
+    expo.setExternalMemoryPressure(runtime.pointee, arrayBuffer.pointee, data.count)
+  }
+  return uint8Array
 }
 
 /// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which

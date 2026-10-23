@@ -469,15 +469,11 @@ inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object 
 }
 
 /**
- * Sets the external memory pressure of the array buffer to the buffer's size. An amount that the runtime
- * rejects is ignored.
+ * Sets the external memory pressure of the array buffer. An amount that the runtime rejects is ignored.
  */
-inline void updateExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer) noexcept {
-  try {
-    setExternalMemoryPressure(runtime, arrayBuffer, arrayBuffer.size(runtime));
-  } catch (...) {
-    // `size` calls into the runtime, and a C++ exception that reaches Swift terminates the app.
-  }
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer, size_t amount) noexcept {
+  // Swift doesn't convert `jsi::ArrayBuffer` to `jsi::Object` for a C++ parameter.
+  setExternalMemoryPressure(runtime, static_cast<const jsi::Object &>(arrayBuffer), amount);
 }
 
 // MARK: - ArrayBuffer

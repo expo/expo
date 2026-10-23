@@ -282,23 +282,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// buffer is visible to JavaScript. Otherwise JavaScript can read bytes that earlier allocations left in
   /// that memory, which can hold data from elsewhere in the app.
   public func createArrayBuffer(size: Int, initializeToZero: Bool = true) -> JavaScriptArrayBuffer {
-    return createArrayBuffer(size: size, initializeToZero: initializeToZero, reportsMemory: true)
-  }
-
-  /// Creates a new array buffer like `createArrayBuffer(size:initializeToZero:)`. When `reportsMemory` is
-  /// `false`, call `JavaScriptArrayBuffer.updateExternalMemoryPressure()` after you create the other objects
-  /// you need.
-  @usableFromInline
-  internal func createArrayBuffer(size: Int, initializeToZero: Bool, reportsMemory: Bool) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, reportsMemory)
-    return JavaScriptArrayBuffer(self, jsiArrayBuffer, ownsMemory: true)
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, true)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
 
   /// Keeps the ABI symbol of `createArrayBuffer(size:)`, which prebuilt binaries that inlined `Data.encode`
   /// still call.
   @usableFromInline
   internal func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
-    return createArrayBuffer(size: size, initializeToZero: true, reportsMemory: true)
+    return createArrayBuffer(size: size, initializeToZero: true)
   }
 
   /// Creates a new array buffer that wraps the given native data pointer.
