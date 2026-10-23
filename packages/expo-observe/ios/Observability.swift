@@ -33,8 +33,8 @@ internal struct ObservabilityManager {
   /// hook waits its turn rather than sending the same rows twice.
   private static let serializer = DispatchSerializer()
 
-  /// Log names that `errorSampleRate` applies to. `ExpoAppMetrics` writes them for JS errors and crash reports.
-  private nonisolated static let errorLogNames: Set<String> = ["js.exception", "native.exception"]
+  /// Log names that `errorSampleRate` applies to.
+  private nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
 
   internal static func dispatch() async {
     await serializer.run {
@@ -43,7 +43,7 @@ internal struct ObservabilityManager {
       // others' traffic.
       let config = ObserveUserDefaults.config
       let shouldDispatch = Self.shouldDispatch(config: config, rate: config?.sampleRate)
-      // When a log is sampled in by `sampleRate`, all its logs and errors are sent. If `errorSampleRate` is lower than `sampleRate`, errors are still sent according to `sampleRate`.
+      // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
       let shouldDispatchErrors = Self.shouldDispatch(
         config: config,
         rate: config?.errorSampleRate ?? config?.sampleRate
@@ -176,6 +176,8 @@ internal struct ObservabilityManager {
       return
     }
 
+    // Fewer than `batchCount` when only errors are sent.
+    var sentCount = 0
     await DispatchLoop.drain(
       startCursor: cursor,
       fetchBatch: { cursor, limit in
@@ -191,6 +193,7 @@ internal struct ObservabilityManager {
         guard !logs.isEmpty else {
           return nil
         }
+        sentCount = logs.count
         let events = try buildEvents(forLogs: logs)
         let resourceLogs = events.compactMap { event -> OTResourceLogs? in
           guard !event.logs.isEmpty else {
@@ -212,13 +215,13 @@ internal struct ObservabilityManager {
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
           observeLogger.warn(
-            "[EAS Observe] Partial success on batch of \(batchCount) log row(s) past "
+            "[EAS Observe] Partial success on batch of \(sentCount) log row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
         case .nonRetryableFailure(let reason):
           observeLogger.warn(
-            "[EAS Observe] Dropping batch of \(batchCount) log row(s) past id "
+            "[EAS Observe] Dropping batch of \(sentCount) log row(s) past id "
               + "\(highestId): \(reason)"
           )
         case .payloadTooLarge where batchCount == 1:

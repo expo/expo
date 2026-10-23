@@ -216,7 +216,7 @@ class BaseObservabilityManager(
 
     repairLogCursorIfStale(context, sessionManager)
     val config = ObservePreferences.getConfig(context)
-    // When a log is sampled in by `sampleRate`, all its logs and errors are sent. If `errorSampleRate` is lower than `sampleRate`, errors are still sent according to `sampleRate`.
+    // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
     val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
     val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
     if (!dispatchLogsAndErrors && !dispatchErrors) {
@@ -237,7 +237,11 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      val sampledLogs = if (dispatchLogsAndErrors) logs else logs.filter { it.name in ERROR_LOG_NAMES }
+      val sampledLogs = if (dispatchLogsAndErrors) {
+        logs
+      } else {
+        logs.filter { it.name in ERROR_LOG_NAMES }
+      }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
       val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->
@@ -261,12 +265,12 @@ class BaseObservabilityManager(
         is DispatchResult.PartialSuccess ->
           Log.w(
             OBSERVE_TAG,
-            "Partial success on batch of ${logs.size} log event(s): " +
+            "Partial success on batch of ${sampledLogs.size} log event(s): " +
               "server rejected ${result.partial.rejectedCount} " +
               "(${result.partial.errorMessage ?: "no error message"})"
           )
         is DispatchResult.NonRetryableFailure ->
-          Log.w(OBSERVE_TAG, "Dropping batch of ${logs.size} log event(s): ${result.reason}")
+          Log.w(OBSERVE_TAG, "Dropping batch of ${sampledLogs.size} log event(s): ${result.reason}")
         DispatchResult.PayloadTooLarge -> if (logs.size == 1) {
           Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
         }

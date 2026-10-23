@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+public let nativeExceptionLogName = "native.exception"
+
 /// Structured crash report extracted from MetricKit's `MXCrashDiagnostic`.
 ///
 /// This is the native-crash shape: a Mach exception, signal, and native call-stack tree over a
@@ -141,7 +143,7 @@ public struct CrashReport: Codable, Sendable {
       }
     }
     return LogRecord(
-      name: "native.exception",
+      name: nativeExceptionLogName,
       attributes: attributes,
       severity: .fatal,
       // MetricKit gives a time window; its end is the tightest crash-time bound and matches Android.
