@@ -76,12 +76,12 @@ To turn off reporting, call `Observe.configure()` again without the `react-nativ
 
 Reanimated calls the integration for each message that passes its logger's `level` and `strict` settings. This includes messages from the React Native runtime and from the UI runtime. Reanimated still prints all errors and warnings to the console.
 
-A Reanimated error is reported as a non-fatal error named `reanimated.error`. It appears with your other errors in the **Errors** page. See [Error reporting](/eas/observe/errors/).
+The integration reports a Reanimated error as a non-fatal error named `reanimated.error`. It appears with your other errors in the **Errors** page. See [Error reporting](/eas/observe/errors/).
 
-- For an error on the React Native runtime, the stack trace starts at the code that called Reanimated's logger.
+- For an error on the React Native runtime, the stack trace starts in Reanimated's logger and then includes the code that called the logger.
 - For an error on the UI runtime, Reanimated delivers the message later, so the error has the message but no stack trace.
 
-When `reportWarnings` is `true`, a Reanimated warning is logged as a `reanimated.warning` event with `warn` severity.
+When `reportWarnings` is `true`, the integration logs a Reanimated warning as a `reanimated.warning` event with `warn` severity.
 
 **Event attributes:**
 
