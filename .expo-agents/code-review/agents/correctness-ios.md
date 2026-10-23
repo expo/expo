@@ -86,14 +86,14 @@ Apple SDK headers, no `Bash`. Never state a framework guarantee from memory as
 though you verified it. Before reporting a semantics-based finding, look for
 corroboration in this order:
 
-1. **React Native's own source, vendored in-tree.** It is here, not external:
-   `react-native-lab/react-native/packages/react-native/` (currently 0.86.2) —
-   `ReactCommon/react/renderer/…` for the C++/Objective-C++ renderer,
-   `Libraries/` for the JavaScript side. If a diff's comment claims RN behaves a
-   certain way (trait matching, font fallback, view flattening), open the file and
-   check. A previous reviewer wrongly recorded `RCTFontUtils.mm` as unverifiable
-   "outside this repo" when it sits at
-   `ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm`.
+1. **React Native's own source, when it is present.** The repo vendors it as a git
+   submodule at `react-native-lab/react-native/packages/react-native/` (currently
+   0.86.2) — `ReactCommon/react/renderer/…` for the C++/Objective-C++ renderer,
+   `Libraries/` for the JavaScript side. The checkout you review does not always
+   initialize submodules, so first check that the directory has files. If it does and
+   a diff's comment claims RN behaves a certain way (trait matching, font fallback,
+   view flattening), open the file and check. If it is empty, the claim is unverified
+   from here: do not call it false, and do not call RN "outside this repo".
 2. **A sibling Expo package that already calls the same API.** This is the
    strongest evidence available to you, and it is what this repo's reviewers
    actually cite. If three packages set `isNetworkAccessAllowed = true` on PhotoKit
@@ -267,3 +267,12 @@ applied a plausible-sounding rule where the framework already handles it.
 
 Read the DSL definition you think is violated, and the framework documentation for
 any semantic you assert, before reporting. Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/ViewModifierRegistry.swift -->
+<!-- @ref glob:packages/*/apple/** -->
+<!-- @ref glob:packages/*/ios/** -->
+<!-- @ref packages/expo-ui/src/swift-ui/modifiers/ -->
+<!-- @ref-ignore Libraries/ apple/ common/ ios/ packages/expo-modules-core packages/expo-ui/ios packages/expo-updates/ios react-native-lab/react-native/packages/react-native/ -->

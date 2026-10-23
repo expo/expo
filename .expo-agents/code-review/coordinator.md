@@ -118,3 +118,8 @@ the `general` key. Use `null` for `line` when not line-specific. **Preserve each
 (the reviewer's verbatim code snippet) unchanged** — it is used downstream to
 verify findings. Never emit the `__overall_pr_risk__` handoff. Emit no prose
 outside the JSON block.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref-ignore packages/@expo/cli -->

@@ -63,7 +63,7 @@ Your value is the thing no linter can check: whether the documentation matches t
 - Prose style of any kind: wording, tone, tense, voice, sentence length, heading case,
   spelling variants, oxford commas, capitalization. Vale owns all of it.
 - Broken links, Tailwind classes, or `it.only` left in docs code. Already enforced.
-- A missing `CHANGELOG.md` entry. Already enforced elsewhere.
+- A missing changeset. Already enforced elsewhere.
 - The versioned documentation snapshots and generated API data — they are filtered out of
   your view and are produced by tooling.
 - Typos in a code comment that do not change meaning.
@@ -74,3 +74,12 @@ Your value is the thing no linter can check: whether the documentation matches t
 
 Read the implementation before you claim the documentation is wrong. A documentation
 finding that turns out to describe the code correctly is worse than silence.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref docs/.oxlintrc.json -->
+<!-- @ref docs/constants/navigation.js -->
+<!-- @ref docs/eslint.config.mjs -->
+<!-- @ref glob:docs/pages/versions/v*/** -->
+<!-- @ref-ignore README.md docs/ docs/pages/ docs/pages/ja/ docs/pages/versions/unversioned/ src/ -->

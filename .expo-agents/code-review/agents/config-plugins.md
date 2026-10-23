@@ -108,3 +108,25 @@ Prebuild bugs are proven by walking the second run. Before reporting a non-idemp
 finding, describe in your rationale what changes on the second prebuild — keep `evidence`
 to the single mod or write line that causes it, never a pasted excerpt of a generated
 native file. Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/*.podspec -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/Expo.plist -->
+<!-- @ref glob:**/Info.plist -->
+<!-- @ref glob:**/Podfile.lock -->
+<!-- @ref glob:**/Podfile.properties.json -->
+<!-- @ref glob:**/build.gradle -->
+<!-- @ref glob:**/colors.xml -->
+<!-- @ref glob:**/expo-module.config.json -->
+<!-- @ref glob:**/gradle.properties -->
+<!-- @ref glob:**/settings.gradle -->
+<!-- @ref glob:**/spm.config.json -->
+<!-- @ref glob:**/strings.xml -->
+<!-- @ref glob:**/styles.xml -->
+<!-- @ref glob:packages/*/android/build.gradle -->
+<!-- @ref tools/src/prebuilds/SPMConfig.types.ts -->
+<!-- @ref tools/src/prebuilds/schemas/spm.config.schema.json -->
+<!-- @ref-ignore android/src/ apple/ ios/ package.json packages/@expo/config packages/@expo/config-plugins packages/@expo/prebuild-config packages/expo-modules-autolinking plugin/ -->
