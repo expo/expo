@@ -465,8 +465,12 @@ describe('selectedIcon fallback', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     const ios = TabsScreen.mock.calls[0]![0].ios;
-    expect(ios?.icon).toEqual({ type: 'imageSource', imageSource: src });
-    expect(ios?.selectedIcon).toEqual({ type: 'imageSource', imageSource: src });
+    expect(ios?.icon).toEqual({ type: 'imageSource', imageSource: src, renderingMode: 'original' });
+    expect(ios?.selectedIcon).toEqual({
+      type: 'imageSource',
+      imageSource: src,
+      renderingMode: 'original',
+    });
   });
 
   it('does not override an explicitly provided selectedIcon', async () => {

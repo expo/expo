@@ -238,9 +238,9 @@ export interface NativeTabOptions extends DefaultRouterOptions {
 }
 
 /**
- * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
- * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
- * @platform ios
+ * How a tab icon is drawn: `template` draws the icon in the tab's icon color,
+ * `original` keeps the icon's own colors. For SF Symbols, `template` is the monochrome
+ * rendering and `original` is the multicolor rendering.
  */
 export type IconRenderingMode = 'template' | 'original';
 
@@ -261,6 +261,10 @@ export type SymbolOrImageSource =
        * @platform android
        */
       drawable?: string;
+      /**
+       * Controls how the SF Symbol or drawable icon is drawn. `xcasset` icons ignore it.
+       */
+      renderingMode?: IconRenderingMode;
     }
   | {
       /**
@@ -268,9 +272,8 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
-       * Controls how the icon is rendered on iOS.
-       * @platform ios
-       * @default 'template'
+       * Controls how the icon is drawn. When not set, iOS draws the icon as `template` if an
+       * icon color applies to the tab state, and as `original` otherwise. Android tints it.
        */
       renderingMode?: IconRenderingMode;
     };

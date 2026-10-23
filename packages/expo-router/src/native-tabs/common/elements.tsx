@@ -52,21 +52,6 @@ export interface SrcIcon {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
       };
-  /**
-   * Controls how the image icon is rendered on iOS.
-   *
-   * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
-   * - `'original'`: Preserves original icon colors
-   *
-   * **Default behavior:**
-   * - If tab bar icon color is configured, defaults to `'template'`
-   * - If no icon color is set, defaults to `'original'`
-   *
-   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
-   *
-   * @platform ios
-   */
-  renderingMode?: IconRenderingMode;
 }
 
 export interface SFSymbolIcon {
@@ -172,7 +157,27 @@ export interface MaterialIcon {
   md: AndroidSymbol | { default?: AndroidSymbol; selected: AndroidSymbol };
 }
 
-export type NativeTabsTriggerIconProps = { selectedColor?: ColorValue } & (
+export type NativeTabsTriggerIconProps = {
+  selectedColor?: ColorValue;
+  /**
+   * Controls how the `src`, `sf`, `drawable`, or `md` icon is drawn.
+   *
+   * - `'template'`: The icon is drawn in the tab's icon color. SF Symbols use the monochrome rendering.
+   * - `'original'`: The icon keeps its own colors. SF Symbols use the multicolor rendering.
+   *
+   * The value can be a single mode, or an object with a distinct mode for the selected state.
+   *
+   * When not set, iOS uses `'template'` for a `src` icon in a state with an icon color, and Android tints the icon.
+   *
+   * @example
+   * ```tsx
+   * <Icon src={require('./path/to/icon.png')} renderingMode={{ default: 'template', selected: 'original' }} />
+   * ```
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   */
+  renderingMode?: IconRenderingMode | { default?: IconRenderingMode; selected: IconRenderingMode };
+} & (
   | (SFSymbolIcon & DrawableIcon)
   | (SFSymbolIcon & MaterialIcon)
   | (SFSymbolIcon & SrcIcon)
