@@ -323,7 +323,7 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
 }
 
 /**
- Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ Calls `defineProperty`, the runtime's `Reflect.defineProperty`, on `object` with a new descriptor that holds
  `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
  JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
  and building the descriptor and the arguments here avoids a round trip through Swift for each of them.

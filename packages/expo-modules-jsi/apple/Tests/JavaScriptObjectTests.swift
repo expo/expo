@@ -91,6 +91,24 @@ struct JavaScriptObjectTests {
   }
 
   @Test
+  func `defineProperty leaves a frozen object unchanged`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    object.defineProperty("value", value: 1, options: [.enumerable])
+    object.defineProperty("descriptor", descriptor: .init(value: JavaScriptValue(runtime, 2)))
+    object.defineProperty("object", descriptor: runtime.createObject())
+    #expect(object.getPropertyNames().isEmpty)
+    #expect(object.hasProperty("descriptor") == false)
+  }
+
+  @Test
+  func `defineProperty keeps a non-configurable property`() {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1)
+    object.defineProperty("test", value: 2)
+    #expect(object.getProperty("test").getInt() == 1)
+  }
+
+  @Test
   func `getPropertyAsFunction finds a non-ASCII name`() throws {
     let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
     let function = try object.getPropertyAsFunction("zażółć")
