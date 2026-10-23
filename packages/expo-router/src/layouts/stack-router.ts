@@ -28,7 +28,7 @@ import { isActionHandled } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
 import {
-  insertRequiredScreensBelow,
+  insertRequiredRoutes,
   SYNC_REQUIRED_SCREENS,
   type SyncRequiredScreensPayload,
 } from './stack-utils/requiredScreensBelow';
@@ -104,11 +104,11 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
       }
       if (action.type === SYNC_REQUIRED_SCREENS) {
         // Only the stack sends this action, with this payload.
-        const { routeKey, screens } = action.payload as SyncRequiredScreensPayload;
+        const { routeKey, ...required } = action.payload as SyncRequiredScreensPayload;
         return {
           state:
             state.routes[state.index]?.key === routeKey
-              ? insertRequiredScreensBelow(state, screens)
+              ? insertRequiredRoutes(state, required)
               : state,
           affectedRouteKey: undefined,
         };

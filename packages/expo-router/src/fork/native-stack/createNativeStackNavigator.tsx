@@ -2,7 +2,6 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
-import { useRequiredScreensBelow } from '../../layouts/stack-utils/requiredScreensBelow';
 import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
@@ -59,13 +58,12 @@ function NativeStackNavigatorContent({
   unstable_nativeProps,
 }: ContentArgs) {
   const fullDescriptors = descriptors as unknown as NativeStackDescriptorMap;
-  const stackState = useRequiredScreensBelow(state, fullDescriptors);
 
   const {
     computedState,
     emit,
     isPreloaded: isComputedRoutePreloaded,
-  } = usePreviewTransition(stackState, emitter.emit, isPreloaded);
+  } = usePreviewTransition(state, emitter.emit, isPreloaded);
 
   useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);

@@ -1,4 +1,4 @@
-import type { StackScreenProps } from './layouts/stack-utils/StackScreen';
+import type { UnknownInputParams } from './typed-routes/types';
 
 export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
@@ -35,7 +35,11 @@ export interface InternalNavigationOptions {
    * When set, this value overrides the user's `gestureEnabled` option.
    */
   [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean;
-  [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: StackScreenProps['unstable_requiredScreensBelow'];
+  // The same type as the `unstable_requiredScreensBelow` prop of `Stack.Screen`.
+  [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: (
+    | string
+    | { name: string; params?: UnknownInputParams }
+  )[];
 }
 
 const internalExpoRouterParamNames = [
