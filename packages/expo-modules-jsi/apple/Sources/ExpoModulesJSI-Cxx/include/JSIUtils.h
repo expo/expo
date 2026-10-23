@@ -519,13 +519,16 @@ inline jsi::Value createUint8Array(jsi::IRuntime &runtime, const uint8_t *_Nulla
   return expo::CppError::tryCatch(runtime, [&] {
 #if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
     (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
-    // The runtime allocates the array and its memory, and counts the memory as the last step.
-    jsi::Uint8Array array(runtime, size);
-    if (size > 0) {
-      std::memcpy(array.buffer(runtime).data(runtime), bytes, size);
+    // Up to 8 KB, an array that the runtime allocates is faster: it needs no native buffer, finalizer or
+    // memory report. The runtime zeroes the memory first, though, and above that size this costs more.
+    if (size <= 8 * 1024) {
+      jsi::Uint8Array array(runtime, size);
+      if (size > 0) {
+        std::memcpy(array.buffer(runtime).data(runtime), bytes, size);
+      }
+      return jsi::Value(std::move(array));
     }
-    return jsi::Value(std::move(array));
-#else
+#endif
     // The memory is reported only after the `Uint8Array` exists. A report can start a young-generation
     // collection at the next allocation, and the buffer that this function holds would survive it and
     // move to the old generation, which a slower collection frees.
@@ -538,7 +541,6 @@ inline jsi::Value createUint8Array(jsi::IRuntime &runtime, const uint8_t *_Nulla
       setExternalMemoryPressure(runtime, buffer, size);
     }
     return array;
-#endif
   });
 }
 
