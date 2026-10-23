@@ -50,21 +50,18 @@ internal func makeJavaScriptUint8Array(
   copying data: Data,
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue {
-  // Every byte is copied below, so the buffer skips the zero fill, and its memory is reported only after
-  // the `Uint8Array` exists. After the report, Hermes can start a young-generation collection at the next
-  // allocation. If that allocation were the `Uint8Array`, the buffer, which this function still references,
-  // would survive and move to the old generation, which a slower collection frees.
-  let arrayBuffer = JavaScriptArrayBuffer(runtime, expo.createArrayBuffer(runtime.pointee, data.count, false, false))
-  data.withUnsafeBytes { rawBuffer in
-    if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
-      memcpy(arrayBuffer.data(), baseAddress, data.count)
+  let runtimeHandle = runtime.handle
+  let jsiRuntime = runtime.pointee
+  return try data.withUnsafeBytes { bytes in
+    // The helper copies every byte, and on some React Native versions it doesn't zero the memory first.
+    precondition(bytes.isEmpty || bytes.baseAddress != nil, "Data that isn't empty has no base address")
+    return try capturingCppErrors {
+      return JavaScriptValue(
+        runtimeHandle,
+        expo.createUint8Array(jsiRuntime, bytes.baseAddress?.assumingMemoryBound(to: UInt8.self), bytes.count)
+      )
     }
   }
-  let uint8Array = try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
-  if data.count > 0 {
-    expo.setExternalMemoryPressure(runtime.pointee, arrayBuffer.pointee, data.count)
-  }
-  return uint8Array
 }
 
 /// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which
