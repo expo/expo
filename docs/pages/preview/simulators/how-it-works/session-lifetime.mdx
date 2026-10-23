@@ -28,7 +28,7 @@ Pass `--max-idle-time-minutes` to stop the session after that many minutes witho
 
 | Rule                                   | Detail                                                                                                                                           |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and actions recorded as session events also count.                         |
+| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and actions recorded as session events also count.               |
 | Activity that does not reset the timer | Watching the preview or receiving video frames. Android browser input does not reset the timer.                                                  |
 | Session types without idle timeout     | `web-preview-only`                                                                                                                               |
 | Allowed values                         | A positive number smaller than the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one. |
