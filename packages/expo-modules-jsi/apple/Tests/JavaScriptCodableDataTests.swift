@@ -35,6 +35,17 @@ struct JavaScriptCodableDataTests {
   }
 
   @Test
+  func `encoding Data reports its memory to the garbage collector`() throws {
+    let size = 1 << 20
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let encoded = try Data.encode(Data(count: size), in: runtime)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(encoded.isTypedArray() == true)
+    #expect(bytesAfter - bytesBefore >= Double(size))
+  }
+
+  @Test
   func `decodes Data through the borrowed-value overload`() throws {
     let value = try runtime.eval("new Uint8Array([1, 2, 3])")
     let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
