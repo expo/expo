@@ -150,3 +150,15 @@ targets an `sdk-*` branch.
 
 Prefer zero findings over a speculative one. Every finding names the changed declaration, the
 affected dependents and the release step.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref .changeset/config.json -->
+<!-- @ref glob:**/ExpoModulesCore.h -->
+<!-- @ref glob:**/spm.config.json -->
+<!-- @ref glob:.changeset/*.md -->
+<!-- @ref packages/expo-modules-core/ios/Core/ExpoModulesMacros.swift -->
+<!-- @ref packages/expo-modules-core/ios/Tests/Macros/ -->
+<!-- @ref glob:packages/expo-modules-core/package.json -->
+<!-- @ref-ignore CHANGELOG.md package.json -->
