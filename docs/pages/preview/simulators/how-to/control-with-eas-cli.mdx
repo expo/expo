@@ -1,0 +1,111 @@
+---
+title: Control a remote iOS Simulator with EAS CLI
+sidebar_title: Use EAS CLI controls
+description: Discover the actions that a running iOS session supports, change device settings, enter text, take screenshots, and transfer files with eas simulator:control.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Use `eas simulator:control` for direct actions on a running iOS Simulator. You can change settings, send input, restart an installed app, take screenshots, and copy files. It connects through the session's preview server, so it works with any iOS session type that exposes that server, including `web-preview-only`.
+
+For accessibility snapshots and actions that select elements by their labels, use [agent-device, Argent, or Appium](/preview/simulators/how-to/drive-the-device/). Direct controls do not provide an accessibility tree. Android sessions use those controllers instead.
+
+## Select the session and discover its actions
+
+[Install or update EAS CLI](/eas/cli/), then run commands from the linked project. Pass the ID of a running iOS session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:get --id <session-id> --json',
+    '$ eas simulator:control --id <session-id>',
+    '$ eas simulator:control --id <session-id> --json',
+  ]}
+/>
+
+Check that the session status is `IN_PROGRESS`. The control command without an action lists the actions that its serve-sim version supports. With `--json`, it returns their descriptions, argument order, accepted properties, and file upload or download behavior. Read this catalog before you run an unfamiliar action. Older sessions can have a different catalog; updating EAS CLI does not update a running session.
+
+If you omit `--id`, the command uses the session ID from **.env.eas-simulator** or the shell environment. Pass `--id` when you have more than one session. EAS CLI selects the device that the session streams; you do not need to copy its UDID or preview token.
+
+A private preview link works with direct controls. You do not need `--public-link`, and you should not copy credentials into the command.
+
+## Change settings and app permissions
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control appearance.set dark --id <session-id>',
+    '$ eas simulator:control hardwareKeyboard.set off --id <session-id>',
+    '$ eas simulator:control reduceMotion.set on --id <session-id>',
+    '$ eas simulator:control permissions.set grant camera com.example.app --id <session-id>',
+  ]}
+/>
+
+Use the matching `get` action, such as `appearance.get`, to read a setting. A permission change applies to the app whose bundle identifier you pass.
+
+## Tap and enter text
+
+Tap coordinates range from 0 to 1, relative to the screen. This example taps the center:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control tap 0.5 0.5 --id <session-id>',
+    '$ eas simulator:control type "hello@example.com" --id <session-id>',
+  ]}
+/>
+
+`type` sends US-keyboard ASCII text to the focused field. For Unicode text, paste through the simulator clipboard:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control clipboard.write "Hello, 世界" --id <session-id>',
+    '$ eas simulator:control clipboard.paste --id <session-id>',
+  ]}
+/>
+
+Writing the clipboard does not paste. Focus the intended field before pasting. Keep passwords and access tokens out of command arguments and shell history.
+
+## Restart an installed app
+
+`app.launch` restarts an installed app. You can pass launch arguments as a JSON array and an optional URL:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.launch com.example.app \'launchArgs=["-UITestMode","1"]\' openUrl=myapp://profile/42 --id <session-id>',
+  ]}
+/>
+
+Quote JSON arrays so your shell passes them as one argument. You can name action values with `name=value`, as above, or pass them in the catalog's argument order.
+
+To install an app during startup, use `--build-id` or `--application-archive-url`. To install a local **.app** folder, use the controller's install command. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/). The direct control file upload accepts files, not folders, and does not turn a physical-device build into a Simulator build.
+
+## Save a screenshot on your computer
+
+<Terminal
+  cmd={['$ eas simulator:control screenshot.capture --output ./screen.png --id <session-id>']}
+/>
+
+`--output` is a path on the computer that runs EAS CLI. Its parent directory must exist. Without `--output`, a screenshot saves with a generated filename in the current directory. Passing a screenshot filename as an action value selects a name on the remote host; it does not select the local destination.
+
+Add `--json` to return the action result with `id`, `action`, `output`, and `file`. For a downloaded file, `file` is the local path. See [Capture evidence](/preview/simulators/how-to/capture-evidence/) for recordings and session artifacts.
+
+## Transfer a file
+
+Use `media.add` to upload a photo or video from your computer into the simulator's Photos library:
+
+<Terminal cmd={['$ eas simulator:control media.add ./fixture.png --id <session-id>']} />
+
+For an installed app's data container, use its bundle identifier and a path relative to that container. Stop the app before you change its files:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.stop com.example.app --id <session-id>',
+    '$ eas simulator:control app.file.upload com.example.app Documents/fixture.json ./fixture.json --id <session-id>',
+    '$ eas simulator:control app.file.list com.example.app Documents --id <session-id>',
+    '$ eas simulator:control app.file.read com.example.app Documents/fixture.json --output ./downloaded-fixture.json --id <session-id>',
+  ]}
+/>
+
+App data transfers accept regular files up to 10 MiB. The upload reads a local file and refuses folders. It does not replace an existing app file unless you pass `overwrite=true`. `app.file.read` requires `--output` with a local filename. Keep the paths inside the app's data container; do not use `..` or absolute paths.
+
+Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
