@@ -175,6 +175,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
+        // The app enters the background after `OnActivityEntersBackground` saved the startup data,
+        // so the backgrounded event needs its own save.
+        AppStartupManager.onLogRecorded = {
+          scope.launch {
+            saveStartupMetrics()
+          }
+        }
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -248,6 +256,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       OnActivityEntersBackground {
         // A pause skews startup timings, so stop recording and save what was recorded before.
+        // The activity listener also marks the pause, but its `onPause` may run after this one.
+        AppStartupManager.markPaused()
         AppStartupManager.stopRecording()
         scope.launch {
           saveStartupMetrics()
@@ -263,6 +273,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // the old instance on the process-wide monitor, writing rows attributed to the
         // torn-down session until the next OnCreate replaces it.
         networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
+        AppStartupManager.onLogRecorded = null
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
         // is persisted before teardown. `stop` awaits the session-start job
@@ -401,6 +412,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       val metrics = AppStartupManager.takeUnsavedMetrics()
       if (metrics.isNotEmpty()) {
         mainSession.addMetrics(metrics)
+      }
+      val logs = AppStartupManager.takeUnsavedLogs()
+      if (logs.isNotEmpty()) {
+        mainSession.addLogs(logs)
       }
     }
 

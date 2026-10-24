@@ -195,4 +195,51 @@ struct AppStartupMonitoringTests {
     try await waitUntil { monitoring.startupState == .interrupted }
     #expect(!receiver.metrics.contains { $0.name == "timeToInteractive" })
   }
+
+  @Test
+  func `emits the backgrounded event when the app enters the background during startup`() throws {
+    let monitoring = makeMonitoring(receiver: CapturingReceiver())
+    let finishedLaunching = try #require(monitoring.markers.finishedLaunching)
+    monitoring.markers.timeToFirstRender = finishedLaunching + 1
+
+    let record = try #require(monitoring.markEnteredBackground(at: finishedLaunching + 5))
+
+    #expect(record.name == "expo.app_startup.backgrounded")
+    #expect(monitoring.startupState == .interrupted)
+    let attributes = try #require(record.attributes?.value as? [String: Any])
+    let duration = try #require(attributes["expo.app_startup.duration"] as? Double)
+    #expect(abs(duration - 5) < 0.001)
+    #expect(attributes["expo.app_startup.hasRendered"] as? Bool == true)
+    #expect(attributes["expo.app_startup.hasMarkedInteractive"] is Bool)
+  }
+
+  @Test
+  func `skips the backgrounded event when the startup is no longer in progress`() {
+    let monitoring = makeMonitoring(receiver: CapturingReceiver())
+
+    for state in [AppStartupMonitoring.StartupState.launched, .interrupted] {
+      monitoring.startupState = state
+      #expect(monitoring.markEnteredBackground() == nil)
+      #expect(monitoring.startupState == state)
+    }
+  }
+
+  @Test
+  func `skips the backgrounded event when the launch didn't finish`() {
+    // For example a prewarmed launch, which doesn't set the `finishedLaunching` marker.
+    let monitoring = makeMonitoring(receiver: CapturingReceiver())
+    monitoring.markers.finishedLaunching = nil
+
+    #expect(monitoring.markEnteredBackground() == nil)
+    #expect(monitoring.startupState == .interrupted)
+  }
+
+  @Test
+  func `skips the backgrounded event after the max startup duration`() throws {
+    let monitoring = makeMonitoring(receiver: CapturingReceiver())
+    let finishedLaunching = try #require(monitoring.markers.finishedLaunching)
+
+    #expect(monitoring.markEnteredBackground(at: finishedLaunching + 10 * 60) == nil)
+    #expect(monitoring.startupState == .interrupted)
+  }
 }
