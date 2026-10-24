@@ -1,5 +1,13 @@
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { bold, font, foregroundStyle, italic, lineLimit } from '@expo/ui/swift-ui/modifiers';
+import {
+  bold,
+  font,
+  foregroundStyle,
+  italic,
+  lineLimit,
+  strikethrough,
+  underline,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextScreen() {
@@ -25,6 +33,12 @@ export default function TextScreen() {
           <Text>
             Normal, <Text modifiers={[italic()]}>italic</Text>,{' '}
             <Text modifiers={[bold()]}>bold</Text>
+          </Text>
+          <Text>
+            <Text modifiers={[underline({ isActive: true, pattern: 'solid' })]}>underline</Text>,{' '}
+            <Text modifiers={[strikethrough({ isActive: true, pattern: 'solid' })]}>
+              strikethrough
+            </Text>
           </Text>
         </Section>
 

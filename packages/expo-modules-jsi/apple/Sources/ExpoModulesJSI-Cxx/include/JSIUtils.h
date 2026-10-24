@@ -323,7 +323,7 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
 }
 
 /**
- Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ Calls `defineProperty`, the runtime's `Reflect.defineProperty`, on `object` with a new descriptor that holds
  `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
  JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
  and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
@@ -454,6 +454,28 @@ inline void getStringDataFromValue(
   getStringData(runtime, *string, ctx, callback);
 }
 
+// MARK: - Memory pressure
+
+/**
+ * Sets the external memory pressure of the object. An amount that the runtime rejects is ignored.
+ */
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object &object, size_t amount) noexcept {
+  try {
+    object.setExternalMemoryPressure(runtime, amount);
+  } catch (...) {
+    // The pressure is only a hint. Hermes throws for amounts above 32 bits or over its external
+    // memory limit, and a C++ exception that reaches Swift terminates the app.
+  }
+}
+
+/**
+ * Sets the external memory pressure of the array buffer. An amount that the runtime rejects is ignored.
+ */
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer, size_t amount) noexcept {
+  // Swift doesn't convert `jsi::ArrayBuffer` to `jsi::Object` for a C++ parameter.
+  setExternalMemoryPressure(runtime, static_cast<const jsi::Object &>(arrayBuffer), amount);
+}
+
 // MARK: - ArrayBuffer
 
 /**
@@ -479,12 +501,21 @@ inline uint8_t *arrayBufferData(jsi::IRuntime &runtime, const jsi::ArrayBuffer &
 }
 
 /**
- * Creates a new array buffer of the given size with zero-initialized memory.
+ * Creates a new array buffer of the given size. When `initializeToZero` is false, the memory is left
+ * uninitialized and the caller must write every byte before JavaScript can read the buffer. When
+ * `reportsMemory` is false, the caller must report the memory to the garbage collector itself.
  */
-inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
-  uint8_t *data = new uint8_t[size]();
+inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, bool initializeToZero, bool reportsMemory) {
+  uint8_t *data = initializeToZero ? new uint8_t[size]() : new uint8_t[size];
   auto buffer = std::make_shared<MemoryBuffer>(data, size, [data]() { delete[] data; });
-  return jsi::ArrayBuffer(runtime, std::move(buffer));
+  jsi::ArrayBuffer arrayBuffer(runtime, std::move(buffer));
+  // Hermes does not count the memory of a buffer that it did not allocate, so without this
+  // pressure the garbage collector does not run for these buffers alone. Only this array buffer
+  // owns the memory.
+  if (reportsMemory && size > 0) {
+    setExternalMemoryPressure(runtime, arrayBuffer, size);
+  }
+  return arrayBuffer;
 }
 
 /**
@@ -561,8 +592,17 @@ inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, co
   object.setNativeState(runtime, nativeState);
 }
 
-inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
-  object.setNativeState(runtime, nullptr);
+/**
+ Removes the native state from the object. Returns `false` when the engine refuses, for example when the
+ object is frozen. A C++ exception can't cross into Swift, so it's caught here.
+ */
+inline bool unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
+  try {
+    object.setNativeState(runtime, nullptr);
+    return true;
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
 }
 
 /**

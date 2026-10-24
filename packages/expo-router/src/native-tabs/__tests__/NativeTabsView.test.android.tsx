@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
@@ -289,4 +289,61 @@ describe('selectedIcon fallback', () => {
       name: 'ic_home_filled',
     });
   });
+});
+
+it('keeps tab state mounted when the tab bar hides and shows', async () => {
+  function Layout() {
+    const [hidden, setHidden] = React.useState(false);
+    return (
+      <>
+        <Button title="Toggle" onPress={() => setHidden((value) => !value)} />
+        <NativeTabs hidden={hidden}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      </>
+    );
+  }
+  function Counter({ name }: { name: string }) {
+    const [count, setCount] = React.useState(0);
+    React.useEffect(() => {
+      mockScreenMount(name);
+      return () => mockScreenUnmount(name);
+    }, [name]);
+    return (
+      <>
+        <Text>
+          {name}: {count}
+        </Text>
+        <Button title={`Increment ${name}`} onPress={() => setCount((value) => value + 1)} />
+      </>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <Counter name="index" />,
+    second: () => <Counter name="second" />,
+  });
+  await fireEvent.press(screen.getByText('INCREMENT INDEX'));
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(true);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'system' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(false);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'all' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
 });

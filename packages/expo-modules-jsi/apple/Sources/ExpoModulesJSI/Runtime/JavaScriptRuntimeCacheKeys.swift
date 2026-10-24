@@ -16,8 +16,8 @@ extension JavaScriptRuntime {
     /// The global `Date` constructor and the `Date` functions that the conversions call.
     static let date = Cache.Key<DateFunctions>()
 
-    /// `Object.defineProperty` and the property names of a descriptor.
-    static let objectDefineProperty = Cache.Key<DefinePropertyFunction>()
+    /// `Reflect.defineProperty` and the property names of a descriptor.
+    static let reflectDefineProperty = Cache.Key<DefinePropertyFunction>()
 
     /// The global `Set` constructor.
     static let setConstructor = Cache.Key<JavaScriptFunction.Ref>()

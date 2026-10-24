@@ -26,9 +26,10 @@ one of these shapes is a regression of known-fixed work, so weigh it accordingly
   array through `spawnAsync`; the SPM tooling under `tools/**` was converted to it for
   exactly this reason (#45819, #45837) and should not regress.
   Be precise about what is new: `execSync` is still live in
-  `packages/@expo/cli/src` — 8 files, including interpolated calls such as
-  `execSync(\`open ${link}\`)` in `start/doctor/apple/XcodePrerequisite.ts` and
-  `execSync(\`command -v ${command}\`)` in `export/embed/exportServer.ts`. Its presence is
+  `packages/@expo/cli/src` — 6 files, including interpolated calls such as
+  `execSync(\`open ${link}\`)` in `packages/@expo/cli/src/start/doctor/apple/XcodePrerequisite.ts`
+  and `execSync(\`command -v ${command}\`)` in
+  `packages/@expo/cli/src/export/embed/exportServer.ts`. Its presence is
   therefore not the finding, and neither is a pre-existing call the diff merely moved. The
   finding is a **new or newly widened** interpolation whose value can come from app config,
   a filename, device output, or user input. If a shell is genuinely required, every
@@ -130,7 +131,7 @@ one of these shapes is a regression of known-fixed work, so weigh it accordingly
 ## What NOT to flag
 
 - Anything the toolchain already enforces. The shared prompt lists it: formatting, lint
-  rules, `tsc` strictness, SwiftLint, changelog presence, oversized files.
+  rules, `tsc` strictness, SwiftLint, changeset presence, oversized files.
 - A theoretical vulnerability with no reachable path in this repo. Trace the caller first.
   If the only caller passes a literal, stay silent.
 - Test, fixture and example code that constructs deliberately unsafe input, unless the
@@ -152,3 +153,24 @@ one of these shapes is a regression of known-fixed work, so weigh it accordingly
 Name the attacker, the input they control, and the consequence. If the code in front of
 you does not let you state all three, do not report it. One substantiated critical finding
 is worth more than five speculative ones.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref .github/dependabot.yml -->
+<!-- @ref .github/workflows/issue-triage.yml -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/Info.plist -->
+<!-- @ref packages/@expo/cli/src/export/embed/exportServer.ts -->
+<!-- @ref packages/@expo/cli/src/start/doctor/apple/XcodePrerequisite.ts -->
+<!-- @ref packages/@expo/cli/src/start/platforms/android/adb.ts -->
+<!-- @ref packages/@expo/cli/src/start/server/ -->
+<!-- @ref packages/@expo/cli/src/utils/tar.ts -->
+<!-- @ref packages/@expo/metro-config/src/serializer/ -->
+<!-- @ref packages/@expo/osascript/src/index.ts -->
+<!-- @ref packages/@expo/router-server/src/utils/html.ts -->
+<!-- @ref packages/expo-auth-session/src/ -->
+<!-- @ref packages/expo-file-system/android/src/main/java/expo/modules/filesystem/FileSystemPath.kt -->
+<!-- @ref packages/expo-router/src/link/href.ts -->
+<!-- @ref packages/expo-server/src/utils/matchers.ts -->
+<!-- @ref-ignore .env apps/ package.json packages/ packages/@expo/** packages/@expo/cli packages/@expo/cli/src packages/@expo/config-plugins/src/ packages/expo-dev-launcher/ state.json tools/** -->

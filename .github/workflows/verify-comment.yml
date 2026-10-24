@@ -48,7 +48,7 @@ jobs:
       !startsWith(github.event.comment.body, '@expo-bot help') &&
       !startsWith(github.event.comment.body, '@expo-bot  help'))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     timeout-minutes: 350
     # Job-level only: a verify failure must never fail the repo's checks, but
     # the STEP must fail honestly — a step-level continue-on-error hid an

@@ -1,6 +1,6 @@
 {
   "name": "expo-apps-common",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
   "dependencies": {
     "@expo/styleguide-base": "^1.0.1",

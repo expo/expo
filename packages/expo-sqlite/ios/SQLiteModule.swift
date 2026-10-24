@@ -9,7 +9,7 @@ private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", 
 // `@unchecked Sendable`: the `@JS(.concurrent)` members send the module off the JavaScript thread, which
 // Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `cacheLock` or
 // only read off the JavaScript thread (`hasListeners`).
-@ExpoModule("ExpoSQLite")
+@ExpoModule("ExpoSQLite", classes: [NativeStatement.self, NativeSession.self])
 public final class SQLiteModule: Module, @unchecked Sendable {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
@@ -169,11 +169,6 @@ public final class SQLiteModule: Module, @unchecked Sendable {
         try closeDatabaseIfNeeded(database)
       }
     }
-
-    // MARK: - NativeStatement and NativeSession
-
-    NativeStatement._synthesizedClassDefinition()
-    NativeSession._synthesizedClassDefinition()
   }
 
   private func ensureDatabasePathExists(path: String) throws -> URL {

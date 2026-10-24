@@ -4005,7 +4005,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.22
+        specifier: workspace:^58.0.23
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0
@@ -5738,6 +5738,9 @@ importers:
       expo-server:
         specifier: workspace:^
         version: link:../expo-server
+      expo-status-bar:
+        specifier: workspace:^
+        version: link:../expo-status-bar
       nanoid:
         specifier: ^3.3.18
         version: 3.3.18
@@ -6175,6 +6178,9 @@ importers:
 
   packages/expo-status-bar:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       react:
         specifier: '*'
         version: 19.3.0
@@ -6206,9 +6212,6 @@ importers:
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-store-review:
     dependencies:

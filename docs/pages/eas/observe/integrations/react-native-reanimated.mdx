@@ -1,0 +1,115 @@
+---
+title: Reanimated integration
+sidebar_title: Reanimated
+description: Report Reanimated errors and warnings from your production app by enabling the Reanimated integration for EAS Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+[`expo-observe`](/versions/latest/sdk/observe/) ships an opt-in integration for [`react-native-reanimated`](/versions/latest/sdk/reanimated/) that reports Reanimated errors and warnings to EAS Observe. Reanimated prints these messages only to the console, so without the integration you cannot see them for devices in production. The integration reports each Reanimated error as a `reanimated.error` error. It can also log each Reanimated warning as a `reanimated.warning` event.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 58 or later">
+    The integration is available in `expo-observe` version 58.0.16 and later.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="Reanimated 4.7.0 or later installed in the app">
+    The integration uses the `onLog` callback of Reanimated's logger, which Reanimated 4.7.0 added.
+    If Reanimated is not installed, or its version is earlier than 4.7.0, the integration prints a
+    console warning and does nothing.
+  </Requirement>
+</Prerequisites>
+
+## Enable the integration
+
+Call `Observe.configure()` once with the `react-native-reanimated` integration flag at module scope, before your app mounts:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: { 'react-native-reanimated': true },
+});
+```
+
+No other setup is needed. Once enabled, the integration reports Reanimated errors automatically.
+
+The integration configures Reanimated's logger itself with `configureReanimatedLogger`. Do not call `configureReanimatedLogger` in your app:
+
+- A call after `Observe.configure()` removes the integration's callback, and the integration stops reporting.
+- A call before `Observe.configure()` loses its `level` and `strict` options, because the integration replaces them.
+
+To set the logger's `level` and `strict` options, or to enable warnings, follow the instructions in the [configuration section](#configuration) below.
+
+## Configuration
+
+Pass a configuration object instead of `true` to set the logger options or to report warnings:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+import { ReanimatedLogLevel } from 'react-native-reanimated';
+
+Observe.configure({
+  integrations: {
+    'react-native-reanimated': {
+      level: ReanimatedLogLevel.warn,
+      strict: true,
+      reportWarnings: true,
+    },
+  },
+});
+```
+
+- `level`: The minimum log level that Reanimated prints and reports. Use `ReanimatedLogLevel.warn` or `ReanimatedLogLevel.error`. The default is `ReanimatedLogLevel.warn`.
+- `strict`: Whether Reanimated also prints and reports its strict-mode warnings. The default is `true`.
+- `reportWarnings`: Whether the integration also reports Reanimated warnings to EAS Observe as `reanimated.warning` events. The default is `false`. Reanimated prints warnings to the console either way.
+
+To turn off reporting, call `Observe.configure()` again without the `react-native-reanimated` integration. Reanimated's logger keeps its `level` and `strict` options.
+
+## How it works
+
+Reanimated calls the integration for each message that passes its logger's `level` and `strict` settings. This includes messages from the React Native runtime and from the UI runtime. Reanimated still prints all errors and warnings to the console.
+
+The integration reports a Reanimated error as a non-fatal error named `reanimated.error`. It appears with your other errors in the **Errors** page. See [Error reporting](/eas/observe/errors/).
+
+- For an error on the React Native runtime, the stack trace starts in Reanimated's logger and then includes the code that called the logger.
+- For an error on the UI runtime, Reanimated delivers the message later, so the error has the message but no stack trace.
+
+When `reportWarnings` is `true`, the integration logs a Reanimated warning as a `reanimated.warning` event with `warn` severity.
+
+**Event attributes:**
+
+| Attribute | Type     | Description                                           |
+| --------- | -------- | ----------------------------------------------------- |
+| `message` | `string` | The warning message, cut to its first 500 characters. |
+
+Some Reanimated messages, such as warnings from `measure()`, can repeat on every frame. To limit the number of reports, the integration applies these limits in a 15-minute period:
+
+- Each distinct message is reported at most once.
+- At most 20 distinct errors and 20 distinct warnings are reported. Errors and warnings have separate limits, so many warnings cannot stop errors from being reported.
+
+Messages are compared by their first 500 characters.
+
+## View errors and events
+
+In the dashboard: open your project and navigate to [**Observe > Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors) to see `reanimated.error` errors. Navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events) and select the `reanimated.warning` event to see individual warnings with their attributes and sessions.
+
+From the CLI:
+
+<Terminal
+  cmd={[
+    '# Show errors, including Reanimated errors',
+    '$ eas observe:errors',
+    '',
+    '# Show Reanimated warning events',
+    '$ eas observe:events reanimated.warning',
+  ]}
+/>
+
+For naming, severity, and attribute details shared by all events, see [User-defined events](/eas/observe/events/).
