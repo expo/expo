@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.27
+
+### Patch Changes
+
+- Updated dependencies. ([#52164](https://github.com/expo/expo/pull/52164))
+  - expo-modules-jsi@58.0.20
+
 ## 58.0.26
 
 ### Patch Changes
