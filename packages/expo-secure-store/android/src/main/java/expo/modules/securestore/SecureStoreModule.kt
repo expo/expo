@@ -180,7 +180,9 @@ open class SecureStoreModule : Module() {
     val prefs: SharedPreferences = getSharedPreferences()
 
     if (value == null) {
-      val success = prefs.edit().putString(keychainAwareKey, null).commit()
+      val success = prefs.commitOrRestore(listOf(keychainAwareKey)) {
+        putString(keychainAwareKey, null)
+      }
       if (!success) {
         throw WriteException("Could not write a null value to SecureStore", key, options.keychainService)
       }
@@ -212,7 +214,7 @@ open class SecureStoreModule : Module() {
 
       // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
       if (prefs.contains(key)) {
-        prefs.edit().remove(key).apply()
+        prefs.applyLocked { remove(key) }
       }
     } catch (e: KeyPermanentlyInvalidatedException) {
       if (!keyIsInvalidated) {
@@ -227,22 +229,6 @@ open class SecureStoreModule : Module() {
     } catch (e: Exception) {
       throw WriteException(e.message, key, options.keychainService, e)
     }
-  }
-
-  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
-    // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
-    encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
-    // In order to be able to have the same keys under different keychains
-    // we need a way to recognize what is the keychain of the item when we read it
-    encryptedItem.put(KEYSTORE_ALIAS_PROPERTY, keychainService)
-    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
-
-    val encryptedItemString = encryptedItem.toString()
-    if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
-      throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
-    }
-
-    return prefs.edit().putString(key, encryptedItemString).commit()
   }
 
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
@@ -282,7 +268,7 @@ open class SecureStoreModule : Module() {
       // Entries which don't require authentication use separate keychains which can't be invalidated,
       // so we shouldn't delete them.
       if (requireAuthentication && keychainService == entryKeychainService) {
-        sharedPreferences.edit().remove(key).apply()
+        sharedPreferences.applyLocked { remove(key) }
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }
     }
@@ -375,7 +361,7 @@ open class SecureStoreModule : Module() {
     private const val SHARED_PREFERENCES_NAME = "SecureStore"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val SCHEME_PROPERTY = "scheme"
-    private const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
+    internal const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
@@ -389,7 +375,36 @@ internal fun removeItem(
   key: String,
   keychainAwareKey: String
 ): Boolean {
-  val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
-  val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
+  val removedFromPrefs = prefs.commitOrRestore(listOf(keychainAwareKey, key)) {
+    remove(keychainAwareKey).remove(key)
+  }
+  val removedFromLegacyPrefs = legacyPrefs.commitOrRestore(listOf(key)) {
+    remove(key)
+  }
   return removedFromPrefs && removedFromLegacyPrefs
+}
+
+internal fun saveEncryptedItem(
+  encryptedItem: JSONObject,
+  prefs: SharedPreferences,
+  key: String,
+  requireAuthentication: Boolean,
+  keychainService: String
+) {
+  // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
+  encryptedItem.put(SecureStoreModule.USES_KEYSTORE_SUFFIX_PROPERTY, true)
+  // In order to be able to have the same keys under different keychains
+  // we need a way to recognize what is the keychain of the item when we read it
+  encryptedItem.put(SecureStoreModule.KEYSTORE_ALIAS_PROPERTY, keychainService)
+  encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
+
+  val encryptedItemString = encryptedItem.toString()
+  if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
+    throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
+  }
+
+  val success = prefs.commitOrRestore(listOf(key)) { putString(key, encryptedItemString) }
+  if (!success) {
+    throw WriteException("Could not save the encrypted item to disk. The device may be out of storage or the app data directory may not be writable", key, keychainService)
+  }
 }
