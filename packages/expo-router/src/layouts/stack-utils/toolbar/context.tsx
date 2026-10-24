@@ -18,6 +18,7 @@ export function useToolbarPlacement(): ToolbarPlacement | null {
 export interface ToolbarColors {
   tintColor?: ColorValue;
   backgroundColor?: ColorValue;
+  buttonContainerColor?: ColorValue;
 }
 
 /**
@@ -28,4 +29,19 @@ export const ToolbarColorContext = createContext<ToolbarColors>({});
 
 export function useToolbarColors(): ToolbarColors {
   return useContext(ToolbarColorContext);
+}
+
+/**
+ * Colors for an `IconButton` drawn in the toolbar's `buttonContainerColor`, the same when disabled.
+ * Returns an empty object rather than `undefined` when unset, as Expo UI doesn't reset a prop
+ * that becomes `undefined`.
+ * @platform android
+ */
+export function getIconButtonContainerColors(buttonContainerColor: ColorValue | undefined): {
+  containerColor?: ColorValue;
+  disabledContainerColor?: ColorValue;
+} {
+  return buttonContainerColor
+    ? { containerColor: buttonContainerColor, disabledContainerColor: buttonContainerColor }
+    : {};
 }

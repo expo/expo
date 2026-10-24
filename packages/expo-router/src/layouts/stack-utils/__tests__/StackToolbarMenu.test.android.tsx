@@ -217,6 +217,30 @@ describe('NativeToolbarMenu', () => {
 
         expect(MockedBackground).toHaveBeenCalledWith('dynamic:surfaceContainer');
       });
+
+      it('uses context buttonContainerColor for the IconButton container', async () => {
+        await renderWithColors(defaultProps, { buttonContainerColor: 'context-container' });
+
+        const iconButton = screen.getByTestId('IconButton');
+        expect(iconButton.props.colors).toEqual({
+          containerColor: 'context-container',
+          disabledContainerColor: 'context-container',
+        });
+      });
+
+      it('does not apply the background modifier to the IconButton when context buttonContainerColor is set', async () => {
+        await renderWithColors(defaultProps, { buttonContainerColor: 'context-container' });
+
+        const iconButton = screen.getByTestId('IconButton');
+        expect(iconButton.props.modifiers).toEqual([]);
+      });
+
+      it('passes empty IconButton colors when no context buttonContainerColor', async () => {
+        await renderWithColors(defaultProps, {});
+
+        const iconButton = screen.getByTestId('IconButton');
+        expect(iconButton.props.colors).toEqual({});
+      });
     });
 
     describe('prop forwarding', () => {

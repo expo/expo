@@ -6,7 +6,7 @@ import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
-import { useToolbarColors } from '../context';
+import { getIconButtonContainerColors, useToolbarColors } from '../context';
 import {
   DEFAULT_DESTRUCTIVE_COLOR,
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
@@ -138,7 +138,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     <IconButton
       onClick={() => setExpanded(true)}
       enabled={!props.disabled}
-      modifiers={[background(backgroundColor)]}>
+      colors={getIconButtonContainerColors(toolbarColors.buttonContainerColor)}
+      // The background modifier would paint a square behind the round container
+      modifiers={toolbarColors.buttonContainerColor ? [] : [background(backgroundColor)]}>
       <Icon
         source={props.source}
         tint={sourceTint}

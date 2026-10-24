@@ -78,6 +78,17 @@ export interface StackToolbarProps {
    * @platform android
    */
   backgroundColor?: ColorValue;
+  /**
+   * Container color for the toolbar's buttons and menu buttons. Each one is
+   * drawn on a round Material icon button container in this color. Use it to
+   * keep header buttons visible over content, like a photo or a map.
+   * When it is not set, the buttons have no container.
+   *
+   * Only applies to `placement="left"` and `placement="right"` on Android.
+   *
+   * @platform android
+   */
+  buttonContainerColor?: ColorValue;
 }
 
 /**
@@ -185,6 +196,7 @@ const StackToolbarHeader = ({
   disableImePadding,
   tintColor,
   backgroundColor,
+  buttonContainerColor,
 }: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
@@ -204,9 +216,18 @@ const StackToolbarHeader = ({
           disableImePadding,
           tintColor,
           backgroundColor,
+          buttonContainerColor,
         } satisfies Record<keyof StackToolbarProps, unknown>
       ),
-    [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
+    [
+      children,
+      placement,
+      asChild,
+      disableImePadding,
+      tintColor,
+      backgroundColor,
+      buttonContainerColor,
+    ]
   );
   useCompositionOption(options);
 
@@ -227,6 +248,7 @@ export function appendStackToolbarPropsToOptions(
   const colors: ToolbarColors = {
     tintColor: props.tintColor,
     backgroundColor: props.backgroundColor,
+    buttonContainerColor: props.buttonContainerColor,
   };
 
   if (asChild) {
