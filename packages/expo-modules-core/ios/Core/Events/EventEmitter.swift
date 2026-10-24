@@ -138,7 +138,9 @@ public extension EventEmitter {
 }
 
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
-/// in the closure context without an allocation of its own.
+/// in the closure context without an allocation of its own. Frozen, because with library evolution the
+/// inlinable initializer can't assign the stored property of a struct whose layout isn't fixed.
+@frozen
 @usableFromInline
 internal struct WeakEventEmitterReference: @unchecked Sendable {
   @usableFromInline
