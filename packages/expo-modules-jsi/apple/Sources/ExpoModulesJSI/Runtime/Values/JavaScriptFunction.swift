@@ -107,8 +107,9 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let argumentsBuffer = JavaScriptValuesBuffer.allocate(in: runtime, with: repeat each arguments)
-    return try self.call(this: this, arguments: argumentsBuffer)
+    return try JavaScriptValuesBuffer.withValues(repeat each arguments, in: runtime) { argumentsBuffer in
+      return try self.call(this: this, arguments: argumentsBuffer)
+    }
   }
 
   /// Calls the function with the given JS-representable arguments.
@@ -117,8 +118,9 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let argumentsBuffer = JavaScriptValuesBuffer.allocate(in: runtime, with: repeat each arguments)
-    return try self.call(arguments: argumentsBuffer)
+    return try JavaScriptValuesBuffer.withValues(repeat each arguments, in: runtime) { argumentsBuffer in
+      return try self.call(arguments: argumentsBuffer)
+    }
   }
 
   /// Calls the function as a constructor with the given buffer of arguments. It's like calling a function with the `new` keyword.
@@ -153,8 +155,9 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let argumentsBuffer = JavaScriptValuesBuffer.allocate(in: runtime, with: repeat each arguments)
-    return try callAsConstructor(argumentsBuffer)
+    return try JavaScriptValuesBuffer.withValues(repeat each arguments, in: runtime) { argumentsBuffer in
+      return try callAsConstructor(argumentsBuffer)
+    }
   }
 
   // MARK: - Conversions

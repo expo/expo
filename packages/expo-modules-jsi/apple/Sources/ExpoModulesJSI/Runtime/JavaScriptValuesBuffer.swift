@@ -1,3 +1,4 @@
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// A buffer that stores instances of `facebook.jsi.Value` with the ability to convert them to `JavaScriptValue` on element access
@@ -200,6 +201,32 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       index += 1
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// Calls `body` with a buffer of the given JS representables that lives on the stack, and destroys
+  /// the values when `body` returns. Unlike ``allocate(in:with:)``, it allocates no memory.
+  internal static func withValues<each T: JavaScriptRepresentable, R: ~Copyable>(
+    _ values: repeat each T,
+    in runtime: JavaScriptRuntime,
+    _ body: (consuming JavaScriptValuesBuffer) throws -> R
+  ) throws -> R {
+    var count = 0
+    for _ in repeat each values {
+      count += 1
+    }
+    return try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: count) { storage in
+      var index = 0
+      for value in repeat each values {
+        JavaScriptValue.write(value.toJavaScriptValue(in: runtime), to: storage.baseAddress! + index)
+        index += 1
+      }
+      defer {
+        if let start = storage.baseAddress {
+          expo.destroyValues(start, count)
+        }
+      }
+      return try body(JavaScriptValuesBuffer(runtime, buffer: storage))
+    }
   }
 
   internal static func copying(in runtime: JavaScriptRuntime, buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>)
