@@ -1,5 +1,6 @@
 import * as PackageManager from '@expo/package-manager';
 
+import { SilentError } from '../../utils/errors';
 import { applyPluginsAsync } from '../applyPlugins';
 import { fixPackagesAsync } from '../fixPackages';
 import { installExpoPackageAsync } from '../installExpoPackage';
@@ -113,6 +114,36 @@ describe(fixPackagesAsync, () => {
       'typescript@^5.9.0',
     ]);
     expect(applyPluginsAsync).toHaveBeenCalledWith('/path/to/project', ['expo-sms']);
+  });
+
+  it('still fixes dev dependencies when config plugins cannot be added to a dynamic config', async () => {
+    jest.mocked(applyPluginsAsync).mockRejectedValueOnce(new SilentError());
+    const packageManager = PackageManager.createForProject('/path/to/project');
+
+    await expect(
+      fixPackagesAsync('/path/to/project', {
+        packageManager,
+        packages: [
+          {
+            packageName: 'expo-sqlite',
+            packageType: 'dependencies',
+            expectedVersionOrRange: '~14.0.0',
+            actualVersion: '13.0.0',
+          },
+          {
+            packageName: 'typescript',
+            packageType: 'devDependencies',
+            expectedVersionOrRange: '^5.9.0',
+            actualVersion: '5.7.0',
+          },
+        ],
+        packageManagerArguments: [],
+        sdkVersion: '55.0.0',
+      })
+    ).resolves.toBeUndefined();
+
+    expect(packageManager.addAsync).toHaveBeenCalledWith(['expo-sqlite@~14.0.0']);
+    expect(packageManager.addDevAsync).toHaveBeenCalledWith(['typescript@^5.9.0']);
   });
 
   it('routes through installExpoPackageAsync when expo itself is outdated', async () => {
