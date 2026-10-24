@@ -61,6 +61,7 @@ class NotificationContentSerializationTest {
     }
 
     assertNotificationContentEquals(createSampleNotificationContent(), deserializedContent)
+    assertNull(deserializedContent.imageUri)
   }
 
   @Test
@@ -86,6 +87,19 @@ class NotificationContentSerializationTest {
 
     assertNotificationContentEquals(originalContent, deserializedContent)
     assertEquals("thread-1", deserializedContent.group)
+  }
+
+  @Test
+  fun testSerializationWithImage() {
+    val originalContent = NotificationContent.Builder()
+      .setTitle("With image")
+      .setImage(Uri.parse("file:///data/image.jpg"))
+      .build()
+
+    val deserializedContent = serializeAndDeserialize(originalContent)
+
+    assertNotificationContentEquals(originalContent, deserializedContent)
+    assertNotNull(deserializedContent.imageUri)
   }
 
   private fun createSampleNotificationContent(): NotificationContent {
