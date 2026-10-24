@@ -68,8 +68,9 @@ internal func makeJavaScriptUint8Array(
   // The memory can be uninitialized, so every byte is written before JavaScript gets the array.
   if let memory {
     data.copyBytes(to: memory, count: data.count)
-  } else {
-    precondition(data.isEmpty, "The new Uint8Array has no memory to copy the data into")
+  } else if !data.isEmpty {
+    // The runtime returned no memory for an array that isn't empty, which breaks the JSI contract.
+    throw DataUint8ArrayNoMemoryException(byteCount: data.count)
   }
   return uint8Array
 }
@@ -102,5 +103,17 @@ public struct DataNotUint8ArrayException: JavaScriptThrowable {
   }
   public var message: String {
     "Cannot convert a JavaScript value to Data because it is not a Uint8Array"
+  }
+}
+
+/// Thrown when the runtime creates the `Uint8Array` for `Data` but returns no memory to copy the bytes into.
+internal struct DataUint8ArrayNoMemoryException: JavaScriptThrowable {
+  let byteCount: Int
+
+  var code: String {
+    "ERR_DATA_UINT8ARRAY_NO_MEMORY"
+  }
+  var message: String {
+    "Cannot convert Data of \(byteCount) bytes to a Uint8Array because the JavaScript runtime returned no memory for the new array. This points to a bug in the runtime's JSI implementation. Report it to Expo with the runtime and React Native versions."
   }
 }
