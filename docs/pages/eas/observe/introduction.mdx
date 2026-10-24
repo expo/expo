@@ -72,22 +72,23 @@ Traditional development-time profiling tools show how your app performs on your 
 - **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
 - **User-defined events**: Log custom signals from your app with `Observe.logEvent` and analyze them alongside performance data
 - **Error reporting** (in preview): [Record JavaScript errors and native crashes](/eas/observe/errors/) and investigate their stack traces in the dashboard
-- **CLI and dashboard access**: Query metrics from the terminal with `eas observe:` commands or view them in the EAS dashboard
+- **CLI, MCP, and dashboard access**: Query metrics from the terminal with `eas observe:` commands, from an AI agent through the [Expo Model Context Protocol (MCP) Server](/eas/observe/mcp/), or view them in the EAS dashboard
 
 ## When to use EAS Observe
 
-| Scenario                                            | Recommendation |
-| --------------------------------------------------- | -------------- |
-| Monitor app startup performance in production       | <YesIcon />    |
-| Compare performance across releases and OTA updates | <YesIcon />    |
-| Investigate slow sessions on specific devices       | <YesIcon />    |
-| Compare navigation performance across routes        | <YesIcon />    |
-| Track EAS Update download times                     | <YesIcon />    |
-| Query performance metrics from the CLI              | <YesIcon />    |
-| Track user-defined events from your app             | <YesIcon />    |
-| Track JavaScript errors in production (in preview)  | <YesIcon />    |
-| Track native crashes in production (in preview)     | <YesIcon />    |
-| Development-time profiling and debugging            | <NoIcon />     |
+| Scenario                                               | Recommendation |
+| ------------------------------------------------------ | -------------- |
+| Monitor app startup performance in production          | <YesIcon />    |
+| Compare performance across releases and OTA updates    | <YesIcon />    |
+| Investigate slow sessions on specific devices          | <YesIcon />    |
+| Compare navigation performance across routes           | <YesIcon />    |
+| Track EAS Update download times                        | <YesIcon />    |
+| Query performance metrics from the CLI                 | <YesIcon />    |
+| Query performance metrics from an AI agent through MCP | <YesIcon />    |
+| Track user-defined events from your app                | <YesIcon />    |
+| Track JavaScript errors in production (in preview)     | <YesIcon />    |
+| Track native crashes in production (in preview)        | <YesIcon />    |
+| Development-time profiling and debugging               | <NoIcon />     |
 
 **Development-time profiling and debugging**: Use [React Native DevTools](/debugging/tools/#debugging-with-react-native-devtools) for debugging and [Expo Atlas](/guides/analyzing-bundles/) for bundle inspection.
 
