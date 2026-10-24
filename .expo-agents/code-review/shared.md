@@ -281,6 +281,10 @@ reviewed in this change and what you concluded. Write it even when you report no
 findings. Readers of the review see it, so state conclusions only, and never mention a
 person with `@`.
 
+`humanReview` is optional. Set it only when your role prompt asks you to request a
+human review, and only when this change needs one. Write one sentence on why a person
+should review it. The engine decides whom to notify, so never name a person yourself.
+
 Return **only** a single fenced ```json code block, an object of this shape:
 
 ```json
@@ -309,7 +313,8 @@ Return **only** a single fenced ```json code block, an object of this shape:
   "trace": {
     "checked": ["Traced the changed value through its public caller and fallback path."],
     "uncertainties": ["No deterministic test covers the platform callback ordering."]
-  }
+  },
+  "humanReview": "optional: one sentence on why a person should review this change, or omit"
 }
 ```
 
