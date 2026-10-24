@@ -408,6 +408,41 @@ describe('Native Bottom Tabs trigger changes', () => {
     }
   });
 
+  it('shows a trigger wrapped in Protected only while its guard passes', async () => {
+    let setGuard!: (guard: boolean) => void;
+    function Layout() {
+      const [guard, set] = useState(true);
+      setGuard = set;
+      return (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <Stack.Protected guard={guard}>
+            <NativeTabs.Trigger name="second" />
+          </Stack.Protected>
+        </NativeTabs>
+      );
+    }
+    await renderRouter({
+      _layout: Layout,
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(TabsScreen.mock.calls.map((call) => call[0].screenKey)).toContain('second');
+    await act(() => router.push('/second'));
+    expect(screen).toHavePathname('/second');
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    TabsScreen.mockClear();
+    await act(() => setGuard(false));
+
+    expect(screen).toHavePathname('/');
+    expect(screen.queryByTestId('second')).toBeNull();
+    for (const call of TabsScreen.mock.calls) {
+      expect(call[0].screenKey).toBe('index');
+    }
+  });
+
   it('waits for a nested native tabs navigator to regain focus before redirecting', async () => {
     let setHidden!: (hidden: boolean) => void;
     function TabsLayout() {

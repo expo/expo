@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useCallback, useMemo, useRef } from 'react';
+import React, { Children, use, useCallback, useMemo, useRef, type ReactNode } from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -22,7 +22,8 @@ import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnch
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { isChildOfType } from '../utils/children';
+import { isProtectedReactElement } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -238,17 +239,38 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   createProps: createNativeTabsProps,
 });
 
+// Mirrors how `useFilterScreenChildren` hides triggers under a failing `Protected` guard.
+function getVisibleTriggerNames(children: ReactNode): (string | undefined)[] {
+  return Children.toArray(children).flatMap((child) => {
+    if (isChildOfType(child, NativeTabTrigger)) {
+      return child.props.hidden ? [] : [child.props.name];
+    }
+    if (isProtectedReactElement(child) && child.props.guard) {
+      return getVisibleTriggerNames(child.props.children);
+    }
+    return [];
+  });
+}
+
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
+  // `Protected` children are kept so `useFilterScreenChildren` can apply their guards.
   const triggerChildren = useMemo(
     () =>
-      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
+      Children.toArray(props.children).filter(
+        (child) =>
+          isProtectedReactElement(child) ||
+          (isChildOfType(child, NativeTabTrigger) && !child.props.hidden)
+      ),
     [props.children]
   );
   const nonTriggerChildren = useMemo(
-    () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
+    () =>
+      Children.toArray(props.children).filter(
+        (child) => !isChildOfType(child, NativeTabTrigger) && !isProtectedReactElement(child)
+      ),
     [props.children]
   );
-  const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
+  const tabConfigurationKey = getVisibleTriggerNames(props.children).join(';');
 
   const {
     backBehavior = defaultBackBehavior,
