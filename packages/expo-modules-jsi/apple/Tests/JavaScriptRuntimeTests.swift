@@ -1219,6 +1219,24 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `withUnsafePointees passes the same pointees as withUnsafePointee`() {
+    let object = runtime.createObject()
+    let value = JavaScriptValue(runtime, 42)
+    let runtimePointee = runtime.withUnsafePointee { return $0 }
+    let objectPointee = object.withUnsafePointee { return $0 }
+    let valuePointee = value.withUnsafePointee { return $0 }
+    var callCount = 0
+
+    runtime.withUnsafePointees(object: object, value: value) { runtimePointer, objectPointer, valuePointer in
+      callCount += 1
+      #expect(runtimePointer == runtimePointee)
+      #expect(objectPointer == objectPointee)
+      #expect(valuePointer == valuePointee)
+    }
+    #expect(callCount == 1)
+  }
+
+  @Test
   func `init from unsafePointer creates functional runtime`() throws {
     let newRuntime = runtime.withUnsafePointee { runtimePointee in
       return JavaScriptRuntime(unsafePointer: runtimePointee)

@@ -151,19 +151,15 @@ private struct WeakEventEmitterReference: @unchecked Sendable {
  */
 @JavaScriptActor
 internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, to target: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-  runtime.withUnsafePointee { runtimePtr in
-    target.withUnsafePointee { objectPtr in
-      payload.withUnsafePointee { payloadPtr in
-        event.withCString { eventName in
-          emitJSEvent(
-            utf8Name: eventName,
-            runtimePointer: runtimePtr,
-            objectPointer: objectPtr,
-            argumentsPointer: payloadPtr,
-            argumentCount: 1
-          )
-        }
-      }
+  runtime.withUnsafePointees(object: target, value: payload) { runtimePtr, objectPtr, payloadPtr in
+    event.withCString { eventName in
+      emitJSEvent(
+        utf8Name: eventName,
+        runtimePointer: runtimePtr,
+        objectPointer: objectPtr,
+        argumentsPointer: payloadPtr,
+        argumentCount: 1
+      )
     }
   }
 }

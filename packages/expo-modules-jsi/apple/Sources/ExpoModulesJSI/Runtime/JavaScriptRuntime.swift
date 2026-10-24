@@ -154,6 +154,24 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
   }
 
+  /// Provides scoped access to raw pointers to the underlying `facebook.jsi.Runtime`, the
+  /// `facebook.jsi.Object` of `object` and the `facebook.jsi.Value` of `value`, for C++ code that takes
+  /// all three. The pointers are valid only for the duration of the closure and must not be stored or
+  /// escaped. Unlike nesting the generic `withUnsafePointee(_:)` of each, this function isn't generic,
+  /// so a caller in another module doesn't run unspecialized generic code.
+  public final func withUnsafePointees(
+    object: borrowing JavaScriptObject,
+    value: borrowing JavaScriptValue,
+    _ body: (_ runtime: UnsafeMutableRawPointer, _ object: UnsafeRawPointer, _ value: UnsafeRawPointer) throws -> Void
+  ) rethrows {
+    let runtimePointer = Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque()
+    try object.withUnsafePointee { objectPointer in
+      try value.withUnsafePointee { valuePointer in
+        try body(runtimePointer, objectPointer, valuePointer)
+      }
+    }
+  }
+
   /// Returns the runtime `global` object.
   public func global() -> JavaScriptObject {
     return JavaScriptObject(self, pointee.global())
