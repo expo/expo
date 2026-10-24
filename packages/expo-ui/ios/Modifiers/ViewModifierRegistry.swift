@@ -1187,7 +1187,6 @@ internal enum TextLinePattern: String, Enumerable {
   case dashDotDot
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
 internal extension TextLinePattern {
   func toSwiftUI() -> Text.LineStyle.Pattern {
     switch self {
