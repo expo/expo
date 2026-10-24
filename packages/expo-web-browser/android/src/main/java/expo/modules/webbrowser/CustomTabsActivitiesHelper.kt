@@ -75,8 +75,13 @@ internal class CustomTabsActivitiesHelper(
         putExtra(BrowserProxyActivity.EXTRA_URL, url.toString())
         putExtra(BrowserProxyActivity.EXTRA_CUSTOM_TABS_INTENT_DATA, tabsIntent.intent)
 
-        // The proxy activity will be in a different task due to its taskAffinity
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        // The proxy activity will be in a different task due to its taskAffinity.
+        // CLEAR_TASK: if the app process died while a Custom Tab was open, the tab
+        // (another app's activity) keeps that task alive with this proxy's affinity
+        // and base intent, and a plain NEW_TASK launch of the same component only
+        // brings the old task — and its stale page — back to the front without
+        // starting anything. Clearing it first opens a fresh tab every time.
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
 
       currentActivity.startActivity(proxyIntent)
