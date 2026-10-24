@@ -158,7 +158,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// `facebook.jsi.Object` of `object` and the `facebook.jsi.Value` of `value`, for C++ code that takes
   /// all three. The pointers are valid only for the duration of the closure and must not be stored or
   /// escaped. Unlike nesting the generic `withUnsafePointee(_:)` of each, this function isn't generic,
-  /// so a caller in another module doesn't run unspecialized generic code.
+  /// so a caller in another module doesn't run unspecialized generic code. It's a helper for
+  /// `expo-modules-core`, so it isn't part of the public API.
+  @_spi(Internal)
   public final func withUnsafePointees(
     object: borrowing JavaScriptObject,
     value: borrowing JavaScriptValue,

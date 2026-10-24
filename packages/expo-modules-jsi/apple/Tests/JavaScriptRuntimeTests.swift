@@ -1,4 +1,4 @@
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 import Foundation
 import Testing
 

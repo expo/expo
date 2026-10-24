@@ -1,6 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 
 /**
  A protocol for native objects that have an associated JavaScript object capable of receiving events.
