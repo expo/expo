@@ -140,4 +140,29 @@ On iPhone Duo, `display=1` selects the outer screen. Use `display=3` for the inn
 
 The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold iPhone Duo in the preview before capturing the app on that screen.
 
+## Transfer a file
+
+Use `media.add` to upload a photo or video from your computer into the simulator's Photos library:
+
+<Terminal cmd={['$ eas simulator:control media.add ./fixture.png --id <session-id>']} />
+
+Use app data transfers to seed test fixtures or inspect files your app saves. The app must understand the file's path and format.
+
+For an installed app's data container, use its bundle identifier and a path relative to that container. Stop the app if it is running before you change its files:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.stop com.example.app --id <session-id>',
+    '$ eas simulator:control app.file.upload com.example.app Documents/fixture.json ./fixture.json --id <session-id>',
+    '$ eas simulator:control app.file.list com.example.app Documents --id <session-id>',
+    '$ eas simulator:control app.file.read com.example.app Documents/fixture.json --output ./downloaded-fixture.json --id <session-id>',
+  ]}
+/>
+
+`app.file.list` shows file names and types. `app.file.read` saves the file locally so you can open it in an editor. Download existing data before replacing it.
+
+Uploads do not update data the app has already loaded into memory. If the app reads the file at startup, [restart it](#restart-an-installed-app) after the transfer.
+
+App data transfers accept regular files up to 10 MiB. The upload reads a local file and refuses folders. It does not replace an existing app file unless you pass `overwrite=true`. `app.file.read` requires `--output` with a local filename. Keep the paths inside the app's data container; do not use `..` or absolute paths.
+
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
