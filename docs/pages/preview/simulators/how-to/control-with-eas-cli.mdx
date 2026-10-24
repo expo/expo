@@ -52,4 +52,62 @@ Tap coordinates range from 0 to 1, relative to the screen. This example taps the
 
 Writing the clipboard does not paste. Focus the intended field before pasting. Keep passwords and access tokens out of command arguments and shell history.
 
+## Restart an installed app
+
+Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's app config:
+
+<Terminal cmd={['$ eas simulator:control app.launch com.example.app --id <session-id>']} />
+
+To pass launch arguments, use a JSON array of strings. These flags belong to your app; your app defines what they do:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.launch com.example.app \\',
+    '  \'launchArgs=["-UITestMode","1","-Greeting","Hello, world"]\' \\',
+    '  --id <session-id>',
+  ]}
+  cmdCopy={`eas simulator:control app.launch com.example.app 'launchArgs=["-UITestMode","1","-Greeting","Hello, world"]' --id <session-id>`}
+/>
+
+Use double quotes inside the JSON and single quotes around the shell argument. Every item must be a string, including values such as `"1"`. Omitting `launchArgs` or passing `'launchArgs=[]'` launches without custom arguments. It does not reuse or merge arguments from a previous launch or session startup.
+
+Add `openUrl` to open a deep link after restarting. Quote the URL so your shell preserves query parameters such as `&`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.launch com.example.app \\',
+    '  \'launchArgs=["-UITestMode","1"]\' \\',
+    "  'openUrl=myapp://profile/42?tab=activity&source=cli' \\",
+    '  --id <session-id>',
+  ]}
+  cmdCopy={`eas simulator:control app.launch com.example.app 'launchArgs=["-UITestMode","1"]' 'openUrl=myapp://profile/42?tab=activity&source=cli' --id <session-id>`}
+/>
+
+Launch arguments are optional. When you omit them, use `openUrl=` so the URL does not fill the `launchArgs` position:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.launch com.example.app \\',
+    "  'openUrl=myapp://profile/42?tab=activity&source=cli' \\",
+    '  --id <session-id>',
+  ]}
+  cmdCopy={`eas simulator:control app.launch com.example.app 'openUrl=myapp://profile/42?tab=activity&source=cli' --id <session-id>`}
+/>
+
+The app starts before the URL opens. If opening the URL fails, the app can stay running with the new arguments. Inspect the device before retrying.
+
+To send a deep link without restarting the app, use `app.openUrl`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.openUrl com.example.app \\',
+    "  'myapp://profile/42?tab=activity&source=cli' --id <session-id>",
+  ]}
+  cmdCopy={`eas simulator:control app.openUrl com.example.app 'myapp://profile/42?tab=activity&source=cli' --id <session-id>`}
+/>
+
+A custom scheme URL may show a confirmation prompt. Check that the app shows the expected screen before sending more input.
+
+To install an app during startup, use `--build-id` or `--application-archive-url`. To install a local **.app** folder, use the controller's install command. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/). The direct control file upload accepts files, not folders.
+
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
