@@ -1,4 +1,4 @@
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 import Foundation
 import Testing
 
@@ -1216,6 +1216,24 @@ struct JavaScriptRuntimeTests {
     let pointee1 = runtime.withUnsafePointee { return $0 }
     let pointee2 = runtime.withUnsafePointee { return $0 }
     #expect(pointee1 == pointee2)
+  }
+
+  @Test
+  func `withUnsafePointees passes the same pointees as withUnsafePointee`() {
+    let object = runtime.createObject()
+    let value = JavaScriptValue(runtime, 42)
+    let runtimePointee = runtime.withUnsafePointee { return $0 }
+    let objectPointee = object.withUnsafePointee { return $0 }
+    let valuePointee = value.withUnsafePointee { return $0 }
+    var callCount = 0
+
+    runtime.withUnsafePointees(object: object, value: value) { runtimePointer, objectPointer, valuePointer in
+      callCount += 1
+      #expect(runtimePointer == runtimePointee)
+      #expect(objectPointer == objectPointee)
+      #expect(valuePointer == valuePointee)
+    }
+    #expect(callCount == 1)
   }
 
   @Test
