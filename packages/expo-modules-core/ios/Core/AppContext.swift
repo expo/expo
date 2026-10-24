@@ -157,11 +157,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
-  /**
-   The module holder for the core module.
-   */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
-
   internal var converter: MainValueConverter {
     // MainValueConverter is ~Copyable so it can't be stored in a lazy var (which uses Optional internally).
     // This is zero-cost at runtime — the struct contains only an unowned pointer to self, so constructing
@@ -487,9 +482,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
     }
 
-    try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
-
-    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    // Bind the `@JS` members of the core module.
     try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
