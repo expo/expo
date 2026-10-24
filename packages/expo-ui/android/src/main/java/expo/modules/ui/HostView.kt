@@ -28,6 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.ComposeView
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.facebook.react.uimanager.events.NativeGestureUtil
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -136,7 +140,34 @@ internal class HostView(context: Context, appContext: AppContext) :
   internal var isDispatchingCancelFromParent = false
     private set
 
+  // Whether a Compose node consumed the current gesture's down.
+  private var contentConsumedDown = false
+
+  // Set by a hosted React Native view that receives the down. Its own root owns that gesture.
+  internal var downReachedReactContent = false
+
+  private var isHandlingNativeGesture = false
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      contentConsumedDown = false
+      downReachedReactContent = false
+      val handled = super.dispatchTouchEvent(ev)
+      if (contentConsumedDown && !downReachedReactContent) {
+        // A Compose control took the press, as a native view does. End the JS gesture, or an
+        // ancestor `Pressable` becomes the responder and cancels the control on the first move.
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev)
+        isHandlingNativeGesture = true
+      }
+      return handled
+    }
+    if (isHandlingNativeGesture && ev.actionMasked == MotionEvent.ACTION_UP) {
+      NativeGestureUtil.notifyNativeGestureEnded(this, ev)
+    }
+    if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
+      // On a cancel, the view that took the gesture over ends it, as React Native's scroll views do.
+      isHandlingNativeGesture = false
+    }
     if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
       return super.dispatchTouchEvent(ev)
     }
@@ -218,7 +249,18 @@ internal class HostView(context: Context, appContext: AppContext) :
             Modifier
           }
         )
-        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
+        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) }
+        .pointerInput(Unit) {
+          awaitPointerEventScope {
+            while (true) {
+              // The Main pass reaches this node after its children.
+              val event = awaitPointerEvent(PointerEventPass.Main)
+              if (event.type == PointerEventType.Press && event.changes.any { it.isConsumed }) {
+                contentConsumedDown = true
+              }
+            }
+          }
+        },
       content = content
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
