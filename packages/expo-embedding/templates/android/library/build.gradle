@@ -1,0 +1,24 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+}
+android {
+  namespace 'expo.embedding'
+  compileSdk 37
+  defaultConfig {
+    minSdk 24
+  }
+  buildFeatures { compose = true }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+dependencies {
+  api project(':expo')
+  api 'com.facebook.react:react-android'
+  api 'androidx.activity:activity-compose:1.12.3'
+  api 'androidx.appcompat:appcompat:1.7.1'
+  implementation platform('androidx.compose:compose-bom:2025.12.00')
+  api 'androidx.compose.ui:ui'
+}
