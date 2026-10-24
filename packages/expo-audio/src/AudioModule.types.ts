@@ -1,5 +1,6 @@
 import type { PermissionResponse } from 'expo';
 import { NativeModule, SharedObject } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import type {
   AudioMetadata,
@@ -283,6 +284,43 @@ export type AudioEvents = {
   audioSampleUpdate(data: AudioSample): void;
 };
 
+/**
+ * Options for the foreground service notification shown when `allowsBackgroundRecording` is enabled.
+ * All fields are optional. Each call to `setNotificationOptions` replaces the previous options.
+ * When several recorders share the service, the first registered recorder controls the notification.
+ * @platform android
+ */
+export type RecordingNotificationOptions = {
+  /** Notification title. @default 'Recording audio' */
+  title?: string;
+  /** Body displayed while recording. @default 'Tap to return to app' */
+  recordingBody?: string;
+  /** Body displayed while paused. Defaults to `recordingBody`. */
+  pausedBody?: string;
+  /** Pause button text. @default 'Pause' */
+  pauseButtonTitle?: string;
+  /** Resume button text. @default 'Resume' */
+  resumeButtonTitle?: string;
+  /** Stop button text. @default 'Stop' */
+  stopButtonTitle?: string;
+  /** Notification channel name. Existing user settings are preserved. @default 'Audio Recording' */
+  channelName?: string;
+  /** Notification channel description. @default 'Shows when audio is being recorded in the background' */
+  channelDescription?: string;
+  /**
+   * Drawable resource name included in the native build. Keep the resource when resource shrinking is enabled.
+   * Falls back to `expo.modules.audio.foreground_service_icon` manifest metadata, the `notification_icon`
+   * drawable, then the system microphone icon.
+   */
+  smallIcon?: string;
+  /** Notification accent color, for example `'#4f66f6'`. */
+  color?: ColorValue;
+  /** Show a button that switches between Pause and Resume. @default false */
+  showPauseResume?: boolean;
+  /** Allow the notification on the lock screen, subject to Android privacy settings. @default false */
+  showOnLockScreen?: boolean;
+};
+
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Initializes a new audio recorder instance with the given source.
@@ -325,6 +363,14 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
    * Pause the recording.
    */
   pause(): void;
+
+  /**
+   * Replaces the Android recording notification options and updates an active notification.
+   * Call before recording to customize the first notification. Pass `{}` to restore defaults.
+   * Does nothing on iOS and web.
+   * @platform android
+   */
+  setNotificationOptions(options: RecordingNotificationOptions): void;
 
   /**
    * Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
@@ -373,11 +419,9 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
 /**
  * Event types that an `AudioRecorder` can emit.
  *
- * These events are used internally by `expo-audio` hooks to provide real-time status updates.
- * Use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
+ * For recording status, use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()`.
  */
 export type RecordingEvents = {
-  /** Fired when the recorder's status changes (start/stop/pause/error, and so on). */
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };
 
