@@ -58,7 +58,9 @@ These events do **not** stop a session:
 
 ## Dropped controller connections
 
-If a controller command returns `ERR_NGROK_3200` or `Remote daemon is unavailable` after the session sat idle, the controller connection dropped. A lost connection also removes the installed app state and the snapshot references. Do not retry the command. Stop the session, start a new one, and then install and drive the app immediately. Create builds before you start the session, not during it.
+If a controller command returns `ERR_NGROK_3200` or `Remote daemon is unavailable`, the endpoint is unavailable. The error alone does not show whether the remote session stopped. Check the original session ID with `eas simulator:get --id <session-id> --json` before starting another session.
+
+If it is still `IN_PROGRESS`, check its current connection details. A tunnel failure does not by itself erase installed apps. If you cannot restore the connection, stop the original session explicitly before replacing it. A replacement device needs a new app install and fresh accessibility references. Create builds before you start the session, not during it.
 
 ## Common questions
 
