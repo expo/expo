@@ -517,6 +517,56 @@ test('does not descend into a mounted dynamic route with a different param', () 
   expect(action.payload.state?.routes[0]?.name).toBe('index');
 });
 
+test('descends into a mounted multi-segment dynamic layout when its params match', () => {
+  const projectStack: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'project-stack',
+    index: 0,
+    routeNames: ['index', 'settings'],
+    routes: [{ key: 'index-key', name: 'index' }],
+  };
+  const rootStack: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'root-stack',
+    index: 0,
+    routeNames: ['[org]/[project]'],
+    routes: [
+      {
+        key: 'project:0',
+        name: '[org]/[project]',
+        params: { org: 'acme', project: 'web' },
+        state: projectStack,
+      },
+    ],
+  };
+  const registry: RouterRegistry = new Map([
+    ['root-stack', entry(StackRouter({}), rootStack.routeNames)],
+    ['project-stack', entry(StackRouter({}), projectStack.routeNames)],
+  ]);
+
+  const action = resolveNavigationDestination({
+    targetState: {
+      routes: [
+        {
+          name: '[org]/[project]',
+          params: { org: 'acme', project: 'web' },
+          state: { routes: [{ name: 'settings' }] },
+        },
+      ],
+    },
+    navigationState: rootStack,
+    routeNode: node('root', [node('[org]/[project]', [node('index'), node('settings')])]),
+    registry,
+    action: { type: 'NAVIGATE', payload: {} },
+  });
+
+  expect(action.target).toBe('project-stack');
+  expect(action.payload.name).toBe('settings');
+  expect(action.payload.state).toBeUndefined();
+});
+
 // The native screen is the inactive parent, while its nested destination is already active.
 test('committing a reopened nested preview promotes only its owning stack route', () => {
   const child: NavigationState = {
