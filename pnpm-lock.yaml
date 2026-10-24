@@ -4826,6 +4826,9 @@ importers:
 
   packages/expo-embedding:
     dependencies:
+      '@bacons/xcode':
+        specifier: 1.0.0-alpha.33
+        version: 1.0.0-alpha.33
       minimatch:
         specifier: ^9.0.9
         version: 9.0.9
@@ -8065,6 +8068,9 @@ packages:
 
   '@bacons/xcode@1.0.0-alpha.29':
     resolution: {integrity: sha512-b2P+Y6ovdlie3A8Tx6QBFlbfQPhXe0vDS83W0DVob6732e3TukgVMbVcE9umn36BaeGzmJVjMFtqEyhWetjRWg==}
+
+  '@bacons/xcode@1.0.0-alpha.33':
+    resolution: {integrity: sha512-+vwXK3mLnW8NOYSHNpCa7sAYR7qWmIHM3xBbBkLailN81F1CdSVsJBH1TAnTMHb+rDEh5ehsZ8AQRNVxvhWR/Q==}
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
@@ -17120,6 +17126,12 @@ snapshots:
       uuid: 8.3.2
 
   '@bacons/xcode@1.0.0-alpha.29':
+    dependencies:
+      '@expo/plist': 0.0.18
+      debug: 4.4.3
+      uuid: 8.3.2
+
+  '@bacons/xcode@1.0.0-alpha.33':
     dependencies:
       '@expo/plist': 0.0.18
       debug: 4.4.3
