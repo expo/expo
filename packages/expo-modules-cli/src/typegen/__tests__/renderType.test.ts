@@ -159,6 +159,13 @@ describe(renderType, () => {
     expect(warnings).toEqual(["unresolved type 'PlaybackStatus' rendered as unknown"]);
   });
 
+  it('renders a shared ref as unknown and warns', () => {
+    const { ctx, warnings } = makeContext();
+    const native: TypeNode = { kind: 'ref', typeof: 'object', name: 'UIImage' };
+    expect(renderType({ kind: 'sharedRef', typeof: 'object', native }, ctx)).toBe('unknown');
+    expect(warnings).toEqual(["unsupported type 'SharedRef' rendered as unknown"]);
+  });
+
   it('renders an unmodeled type as unknown and warns', () => {
     const { ctx, warnings } = makeContext();
     expect(renderType({ kind: 'unknown', text: '(Int, Int)' }, ctx)).toBe('unknown');

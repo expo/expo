@@ -70,6 +70,9 @@ export function renderType(node: TypeNode, ctx: RenderContext): string {
       ctx.warn('unknown', `unresolved type '${node.name}' rendered as unknown`);
       return 'unknown';
     }
+    case 'sharedRef':
+      ctx.warn('unknown', "unsupported type 'SharedRef' rendered as unknown");
+      return 'unknown';
     case 'unknown':
       ctx.warn('unknown', `unmodeled Swift type '${node.text}' rendered as unknown`);
       return 'unknown';

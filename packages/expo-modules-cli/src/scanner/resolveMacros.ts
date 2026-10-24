@@ -8,7 +8,7 @@ export type MacrosPackage = typeof Macros;
  * The `scan-exports` schema version this CLI renders. It must match the macros version the CLI is
  * built and tested against (its devDependency); a test keeps the two in sync.
  */
-export const SCAN_EXPORTS_SCHEMA_VERSION = 8;
+export const SCAN_EXPORTS_SCHEMA_VERSION = 9;
 
 /**
  * The packages to walk from the scanned package to the macros, each resolved from the one before.
