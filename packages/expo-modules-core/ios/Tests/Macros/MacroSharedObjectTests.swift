@@ -204,6 +204,15 @@ private struct MacroSharedObjectTests {
     #expect(try value.asInt() == 7)
   }
 
+  @Test
+  func `an instance made with new reads its ID from the prototype getter`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    try runtime.eval("object = new expo.modules.MacroSharedObjectModule.MacroCounter(7)")
+    let hasOwnId = try runtime.eval("Object.prototype.hasOwnProperty.call(object, '__expo_shared_object_id__')")
+    #expect(try hasOwnId.asBool() == false)
+    #expect(try runtime.eval("object.__expo_shared_object_id__").asInt() > 0)
+  }
+
   // MARK: - @JS methods
 
   @Test

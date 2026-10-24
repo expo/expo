@@ -22,7 +22,7 @@ internal enum JavaScriptBindings {
       guard let sharedObject = try type._constructSharedObject(this: this, arguments: arguments, in: appContext.runtime) else {
         throw Exceptions.ConstructorUnavailable(name)
       }
-      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       return this
     }
     let runtime = try appContext.runtime
