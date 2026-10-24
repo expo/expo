@@ -4824,6 +4824,31 @@ importers:
         specifier: workspace:*
         version: link:../@expo/internal-scripts
 
+  packages/expo-embedding:
+    dependencies:
+      minimatch:
+        specifier: ^9.0.9
+        version: 9.0.9
+    devDependencies:
+      '@expo/internal-scripts':
+        specifier: workspace:*
+        version: link:../@expo/internal-scripts
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      esbuild:
+        specifier: 0.28.1
+        version: 0.28.1
+      jest:
+        specifier: 30.5.2
+        version: 30.5.2(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+
   packages/expo-env-info:
     dependencies:
       envinfo:
