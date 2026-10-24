@@ -50,6 +50,20 @@ final class LinearGradientLayer: CALayer {
     setNeedsDisplay()
   }
 
+  #if !os(macOS)
+  func drawsDifferently(from previous: UITraitCollection?, to current: UITraitCollection) -> Bool {
+    guard let previous else {
+      return true
+    }
+    if previous.displayScale != current.displayScale {
+      return true
+    }
+    return colors.contains { color in
+      color.resolvedColor(with: previous) != color.resolvedColor(with: current)
+    }
+  }
+  #endif
+
   override func display() {
     super.display()
 
