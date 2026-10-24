@@ -413,18 +413,13 @@ private struct MacroSharedObjectTests {
   // MARK: - Alternate-runtime prototype
 
   @Test
-  func `buildPrototype decorates the @JS members for alternate runtimes`() throws {
+  func `buildSharedObjectPrototype decorates the @JS members for alternate runtimes`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
 
-    // `buildPrototype` is how a SharedObject's proxy is rebuilt in an alternate runtime (e.g. a
-    // worklet). The macro's `@JS` members aren't in the DSL `properties`/`functions`, so the
-    // prototype must be decorated via `_decorateSharedObject` here too.
+    // `buildSharedObjectPrototype` is how a SharedObject's proxy is rebuilt in an alternate runtime
+    // (e.g. a worklet), so the prototype must be decorated via `_decorateSharedObject` here too.
     let basePrototype = try runtime.eval("expo.SharedObject.prototype").asObject()
-    let prototype = try MacroCounter._synthesizedClassDefinition().buildPrototype(
-      in: runtime,
-      appContext: appContext,
-      basePrototype: basePrototype
-    )
+    let prototype = try JavaScriptBindings.buildSharedObjectPrototype(MacroCounter.self, in: runtime, basePrototype: basePrototype)
     // Read into plain values first; `#expect` can't capture the non-copyable `JavaScriptObject`.
     let hasMethod = prototype.hasProperty("increment")
     let hasProperty = prototype.hasProperty("current")
