@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of converting small `Data` values to JavaScript. ([#52164](https://github.com/expo/expo/pull/52164) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.19
 
 ### Patch Changes

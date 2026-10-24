@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-modules-core@58.0.27
+  - babel-preset-expo@58.0.21
+
 ## 58.0.19
 
 ### Patch Changes

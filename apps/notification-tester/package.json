@@ -1,6 +1,6 @@
 {
   "name": "notification-tester",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "private": true,
   "main": "index.ts",
   "scripts": {
