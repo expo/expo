@@ -136,7 +136,7 @@ Browser preview activity does not reset the idle timer. See [How long an Expo Si
 
 <Collapsible summary="Why does a controller command say that the remote daemon is unavailable?">
 
-The controller endpoint is unavailable, but the error alone does not prove that the session stopped or that installed apps were removed. Check the original ID with `eas simulator:get --id <session-id> --json`. If the session is still running, check its connection details before replacing it. Stop the original session explicitly if you need a new one. See [Troubleshoot Expo Simulators](/preview/simulators/troubleshooting/#remote-daemon-is-unavailable-or-the-tunnel-endpoint-is-offline).
+The controller endpoint is unavailable. The error alone does not prove that the session stopped or lost its installed apps. Check the original ID with `eas simulator:get --id <session-id> --json`. If the session is still running, check its connection details before replacing it. Stop the original session explicitly if you need a new one. See [Troubleshoot Expo Simulators](/preview/simulators/troubleshooting/#remote-daemon-is-unavailable-or-the-tunnel-endpoint-is-offline).
 
 </Collapsible>
 

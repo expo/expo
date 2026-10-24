@@ -99,7 +99,7 @@ The controller endpoint is unavailable. This can mean a tunnel failure or an end
 
 <Terminal cmd={['$ eas simulator:get --id <session-id> --json']} />
 
-If the session is still `IN_PROGRESS`, check its current connection details. The endpoint error alone does not mean that installed apps were removed. If the connection cannot be restored, stop this session explicitly, start a new one, and repeat install → open → drive. Do not repeatedly send actions to the unavailable endpoint.
+If the session is still `IN_PROGRESS`, check its current connection details. The endpoint error alone does not mean that the device lost its installed apps. If you cannot restore the connection, stop this session explicitly. Start a new one, then repeat install → open → drive. Do not repeatedly send actions to the unavailable endpoint.
 
 ### Screenshots show a local simulator instead of the remote device
 
