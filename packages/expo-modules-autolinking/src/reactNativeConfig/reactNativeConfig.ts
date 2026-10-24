@@ -64,6 +64,17 @@ const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) 
   }
 };
 
+async function hasCodegenConfigAsync(packageRoot: string): Promise<boolean> {
+  try {
+    const packageJson = JSON.parse(
+      await fs.promises.readFile(path.join(packageRoot, 'package.json'), 'utf8')
+    );
+    return packageJson.codegenConfig != null;
+  } catch {
+    return false;
+  }
+}
+
 export async function resolveReactNativeModule(
   resolution: DependencyResolution,
   projectConfig: RNConfigReactNativeProjectConfig | null,
@@ -160,6 +171,19 @@ export async function resolveReactNativeModule(
       maybeExpoModuleConfig
     );
   }
+
+  if (
+    platformData == null &&
+    platform === 'ios' &&
+    reactNativeConfig.platforms?.ios !== null &&
+    maybeExpoModuleConfig?.supportsPlatform('apple') &&
+    (await hasCodegenConfigAsync(modulePath))
+  ) {
+    // React Native codegen reads `codegenConfig` only from dependencies in this config.
+    // Without `platforms.ios`, `list_native_modules` does not link a second pod for the module.
+    return { root: modulePath, name: resolution.name, platforms: {} };
+  }
+
   return (
     platformData && {
       root: modulePath,
