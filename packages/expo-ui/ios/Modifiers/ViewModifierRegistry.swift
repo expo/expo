@@ -1649,12 +1649,10 @@ public class ViewModifierRegistry {
       }
       return text
     case "underline":
-      guard #available(iOS 16.0, macOS 13.0, tvOS 16.0, *),
-            let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
+      guard let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
       return text.underline(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     case "strikethrough":
-      guard #available(iOS 16.0, macOS 13.0, tvOS 16.0, *),
-            let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
+      guard let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
       return text.strikethrough(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     default:
       #if DEBUG
