@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactMarkerConstants
 object SplashScreenManager {
   private var keepSplashScreenOnScreen = true
   var preventAutoHideCalled: Boolean = false
+  var userControlledAutoHide: Boolean = false
   private var exitAnimationDuration = SplashScreenOptions().duration
 
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
@@ -24,6 +25,9 @@ object SplashScreenManager {
   }
 
   fun registerOnActivity(mainActivity: Activity) {
+    if (userControlledAutoHide) {
+      keepSplashScreenOnScreen = true
+    }
     val splashScreen = mainActivity.installSplashScreen()
     ReactMarker.addListener(contentAppearedListener)
 
