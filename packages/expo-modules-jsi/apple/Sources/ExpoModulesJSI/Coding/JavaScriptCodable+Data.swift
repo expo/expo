@@ -50,25 +50,34 @@ internal func makeJavaScriptUint8Array(
   copying data: Data,
   in runtime: borrowing JavaScriptRuntime
 ) throws -> JavaScriptValue {
-  // Every byte is copied below, so the buffer skips the zero fill, and its memory is reported only after
-  // the `Uint8Array` exists. After the report, Hermes can start a young-generation collection at the next
-  // allocation. If that allocation were the `Uint8Array`, the buffer, which this function still references,
-  // would survive and move to the old generation, which a slower collection frees.
-  let arrayBuffer = JavaScriptArrayBuffer(runtime, expo.createArrayBuffer(runtime.pointee, data.count, false, false))
-  data.withUnsafeBytes { rawBuffer in
-    if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
-      memcpy(arrayBuffer.data(), baseAddress, data.count)
+  let runtimeHandle = runtime.handle
+  let jsiRuntime = runtime.pointee
+  var memory: UnsafeMutablePointer<UInt8>?
+  let uint8Array = try runtime.withCached(
+    JavaScriptRuntime.CacheKeys.uint8ArrayConstructor,
+    { try runtime.global().getPropertyAsFunction("Uint8Array") },
+    { (constructor: borrowing JavaScriptFunction) in
+      return try capturingCppErrors {
+        return JavaScriptValue(
+          runtimeHandle,
+          expo.createUint8Array(jsiRuntime, constructor.pointee, data.count, &memory)
+        )
+      }
     }
-  }
-  let uint8Array = try makeJavaScriptUint8Array(over: arrayBuffer, in: runtime)
-  if data.count > 0 {
-    expo.setExternalMemoryPressure(runtime.pointee, arrayBuffer.pointee, data.count)
+  )
+  // The memory can be uninitialized, so every byte is written before JavaScript gets the array.
+  if let memory {
+    data.copyBytes(to: memory, count: data.count)
+  } else if !data.isEmpty {
+    // The runtime returned no memory for an array that isn't empty, which breaks the JSI contract.
+    throw DataUint8ArrayNoMemoryException(byteCount: data.count)
   }
   return uint8Array
 }
 
 /// Creates a JS `Uint8Array` over the given array buffer with the global `Uint8Array` constructor, which
-/// is looked up once and cached, so an encode doesn't pay for the global property lookup.
+/// is looked up once per runtime and cached. Nothing in this module calls it; it keeps the ABI symbol for
+/// prebuilt binaries whose inlined `Data.encode` still calls it.
 @usableFromInline
 @JavaScriptActor
 internal func makeJavaScriptUint8Array(
@@ -94,5 +103,17 @@ public struct DataNotUint8ArrayException: JavaScriptThrowable {
   }
   public var message: String {
     "Cannot convert a JavaScript value to Data because it is not a Uint8Array"
+  }
+}
+
+/// Thrown when the runtime creates the `Uint8Array` for `Data` but returns no memory to copy the bytes into.
+internal struct DataUint8ArrayNoMemoryException: JavaScriptThrowable {
+  let byteCount: Int
+
+  var code: String {
+    "ERR_DATA_UINT8ARRAY_NO_MEMORY"
+  }
+  var message: String {
+    "Cannot convert Data of \(byteCount) bytes to a Uint8Array because the JavaScript runtime returned no memory for the new array. This points to a bug in the runtime's JSI implementation. Report it to Expo with the runtime and React Native versions."
   }
 }

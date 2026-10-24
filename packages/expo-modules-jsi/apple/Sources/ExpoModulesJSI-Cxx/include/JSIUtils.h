@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 
+#include <cstring>
 #include <new>
 #include <TargetConditionals.h>
 
@@ -468,14 +469,6 @@ inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object 
   }
 }
 
-/**
- * Sets the external memory pressure of the array buffer. An amount that the runtime rejects is ignored.
- */
-inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::ArrayBuffer &arrayBuffer, size_t amount) noexcept {
-  // Swift doesn't convert `jsi::ArrayBuffer` to `jsi::Object` for a C++ parameter.
-  setExternalMemoryPressure(runtime, static_cast<const jsi::Object &>(arrayBuffer), amount);
-}
-
 // MARK: - ArrayBuffer
 
 /**
@@ -516,6 +509,41 @@ inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, b
     setExternalMemoryPressure(runtime, arrayBuffer, size);
   }
   return arrayBuffer;
+}
+
+/**
+ * Creates a `Uint8Array` of `size` bytes and sets `data` to its memory, which may be uninitialized: the
+ * caller must write every byte before JavaScript can read the array. `uint8ArrayConstructor` is the
+ * global `Uint8Array` constructor. The garbage collector counts the memory of the new array.
+ */
+inline jsi::Value createUint8Array(
+  jsi::IRuntime &runtime,
+  const jsi::Function &uint8ArrayConstructor,
+  size_t size,
+  uint8_t *_Nullable *_Nonnull data
+) {
+  return expo::CppError::tryCatch(runtime, [&] {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+    // Up to 8 KB, an array that the runtime allocates is faster: it needs no native buffer, finalizer or
+    // memory report. The runtime zeroes the memory first, though, and above that size this costs more.
+    if (size <= 8 * 1024) {
+      jsi::Uint8Array array(runtime, size);
+      *data = array.buffer(runtime).data(runtime);
+      return jsi::Value(std::move(array));
+    }
+#endif
+    // The memory is reported only after the `Uint8Array` exists. A report can start a young-generation
+    // collection at the next allocation, and the buffer that this function holds would survive it and
+    // move to the old generation, which a slower collection frees.
+    jsi::ArrayBuffer buffer = createArrayBuffer(runtime, size, false, false);
+    *data = buffer.data(runtime);
+    jsi::Value array = uint8ArrayConstructor.callAsConstructor(runtime, buffer);
+    if (size > 0) {
+      setExternalMemoryPressure(runtime, buffer, size);
+    }
+    return array;
+  });
 }
 
 /**
