@@ -299,7 +299,7 @@ export class CocoaPodsPackageManager {
 
     // Attempt `pod update <package> <--no-repo-update>` and then try again.
     return await this.runInstallTypeCommandAsync(
-      ['update', updatePackage, shouldUpdateRepo ? '' : '--no-repo-update'].filter(Boolean),
+      ['update', ...updatedPackages, shouldUpdateRepo ? '' : '--no-repo-update'].filter(Boolean),
       {
         formatWarning() {
           const updateMessage = `Failed to update ${chalk.bold(
