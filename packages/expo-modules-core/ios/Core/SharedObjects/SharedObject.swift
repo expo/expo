@@ -99,6 +99,21 @@ open class SharedObject: AnySharedObject {
     return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
   }
 
+  /// The native state, or `nil` if the object was released. A released native state can outlive the
+  /// release on a JS object that couldn't drop it (for example a frozen one).
+  internal var unreleasedNativeState: SharedObjectNativeState? {
+    guard let nativeState, !nativeState.isReleased else {
+      return nil
+    }
+    return nativeState
+  }
+
+  /// The JS object paired with this object in the given runtime, read off its native state. Returns
+  /// `nil` when the object isn't paired in that runtime or was released.
+  internal func object(in runtime: JavaScriptRuntime) -> JavaScriptObject? {
+    return unreleasedNativeState?.javaScriptObject(in: runtime)
+  }
+
   /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
@@ -132,13 +147,9 @@ open class SharedObject: AnySharedObject {
 extension SharedObject: EventEmitter {
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    // The same lookup as `getJavaScriptObject()`, reading the paired object off the native state
-    // without going through the registry, since it runs for every emitted event.
-    guard let runtime = try? appContext?.runtime,
-      let nativeState,
-      !nativeState.isReleased,
-      let target = nativeState.javaScriptObject(in: runtime)
-    else {
+    // The same lookup as `getJavaScriptObject()`, without going through the registry, since it runs
+    // for every emitted event.
+    guard let runtime = try? appContext?.runtime, let target = object(in: runtime) else {
       return nil
     }
     return try body(target)
