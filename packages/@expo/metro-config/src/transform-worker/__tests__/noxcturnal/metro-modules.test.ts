@@ -15,6 +15,7 @@ import { importExportLiveBindingsPlugin } from '../../../transform-plugins/impor
 import {
   createNoxcturnalSourceFacts,
   isPathInsideRoot,
+  transformAssetWithNoxcturnalSync,
   transformFileFullyWithNoxcturnal,
   transformFileFullyWithNoxcturnalSync,
   transformNodeModuleWithNoxcturnal,
@@ -96,6 +97,45 @@ function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
       configFile: false,
     })?.code ?? ''
   );
+}
+
+// The Babel worker adds "use strict" to each file that parsed as an ES module after its plugins
+// run (`applyUseStrictDirective` in metro-transform-worker.ts). The native worker does the same in
+// its live-bindings plugin, so the Babel side of a comparison needs the same step.
+const babelWorkerUseStrict: babel.PluginObj = {
+  visitor: {
+    Program: {
+      exit(program) {
+        if (
+          program.node.sourceType === 'module' &&
+          !program.node.directives.some((directive) => directive.value.value === 'use strict')
+        ) {
+          program.node.directives.push(
+            babel.types.directive(babel.types.directiveLiteral('use strict'))
+          );
+        }
+      },
+    },
+  },
+};
+
+/** The directives of a transformed module: its Metro factory's, or the program's when unwrapped. */
+function moduleDirectives(code: string): string[] {
+  const file = babel.parseSync(code, {
+    sourceType: 'unambiguous',
+    configFile: false,
+    babelrc: false,
+  });
+  if (!file) throw new Error('Failed to parse transformed module');
+  const statement = file.program.body[0];
+  const factory =
+    babel.types.isExpressionStatement(statement) &&
+    babel.types.isCallExpression(statement.expression) &&
+    babel.types.isIdentifier(statement.expression.callee, { name: '__d' }) &&
+    babel.types.isFunctionExpression(statement.expression.arguments[0])
+      ? statement.expression.arguments[0].body
+      : file.program;
+  return factory.directives.map((directive) => directive.value.value);
 }
 
 const loadedBabelPresetExpo = require(
@@ -2073,7 +2113,10 @@ it.each([
     compact: false,
     configFile: false,
     filename,
-    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: false, resolve: false }]],
+    plugins: [
+      [importExportLiveBindingsPlugin, { performConstantFolding: false, resolve: false }],
+      babelWorkerUseStrict,
+    ],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
 
@@ -2101,10 +2144,70 @@ it.each([
     comments: false,
     configFile: false,
     filename,
-    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
+    plugins: [
+      [importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }],
+      babelWorkerUseStrict,
+    ],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
   expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+});
+
+it.each([
+  [
+    'an ES module',
+    `import { value } from 'pkg'; export const doubled = value * 2;`,
+    ['use strict'],
+  ],
+  [
+    'an ES module with the directive',
+    `'use strict'; import { value } from 'pkg'; export const doubled = value * 2;`,
+    ['use strict'],
+  ],
+  [
+    'an ES module with another directive',
+    `'use client'; export const label = 'Example';`,
+    ['use client', 'use strict'],
+  ],
+  ['an ES module with only side-effect imports', `import './setup';`, ['use strict']],
+  ['a CommonJS module', `module.exports = function read() { return this; };`, []],
+])('gives %s the same directives as the Babel worker', async (_name, source, directives) => {
+  for (const dev of [true, false]) {
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options({ dev }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    if (native.status === 'fallback') throw new Error(native.reason);
+    expect(moduleDirectives(native.result.code)).toEqual(directives);
+  }
+});
+
+it('keeps an ES module strict when graph optimization defers its imports', async () => {
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `import { value } from 'pkg'; export const doubled = value * 2;`,
+    options: options({ customTransformOptions: { engine: 'hermes', optimize: 'true' } }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  if (native.status === 'fallback') throw new Error(native.reason);
+  expect(moduleDirectives(native.result.code)).toEqual(['use strict']);
+});
+
+it('gives a generated asset module "use strict", as the Babel worker does', () => {
+  const native = transformAssetWithNoxcturnalSync({
+    filename: '/app/assets/icon.png',
+    projectRoot: '/app',
+    source: `module.exports = require('asset-registry').registerAsset({ name: 'icon' });`,
+    options: options(),
+    config: fullConfig(),
+  });
+  expect(moduleDirectives(native.result.code)).toEqual(['use strict']);
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
