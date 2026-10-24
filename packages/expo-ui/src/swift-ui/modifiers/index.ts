@@ -1459,7 +1459,7 @@ export const font = (params: {
     | 'caption'
     | 'caption2';
   /**
-   * Draws lowercase letters as small capitals.
+   * Draws both lowercase and uppercase letters as small capitals.
    * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).
    */
   smallCaps?: boolean;
