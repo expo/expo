@@ -6,6 +6,7 @@ description: EAS を使う旅の次のステップを学びます。
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
@@ -59,7 +60,14 @@ import { CODE } from '~/ui/components/Text';
 />
 
 <BoxLink
-  title="EAS Metadata（プレビュー版）"
+  title="EAS Observe"
+  Icon={ActivityIcon}
+  description="EAS Observe のドキュメントで、本番環境でのアプリのパフォーマンスを監視する方法を学びましょう。"
+  href="/eas/observe/introduction/"
+/>
+
+<BoxLink
+  title="EAS Metadata（ベータ版）"
   Icon={EasMetadataIcon}
   description="EAS Metadata のドキュメントで、コマンドラインからアプリストアの掲載情報を自動化・管理する方法を学びましょう。"
   href="/eas/metadata/"

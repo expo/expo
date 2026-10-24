@@ -1,6 +1,6 @@
 package expo.modules.application
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -8,120 +8,102 @@ import android.os.RemoteException
 import android.provider.Settings
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.Constant
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-class ApplicationPackageNameNotFoundException(cause: PackageManager.NameNotFoundException) :
-  CodedException(message = "Unable to get install time of this application. Could not get package info or package name.", cause = cause)
-
+@ExpoModule("ExpoApplication")
 class ApplicationModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val packageInfo: PackageInfo
+    get() = androidContext.packageManager.getPackageInfoCompat(androidContext.packageName)
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoApplication")
+  @JS
+  @Constant
+  val applicationName: String
+    get() = androidContext.applicationInfo.loadLabel(androidContext.packageManager).toString()
 
-    Constant("applicationName") {
-      context.applicationInfo.loadLabel(context.packageManager).toString()
-    }
+  @JS
+  @Constant
+  val applicationId: String
+    get() = androidContext.packageName
 
-    Constant("applicationId") {
-      packageName
-    }
+  @JS
+  @Constant
+  val nativeApplicationVersion: String?
+    get() = packageInfo.versionName
 
-    Constant("nativeApplicationVersion") {
-      packageManager.getPackageInfoCompat(packageName, 0).versionName
-    }
+  @JS
+  @Constant
+  val nativeBuildVersion: String
+    get() = getLongVersionCode(packageInfo).toInt().toString()
 
-    Constant("nativeBuildVersion") {
-      getLongVersionCode(packageManager.getPackageInfoCompat(packageName, 0)).toInt().toString()
-    }
+  @JS
+  @Constant
+  @get:SuppressLint("HardwareIds")
+  val androidId: String?
+    get() = Settings.Secure.getString(androidContext.contentResolver, Settings.Secure.ANDROID_ID)
 
-    Constant("androidId") {
-      Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-    }
-
-    AsyncFunction<Double>("getInstallationTimeAsync") {
-      val packageManager = context.packageManager
-      val packageName = context.packageName
-      packageManager
-        .getPackageInfoCompat(packageName, 0)
-        .firstInstallTime
-        .toDouble()
-    }
-
-    AsyncFunction<Double>("getLastUpdateTimeAsync") {
-      val packageManager = context.packageManager
-      val packageName = context.packageName
-      packageManager
-        .getPackageInfoCompat(packageName, 0)
-        .lastUpdateTime
-        .toDouble()
-    }
-
-    AsyncFunction("getInstallReferrerAsync") { promise: Promise ->
-      val installReferrer = StringBuilder()
-      var isSettled = false
-
-      val referrerClient = InstallReferrerClient.newBuilder(context).build()
-
-      referrerClient.startConnection(object : InstallReferrerStateListener {
-        override fun onInstallReferrerSetupFinished(responseCode: Int) {
-          if (isSettled) {
-            return
-          }
-
-          when (responseCode) {
-            InstallReferrerClient.InstallReferrerResponse.OK -> {
-              // Connection established and response received
-              try {
-                val response = referrerClient.installReferrer
-                installReferrer.append(response.installReferrer)
-              } catch (e: RemoteException) {
-                promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e)
-                return
-              } finally {
-                isSettled = true
-              }
-              promise.resolve(installReferrer.toString())
-            }
-
-            InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> { // API not available in the current Play Store app
-              isSettled = true
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.", null)
-            }
-
-            InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> { // Connection could not be established
-              isSettled = true
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
-            }
-
-            else -> {
-              isSettled = true
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
-            }
-          }
-          referrerClient.endConnection()
-        }
-
-        override fun onInstallReferrerServiceDisconnected() {
-          if (isSettled) {
-            return
-          }
-          isSettled = true
-          promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.", null)
-        }
-      })
-    }
+  @JS
+  suspend fun getInstallationTimeAsync(): Double = withContext(Dispatchers.IO) {
+    packageInfo.firstInstallTime.toDouble()
   }
 
-  private val packageName
-    get() = context.packageName
-  private val packageManager
-    get() = context.packageManager
+  @JS
+  suspend fun getLastUpdateTimeAsync(): Double = withContext(Dispatchers.IO) {
+    packageInfo.lastUpdateTime.toDouble()
+  }
+
+  @JS
+  suspend fun getInstallReferrerAsync(): String = suspendCancellableCoroutine { continuation ->
+    val referrerClient = InstallReferrerClient.newBuilder(androidContext).build()
+
+    val listener = object : InstallReferrerStateListener {
+      override fun onInstallReferrerSetupFinished(responseCode: Int) {
+        if (!continuation.isActive) {
+          return
+        }
+
+        when (responseCode) {
+          InstallReferrerClient.InstallReferrerResponse.OK -> {
+            // Connection established and response received
+            try {
+              val installReferrer: String? = referrerClient.installReferrer.installReferrer
+              continuation.resume(installReferrer.toString())
+            } catch (e: RemoteException) {
+              continuation.resumeWithException(ApplicationInstallReferrerRemoteException(e))
+            }
+          }
+
+          InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+            // API not available in the current Play Store app
+            continuation.resumeWithException(ApplicationInstallReferrerUnavailableException())
+          }
+
+          else -> {
+            // Includes SERVICE_UNAVAILABLE, when the connection could not be established
+            continuation.resumeWithException(ApplicationInstallReferrerException(responseCode))
+          }
+        }
+        referrerClient.endConnection()
+      }
+
+      override fun onInstallReferrerServiceDisconnected() {
+        if (!continuation.isActive) {
+          return
+        }
+        continuation.resumeWithException(ApplicationInstallReferrerServiceDisconnectedException())
+      }
+    }
+
+    referrerClient.startConnection(listener)
+  }
 }
 
 private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =

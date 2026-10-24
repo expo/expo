@@ -147,6 +147,12 @@ module Expo
           macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
         end
 
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
+        end
+
         target.pod_targets.each do |pod_target|
           is_core = pod_target.name == 'ExpoModulesCore'
           has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
@@ -317,6 +323,8 @@ module Expo
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
       podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      # Links only the scanned classes that compile for this platform.
+      target_platform_param = "--target-platform \"#{platform}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -373,6 +381,7 @@ module Expo
         #{app_root_param} \\
         #{podfile_properties_param} \\
         --platform "apple" \\
+        #{target_platform_param} \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end

@@ -20,7 +20,8 @@ export function FieldGroup({
   const modifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'FieldGroup' }
   );
 
   return <Form modifiers={modifiers}>{children}</Form>;

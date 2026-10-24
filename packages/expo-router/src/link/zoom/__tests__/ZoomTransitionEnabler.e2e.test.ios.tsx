@@ -2,9 +2,9 @@ import { act, fireEvent, screen } from '@testing-library/react-native';
 import { use, useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { internalNavigationEvents } from '../../../global-state/internalNavigationEvents';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/Stack';
-import { unstable_navigationEvents } from '../../../navigationEvents';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
@@ -169,7 +169,7 @@ describe('ZoomTransitionEnabler with gestureEnabled', () => {
 async function navigateViaPreviewZoomLink() {
   // Native reports the key of the mounted preload, not an arbitrary preview ID.
   let previewKey: string | undefined;
-  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', ({ routeKey }) => {
+  const unsubscribe = internalNavigationEvents.addListener('routePreloaded', ({ routeKey }) => {
     previewKey = routeKey;
   });
   await act(() => router.prefetch('/dest'));

@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-constants@58.0.13
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-constants@58.0.12
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-constants@58.0.11
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-constants@58.0.10
+
 ## 58.0.10
 
 ### Patch Changes

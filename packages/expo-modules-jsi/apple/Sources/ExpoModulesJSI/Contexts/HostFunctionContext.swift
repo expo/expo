@@ -23,9 +23,7 @@ internal final class UnownedThisHostFunctionContext: HostCallbackContext, Sendab
   // outlive the runtime it was installed in. A `weak` reference here cost a `swift_weakLoadStrong`
   // plus a strong release on every host call, and profiling showed that pair as the largest single
   // item on the no-op `@JS` call floor. Callers read it through `_withUnsafeGuaranteedRef`, which
-  // also skips the strong retain/release a plain `unowned(unsafe)` load would still emit. Those go
-  // through the refcount side table (other wrappers hold the runtime `weak`), so they were the next
-  // largest item once the weak load was gone.
+  // also skips the strong retain/release a plain `unowned(unsafe)` load would still emit.
   let runtime: Unmanaged<JavaScriptRuntime>
   let name: String?
   let call: JavaScriptRuntime.UnownedThisSyncFunctionClosure
@@ -35,6 +33,20 @@ internal final class UnownedThisHostFunctionContext: HostCallbackContext, Sendab
     name: String? = nil,
     _ function: @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
   ) {
+    self.runtime = Unmanaged.passUnretained(runtime)
+    self.name = name
+    self.call = function
+  }
+}
+
+/// Counterpart to ``UnownedThisHostFunctionContext`` for ``JavaScriptRuntime/VoidFunctionClosure``.
+internal final class VoidHostFunctionContext: HostCallbackContext, Sendable {
+  // `Unmanaged` for the same reason as in ``UnownedThisHostFunctionContext``.
+  let runtime: Unmanaged<JavaScriptRuntime>
+  let name: String?
+  let call: JavaScriptRuntime.VoidFunctionClosure
+
+  init(runtime: JavaScriptRuntime, name: String? = nil, _ function: @escaping JavaScriptRuntime.VoidFunctionClosure) {
     self.runtime = Unmanaged.passUnretained(runtime)
     self.name = name
     self.call = function

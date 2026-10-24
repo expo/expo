@@ -13,7 +13,7 @@ private struct MacroOptions {
   var count: Int = 0
 }
 
-// `@unchecked Sendable`: the `@JS(.concurrent)` members send `self` off the JavaScript thread,
+// `@unchecked Sendable`: the `.concurrent` and `.withAsync` members send `self` off the JavaScript thread,
 // which Swift 6 mode allows only for a `Sendable` module.
 @ExpoModule
 private final class MacroGreeter: Module, @unchecked Sendable {
@@ -76,6 +76,12 @@ private final class MacroGreeter: Module, @unchecked Sendable {
   func offThreadWithName(value: String) async throws -> String {
     return value
   }
+
+  // A synchronous function that is also bound as a promise-returning variant.
+  @JS("joinSync", .withAsync("join"))
+  func join(first: String, second: String) -> String {
+    return first + second
+  }
 }
 
 @ExpoModule("RenamedMacroModule")
@@ -83,6 +89,47 @@ private final class MacroRenamed: Module {
   @JS
   func ping() -> String {
     return "pong"
+  }
+}
+
+// Closure arguments: JS passes a function, and the binding wraps it in a native closure.
+@ExpoModule
+private final class MacroCallbacks: Module {
+  private var stored: ((String) -> Void)?
+
+  @JS
+  func transform(value: Int, using transform: (Int) throws -> Int) throws -> Int {
+    return try transform(value)
+  }
+
+  // A `Record` crosses into the closure, so its argument is encoded on the way to JS.
+  @JS
+  func describe(options: MacroOptions, format: (MacroOptions) throws -> String) throws -> String {
+    return try format(options)
+  }
+
+  // Keeps the closure past the call that received it.
+  @JS
+  func store(onEvent: @escaping (String) -> Void) {
+    stored = onEvent
+  }
+
+  @JS
+  func fire(value: String) {
+    stored?(value)
+  }
+
+  // Returns whether a closure was passed.
+  @JS
+  func optional(callback: ((String) throws -> Void)?) throws -> Bool {
+    try callback?("called")
+    return callback != nil
+  }
+
+  @JS
+  @JavaScriptActor
+  func awaitCallback(fetch: @escaping (Int) async throws -> Int) async throws -> Int {
+    return try await fetch(20) + 1
   }
 }
 
@@ -188,6 +235,14 @@ private struct MacroModuleTests {
     #expect(try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() == false)
   }
 
+  @Test
+  func `binds a @JS(.withAsync) variant that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.joinSync('a', 'b')").asString() == "ab")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.join('a', 'b').then((value) => value + '!')")
+    #expect(try await result.asString() == "ab!")
+  }
+
   // MARK: - Non-primitive decode/encode
 
   @Test
@@ -224,5 +279,79 @@ private struct MacroModuleTests {
     let message = try runtime.eval("try { expo.modules.MacroGreeter.greet(); '' } catch (error) { error.message }")
     #expect(try message.asString().contains("greet"))
     #expect(try message.asString().contains("argument"))
+  }
+
+  // MARK: - Closure arguments
+
+  @Test
+  func `a closure argument calls back into JS and returns its result`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.transform(20, (x) => x * 2 + 2)").asInt() == 42)
+  }
+
+  @Test
+  func `a closure argument encodes a Record for JS`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let format = "(options) => options.label + options.count"
+    let result = try runtime.eval("expo.modules.MacroCallbacks.describe({ label: 'a', count: 2 }, \(format))")
+    #expect(try result.asString() == "a2")
+  }
+
+  @Test
+  func `a JS exception in a closure argument reaches the JS caller`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let message = try runtime.eval(
+      """
+      try {
+        expo.modules.MacroCallbacks.transform(1, () => { throw new Error('nope') })
+        ''
+      } catch (error) {
+        error.message
+      }
+      """)
+    #expect(try message.asString().contains("nope"))
+  }
+
+  @Test
+  func `null or undefined for a required closure argument throws a TypeError`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    for value in ["null", "undefined"] {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroCallbacks.transform(1, \(value)); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
+  }
+
+  @Test
+  func `a stored closure argument can be called later`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let runtime = try runtime
+    // A non-throwing closure is called detached, which runs inline only on the JavaScript thread.
+    // Elsewhere it's scheduled and may not have run yet when `globalThis.received` is read.
+    let value = try runtime.execute {
+      try runtime.eval(
+        """
+        expo.modules.MacroCallbacks.store((value) => { globalThis.received = value })
+        expo.modules.MacroCallbacks.fire('later')
+        globalThis.received
+        """
+      ).asString()
+    }
+    #expect(value == "later")
+  }
+
+  @Test
+  func `an optional closure argument is nil when omitted or null`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional()").asBool() == false)
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional(null)").asBool() == false)
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional(() => {})").asBool() == true)
+  }
+
+  @Test
+  func `an async closure argument awaits the promise the JS function returns`() async throws {
+    register(MacroCallbacks(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroCallbacks.awaitCallback(async (x) => x * 2)")
+    #expect(try await result.asInt() == 41)
   }
 }

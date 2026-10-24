@@ -1,12 +1,14 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import type { RouteNode } from '../Route';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { BaseNavigationContainer } from '../react-navigation/core/BaseNavigationContainer';
 import type {
   LinkingOptions,
   LocaleDirection,
   NavigationContainerProps,
+  NavigationState,
   NavigationContainerRef,
   ParamListBase,
 } from '../react-navigation/native';
@@ -20,7 +22,6 @@ import { getPathFromState } from './getPathFromState';
 import { getStateFromPath } from './getStateFromPath';
 import { useBackButton } from './useBackButton';
 import { useLinking } from './useLinking';
-import { useThenable } from './useThenable';
 import { validatePathConfig } from './validatePathConfig';
 
 declare global {
@@ -76,11 +77,52 @@ function NavigationContainerInner({
   });
 
   const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
+  // Kept outside the Suspense boundary so a retry after loading reads the same promise.
+  const [initialState] = React.useState(getInitialState);
+
+  return (
+    <React.Suspense fallback={<ThemeProvider value={theme}>{fallback}</ThemeProvider>}>
+      <LocaleDirContext.Provider value={direction}>
+        <LinkingContext.Provider value={linkingContext}>
+          <InitialStateNavigationContainer
+            {...rest}
+            initialState={initialState}
+            linking={linking}
+            theme={theme}
+            routeNode={routerConfig?.routeNode ?? undefined}
+            containerRef={refContainer}
+            ref={ref}
+          />
+        </LinkingContext.Provider>
+      </LocaleDirContext.Provider>
+    </React.Suspense>
+  );
+}
+
+function InitialStateNavigationContainer({
+  initialState: initialStateOrPromise,
+  linking,
+  routeNode,
+  containerRef,
+  ref,
+  ...rest
+}: Omit<NavigationContainerProps, 'initialState'> & {
+  initialState: NavigationState | undefined | PromiseLike<NavigationState | undefined>;
+  linking: LinkingOptions<ParamListBase> | undefined;
+  routeNode: RouteNode | undefined;
+  containerRef: React.RefObject<NavigationContainerRef<ParamListBase> | null>;
+  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>;
+}) {
+  const initialState = isThenable(initialStateOrPromise)
+    ? React.use(initialStateOrPromise)
+    : initialStateOrPromise;
+  // Set here, not in the parent, so the ref is set once the container mounts after waiting.
+  React.useImperativeHandle(ref, () => containerRef.current!);
   // Add additional linking related info to the ref
   // This will be used by the devtools
   React.useEffect(() => {
-    if (refContainer.current) {
-      REACT_NAVIGATION_DEVTOOLS.set(refContainer.current, {
+    if (containerRef.current) {
+      REACT_NAVIGATION_DEVTOOLS.set(containerRef.current, {
         get linking() {
           return {
             ...linking,
@@ -92,16 +134,6 @@ function NavigationContainerInner({
       });
     }
   });
-
-  const [isResolved, initialState] = useThenable(getInitialState);
-  React.useImperativeHandle(ref, () => refContainer.current!);
-
-  if (!isResolved) {
-    // This is temporary until we have Suspense for data-fetching
-    // Then the fallback will be handled by a parent `Suspense` component
-    return <ThemeProvider value={theme}>{fallback}</ThemeProvider>;
-  }
-
   if (initialState === undefined) {
     throw new Error(
       'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
@@ -109,17 +141,21 @@ function NavigationContainerInner({
   }
 
   return (
-    <LocaleDirContext.Provider value={direction}>
-      <LinkingContext.Provider value={linkingContext}>
-        <BaseNavigationContainer
-          {...rest}
-          theme={theme}
-          initialState={initialState}
-          UNSTABLE_routeNode={routerConfig?.routeNode ?? undefined}
-          ref={refContainer}
-        />
-      </LinkingContext.Provider>
-    </LocaleDirContext.Provider>
+    <BaseNavigationContainer
+      {...rest}
+      initialState={initialState}
+      UNSTABLE_routeNode={routeNode}
+      ref={containerRef}
+    />
+  );
+}
+
+function isThenable<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
   );
 }
 

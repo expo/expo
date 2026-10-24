@@ -136,6 +136,21 @@ function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
 
 > **info** `createProps` receives the processed Expo Router `state` and raw `dispatch`. These are internal and may have small breaking changes between releases, so prefer the `state` and `actions` passed to `NavigatorContent` when they suffice. If something you need is missing from the standard `state`, `actions`, or `emitter`, [open an issue on GitHub](https://github.com/expo/expo/issues).
 
+### Tab back history
+
+> **info** `unstable_useReconcileTabHistory` is available in **SDK 58 and later**. It is unstable and may change in a future release.
+
+A navigator that uses `TabRouter` stores the tab that Back goes to in the `history` of its navigation state. Call `unstable_useReconcileTabHistory` in `NavigatorContent` to save the back target in the navigation state, so code that reads the state sees it.
+
+```tsx components/Tabs.tsx
+import { unstable_useReconcileTabHistory } from 'expo-router';
+
+function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+  unstable_useReconcileTabHistory();
+  // ...
+}
+```
+
 ## Integrate an existing navigator (library authors)
 
 ### The standard navigator API
@@ -245,7 +260,7 @@ Consumers then import the integration for their framework (for example, `import 
 
 > **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
 
-Use `extendRouterActions` when you only need to handle or reject navigation actions. Return a result to handle the action, `null` to reject it, or `undefined` to let the base router handle it.
+Use `extendRouterActions` when you only need to handle navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Unhandled` so the navigator ignores it.
 
 Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
 
@@ -255,6 +270,7 @@ The following example adds a `CLEAR` action and an action creator for it:
 import {
   extendRouter,
   extendRouterActions,
+  RouterActionHandling,
   StackRouter,
   type CommonNavigationAction,
   type StackActionType,
@@ -266,7 +282,7 @@ const RouterWithClearAction = extendRouterActions(
   StackRouter,
   (state, action: CommonNavigationAction | StackActionType | ClearAction, { nextKey }) => {
     if (action.type !== 'CLEAR') {
-      return undefined;
+      return RouterActionHandling.Delegate;
     }
 
     const route = { key: nextKey('index'), name: 'index' };
@@ -285,4 +301,4 @@ export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
 }));
 ```
 
-Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to delegate existing behavior, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state.
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state. Use `isActionHandled` to check whether the base router handled an action.

@@ -246,25 +246,6 @@ function stringParam(params: Record<string, unknown>, name: string): string | un
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
-function integerParam(params: Record<string, unknown>, name: string): number | undefined {
-  const value = params[name];
-  return typeof value === 'number' && Number.isInteger(value) ? value : undefined;
-}
-
-function counterIncrement(invocation: AppIntentInvocationLike): number {
-  if (invocation.name === 'increaseCounter') {
-    return 1;
-  }
-  const amount = integerParam(invocation.params, 'amount');
-  if (amount === undefined) {
-    console.warn(
-      `Ignoring the '${invocation.name}' invocation ${invocation.id}, because its amount param is not an integer. Check that AddToCounterIntent dispatches its amount.`
-    );
-    return 0;
-  }
-  return amount;
-}
-
 function stringArrayParam(params: Record<string, unknown>, name: string): string[] {
   const value = params[name];
   return Array.isArray(value)
@@ -334,9 +315,7 @@ async function recordCounterInvocations(invocations: AppIntentInvocationLike[]):
 
   const latest = latestInvocation(newInvocations)!;
   await writeJson<AppIntentCounterState>(counterStateKey, {
-    count:
-      current.count +
-      newInvocations.reduce((total, invocation) => total + counterIncrement(invocation), 0),
+    count: current.count + newInvocations.length,
     // Store exactly the ids this run compared against, minus the oldest ones that no longer fit
     // the window. Deduplicate first, so a list written by an older build cannot spend the window
     // on repeats of the same id.
@@ -511,7 +490,6 @@ type AppIntentHandlerDescriptor = {
  */
 const appIntentHandlers: Record<string, AppIntentHandlerDescriptor> = {
   increaseCounter: { route: 'counter', opensApp: true },
-  addToCounter: { route: 'counter', opensApp: true },
   orderFood: { route: 'order', opensApp: true },
   createMailDraft: { route: 'mail', opensApp: true },
   deleteMailDrafts: { route: 'mail', opensApp: false },
@@ -572,7 +550,7 @@ async function applyAppIntentInvocations(
   }
 
   const counterInvocations = supportedInvocations.filter(
-    (invocation) => invocation.name === 'increaseCounter' || invocation.name === 'addToCounter'
+    (invocation) => invocation.name === 'increaseCounter'
   );
   const orderInvocations = supportedInvocations.filter(
     (invocation) => invocation.name === 'orderFood'

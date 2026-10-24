@@ -236,6 +236,7 @@ class DevLauncherViewModel: ObservableObject {
       },
       onError: { [weak self] error in
         let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
+        EXDevLauncherRemoteLogsManager.reportError(message, toServerAt: bundleUrl)
         DispatchQueue.main.async {
           self?.isLoadingServer = false
           self?.showErrorAlert(message)

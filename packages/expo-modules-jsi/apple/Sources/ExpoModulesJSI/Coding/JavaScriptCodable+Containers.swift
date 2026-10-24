@@ -22,7 +22,6 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
     -> [Element]
   {
     // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
     return try value.withUnownedValue(in: runtime) { unownedValue in
       return try decode(unownedValue, in: runtime)
     }
@@ -51,11 +50,9 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
   public static func encode(_ value: [Element], in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    let jsArray = runtime.createArray(length: value.count)
-    for (index, element) in value.enumerated() {
-      try jsArray.set(value: Element.encode(element, in: runtime), at: index)
+    return try runtime.createArray(count: value.count) { index in
+      return try Element.encode(value[index], in: runtime)
     }
-    return jsArray.asValue()
   }
 }
 
@@ -100,7 +97,7 @@ extension Optional: JavaScriptEncodable where Wrapped: JavaScriptEncodable {
   {
     guard let value else {
       // `nil` maps to `null`; mapping to `undefined` is the job of `ValueOrUndefined`.
-      return .null
+      return .null()
     }
     return try Wrapped.encode(value, in: runtime)
   }
@@ -120,7 +117,6 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
     -> [String: Value]
   {
     // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
     return try value.withUnownedValue(in: runtime) { unownedValue in
       return try decode(unownedValue, in: runtime)
     }
@@ -160,6 +156,6 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
     for (key, element) in value {
       object.setProperty(key, value: try Value.encode(element, in: runtime))
     }
-    return object.asValue()
+    return object.takeValue()
   }
 }

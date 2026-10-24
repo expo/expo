@@ -60,7 +60,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   const closeMenu = useCallback(() => {
     setExpanded(false);
     parentClose?.();
-  }, [parentClose]);
+  }, [parentClose, setExpanded]);
 
   if (process.env.NODE_ENV !== 'production' && isNested && props.badge) {
     console.warn(

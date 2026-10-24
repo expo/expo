@@ -1,6 +1,6 @@
 {
   "name": "@expo/pkcs12",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "PKCS#12 Utilities for Node.js",
   "keywords": [
     "pkcs12"
@@ -37,8 +37,8 @@
     "node-forge": "^1.4.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/node": "^22.14.0",
-    "@types/node-forge": "^1.0.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/node-forge": "^1.0.0"
   }
 }

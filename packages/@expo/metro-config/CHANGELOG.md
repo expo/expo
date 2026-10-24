@@ -1,5 +1,90 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- Updated dependencies. ([`4a6ae65`](https://github.com/expo/expo/commit/4a6ae6527e2e46e2b0cbc5af1151a82e30c844d4))
+  - @expo/config@58.0.8
+
+## 58.0.16
+
+### Patch Changes
+
+- Bump to `noxcturnal@^0.1.7` ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Update to `noxcturnal@^0.1.8` ([#52008](https://github.com/expo/expo/pull/52008) by [@kitten](https://github.com/kitten))
+- Fix Babel transforms using the process `BABEL_ENV` instead of the bundle's mode. ([#51872](https://github.com/expo/expo/pull/51872) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve project-relative filenames against the app root in Noxcturnal plugins for React Server references, server actions, DOM components, Router export detection, and Router environment values. Preserve project-relative module IDs. ([#51932](https://github.com/expo/expo/pull/51932) by [@kitten](https://github.com/kitten))
+- Pass the app root to Noxcturnal so diagnostic filenames resolve correctly when Metro runs from a workspace root. ([#51937](https://github.com/expo/expo/pull/51937) by [@kitten](https://github.com/kitten))
+- Add asset transformer through noxcturnal for `experiments.noxcturnalTransformWorker` ([#51714](https://github.com/expo/expo/pull/51714) by [@kitten](https://github.com/kitten))
+- Switch default React Compiler panic threshold for Noxcturnal to `none` to match `babel-plugin-react-compiler`. ([#51913](https://github.com/expo/expo/pull/51913) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+  - @expo/config@58.0.7
+
+## 58.0.15
+
+### Patch Changes
+
+- Update to `noxcturnal@^0.1.4` for `experiments.noxcturnalTransformWorker`. This updates Flow erasure support, React Compiler transforms, and internal dependencies, and improves performance slightly. ([#51712](https://github.com/expo/expo/pull/51712) by [@kitten](https://github.com/kitten))
+- Avoid unnecessary noxcturnal bailout for modules with a `use client` directive for client bundles. ([#51663](https://github.com/expo/expo/pull/51663) by [@kitten](https://github.com/kitten))
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+- Fix edge-cases in root dependency resolution for `expo-router`, `react-native/setup-env`, and `expo/build/winter` runtime resolution. ([#51536](https://github.com/expo/expo/pull/51536) by [@kitten](https://github.com/kitten))
+- Refactor package version cache key resolution and resolve `react-native-worklets` version optionally through `react-native-reanimated`. ([#51526](https://github.com/expo/expo/pull/51526) by [@kitten](https://github.com/kitten))
+- Bump to `2g@1.0.0` and provide process metadata, such as `port` for commands like `expo start`. ([#51338](https://github.com/expo/expo/pull/51338) by [@kitten](https://github.com/kitten))
+- Update to `2g@^1.0.1` ([#51517](https://github.com/expo/expo/pull/51517) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+  - @expo/config@58.0.6
+
+## 58.0.12
+
+### Patch Changes
+
+- [web] Add experimental granular bundle splitting for production exports with async routes. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+  - @expo/config@58.0.5
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+  - @expo/config@58.0.4
+
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- [Internal] Resolve the `setup-env` run-before-main module with `@expo/require-utils`. ([#51177](https://github.com/expo/expo/pull/51177) by [@huntie](https://github.com/huntie))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Remove `INTERNAL_CALLSITES_REGEX` entries that no longer match any stack frame. ([#50989](https://github.com/expo/expo/pull/50989) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+  - @expo/config@58.0.3
+
 ## 58.0.8
 
 ### Patch Changes

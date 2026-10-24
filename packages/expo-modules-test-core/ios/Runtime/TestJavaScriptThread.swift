@@ -45,9 +45,10 @@ internal final class TestJavaScriptThread: @unchecked Sendable {
     }
     withoutActuallyEscaping(operation) { operation in
       let finished = DispatchSemaphore(value: 0)
-      nonisolated(unsafe) let operation = operation
+      nonisolated(unsafe) var operation: Optional<() -> Void> = operation
       schedule {
-        operation()
+        operation?()
+        operation = nil
         finished.signal()
       }
       finished.wait()

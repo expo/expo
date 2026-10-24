@@ -113,11 +113,11 @@ const styles = StyleSheet.create({
 
 ```tsx
 import { BlurView, BlurTargetView } from 'expo-blur';
-import { useRef } from 'react';
+import { useRef, type ComponentRef } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 
 export default function App() {
-  const targetRef = useRef<View | null>(null);
+  const targetRef = useRef<ComponentRef<typeof View>>(null);
   const text = 'Hello, my container is blurring contents underneath!';
 
   return (

@@ -21,10 +21,12 @@ export function styleKind(kind: string, stream: NodeJS.WriteStream = process.std
   return styleText('magenta', kind, { stream });
 }
 
-/** The heading of the warnings block. */
-export function styleWarningHeading(
-  text: string,
-  stream: NodeJS.WriteStream = process.stdout
-): string {
+/** The heading of the warnings block and the bullet of each warning, yellow to mark a warning. */
+export function styleWarning(text: string, stream: NodeJS.WriteStream = process.stdout): string {
   return styleText('yellow', text, { stream });
+}
+
+/** The text of a doc comment, gray like comments in a code editor. */
+export function styleComment(text: string, stream: NodeJS.WriteStream = process.stdout): string {
+  return styleText('gray', text, { stream });
 }

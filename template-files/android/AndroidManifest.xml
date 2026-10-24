@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <permission
-        android:name="host.exp.exponent.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <!-- These are required permissions to make the app run -->
-    <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />

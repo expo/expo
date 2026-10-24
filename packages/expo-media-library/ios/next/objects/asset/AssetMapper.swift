@@ -13,7 +13,8 @@ class AssetMapper {
       width: phAsset.pixelWidth,
       mediaType: mapMediaType(phAsset.mediaType),
       modificationTime: mapModificationTime(phAsset.modificationDate),
-      isFavorite: phAsset.isFavorite
+      isFavorite: phAsset.isFavorite,
+      mediaSubtypes: MediaSubtypeNext.from(phAsset.mediaSubtypes)
     )
   }
 
@@ -27,7 +28,8 @@ class AssetMapper {
       width: phAsset.pixelWidth,
       mediaType: mapMediaType(phAsset.mediaType),
       modificationTime: mapModificationTime(phAsset.modificationDate),
-      isFavorite: phAsset.isFavorite
+      isFavorite: phAsset.isFavorite,
+      mediaSubtypes: MediaSubtypeNext.from(phAsset.mediaSubtypes)
     )
   }
 

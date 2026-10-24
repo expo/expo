@@ -1,4 +1,4 @@
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 import Foundation
 import Testing
 
@@ -29,7 +29,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `create function`() {
     let fn = runtime.createFunction("function name") { this, arguments in
-      return .undefined
+      return .undefined()
     }
     #expect(fn.asValue().isFunction() == true)
   }
@@ -49,7 +49,7 @@ struct JavaScriptRuntimeTests {
     // instead of moving it out: the captured value has to stay valid for the next call.
     let shared = JavaScriptValue(runtime, "shared")
     let fn = runtime.createFunction("shared") { _, _ in
-      return shared
+      return shared.copy()
     }
     runtime.global().setProperty("shared", value: fn)
     #expect(try runtime.eval("shared() + ' ' + shared()").getString() == "shared shared")
@@ -150,6 +150,15 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `execute async returns a JavaScript value`() async throws {
+    let result = try await runtime.execute {
+      await Task.yield()
+      return try self.runtime.eval("({ answer: 42 })")
+    }
+    #expect(result.getObject().getProperty("answer").getInt() == 42)
+  }
+
+  @Test
   func `execute async throws error`() async {
     await #expect(throws: ScriptEvaluationError.self) {
       _ = try await runtime.execute {
@@ -207,6 +216,60 @@ struct JavaScriptRuntimeTests {
     withExtendedLifetime(scheduler) {}
   }
 
+  @Test
+  func `schedule drops the work when the runtime is gone by the time it runs`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let didRun = InlineRunFlag()
+
+    await scheduler.run {
+      var runtime: JavaScriptRuntime? = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      // Queued behind this block, so it runs after the runtime below is gone.
+      runtime?.schedule {
+        didRun.value = true
+      }
+      runtime = nil
+    }
+    await scheduler.run {}
+
+    #expect(didRun.value == false)
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `execute throws RuntimeLostError when the host drops the task`() async throws {
+    let testRuntime = await ReleasableTestRuntime(dispatch: dropOnTestRuntime)
+    let runtime = try #require(testRuntime.runtime)
+
+    // Called off the runtime's JavaScript thread, so each call schedules a task that the host drops.
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { 1 }
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      try await runtime.execute { () async in 1 }
+    }
+    // The blocking overloads aren't available in async contexts, so they run on a thread of their own.
+    let blockingResults = await withCheckedContinuation { (continuation: CheckedContinuation<[Bool], Never>) in
+      Thread.detachNewThread {
+        continuation.resume(returning: [
+          isRuntimeLostError { try runtime.execute { 1 } },
+          isRuntimeLostError { try runtime.execute { () async in 1 } },
+        ])
+      }
+    }
+    #expect(blockingResults == [true, true])
+    await testRuntime.tearDown()
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
@@ -250,6 +313,65 @@ struct JavaScriptRuntimeTests {
     }
   }
 
+  // A standalone runtime runs scheduled work inline on the caller, so the next four tests give the
+  // runtime its own thread with `TestRuntimeScheduler` to make the caller wait for it.
+
+  @Test
+  func `execute sync waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute blocking-async waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor () async in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute sync returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
+  }
+
+  @Test
+  func `execute blocking-async returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor () async in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
+  }
+
   // MARK: - Host objects
 
   @Test
@@ -259,13 +381,13 @@ struct JavaScriptRuntimeTests {
         if name == "foo" {
           return JavaScriptValue(self.runtime, 42)
         }
-        return .undefined
+        return .undefined()
       },
       getPropertyNames: { ["foo"] }
     )
 
     #expect(hostObject.getProperty("foo").getInt() == 42)
-    #expect(hostObject.getProperty("unknown").isUndefined())
+    #expect(hostObject.getProperty("unknown").isUndefined() == true)
   }
 
   @Test
@@ -279,9 +401,9 @@ struct JavaScriptRuntimeTests {
         case "fresh":
           return JavaScriptValue(runtime, "fresh")
         case "shared":
-          return shared
+          return shared.copy()
         default:
-          return .undefined
+          return .undefined()
         }
       },
       getPropertyNames: { ["fresh", "shared"] }
@@ -302,7 +424,7 @@ struct JavaScriptRuntimeTests {
         if name == "value", let storedValue {
           return JavaScriptValue(self.runtime, storedValue)
         }
-        return .undefined
+        return .undefined()
       },
       set: { name, value in
         if name == "value" {
@@ -324,7 +446,7 @@ struct JavaScriptRuntimeTests {
         switch name {
         case "a": return JavaScriptValue(self.runtime, 1)
         case "b": return JavaScriptValue(self.runtime, 2)
-        default: return .undefined
+        default: return .undefined()
         }
       },
       getPropertyNames: { ["a", "b"] }
@@ -345,7 +467,7 @@ struct JavaScriptRuntimeTests {
         if name == "greeting" {
           return JavaScriptValue(self.runtime, "hello")
         }
-        return .undefined
+        return .undefined()
       },
       getPropertyNames: { ["greeting"] }
     )
@@ -364,7 +486,7 @@ struct JavaScriptRuntimeTests {
     let hostObject = runtime.createHostObject(
       get: { name in
         receivedNames.append(name)
-        return .undefined
+        return .undefined()
       },
       set: { name, _ in
         setNames.append(name)
@@ -386,7 +508,7 @@ struct JavaScriptRuntimeTests {
     let hostObject = runtime.createHostObject(
       get: { name in
         receivedName = name
-        return .undefined
+        return .undefined()
       }
     )
 
@@ -399,7 +521,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `isHostObject distinguishes host objects from plain ones`() {
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined }
+      get: { _ in .undefined() }
     )
     let plainObject = runtime.createObject()
 
@@ -410,7 +532,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `host object default getPropertyNames returns no keys in JavaScript`() throws {
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined }
+      get: { _ in .undefined() }
     )
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
@@ -428,7 +550,7 @@ struct JavaScriptRuntimeTests {
     }
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in throw TestError() }
     )
 
@@ -451,7 +573,7 @@ struct JavaScriptRuntimeTests {
     }
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in throw TypedError() }
     )
 
@@ -562,7 +684,7 @@ struct JavaScriptRuntimeTests {
         if name == "ok" {
           return JavaScriptValue(self.runtime, 123)
         }
-        return .undefined
+        return .undefined()
       },
       set: { _, _ in throw TestError() },
       getPropertyNames: { ["ok"] }
@@ -641,7 +763,7 @@ struct JavaScriptRuntimeTests {
         // Calling JS that throws surfaces an `expo.CppError` wrapping the original
         // `jsi::JSError`. Letting it propagate exercises the CppError relay path.
         _ = try throwTagged.call()
-        return .undefined
+        return .undefined()
       }
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
@@ -670,7 +792,7 @@ struct JavaScriptRuntimeTests {
     let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
-      get: { _ in .undefined },
+      get: { _ in .undefined() },
       set: { _, _ in
         _ = try throwTagged.call()
       }
@@ -752,13 +874,64 @@ struct JavaScriptRuntimeTests {
   func `host function results of primitive kinds reach JavaScript unchanged`() throws {
     runtime.global().setProperty("yes", value: runtime.createFunction("yes") { _, _ in .true() }.asValue())
     runtime.global().setProperty("no", value: runtime.createFunction("no") { _, _ in .false() }.asValue())
-    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null }.asValue())
+    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null() }.asValue())
     runtime.global().setProperty("half", value: runtime.createFunction("half") { _, _ in .number(0.5) }.asValue())
     let result = try runtime.eval("[yes() === true, no() === false, nothing() === null, half() === 0.5]").getArray()
     #expect(result[0].getBool() == true)
     #expect(result[1].getBool() == true)
     #expect(result[2].getBool() == true)
     #expect(result[3].getBool() == true)
+  }
+
+  // MARK: - Void host functions
+
+  @Test
+  func `void host function runs its closure and returns undefined`() throws {
+    let fn = runtime.createFunction("record") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+      try this.asObject(in: runtime).setProperty("seen", value: arguments[0])
+    }
+    runtime.global().setProperty("record", value: fn.asValue())
+
+    let result = try runtime.eval("var target = {}; [record.call(target, 3), target.seen]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].getInt() == 3)
+  }
+
+  @Test
+  func `throwing void host function propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "void failure" }
+    }
+
+    let fn = runtime.createFunction("failing") {
+      (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) throws -> Void in
+      throw TestError()
+    }
+    runtime.global().setProperty("failing", value: fn.asValue())
+
+    let result = try runtime.eval("try { failing(); 'no error' } catch (e) { e.message }")
+
+    #expect(result.getString().contains("void failure"))
+  }
+
+  @Test
+  func `setProperty with a void closure installs a function returning undefined`() throws {
+    let object = runtime.createObject()
+    object.setProperty("bump") {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) -> Void in
+      let target = try this.asObject(in: runtime)
+      target.setProperty("calls", value: JavaScriptValue(runtime, target.getProperty("calls").getInt() + 1))
+    }
+    object.setProperty("calls", value: JavaScriptValue(runtime, 0))
+    runtime.global().setProperty("counter", value: object.asValue())
+
+    let result = try runtime.eval("[counter.bump(), counter.bump(), counter.calls]").getArray()
+
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].isUndefined() == true)
+    #expect(result[2].getInt() == 2)
   }
 
   // MARK: - Async functions
@@ -772,8 +945,8 @@ struct JavaScriptRuntimeTests {
     }
     let result = try fn.call()
 
-    #expect(result.isObject())
-    #expect(result.is("Promise"))
+    #expect(result.isObject() == true)
+    #expect(result.is("Promise") == true)
   }
 
   @Test
@@ -831,7 +1004,7 @@ struct JavaScriptRuntimeTests {
     }
 
     await #expect(throws: Error.self) {
-      try await fn.call().getPromise().await()
+      _ = try await fn.call().getPromise().await()
     }
   }
 
@@ -849,7 +1022,7 @@ struct JavaScriptRuntimeTests {
     // matching JavaScript's async-function semantics, the returned promise rejects instead.
     let promise = try fn.call().getPromise()
     await #expect(throws: Error.self) {
-      try await promise.await()
+      _ = try await promise.await()
     }
   }
 
@@ -893,11 +1066,11 @@ struct JavaScriptRuntimeTests {
       // memory — a separate, pre-existing hazard of wrappers outliving their runtime.
       let fn = schedulerRuntime.createAsyncFunction("asyncFn") { this, arguments in
         return {
-          return .undefined
+          return .undefined()
         }
       }
       // Call with a JS object argument — the kind whose destruction after teardown crashes.
-      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue().ref())
       // The decode phase ran synchronously within the call; the async body is queued on the
       // scheduler, emulating a task that React never gets to run before the reload.
       #expect(heldSchedulerTasks.count == 1)
@@ -971,6 +1144,30 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `classes from the shared factory are independent`() throws {
+    let first = try runtime.createClass(name: "First") { this, _ in
+      this.getObject().setProperty("kind", value: "first")
+      return this
+    }
+    let second = try runtime.createClass(name: "Second") { this, _ in
+      this.getObject().setProperty("kind", value: "second")
+      return this
+    }
+    runtime.global().setProperty("First", value: first.asValue())
+    runtime.global().setProperty("Second", value: second.asValue())
+
+    let result = try runtime.eval(
+      """
+      First !== Second && First.prototype !== Second.prototype
+        && First.name === 'First' && Second.name === 'Second'
+        && new First().kind === 'first' && new Second().kind === 'second'
+        && !(new First() instanceof Second)
+      """
+    )
+    #expect(result.getBool() == true)
+  }
+
+  @Test
   func `create class throws on invalid name with special characters`() {
     #expect(throws: JavaScriptRuntime.InvalidIdentifierError.self) {
       _ = try runtime.createClass(name: "bad); evil(") { this, _ in this }
@@ -1019,6 +1216,24 @@ struct JavaScriptRuntimeTests {
     let pointee1 = runtime.withUnsafePointee { return $0 }
     let pointee2 = runtime.withUnsafePointee { return $0 }
     #expect(pointee1 == pointee2)
+  }
+
+  @Test
+  func `withUnsafePointees passes the same pointees as withUnsafePointee`() {
+    let object = runtime.createObject()
+    let value = JavaScriptValue(runtime, 42)
+    let runtimePointee = runtime.withUnsafePointee { return $0 }
+    let objectPointee = object.withUnsafePointee { return $0 }
+    let valuePointee = value.withUnsafePointee { return $0 }
+    var callCount = 0
+
+    runtime.withUnsafePointees(object: object, value: value) { runtimePointer, objectPointer, valuePointer in
+      callCount += 1
+      #expect(runtimePointer == runtimePointee)
+      #expect(objectPointer == objectPointee)
+      #expect(valuePointer == valuePointee)
+    }
+    #expect(callCount == 1)
   }
 
   @Test
@@ -1165,6 +1380,18 @@ struct JavaScriptRuntimeTests {
   }
 }
 
+/// Returns the CPU time the calling thread spent in `body`, in seconds.
+private func measureThreadCPUTime(_ body: () throws -> Void) rethrows -> Double {
+  func threadCPUTime() -> Double {
+    var time = timespec()
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time)
+    return Double(time.tv_sec) + Double(time.tv_nsec) / 1e9
+  }
+  let start = threadCPUTime()
+  try body()
+  return threadCPUTime() - start
+}
+
 /// Records whether a `runOrSchedule` block ran. A class instead of a `nonisolated(unsafe) var` captured
 /// by the block, which Swift 6.2 rejects as a data race. Safe without synchronization: the test only
 /// reads it after the block ran inline on the same thread.
@@ -1200,5 +1427,15 @@ private func onSyncOffThread<R: Sendable>(
         continuation.resume(throwing: error)
       }
     }
+  }
+}
+
+/// Whether `body` throws ``JavaScriptCallback/RuntimeLostError``.
+private func isRuntimeLostError(_ body: () throws -> Int) -> Bool {
+  do {
+    _ = try body()
+    return false
+  } catch {
+    return error is JavaScriptCallback.RuntimeLostError
   }
 }

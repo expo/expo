@@ -69,11 +69,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro waiting on...` とマニフェスト URL が表示されます。
+このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro:` とマニフェスト URL が表示されます。
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.webp"
+  src="/static/images/tutorial/eas/configure-development-build-development-server.webp"
   className="max-w-[600px]"
 />
 
@@ -121,15 +121,16 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 実行すると、このコマンドは次のことを行います。
 
-- Expo アカウントの認証情報を入力してアカウント所有者の確認を求め、新しい EAS プロジェクトを作成するか尋ねます。
+- どのアカウントをプロジェクトの所有者にするか（複数のアカウントがある場合）と、EAS プロジェクトを作成するかを尋ねます。
 
 <Terminal
   cmd={[
     '# Output after running eas init',
-    '✔ Which account should own this project? > your-username',
+    '✔ Which account should own this project? › your-username',
     '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
     '✔ Created @your-username/sticker-smash',
     '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
+    '✔ Set the project icon from icon in your app config',
   ]}
 />
 
@@ -137,11 +138,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <ContentSpotlight
   alt="New project in EAS dashboard"
-  src="/static/images/tutorial/eas/new-project.png"
+  src="/static/images/tutorial/eas/configure-development-build-new-project.webp"
 />
 
 - 一意の `projectId` を生成し、この EAS プロジェクトを開発マシン上のサンプルアプリにリンクします。
-- **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) を追加し、生成された一意の ID をその値に設定します。
+- **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) に生成された一意の ID を、[`owner`](/versions/latest/config/app/#owner) にプロジェクトを所有するアカウント名を追加します。
+- プロジェクトにまだアイコンがない場合、**app.json** の `icon` を EAS ダッシュボードのプロジェクトアイコンとしてアップロードします。
 
 <Collapsible summary={<>app.json の <CODE>projectId</CODE> とは？</>}>
 
@@ -177,7 +179,7 @@ EAS Build 用にプロジェクトをセットアップするには、次のコ�
 ```json eas.json
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 24.12.1",
     "appVersionSource": "remote"
   },
   "build": {

@@ -18,7 +18,15 @@ public struct ContentUnavailableView: ExpoSwiftUI.View {
 
   public var body: some View {
     if #available(iOS 17.0, tvOS 17.0, *) {
-      SwiftUI.ContentUnavailableView(props.title, systemImage: props.systemImage, description: Text(props.description))
+      SwiftUI.ContentUnavailableView {
+        Label(props.title, systemImage: props.systemImage)
+      } description: {
+        Text(props.description)
+      } actions: {
+        if let actions = props.children?.slot("actions") {
+          actions
+        }
+      }
     }
   }
 }

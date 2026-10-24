@@ -25,7 +25,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 アプリバージョンは 2 つの値で構成されます。
 
 - 開発者向けの値: Android では [`versionCode`](/versions/latest/config/app/#versioncode)、iOS では [`buildNumber`](/versions/latest/config/app/#buildnumber) で表されます。
-- ユーザー向けの値: **app.config.js** の [`version`](/versions/latest/config/app/#version) で表されます。
+- ユーザー向けの値: [アプリ設定](/workflow/configuration/) の [`version`](/versions/latest/config/app/#version) で表されます。
 
 Google Play ストアも Apple App Store も、それぞれのビルドを識別するために開発者向けの値を使います。たとえばアプリバージョン `1.0.0 (1)`（ユーザー向けの値と開発者向けの値の組み合わせ）でアプリをアップロードした場合、同じアプリバージョンで別のビルドをストアに提出することはできません。重複したアプリバージョン番号のビルドを提出すると、提出は失敗します。
 
@@ -44,13 +44,13 @@ Google Play ストアも Apple App Store も、それぞれのビルドを識別
 }
 ```
 
-> **Note**: [ユーザー向けのバージョン番号](/build-reference/app-versions/#user-facing-version) は EAS では扱いません。本番アプリを審査に提出する前に、各アプリストアのデベロッパーポータルで定義します。
+> **info** [ユーザー向けのバージョン番号](/build-reference/app-versions/#user-facing-version) は EAS では扱いません。代わりに、本番ビルドを作成する前に、アプリ設定の `version` プロパティを更新します。
 
 ## EAS Build による自動バージョン管理
 
 EAS Build はデフォルトで、開発者向けの値の自動化を助けてくれます。[リモートバージョンソース](/build-reference/app-versions/#remote-version-source) を利用し、新しい本番リリースを作成するたびに開発者向けの値を自動でインクリメントします。
 
-`eas init` コマンドでプロジェクトを初期化したとき、EAS CLI は **eas.json** に次のプロパティを自動的に追加しています。
+`eas build:configure` コマンドでプロジェクトを設定したとき、EAS CLI は **eas.json** に次のプロパティを自動的に追加しています。
 
 - `remote` に設定された `cli.appVersionSource`
 - `true` に設定された [`build.production.autoIncrement`](/eas/json/#autoincrement-1)

@@ -1,5 +1,47 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([`4a6ae65`](https://github.com/expo/expo/commit/4a6ae6527e2e46e2b0cbc5af1151a82e30c844d4))
+  - @expo/config@58.0.8
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.7
+
+## 58.0.6
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.6
+
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.5
+
+## 58.0.4
+
+### Patch Changes
+
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/config@58.0.4
+
+## 58.0.3
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.3
+
 ## 58.0.2
 
 ### Patch Changes

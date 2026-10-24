@@ -1,11 +1,18 @@
+import { SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION } from 'expo-modules-macros';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 import { generateTypes } from '../generateTypes';
 
+// The scanned paths are not real packages, so scan with the macros this CLI is developed against.
+jest.mock('../../scanner/resolveMacros', () => ({
+  ...jest.requireActual('../../scanner/resolveMacros'),
+  resolveMacros: () => jest.requireActual('expo-modules-macros'),
+}));
+
 const sampleScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: {
     records: [
       {
@@ -27,14 +34,17 @@ const sampleScan = {
         jsName: 'Player',
         file: '/pkg/ios/Demo.swift',
         events: [],
-        constructorParameters: [
-          {
-            label: 'options',
-            name: 'options',
-            type: { kind: 'ref', name: 'Options', typeof: 'object' },
-            optional: false,
-          },
-        ],
+        initializer: {
+          parameters: [
+            {
+              label: 'options',
+              name: 'options',
+              type: { kind: 'ref', name: 'Options', typeof: 'object' },
+              optional: false,
+            },
+          ],
+          platforms: [{ name: 'iOS' }],
+        },
         functions: [],
         properties: [],
       },
@@ -64,7 +74,7 @@ const sampleScan = {
 };
 
 const emptyScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: { records: [], sharedObjects: [], modules: [], enums: [], unions: [] },
   stats: { durationMs: 0.5, filesParsed: 0, filesScanned: 0 },
 };
@@ -216,6 +226,62 @@ describe(generateTypes, () => {
     await generateTypes({ packageDir: tmpDir, outputPath, scannerPath });
 
     expect(fs.readFileSync(outputPath, 'utf8')).not.toContain('Old');
+  });
+
+  it('keeps the doc comments written in the file it generated before', async () => {
+    const scannerPath = writeFakeScanner({ stdout: JSON.stringify(sampleScan) });
+    const outputPath = path.join(tmpDir, 'native.types.ts');
+    await generateTypes({ packageDir: tmpDir, outputPath, scannerPath });
+    const documented = fs
+      .readFileSync(outputPath, 'utf8')
+      .replace('export declare class Player', '/** Plays a video. */\nexport declare class Player')
+      .replace('  readonly status', '  /**\n   * The current status.\n   */\n  readonly status');
+    fs.writeFileSync(outputPath, documented);
+
+    const checked = await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath,
+      check: true,
+    });
+    const result = await generateTypes({ packageDir: tmpDir, outputPath, scannerPath });
+
+    expect(checked.outcome).toEqual({ kind: 'unchanged', outputPath });
+    expect(result.outcome).toEqual({ kind: 'unchanged', outputPath });
+    expect(fs.readFileSync(outputPath, 'utf8')).toBe(documented);
+  });
+
+  it('warns about the doc comments of declarations it no longer generates', async () => {
+    const outputPath = path.join(tmpDir, 'native.types.ts');
+    await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath: writeFakeScanner({ stdout: JSON.stringify(sampleScan) }),
+    });
+    fs.writeFileSync(
+      outputPath,
+      fs
+        .readFileSync(outputPath, 'utf8')
+        .replace('  readonly status', '  /** The current status. */\n  readonly status')
+    );
+    const scan = {
+      ...sampleScan,
+      exports: {
+        ...sampleScan.exports,
+        modules: [{ ...sampleScan.exports.modules[0], properties: [] }],
+      },
+    };
+
+    const result = await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath: writeFakeScanner({ stdout: JSON.stringify(scan) }),
+    });
+
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ kind: 'dropped', file: outputPath, location: 'MyModule.status' }),
+    ]);
+    expect(fs.readFileSync(outputPath, 'utf8')).not.toContain('The current status.');
   });
 
   it('refuses to overwrite a file it did not generate', async () => {

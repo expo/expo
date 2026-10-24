@@ -46,13 +46,13 @@ After responding, the build will queue up, and we can track its progress via a p
 
 <ContentSpotlight
   alt="Android development build details and progress in EAS dashboard"
-  src="/static/images/tutorial/eas/android-build-details.png"
+  src="/static/images/tutorial/eas/android-development-build-details.webp"
   className="max-w-[800px]"
 />
 
 <Collapsible summary="What information does a build details page contain?">
 
-The build details page displays the build type, profile, Expo SDK version, app version, version code, last commit hash, and the identity of the developer or account owner who initiated the build.
+The build details page displays the build type, profile, environment, Expo SDK version, app version, and version code. It also displays the fingerprint, the last commit hash, and the identity of the developer or account owner who initiated the build.
 
 In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the Android build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [Android build process](/build-reference/android-builds/).
 
@@ -76,7 +76,7 @@ Once the build finishes, the **Build artifact** section gets updated, indicating
 
 <ContentSpotlight
   alt="Build artifact gives the option to download development build for Android devices and emulators"
-  src="/static/images/tutorial/eas/android-build-artifact.png"
+  src="/static/images/tutorial/eas/android-development-build-artifact.webp"
 />
 
 This section provides the methods available for running the development build on an Android device: Expo Orbit and Install button.
@@ -105,7 +105,7 @@ The **Install** button in the **Build artifact** generates a QR code for install
 
 <ContentSpotlight
   alt="Install button generates a QR code for easy installation on Android devices and emulators"
-  src="/static/images/tutorial/eas/android-qr-code.png"
+  src="/static/images/tutorial/eas/android-development-build-qr-code.webp"
   className="max-w-[480px]"
 />
 
@@ -151,13 +151,13 @@ In the terminal, once the build finishes, EAS CLI prompts us by asking whether w
 
 <ContentSpotlight
   alt="EAS CLI automatically gives to run build on Android Emulator"
-  src="/static/images/tutorial/eas/android-emulator-cli.png"
+  src="/static/images/tutorial/eas/android-development-build-emulator-cli.webp"
   className="max-w-[600px]"
 />
 
 <Collapsible summary="Alternate: Use Expo Orbit">
 
-Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the EAS dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
+Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the EAS dashboard, click **Open with Orbit** to install the development build on the Android Emulator.
 
 </Collapsible>
 

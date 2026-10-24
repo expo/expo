@@ -381,6 +381,8 @@ on:
 
 ### `on.schedule.cron`
 
+> **info** Scheduled workflows are available on paid plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+
 Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
 
 - Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
@@ -706,10 +708,10 @@ concurrency:
 # @end #
 ```
 
-| Property             | Type     | Description                                                                                                                                             |
-| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cancel_in_progress` | `true`   | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
-| `group`              | `string` | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
+| Property             | Type                    | Description                                                                                                                                             |
+| -------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel_in_progress` | `boolean` or expression | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch. Can be a `${{ }}` expression.                  |
+| `group`              | `string`                | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
 
 ## Control flow
 
@@ -1612,7 +1614,7 @@ jobs:
       record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
-      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the version preinstalled on the image is used when found, otherwise the latest version. Set to `latest` to always install the newest version.
       android_system_image_package: string # optional. Android Emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
@@ -1644,7 +1646,7 @@ jobs:
       maestro_api_key: string # optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
-      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the version preinstalled on the image is used when found, otherwise the latest version. Set to `latest` to always install the newest version.
       maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
       device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
       device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.

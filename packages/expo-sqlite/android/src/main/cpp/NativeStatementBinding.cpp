@@ -5,6 +5,7 @@
 
 #include <android/log.h>
 #include "Exceptions.h"
+#include "SQLiteError.h"
 
 namespace jni = facebook::jni;
 
@@ -34,6 +35,8 @@ void NativeStatementBinding::registerNatives() {
       makeNativeMethod("sqlite3_step", NativeStatementBinding::sqlite3_step),
       makeNativeMethod("bindStatementParam",
                        NativeStatementBinding::bindStatementParam),
+      makeNativeMethod("getLastErrorMessage",
+                       NativeStatementBinding::getLastErrorMessage),
       makeNativeMethod("getColumnNames",
                        NativeStatementBinding::getColumnNames),
       makeNativeMethod("getColumnValues",
@@ -59,14 +62,52 @@ std::string NativeStatementBinding::sqlite3_column_name(int index) {
 }
 
 int NativeStatementBinding::sqlite3_finalize() {
+  if (!stmt) {
+    lastErrorMessage.clear();
+    return SQLITE_OK;
+  }
+  if (!db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
+  SQLiteDatabaseLock lock(db);
   int ret = ::exsqlite3_finalize(stmt);
   stmt = nullptr;
+  lastErrorMessage = ret == SQLITE_OK ? "" : sqliteErrorMessage(db, ret);
   return ret;
 }
 
-int NativeStatementBinding::sqlite3_reset() { return ::exsqlite3_reset(stmt); }
+int NativeStatementBinding::sqlite3_reset() {
+  if (!stmt) {
+    lastErrorMessage.clear();
+    return SQLITE_OK;
+  }
+  if (!db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
+  SQLiteDatabaseLock lock(db);
+  int ret = ::exsqlite3_reset(stmt);
+  lastErrorMessage = ret == SQLITE_OK ? "" : sqliteErrorMessage(db, ret);
+  return ret;
+}
 
-int NativeStatementBinding::sqlite3_step() { return ::exsqlite3_step(stmt); }
+int NativeStatementBinding::sqlite3_step() {
+  if (!stmt || !db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
+  SQLiteDatabaseLock lock(db);
+  int ret = ::exsqlite3_step(stmt);
+  lastErrorMessage = ret == SQLITE_ROW || ret == SQLITE_DONE
+                         ? ""
+                         : sqliteErrorMessage(db, ret);
+  return ret;
+}
+
+std::string NativeStatementBinding::getLastErrorMessage() {
+  return lastErrorMessage;
+}
 
 int NativeStatementBinding::bindStatementParam(
     int index, jni::alias_ref<jni::JObject> param) {

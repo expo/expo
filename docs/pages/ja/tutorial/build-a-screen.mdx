@@ -1,12 +1,14 @@
 ---
 title: 画面を構築する
-description: このチュートリアルでは、React Native の Pressable や Expo Image などのコンポーネントを使って画面を構築する方法を学びます。
+description: このチュートリアルでは、React Native の Pressable、Expo Image、Expo UI などのコンポーネントを使って画面を構築する方法を学びます。
 hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -14,8 +16,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 この章では、StickerSmash アプリの最初の画面を作成します。
 
 <ContentSpotlight
-  alt="初期レイアウト。"
-  src="/static/images/tutorial/initial-layout.webp"
+  alt="StickerSmash アプリの初期レイアウト。"
+  src="/static/images/tutorial/build-a-screen-initial-layout.webp"
   className="max-w-[300px]"
 />
 
@@ -39,20 +41,20 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <ContentSpotlight
   alt="初期レイアウトの分解。"
-  src="/static/images/tutorial/breakdown-of-layout.webp"
+  src="/static/images/tutorial/build-a-screen-breakdown-of-layout.webp"
   className="max-w-[300px]"
 />
 
 主要な要素は 2 つです。
 
-- 画面の中央に大きな画像が表示されています
-- 画面の下半分に 2 つのボタンがあります
+- 画面の上半分にある大きな画像
+- 画面の下半分にある 2 つのボタン
 
-1 つ目のボタンは複数のコンポーネントで構成されています。親要素には黄色のボーダーがあり、その内側に行レイアウトでアイコンとテキストコンポーネントが配置されています。
+1 つ目のボタンは複数のコンポーネントで構成されています。背景は黄色です。その内側に、行レイアウトでアイコンとテキストコンポーネントが配置されています。
 
 <ContentSpotlight
-  alt="行レイアウトのボタンコンポーネントの分解。"
-  src="/static/images/tutorial/breakdown-of-buttons.webp"
+  alt="1 つ目のボタンの分解：黄色の背景の上にアイコンとテキストコンポーネントがあります。"
+  src="/static/images/tutorial/build-a-screen-breakdown-of-buttons.webp"
   className="max-w-[400px]"
 />
 
@@ -78,11 +80,14 @@ Image コンポーネントは画像のソースを値として受け取りま�
 
 1. `expo-image` ライブラリから `Image` をインポートします。
 2. **assets/images/background-image.png** を `Image` コンポーネントの `source` プロパティとして使用するために、`PlaceholderImage` 変数を作成します。
+3. 外側の `View` を `react-native-safe-area-context` の `SafeAreaView` に置き換えます。ネイティブタブはヘッダーを追加しないため、`SafeAreaView` を使うと Android と iOS で画面のコンテンツがステータスバーの下に配置されます。デフォルトテンプレートにはこのライブラリが含まれています。
+4. [`Platform.select()`](https://reactnative.dev/docs/platform#select) を使って、画像コンテナに `paddingTop` を追加します。web ではタブリストがページの上部に配置されるため、画像にはより多くのスペースが必要です。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx|collapseHeight=380
-import { View, StyleSheet } from 'react-native';
+import { Platform, View, StyleSheet } from 'react-native';
 /* @tutinfo `Image` コンポーネントをインポートします。 */ import { Image } from 'expo-image'; /* @end */
+/* @tutinfo `SafeAreaView` コンポーネントをインポートします。外側の `View` をこのコンポーネントに置き換えます。 */ import { SafeAreaView } from 'react-native-safe-area-context'; /* @end */
 
 /* @tutinfo "assets/images/" ディレクトリから画像をインポートします。この画像は静的リソースであるため、`require` を使用して参照する必要があります。 */
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -90,13 +95,13 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       /* @tutinfo `Image` コンポーネントをコンテナの内部にラップします。また、プレースホルダー画像を表示するため、画像コンポーネントを追加します。 */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
       </View>
       /* @end */
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -108,9 +113,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     /* @end */
   },
-  /* @tutinfo 画像コンテナと画像のスタイルを追加します。 */
+  /* @tutinfo 画像コンテナと画像のスタイルを追加します。`Platform.select()` は Android と iOS では `20` を、web では `96` を返します。 */
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   image: {
     width: 320,
@@ -134,11 +140,11 @@ const styles = StyleSheet.create({
 
 {/* prettier-ignore */}
 ```tsx src/components/image-viewer.tsx|collapseHeight=280
-import { ImageSourcePropType, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { StyleSheet } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
-  imgSource: ImageSourcePropType;
+  /* @tutinfo `expo-image` の `ImageSource` 型は、`source` プロパティが受け付ける値を表します。 */imgSource: ImageSource;/* @end */
 };
 
 export default function ImageViewer({ imgSource }: Props) {
@@ -160,7 +166,8 @@ const styles = StyleSheet.create({
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx|collapseHeight=320
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /* @tutinfo */import ImageViewer from '@/components/image-viewer'; /* @end */
 
@@ -168,13 +175,13 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         /* @tutinfo `Image` コンポーネントを `ImageViewer` に置き換えます。 */
         <ImageViewer imgSource={PlaceholderImage} />
         /* @end */
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -186,6 +193,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
 });
 ```
@@ -212,12 +220,13 @@ import { StyleSheet, View, Pressable, Text } from 'react-native';
 
 type Props = {
   label: string;
+  /* @tutinfo ボタンをレンダリングする画面が、ボタンが押されるたびに実行する関数を渡します。 */onPress?: () => void;/* @end */
 };
 
-export default function Button({ label }: Props) {
+export default function Button({ label, onPress }: Props) {
   return (
     <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+      <Pressable style={styles.button} onPress={onPress}>
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </View>
@@ -228,18 +237,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: 320,
     height: 68,
-    marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 3,
   },
   button: {
-    borderRadius: 10,
-    width: '100%',
-    height: '100%',
+    height: 48,
+    paddingHorizontal: 20,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    gap: 8,
   },
   buttonLabel: {
     color: '#fff',
@@ -248,30 +256,31 @@ const styles = StyleSheet.create({
 });
 ```
 
-画面上のいずれかのボタンをタップすると、アプリはアラートを表示します。これは、`<Pressable>` が `onPress` プロパティで `alert()` を呼び出しているためです。このコンポーネントを **src/app/(tabs)/index.tsx** ファイルにインポートし、これらのボタンを囲む `<View>` のスタイルを追加しましょう。
+`onPress` プロパティを使うと、ユーザーがボタンを押したときの動作を画面側で決められます。このコンポーネントを **src/app/(tabs)/index.tsx** ファイルにインポートしましょう。各ボタンに、`alert()` を呼び出す `onPress` 関数を渡します。次に、ボタンを囲む `<View>` のスタイルを追加します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /* @tutinfo */import Button from '@/components/button'; /* @end */
 import ImageViewer from '@/components/image-viewer';
 
-const PlaceholderImage = require("@/assets/images/background-image.png");
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       /* @tutinfo 再利用可能な `Button` コンポーネントを使って 2 つのボタンを作成し、`View` コンポーネント内にカプセル化します。 */
       <View style={styles.footerContainer}>
-        <Button label="Choose a photo" />
-        <Button label="Use this photo" />
+        <Button label="Choose a photo" onPress={() => alert('You pressed a button.')} />
+        <Button label="Use this photo" onPress={() => alert('You pressed a button.')} />
       </View>
       /* @end */
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -283,6 +292,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   /* @tutinfo 以下のスタイルを追加します。 */
   footerContainer: {
@@ -293,11 +303,11 @@ const styles = StyleSheet.create({
 });
 ```
 
-Android、iOS、web でアプリを確認してみましょう。
+画面上のいずれかのボタンをタップすると、アプリはアラートを表示します。Android、iOS、web でアプリを確認してみましょう。
 
 <ContentSpotlight
-  alt="初期レイアウト。"
-  src="/static/images/tutorial/buttons-created.webp"
+  alt="Android、iOS、web での画像と 2 つのボタン。"
+  src="/static/images/tutorial/build-a-screen-buttons-created.webp"
   className="max-w-[720px]"
 />
 
@@ -309,35 +319,34 @@ Android、iOS、web でアプリを確認してみましょう。
 
 ## 再利用可能なボタンコンポーネントを強化する
 
-「Choose a photo」ボタンには「Use this photo」ボタンとは異なるスタイルが必要なので、`primary` テーマを適用できるよう新しい `theme` プロパティを追加します。このボタンにはラベルの前にアイコンも表示します。アイコンには `@expo/vector-icons` ライブラリのものを使用します。
+「Choose a photo」ボタンには「Use this photo」ボタンとは異なるスタイルが必要です。`primary` テーマを適用するために、`theme` プロパティを追加しましょう。このボタンにはラベルの前にアイコンも表示します。アイコンの表示には [`expo-symbols`](/versions/latest/sdk/symbols/) の `SymbolView` コンポーネントを使用します。Android と web では、`SymbolView` は [Material Symbols](https://fonts.google.com/icons) のアイコンを表示します。iOS では、[SF Symbols](https://developer.apple.com/sf-symbols/) のアイコンを表示します。デフォルトテンプレートにはすでに `expo-symbols` が含まれています。
 
-ボタンにアイコンを読み込んで表示するために、ライブラリから `FontAwesome` を使いましょう。**src/components/button.tsx** を修正して、次のコードスニペットを追加します。
+**src/components/button.tsx** を修正して、次のコードスニペットを追加します。
 
 {/* prettier-ignore */}
 ```tsx src/components/button.tsx
 import { StyleSheet, View, Pressable, Text } from 'react-native';
-/* @tutinfo FontAwesome をインポートします。 */import FontAwesome from '@expo/vector-icons/FontAwesome';/* @end */
+/* @tutinfo SymbolView をインポートします。 */import { SymbolView } from 'expo-symbols';/* @end */
 
 type Props = {
   label: string;
   /* @tutinfo theme プロパティを追加します。 */theme?: 'primary';/* @end */
+  onPress?: () => void;
 };
 
-export default function Button({ label, /* @tutinfo ボタンのバリアントを判定するため、`theme` プロパティを使います。 */theme/* @end */ }: Props) {
+export default function Button({ label, /* @tutinfo ボタンのバリアントを判定するため、`theme` プロパティを使います。 */theme/* @end */, onPress }: Props) {
   /* @tutinfo primary テーマのボタンを条件付きでレンダリングします。 */
   if (theme === 'primary') {
   /* @end */
   /* @tutinfo */
     return (
-      <View
-        style={[
-          styles.buttonContainer,
-          { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
-        ]}>
-        <Pressable
-          style={[styles.button, { backgroundColor: '#fff' }]}
-          onPress={() => alert('You pressed a button.')}>
-          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+      <View style={styles.buttonContainer}>
+        <Pressable style={[styles.button, styles.primaryButton]} onPress={onPress}>
+          <SymbolView
+            name={{ ios: 'photo', android: 'image', web: 'image' }}
+            size={18}
+            tintColor="#25292e"
+          />
           <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
         </Pressable>
       </View>
@@ -349,7 +358,7 @@ export default function Button({ label, /* @tutinfo ボタンのバリアント�
 
   return (
     <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+      <Pressable style={styles.button} onPress={onPress}>
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </View>
@@ -360,22 +369,21 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: 320,
     height: 68,
-    marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 3,
   },
   button: {
-    borderRadius: 10,
-    width: '100%',
-    height: '100%',
+    height: 48,
+    paddingHorizontal: 20,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+    gap: 8,
   },
-  /* @tutinfo primary テーマのボタンを条件付きでレンダリングします。 */
-  buttonIcon: {
-    paddingRight: 8,
+  /* @tutinfo primary テーマのスタイルを追加します。 */
+  primaryButton: {
+    backgroundColor: '#ffd33d',
   },
   /* @end */
   buttonLabel: {
@@ -387,15 +395,16 @@ const styles = StyleSheet.create({
 
 上記のコードが何をしているのか確認しましょう。
 
-- primary テーマのボタンは **インラインスタイル** を使用し、`style` プロパティに直接渡したオブジェクトで `StyleSheet.create()` で定義したスタイルを上書きします。
-- primary テーマの `<Pressable>` コンポーネントは、`backgroundColor` プロパティに値 `#fff` を指定して、ボタンの背景を白に設定しています。このプロパティを `styles.button` に追加すると、primary テーマと未指定のテーマの両方に背景色が適用されてしまいます。
-- インラインスタイルは JavaScript を使用し、特定の値についてデフォルトのスタイルを上書きします。
+- primary テーマのボタンは、`<Pressable>` の `style` プロパティに配列を渡します。React Native はスタイルを順番に適用するため、`styles.primaryButton` の `backgroundColor` は primary ボタンにのみ適用されます。
+- primary ボタンのラベルは **インラインスタイル** を使用します。インラインスタイルとは、`style` プロパティに直接渡すオブジェクトです。これはラベルの色を `#25292e` に変更し、`styles.buttonLabel` の `color` を上書きします。
+- `SymbolView` の `name` プロパティは、プラットフォームごとのアイコン名を受け取ります。Android と web では `image`、iOS では `photo` です。
 
 次に、**src/app/(tabs)/index.tsx** ファイルを修正して、1 つ目のボタンに `theme="primary"` プロパティを設定します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -404,17 +413,21 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
         /* @tutinfo 最初のボタンに `"primary"` テーマを追加します。 */
-        <Button theme="primary" label="Choose a photo" />
+        <Button
+          theme="primary"
+          label="Choose a photo"
+          onPress={() => alert('You pressed a button.')}
+        />
         /* @end */
-        <Button label="Use this photo" />
+        <Button label="Use this photo" onPress={() => alert('You pressed a button.')} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -426,6 +439,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
@@ -436,7 +450,187 @@ const styles = StyleSheet.create({
 
 Android、iOS、web でアプリを確認してみましょう。
 
-<ContentSpotlight file="tutorial/04-complete-layout.mp4" />
+<ContentSpotlight
+  alt="Android、iOS、web での、アイコンと黄色の背景がある primary ボタン。"
+  src="/static/images/tutorial/build-a-screen-primary-button.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="6">
+
+## Expo UI でネイティブボタンを使用する
+
+現在のボタンは React Native のコンポーネントを使用しているため、どのプラットフォームでも同じ見た目になります。[Expo UI](/versions/latest/sdk/ui/) はネイティブコンポーネントを提供します。Android では Jetpack Compose のビュー、iOS では SwiftUI のビューです。デフォルトテンプレートにはすでに Expo UI（`@expo/ui`）が含まれています。Expo UI は Expo Go で動作します。
+
+Android と iOS のボタンをネイティブボタンに置き換え、web では React Native のボタンをそのまま使いましょう。そのために、プラットフォーム固有の拡張子を使用します。**button.tsx** と同じ場所に **button.android.tsx** と **button.ios.tsx** があると、`@/components/button` をインポートしたときに、Metro は現在のプラットフォーム用のファイルを使用します。web では引き続き **button.tsx** が使われます。詳細については [プラットフォーム固有の拡張子](/router/advanced/platform-specific-modules/#platform-specific-extensions) を参照してください。
+
+Android のボタンには、[`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols) のアイコンを表示します。これは Jetpack Compose 向けの Material Symbols アイコンのセットです。インストールするには、ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して開発サーバーを停止してから、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/material-symbols'],
+    yarn: ['$ yarn expo install @expo/material-symbols'],
+    pnpm: ['$ pnpm expo install @expo/material-symbols'],
+    bun: ['$ bun expo install @expo/material-symbols'],
+  }}
+/>
+
+2 つの新しいファイルを作成するまで、開発サーバーは停止したままにしておきます。サーバーの実行中にファイルを追加すると、Metro が **button.tsx** を使い続けることがあります。その場合は、サーバーを再起動してください。
+
+**src/components** ディレクトリ内に **button.android.tsx** ファイルを作成します。
+
+{/* prettier-ignore */}
+```tsx src/components/button.android.tsx
+import { StyleSheet, View } from 'react-native';
+/* @tutinfo Expo UI から Jetpack Compose のコンポーネントをインポートします。 */import { Host, Button as ComposeButton, TextButton, Icon, Row, Text } from '@expo/ui/jetpack-compose';/* @end */
+
+type Props = {
+  label: string;
+  theme?: 'primary';
+  onPress?: () => void;
+};
+
+export default function Button({ label, theme, onPress }: Props) {
+  if (theme === 'primary') {
+    return (
+      <View style={styles.buttonContainer}>
+        /* @tutinfo `colors` プロパティは、ボタンのコンテナとコンテンツの色を設定します。`Row` はアイコンとラベルを横に並べ、その間に 8 dp のスペースを空けます。 */
+        <Host matchContents>
+          <ComposeButton
+            onClick={onPress}
+            colors={{ containerColor: '#ffd33d', contentColor: '#25292e' }}>
+            <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 8 }}>
+              <Icon source={require('@expo/material-symbols/image.xml')} size={18} tint="#25292e" />
+              <Text color="#25292e">{label}</Text>
+            </Row>
+          </ComposeButton>
+        </Host>
+        /* @end */
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.buttonContainer}>
+      <Host matchContents>
+        /* @tutinfo `TextButton` は背景のないボタンを表示します。 */
+        <TextButton onClick={onPress} colors={{ contentColor: '#fff' }}>
+          <Text color="#fff">{label}</Text>
+        </TextButton>
+        /* @end */
+      </Host>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+<Collapsible summary={<><CODE>Host</CODE> とは何ですか？</>}>
+
+`Host` は React Native と Expo UI をつなぐブリッジです。Android の Jetpack Compose コンポーネントと iOS の SwiftUI コンポーネントは、`Host` の内側でのみレンダリングされます。`matchContents` プロパティは、`Host` のサイズをコンテンツに合わせます。ここでのコンテンツはボタンです。詳細については、[Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/host/) と [SwiftUI](/versions/latest/sdk/ui/swift-ui/host/) の `Host` を参照してください。
+
+</Collapsible>
+
+次に、**src/components** ディレクトリ内に **button.ios.tsx** ファイルを作成します。
+
+{/* prettier-ignore */}
+```tsx src/components/button.ios.tsx
+import { StyleSheet, View } from 'react-native';
+/* @tutinfo Expo UI から SwiftUI のコンポーネントとモディファイアをインポートします。 */
+import { Host, Button as SwiftUIButton } from '@expo/ui/swift-ui';
+import { buttonStyle, controlSize, foregroundStyle, tint } from '@expo/ui/swift-ui/modifiers';
+/* @end */
+
+type Props = {
+  label: string;
+  theme?: 'primary';
+  onPress?: () => void;
+};
+
+export default function Button({ label, theme, onPress }: Props) {
+  if (theme === 'primary') {
+    return (
+      <View style={styles.buttonContainer}>
+        <Host matchContents>
+          /* @tutinfo `systemImage` はラベルの前に SF Symbols のアイコンを表示します。モディファイアはボタンのスタイルを変更します。`tint` はボタンの色を設定し、`foregroundStyle` はアイコンとラベルの色を設定します。 */
+          <SwiftUIButton
+            label={label}
+            systemImage="photo"
+            onPress={onPress}
+            modifiers={[
+              buttonStyle('borderedProminent'),
+              controlSize('large'),
+              tint('#ffd33d'),
+              foregroundStyle('#25292e'),
+            ]}
+          />
+          /* @end */
+        </Host>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.buttonContainer}>
+      <Host matchContents>
+        /* @tutinfo `borderless` は背景のないボタンを表示します。 */
+        <SwiftUIButton
+          label={label}
+          onPress={onPress}
+          modifiers={[buttonStyle('borderless'), controlSize('large'), foregroundStyle('#fff')]}
+        />
+        /* @end */
+      </Host>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+<Collapsible summary="モディファイアとは何ですか？">
+
+モディファイアは、スタイル、サイズ、色など、Expo UI コンポーネントの見た目と動作をカスタマイズします。Jetpack Compose では `@expo/ui/jetpack-compose/modifiers` から、SwiftUI では `@expo/ui/swift-ui/modifiers` からインポートします。次に、**button.ios.tsx** のように、コンポーネントの `modifiers` プロパティに配列として渡します。詳細については、[Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/modifiers/) と [SwiftUI](/versions/latest/sdk/ui/swift-ui/modifiers/) のモディファイアを参照してください。
+
+</Collapsible>
+
+どちらのファイルも **button.tsx** と同じプロパティを持つため、**src/app/(tabs)/index.tsx** を変更する必要はありません。**src/components** ディレクトリには、3 つのバージョンのボタンが含まれるようになりました。
+
+<FileTree
+  files={[
+    ['src/components/button.android.tsx', 'Android で使用'],
+    ['src/components/button.ios.tsx', 'iOS で使用'],
+    ['src/components/button.tsx', 'web で使用'],
+    ['src/components/image-viewer.tsx'],
+  ]}
+/>
+
+<Collapsible summary={<>なぜ <CODE>button.tsx</CODE> を残すのですか？</>}>
+
+**button.web.tsx** ファイルがないため、web では **button.tsx** が使われます。また、TypeScript は `@/components/button` の型を **button.tsx** から読み取ります。そのため、3 つのファイルはすべて同じプロパティを受け付ける必要があります。
+
+</Collapsible>
+
+`npx expo start` を実行して、開発サーバーを再び起動します。Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight file="tutorial/build-a-screen-complete-layout.mp4" />
 
 </Step>
 

@@ -1,5 +1,92 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Updated dependencies. ([#51934](https://github.com/expo/expo/pull/51934), [#51118](https://github.com/expo/expo/pull/51118), [#51119](https://github.com/expo/expo/pull/51119), [#52047](https://github.com/expo/expo/pull/52047), [#51117](https://github.com/expo/expo/pull/51117), [#51120](https://github.com/expo/expo/pull/51120), [#52010](https://github.com/expo/expo/pull/52010))
+  - @expo/ui@58.0.23
+
+## 58.0.22
+
+### Patch Changes
+
+- Updated dependencies. ([#51896](https://github.com/expo/expo/pull/51896), [#51988](https://github.com/expo/expo/pull/51988), [#51914](https://github.com/expo/expo/pull/51914), [#51954](https://github.com/expo/expo/pull/51954), [#51650](https://github.com/expo/expo/pull/51650), [#51958](https://github.com/expo/expo/pull/51958), [#51888](https://github.com/expo/expo/pull/51888), [#51971](https://github.com/expo/expo/pull/51971), [#50024](https://github.com/expo/expo/pull/50024), [#51906](https://github.com/expo/expo/pull/51906), [#51899](https://github.com/expo/expo/pull/51899), [#51904](https://github.com/expo/expo/pull/51904), [#51651](https://github.com/expo/expo/pull/51651), [#51698](https://github.com/expo/expo/pull/51698), [#51889](https://github.com/expo/expo/pull/51889), [#51799](https://github.com/expo/expo/pull/51799), [#51867](https://github.com/expo/expo/pull/51867))
+  - @expo/ui@58.0.22
+
+## 58.0.21
+
+### Patch Changes
+
+- Updated dependencies. ([#51704](https://github.com/expo/expo/pull/51704), [#51775](https://github.com/expo/expo/pull/51775))
+  - @expo/ui@58.0.21
+
+## 58.0.20
+
+### Patch Changes
+
+- Fix Android apps crashing at launch with `constructor cannot be null` when they use expo-widgets. The `CustomNotification` class now has a constructor that throws, because instances only come from `CustomNotificationFactory`. ([#51655](https://github.com/expo/expo/pull/51655) by [@voida6](https://github.com/voida6))
+- Fix the Android build failing with `Unresolved reference 'jakex7'`. Custom notifications now import the `io.github.expo.peek` packages that the `peek-emittables` dependency provides. ([#51654](https://github.com/expo/expo/pull/51654) by [@voida6](https://github.com/voida6))
+- [Android] Fix the layout registry script exiting without output when the package path contains a symlink, for example in a pnpm install. ([#51641](https://github.com/expo/expo/pull/51641) by [@juliusmarminge](https://github.com/juliusmarminge))
+- Updated dependencies. ([#51617](https://github.com/expo/expo/pull/51617))
+  - @expo/ui@58.0.20
+
+## 58.0.19
+
+### Patch Changes
+
+- Updated dependencies. ([#51632](https://github.com/expo/expo/pull/51632), [#51636](https://github.com/expo/expo/pull/51636))
+  - @expo/ui@58.0.19
+
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies. ([#51459](https://github.com/expo/expo/pull/51459), [#51563](https://github.com/expo/expo/pull/51563), [#51606](https://github.com/expo/expo/pull/51606))
+  - @expo/ui@58.0.18
+
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Add custom notifications. ([#51461](https://github.com/expo/expo/pull/51461) by [@jakex7](https://github.com/jakex7))
+- [iOS] Rebuild the widgets JS bundle on every Xcode build so JS changes are picked up without a clean build. ([#50200](https://github.com/expo/expo/pull/50200) by [@jakex7](https://github.com/jakex7))
+- Updated dependencies. ([#51480](https://github.com/expo/expo/pull/51480), [#51426](https://github.com/expo/expo/pull/51426))
+  - @expo/ui@58.0.17
+
+## 58.0.16
+
+### Patch Changes
+
+- [Android] Fix `generateExpoWidgetsLayoutRegistry` failing on Windows with `RangeError: Maximum call stack size exceeded` when a widget sets `initialLayout`. Absolute Windows paths (`D:\...`) are now resolved as files instead of being stubbed as empty modules. ([#51028](https://github.com/expo/expo/pull/51028) by [@Cedric921](https://github.com/Cedric921))
+- [Android] Fix minified release builds crashing on launch with `Failed to create an instance of class androidx.work.impl.WorkDatabase.canonicalName`. R8 stripped the no-arg constructor of WorkManager's Room database, which WorkManager creates by reflection; `expo-widgets` now ships consumer keep rules for it and for WorkManager's input mergers. ([#51349](https://github.com/expo/expo/pull/51349) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Show an empty widget, instead of an error, before the app has been launched. The widget layout is stored when the app first runs `createWidget()`, so a freshly installed or updated app that hasn't been opened yet has no layout. Widgets in this state, including previews in the widget gallery, rendered the "No layout found" red box. Because that view has no container background, iOS 17+ replaced it with the system's "Please adopt containerBackground API" placeholder. They now render an empty view with the system's tertiary fill until the app runs. ([#51350](https://github.com/expo/expo/pull/51350) by [@jsg2021](https://github.com/jsg2021))
+- [iOS] Fix widget layout errors being hidden behind the system's "Please adopt containerBackground API" placeholder on iOS 17+. The red box shown when a widget's layout fails to evaluate now declares a container background, so its error message is visible. ([#51350](https://github.com/expo/expo/pull/51350) by [@jsg2021](https://github.com/jsg2021))
+- [Android] Fix a release build failing `checkReleaseDuplicateClasses` when another dependency brings WorkManager 2.8 or newer, by pinning `work-runtime-ktx` forward from the 2.7.1 that Glance requests. ([#50010](https://github.com/expo/expo/pull/50010) by [@LizunovSergey](https://github.com/LizunovSergey))
+- Updated dependencies. ([#51368](https://github.com/expo/expo/pull/51368), [#51319](https://github.com/expo/expo/pull/51319), [#51237](https://github.com/expo/expo/pull/51237), [#50715](https://github.com/expo/expo/pull/50715), [#50727](https://github.com/expo/expo/pull/50727), [#51412](https://github.com/expo/expo/pull/51412), [#51322](https://github.com/expo/expo/pull/51322), [#51351](https://github.com/expo/expo/pull/51351))
+  - @expo/ui@58.0.16
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#51283](https://github.com/expo/expo/pull/51283), [#51274](https://github.com/expo/expo/pull/51274), [#51163](https://github.com/expo/expo/pull/51163), [#51196](https://github.com/expo/expo/pull/51196), [#50369](https://github.com/expo/expo/pull/50369))
+  - @expo/ui@58.0.15
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#50941](https://github.com/expo/expo/pull/50941), [#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/ui@58.0.14
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#50893](https://github.com/expo/expo/pull/50893), [#51116](https://github.com/expo/expo/pull/51116), [#51007](https://github.com/expo/expo/pull/51007), [#50910](https://github.com/expo/expo/pull/50910), [#50909](https://github.com/expo/expo/pull/50909), [#51108](https://github.com/expo/expo/pull/51108))
+  - @expo/ui@58.0.13
+
 ## 58.0.12
 
 ### Patch Changes
@@ -125,6 +212,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
+- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.7 - 2026-07-29
 
@@ -175,7 +263,6 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
-- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.16 - 2026-05-29
 

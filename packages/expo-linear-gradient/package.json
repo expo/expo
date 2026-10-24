@@ -34,13 +34,13 @@
     "prepack": "expo-module prepack"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

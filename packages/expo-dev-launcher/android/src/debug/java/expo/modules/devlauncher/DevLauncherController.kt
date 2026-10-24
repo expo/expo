@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
+import expo.modules.devlauncher.helpers.DevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasEnabledFlag
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
@@ -36,6 +37,7 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHand
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherEmbeddedAppLoader
 import expo.modules.devlauncher.launcher.loaders.createAppLoader
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
@@ -334,6 +336,8 @@ class DevLauncherController private constructor(
             pendingIntentRegistry.intent = Intent(intent).setData(launch.strippedUrl)
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
+            val appUrl = DevLauncherUrl(uri).url
+            DevLauncherRemoteLogManager.reportError(httpClient, appUrl, "Failed to load app from $appUrl.", e)
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
           }
         }

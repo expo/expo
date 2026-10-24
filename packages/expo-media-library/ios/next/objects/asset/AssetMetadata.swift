@@ -10,6 +10,7 @@ struct AssetMetadata: Record {
   @Field var mediaType: MediaTypeNext = .UNKNOWN
   @Field var modificationTime: Int?
   @Field var isFavorite: Bool
+  @Field var mediaSubtypes: [MediaSubtypeNext] = []
 
   init () {}
 
@@ -22,7 +23,8 @@ struct AssetMetadata: Record {
     width: Int?,
     mediaType: MediaTypeNext,
     modificationTime: Int? = nil,
-    isFavorite: Bool
+    isFavorite: Bool,
+    mediaSubtypes: [MediaSubtypeNext]
   ) {
     self.id = id
     self.creationTime = creationTime
@@ -33,5 +35,6 @@ struct AssetMetadata: Record {
     self.mediaType = mediaType
     self.modificationTime = modificationTime
     self.isFavorite = isFavorite
+    self.mediaSubtypes = mediaSubtypes
   }
 }

@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- On Android, a failed app load and a native error in the running app now appear in the terminal that runs `npx expo start`, with the `Android` tag. Before, these errors were visible only on the device. Crash reports sent to the terminal now also have the `Android` tag. ([#51670](https://github.com/expo/expo/pull/51670) by [@alanjhughes](https://github.com/alanjhughes))
+- On iOS, a failed app load now appears in the terminal that runs `npx expo start`, with the `iOS` tag. Before, the error was visible only on the device. Crash reports sent to the terminal now also have the `iOS` tag. ([#51669](https://github.com/expo/expo/pull/51669) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Remove the unused date formatter in `getAppExpirationDate`, which built a string nothing read and triggered an `-Wunused-variable` warning. ([#51360](https://github.com/expo/expo/pull/51360) by [@yasserstudio](https://github.com/yasserstudio))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Removed a reflective write to an `AppearanceModule` field that no longer exists, which logged a warning every time an app was loaded. ([#51131](https://github.com/expo/expo/pull/51131) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#51130](https://github.com/expo/expo/pull/51130))
+  - expo-dev-menu@58.0.11
+
 ## 58.0.11
 
 ### Patch Changes

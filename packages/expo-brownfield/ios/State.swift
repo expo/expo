@@ -89,7 +89,7 @@ public final class BrownfieldStateInternal {
       module = expoModule
     }
 
-    module?.notifyKeyRecreated(key)
+    module?.onKeyRecreated(["key": key])
   }
 
   public func setExpoModule(_ expoModule: ExpoBrownfieldStateModule) {
