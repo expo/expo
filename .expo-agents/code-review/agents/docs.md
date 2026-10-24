@@ -81,9 +81,10 @@ finding that turns out to describe the code correctly is worse than silence.
 ## When to ask the docs maintainer for a review
 
 Set `humanReview` when the change needs a decision that only the docs maintainer can make.
-`.github/codemention.yml` already notifies the maintainer about every change under `docs/`,
-so ask only for one of these reasons:
+Ask only for one of these reasons:
 
+- New content under `docs/pages/`: a new section, a new example, or a new guide.
+- A change to how a page describes behavior, or a guide that changes its structure.
 - A user-visible change in a package (a new or changed public export, prop, config option or
   CLI flag) that has no documentation in this PR, or whose JSDoc is the only documentation.
   The API reference pages are generated from that JSDoc.
@@ -98,7 +99,6 @@ a `humanReview` are separate: you can set one without the other.
 <!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
      per-package directory name, a root file the text does not mean, a submodule
      path the review checkout lacks) is listed as ignored instead. -->
-<!-- @ref .github/codemention.yml -->
 <!-- @ref docs/.oxlintrc.json -->
 <!-- @ref docs/constants/navigation.js -->
 <!-- @ref docs/eslint.config.mjs -->
