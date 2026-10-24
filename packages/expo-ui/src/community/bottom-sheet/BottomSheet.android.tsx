@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Host } from '../../jetpack-compose/Host';
 import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
@@ -66,7 +66,6 @@ export function BottomSheet(props: BottomSheetProps) {
     backgroundStyle,
     children,
   } = props;
-  const { width } = useWindowDimensions();
 
   const hasMultipleSnapPoints = snapPointsProp != null && snapPointsProp.length > 1;
   const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
@@ -186,7 +185,7 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }} pointerEvents="none">
+        <Host presentsInWindow style={{ position: 'absolute' }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}
@@ -199,12 +198,11 @@ export function BottomSheet(props: BottomSheetProps) {
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
-            <RNHostView matchContents={fitToContents}>
-              {/* With matchContents, RNHostView lays the hosted view out at its own size, so `width` gives it
-                  the sheet width while its height stays content-sized. Otherwise flexGrow:1 + height:0
-                  (flex-basis 0) fills RNHostView's measured height without inheriting the scrollable
-                  child's content height, which would block scrolling to the end. */}
-              <View style={fitToContents ? { width } : { flexGrow: 1, height: 0 }}>
+            {/* Fitting to contents takes the width from the sheet and the height from the content.
+                Otherwise flexGrow:1 + height:0 (flex-basis 0) fills RNHostView's measured height without
+                inheriting the scrollable child's content height, which would block scrolling to the end. */}
+            <RNHostView matchContents={fitToContents ? { vertical: true } : false}>
+              <View style={fitToContents ? undefined : { flexGrow: 1, height: 0 }}>
                 <SheetScrollContextReset>{children}</SheetScrollContextReset>
               </View>
             </RNHostView>

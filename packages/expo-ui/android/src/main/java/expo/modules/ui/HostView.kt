@@ -117,7 +117,7 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 }
 
 @SuppressLint("ViewConstructor")
-internal class HostView(context: Context, appContext: AppContext) :
+internal open class HostView(context: Context, appContext: AppContext) :
   ExpoComposeView<HostProps>(context, appContext, withHostingView = true) {
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
@@ -148,8 +148,24 @@ internal class HostView(context: Context, appContext: AppContext) :
     }
   }
 
+  // False when the children render somewhere else, like a presentation root.
+  protected open val rendersChildren: Boolean
+    get() = true
+
   @Composable
   override fun ComposableScope.Content() {
+    if (!rendersChildren) {
+      return
+    }
+    HostTheme {
+      MaybeMatchContentsLayout {
+        Children(this@Content)
+      }
+    }
+  }
+
+  @Composable
+  internal fun HostTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val isDark = when (props.colorScheme.value) {
       ExpoColorScheme.DARK -> true
@@ -173,11 +189,7 @@ internal class HostView(context: Context, appContext: AppContext) :
       LocalLayoutDirection provides layoutDirection,
       LocalContentColor provides colorScheme.onSurface
     ) {
-      MaterialExpressiveTheme(colorScheme = colorScheme) {
-        MaybeMatchContentsLayout {
-          Children(this@Content)
-        }
-      }
+      MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
     }
   }
 
