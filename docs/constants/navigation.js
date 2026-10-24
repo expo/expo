@@ -766,6 +766,7 @@ const preview = [
             makePage('preview/simulators/how-to/start-a-session.mdx'),
             makePage('preview/simulators/how-to/install-your-app.mdx'),
             makePage('preview/simulators/how-to/drive-the-device.mdx'),
+            makePage('preview/simulators/how-to/control-with-eas-cli.mdx'),
             makePage('preview/simulators/how-to/iterate-on-your-code.mdx'),
             makePage('preview/simulators/how-to/capture-evidence.mdx'),
             makePage('preview/simulators/how-to/organize-sessions.mdx'),
