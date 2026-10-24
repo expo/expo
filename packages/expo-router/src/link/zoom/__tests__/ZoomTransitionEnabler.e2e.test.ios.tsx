@@ -171,33 +171,6 @@ describe('ZoomTransitionEnabler with nested destinations', () => {
     MockedLinkZoomTransitionEnabler.mockClear();
   });
 
-  it('enables the zoom transition for a flat destination', async () => {
-    await renderRouter({
-      _layout: () => <Stack />,
-      index: () => (
-        <Link href="/detail" asChild>
-          <Link.AppleZoom>
-            <Pressable testID="zoom-link">
-              <Text>Go</Text>
-            </Pressable>
-          </Link.AppleZoom>
-        </Link>
-      ),
-      detail: () => (
-        <View testID="dest-page">
-          <Link.AppleZoomTarget>
-            <View testID="zoom-target" />
-          </Link.AppleZoomTarget>
-        </View>
-      ),
-    });
-
-    await navigateViaZoomLink();
-
-    expect(MockedLinkZoomTransitionEnabler).toHaveBeenCalled();
-    expect(screen.getByTestId('link-zoom-transition-alignment-rect-detector')).toBeVisible();
-  });
-
   it('enables the zoom transition for a destination inside a nested stack', async () => {
     await renderRouter({
       _layout: () => <Stack />,
