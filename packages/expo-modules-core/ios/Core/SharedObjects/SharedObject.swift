@@ -110,7 +110,7 @@ open class SharedObject: AnySharedObject {
 
   /// The JS object paired with this object in the given runtime, read off its native state. Returns
   /// `nil` when the object isn't paired in that runtime or was released.
-  internal func object(in runtime: JavaScriptRuntime) -> JavaScriptObject? {
+  internal func object(in runtime: borrowing JavaScriptRuntime) -> JavaScriptObject? {
     return unreleasedNativeState?.javaScriptObject(in: runtime)
   }
 

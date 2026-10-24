@@ -59,7 +59,7 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
 
   /// Returns the JS object paired with the native object in `runtime`, or `nil` if there is no live
   /// pairing there (none was created, or the JS object has been garbage-collected).
-  internal func javaScriptObject(in runtime: JavaScriptRuntime) -> JavaScriptObject? {
+  internal func javaScriptObject(in runtime: borrowing JavaScriptRuntime) -> JavaScriptObject? {
     let runtimeId = runtime.id
 
     // Unwrap the ref first so the optional doesn't nest with `withValue`'s, which would form a

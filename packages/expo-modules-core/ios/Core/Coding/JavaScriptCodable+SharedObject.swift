@@ -36,8 +36,7 @@ extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
   @JavaScriptActor
   public static func encode(_ value: SharedObject, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     // An object already paired in this runtime is read off its native state, which is how most objects
-    // are encoded (for example, when a module returns or emits an object it got from JavaScript). This
-    // skips recovering the app context from the runtime, which reads `global.expo` on every call.
+    // are encoded (for example, when a module returns or emits an object it got from JavaScript).
     if let jsObject = value.object(in: runtime) {
       return jsObject.takeValue()
     }
