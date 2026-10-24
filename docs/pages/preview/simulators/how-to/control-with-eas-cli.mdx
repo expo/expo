@@ -110,4 +110,34 @@ To send a deep link without restarting the app, use `app.openUrl`:
 
 For a custom scheme URL, the simulator host approves the scheme for the app before it opens the URL. If that approval fails, the Simulator can ask for confirmation. Check that the app shows the expected screen before sending more input.
 
+## Save a screenshot on your computer
+
+`screenshot.capture` captures only the active screen by default, including on iPhone Duo.
+
+<Terminal
+  cmd={['$ eas simulator:control screenshot.capture --output ./screen.png --id <session-id>']}
+/>
+
+`--output` is a path on the computer that runs EAS CLI. Its parent directory must exist. Without `--output`, EAS CLI saves the screenshot in the current directory using the remote filename. The host generates that filename unless you supply a valid `fileName` action value. Use `--output` to choose a local path.
+
+Add `--json` to return the action result with `id`, `action`, `output`, and `file`. For a downloaded file, `file` is the local path. See [Capture evidence](/preview/simulators/how-to/capture-evidence/) for recordings and session artifacts.
+
+### Capture both iPhone Duo screens
+
+On iPhone Duo, `display=1` selects the outer screen. Use `display=3` for the inner screen. Save both as separate files:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control screenshot.capture display=1 --output ./duo-outer.png --id <session-id>',
+  ]}
+/>
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control screenshot.capture display=3 --output ./duo-inner.png --id <session-id>',
+  ]}
+/>
+
+Each command saves one screen to its own file. The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold Duo in the preview before capturing the app on that screen.
+
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
