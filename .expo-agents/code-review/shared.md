@@ -313,8 +313,7 @@ Return **only** a single fenced ```json code block, an object of this shape:
   "trace": {
     "checked": ["Traced the changed value through its public caller and fallback path."],
     "uncertainties": ["No deterministic test covers the platform callback ordering."]
-  },
-  "humanReview": "optional: one sentence on why a person should review this change, or omit"
+  }
 }
 ```
 

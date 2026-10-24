@@ -83,12 +83,12 @@ finding that turns out to describe the code correctly is worse than silence.
 Set `humanReview` when the change needs a decision that only the docs maintainer can make.
 Ask only for one of these reasons:
 
-- New content under `docs/pages/`: a new section, a new example, or a new guide.
-- A change to how a page describes behavior, or a guide that changes its structure.
+- A content change under `docs/pages/`: a new section or example, a change to how a page
+  describes behavior, or a change to the structure of a guide.
+- A new page, a removed page, a renamed page, or a change to `docs/constants/navigation.js`.
 - A user-visible change in a package (a new or changed public export, prop, config option or
   CLI flag) that has no documentation in this PR, or whose JSDoc is the only documentation.
   The API reference pages are generated from that JSDoc.
-- A new page, a removed page, a renamed page, or a change to `docs/constants/navigation.js`.
 - A change to a guide or a reference page whose accuracy you could not check against the code,
   for example a statement about an external service or a vendor API.
 
