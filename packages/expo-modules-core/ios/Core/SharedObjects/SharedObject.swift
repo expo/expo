@@ -132,7 +132,13 @@ open class SharedObject: AnySharedObject {
 extension SharedObject: EventEmitter {
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    guard let target = getJavaScriptObject() else {
+    // The same lookup as `getJavaScriptObject()`, reading the paired object off the native state
+    // without going through the registry, since it runs for every emitted event.
+    guard let runtime = try? appContext?.runtime,
+      let nativeState,
+      !nativeState.isReleased,
+      let target = nativeState.javaScriptObject(in: runtime)
+    else {
       return nil
     }
     return try body(target)
