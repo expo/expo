@@ -5460,9 +5460,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
-      expo-modules-macros:
-        specifier: 0.23.1
-        version: 0.23.1
 
   packages/expo-modules-core:
     dependencies:
