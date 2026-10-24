@@ -51,4 +51,26 @@ You do not need to restart the app to change its permission state. Some framewor
 
 On iOS 27.1, an app that has never requested notification permission may still need its normal request flow after a grant. Call `UNUserNotificationCenter.requestAuthorization` from the app, or `Notifications.requestPermissionsAsync()` with [expo-notifications](/versions/latest/sdk/notifications/). This initializes notification capabilities; restarting alone does not. Service authorization does not confirm notification delivery.
 
+## Tap and enter text
+
+Tap coordinates range from 0 to 1, relative to the screen. This example taps the center:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control tap 0.5 0.5 --id <session-id>',
+    '$ eas simulator:control type "hello@example.com" --id <session-id>',
+  ]}
+/>
+
+`type` sends American Standard Code for Information Interchange (ASCII) text to the focused field using a United States keyboard layout. For Unicode text, paste through the simulator clipboard:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control clipboard.write "Hello, 世界" --id <session-id>',
+    '$ eas simulator:control clipboard.paste --id <session-id>',
+  ]}
+/>
+
+Writing the clipboard does not paste. Focus the intended field before pasting. Keep passwords and access tokens out of command arguments and shell history.
+
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
