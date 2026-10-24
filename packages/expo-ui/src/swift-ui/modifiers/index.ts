@@ -1735,6 +1735,15 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
 
 /**
+ * Sets the label that a list's section index shows for this `Section`. People tap or drag along
+ * the index to scroll the list to the section. On versions before iOS 26 it does nothing.
+ * @param label - The label for the section, usually a single letter.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/sectionindexlabel(_:)).
+ */
+export const sectionIndexLabel = (label: string) => createModifier('sectionIndexLabel', { label });
+
+/**
  * Adds a luminance to alpha effect to this view.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
  */
