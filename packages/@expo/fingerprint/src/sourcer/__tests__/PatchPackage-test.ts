@@ -37,6 +37,149 @@ describe(getPatchPackageSourcesAsync, () => {
     const sources = await getPatchPackageSourcesAsync('/app', options);
     expect(sources).toEqual([]);
   });
+
+  it('should include workspace-root `patches` in a monorepo', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({
+        name: 'monorepo',
+        private: true,
+        workspaces: ['app'],
+        patchedDependencies: {
+          'react-native@0.88.0': 'patches/react-native@0.88.0.patch',
+        },
+      }),
+      '/monorepo/app/package.json': JSON.stringify({ name: 'app', private: true }),
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo/app',
+      await normalizeOptionsAsync('/monorepo/app')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: '../patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
+  it('should include project and workspace-root `patches` without duplicating either', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({
+        private: true,
+        workspaces: ['app'],
+      }),
+      '/monorepo/app/package.json': JSON.stringify({ name: 'app', private: true }),
+      '/monorepo/app/patches/left-pad+1.0.0.patch': 'diff --git a/left-pad\n',
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo/app',
+      await normalizeOptionsAsync('/monorepo/app')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: 'patches',
+        reasons: ['patchPackage'],
+      },
+      {
+        type: 'dir',
+        filePath: '../patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
+  it('should include workspace-root `patches` once when projectRoot is the workspace root', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({
+        private: true,
+        workspaces: ['app'],
+        patchedDependencies: {
+          'react-native@0.88.0': 'patches/react-native@0.88.0.patch',
+        },
+      }),
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo',
+      await normalizeOptionsAsync('/monorepo')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: 'patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
+  it('should include workspace-root `patches` for a nested apps/* package', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({
+        private: true,
+        workspaces: { packages: ['apps/*', 'packages/*'] },
+      }),
+      '/monorepo/apps/mobile/package.json': JSON.stringify({ name: 'mobile', private: true }),
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo/apps/mobile',
+      await normalizeOptionsAsync('/monorepo/apps/mobile')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: '../../patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
+  it('should include pnpm workspace-root `patches`', async () => {
+    vol.fromJSON({
+      '/pnpm-monorepo/pnpm-workspace.yaml':
+        'packages: # workspace packages\n  - \'apps/*\'\n  - "app"\n\nignoreWorkspaceCycles: true\n',
+      '/pnpm-monorepo/package.json': JSON.stringify({ name: 'pnpm-monorepo', private: true }),
+      '/pnpm-monorepo/app/package.json': JSON.stringify({ name: 'app', private: true }),
+      '/pnpm-monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/pnpm-monorepo/app',
+      await normalizeOptionsAsync('/pnpm-monorepo/app')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: '../patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
+  it('should not include a parent `patches` dir when the project is outside the workspace globs', async () => {
+    vol.fromJSON({
+      '/outer/package.json': JSON.stringify({
+        private: true,
+        workspaces: ['packages/*'],
+      }),
+      '/outer/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+      '/outer/app/package.json': JSON.stringify({ name: 'app', private: true }),
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/outer/app',
+      await normalizeOptionsAsync('/outer/app')
+    );
+    expect(sources).toEqual([]);
+  });
 });
 
 describe('patch-package postinstall', () => {
