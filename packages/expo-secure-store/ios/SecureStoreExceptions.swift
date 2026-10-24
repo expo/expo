@@ -6,6 +6,13 @@ internal final class InvalidKeyException: Exception {
   }
 }
 
+internal final class InvalidAuthenticationOptionException: GenericException<String?> {
+  override var reason: String {
+    let valueDescription = param.map { "\"\($0)\"" } ?? "null"
+    return "Invalid value for requireAuthentication: \(valueDescription). Expected \"none\", \"biometry\", \"deviceCredentials\", true, or false."
+  }
+}
+
 internal final class MissingPlistKeyException: Exception {
   override var reason: String {
     "You must set `NSFaceIDUsageDescription` in your Info.plist file to use the `requireAuthentication` option"
