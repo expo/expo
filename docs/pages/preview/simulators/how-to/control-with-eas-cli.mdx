@@ -30,6 +30,27 @@ If you omit `--id`, the command uses the session ID from **.env.eas-simulator** 
 
 A private preview link works with direct controls. You do not need `--public-link`.
 
+## Change settings and app permissions
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control appearance.set dark --id <session-id>',
+    '$ eas simulator:control hardwareKeyboard.set off --id <session-id>',
+    '$ eas simulator:control reduceMotion.set on --id <session-id>',
+    '$ eas simulator:control permissions.set grant camera com.example.app --id <session-id>',
+  ]}
+/>
+
+Use the matching `get` action, such as `appearance.get`, to read a setting. A permission change applies to the app whose bundle identifier you pass.
+
+You do not need to restart the app to change its permission state. Some frameworks cache their status until relaunch. Read the Simulator's service authorization after a change:
+
+<Terminal
+  cmd={['$ eas simulator:control permissions.list com.example.app --id <session-id> --json']}
+/>
+
+On iOS 27.1, an app that has never requested notification permission may still need its normal request flow after a grant. Call `UNUserNotificationCenter.requestAuthorization` from the app, or `Notifications.requestPermissionsAsync()` with [expo-notifications](/versions/latest/sdk/notifications/). This initializes notification capabilities; restarting alone does not. Service authorization does not confirm notification delivery.
+
 ## Tap and enter text
 
 Tap coordinates range from 0 to 1, relative to the screen. This example taps the center:
