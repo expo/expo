@@ -1,6 +1,7 @@
 import { requireNativeModule } from 'expo';
 import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
+import { setRejectionTrackerEnabled } from './installRejectionTracker';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import {
@@ -45,9 +46,10 @@ const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
       return (config: ObserveConfig) => {
-        // The handler is already installed at this point (it installs on import), so this only
-        // toggles whether it records anything.
+        // The error handler and the rejection tracker are already installed at this point (they
+        // install on import), so these calls only toggle whether they record anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+        setRejectionTrackerEnabled(config.errorHandlingEnabled ?? true);
 
         // Recording is gated in expo-app-metrics (the producer side), so the setting travels
         // there rather than into the native `configure` payload. Applies to future captures
