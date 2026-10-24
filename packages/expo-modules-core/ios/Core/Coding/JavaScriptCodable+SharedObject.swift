@@ -38,14 +38,12 @@ extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
     // An object already paired in this runtime is read off its native state, which is how most objects
     // are encoded (for example, when a module returns or emits an object it got from JavaScript). This
     // skips recovering the app context from the runtime, which reads `global.expo` on every call.
-    if let nativeState = value.nativeState,
-      !nativeState.isReleased,
-      let jsObject = nativeState.javaScriptObject(in: runtime)
-    {
+    if let jsObject = value.object(in: runtime) {
       return jsObject.takeValue()
     }
-    // Otherwise, delegates to `DynamicSharedObjectType.castToJS`, which returns the already-paired JS
-    // object or creates and registers a new one. That needs the registry on the app context, recovered
+    // Otherwise, delegates to `DynamicSharedObjectType.castToJS`, which mostly creates and registers a
+    // new JS object. It returns an already-paired one only when the object is paired in its app
+    // context's runtime and that isn't `runtime`. That needs the registry on the app context, recovered
     // from the runtime; an unprepared runtime throws `Exceptions.AppContextNotFound`.
     //
     // TODO: creating the object isn't `encode`'s job. Once creation/pairing moves elsewhere, `encode`
