@@ -10,6 +10,7 @@ import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.Callback
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
@@ -253,6 +254,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ),
       NativeArrayBuffer::class.java to createTrivialTypeConverter(
         ExpectedType(CppType.NATIVE_ARRAY_BUFFER)
+      ),
+      Callback::class.java to createTrivialTypeConverter(
+        ExpectedType(CppType.CALLBACK)
       ),
 
       Serializable::class.java to serializableTypeConverter,
