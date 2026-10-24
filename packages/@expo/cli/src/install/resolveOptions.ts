@@ -14,6 +14,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   dev?: boolean;
   /** Should output in JSON format (use with --check) */
   json?: boolean;
+  /** Should limit --check and --fix to Expo dependencies only. */
+  expoOnly?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -26,6 +28,9 @@ function resolveOptions(options: Options): Options {
   if (options.json && !options.check) {
     throw new CommandError('BAD_ARGS', 'The --json flag can only be used with --check');
   }
+  if (options.expoOnly && !options.check && !options.fix) {
+    throw new CommandError('BAD_ARGS', 'The --expo-only flag can only be used with --check or --fix');
+  }
   return {
     ...options,
   };
@@ -37,7 +42,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--json'],
+    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--json', '--expo-only'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -54,6 +59,7 @@ export async function resolveArgsAsync(
       pnpm: !!flags['--pnpm'],
       bun: !!flags['--bun'],
       json: !!flags['--json'],
+      expoOnly: !!flags['--expo-only'],
     }),
     extras,
   };
