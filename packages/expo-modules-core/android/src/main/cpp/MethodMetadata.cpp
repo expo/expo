@@ -4,12 +4,11 @@
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
+#include "CallbackContext.h"
 #include "types/JNIToJSIConverter.h"
 #include "JSReferencesCache.h"
 
 #include <utility>
-
-#include <react/bridging/LongLivedObject.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -23,20 +22,14 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
   jsi::Runtime &rt,
   std::vector<jsi::Value> &&retainedValues
 ) {
-  JSIContext *jsiContext = getJSIContext(rt);
-  std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
-
-  std::shared_ptr<JavaCallback::CallbackContext> callbackContext = std::make_shared<JavaCallback::CallbackContext>(
+  auto callbackContext = CallbackContext::create(
     rt,
-    std::move(jsInvoker),
     std::move(resolveFunction),
     std::move(rejectFunction),
     std::move(retainedValues)
   );
 
-  facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
-
-  return JavaCallback::newInstance(jsiContext, std::move(callbackContext));
+  return JavaCallback::newInstance(getJSIContext(rt), std::move(callbackContext));
 }
 
 jobjectArray MethodMetadata::convertJSIArgsToJNI(
