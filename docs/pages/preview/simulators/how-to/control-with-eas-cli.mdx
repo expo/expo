@@ -1,0 +1,33 @@
+---
+title: Control a remote iOS Simulator with EAS CLI
+sidebar_title: Use EAS CLI controls
+description: Discover the actions a running iOS session supports and select a session with eas simulator:control.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Use `eas simulator:control` for direct actions on a running iOS Simulator. It connects through the session's preview server, so it works with any iOS session type that exposes that server, including `web-preview-only`.
+
+For accessibility snapshots and actions that select elements by their labels, use [agent-device, Argent, or Appium](/preview/simulators/how-to/drive-the-device/). Direct controls do not provide an accessibility tree. Android sessions use those controllers instead.
+
+## Select the session and discover its actions
+
+[Install or update EAS CLI](/eas/cli/), then run commands from the linked project. Pass the ID of a running iOS session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:get --id <session-id> --json',
+    '$ eas simulator:control --id <session-id>',
+    '$ eas simulator:control --id <session-id> --json',
+  ]}
+/>
+
+Check that the session status is `IN_PROGRESS`. The control command without an action lists the actions that its serve-sim version supports. With `--json`, it returns their descriptions, argument order, accepted properties, and file upload or download behavior. Read this catalog before you run an unfamiliar action. Older sessions can have a different catalog; updating EAS CLI does not update a running session.
+
+If you omit `--id`, the command uses the session ID from **.env.eas-simulator** or the shell environment. Pass `--id` when you have more than one session. EAS CLI selects the device that the session streams; you do not need to copy its UDID or preview token.
+
+A private preview link works with direct controls. You do not need `--public-link`, and you should not copy credentials into the command.
+
+Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
