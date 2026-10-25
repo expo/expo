@@ -1,7 +1,6 @@
 import { Column, Host, RNHostView, Text as UIText } from '@expo/ui';
-import { MenuView } from '@expo/ui/community/menu';
 import React from 'react';
-import { Platform, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native';
+import { ScrollView, Text, View, type LayoutChangeEvent } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
@@ -32,7 +31,6 @@ type Axes = { width: number; height: number };
 type Paired = { hosted: Axes; control: Axes };
 type AcrossChange = { before: Axes; grown: Axes; shrunk: Axes };
 type AcrossReplace = { before: Axes; replaced: Axes };
-type AcrossParentWidth = { wide: Axes; narrow: Axes; restored: Axes };
 
 function useSettledLayout(onSettled: (size: Axes) => void) {
   const size = React.useRef<Axes | undefined>(undefined);
@@ -306,36 +304,6 @@ function ReplaceProbe({ onMeasured }: { onMeasured: (sizes: AcrossReplace) => vo
   );
 }
 
-function MenuTriggerProbe({ onMeasured }: { onMeasured: (sizes: AcrossParentWidth) => void }) {
-  const [step, setStep] = React.useState(0);
-  const seen = React.useRef<Partial<AcrossParentWidth>>({});
-
-  const onLayout = useSettledLayout((size) => {
-    if (step === 0) {
-      seen.current.wide = size;
-      setStep(1);
-    } else if (step === 1) {
-      seen.current.narrow = size;
-      setStep(2);
-    } else if (step === 2) {
-      const { wide, narrow } = seen.current;
-      if (wide && narrow) {
-        onMeasured({ wide, narrow, restored: size });
-      }
-    }
-  });
-
-  return (
-    <View style={{ width: step === 1 ? HOST_WIDTH : PARENT_WIDTH }}>
-      <MenuView actions={[{ id: 'open', title: 'Open' }]}>
-        <View style={{ width: '100%' }} onLayout={onLayout}>
-          <Text style={{ fontSize: FONT_SIZE }}>{LONG_TEXT}</Text>
-        </View>
-      </MenuView>
-    </View>
-  );
-}
-
 export async function test(
   { it, describe, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
@@ -476,23 +444,5 @@ export async function test(
       expect(Math.abs(before.height - TALL_HEIGHT)).toBeLessThan(TOLERANCE);
       expect(Math.abs(replaced.height - SHORT_HEIGHT)).toBeLessThan(TOLERANCE);
     });
-
-    // Regression test for https://github.com/expo/expo/issues/52194
-    if (Platform.OS === 'ios') {
-      it('fills and wraps a MenuView trigger within its parent, as the parent resizes', async () => {
-        const { wide, narrow, restored } = await mountAndWaitForWithTimeout<AcrossParentWidth>(
-          <MenuTriggerProbe onMeasured={() => {}} />,
-          'onMeasured',
-          setPortalChild,
-          TIMEOUT_MS
-        );
-
-        expect(Math.abs(wide.width - PARENT_WIDTH)).toBeLessThan(TOLERANCE);
-        expect(Math.abs(narrow.width - HOST_WIDTH)).toBeLessThan(TOLERANCE);
-        expect(narrow.height).toBeGreaterThan(wide.height);
-        expect(Math.abs(restored.width - wide.width)).toBeLessThan(TOLERANCE);
-        expect(Math.abs(restored.height - wide.height)).toBeLessThan(TOLERANCE);
-      });
-    }
   });
 }

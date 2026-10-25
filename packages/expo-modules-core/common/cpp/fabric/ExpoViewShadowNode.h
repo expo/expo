@@ -130,9 +130,7 @@ public:
       constrainToMaximumSize(constraints, layoutConstraints.maximumSize);
     }
 
-    auto measureContext = layoutContext;
-    measureContext.affectedNodes = nullptr;
-    return layoutContent(*content, measureContext, constraints)->getLayoutMetrics().frame.size;
+    return content->measure(layoutContext, constraints);
   }
 
   // We override this so RNHostView can lay out it's children
@@ -157,7 +155,8 @@ public:
       constrainToMaximumSize(constraints, this->getLayoutMetrics().frame.size);
     }
 
-    auto const clonedContent = layoutContent(*content, layoutContext, constraints);
+    auto const clonedContent = content->clone({});
+    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(layoutContext, constraints);
 
     this->replaceChild(*content, clonedContent, 0);
 
@@ -168,18 +167,6 @@ public:
   }
 
 private:
-  // Dirties the clone like `RootShadowNode` does, so Yoga doesn't reuse the children's old layout.
-  static std::shared_ptr<react::LayoutableShadowNode> layoutContent(
-    const react::LayoutableShadowNode &content,
-    const react::LayoutContext &layoutContext,
-    const react::LayoutConstraints &constraints
-  ) {
-    auto const clonedContent = std::static_pointer_cast<react::LayoutableShadowNode>(content.clone({}));
-    clonedContent->dirtyLayout();
-    clonedContent->layoutTree(layoutContext, constraints);
-    return clonedContent;
-  }
-
   static void constrainToMaximumSize(react::LayoutConstraints &constraints, react::Size maximumSize) {
     constraints.maximumSize.width = std::min(constraints.maximumSize.width, maximumSize.width);
     constraints.maximumSize.height = std::min(constraints.maximumSize.height, maximumSize.height);
