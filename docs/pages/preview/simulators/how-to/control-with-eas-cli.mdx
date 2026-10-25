@@ -96,6 +96,18 @@ On iPhone Duo, `hinge.set` folds or unfolds the device. Pass `fold`, `half`, `un
 
 Hinge actions return an error on a device that does not fold.
 
+## Install an app
+
+`app.install` uploads a file from your computer and installs it on the simulator. Pass an **.ipa** file that contains an iOS Simulator build. A device build does not install:
+
+<Terminal cmd={['$ eas simulator:control app.install ./MyApp.ipa --id <session-id>']} />
+
+The upload accepts a file, not a folder. To install a **.app** folder, put it in a **Payload** folder and compress that folder into an **.ipa** file:
+
+<Terminal cmd={['$ mkdir Payload && cp -R MyApp.app Payload/', '$ zip -qry MyApp.ipa Payload']} />
+
+You can also install a **.app** folder with the controller's install command. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/#install-a-local-build).
+
 ## Restart an installed app
 
 Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's [app config](/workflow/configuration/):
@@ -153,6 +165,14 @@ To send a deep link without restarting the app, use `app.openUrl`:
 />
 
 For a custom scheme URL, the simulator host approves the scheme for the app before it opens the URL. If that approval fails, the Simulator can ask for confirmation. Check that the app shows the expected screen before sending more input.
+
+Without approval, a link with a custom scheme can show the system **Open in** dialog, for example when the link opens from Safari. To approve a scheme for an app before such a link opens, use `app.approveUrlScheme`:
+
+<Terminal
+  cmd={['$ eas simulator:control app.approveUrlScheme com.example.app myapp --id <session-id>']}
+/>
+
+Pass the scheme without `://`. `http` and `https` links do not need approval.
 
 ## Save a screenshot on your computer
 
