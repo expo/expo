@@ -1,17 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- [iOS] Let `RNHostView` content be measured within the box Yoga gives its `Host` when `expoInternalBoundedByHost` is set, so a full-width `MenuView` trigger fills its parent and wraps. ([#52194](https://github.com/expo/expo/issues/52194) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#52237](https://github.com/expo/expo/pull/52237) by [@dileepapeiris](https://github.com/dileepapeiris))
-
-### 💡 Others
-
 ## 58.0.26
 
 ### Patch Changes
