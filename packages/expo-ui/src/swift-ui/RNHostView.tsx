@@ -20,17 +20,18 @@ export interface RNHostViewProps {
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
   onLayout?: (event: LayoutChangeEvent) => void;
   /**
-   * Measures the children within the space the parent offers, like a React Native view.
+   * Measures the children within the space Yoga gives the `Host`. SwiftUI layout between the
+   * `Host` and this view (padding, siblings, scroll views) is not taken into account.
    * @hidden
    */
-  boundedByParent?: boolean;
+  boundedByHost?: boolean;
   /**
    * The RN View to be hosted.
    */
   children: React.ReactElement;
 }
 
-export function RNHostView({ matchContents, boundedByParent, ...props }: RNHostViewProps) {
+export function RNHostView({ matchContents, boundedByHost, ...props }: RNHostViewProps) {
   // A sheet or popover presents its content in its own view controller, where the React Native
   // surface root is not an ancestor and so touch dispatches don't work.
   // Hosted content there owns its touches and is the origin it is measured from; native reads
@@ -46,7 +47,7 @@ export function RNHostView({ matchContents, boundedByParent, ...props }: RNHostV
       matchContentsHorizontal={matchContentsHorizontal}
       matchContentsVertical={matchContentsVertical}
       expoInternalSizeFromChildren={matchContentsHorizontal || matchContentsVertical}
-      expoInternalBoundedByParent={boundedByParent}
+      expoInternalBoundedByHost={boundedByHost}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={`${matchContentsHorizontal}-${matchContentsVertical}`}>

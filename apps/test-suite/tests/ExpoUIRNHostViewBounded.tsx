@@ -1,4 +1,4 @@
-export const name = 'ExpoUI RNHostView boundedByParent';
+export const name = 'ExpoUI RNHostView boundedByHost';
 export const route = 'expo-ui-rnhostview-bounded';
 
 export async function test({ describe, it }: any) {

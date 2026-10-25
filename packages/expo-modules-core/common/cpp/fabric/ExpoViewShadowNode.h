@@ -96,14 +96,14 @@ public:
   }
 
   // Set by `MenuView`'s `RNHostView`, whose `Host` is sized by Yoga instead of its content.
-  static bool boundedByParent(const react::Props::Shared &props) {
+  static bool boundedByHost(const react::Props::Shared &props) {
     auto const *viewProps = dynamic_cast<const ExpoViewProps *>(props.get());
 
     if (viewProps == nullptr) {
       return false;
     }
 
-    auto const it = viewProps->propsMap.find("expoInternalBoundedByParent");
+    auto const it = viewProps->propsMap.find("expoInternalBoundedByHost");
     return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
   }
 
@@ -125,8 +125,8 @@ public:
 
     auto constraints = hostedContentConstraints(*content);
 
-    if (boundedByParent(this->getProps())) {
-      // Like any Yoga child, the content can't be bigger than the space its parent offers.
+    if (boundedByHost(this->getProps())) {
+      // Like any Yoga child, the content can't be bigger than the space the `Host` offers.
       constrainToMaximumSize(constraints, layoutConstraints.maximumSize);
     }
 
@@ -151,7 +151,7 @@ public:
     // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
     auto constraints = hostedContentConstraints(*content);
 
-    if (boundedByParent(this->getProps())) {
+    if (boundedByHost(this->getProps())) {
       constrainToMaximumSize(constraints, this->getLayoutMetrics().frame.size);
     }
 

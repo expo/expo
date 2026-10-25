@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
 import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
 
-export const name = 'ExpoUI RNHostView boundedByParent';
+export const name = 'ExpoUI RNHostView boundedByHost';
 export const route = 'expo-ui-rnhostview-bounded';
 
 const SETTLE_MS = 250;
@@ -77,7 +77,7 @@ function FillingProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
   return (
     <View style={{ width: PARENT_WIDTH }}>
       <Host>
-        <RNHostView matchContents boundedByParent>
+        <RNHostView matchContents boundedByHost>
           <View style={{ width: '100%' }} onLayout={onLayout}>
             <Text style={{ fontSize: FONT_SIZE }}>{LONG_TEXT}</Text>
           </View>
@@ -94,7 +94,7 @@ function HuggingInRowProbe({ onMeasured }: { onMeasured: (size: Axes) => void })
     <View style={{ width: PARENT_WIDTH, flexDirection: 'row' }}>
       <Text style={{ flex: 1 }}>{LONG_TEXT}</Text>
       <Host>
-        <RNHostView matchContents boundedByParent>
+        <RNHostView matchContents boundedByHost>
           <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} onLayout={onLayout} />
         </RNHostView>
       </Host>
@@ -108,7 +108,7 @@ function ParentResizeProbe({ onMeasured }: { onMeasured: (sizes: AcrossChange) =
   return (
     <View style={{ width: changed ? NARROW_WIDTH : PARENT_WIDTH }}>
       <Host>
-        <RNHostView matchContents boundedByParent>
+        <RNHostView matchContents boundedByHost>
           <View style={{ width: '100%' }} onLayout={onLayout}>
             <Text style={{ fontSize: FONT_SIZE }}>{LONG_TEXT}</Text>
           </View>
@@ -124,7 +124,7 @@ function ContentGrowthProbe({ onMeasured }: { onMeasured: (sizes: AcrossChange) 
   return (
     <View style={{ width: PARENT_WIDTH, alignItems: 'flex-start' }}>
       <Host>
-        <RNHostView matchContents boundedByParent>
+        <RNHostView matchContents boundedByHost>
           <View onLayout={onLayout}>
             <Text style={{ fontSize: FONT_SIZE }}>{changed ? LONG_TEXT : TEXT}</Text>
           </View>

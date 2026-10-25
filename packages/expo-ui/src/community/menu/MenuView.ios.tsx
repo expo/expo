@@ -127,7 +127,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   // RNHostView requires a single ReactElement; wrap in a fragment so callers
   // can pass any `ReactNode` (string, array, etc.).
   const trigger = (
-    <RNHostView matchContents boundedByParent>
+    <RNHostView matchContents boundedByHost>
       <>{children}</>
     </RNHostView>
   );
