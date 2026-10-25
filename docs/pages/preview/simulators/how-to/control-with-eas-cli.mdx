@@ -52,6 +52,50 @@ Tap coordinates range from 0 to 1, relative to the screen. This example taps the
 
 Writing the clipboard does not paste. Focus the intended field before pasting. Keep passwords and access tokens out of command arguments and shell history.
 
+## Swipe and drag
+
+`tap` sends one touch. For a swipe or a drag, pass a JSON array of touch events to `gesture`. The array starts with a `begin` event, continues with `move` events, and ends with an `end` event. Coordinates range from 0 to 1, as with `tap`. This example swipes up from the lower part of the screen:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control gesture \\',
+    `  '[{"type":"begin","x":0.5,"y":0.8},{"type":"move","x":0.5,"y":0.5},{"type":"end","x":0.5,"y":0.2}]' \\`,
+    '  --id <session-id>',
+  ]}
+  cmdCopy={`eas simulator:control gesture '[{"type":"begin","x":0.5,"y":0.8},{"type":"move","x":0.5,"y":0.5},{"type":"end","x":0.5,"y":0.2}]' --id <session-id>`}
+/>
+
+By default, events are 40 milliseconds apart. To change the wait before an event, add `delayMs` to it, from 0 to 1000. A gesture has 2 to 256 events and lasts at most 30 seconds. The command waits until the simulator finishes the gesture input.
+
+## Set the location, orientation, and buttons
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control location.set 37.3349 -122.0090 --id <session-id>',
+    '$ eas simulator:control rotate landscape_left --id <session-id>',
+    '$ eas simulator:control button home --id <session-id>',
+  ]}
+/>
+
+`location.set` takes a latitude and a longitude in decimal degrees. `location.clear` stops the simulated location.
+
+`rotate` accepts `portrait`, `portrait_upside_down`, `landscape_left`, or `landscape_right`. An app can still limit the orientations that it supports.
+
+`button` takes a button name, such as `home`, `lock`, `siri`, `volume-up`, or `volume-down`. `springboard.restart` restarts SpringBoard, the process that shows the Home screen. The app in the foreground goes to the background.
+
+### Fold iPhone Duo
+
+On iPhone Duo, `hinge.set` folds or unfolds the device. Pass `fold`, `half`, `unfold`, or an angle from 0 to 180 degrees. `hinge.get` reads the current hinge state:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control hinge.set unfold --id <session-id>',
+    '$ eas simulator:control hinge.get --id <session-id>',
+  ]}
+/>
+
+Hinge actions return an error on a device that does not fold.
+
 ## Restart an installed app
 
 Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's [app config](/workflow/configuration/):
@@ -138,7 +182,7 @@ On iPhone Duo, `display=1` selects the outer screen. Use `display=3` for the inn
   ]}
 />
 
-The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold iPhone Duo in the preview before capturing the app on that screen.
+The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold iPhone Duo with [`hinge.set`](#fold-iphone-duo) or in the preview before capturing the app on that screen.
 
 ## Transfer a file
 
