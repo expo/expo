@@ -70,6 +70,22 @@ const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
   'TextView'
 );
 
+function flattenFragments(children: React.ReactNode): React.ReactNode[] {
+  return React.Children.toArray(children).flatMap((child) => {
+    if (
+      React.isValidElement<{ children?: React.ReactNode }>(child) &&
+      child.type === React.Fragment
+    ) {
+      return flattenFragments(child.props.children).map((nested) =>
+        React.isValidElement(nested)
+          ? React.cloneElement(nested, { key: `${child.key}${nested.key}` })
+          : nested
+      );
+    }
+    return child;
+  });
+}
+
 export function Text(props: TextProps) {
   const { children, modifiers, date, timerInterval, pauseTime, ...restProps } = props;
 
@@ -98,7 +114,7 @@ export function Text(props: TextProps) {
     return null;
   }
 
-  const childArray = React.Children.toArray(children);
+  const childArray = flattenFragments(children);
   if (childArray.length === 0) return null;
 
   const isSimpleText = childArray.every(
