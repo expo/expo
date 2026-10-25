@@ -40,32 +40,21 @@ For other ways to set it, such as Group Policy, see [Maximum Path Length Limitat
 Enabling long paths isn't enough on its own, because Ninja 1.10.2 doesn't support them. Install a newer CMake package, which includes a newer Ninja. For example, the Android SDK's CMake 3.31.6 package includes Ninja 1.12.1.
 
 1. In Android Studio, open **Settings** > **Languages & Frameworks** > **Android SDK** > **SDK Tools**, select **Show Package Details**, and install **CMake 3.31.6** under **CMake**.
-2. Set the CMake version with the `android.cmakeVersion` option of [`expo-build-properties`](/versions/latest/sdk/build-properties/) (available from SDK 57):
+2. Set the `android.cmakeVersion` Gradle property in the **gradle.properties** file in your Gradle user home, **%USERPROFILE%\.gradle\gradle.properties**. Create the file if it doesn't exist:
 
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "cmakeVersion": "3.31.6"
-          }
-        }
-      ]
-    ]
-  }
-}
+```properties gradle.properties
+android.cmakeVersion=3.31.6
 ```
 
-3. Delete **android/app/.cxx** and **android/app/build** so that CMake regenerates its build files, and then run `npx expo prebuild --clean` and build again.
+3. Delete **android/app/.cxx** and **android/app/build** so that CMake regenerates its build files, and then build again.
 
-#### Builds on EAS Build
+Expo reads the `android.cmakeVersion` property from SDK 57, both in projects that use [prebuild](/workflow/continuous-native-generation/) and in projects that include an **android** directory. This file is on your computer and isn't part of your project, so builds on EAS Build and on other computers keep using the default CMake version.
 
-EAS Build runs Android builds on Linux, where the path limit doesn't apply and CMake 3.31.6 isn't installed. If `cmakeVersion` is also set for EAS Build, the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
+#### Set the CMake version in your project
 
-To use the newer CMake version only for local builds on Windows, remove the `expo-build-properties` entry from **app.json** and add it in **app.config.js** instead:
+You can also set the CMake version in your project, with the `android.cmakeVersion` option of [`expo-build-properties`](/versions/latest/sdk/build-properties/) in **app.json**, or with the `android.cmakeVersion` property in **android/gradle.properties**. The setting then applies to every build of the project, including builds on EAS Build. EAS Build runs Android builds on Linux, where the path limit doesn't apply and CMake 3.31.6 isn't installed, so the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
+
+If your project uses prebuild, you can set the CMake version only when you build on Windows. Add the `expo-build-properties` entry in **app.config.js** instead of **app.json**:
 
 ```js app.config.js
 const isWindows = process.platform === 'win32';
@@ -79,7 +68,7 @@ export default ({ config }) => ({
 });
 ```
 
-If your project doesn't include an **android** directory, EAS Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there and the default CMake version is used.
+EAS Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there. On your computer, run `npx expo prebuild --clean` after changing the config.
 
 ### Move the project to a shorter path
 
