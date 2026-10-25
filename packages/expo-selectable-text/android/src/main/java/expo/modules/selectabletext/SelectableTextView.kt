@@ -5,9 +5,9 @@ import android.content.Context
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import com.facebook.react.views.text.ReactTextView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -29,19 +29,30 @@ class SelectableTextView(context: Context, appContext: AppContext) : ExpoView(co
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) = Unit
 
   // A `TextView` that becomes selectable in the middle of a touch doesn't start a selection from
-  // that touch, so the text views are configured as soon as they are laid out inside this view.
-  private val globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { attachDescendants(this) }
+  // that touch, so the text views are configured when they are added to this view.
+  override fun onViewAdded(child: View) {
+    super.onViewAdded(child)
+    if (isAttachedToWindow) {
+      attachDescendants(child)
+    }
+  }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
     attachDescendants(this)
   }
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
     attachedTextViews.keys.toList().forEach { detach(it) }
+  }
+
+  // A `Text` nested deeper can be added after this view, so a touch also looks for new ones.
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+      attachDescendants(this)
+    }
+    return super.dispatchTouchEvent(event)
   }
 
   private fun attachDescendants(view: View) {
