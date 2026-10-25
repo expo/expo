@@ -23,6 +23,7 @@ import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
+import type { Shape } from './shapes/index';
 import { symbolEffect } from './symbolEffect';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
@@ -313,8 +314,12 @@ export const opacity = (value: number) => createModifier('opacity', { value });
 
 /**
  * Clips the view to a specific shape.
- * @param shape - The clipping shape.
- * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
+ *
+ * Pass a shape from the `shapes` API to set the corner style or the corner size, for example
+ * `clipShape(shapes.roundedRectangle({ cornerRadius: 16, roundedCornerStyle: 'continuous' }))`.
+ *
+ * @param shape - The clipping shape. A shape name, or a shape from the `shapes` API.
+ * @param cornerRadius - Corner radius for rounded rectangle (default: 8). Used only with a shape name.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
@@ -324,9 +329,10 @@ export const clipShape = (
     | 'capsule'
     | 'ellipse'
     | 'roundedRectangle'
-    | 'containerRelativeShape',
+    | 'containerRelativeShape'
+    | Shape,
   cornerRadius?: number
-) => createModifier('clipShape', { shape, cornerRadius });
+) => createModifier('clipShape', typeof shape === 'string' ? { shape, cornerRadius } : shape);
 
 /**
  * The parameters of the `border` modifier.
