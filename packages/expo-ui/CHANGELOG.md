@@ -1,5 +1,17 @@
 # Changelog
 
+## Unpublished
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `MenuView` triggers with `width: '100%'` or `flex: 1` measuring as if they had unbounded width, so their text did not wrap and they kept their first size after rotation. ([#52194](https://github.com/expo/expo/issues/52194) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#52237](https://github.com/expo/expo/pull/52237) by [@dileepapeiris](https://github.com/dileepapeiris))
+
+### 💡 Others
+
 ## 58.0.23
 
 ### Patch Changes
