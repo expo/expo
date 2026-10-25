@@ -140,6 +140,14 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             (route) => route.key === previewKey && route.name === action.payload.name
           );
           const currentRoute = activeRoutes[state.index]!;
+          // React Navigation's NAVIGATE goes back to a route only with `pop`. Without it, navigating
+          // to a navigator lower in the stack, e.g. the tabs from a screen pushed over them, would
+          // push a second instance of that navigator.
+          const shouldPopToNavigator =
+            action.type === 'NAVIGATE' &&
+            !action.payload.pop &&
+            id === undefined &&
+            isNavigatorBelow(activeRoutes.slice(0, state.index), action.payload);
           const shouldCreateSingularRoute =
             action.type === 'NAVIGATE' &&
             !previewRoute &&
@@ -211,10 +219,13 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               browserHistory: { type: 'push' },
             };
           } else {
-            actionResult = original.getStateForAction(state, action, {
-              ...options,
-              routeGetIdList,
-            });
+            actionResult = original.getStateForAction(
+              state,
+              shouldPopToNavigator
+                ? { ...action, payload: { ...action.payload, pop: true } }
+                : action,
+              { ...options, routeGetIdList }
+            );
           }
           if (!isActionHandled(actionResult)) {
             return actionResult;
@@ -306,6 +317,22 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
     },
   };
 };
+
+/**
+ * Whether the last route below the focused one with the target's name holds a navigator and has
+ * the target's path params (a dynamic route with other params is another screen).
+ */
+function isNavigatorBelow(
+  routesBelow: StackNavigationState<ParamListBase>['routes'],
+  target: { name: string; params?: object }
+) {
+  const route = routesBelow.findLast((route) => route.name === target.name);
+  return (
+    route?.state !== undefined &&
+    getSingularId(route.name, { params: route.params }) ===
+      getSingularId(target.name, { params: target.params })
+  );
+}
 
 function getActionSingularIdFn(
   actionGetId: SingularOptions | undefined,

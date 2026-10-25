@@ -1581,6 +1581,79 @@ describe('stack unwinding', () => {
     expect(router.canGoBack()).toBe(false);
   });
 
+  it('navigate goes back to a screen lower in the stack that holds a navigator', async () => {
+    const result = await renderRouter({
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      '(tabs)/index': () => null,
+      '(tabs)/two': () => null,
+      'details/[id]': () => null,
+    });
+
+    await act(() => router.push('/details/1'));
+    expect(result.getRouterState()!.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+      '(tabs)',
+      'details/[id]',
+    ]);
+
+    await act(() => router.navigate('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(result.getRouterState()!.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+      '(tabs)',
+    ]);
+    expect(router.canGoBack()).toBe(true);
+  });
+
+  it('navigate pushes a dynamic screen that holds a navigator when its params differ', async () => {
+    const result = await renderRouter(
+      {
+        _layout: () => <Stack />,
+        'user/[id]/_layout': () => <Stack />,
+        'user/[id]/index': () => null,
+        details: () => null,
+      },
+      { initialUrl: '/user/1' }
+    );
+
+    await act(() => router.push('/details'));
+    await act(() => router.navigate('/user/2'));
+    expect(screen).toHavePathname('/user/2');
+    expect(result.getRouterState()!.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+      'user/[id]',
+      'details',
+      'user/[id]',
+    ]);
+  });
+
+  it('push adds a second instance of a screen lower in the stack that holds a navigator', async () => {
+    const result = await renderRouter({
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
+      '(tabs)/index': () => null,
+      '(tabs)/two': () => null,
+      'details/[id]': () => null,
+    });
+
+    await act(() => router.push('/details/1'));
+    await act(() => router.push('/two'));
+    expect(screen).toHavePathname('/two');
+    expect(result.getRouterState()!.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+      '(tabs)',
+      'details/[id]',
+      '(tabs)',
+    ]);
+  });
+
   it('push will never unwind the stack', async () => {
     await renderRouter(
       {
