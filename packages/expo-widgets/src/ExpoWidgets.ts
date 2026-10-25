@@ -97,6 +97,9 @@ class CustomNotificationFactoryStub {
 const ExpoWidgetsModule = {
   widgetsDirectory: '',
   reloadAllWidgets(): void {},
+  areActivitiesEnabled(): boolean {
+    return false;
+  },
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,
   LiveActivity: LiveActivityStub as typeof NativeLiveActivity,

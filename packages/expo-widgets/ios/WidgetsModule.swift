@@ -63,6 +63,10 @@ public final class WidgetsModule: Module {
       WidgetCenter.shared.reloadAllTimelines()
     }
 
+    Function("areActivitiesEnabled") { () -> Bool in
+      return ActivityAuthorizationInfo().areActivitiesEnabled
+    }
+
     Class("Widget", WidgetObject.self) {
       Constructor { (name: String, layout: String, initialProps: [String: Any]?) in
         WidgetObject(name: name, layout: layout, initialProps: initialProps)
