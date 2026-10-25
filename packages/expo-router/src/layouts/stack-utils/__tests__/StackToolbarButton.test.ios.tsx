@@ -388,7 +388,7 @@ describe('StackToolbarButton component', () => {
     });
   });
 
-  describe('badge warning in bottom placement', () => {
+  describe('badge in bottom placement', () => {
     const originalEnv = process.env.NODE_ENV;
     let consoleSpy: jest.SpyInstance;
 
@@ -401,19 +401,70 @@ describe('StackToolbarButton component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns about Badge in bottom placement', async () => {
+    it('does not warn about Badge in bottom placement', async () => {
       process.env.NODE_ENV = 'development';
 
       await render(
         <ToolbarPlacementContext.Provider value="bottom">
-          <StackToolbarButton>
+          <StackToolbarButton icon="star.fill">
             <StackToolbarBadge>3</StackToolbarBadge>
           </StackToolbarButton>
         </ToolbarPlacementContext.Provider>
       );
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+
+    it('passes the Badge value to RouterToolbarItem as badgeConfiguration', async () => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill">
+            <StackToolbarBadge>3</StackToolbarBadge>
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          badgeConfiguration: { value: '3' },
+        }),
+        undefined
+      );
+    });
+
+    it('passes the Badge style to RouterToolbarItem as badgeConfiguration', async () => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill">
+            <StackToolbarBadge style={{ backgroundColor: 'red', color: 'white' }}>
+              1
+            </StackToolbarBadge>
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          badgeConfiguration: { value: '1', backgroundColor: 'red', color: 'white' },
+        }),
+        undefined
+      );
+    });
+
+    it('passes a Badge without a value to RouterToolbarItem as an indicator', async () => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill">
+            <StackToolbarBadge />
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          badgeConfiguration: { value: undefined },
+        }),
+        undefined
       );
     });
   });

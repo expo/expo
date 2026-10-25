@@ -27,7 +27,6 @@ export interface RouterToolbarItemProps {
   hidden?: boolean;
   selected?: boolean;
   possibleTitles?: string[];
-  // Right now this does not seem to work
   badgeConfiguration?: {
     value?: string;
     backgroundColor?: ColorValue;

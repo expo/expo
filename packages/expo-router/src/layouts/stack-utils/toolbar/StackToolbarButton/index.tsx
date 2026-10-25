@@ -2,7 +2,7 @@
 import { Children, useMemo } from 'react';
 
 import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
-import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../../utils/children';
+import { filterAllowedChildrenElements } from '../../../../utils/children';
 import { useToolbarPlacement } from '../context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
@@ -71,15 +71,6 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
           `Stack.Toolbar.Button only accepts a single string or Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
         );
       }
-    }
-  }
-
-  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
-    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
-    if (hasBadge) {
-      console.warn(
-        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
-      );
     }
   }
 

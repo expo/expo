@@ -25,7 +25,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
 
   @ReactiveProp var selected: Bool = false
   @ReactiveProp var possibleTitles: Set<String>?
-  @ReactiveProp var badgeConfiguration: BadgeConfiguration?
+  @ReactiveProp(needsFullRebuild: true) var badgeConfiguration: BadgeConfiguration?
   @ReactiveProp var titleStyle: TitleStyle?
   @ReactiveProp var routerAccessibilityLabel: String?
   @ReactiveProp var routerAccessibilityHint: String?
