@@ -19,7 +19,10 @@ export type SelectionMenuActionEvent = {
 };
 
 export type SelectableTextProps = ViewProps & {
-  /** Items added to the selection menu, before the system items. */
+  /**
+   * Items added to the selection menu: before the system items on iOS, and after Copy on Android.
+   * Web ignores them.
+   */
   menu?: SelectionMenuItem[];
   onMenuAction?: (event: SelectionMenuActionEvent) => void;
 };

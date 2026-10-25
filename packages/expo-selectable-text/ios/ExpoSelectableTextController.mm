@@ -174,8 +174,9 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
   if (_paragraph != nil && ![_paragraph isDescendantOfView:hostView]) {
     [self _detach];
   }
-  if (paragraph != _paragraph && ![self _isNearSelectionAtPoint:point]) {
-    // A touch on another paragraph moves the selection there.
+  if (paragraph != nil && paragraph != _paragraph && ![self _isNearSelectionAtPoint:point]) {
+    // A touch on another paragraph moves the selection there. A tap anywhere
+    // else clears the selection through the selection view's tap recognizer.
     [_selectionView resignFirstResponder];
     [self _detach];
   }

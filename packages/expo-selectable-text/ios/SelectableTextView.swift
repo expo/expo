@@ -16,8 +16,9 @@ final class SelectableTextView: ExpoView {
   }()
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    // Only touches can start a selection, not pointer hover or other hit tests.
-    if event?.type == .touches {
+    // Only touches inside this view can start a selection, not pointer hover, other hit tests,
+    // or the hit tests UIKit sends to siblings while it looks for the touched view.
+    if event?.type == .touches && self.point(inside: point, with: event) {
       controller.prepareForTouch(at: point, with: event)
     }
     return super.hitTest(point, with: event)
