@@ -1,6 +1,6 @@
 import { SelectableText, type SelectionMenuActionEvent } from 'expo-selectable-text';
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text as RNText } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
 
 const RTL = 'مرحبا بك في هذا التطبيق، اضغط مطولا لتحديد جزء من النص.';
 const EMOJI = 'Hi 👋🏽 family 👨‍👩‍👧 and café ☕️ end of line.';
@@ -77,6 +77,14 @@ export default function EdgeCasesScreen() {
         />{' '}
         after the inline view.
       </RNText>
+
+      <RNText style={styles.title}>Inline view that mounts and unmounts</RNText>
+      <SelectableText {...menuProps('toggling', 'Before after a toggling inline view.')}>
+        <RNText style={styles.body}>
+          Before {tick % 2 === 0 ? <View style={styles.inlineView} /> : null} after a toggling
+          inline view.
+        </RNText>
+      </SelectableText>
 
       <RNText style={styles.title}>Root onPress</RNText>
       <SelectableText {...menuProps('root-press', 'A short tap presses this whole paragraph.')}>

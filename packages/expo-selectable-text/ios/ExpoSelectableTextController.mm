@@ -33,11 +33,11 @@ using namespace facebook::react;
 
 @end
 
-// The selection layer depends on private React Native internals. When an
-// upgrade removes one of them, the text keeps React Native's behavior.
-static BOOL ExpoSelectableTextCanUseSelectionLayer(void)
+// The selection layer lines up with the drawn text through two private React Native
+// internals. Without them it uses public equivalents, which can be slightly off.
+static BOOL ExpoSelectableTextHasReactNativeInternals(void)
 {
-  static BOOL canUseSelectionLayer;
+  static BOOL hasInternals;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSMutableArray<NSString *> *missing = [NSMutableArray new];
@@ -48,14 +48,65 @@ static BOOL ExpoSelectableTextCanUseSelectionLayer(void)
                                (_textStorageAndLayoutManagerWithAttributesString:paragraphAttributes:size:)]) {
       [missing addObject:@"-[RCTTextLayoutManager _textStorageAndLayoutManagerWithAttributesString:paragraphAttributes:size:]"];
     }
-    canUseSelectionLayer = missing.count == 0;
-    if (!canUseSelectionLayer) {
+    hasInternals = missing.count == 0;
+    if (!hasInternals) {
       RCTLogWarn(
-          @"SelectableText could not enable range selection because this React Native version does not have the paragraph internals it uses. Missing: %@",
+          @"SelectableText uses an approximate text layout because this React Native version does not have: %@. The selection highlight can be slightly off the drawn text.",
           [missing componentsJoinedByString:@", "]);
     }
   });
-  return canUseSelectionLayer;
+  return hasInternals;
+}
+
+// The frame the paragraph draws its glyphs into, in the paragraph's coordinates.
+static CGRect ExpoSelectableTextDrawingFrame(UIView *contentView)
+{
+  CGRect drawingFrame = ExpoSelectableTextHasReactNativeInternals()
+      ? [[contentView valueForKey:@"drawingFrame"] CGRectValue]
+      : contentView.bounds;
+  return CGRectOffset(drawingFrame, contentView.frame.origin.x, contentView.frame.origin.y);
+}
+
+static NSLineBreakMode ExpoSelectableTextLineBreakMode(EllipsizeMode ellipsizeMode)
+{
+  switch (ellipsizeMode) {
+    case EllipsizeMode::Clip:
+      return NSLineBreakByClipping;
+    case EllipsizeMode::Head:
+      return NSLineBreakByTruncatingHead;
+    case EllipsizeMode::Middle:
+      return NSLineBreakByTruncatingMiddle;
+    case EllipsizeMode::Tail:
+      return NSLineBreakByTruncatingTail;
+  }
+  return NSLineBreakByTruncatingTail;
+}
+
+// Same setup as `RCTTextLayoutManager`'s private method, without its baseline offset and
+// `adjustsFontSizeToFit` scaling.
+static NSTextStorage *ExpoSelectableTextStorage(
+    RCTTextLayoutManager *layoutManager,
+    NSAttributedString *attributedString,
+    ParagraphAttributes paragraphAttributes,
+    CGSize size)
+{
+  if (ExpoSelectableTextHasReactNativeInternals()) {
+    return [layoutManager _textStorageAndLayoutManagerWithAttributesString:attributedString
+                                                       paragraphAttributes:paragraphAttributes
+                                                                      size:size];
+  }
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+  textContainer.lineFragmentPadding = 0.0;
+  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
+      ? ExpoSelectableTextLineBreakMode(paragraphAttributes.ellipsizeMode)
+      : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+  NSLayoutManager *textLayoutManager = [NSLayoutManager new];
+  textLayoutManager.usesFontLeading = NO;
+  [textLayoutManager addTextContainer:textContainer];
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
+  [textStorage addLayoutManager:textLayoutManager];
+  return textStorage;
 }
 
 // The topmost paragraph under the point, skipping views that can't be touched.
@@ -116,7 +167,7 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
 - (void)prepareForTouchAtPoint:(CGPoint)point withEvent:(UIEvent *)event
 {
   UIView *hostView = _hostView;
-  if (hostView == nil || !ExpoSelectableTextCanUseSelectionLayer()) {
+  if (hostView == nil) {
     return;
   }
   RCTParagraphComponentView *paragraph = ExpoSelectableTextParagraphAtPoint(hostView, point);
@@ -174,17 +225,12 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
   RCTParagraphComponentView *paragraph = _paragraph;
   UIView *contentView = paragraph.contentView;
   NSAttributedString *attributedText = paragraph.attributedText;
-  SEL drawingFrameSelector = NSSelectorFromString(@"drawingFrame");
-  if (paragraph == nil || attributedText.length == 0 || contentView.superview == nil ||
-      ![contentView respondsToSelector:drawingFrameSelector]) {
+  if (paragraph == nil || attributedText.length == 0 || contentView.superview == nil) {
     [self _detach];
     return;
   }
 
-  // `RCTParagraphTextView` stores the frame it draws the glyphs into, after its
-  // compressed line height adjustment. Reading it keeps one source of truth.
-  CGRect drawingFrame = [[contentView valueForKey:@"drawingFrame"] CGRectValue];
-  drawingFrame = CGRectOffset(drawingFrame, contentView.frame.origin.x, contentView.frame.origin.y);
+  CGRect drawingFrame = ExpoSelectableTextDrawingFrame(contentView);
   if (CGRectIsEmpty(drawingFrame)) {
     [self _detach];
     return;
@@ -206,9 +252,7 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
       _selectionLayoutManager = [RCTTextLayoutManager new];
     }
     NSTextStorage *textStorage =
-        [_selectionLayoutManager _textStorageAndLayoutManagerWithAttributesString:layoutText
-                                                              paragraphAttributes:paragraphAttributes
-                                                                             size:drawingFrame.size];
+        ExpoSelectableTextStorage(_selectionLayoutManager, layoutText, paragraphAttributes, drawingFrame.size);
     if (needsNewView) {
       [_selectionView removeFromSuperview];
       _selectionView = [[ExpoSelectableTextSelectionView alloc]
