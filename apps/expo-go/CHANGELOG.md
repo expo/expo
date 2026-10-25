@@ -1,5 +1,15 @@
 # @expo/home
 
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#52227](https://github.com/expo/expo/pull/52227), [#52190](https://github.com/expo/expo/pull/52190), [#52189](https://github.com/expo/expo/pull/52189), [#52112](https://github.com/expo/expo/pull/52112), [#52225](https://github.com/expo/expo/pull/52225), [#52186](https://github.com/expo/expo/pull/52186))
+  - @expo/ui@58.0.24
+  - expo@58.0.20
+  - expo-router@58.0.27
+  - expo-dev-menu@58.0.11
+
 ## 0.0.14
 
 ### Patch Changes

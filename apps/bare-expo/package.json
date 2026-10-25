@@ -1,6 +1,6 @@
 {
   "name": "bare-expo",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "main": "index",
   "scripts": {
