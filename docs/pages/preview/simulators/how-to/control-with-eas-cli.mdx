@@ -106,8 +106,6 @@ To send a deep link without restarting the app, use `app.openUrl`:
   cmdCopy={`eas simulator:control app.openUrl com.example.app 'myapp://profile/42?tab=activity&source=cli' --id <session-id>`}
 />
 
-A custom scheme URL may show a confirmation prompt. Check that the app shows the expected screen before sending more input.
-
-To install an app during startup, use `--build-id` or `--application-archive-url`. To install a local **.app** folder, use the controller's install command. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/). The direct control file upload accepts files, not folders.
+For a custom scheme URL, the simulator host approves the scheme for the app before it opens the URL. If that approval fails, the Simulator can ask for confirmation. Check that the app shows the expected screen before sending more input.
 
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
