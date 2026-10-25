@@ -24,6 +24,14 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
 
 @implementation ExpoSelectableTextSelectionView {
   UITapGestureRecognizer *_dismissSelectionRecognizer;
+  BOOL _isProgrammaticChange;
+}
+
+- (void)performProgrammaticChange:(void (^)(void))change
+{
+  _isProgrammaticChange = YES;
+  change();
+  _isProgrammaticChange = NO;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer
@@ -99,7 +107,7 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
  */
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-  if (textView.selectedRange.length > 0) {
+  if (!_isProgrammaticChange && textView.selectedRange.length > 0) {
     [self _cancelSurfaceTouches];
   }
 }
@@ -156,6 +164,16 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
   [super willMoveToWindow:newWindow];
   if (newWindow == nil) {
     [self _removeDismissSelectionRecognizer];
+    if (self.onRemovedFromWindow) {
+      // Not while UIKit is moving the view hierarchy.
+      __weak __typeof(self) weakSelf = self;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        __typeof(self) strongSelf = weakSelf;
+        if (strongSelf != nil && strongSelf.window == nil && strongSelf.onRemovedFromWindow) {
+          strongSelf.onRemovedFromWindow();
+        }
+      });
+    }
   }
 }
 

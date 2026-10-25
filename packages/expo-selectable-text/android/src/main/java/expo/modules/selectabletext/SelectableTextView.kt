@@ -2,6 +2,7 @@ package expo.modules.selectabletext
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
@@ -56,6 +57,7 @@ class SelectableTextView(context: Context, appContext: AppContext) : ExpoView(co
   }
 
   private fun attachDescendants(view: View) {
+    warnIfUnsupported(view)
     when (view) {
       is ReactTextView -> attach(view)
       is ViewGroup -> for (index in 0 until view.childCount) {
@@ -65,7 +67,13 @@ class SelectableTextView(context: Context, appContext: AppContext) : ExpoView(co
   }
 
   private fun attach(textView: ReactTextView) {
-    if (attachedTextViews.containsKey(textView)) {
+    val attached = attachedTextViews[textView]
+    if (attached != null) {
+      // `selectable={false}` on the `Text` turns selection off again.
+      if (!textView.isTextSelectable) {
+        attached.madeSelectable = true
+        textView.setTextIsSelectable(true)
+      }
       return
     }
     val listener = object : OnAttachStateChangeListener {
@@ -140,5 +148,21 @@ class SelectableTextView(context: Context, appContext: AppContext) : ExpoView(co
     }
   }
 
-  private class AttachedTextView(val madeSelectable: Boolean, val listener: OnAttachStateChangeListener)
+  private class AttachedTextView(var madeSelectable: Boolean, val listener: OnAttachStateChangeListener)
+
+  companion object {
+    private var didWarnAboutPreparedLayout = false
+
+    // With React Native's `enablePreparedTextLayout` flag, a `Text` that isn't `selectable` is not a
+    // `TextView`, so it can't be selected here.
+    private fun warnIfUnsupported(view: View) {
+      if (!didWarnAboutPreparedLayout && view.javaClass.simpleName == "PreparedLayoutTextView") {
+        didWarnAboutPreparedLayout = true
+        Log.w(
+          "SelectableText",
+          "SelectableText can't select a Text rendered by PreparedLayoutTextView. Turn off the enablePreparedTextLayout feature flag."
+        )
+      }
+    }
+  }
 }

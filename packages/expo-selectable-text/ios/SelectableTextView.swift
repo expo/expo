@@ -16,12 +16,17 @@ final class SelectableTextView: ExpoView {
   }()
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    controller.prepareForTouch(at: point, with: event)
+    // Only touches can start a selection, not pointer hover or other hit tests.
+    if event?.type == .touches {
+      controller.prepareForTouch(at: point, with: event)
+    }
     return super.hitTest(point, with: event)
   }
 
-  override func prepareForRecycle() {
-    super.prepareForRecycle()
-    controller.reset()
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window == nil {
+      controller.reset()
+    }
   }
 }

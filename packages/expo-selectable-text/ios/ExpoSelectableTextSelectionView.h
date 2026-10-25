@@ -25,6 +25,11 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
 
 @property (nonatomic, copy, nullable) void (^onFirstResponderChange)(BOOL isFirstResponder);
 
+@property (nonatomic, copy, nullable) void (^onRemovedFromWindow)(void);
+
+// Changes the text or selection without treating it as the user's selection.
+- (void)performProgrammaticChange:(void (^)(void))change;
+
 @end
 
 NS_ASSUME_NONNULL_END

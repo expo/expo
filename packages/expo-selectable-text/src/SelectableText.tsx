@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import type { ViewProps } from 'react-native';
+import { Platform, type ViewProps } from 'react-native';
 
 export type SelectionMenuItem = {
   /** Identifies the item in `onMenuAction`. */
@@ -29,6 +29,8 @@ type NativeSelectableTextProps = Omit<SelectableTextProps, 'onMenuAction'> & {
   collapsableChildren?: boolean;
 };
 
+const NO_ITEMS: SelectionMenuItem[] = [];
+
 const NativeSelectableText: React.ComponentType<NativeSelectableTextProps> =
   requireNativeView('ExpoSelectableText');
 
@@ -36,13 +38,13 @@ const NativeSelectableText: React.ComponentType<NativeSelectableTextProps> =
  * Adds range selection and custom selection menu items to the React Native `Text`
  * elements inside it.
  */
-export function SelectableText({ menu = [], onMenuAction, ...props }: SelectableTextProps) {
+export function SelectableText({ menu = NO_ITEMS, onMenuAction, ...props }: SelectableTextProps) {
   return (
     <NativeSelectableText
       {...props}
-      // On Android, a `Text` can't hold its inline views, so React Native mounts them into the
-      // `Text`'s parent. That needs the `Text` to stay flattenable here.
-      collapsableChildren={false}
+      // On Android, a `Text` can't hold its inline views, so React Native mounts them into this
+      // view. Expo views otherwise make each child form its own stacking context, which stops that.
+      collapsableChildren={Platform.OS === 'android' ? false : undefined}
       menu={menu}
       onMenuAction={onMenuAction ? ({ nativeEvent }) => onMenuAction(nativeEvent) : undefined}
     />

@@ -13,6 +13,8 @@ import {
 const RTL = 'مرحبا بك في هذا التطبيق، اضغط مطولا لتحديد جزء من النص.';
 const EMOJI = 'Hi 👋🏽 family 👨‍👩‍👧 and café ☕️ end of line.';
 const MODAL_TEXT = 'Text inside a modal. Select a word, then tap outside to clear it.';
+const FIRST = 'First paragraph in the wrapper.';
+const SECOND = 'Second paragraph in the wrapper.';
 const MENU = [{ id: 'add-to-chat', title: 'Add to chat' }];
 const LONG = Array.from(
   { length: 40 },
@@ -94,6 +96,12 @@ export default function EdgeCasesScreen() {
           Before {tick % 2 === 0 ? <View style={styles.inlineView} /> : null} after a toggling
           inline view.
         </RNText>
+      </SelectableText>
+
+      <RNText style={styles.title}>Two Text in one wrapper</RNText>
+      <SelectableText {...menuProps('two', SECOND)}>
+        <RNText style={styles.body}>{FIRST}</RNText>
+        <RNText style={styles.body}>{SECOND}</RNText>
       </SelectableText>
 
       <RNText style={styles.title}>Root onPress</RNText>

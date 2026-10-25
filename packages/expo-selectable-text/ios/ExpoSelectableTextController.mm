@@ -151,7 +151,7 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
 
 - (void)dealloc
 {
-  [_syncTimer invalidate];
+  [self _detach];
 }
 
 - (void)setMenuItems:(NSArray<NSDictionary *> *)menuItems
@@ -171,7 +171,12 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
     return;
   }
   RCTParagraphComponentView *paragraph = ExpoSelectableTextParagraphAtPoint(hostView, point);
-  if (paragraph != _paragraph && !_selectionView.isFirstResponder) {
+  if (_paragraph != nil && ![_paragraph isDescendantOfView:hostView]) {
+    [self _detach];
+  }
+  if (paragraph != _paragraph && ![self _isNearSelectionAtPoint:point]) {
+    // A touch on another paragraph moves the selection there.
+    [_selectionView resignFirstResponder];
     [self _detach];
   }
   if (paragraph != nil && _paragraph == nil) {
@@ -180,6 +185,31 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
   if (paragraph != nil && paragraph == _paragraph) {
     [self _updateSelectionView];
   }
+}
+
+// The selection handles reach outside the text, so a touch on a handle keeps the
+// selection, even when it lands on another paragraph.
+- (BOOL)_isNearSelectionAtPoint:(CGPoint)point
+{
+  UIView *hostView = _hostView;
+  UITextRange *selectedRange = _selectionView.selectedTextRange;
+  if (!_selectionView.isFirstResponder || hostView == nil || selectedRange == nil || selectedRange.isEmpty) {
+    return NO;
+  }
+  CGPoint pointInSelectionView = [hostView convertPoint:point toView:_selectionView];
+  for (UITextSelectionRect *selectionRect in [_selectionView selectionRectsForRange:selectedRange]) {
+    // The start handle's knob is above the text and the end handle's is below it.
+    CGRect rect = selectionRect.rect;
+    if (selectionRect.containsStart &&
+        CGRectContainsPoint(UIEdgeInsetsInsetRect(rect, UIEdgeInsetsMake(-24, -16, -4, -16)), pointInSelectionView)) {
+      return YES;
+    }
+    if (selectionRect.containsEnd &&
+        CGRectContainsPoint(UIEdgeInsetsInsetRect(rect, UIEdgeInsetsMake(-4, -16, -24, -16)), pointInSelectionView)) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 - (void)reset
@@ -266,6 +296,12 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
       _selectionView.onFirstResponderChange = ^(BOOL isFirstResponder) {
         [weakSelf _selectionViewFirstResponderDidChange:isFirstResponder];
       };
+      // React Native recycles the paragraph when its <Text> unmounts. The layer
+      // must not stay in it for the next <Text>.
+      __weak ExpoSelectableTextSelectionView *weakSelectionView = _selectionView;
+      _selectionView.onRemovedFromWindow = ^{
+        [weakSelf _selectionViewWasRemovedFromWindow:weakSelectionView];
+      };
       // Under the drawn text. `RCTParagraphTextView` returns nil from `hitTest:`,
       // so the selection view gets the touches, and React Native still finds the
       // paragraph's nested <Text> for them.
@@ -275,11 +311,14 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
       // Text that streams in changes on every update. Updating the text view in
       // place keeps the selection and a gesture that is in progress.
       NSRange selectedRange = _selectionView.selectedRange;
-      _selectionView.textContainer.size = drawingFrame.size;
-      [_selectionView.textStorage setAttributedString:textStorage];
-      if (selectedRange.length > 0 && NSMaxRange(selectedRange) <= textStorage.length) {
-        _selectionView.selectedRange = selectedRange;
-      }
+      ExpoSelectableTextSelectionView *selectionView = _selectionView;
+      [selectionView performProgrammaticChange:^{
+        selectionView.textContainer.size = drawingFrame.size;
+        [selectionView.textStorage setAttributedString:textStorage];
+        if (selectedRange.length > 0 && NSMaxRange(selectedRange) <= textStorage.length) {
+          selectionView.selectedRange = selectedRange;
+        }
+      }];
     }
     _selectionLayoutText = [layoutText copy];
     _selectionLayoutSize = drawingFrame.size;
@@ -289,6 +328,13 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
   _selectionView.sourceAttributedText = attributedText;
 }
 
+- (void)_selectionViewWasRemovedFromWindow:(ExpoSelectableTextSelectionView *)selectionView
+{
+  if (selectionView != nil && selectionView == _selectionView) {
+    [self _detach];
+  }
+}
+
 // The host doesn't see the paragraph's updates, so while a selection is shown
 // the layer follows the text, for example a message that streams in.
 - (void)_selectionViewFirstResponderDidChange:(BOOL)isFirstResponder
@@ -296,11 +342,13 @@ static RCTParagraphComponentView *ExpoSelectableTextParagraphAtPoint(UIView *vie
   if (isFirstResponder) {
     if (_syncTimer == nil) {
       __weak __typeof(self) weakSelf = self;
-      _syncTimer = [NSTimer scheduledTimerWithTimeInterval:0.25
-                                                   repeats:YES
-                                                     block:^(NSTimer *timer) {
-                                                       [weakSelf _updateSelectionView];
-                                                     }];
+      _syncTimer = [NSTimer timerWithTimeInterval:0.25
+                                          repeats:YES
+                                            block:^(NSTimer *timer) {
+                                              [weakSelf _updateSelectionView];
+                                            }];
+      // Common modes keep it running while a list scrolls.
+      [NSRunLoop.mainRunLoop addTimer:_syncTimer forMode:NSRunLoopCommonModes];
     }
   } else {
     [self _stopSync];
