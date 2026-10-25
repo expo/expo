@@ -26,6 +26,7 @@ export type SelectableTextProps = ViewProps & {
 
 type NativeSelectableTextProps = Omit<SelectableTextProps, 'onMenuAction'> & {
   onMenuAction?: (event: { nativeEvent: SelectionMenuActionEvent }) => void;
+  collapsableChildren?: boolean;
 };
 
 const NativeSelectableText: React.ComponentType<NativeSelectableTextProps> =
@@ -39,6 +40,9 @@ export function SelectableText({ menu = [], onMenuAction, ...props }: Selectable
   return (
     <NativeSelectableText
       {...props}
+      // On Android, a `Text` can't hold its inline views, so React Native mounts them into the
+      // `Text`'s parent. That needs the `Text` to stay flattenable here.
+      collapsableChildren={false}
       menu={menu}
       onMenuAction={onMenuAction ? ({ nativeEvent }) => onMenuAction(nativeEvent) : undefined}
     />
