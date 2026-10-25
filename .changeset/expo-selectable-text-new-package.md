@@ -2,4 +2,4 @@
 'expo-selectable-text': patch
 ---
 
-Add the `expo-selectable-text` package with a `Text` component that adds range selection on iOS and custom items to the text selection menu (`Text.Menu` and `Text.MenuAction`) on iOS and Android.
+Add the `expo-selectable-text` package with a `SelectableText` component that adds range selection and custom selection menu items to the React Native `Text` inside it, on iOS and Android.

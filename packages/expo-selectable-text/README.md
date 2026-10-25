@@ -1,51 +1,52 @@
 # expo-selectable-text
 
-React Native `Text` with range selection and custom items in the selection menu.
+Range selection and custom selection menu items for React Native `Text`.
 
 ```tsx
-import { Text } from 'expo-selectable-text';
+import { SelectableText } from 'expo-selectable-text';
+import { Text } from 'react-native';
 
-<Text selectable>
-  <Text.Menu>
-    <Text.MenuAction onPress={({ selectedText, start, end }) => addToChat(selectedText)}>
-      Add to chat
-    </Text.MenuAction>
-  </Text.Menu>
-  Hello <Text style={{ fontWeight: 'bold' }}>world</Text>
-</Text>;
+<SelectableText
+  menu={[{ id: 'add-to-chat', title: 'Add to chat' }]}
+  onMenuAction={({ id, selectedText, start, end }) => addToChat(selectedText)}>
+  <Text>
+    Hello <Text style={{ fontWeight: 'bold' }}>world</Text>
+  </Text>
+</SelectableText>;
 ```
 
-Without a `Text.Menu` child, `Text` renders React Native's `Text`. With one, the outermost `Text` renders a
-paragraph that reuses React Native's own text code:
+`SelectableText` wraps React Native's own `Text`. React Native still lays out, draws, and handles touches,
+nested `Text`, and accessibility. The wrapper only adds selection:
 
-| Layer      | React Native code that it uses                                                | What this package adds                                                                |
-| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| JavaScript | The root path of `Libraries/Text/Text.js`, ported line by line                | `Text.Menu` and `Text.MenuAction`                                                     |
-| C++        | `ParagraphShadowNode`, under the name `ExpoSelectableText`                    | Nothing else                                                                          |
-| iOS        | `RCTParagraphComponentView`, which still lays out, draws, and handles touches | A `UITextView` under the drawn text that provides range selection, and the menu items |
-| Android    | `ReactTextViewManager` and `ReactTextView`                                    | An `ActionMode.Callback` that adds the menu items                                     |
+| Platform | What it adds |
+| -------- | ------------ |
+| iOS      | When a touch reaches a `Text`, a transparent `UITextView` with the same text layout goes under the drawn text and provides range selection and the menu items. |
+| Android  | `ReactTextView` is a `TextView`, so the `Text` inside is made selectable and an `ActionMode.Callback` adds the menu items. |
 
 ## Behavior
 
-- `start` and `end` are UTF-16 indexes into the text of the paragraph. An inline view counts as one character
-  (U+FFFC), the same as in the attributed string that React Native builds.
-- The menu items appear before the system items on iOS, and after Copy on Android.
-- On iOS, a selection stays while the text changes, for example while a message streams in. The selection keeps
-  its indexes. On Android, a text change clears the selection, the same as React Native `Text`.
-- On Android, a long press on a nested `Text` with `onPress` also presses it, the same as React Native `Text`.
-  On iOS it only selects.
-- `selectionColor` works on Android only, the same as React Native `Text`.
-- When a React Native upgrade removes a private method that the iOS selection layer uses, the paragraph logs a
-  warning and keeps the React Native copy menu.
+- The menu items apply to every `Text` inside the wrapper. They appear before the system items on iOS, and after
+  Copy on Android.
+- `start` and `end` are UTF-16 indexes into the text of the `Text`. An inline view counts as one character
+  (U+FFFC).
+- On iOS, a selection stays while the text changes, for example while a message streams in. On Android, a text
+  change clears the selection, the same as React Native `Text`.
+- On iOS, a long press on a nested `Text` with `onPress` only selects. On Android, it also presses it, the same as
+  React Native `Text` with `selectable`.
+- On Android, a tap outside the `Text` doesn't clear the selection, and `numberOfLines` doesn't show an ellipsis,
+  the same as React Native `Text` with `selectable`.
+- On iOS, if an inline view of the `Text` mounts or unmounts while a selection is shown, the selection is cleared.
 
-## Differences from React Native `Text`
+## Private React Native internals
 
-- The outermost host component is `ExpoSelectableText`, not `RCTText`.
-- The children of the paragraph sit in one `RCTVirtualText` without props. The React Native renderer accepts raw
-  strings only inside the text host components that it knows. This adds one level to the attributed string and to
-  `ref.childNodes`, and it does not change text attributes or drawing.
+On iOS, the selection layer lines up with the drawn text through two private React Native internals:
+`-[RCTParagraphTextView drawingFrame]` and `-[RCTTextLayoutManager _textStorageAndLayoutManagerWithAttributesString:paragraphAttributes:size:]`.
+When a React Native version doesn't have them, the package logs a warning and uses public APIs with the same
+setup. Selection keeps working, but the highlight can be slightly off for text with padding, a custom
+`lineHeight`, or `adjustsFontSizeToFit`.
 
 ## Testing
 
-`src/__tests__/Text-test.native.tsx` renders React Native's real `Text` and this `Text` with the inputs of React
-Native's `Libraries/Text/__tests__/Text-itest.js` and compares the host output.
+- `apps/bare-expo/e2e/expo-selectable-text`: Maestro flows for the menu, a nested link, and a 500-row list.
+- Native component list, Components → Selectable Text: basics, edge cases, and a chat list with a React Native
+  `Text` control.

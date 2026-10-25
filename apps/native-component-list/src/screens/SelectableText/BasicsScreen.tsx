@@ -59,9 +59,9 @@ export default function BasicsScreen() {
       <Section title="numberOfLines and decorations">
         <SelectableText menu={MENU} onMenuAction={onMenuAction}>
           <RNText numberOfLines={2} style={[styles.body, styles.decorated]}>
-            This paragraph is truncated after two lines. It has an underline and a padded
-            background so that the selection highlight and the drawn glyphs can be compared with
-            the control below, which is React Native Text with the same props.
+            This paragraph is truncated after two lines. It has an underline and a padded background
+            so that the selection highlight and the drawn glyphs can be compared with the control
+            below, which is React Native Text with the same props.
           </RNText>
         </SelectableText>
         <RNText selectable numberOfLines={2} style={[styles.body, styles.decorated]}>

@@ -113,7 +113,10 @@ export default function EdgeCasesScreen() {
 
       <RNText style={styles.title}>Modal</RNText>
       <Button title="Open modal" onPress={() => setModalVisible(true)} />
-      <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modal}>
           <RNText style={[styles.status, styles.statusBox]} numberOfLines={3}>
             {status}
