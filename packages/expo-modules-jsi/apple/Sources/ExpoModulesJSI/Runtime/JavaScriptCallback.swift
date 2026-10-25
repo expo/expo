@@ -133,6 +133,68 @@ public final class JavaScriptCallback: Sendable {
     return result.value
   }
 
+  // The `emplacing` variants below pass `values` to the closure, so `values` doesn't have to be `Sendable`
+  // and the closure can capture nothing.
+
+  /// Calls the function like ``invokeDetached(_:)``, with `argumentCount` arguments. On the JavaScript
+  /// thread, `emplacing` encodes `values` into the arguments with ``JavaScriptValuesBuffer/emplace(_:at:in:)``.
+  /// Arguments that it doesn't emplace are `undefined`.
+  @inlinable
+  public func invokeDetached<Values>(
+    _ values: Values,
+    argumentCount: Int,
+    emplacing:
+      @escaping @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime)
+      throws -> Void
+  ) {
+    let box = UncheckedSendableBox(values)
+    runDetached { runtime in
+      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
+    }
+  }
+
+  /// Calls the function like ``invokeBlocking(_:)``, with `argumentCount` arguments. On the JavaScript
+  /// thread, `emplacing` encodes `values` into the arguments with ``JavaScriptValuesBuffer/emplace(_:at:in:)``.
+  /// Arguments that it doesn't emplace are `undefined`.
+  @available(*, noasync)
+  @inlinable
+  public func invokeBlocking<Values>(
+    _ values: Values,
+    argumentCount: Int,
+    emplacing:
+      @escaping @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime)
+      throws -> Void
+  ) throws {
+    let box = UncheckedSendableBox(values)
+    let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
+      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
+    } decodeResult: { _, _ in
+      UncheckedSendableBox(())
+    }
+  }
+
+  /// Calls the function like ``invokeBlocking(_:returning:)``, with `argumentCount` arguments. On the
+  /// JavaScript thread, `emplacing` encodes `values` into the arguments with
+  /// ``JavaScriptValuesBuffer/emplace(_:at:in:)``. Arguments that it doesn't emplace are `undefined`.
+  @available(*, noasync)
+  @inlinable
+  public func invokeBlocking<Values, R: JavaScriptDecodable>(
+    _ values: Values,
+    argumentCount: Int,
+    returning _: R.Type,
+    emplacing:
+      @escaping @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime)
+      throws -> Void
+  ) throws -> sending R {
+    let box = UncheckedSendableBox(values)
+    let result = try runBlocking { runtime in
+      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
+    } decodeResult: { result, runtime in
+      UncheckedSendableBox(try R.decode(result, in: runtime))
+    }
+    return result.value
+  }
+
   /// Calls the function with `arguments` and suspends until it returns, awaiting a returned promise.
   @inlinable
   public func invokeAsync<each A: JavaScriptEncodable>(_ arguments: repeat each A) async throws {
@@ -191,6 +253,20 @@ public final class JavaScriptCallback: Sendable {
   ) throws {
     buffer.emplace(try A.encode(argument, in: runtime), at: index)
     index += 1
+  }
+
+  /// Allocates `count` arguments that hold `undefined`, and lets `emplacing` encode `values` into them.
+  @inlinable
+  @JavaScriptActor
+  internal static func emplaceArguments<Values>(
+    _ values: Values,
+    count: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing: @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
+  ) throws -> JavaScriptValuesBuffer {
+    let arguments = JavaScriptValuesBuffer.allocateUndefined(in: runtime, count: count)
+    try emplacing(values, arguments, runtime)
+    return arguments
   }
 
   /// Reports an error from a closure that can't throw it: to React Native's `ErrorUtils.reportError`,
