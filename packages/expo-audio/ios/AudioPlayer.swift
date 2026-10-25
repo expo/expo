@@ -87,7 +87,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
   }
 
-  func currentStatus() -> [String: Any] {
+  func currentStatus() -> [String: Any?] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
     return [
@@ -104,7 +104,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "isLoaded": isLoaded,
       "playbackRate": rate,
       "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering
+      "isBuffering": isBuffering,
+      "error": ref.currentItem?.status == .failed
+        ? ref.currentItem?.error?.localizedDescription ?? "Unknown playback error"
+        : nil
     ]
   }
 
@@ -158,6 +161,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
             installTap()
             shouldInstallAudioTap = false
           }
+        }
+        if status == .failed {
+          self.updateStatus(with: [:])
         }
       }
       .store(in: &cancellables)
