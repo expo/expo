@@ -127,13 +127,15 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   // RNHostView requires a single ReactElement; wrap in a fragment so callers
   // can pass any `ReactNode` (string, array, etc.).
   const trigger = (
-    <RNHostView matchContents>
+    <RNHostView matchContents boundedByHost>
       <>{children}</>
     </RNHostView>
   );
 
+  // The host is sized by Yoga like a `View`, so a full-width trigger fills it and wraps, and it
+  // follows the parent on rotation. Content-sized triggers still hug their content.
   return (
-    <Host matchContents style={style} testID={testID} ignoreSafeArea="all">
+    <Host style={style} testID={testID} ignoreSafeArea="all">
       {shouldOpenOnLongPress ? (
         <ContextMenu>
           <ContextMenu.Trigger>{trigger}</ContextMenu.Trigger>
