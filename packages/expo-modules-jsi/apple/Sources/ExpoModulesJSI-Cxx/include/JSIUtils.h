@@ -317,6 +317,16 @@ inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &func
   });
 }
 
+/**
+ Calls `function` and moves its result into `result`. Returns `false` when the call throws, so the caller reads
+ the error from `CppError::getCurrent()` only then.
+ */
+inline bool callFunctionInto(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count, jsi::Value *_Nonnull result) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    *result = function.call(runtime, args, count);
+  });
+}
+
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);

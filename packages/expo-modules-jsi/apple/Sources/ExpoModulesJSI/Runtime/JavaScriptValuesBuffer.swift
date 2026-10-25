@@ -220,6 +220,19 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     emplace(try T.encode(value, in: runtime), at: index)
   }
 
+  /// Encodes `value` into the slot at `index`, which must hold a value that owns nothing, such as
+  /// `undefined`.
+  @usableFromInline
+  @JavaScriptActor
+  internal func encode<A: JavaScriptEncodable>(_ value: consuming A, at index: Int, in runtime: JavaScriptRuntime)
+    throws
+  {
+    // Not inlinable: here the encoded `JavaScriptValue` has a known layout, while a caller in another
+    // module handles it through its type metadata. It's called in a parameter pack loop, where a
+    // generic call doesn't specialize anyway.
+    emplace(try A.encode(value, in: runtime), at: index)
+  }
+
   /// Allocates new values buffer with the given JS representables.
   /// Note that parameter packs still do not support non-copyable types so they need to be passed as `JavaScriptRef`.
   public static func allocate<each T: JavaScriptRepresentable>(
