@@ -24,6 +24,16 @@ describe('apiRoutes', () => {
   );
 });
 
+describe('streaming', () => {
+  it('accepts the streaming option', () => {
+    const config = withRouter(
+      { name: 'test', slug: 'test', web: { output: 'server' } },
+      { streaming: false }
+    );
+    expect(config.extra?.router.streaming).toBe(false);
+  });
+});
+
 describe('asyncRoutes', () => {
   it('defaults to enabled only on web', () => {
     const config = withRouter({ name: 'test', slug: 'test' });

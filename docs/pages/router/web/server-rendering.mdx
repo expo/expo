@@ -213,6 +213,35 @@ The `generateMetadata` function executes on the server and is stripped from the 
 
 You can also use the `<Head>` component from `expo-router/head` to add `<meta>` tags. Both approaches can co-exist in the same route. However, `generateMetadata` is the recommended approach for server rendering because it resolves metadata before the HTML stream begins, ensuring that `<meta>` tags are included in the earliest bytes of the response. `<Head>` can be used to update `<meta>` tags dynamically after the app has hydrated.
 
+## Streaming
+
+By default, the server streams each page. It sends the HTML shell first, with the fallback of each pending [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary. Then it sends the content of each boundary when it resolves, with an inline script that puts it in place. This gives a faster first byte.
+
+To send each page once it is complete, set `streaming` to `false` in the `expo-router` config plugin:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "output": "server"
+    },
+    "plugins": [["expo-router", { "streaming": false }]]
+  }
+}
+```
+
+The server then waits for all Suspense boundaries to resolve before it sends the first byte, so the slowest boundary sets the time to first byte. The response contains the final content of each boundary that resolves. A boundary that fails, or that does not resolve within 10 seconds after the shell is rendered, is sent with its fallback, and the browser renders it. Use this option when:
+
+- A component sets [response headers](/router/web/api-routes/#response-headers) with `setResponseHeaders()` from data that it loads while it renders. When the page is streamed, the server sends the headers before this data loads.
+- Crawlers and link previews must get the complete content of the page, without running JavaScript.
+
+This option has the following limitations:
+
+- The headers that a boundary sets with `setResponseHeaders()` are lost if the boundary does not resolve within 10 seconds.
+- The server renders the `<head>` and the font resources with the shell. A font that a boundary loads with `useFonts` after the shell is rendered is not preloaded in the page.
+
+Static rendering always waits for all Suspense boundaries, so this option has no effect with `web.output: "static"`.
+
 ## Deployment
 
 Server-side rendering requires a runtime server to render pages on each request. Server-side rendered Expo apps **cannot** be deployed to static hosting services like GitHub Pages.

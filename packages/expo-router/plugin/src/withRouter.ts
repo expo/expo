@@ -168,6 +168,13 @@ export type Props = {
    */
   apiRoutes?: boolean;
   /**
+   * Stream server-rendered pages with `web.output: "server"`. When `false`, the server waits for
+   * all Suspense boundaries to resolve, for up to 10 seconds after the shell is rendered, and then
+   * sends the page. Static output always waits for all Suspense boundaries.
+   * @default true
+   */
+  streaming?: boolean;
+  /**
    * Enable experimental server middleware support. Middleware no longer requires an opt-in as of
    * SDK 58. This option has no effect.
    * @deprecated
