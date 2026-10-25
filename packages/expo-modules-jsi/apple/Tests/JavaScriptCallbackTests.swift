@@ -120,12 +120,40 @@ struct JavaScriptCallbackTests {
     }
   }
 
+  @Test
+  func `invokeBlocking with emplaced arguments encodes the values and decodes the result`() throws {
+    let callback = try callback("(a, b) => a + b")
+    let sum = try callback.invokeBlocking((2, 3), argumentCount: 2, returning: Int.self) { values, buffer, runtime in
+      try buffer.emplace(values.0, at: 0, in: runtime)
+      try buffer.emplace(values.1, at: 1, in: runtime)
+    }
+    #expect(sum == 5)
+  }
+
+  @Test
+  func `invokeBlocking with emplaced arguments without a result calls the function`() throws {
+    let callback = try callback("(value) => { globalThis.received = value }")
+    try callback.invokeBlocking("hello", argumentCount: 1) { value, buffer, runtime in
+      try buffer.emplace(value, at: 0, in: runtime)
+    }
+    #expect(try runtime.eval("globalThis.received").asString() == "hello")
+  }
+
   // MARK: - invokeDetached
 
   @Test
   func `invokeDetached calls the function`() throws {
     let callback = try callback("(value) => { globalThis.received = value }")
     callback.invokeDetached(7)
+    #expect(try runtime.eval("globalThis.received").asInt() == 7)
+  }
+
+  @Test
+  func `invokeDetached with emplaced arguments calls the function`() throws {
+    let callback = try callback("(value) => { globalThis.received = value }")
+    callback.invokeDetached(7, argumentCount: 1) { value, buffer, runtime in
+      try buffer.emplace(value, at: 0, in: runtime)
+    }
     #expect(try runtime.eval("globalThis.received").asInt() == 7)
   }
 
@@ -271,6 +299,33 @@ struct JavaScriptCallbackThreadingTests {
       }
       #expect(result == 42)
       #expect(flag.value == true)
+    }
+    await drain(testRuntime)
+  }
+
+  @Test
+  func `invokeBlocking with emplaced arguments from another thread calls the function`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    do {
+      let callback = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        return try runtime.eval("(a, b) => a + b").withUnownedValue(in: runtime) { unownedValue in
+          try JavaScriptCallback.decode(unownedValue, in: runtime)
+        }
+      }
+      let result: Int = try await withCheckedThrowingContinuation { continuation in
+        DispatchQueue.global().async {
+          continuation.resume(
+            with: Result {
+              try callback.invokeBlocking((2, 3), argumentCount: 2, returning: Int.self) { values, buffer, runtime in
+                try buffer.emplace(values.0, at: 0, in: runtime)
+                try buffer.emplace(values.1, at: 1, in: runtime)
+              }
+            }
+          )
+        }
+      }
+      #expect(result == 5)
     }
     await drain(testRuntime)
   }
