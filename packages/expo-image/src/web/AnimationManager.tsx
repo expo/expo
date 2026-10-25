@@ -117,9 +117,12 @@ export default function AnimationManager({
   const animation = getAnimatorFromTransition(transition);
 
   const initialNode = useAnimationManagerNode(initial, 'active');
+  const newNode = useAnimationManagerNode(renderFunction);
 
+  // Without a placeholder, start with the image. Effects do not run in server rendering,
+  // so the image must be in the first render to be in the HTML.
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
-    initialNode ? [initialNode] : []
+    initialNode ? [initialNode] : newNode ? [newNode] : []
   );
 
   const [prevRecyclingKey, setPrevRecyclingKey] = React.useState<string>(recyclingKey ?? '');
@@ -139,11 +142,10 @@ export default function AnimationManager({
     );
   };
 
-  const newNode = useAnimationManagerNode(renderFunction);
-
   React.useEffect(() => {
     setNodes((n) => {
-      if (!newNode) {
+      // The initial state can already hold this node. It stays `mounted` until `onReady`.
+      if (!newNode || n.includes(newNode)) {
         return n;
       }
       const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
