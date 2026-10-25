@@ -24,10 +24,10 @@ For accessibility snapshots and actions that select elements by their labels, us
   ]}
 />
 
-Check that the session status is `IN_PROGRESS`. The control command without an action lists the actions that its serve-sim version supports. With `--json`, it returns their descriptions, argument order, accepted properties, and file upload or download behavior. Read this catalog before you run an unfamiliar action. Older sessions can have a different catalog; updating EAS CLI does not update a running session.
+Check that the session status is `IN_PROGRESS`. The control command without an action lists the actions that its serve-sim version supports. With `--json`, it returns their descriptions, argument order, accepted properties, and file upload or download behavior. Read this catalog before you run an unfamiliar action. For the usage of one action, run `eas simulator:control <action> --help`. Older sessions can have a different catalog; updating EAS CLI does not update a running session.
 
 If you omit `--id`, the command uses the session ID from **.env.eas-simulator** or the shell environment. Pass `--id` when you have more than one session. EAS CLI selects the device that the session streams. You do not need to copy its device identifier or preview token.
 
-A private preview link works with direct controls. You do not need `--public-link`. Keep credentials out of the command.
+A private preview link works with direct controls. You do not need `--public-link`.
 
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
