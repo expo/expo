@@ -61,6 +61,26 @@ Enabling long paths isn't enough on its own, because Ninja 1.10.2 doesn't suppor
 
 3. Delete **android/app/.cxx** and **android/app/build** so that CMake regenerates its build files, and then run `npx expo prebuild --clean` and build again.
 
+#### Builds on EAS Build
+
+EAS Build runs Android builds on Linux, where the path limit doesn't apply and CMake 3.31.6 isn't installed. If `cmakeVersion` is also set for EAS Build, the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
+
+To use the newer CMake version only for local builds on Windows, remove the `expo-build-properties` entry from **app.json** and add it in **app.config.js** instead:
+
+```js app.config.js
+const isWindows = process.platform === 'win32';
+
+export default ({ config }) => ({
+  ...config,
+  plugins: [
+    ...(config.plugins ?? []),
+    ['expo-build-properties', { android: isWindows ? { cmakeVersion: '3.31.6' } : {} }],
+  ],
+});
+```
+
+If your project doesn't include an **android** directory, EAS Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there and the default CMake version is used.
+
 ### Move the project to a shorter path
 
 To confirm that the path length is the cause, or as a workaround, move the project to a short folder such as **C:\dev\my-app** and build again.
