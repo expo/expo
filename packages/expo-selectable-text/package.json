@@ -47,8 +47,8 @@
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
-    "test-renderer": "^1.3.0",
-    "expo": "workspace:*"
+    "expo": "workspace:*",
+    "test-renderer": "^1.3.0"
   },
   "peerDependencies": {
     "expo": "*",

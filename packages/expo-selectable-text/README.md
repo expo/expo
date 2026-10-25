@@ -18,10 +18,10 @@ import { Text } from 'react-native';
 `SelectableText` wraps React Native's own `Text`. React Native still lays out, draws, and handles touches,
 nested `Text`, and accessibility. The wrapper only adds selection:
 
-| Platform | What it adds |
-| -------- | ------------ |
+| Platform | What it adds                                                                                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | iOS      | When a touch reaches a `Text`, a transparent `UITextView` with the same text layout goes under the drawn text and provides range selection and the menu items. |
-| Android  | `ReactTextView` is a `TextView`, so the `Text` inside is made selectable and an `ActionMode.Callback` adds the menu items. |
+| Android  | `ReactTextView` is a `TextView`, so the `Text` inside is made selectable and an `ActionMode.Callback` adds the menu items.                                     |
 
 ## Behavior
 
