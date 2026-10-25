@@ -5,6 +5,21 @@ import { Suspense, use, type ReactNode } from 'react';
 import { getStreamingContent } from '../renderStreamingContent';
 
 const mockRenderContent = jest.fn<ReactNode, []>();
+const mockStreaming = jest.fn<boolean | undefined, []>();
+
+// The `expo-router` config plugin options, as Metro inlines them in the server bundle.
+jest.mock('expo-constants', () => ({
+  ...jest.requireActual('expo-constants'),
+  expoConfig: {
+    extra: {
+      router: {
+        get streaming() {
+          return mockStreaming();
+        },
+      },
+    },
+  },
+}));
 
 // Metro provides these require.context modules when bundling an app.
 jest.mock('expo-router/_ctx', () => {
@@ -24,6 +39,10 @@ jest.mock('expo-router/_ctx', () => {
 jest.mock('expo-router/_ctx-html', () => ({
   ctx: { keys: () => [] },
 }));
+
+beforeEach(() => {
+  mockStreaming.mockReturnValue(undefined);
+});
 
 it.each(['server', 'static'] as const)(
   '%s output preserves script order and bootstrap data',
@@ -144,6 +163,67 @@ it('returns the live shell while Suspense is still pending', async () => {
     deferred.resolve('Finished live content');
     while (!(await reader.read()).done) {}
     reader.releaseLock();
+  }
+});
+
+it('returns the complete document when streaming is disabled', async () => {
+  mockStreaming.mockReturnValue(false);
+  const deferred = createDeferred<string>();
+  function Content() {
+    return <p>{use(deferred.promise)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  try {
+    let isReturned = false;
+    const result = getStreamingContent(new URL('http://localhost/suspense'), {
+      route: { file: './suspense.tsx', page: '/suspense' },
+    }).then((stream) => {
+      isReturned = true;
+      return stream;
+    });
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(isReturned).toBe(false);
+
+    deferred.resolve('Finished live content');
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Finished live content');
+    expect(content).not.toContain('Loading live content');
+    expect(content).not.toContain('<template');
+  } finally {
+    deferred.resolve('Finished live content');
+  }
+});
+
+it('sends the fallback of a pending boundary when the complete render times out', async () => {
+  mockStreaming.mockReturnValue(false);
+  jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick', 'queueMicrotask'] });
+  const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const pending = new Promise<string>(() => {});
+  function Content() {
+    return <p>{use(pending)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  try {
+    const result = getStreamingContent(new URL('http://localhost/suspense'), {
+      route: { file: './suspense.tsx', page: '/suspense' },
+    });
+    await jest.advanceTimersByTimeAsync(10_000);
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Loading live content');
+    expect(consoleWarn).toHaveBeenCalledWith(
+      'SSR render: Suspense boundaries did not resolve within 10000 ms. The browser renders them.'
+    );
+  } finally {
+    consoleWarn.mockRestore();
+    jest.useRealTimers();
   }
 });
 

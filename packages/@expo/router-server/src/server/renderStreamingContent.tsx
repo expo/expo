@@ -7,6 +7,7 @@
 // NOTE(@hassankhan): disable when this file is its own entrypoint
 // import '@expo/metro-runtime';
 
+import Constants from 'expo-constants';
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
@@ -19,7 +20,7 @@ import {
 } from 'expo-router/internal/static';
 import { normalizeCssAssets, type AssetInfo, type MatchedRoute } from 'expo-server/private';
 import React, { type ReactNode } from 'react';
-import ReactDOMServer from 'react-dom/server';
+import ReactDOMServer, { type ReactDOMServerReadableStream } from 'react-dom/server';
 
 import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
@@ -110,9 +111,54 @@ function FontResources() {
   return createInjectedFontsAsNodes(descriptors);
 }
 
+function isStreamingEnabled(): boolean {
+  return Constants.expoConfig?.extra?.router?.streaming !== false;
+}
+
+/**
+ * The longest time that server output waits for Suspense boundaries when streaming is disabled,
+ * from when the shell is ready. The render is then aborted, and the browser renders the
+ * boundaries that are still pending. The headers that they set with `setResponseHeaders()` are lost.
+ * `FontResources` renders with the shell, so the fonts that late boundaries load are not in the page.
+ */
+const COMPLETE_RENDER_TIMEOUT_MS = 10_000;
+
+/** Aborts with `signal`, or when `abort()` is called. */
+function createLinkedAbortController(signal: AbortSignal | undefined): AbortController {
+  const controller = new AbortController();
+  if (signal?.aborted) {
+    controller.abort(signal.reason);
+  } else {
+    signal?.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+  }
+  return controller;
+}
+
+/** Waits for all Suspense boundaries, then aborts the boundaries still pending after the timeout. */
+async function waitForAllReady(
+  stream: ReactDOMServerReadableStream,
+  controller: AbortController
+): Promise<void> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const isReady = await Promise.race([
+    stream.allReady.then(() => true),
+    new Promise<false>((resolve) => {
+      timeout = setTimeout(() => resolve(false), COMPLETE_RENDER_TIMEOUT_MS);
+    }),
+  ]).finally(() => clearTimeout(timeout));
+  if (!isReady) {
+    console.warn(
+      `SSR render: Suspense boundaries did not resolve within ${COMPLETE_RENDER_TIMEOUT_MS} ms. The browser renders them.`
+    );
+    controller.abort(new Error(`Server render timed out after ${COMPLETE_RENDER_TIMEOUT_MS} ms`));
+    await stream.allReady;
+  }
+}
+
 /**
  * Renders the document using `renderToReadableStream`. Static output waits for Suspense
- * and returns HTML; server output returns a progressive stream.
+ * and returns HTML; server output returns a progressive stream, or a stream of the complete
+ * document when the `streaming` option of the `expo-router` config plugin is `false`.
  */
 export function getStreamingContent(
   location: URL,
@@ -155,6 +201,12 @@ export async function getStreamingContent(
     };
 
     const isStatic = options.output === 'static';
+    const shouldWaitForAllReady = !isStatic && !isStreamingEnabled();
+    // Lets the render be aborted after the timeout, as well as with the request.
+    const abortController = shouldWaitForAllReady
+      ? createLinkedAbortController(options.request?.signal)
+      : null;
+    const signal = abortController?.signal ?? options.request?.signal;
     const renderErrors: unknown[] = [];
     const stream = await ReactDOMServer.renderToReadableStream(
       <ServerDocument data={serverDocumentData}>
@@ -169,9 +221,9 @@ export async function getStreamingContent(
             hydrate: options.hydrate ?? true,
             loadedData,
           }) || undefined,
-        signal: options.request?.signal,
+        signal,
         onError(error) {
-          if (options.request?.signal.aborted) {
+          if (signal?.aborted) {
             return;
           }
 
@@ -183,14 +235,23 @@ export async function getStreamingContent(
         },
       }
     );
-    if (isStatic) {
-      await stream.allReady;
-      if (renderErrors.length > 0) {
-        throw renderErrors[0];
+    try {
+      if (isStatic) {
+        await stream.allReady;
+        if (renderErrors.length > 0) {
+          throw renderErrors[0];
+        }
+        return await new Response(stream).text();
       }
-      return new Response(stream).text();
+      if (abortController) {
+        await waitForAllReady(stream, abortController);
+      }
+      return stream;
+    } catch (error) {
+      // Stops the render: nothing reads the stream after this.
+      await stream.cancel(error).catch(() => {});
+      throw error;
     }
-    return stream;
   });
 }
 
