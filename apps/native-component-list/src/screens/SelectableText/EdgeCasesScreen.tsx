@@ -1,9 +1,18 @@
 import { SelectableText, type SelectionMenuActionEvent } from 'expo-selectable-text';
 import * as React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
+import {
+  Button,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text as RNText,
+  View,
+} from 'react-native';
 
 const RTL = 'مرحبا بك في هذا التطبيق، اضغط مطولا لتحديد جزء من النص.';
 const EMOJI = 'Hi 👋🏽 family 👨‍👩‍👧 and café ☕️ end of line.';
+const MODAL_TEXT = 'Text inside a modal. Select a word, then tap outside to clear it.';
 const MENU = [{ id: 'add-to-chat', title: 'Add to chat' }];
 const LONG = Array.from(
   { length: 40 },
@@ -15,6 +24,7 @@ export default function EdgeCasesScreen() {
   const [rootPresses, setRootPresses] = React.useState(0);
   const [inlinePresses, setInlinePresses] = React.useState(0);
   const [tick, setTick] = React.useState(0);
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   React.useEffect(() => {
     const id = setInterval(() => setTick((value) => value + 1), 1000);
@@ -101,6 +111,20 @@ export default function EdgeCasesScreen() {
         {changing}
       </RNText>
 
+      <RNText style={styles.title}>Modal</RNText>
+      <Button title="Open modal" onPress={() => setModalVisible(true)} />
+      <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modal}>
+          <RNText style={[styles.status, styles.statusBox]} numberOfLines={3}>
+            {status}
+          </RNText>
+          <SelectableText {...menuProps('modal', MODAL_TEXT)}>
+            <RNText style={styles.body}>{MODAL_TEXT}</RNText>
+          </SelectableText>
+          <Button title="Close modal" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
+
       <RNText style={styles.title}>Long message</RNText>
       <SelectableText {...menuProps('long', LONG)}>
         <RNText style={styles.body}>{LONG}</RNText>
@@ -130,6 +154,12 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 17,
     lineHeight: 24,
+  },
+  modal: {
+    flex: 1,
+    padding: 16,
+    paddingTop: 80,
+    gap: 16,
   },
   inlineView: {
     width: 16,
