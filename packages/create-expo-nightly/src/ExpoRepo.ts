@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { mergeJsonFilesAsync, readJsonFileAsync } from './JsonFile.js';
 import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
 import { runAsync } from './Processes.js';
 
@@ -72,12 +71,16 @@ export async function packExpoBareTemplateTarballAsync(
 }
 
 async function setupDependenciesAsync(expoRepoPath: string, nightlyVersion: string) {
-  const packageJsonPath = path.join(expoRepoPath, 'package.json');
-  const packageJson = await readJsonFileAsync(packageJsonPath);
-  const resolutions: Record<string, string> =
-    (packageJson.resolutions as Record<string, string>) ?? {};
+  const { stdout } = await runAsync('pnpm', ['config', 'get', 'overrides', '--json'], {
+    cwd: expoRepoPath,
+  });
+  const overrides = JSON.parse(stdout);
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
-    resolutions[name] = `${nightlyVersion}`;
+    overrides[name] = nightlyVersion;
   }
-  await mergeJsonFilesAsync(packageJsonPath, { resolutions });
+  await runAsync(
+    'pnpm',
+    ['config', 'set', '--location=project', '--json', 'overrides', JSON.stringify(overrides)],
+    { cwd: expoRepoPath }
+  );
 }

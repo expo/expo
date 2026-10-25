@@ -54,7 +54,6 @@ describe('export static with headers', () => {
       export: {
         env: {
           EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SERVER_LOADERS: 'true',
           E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
           E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
         },

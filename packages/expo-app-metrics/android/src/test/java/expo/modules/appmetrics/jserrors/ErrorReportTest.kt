@@ -55,6 +55,37 @@ class ErrorReportTest {
     val record = report.toLogRecord(sessionId = "s")
     val attributes = record.attributes ?: ""
     assertTrue(attributes.contains("\"expo.error.source\":\"reportedByUser\""))
+    assertEquals("js.exception", record.name)
     assertEquals("error", record.severity)
+  }
+
+  @Test
+  fun `tags an integration-reported error with the integration source at error severity`() {
+    val report = ErrorReport(
+      source = ErrorSource.INTEGRATION,
+      type = "reanimated.error",
+      message = "[Reanimated] boom",
+      stacktrace = "at f (app.js:1:1)",
+      isFatal = false
+    )
+    val record = report.toLogRecord(sessionId = "s")
+    val attributes = record.attributes ?: ""
+    assertTrue(attributes.contains("\"expo.error.source\":\"integration\""))
+    assertEquals("error", record.severity)
+  }
+
+  @Test
+  fun `builds a js exception log from a pending fatal error`() {
+    val record = PendingErrorStore.PendingError(
+      source = "global",
+      type = "Error",
+      message = "boom",
+      stacktrace = "at f (app.js:1:1)",
+      sessionId = "s",
+      timestamp = "2026-01-01T00:00:00Z"
+    ).toLogRecord()
+
+    assertEquals("js.exception", record.name)
+    assertEquals("fatal", record.severity)
   }
 }

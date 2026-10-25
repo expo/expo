@@ -99,7 +99,7 @@ class FileSystemModule : Module() {
     }
 
     Property("availableDiskSpace") {
-      filesDirectory.freeSpace
+      filesDirectory.usableSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
@@ -293,9 +293,9 @@ class FileSystemModule : Module() {
 
       Property("size") { file ->
         try {
-          file.size
+          file.size ?: 0
         } catch (e: Exception) {
-          null
+          0
         }
       }
 

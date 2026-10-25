@@ -14,6 +14,7 @@ import { detectSandbox } from 'sandbox-cli-detector';
 import {
   CLI_FEEDBACK_CATEGORIES,
   CLI_FEEDBACK_MAX_LENGTH,
+  CLI_FEEDBACK_MIN_LENGTH,
   type CliFeedbackCategory,
   type CliFeedbackContextMetadata,
   type CliFeedbackMetadata,
@@ -67,11 +68,13 @@ async function runAsync(): Promise<void> {
     {
       '--help': Boolean,
       '--version': Boolean,
+      '--message': String,
       '--category': String,
       '--subject': String,
       '--resume': String,
       '-h': '--help',
       '-v': '--version',
+      '-m': '--message',
       '-c': '--category',
       '-s': '--subject',
     },
@@ -96,7 +99,19 @@ async function runAsync(): Promise<void> {
     return;
   }
 
-  const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
+  if (args._.length > 0 && args['--message'] === undefined) {
+    console.warn(
+      chalk.yellow(
+        'Passing feedback as a positional argument is deprecated. Use --message or -m instead.'
+      )
+    );
+  }
+
+  const { category, feedback } = await resolveFeedbackAsync(
+    args._,
+    args['--category'],
+    args['--message']
+  );
   const session = getSession();
   const metadata = await createFeedbackMetadataAsync(
     process.cwd(),
@@ -125,23 +140,38 @@ async function runAsync(): Promise<void> {
 
   console.log(chalk.green('Thanks for the feedback!'));
   console.log(
-    `To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume ${metadata.feedbackId}`
+    `To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume ${metadata.feedbackId} --message "<message>"`
   );
 }
 
 export async function resolveFeedbackAsync(
   messageParts: string[],
-  categoryValue?: string
+  categoryValue?: string,
+  messageValue?: string
 ): Promise<{ category: CliFeedbackCategory; feedback: string }> {
   const category = resolveFeedbackCategory(categoryValue);
-  const feedback = messageParts.join(' ').trim();
-  if (feedback) {
+  const positionalFeedback = messageParts.join(' ').trim();
+  if (messageValue !== undefined && positionalFeedback) {
+    throw new CommandError(
+      'Provide feedback with either --message or a positional argument, not both.'
+    );
+  }
+
+  if (messageValue !== undefined) {
+    const feedback = messageValue.trim();
     validateFeedback(feedback);
     return { category, feedback };
   }
 
+  if (positionalFeedback) {
+    validateFeedback(positionalFeedback);
+    return { category, feedback: positionalFeedback };
+  }
+
   if (ciInfo.isCI || !process.stdin.isTTY) {
-    throw new CommandError('Feedback message is required in non-interactive environments.');
+    throw new CommandError(
+      'Feedback message is required in non-interactive environments. Pass it with --message or -m.'
+    );
   }
 
   const response = await prompts(
@@ -443,11 +473,12 @@ function getExpoApiBaseUrl(): string {
 function printHelp(): void {
   console.log(chalk`
   {bold Usage}
-    {dim $} npx submit-expo-feedback {dim <message>}
+    {dim $} npx submit-expo-feedback {dim --message <message>}
 
   {bold Info}
     Send feedback to the Expo team. If no message is provided, you will be prompted.
-    Feedback messages can be up to ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.
+    Feedback messages must be between ${CLI_FEEDBACK_MIN_LENGTH.toLocaleString('en-US')} and ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.
+    Positional messages are temporarily supported for backwards compatibility.
 
   {bold Data collection}
     Feedback includes detected agent, sandbox and environment
@@ -457,6 +488,7 @@ function printHelp(): void {
     and all network requests.
 
   {bold Options}
+    --message, -m <message>    Feedback message
     --category, -c <category>  Feedback category (${CLI_FEEDBACK_CATEGORIES.join(', ')})
     --subject, -s <subject>    Exact item the feedback is about, based on the category
     --resume <feedbackId>      Continue a feedback session using its ID
@@ -500,8 +532,12 @@ function validateFeedback(feedback: string): void {
 }
 
 function getFeedbackValidationError(feedback: string): string | null {
-  if (!feedback) {
+  const trimmedFeedback = feedback.trim();
+  if (!trimmedFeedback) {
     return 'Feedback cannot be empty.';
+  }
+  if (trimmedFeedback.length < CLI_FEEDBACK_MIN_LENGTH) {
+    return `Feedback must be at least ${CLI_FEEDBACK_MIN_LENGTH.toLocaleString('en-US')} characters.`;
   }
   if (feedback.length > CLI_FEEDBACK_MAX_LENGTH) {
     return `Feedback cannot exceed ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.`;
@@ -528,7 +564,7 @@ export function resolveFeedbackId(value?: string): string {
 
 function getPackageVersion(): string {
   try {
-    return require('../package.json').version;
+    return require('submit-expo-feedback/package.json')?.version ?? '0.0.0';
   } catch {
     return '0.0.0';
   }

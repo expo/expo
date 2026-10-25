@@ -5,7 +5,9 @@ import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedExcep
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumId
 import expo.modules.medialibrary.next.extensions.resolver.queryAllAlbumIds
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumsMetadata
 import expo.modules.medialibrary.next.objects.album.factories.AlbumFactory
+import expo.modules.medialibrary.next.records.AlbumMetadata
 import java.lang.ref.WeakReference
 
 class AlbumQuery(val albumFactory: AlbumFactory, context: Context) {
@@ -26,4 +28,7 @@ class AlbumQuery(val albumFactory: AlbumFactory, context: Context) {
     val ids = contentResolver.queryAllAlbumIds()
     return ids.map { albumFactory.create(it) }
   }
+
+  suspend fun getAlbumsMetadata(): List<AlbumMetadata> =
+    contentResolver.queryAlbumsMetadata()
 }

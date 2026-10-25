@@ -23,6 +23,7 @@ import {
   extractFrontmatter,
   findMdxSource,
   injectSceneVariants,
+  insertAgentInstructionsAfterH1,
   type ResolvedMdxImport,
 } from './generate-markdown-pages-utils.ts';
 import { SCENE_PAGES } from './scene-page-manifest.ts';
@@ -76,8 +77,9 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
   if (msg.type === 'task') {
     const htmlPath = msg.htmlPath!;
     const relHtmlPath = toPosixPath(path.relative(outDir, htmlPath));
+    const pathname = urlPathFromHtmlPath(relHtmlPath);
     const html = fs.readFileSync(htmlPath, 'utf-8');
-    let markdown = convertHtmlToMarkdown(html);
+    let markdown = convertHtmlToMarkdown(html, pathname);
 
     const sceneWarnings: string[] = [];
     const scenePage = SCENE_PAGES.find(page => page.htmlPath === relHtmlPath);
@@ -137,7 +139,6 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
 
     const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
     const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
-    const pathname = urlPathFromHtmlPath(relHtmlPath);
     const instructionSections: string[] = [];
     if (shouldAppendAgentInstructions(markdown)) {
       instructionSections.push(buildFeedbackSection(pathname));
@@ -150,15 +151,19 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       instructionSections.length > 0 ? wrapAgentInstructions(instructionSections) : null;
     const pageNote = buildPageSpecificNote(pathname);
 
+    if (agentInstructions) {
+      const description = frontmatter
+        ?.match(/^description: (.*)$/m)?.[1]
+        ?.replace(/^["']|["']$/g, '');
+      markdown = insertAgentInstructionsAfterH1(markdown, agentInstructions, description);
+    }
+
     const parts: string[] = [];
     if (frontmatter) {
       parts.push(frontmatter);
     }
     if (pageNote) {
       parts.push(pageNote);
-    }
-    if (agentInstructions) {
-      parts.push(agentInstructions);
     }
     parts.push(markdown);
     markdown = parts.join('\n');

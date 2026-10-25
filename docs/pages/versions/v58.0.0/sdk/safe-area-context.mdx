@@ -1,0 +1,221 @@
+---
+title: react-native-safe-area-context
+description: A library with a flexible API for accessing the device's safe area inset information.
+sourceCodeUrl: 'https://github.com/AppAndFlow/react-native-safe-area-context'
+packageName: react-native-safe-area-context
+platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
+inExpoGo: true
+---
+
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
+import { CALLOUT, A } from '~/ui/components/Text';
+
+`react-native-safe-area-context` provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
+
+## Installation
+
+<APIInstallSection href="https://appandflow.github.io/react-native-safe-area-context/" />
+
+## API
+
+```js
+import {
+  SafeAreaView,
+  SafeAreaProvider,
+  SafeAreaInsetsContext,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+```
+
+## Components
+
+<PaddedAPIBox header="SafeAreaView">
+
+`SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
+
+If you set your own padding on the view, it will be added to the padding from the safe area.
+
+> **info** On web, see the [Context](#context) section for Expo Router behavior and provider setup.
+
+```jsx
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+function SomeComponent() {
+  return (
+    <SafeAreaView>
+      <View />
+    </SafeAreaView>
+  );
+}
+```
+
+<APIBoxSectionHeader text="SafeAreaView Props" />
+
+<PaddedAPIBox header="edges" headerNestingLevel={4}>
+
+{/* prettier-ignore */}
+<CALLOUT theme="tertiary" className="text-xs">
+  {'Optional\u2002•\u2002Type: '}
+  <A href="#edge">
+    <code>Edge[]</code>
+  </A>
+  {'\u2002•\u2002Default: '}
+  <code>["top", "right", "bottom", "left"]</code>
+</CALLOUT>
+<br />
+
+Sets the edges to apply the safe area insets to.
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="emulateUnlessSupported" headerNestingLevel={4}>
+
+<CALLOUT theme="tertiary" className="text-xs">
+  {'Optional\u2002•\u2002Type: '}
+  <code>boolean</code>
+  {'\u2002•\u2002Default: '}
+  <code>true</code>
+</CALLOUT>
+<br />
+
+On iOS 10+, emulate the safe area using the status bar height and home indicator sizes.
+
+</PaddedAPIBox>
+</PaddedAPIBox>
+
+## Hooks
+
+<PaddedAPIBox header="useSafeAreaInsets()">
+
+Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
+
+<APIBoxSectionHeader text="Example" />
+
+```jsx
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+function HookComponent() {
+  const insets = useSafeAreaInsets();
+
+  return <View style={{ paddingTop: insets.top }} />;
+}
+```
+
+<APIBoxSectionHeader text="Returns" />
+
+<CornerDownRightIcon
+  aria-hidden="true"
+  className="icon-sm text-icon-secondary mr-2 inline-block align-middle"
+/>
+[`EdgeInsets`](#edgeinsets)
+
+</PaddedAPIBox>
+
+## Types
+
+<PaddedAPIBox header="Edge">
+
+String union of possible edges.
+
+Acceptable values are: `'top'`, `'right'`, `'bottom'`, `'left'`.
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="EdgeInsets">
+
+Represent the hook result.
+
+<APIBoxSectionHeader text="EdgeInsets Properties" />
+
+| Name     | Type     | Description            |
+| -------- | -------- | ---------------------- |
+| `bottom` | `number` | Value of bottom inset. |
+| `left`   | `number` | Value of left inset.   |
+| `right`  | `number` | Value of right inset.  |
+| `top`    | `number` | Value of top inset.    |
+
+</PaddedAPIBox>
+
+## Guides
+
+### Context
+
+Expo Router sets up safe area context automatically. On web, `useSafeAreaInsets()` and `useSafeAreaFrame()` return zero values under Expo Router's provider. `SafeAreaView` does not add safe-area spacing. This applies to all web rendering modes. Android and iOS behavior is unchanged.
+
+Use [CSS for web safe-area spacing](/develop/user-interface/safe-areas/#usage-with-web).
+
+Without Expo Router, add `SafeAreaProvider` in your app root component when using the library's components or hooks. This provider supports web measurements, but CSS remains the recommended approach for web spacing.
+
+> You may need to add it in other places too, including at the root of any modals any routes when using `react-native-screen`.
+
+```jsx
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+function App() {
+  return <SafeAreaProvider>...</SafeAreaProvider>;
+}
+```
+
+Then, you can use [`useSafeAreaInsets()`](#usesafeareainsets) hook and also consumer API to access inset data:
+
+```jsx
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+
+function Component() {
+  return (
+    <SafeAreaInsetsContext.Consumer>
+      {insets => <View style={{ paddingTop: insets.top }} />}
+    </SafeAreaInsetsContext.Consumer>
+  );
+}
+```
+
+### Optimization
+
+If you can, use `SafeAreaView`. It's implemented natively so when rotating the device, there is no delay from the asynchronous bridge.
+
+To speed up the initial render, you can import `initialWindowMetrics` from this package and set it as the `initialMetrics` prop on the provider as shown below. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
+
+```jsx
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+
+function App() {
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}>...</SafeAreaProvider>;
+}
+```
+
+### Web SSR
+
+For server-side rendering (SSR), follow the [web stylesheet setup and hydration guidance](/develop/user-interface/safe-areas/#usage-with-web).
+
+### Platform-specific safe-area spacing
+
+#### Android and iOS
+
+Use `SafeAreaView` or the `useSafeAreaInsets()` hook for native safe-area spacing. The hook provides inset values you can apply to a view:
+
+```jsx App.js
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+function App() {
+  const insets = useSafeAreaInsets();
+  return (
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingLeft: insets.left,
+        paddingBottom: insets.bottom,
+        paddingRight: insets.right,
+      }}
+    />
+  );
+}
+```
+
+#### Web
+
+Use CSS environment variables for web safe-area spacing, including in apps that also target Android and iOS. See the [CSS example](/develop/user-interface/safe-areas/#usage-with-web).

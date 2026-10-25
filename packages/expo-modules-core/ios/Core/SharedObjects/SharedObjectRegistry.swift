@@ -23,7 +23,9 @@ public final class SharedObjectRegistry: Sendable {
 
   // `@unchecked` because `SharedObjectNativeState` isn't `Sendable` (its JSI base class isn't), yet a
   // value escapes `withLock` whenever `get`/the lookups return it. Access is always serialized through
-  // `state`'s `Mutex` and the callers run on `JavaScriptActor`, so the unchecked assertion is sound.
+  // `state`'s `Mutex`. `delete(_:)` can run on the thread that destroys a C++ native state, such as a
+  // garbage collector thread, so it and `add` change the native object's ID and native state only under
+  // the lock.
   internal struct State: @unchecked Sendable {
     /**
      Maps each shared object id to the native object's `SharedObjectNativeState`, which carries the
@@ -90,25 +92,39 @@ public final class SharedObjectRegistry: Sendable {
 
   /**
    Adds a pair of native and JS shared object to the registry. Assigns a new shared object ID to these objects.
+   Pass `inheritsBaseClass: true` when `jsObject` inherits from `expo.SharedObject.prototype`, whose getter
+   already reads the ID from the native state. A plain object gets the ID as its own property instead.
    */
   @discardableResult
-  internal func add(native nativeObject: SharedObject, javaScript jsObject: borrowing JavaScriptObject) -> SharedObjectId {
-    // A native object that already carries a native state was paired in an earlier runtime. Reuse its
-    // id rather than minting a new one: the C++ `NativeState.objectId` is immutable and drives the
-    // releaser/`delete`, so a fresh id would disagree with it and leak this object's registry entry.
-    let id = nativeObject.nativeState != nil ? nativeObject.sharedObjectId : pullNextId()
+  internal func add(
+    native nativeObject: SharedObject,
+    javaScript jsObject: borrowing JavaScriptObject,
+    inheritsBaseClass: Bool = false
+  ) -> SharedObjectId {
+    // Reuse the native state, and with it the ID, only while a live JS object in this runtime holds it.
+    // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
+    // Otherwise the C++ native state can be in destruction on another thread, and its release must not
+    // apply to `jsObject`, so the native object gets a new native state and ID.
+    // Loaded once: each read of the weak reference to the app context costs an atomic operation.
+    let appContext = self.appContext
+    let runtime = try? appContext?.runtime
+    let pairedObject = pairedObjectHoldingNativeState(of: nativeObject, in: runtime)
+    let existingNativeState = pairedObject != nil ? nativeObject.nativeState : nil
+    let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
 
-    // Assign the ID and the app context to the object.
-    nativeObject.sharedObjectId = id
+    // Assign the app context to the object.
     nativeObject.appContext = appContext
 
     // This property should be deprecated, but it's still used when passing as a view prop.
-    // It's already defined in the JS base SharedObject class prototype,
-    // but with the current implementation it's possible to use a raw object for registration.
-    jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: [.writable])
+    // The base class prototype defines it as a getter, so only a plain object needs its own property.
+    // Defining it calls `Object.defineProperty` in JS, a large part of the cost of pairing.
+    // No option set literals here: they build the set through a generic initializer on every call.
+    if !inheritsBaseClass {
+      jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
+    }
 
-    if let sharedRef = nativeObject as? AnySharedRef {
-      jsObject.defineProperty("nativeRefType", value: sharedRef.nativeRefType, options: [])
+    if let sharedRefType = nativeObject.sharedRefType {
+      jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
     }
 
     let memoryPressure = nativeObject.getAdditionalMemoryPressure()
@@ -119,12 +135,7 @@ public final class SharedObjectRegistry: Sendable {
     // Attach the C++ shared-object native state. Because `expo::SharedObject::NativeState`
     // inherits from `expo::EventEmitter::NativeState`, later `addListener` calls see an
     // existing native state (via the inheritance check) and don't overwrite it.
-    //
-    // A native object may already carry a native state from a previous pairing in another runtime.
-    // Reuse it so all runtimes share one native state (and one underlying C++ pointee, via
-    // `acquireShared`); a fresh state per runtime would leave `nativeObject.nativeState` pointing at
-    // whichever ran last and lose the earlier runtimes' pairings.
-    let nativeState = nativeObject.nativeState ?? {
+    let nativeState = existingNativeState ?? {
       let releaser: ObjectReleaser = { [weak self] id in
         self?.delete(id)
       }
@@ -136,26 +147,29 @@ public final class SharedObjectRegistry: Sendable {
           contextDeallocator: deallocator
         )
       }
-      nativeObject.nativeState = state
       return state
     }()
 
-    // Index the native state by id. One entry per native object: re-pairing in another runtime stores
-    // the same state under the same id (idempotent); the per-runtime JS counterparts live on the state.
+    // Index the native state by ID. `delete(_:)` reads the native object's ID and native state on any
+    // thread, so they change under the same lock.
     state.withLock { state in
       state.pairs[id] = nativeState
+      nativeObject.sharedObjectId = id
+      nativeObject.nativeState = nativeState
     }
 
     // setNativeState calls acquireShared() synchronously, which retains `nativeState`
     // via Unmanaged.passRetained. That's the wrapper's only strong reference — once
     // the C++ pointee dies, the contextDeallocator releases it. Reattaching the same
     // native state to another runtime's JS object reuses that same C++ pointee.
-    jsObject.setNativeState(nativeState)
+    withExtendedLifetime(pairedObject) {
+      jsObject.setNativeState(nativeState)
+    }
 
     // The registry is scoped to its app context, so the JS object being paired here lives in that
     // context's runtime. Record the pairing under that runtime so the native object can recover this
     // JS counterpart via `native.nativeState?.javaScriptObject(in:)`.
-    if let runtime = try? appContext?.runtime {
+    if let runtime {
       nativeState.setJavaScriptObject(jsObject, in: runtime)
     }
 
@@ -169,12 +183,19 @@ public final class SharedObjectRegistry: Sendable {
     state.withLock { state in
       if let nativeState = state.pairs[id] {
         let native = nativeState.native
-        native.sharedObjectWillRelease()
-        // Reset an ID on the object.
-        native.sharedObjectId = 0
+        nativeState.markReleased()
 
         // Delete the entry from the dictionary.
         state.pairs[id] = nil
+
+        // A native object that was paired again after its JS object died has a new native state and ID,
+        // and stays paired.
+        guard native.nativeState === nativeState else {
+          return
+        }
+        native.sharedObjectWillRelease()
+        // Reset an ID on the object.
+        native.sharedObjectId = 0
         native.sharedObjectDidRelease()
       }
     }
@@ -227,13 +248,29 @@ public final class SharedObjectRegistry: Sendable {
     guard let runtime = try? appContext?.runtime else {
       return nil
     }
-    // The id table and the native object both resolve to the same `SharedObjectNativeState`, which
-    // owns the per-runtime JS counterparts, so a single lookup serves both. Prefer the native object's
-    // own back-pointer and fall back to the id table for objects whose back-pointer was cleared.
-    let nativeState = nativeObject.nativeState ?? state.withLock { state in
-      return state.pairs[nativeObject.sharedObjectId]
+    return unreleasedNativeState(of: nativeObject)?.javaScriptObject(in: runtime)
+  }
+
+  /// Returns the native object's native state, or `nil` if it was released. A released native state can
+  /// outlive the release on a JS object that couldn't drop it (for example a frozen one).
+  private func unreleasedNativeState(of nativeObject: SharedObject) -> SharedObjectNativeState? {
+    guard let nativeState = nativeObject.nativeState, !nativeState.isReleased else {
+      return nil
     }
-    return nativeState?.javaScriptObject(in: runtime)
+    return nativeState
+  }
+
+  /// Returns the JS object paired with the native object in this registry's runtime, if it is alive and
+  /// still holds the native object's native state.
+  private func pairedObjectHoldingNativeState(of nativeObject: SharedObject, in runtime: JavaScriptRuntime?) -> JavaScriptObject? {
+    guard let runtime,
+      let nativeState = unreleasedNativeState(of: nativeObject),
+      let pairedObject = nativeState.javaScriptObject(in: runtime),
+      pairedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState
+    else {
+      return nil
+    }
+    return pairedObject
   }
 
   /**

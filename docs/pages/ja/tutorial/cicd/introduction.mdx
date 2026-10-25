@@ -4,7 +4,7 @@ sidebar_title: はじめに
 description: EAS Workflows チュートリアルの導入と、Expo および React Native アプリ向けの CI/CD パイプラインを構築するための中心的な概念を紹介します。
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BuildsVsUpdates } from '~/ui/components/FlowDiagram/Diagrams/BuildsVsUpdates';
@@ -125,10 +125,10 @@ EAS CLI をインストールするには、次のコマンドを実行します
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-    bun: ['$ bun create expo --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
   }}
 />
 
@@ -179,6 +179,6 @@ EAS Workflows のファイルは、GitHub Actions のワークフローが **.gi
 <BoxLink
   title="はじめる"
   description="EAS Workflows で最初のワークフローを作成して実行します。"
-  Icon={BookOpen02Icon}
+  Icon={Dataflow03Icon}
   href="/ja/tutorial/cicd/first-workflow/"
 />

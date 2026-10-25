@@ -1,0 +1,104 @@
+# Automatic triage for every newly opened issue and pull request, external
+# contributors' included: `verify triage <target> --if-untriaged` classifies
+# the target and publishes routing labels plus a triage comment as expo-bot
+# (engine LLP 0004, Rollout step 2). `@expo-bot triage` reruns it by hand
+# through verify-comment.yml.
+name: verify (triage)
+run-name: "triage #${{ github.event.issue.number || github.event.pull_request.number }}"
+
+on:
+  issues:
+    types: [opened]
+  # pull_request_target is required so fork PRs get the bot token and model
+  # credentials. Safe because the only checkout is a sparse, base-branch read
+  # of the .expo-agents/verify/ profile — no PR code is fetched or executed.
+  # The engine reads the PR through the API and hands it to a model with no
+  # tools; fixed code decides every label and comment it writes.
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  triage:
+    # One run per target. `opened` fires once, and --if-untriaged skips a
+    # target the bot already triaged (a quick `@expo-bot verify` triages
+    # first), so a duplicate delivery is cheap.
+    concurrency:
+      group: verify-triage-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: false
+    # Bot authors (Dependabot, expo-bot's own fix PRs) are triaged too.
+    # Dependabot's no-secrets rule covers pull_request, not
+    # pull_request_target.
+    if: github.repository == 'expo/expo'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Triage is advisory: a failure must never fail the repo's checks.
+    continue-on-error: true
+    env:
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.19' }}
+    steps:
+      # The repository spend limit LLP 0004 requires before automatic
+      # triggers: each run is capped at $1.50 by the engine's per-phase
+      # budget, and this caps the number of runs per UTC day.
+      - name: Check daily limit
+        id: limit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LIMIT: ${{ vars.VERIFY_TRIAGE_DAILY_LIMIT || '300' }}
+        run: |
+          count=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/verify-triage.yml/runs?created=>=$(date -u +%F)&per_page=1" --jq .total_count)
+          if [ "$count" -gt "$LIMIT" ]; then
+            echo "::warning::Skipping triage: $count runs today exceed VERIFY_TRIAGE_DAILY_LIMIT ($LIMIT)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.limit.outputs.ok == 'true'
+        with:
+          sparse-checkout: |
+            .expo-agents/verify
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.limit.outputs.ok == 'true'
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install Claude Code CLI
+        if: steps.limit.outputs.ok == 'true'
+        run: npm install -g @anthropic-ai/claude-code@2.1.280
+
+      - name: Guard profile and credential env
+        if: steps.limit.outputs.ok == 'true'
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
+
+      - name: Triage
+        if: steps.limit.outputs.ok == 'true'
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify triage "$VERIFY_TARGET" --if-untriaged --out-dir "$RUNNER_TEMP/verify-triage"
+        env:
+          # The target crosses as env only — never ${{ }} inside run: lines.
+          VERIFY_TARGET: ${{ github.repository }}#${{ github.event.issue.number || github.event.pull_request.number }}
+          VERIFY_RUN_ID: ${{ github.run_id }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ECR_1: ${{ secrets.ECR_1 }}
+          ECR_2: ${{ secrets.ECR_2 }}
+          ECR_3: ${{ secrets.ECR_3 }}
+          ECR_4: ${{ secrets.ECR_4 }}
+          ECR_5: ${{ secrets.ECR_5 }}
+          CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+
+      - name: Upload triage artifacts
+        if: always() && steps.limit.outputs.ok == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-triage-${{ github.event.issue.number || github.event.pull_request.number }}
+          path: ${{ runner.temp }}/verify-triage/
+          if-no-files-found: ignore
+          retention-days: 14

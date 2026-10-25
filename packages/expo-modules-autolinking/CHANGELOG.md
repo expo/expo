@@ -1,26 +1,141 @@
 # Changelog
 
-## Unpublished
+## 58.0.15
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [iOS] Keep pods that resolve Swift packages through React Native's `spm_dependency` (such as `@stripe/stripe-react-native`) and their dependencies as dynamic frameworks when precompiled modules are enabled. ([#52017](https://github.com/expo/expo/pull/52017) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`. ([#50388](https://github.com/expo/expo/pull/50388) by [@vitalyster](https://github.com/vitalyster))
+
+## 58.0.13
+
+### Patch Changes
+
+- Fix autolinking choosing a different copy of a duplicated native module between runs when it is reachable at more than one dependency depth, which also made the `@expo/fingerprint` hash unstable. A resolved module no longer lists its own path among its duplicates. ([#51477](https://github.com/expo/expo/pull/51477) by [@jszumski](https://github.com/jszumski))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Detect native module classes annotated with the `@ExpoModule` macro and add them to the generated modules provider automatically, without listing them in `expo-module.config.json`. Generating the modules provider runs the scanner from `expo-modules-macros` once over all package sources and links only the classes that compile for the target platform. When the scan fails, packages that declare their modules still link them, and the build fails if a package relies on the scan for its module classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fixed `pod install` failing with precompiled modules and `useFrameworks: "dynamic"` when a pod depends on React only through `React`, `ReactCommon`, or another pod that depends on them ([#50640](https://github.com/expo/expo/issues/50640)). ([#50956](https://github.com/expo/expo/pull/50956) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Register inline modules declared with the `@ExpoModule` macro, and load the Expo Modules macro plugin in the app target so they compile. ([#51047](https://github.com/expo/expo/pull/51047) by [@mrevanzak](https://github.com/mrevanzak))
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
+## 58.0.8
+
+### Patch Changes
+
+- [iOS] Fix `pod install` writing a damaged `Pods.xcodeproj` when objects created in a Podfile `post_install` hook or by Expo reuse UUIDs already in the project. ([#50946](https://github.com/expo/expo/pull/50946) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Keep checkout paths out of the Swift compilation cache key so modules importing ExpoModulesCore can reuse cached compilation results across checkouts and worktrees. ([#50354](https://github.com/expo/expo/pull/50354) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Warn about incomplete `spmPackages` entries, which the `prebuilt-metadata` document leaves out. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
+## 58.0.5 — 2026-09-28
 
 ### 🎉 New features
 
+- [iOS] Publish each product's `autolinkWhen` condition, `sourceOnly` flag, iOS deployment target and SwiftPM package dependencies in the `prebuilt-metadata` document. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
+
+### 🐛 Bug fixes
+
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
+- [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
+
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- [iOS] Resolve React Native headers from the self-contained XCFrameworks that React Native 0.87 ships, extending React Native's module map coverage to the Expo pods during precompile and pod install. ([#47256](https://github.com/expo/expo/pull/47256) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
+- [iOS] Re-anchor the project-level `REACT_NATIVE_PATH` build setting to `$(SRCROOT)` when React Native's ccache integration is enabled, so the `CC`/`LD` ccache wrapper paths resolve in targets not integrated with CocoaPods (e.g. custom share or widget extensions), which previously failed with `unable to spawn process '/../../node_modules/react-native/scripts/xcode/ccache-clang.sh'`. ([#47596](https://github.com/expo/expo/pull/47596) by [@AbbanMustafa](https://github.com/AbbanMustafa))
 - [iOS] Fix `HEADER_SEARCH_PATHS` corruption for pod targets whose existing build setting is an array: interpolating the array into a string rendered it as `["…", "…"]`, producing unresolvable include paths. Surfaced as `'React/RCTSurfaceTouchHandler.h' file not found` when building `@expo/ui` with `use_frameworks! :linkage => :dynamic`. ([#48665](https://github.com/expo/expo/pull/48665) by [@Lanchez](https://github.com/Lanchez))
 - [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))
 - [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
 - [Android] Resolve symlinks in the Gradle plugin `sourceDir` before it reaches `includeBuild`. Android Studio failed to sync with `Missing ExternalProject for :` in pnpm workspaces with a patched dependency. ([#48495](https://github.com/expo/expo/pull/48495) by [@lukmccall](https://github.com/lukmccall))
 - Fixed unsorted autolinking result and introduced unstable fingerprint. ([#48629](https://github.com/expo/expo/pull/48629) by [@kudo](https://github.com/kudo))
+- [iOS] Stop discarding xcconfig changes made by other `post_install` hooks, which broke builds against React Native nightlies with `include of non-modular header inside framework module 'React.…'`. ([#49038](https://github.com/expo/expo/pull/49038) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `'React/RCTBridge.h' file not found` with `ios.useFrameworks: "dynamic"` by reverting the dynamic-framework linkage guard from [#47500](https://github.com/expo/expo/pull/47500). Under `:dynamic` linkage every pod target is already a dynamic framework, so the guard skipped the whole `USE_FRAMEWORKS` downgrade. `@rnmapbox/maps` 10.3.2 no longer needs the guard because it skips its own dynamic flip when precompiled modules are enabled. ([#48869](https://github.com/expo/expo/pull/48869) by [@kudo](https://github.com/kudo))
+- [iOS] Pull a 3rd-party pod's prebuilt XCFramework to source when a dependent 3rd-party pod builds from source, fixing `'worklets/Compat/StableApi.h' file not found`. ([#49147](https://github.com/expo/expo/pull/49147) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add a prebuilt dependency's XCFramework header directories to the `HEADER_SEARCH_PATHS` of source-built pods that depend on it, fixing missing header file errors. ([#49203](https://github.com/expo/expo/pull/49203) by [@chrfalch](https://github.com/chrfalch))
+- Respect explicit per-platform `null` overrides from project `react-native.config.js` files ([#47545](https://github.com/expo/expo/pull/47545) by [@chownation](https://github.com/chownation))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
+- [iOS] Extract the prebuilt-modules metadata scan into a product-resolution library with catalog and app-plan projections; standalone projects now resolve through the app's module resolution instead of erroring (ENG-25370). ([#49603](https://github.com/expo/expo/pull/49603) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Read the XCFramework `Info.plist` files out of a prebuilt tarball in a single `tar` pass instead of a listing pass plus one extract per plist, roughly halving the per-pod archive work during `pod install`. ([#49580](https://github.com/expo/expo/pull/49580) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add a `prebuilt-metadata` command emitting the prebuilt-modules identity document (npm package ↔ pod ↔ product), verified field-by-field against the Ruby derivations fixture (ENG-25370 phase 1). ([#49335](https://github.com/expo/expo/pull/49335) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add a derivations snapshot dump for precompiled modules (`EXPO_PRECOMPILED_DUMP` / `dump_precompiled_derivations.rb`) with a committed bare-expo fixture enforced by an e2e test, guarding the migration of these derivations to autolinking metadata. ([#49150](https://github.com/expo/expo/pull/49150) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
 - Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 

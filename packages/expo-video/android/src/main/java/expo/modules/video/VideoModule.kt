@@ -6,6 +6,7 @@ import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -73,7 +74,8 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource?, /* useSynchronousReplace - iOS-only */ _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
-        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source, playerBuilderOptions)
+        val applicationContext = appContext.reactContext?.applicationContext ?: throw Exceptions.ReactContextLost()
+        val player = VideoPlayer(applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
           player.prepare()
         }
@@ -189,7 +191,11 @@ class VideoModule : Module() {
           ref.playbackParameters.speed
         }
         .set { ref: VideoPlayer, playbackRate: Float ->
-          val pitch = if (ref.preservesPitch) 1f else playbackRate
+          val pitch = if (ref.preservesPitch) {
+            1f
+          } else {
+            playbackRate
+          }
           ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
 

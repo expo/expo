@@ -31,6 +31,7 @@ import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
 import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.records.AssetUriOptions
 import expo.modules.medialibrary.next.observers.MediaStoreObserverManager
 import expo.modules.medialibrary.next.records.SortDescriptor
 
@@ -168,7 +169,7 @@ class MediaLibraryNextModule : Module() {
         self.getShape()
       }
 
-      AsyncFunction("getUri") Coroutine { self: Asset ->
+      AsyncFunction("getUri") Coroutine { self: Asset, _: AssetUriOptions? ->
         self.getUri()
       }
 
@@ -214,6 +215,10 @@ class MediaLibraryNextModule : Module() {
         self.getAssets()
       }
 
+      AsyncFunction("getAssetCount") Coroutine { self: Album ->
+        self.getAssetCount()
+      }
+
       AsyncFunction("add") Coroutine { self: Album, assets: List<Asset> ->
         self.add(assets)
       }
@@ -228,6 +233,10 @@ class MediaLibraryNextModule : Module() {
 
       StaticAsyncFunction("getAll") Coroutine { ->
         albumQuery.getAllAlbums()
+      }
+
+      StaticAsyncFunction("getAlbumsMetadata") Coroutine { ->
+        albumQuery.getAlbumsMetadata()
       }
 
       StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean? ->

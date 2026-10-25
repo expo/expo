@@ -2,6 +2,8 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
+import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
   type NavigationAction,
@@ -9,6 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { isActionHandled } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -19,12 +22,10 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  onAction: (action: NavigationAction) => boolean;
-  onUnhandledAction: (action: NavigationAction) => void;
-  getState: () => State;
+  handleAction: (action: NavigationAction) => void;
+  state: State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
 };
 
 /**
@@ -36,26 +37,22 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({
-  id: navigatorId,
-  onAction,
-  onUnhandledAction,
-  getState,
-  emitter,
-  router,
-  stateRef,
-}: Options<State, Action>) {
+>({ id: navigatorId, handleAction, state, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
+  const enqueue = useEnqueueRoutingIntent();
+  // Unlike handler-only Effect Events, the public accessor can be called during render.
+  const getState = useLatestCallback(() => state);
 
   return React.useMemo(() => {
-    const dispatch = (op: Action | ((state: State) => Action)) => {
-      const action = typeof op === 'function' ? op(getState()) : op;
+    const dispatchSync = (action: Action) => {
+      handleAction(action);
+    };
 
-      const handled = onAction(action);
-
-      if (!handled) {
-        onUnhandledAction?.(action);
-      }
+    const dispatch = (action: Action) => {
+      enqueue({
+        type: 'ACTION',
+        payload: { action, originKey: getState().key },
+      });
     };
 
     const actions = {
@@ -73,19 +70,17 @@ export function useNavigationHelpers<
       ...parentNavigationHelpers,
       ...helpers,
       dispatch,
+      dispatchSync,
       emit: emitter.emit,
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
         const state = getState();
+        const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
+          routeNames: state.routeNames,
+          routeGetIdList: {},
+        });
 
-        return (
-          router.getStateForAction(state, CommonActions.goBack() as Action, {
-            routeNames: state.routeNames,
-            routeGetIdList: {},
-          }) !== null ||
-          parentNavigationHelpers?.canGoBack() ||
-          false
-        );
+        return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
       },
       getId: () => navigatorId,
       getParent: (id?: string) => {
@@ -102,28 +97,10 @@ export function useNavigationHelpers<
         return parentNavigationHelpers;
       },
       getState: (): State => {
-        // FIXME: Workaround for when the state is read during render
-        // By this time, we haven't committed the new state yet
-        // Without this `useSyncExternalStore` will keep reading the old state
-        // This may result in `useNavigationState` or `useIsFocused` returning wrong values
-        // Apart from `useSyncExternalStore`, `getState` should never be called during render
-        if (stateRef.current != null) {
-          return stateRef.current;
-        }
-
         return getState();
       },
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [
-    router,
-    parentNavigationHelpers,
-    emitter.emit,
-    getState,
-    onAction,
-    onUnhandledAction,
-    navigatorId,
-    stateRef,
-  ]);
+  }, [enqueue, router, parentNavigationHelpers, emitter.emit, handleAction, navigatorId]);
 }

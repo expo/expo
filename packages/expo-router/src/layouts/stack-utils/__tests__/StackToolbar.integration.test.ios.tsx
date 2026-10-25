@@ -41,8 +41,8 @@ beforeEach(() => {
 
 describe('Stack.Toolbar integration tests', () => {
   describe('bottom placement', () => {
-    it('renders RouterToolbarHost', () => {
-      renderRouter({
+    it('renders RouterToolbarHost', async () => {
+      await renderRouter({
         index: () => (
           <>
             <Stack.Toolbar placement="bottom">
@@ -58,8 +58,8 @@ describe('Stack.Toolbar integration tests', () => {
       expect(MockedRouterToolbarHost).toHaveBeenCalled();
     });
 
-    it('renders toolbar items inside RouterToolbarHost', () => {
-      renderRouter({
+    it('renders toolbar items inside RouterToolbarHost', async () => {
+      await renderRouter({
         index: () => (
           <>
             <Stack.Toolbar placement="bottom">
@@ -78,8 +78,8 @@ describe('Stack.Toolbar integration tests', () => {
       expect(within(host).getAllByTestId('RouterToolbarItem')).toHaveLength(3);
     });
 
-    it('defaults to bottom placement when no placement specified', () => {
-      renderRouter({
+    it('defaults to bottom placement when no placement specified', async () => {
+      await renderRouter({
         index: () => (
           <>
             <Stack.Toolbar>
@@ -94,8 +94,8 @@ describe('Stack.Toolbar integration tests', () => {
       expect(screen.getByTestId('RouterToolbarHost')).toBeVisible();
     });
 
-    it('renders multiple buttons with correct icons', () => {
-      renderRouter({
+    it('renders multiple buttons with correct icons', async () => {
+      await renderRouter({
         index: () => (
           <>
             <Stack.Toolbar placement="bottom">
@@ -133,9 +133,9 @@ describe('Stack.Toolbar integration tests', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('throws error when toolbar is nested inside another toolbar', () => {
-      expect(() => {
-        renderRouter({
+    it('throws error when toolbar is nested inside another toolbar', async () => {
+      await expect(async () => {
+        await renderRouter({
           index: () => (
             <>
               <Stack.Toolbar placement="bottom">
@@ -147,13 +147,13 @@ describe('Stack.Toolbar integration tests', () => {
             </>
           ),
         });
-      }).toThrow('Stack.Toolbar cannot be nested inside another Stack.Toolbar.');
+      }).rejects.toThrow('Stack.Toolbar cannot be nested inside another Stack.Toolbar.');
     });
   });
 
   describe('toolbar from page component', () => {
-    it('renders bottom toolbar from page', () => {
-      renderRouter({
+    it('renders bottom toolbar from page', async () => {
+      await renderRouter({
         _layout: () => <Stack />,
         index: () => (
           <>
@@ -171,8 +171,8 @@ describe('Stack.Toolbar integration tests', () => {
   });
 
   describe('left/right placement from layout', () => {
-    it('passes headerLeftBarButtonItems to ScreenStackItem for left toolbar', () => {
-      renderRouter({
+    it('passes headerLeftBarButtonItems to ScreenStackItem for left toolbar', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -195,8 +195,8 @@ describe('Stack.Toolbar integration tests', () => {
       });
     });
 
-    it('passes headerRightBarButtonItems to ScreenStackItem for right toolbar', () => {
-      renderRouter({
+    it('passes headerRightBarButtonItems to ScreenStackItem for right toolbar', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -219,8 +219,8 @@ describe('Stack.Toolbar integration tests', () => {
       });
     });
 
-    it('passes both left and right items to ScreenStackItem', () => {
-      renderRouter({
+    it('passes both left and right items to ScreenStackItem', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -255,8 +255,8 @@ describe('Stack.Toolbar integration tests', () => {
       });
     });
 
-    it('renders custom left content for asChild left toolbar', () => {
-      renderRouter({
+    it('renders custom left content for asChild left toolbar', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -273,8 +273,8 @@ describe('Stack.Toolbar integration tests', () => {
       expect(screen.getByTestId('custom-left')).toBeVisible();
     });
 
-    it('renders custom right content for asChild right toolbar', () => {
-      renderRouter({
+    it('renders custom right content for asChild right toolbar', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -303,8 +303,8 @@ describe('Stack.Toolbar integration tests', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns about invalid children in left/right placement', () => {
-      renderRouter({
+    it('warns about invalid children in left/right placement', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -335,9 +335,9 @@ describe('Stack.Toolbar integration tests', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('throws error when bottom toolbar is in layout', () => {
-      expect(() => {
-        renderRouter({
+    it('throws error when bottom toolbar is in layout', async () => {
+      await expect(async () => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -349,13 +349,15 @@ describe('Stack.Toolbar integration tests', () => {
           ),
           index: () => <View testID="index" />,
         });
-      }).toThrow('Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen');
+      }).rejects.toThrow(
+        'Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen'
+      );
     });
   });
 
   describe('screen with toolbar and other components', () => {
-    it('passes title and toolbar items to ScreenStackItem', () => {
-      renderRouter({
+    it('passes title and toolbar items to ScreenStackItem', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -382,8 +384,8 @@ describe('Stack.Toolbar integration tests', () => {
       });
     });
 
-    it('passes back button config and toolbar items to ScreenStackItem', () => {
-      renderRouter({
+    it('passes back button config and toolbar items to ScreenStackItem', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">

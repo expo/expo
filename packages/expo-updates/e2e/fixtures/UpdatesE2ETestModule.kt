@@ -5,6 +5,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
@@ -67,6 +68,16 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
         val assetsFolder = UpdatesController.instance.updatesDirectory
         assetsFolder!!.deleteRecursively()
         promise.resolve(null)
+      } catch (e: Throwable) {
+        promise.reject("ERR_E2E_TEST", null, e)
+      }
+    }
+
+    AsyncFunction("readCachedUpdateIdsAsync") { promise: Promise ->
+      try {
+        val context = requireNotNull(appContext.reactContext)
+        val database = UpdatesDatabase.getInstance(context, null)
+        promise.resolve(database.updateDao().loadAllUpdates().map { it.id.toString() }.sorted())
       } catch (e: Throwable) {
         promise.reject("ERR_E2E_TEST", null, e)
       }

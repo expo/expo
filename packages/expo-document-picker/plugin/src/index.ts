@@ -1,1 +1,3 @@
-export default () => 'expo-document-picker';
+import { Props } from './withDocumentPickerIOS';
+
+export default (props: Props = {}): [string, Props] => ['expo-document-picker', props];

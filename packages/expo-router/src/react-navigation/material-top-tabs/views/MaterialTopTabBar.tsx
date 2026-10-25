@@ -2,7 +2,7 @@ import type { ColorValue } from 'react-native';
 import { StyleSheet } from 'react-native';
 import type { TabDescriptor } from 'react-native-tab-view';
 
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 import { Text } from '../../elements';
 import { useLinkBuilder, useLocale, useTheme } from '../../native';
 import type { MaterialTopTabBarProps, MaterialTopTabViewRoute } from '../types';
@@ -40,6 +40,7 @@ export function MaterialTopTabBar({
   emitter,
   // The built-in bar switches through `jumpTo`; only strip the custom callback from forwarded props.
   navigateToTab: _navigateToTab,
+  insets,
   ...rest
 }: MaterialTopTabBarProps) {
   const { colors } = useTheme();
@@ -51,9 +52,7 @@ export function MaterialTopTabBar({
 
   const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
   const inactiveColor: ColorValue =
-    focusedOptions.tabBarInactiveTintColor ??
-    Color(activeColor)?.alpha(0.5).string() ??
-    colors.text;
+    focusedOptions.tabBarInactiveTintColor ?? alpha(activeColor, 0.5) ?? colors.text;
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route) => {
@@ -123,7 +122,15 @@ export function MaterialTopTabBar({
       gap={focusedOptions.tabBarGap}
       android_ripple={focusedOptions.tabBarAndroidRipple}
       indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle}
-      contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
+      contentContainerStyle={[
+        focusedOptions.tabBarContentContainerStyle,
+        // Pad the tabs inside the horizontal safe area, such as beside the iPhone Duo rail, while
+        // the bar's own style spans the screen edges.
+        {
+          paddingStart: (direction === 'rtl' ? insets.right : insets.left) || undefined,
+          paddingEnd: (direction === 'rtl' ? insets.left : insets.right) || undefined,
+        },
+      ]}
       style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]}
       onTabPress={({ route, preventDefault }) => {
         const event = emitter.emit({

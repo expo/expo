@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Spacer`](../universal/spacer) — it renders the appropriate native component per platform.
@@ -32,43 +33,88 @@ Expo UI Spacer matches the official Jetpack Compose [Spacer](https://developer.a
 
 Use the `weight()` modifier to make the spacer fill available space proportionally within a `Row` or `Column`.
 
-```tsx SpacerWeightExample.tsx
-import { Host, Row, Spacer, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, weight } from '@expo/ui/jetpack-compose/modifiers';
+<ComponentExample
+  title="SpacerWeightExample.tsx"
+  src="/static/images/expo-ui/examples/spacer-weight-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/spacer-weight-android-dark.webp"
+  alt="The labels Left and Right pushed to opposite ends of a row by a weighted spacer">
+
+```tsx
+import {
+  Host,
+  Row,
+  Spacer,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  weight,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SpacerWeightExample() {
+  const colors = useMaterialColors();
+
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Row modifiers={[fillMaxWidth()]}>
-        <Text>Left</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Left
+        </Text>
         <Spacer modifiers={[weight(1)]} />
-        <Text>Right</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Right
+        </Text>
       </Row>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Spacer with fixed size
 
 Use a `height` or `width` modifier to create a spacer with a fixed dimension.
 
-```tsx SpacerFixedSizeExample.tsx
-import { Host, Column, Spacer, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="SpacerFixedSizeExample.tsx"
+  src="/static/images/expo-ui/examples/spacer-fixed-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/spacer-fixed-android-dark.webp"
+  alt="Two stacked labels separated by a fixed 24dp vertical gap">
+
+```tsx
+import {
+  Host,
+  Column,
+  Spacer,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { height } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SpacerFixedSizeExample() {
+  const colors = useMaterialColors();
+
   return (
     <Host matchContents>
       <Column>
-        <Text>Above</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Above
+        </Text>
         <Spacer modifiers={[height(24)]} />
-        <Text>Below (24dp gap)</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Below (24dp gap)
+        </Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -76,4 +122,7 @@ export default function SpacerFixedSizeExample() {
 import { Spacer } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/spacer" apiName="Spacer" />
+<APISection
+  packageName="expo-ui/jetpack-compose/spacer"
+  apiName="Spacer"
+/>

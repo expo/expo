@@ -40,12 +40,18 @@ it('runs normally for a single iOS prebuild', async () => {
   expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(true);
 
   expect(config).toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }));
-  expect(() =>
-    expect(config).not.toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }))
-  ).toThrow(/\.not\.toMatchInfoPlist/);
-  expect(() =>
-    expect(config).not.toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }))
-  ).toThrow(/Expected: not/);
+  // The matcher hint contains ANSI color codes when jest runs with colors enabled (interactive
+  // terminals), which would split the substrings asserted on below — strip them first.
+  const getNotToMatchInfoPlistMessage = () => {
+    try {
+      expect(config).not.toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }));
+    } catch (error: any) {
+      return String(error.message).replace(/\u001b\[\d+m/g, '');
+    }
+    throw new Error('Expected .not.toMatchInfoPlist to throw');
+  };
+  expect(getNotToMatchInfoPlistMessage()).toMatch(/\.not\.toMatchInfoPlist/);
+  expect(getNotToMatchInfoPlistMessage()).toMatch(/Expected: not/);
   expect(config).toMatchAppleEntitlements({});
 });
 

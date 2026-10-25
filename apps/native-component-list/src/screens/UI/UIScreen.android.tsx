@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'CompositionLocalProvider component',
+    route: 'ui/composition-local-provider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CompositionLocalProviderScreen'));
+    },
+  },
+  {
     name: 'Card component',
     route: 'ui/card',
     options: {},
@@ -96,6 +104,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./DateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Date Range Picker component',
+    route: 'ui/date-range-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DateRangePickerScreen'));
     },
   },
   {
@@ -331,6 +347,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyColumn.Items and LazyRow.Items data (experimental)',
+    route: 'ui/lazy-items',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyItemsScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},
@@ -344,6 +368,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'Host touch after ripple',
+    route: 'ui/host-touch-after-ripple',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostTouchAfterRippleScreen'));
     },
   },
   {
@@ -416,6 +448,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
+  {
+    name: 'TopAppBar component',
+    route: 'ui/top-app-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TopAppBarScreen'));
     },
   },
   {

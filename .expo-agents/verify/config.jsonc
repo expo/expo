@@ -1,0 +1,22 @@
+{
+  // expo/expo verify profile — LLP 0020 Layer 4 (expo-sandbox-mcp).
+  // Capability fields are enforcement inputs: the agent tool allowlist,
+  // the scoped-token mint body, and which publish steps run.
+  "repo": "expo/expo",
+  "runner": "gha", // default; `et verify <n> --runner eas` overrides per run
+  // EAS runs upload this checkout's verify files (app.json links the EAS
+  // project; .easignore trims the upload). No hosts.eas: that would select
+  // the linked-repo REST mode instead of the upload.
+  "hosts": { "gha": { "repo": "expo/expo" } },
+  "fix": "pr",
+  "ghaSandbox": true,
+  "bot": { "login": "expo-bot" },
+  "budgets": { "sandboxes": 2, "builds": 5, "ttlSeconds": 10800 },
+  "phases": { "investigate": 5400, "critic": 900, "revise": 1800 },
+  "pr": {
+    "fork": "expo-bot/expo",
+    "branchPrefix": "verify",
+    "labels": ["ai-review", "agent-authored"],
+    "denylistAdditions": ["^\\.expo-code-review/"]
+  }
+}

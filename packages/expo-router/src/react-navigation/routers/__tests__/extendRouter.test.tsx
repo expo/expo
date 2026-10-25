@@ -1,0 +1,596 @@
+import { afterEach, describe, expect, jest, test } from '@jest/globals';
+
+import {
+  StackActions,
+  StackRouter,
+  type StackActionType,
+  type StackNavigationState,
+} from '../StackRouter';
+import {
+  extendRouter,
+  extendRouterActions,
+  type RouterActionContext,
+  type RouterExtensionContext,
+} from '../extendRouter';
+import {
+  type CommonNavigationAction,
+  type DefaultRouterOptions,
+  type NavigationState,
+  type Router,
+  RouterActionHandling,
+  type RouterFactory,
+} from '../types';
+import { isActionHandled } from '../utils';
+import { expectHandled } from './__fixtures__/expectHandled';
+
+type CustomAction = {
+  type: 'CUSTOM';
+  payload: { value: number };
+};
+
+const config = { routeNames: ['index', 'second'], routeGetIdList: {} };
+const state: NavigationState = {
+  stale: false,
+  type: 'test',
+  key: 'navigator:root',
+  routeKeySeq: 2,
+  index: 1,
+  routeNames: ['index', 'second'],
+  routes: [
+    { key: 'index:0', name: 'index' },
+    { key: 'second:1', name: 'second' },
+  ],
+};
+const stackState: StackNavigationState<Record<string, object | undefined>> = {
+  ...state,
+  type: 'stack',
+};
+
+const TestRouter: RouterFactory<
+  NavigationState,
+  CommonNavigationAction,
+  DefaultRouterOptions
+> = () => ({
+  type: 'test',
+  getStateForDeclaredRoutes: (state) => state,
+  getStateForRouteFocus: (state) => state,
+  getStateForAction: (state) => ({ state, affectedRouteKey: undefined }),
+  shouldActionChangeFocus: () => false,
+});
+
+const uppercaseNames = (state: NavigationState) => ({
+  ...state,
+  routes: state.routes.map((route) => ({
+    ...route,
+    name: route.name.toUpperCase(),
+  })),
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+describe('extendRouter', () => {
+  test('merges the extension over the base router and passes the context', () => {
+    const context: { baseRouterType?: string; initialRouteName?: string } = {};
+    const router = extendRouter(TestRouter, ({ baseRouter, options }) => {
+      context.baseRouterType = baseRouter.type;
+      context.initialRouteName = options.initialRouteName;
+      return {
+        getStateForRouteFocus: (state) => ({ ...state, index: 0 }),
+        actionCreators: {
+          noop: () => ({ type: 'NOOP' }) as unknown as CommonNavigationAction,
+        },
+      };
+    })({ initialRouteName: 'second' });
+
+    expect(context).toEqual({
+      baseRouterType: 'test',
+      initialRouteName: 'second',
+    });
+    expect(router.type).toBe('test');
+    expect(router.getStateForRouteFocus(state, 'index:0').index).toBe(0);
+    expect(expectHandled(router.getStateForAction(state, { type: 'GO_BACK' }, config)).state).toBe(
+      state
+    );
+    expect(router.actionCreators?.noop).toBeDefined();
+  });
+
+  test('stamps the type from the options on the router and on focused and reduced states', () => {
+    const untyped = { ...state, type: undefined };
+    let seenType: string | undefined;
+    const router = extendRouter(
+      TestRouter,
+      () => ({
+        getStateForRouteFocus: (state) => {
+          seenType = state.type;
+          return state;
+        },
+      }),
+      { type: 'custom' }
+    )({});
+
+    expect(router.type).toBe('custom');
+    expect(router.getStateForDeclaredRoutes(untyped, config.routeNames).type).toBeUndefined();
+    expect(router.getStateForRouteFocus(untyped, 'index:0').type).toBe('custom');
+    expect(seenType).toBe('custom');
+    expect(
+      expectHandled(router.getStateForAction(untyped, { type: 'GO_BACK' }, config)).state.type
+    ).toBe('custom');
+  });
+
+  test('delegates to the base router when getStateForAction returns Delegate', () => {
+    const router = extendRouter(StackRouter, () => ({
+      getStateForAction: () => RouterActionHandling.Delegate,
+    }))({});
+
+    const result = expectHandled(router.getStateForAction(stackState, StackActions.pop(1), config));
+
+    expect(result?.state.routes).toHaveLength(1);
+  });
+
+  test('leaves the action unhandled when getStateForAction returns Unhandled', () => {
+    const router = extendRouter(StackRouter, () => ({
+      getStateForAction: () => RouterActionHandling.Unhandled,
+    }))({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
+      RouterActionHandling.Unhandled
+    );
+  });
+
+  test('leaves the action unhandled and warns once when getStateForAction returns null', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const router = extendRouter(StackRouter, () => ({ getStateForAction: () => null }))({});
+
+    const result = router.getStateForAction(stackState, StackActions.pop(1), config);
+    router.getStateForAction(stackState, StackActions.pop(1), config);
+
+    expect(result).toBe(RouterActionHandling.Unhandled);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('isActionHandled'));
+  });
+
+  test('leaves the action unhandled without a warning when the extension passes on a null from the base router', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const NullRouter: typeof TestRouter = (options) => ({
+      ...TestRouter(options),
+      getStateForAction: () => null,
+    });
+    const router = extendRouter(NullRouter, ({ baseRouter }) => ({
+      getStateForAction: (state, action) => baseRouter.getStateForAction(state, action),
+    }))({});
+
+    expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)).toBe(
+      RouterActionHandling.Unhandled
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  test('uses the base router type when the options give none', () => {
+    const router = extendRouter(TestRouter, () => ({}))({});
+
+    expect(router.type).toBe('test');
+    expect(router.getStateForRouteFocus({ ...state, type: undefined }, 'index:0').type).toBe(
+      'test'
+    );
+  });
+
+  test('applies normalizeState to every state the router returns', () => {
+    const router = extendRouter(TestRouter, () => ({
+      normalizeState: uppercaseNames,
+    }))({});
+
+    expect(router.getStateForDeclaredRoutes(state, config.routeNames).routes[0]?.name).toBe(
+      'INDEX'
+    );
+    expect(router.getStateForRouteFocus(state, 'index:0').routes[0]?.name).toBe('INDEX');
+    expect(
+      expectHandled(router.getStateForAction(state, { type: 'GO_BACK' }, config)).state.routes[0]
+        ?.name
+    ).toBe('INDEX');
+  });
+
+  test('lets the extension replace the base router normalizeState', () => {
+    const NormalizedRouter = extendRouter(TestRouter, () => ({ normalizeState: uppercaseNames }));
+    const router = extendRouter(NormalizedRouter, () => ({
+      normalizeState: (state) => ({ ...state, index: 0 }),
+      getStateForRouteFocus: (state) => state,
+    }))({});
+
+    const result = router.getStateForRouteFocus(state, 'index:0');
+
+    expect(result.index).toBe(0);
+    expect(result.routes[0]?.name).toBe('index');
+  });
+
+  test('computes browser history from the action and normalized result', () => {
+    const router = extendRouter(TestRouter, () => ({
+      normalizeState: (state) => ({ ...state, index: 0 }),
+      getBrowserHistoryForAction(previous, next, action) {
+        expect(previous.index).toBe(1);
+        expect(next.index).toBe(0);
+        expect(action.type).toBe('GO_BACK');
+        return { type: 'pop', count: 1 } as const;
+      },
+    }))({});
+
+    expect(
+      expectHandled(router.getStateForAction(state, { type: 'GO_BACK' }, config)).browserHistory
+    ).toEqual({
+      type: 'pop',
+      count: 1,
+    });
+  });
+
+  test('lets an extension clear the base router browser instruction', () => {
+    const WithHistory = extendRouter(TestRouter, () => ({
+      getBrowserHistoryForAction: () => ({ type: 'push' as const }),
+    }));
+    const router = extendRouter(WithHistory, () => ({
+      getBrowserHistoryForAction: () => undefined,
+    }))({});
+
+    expect(
+      expectHandled(WithHistory({}).getStateForAction(state, { type: 'GO_BACK' }, config))
+        .browserHistory
+    ).toEqual({ type: 'push' });
+    expect(
+      expectHandled(router.getStateForAction(state, { type: 'GO_BACK' }, config)).browserHistory
+    ).toBeUndefined();
+  });
+
+  test('does not compute browser history for an unhandled action', () => {
+    const router = extendRouter(TestRouter, () => ({
+      getStateForAction: () => RouterActionHandling.Unhandled,
+      getBrowserHistoryForAction: () => {
+        throw new Error('An unhandled action must not change browser history.');
+      },
+    }))({});
+
+    expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)).toBe(
+      RouterActionHandling.Unhandled
+    );
+  });
+
+  test('merges added action creators with the base router ones', () => {
+    const first = () => ({ type: 'GO_BACK' }) as const;
+    const second = () => ({ type: 'GO_BACK' }) as const;
+    const FirstRouter = extendRouter(TestRouter, () => ({ actionCreators: { first } }));
+    const router = extendRouter(FirstRouter, ({ baseRouter }) => ({
+      actionCreators: { ...baseRouter.actionCreators, second },
+    }))({});
+
+    expect(router.actionCreators).toEqual({ first, second });
+  });
+
+  test('requires config when delegating outside of getStateForAction', () => {
+    const router = extendRouter(TestRouter, ({ baseRouter }) => ({
+      getStateForRouteFocus: (state) => {
+        baseRouter.getStateForAction(state, { type: 'GO_BACK' });
+        return state;
+      },
+    }))({});
+
+    expect(() => router.getStateForRouteFocus(state, 'index:0')).toThrow(
+      'needs the `config` argument'
+    );
+  });
+
+  test('inherits normalizeState from the base router', () => {
+    const NormalizedRouter = extendRouter(TestRouter, () => ({
+      normalizeState: uppercaseNames,
+    }));
+    const router = extendRouter(NormalizedRouter, () => ({
+      getStateForRouteFocus: (state) => ({ ...state, index: 0 }),
+    }))({});
+
+    const focused = router.getStateForRouteFocus(state, 'index:0');
+    expect(focused.index).toBe(0);
+    expect(focused.routes[0]?.name).toBe('INDEX');
+  });
+
+  test('mints route keys with nextKey and stamps routeKeySeq on every returned state', () => {
+    const router = extendRouter(TestRouter, ({ nextKey }) => ({
+      getStateForRouteFocus: (state) => ({
+        ...state,
+        routes: [...state.routes, { key: nextKey('index'), name: 'index' }],
+      }),
+    }))({});
+
+    const focused = router.getStateForRouteFocus(state, 'index:0');
+
+    expect(focused.routes[2]?.key).toBe('index:2');
+    expect(focused.routeKeySeq).toBe(3);
+  });
+
+  test('can change the state, action, and options types', () => {
+    type WideState = NavigationState & { type?: 'wide'; extra: number };
+    type WideOptions = DefaultRouterOptions & { extra: number };
+    const WideRouter = extendRouter(
+      TestRouter,
+      ({
+        options,
+      }: RouterExtensionContext<
+        WideState,
+        CommonNavigationAction | CustomAction,
+        WideOptions
+      >): Partial<Router<WideState, CommonNavigationAction | CustomAction>> => ({
+        type: 'wide',
+        getStateForAction: (state, action) =>
+          action.type === 'CUSTOM'
+            ? {
+                state: {
+                  ...state,
+                  extra: options.extra + action.payload.value,
+                },
+                affectedRouteKey: undefined,
+              }
+            : null,
+      })
+    );
+
+    const result = expectHandled(
+      WideRouter({ extra: 1 }).getStateForAction(
+        { ...state, type: 'wide', extra: 0 },
+        { type: 'CUSTOM', payload: { value: 2 } },
+        config
+      )
+    );
+
+    expect(result?.state.extra).toBe(3);
+  });
+});
+
+describe('extendRouterActions', () => {
+  test('delegates to the base router when the reducer returns Delegate', () => {
+    const router = extendRouterActions(StackRouter, () => RouterActionHandling.Delegate)({});
+
+    const result = expectHandled(router.getStateForAction(stackState, StackActions.pop(1), config));
+
+    expect(result?.state.routes).toHaveLength(1);
+  });
+
+  test('leaves the action unhandled when the reducer returns Unhandled', () => {
+    const router = extendRouterActions(StackRouter, (state, action) =>
+      action.type === 'POP' ? RouterActionHandling.Unhandled : RouterActionHandling.Delegate
+    )({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
+      RouterActionHandling.Unhandled
+    );
+  });
+
+  test('leaves the action unhandled and warns when the reducer returns null', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const router = extendRouterActions(StackRouter, () => null)({});
+
+    expect(router.getStateForAction(stackState, StackActions.pop(1), config)).toBe(
+      RouterActionHandling.Unhandled
+    );
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"POP"'));
+  });
+
+  test('delegates and warns once when the reducer returns undefined', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const router = extendRouterActions(StackRouter, () => undefined)({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, StackActions.push('second'), config)
+    );
+    router.getStateForAction(stackState, StackActions.push('second'), config);
+
+    expect(result?.state.routes).toHaveLength(3);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"PUSH"'));
+  });
+
+  test('returns the result of a handled action', () => {
+    const router = extendRouterActions(
+      StackRouter,
+      (state, action: StackActionType | CommonNavigationAction | CustomAction) =>
+        action.type === 'CUSTOM'
+          ? {
+              state: { ...state, index: 0 },
+              affectedRouteKey: state.routes[0]?.key,
+            }
+          : RouterActionHandling.Delegate
+    )({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, { type: 'CUSTOM', payload: { value: 1 } }, config)
+    );
+
+    expect(result?.state.index).toBe(0);
+    expect(result?.affectedRouteKey).toBe('index:0');
+  });
+
+  test('lets the reducer delegate to the base router with a different action', () => {
+    const router = extendRouterActions(
+      StackRouter,
+      (state, action: StackActionType | CommonNavigationAction | CustomAction, { baseRouter }) =>
+        action.type === 'CUSTOM'
+          ? baseRouter.getStateForAction(state, StackActions.pop(1), config)
+          : RouterActionHandling.Delegate
+    )({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, { type: 'CUSTOM', payload: { value: 1 } }, config)
+    );
+
+    expect(result?.state.routes).toHaveLength(1);
+  });
+
+  test('delegates with the config of the reduced action when none is passed', () => {
+    const RecordingRouter = extendRouter(TestRouter, () => ({
+      getStateForAction: (state, action, config) => ({
+        state: { ...state, routeNames: config.routeNames },
+        affectedRouteKey: undefined,
+      }),
+    }));
+    const router = extendRouterActions(RecordingRouter, (state, action, { baseRouter }) =>
+      baseRouter.getStateForAction(state, action)
+    )({});
+
+    const result = expectHandled(router.getStateForAction(state, { type: 'GO_BACK' }, config));
+
+    expect(result?.state.routeNames).toBe(config.routeNames);
+  });
+
+  test('mints route keys with nextKey and stamps routeKeySeq on the result', () => {
+    const router = extendRouterActions(StackRouter, (state, action, { nextKey }) =>
+      action.type === 'PUSH'
+        ? {
+            state: {
+              ...state,
+              index: state.index + 1,
+              routes: [
+                ...state.routes,
+                {
+                  key: nextKey(action.payload.name),
+                  name: action.payload.name,
+                },
+              ],
+            },
+            affectedRouteKey: undefined,
+          }
+        : RouterActionHandling.Delegate
+    )({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, StackActions.push('second'), config)
+    );
+
+    expect(result?.state.routes[2]?.key).toBe('second:2');
+    expect(result?.state.routeKeySeq).toBe(3);
+  });
+
+  test('does not reuse a key minted before delegating to the base router', () => {
+    const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
+      if (action.type !== 'PUSH') {
+        return RouterActionHandling.Delegate;
+      }
+      const key = nextKey('index');
+      const result = baseRouter.getStateForAction(state, action, config);
+      if (!isActionHandled(result)) {
+        return result;
+      }
+      return {
+        ...result,
+        state: {
+          ...result.state,
+          routes: [...result.state.routes, { key, name: 'index' }],
+        },
+      };
+    })({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, StackActions.push('second'), config)
+    );
+    const keys = result?.state.routes.map((route) => route.key);
+
+    expect(keys).toEqual(['index:0', 'second:1', 'second:3', 'index:2']);
+    expect(result?.state.routeKeySeq).toBe(4);
+  });
+
+  test('does not reuse a key minted after delegating to the base router', () => {
+    const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
+      if (action.type !== 'PUSH') {
+        return RouterActionHandling.Delegate;
+      }
+      const result = baseRouter.getStateForAction(state, action, config);
+      if (!isActionHandled(result)) {
+        return result;
+      }
+      return {
+        ...result,
+        state: {
+          ...result.state,
+          routes: [...result.state.routes, { key: nextKey('index'), name: 'index' }],
+        },
+      };
+    })({});
+
+    const result = expectHandled(
+      router.getStateForAction(stackState, StackActions.push('second'), config)
+    );
+    const keys = result?.state.routes.map((route) => route.key);
+
+    expect(keys).toEqual(['index:0', 'second:1', 'second:2', 'index:3']);
+    expect(result?.state.routeKeySeq).toBe(4);
+  });
+
+  test('keeps a higher routeKeySeq produced by the base router', () => {
+    const router = extendRouterActions(StackRouter, (state, action, { baseRouter, nextKey }) => {
+      if (action.type !== 'RESET') {
+        return RouterActionHandling.Delegate;
+      }
+      nextKey('index');
+      return baseRouter.getStateForAction(state, action, config);
+    })({});
+
+    const result = expectHandled(
+      router.getStateForAction(
+        stackState,
+        { type: 'RESET', payload: { ...stackState, routeKeySeq: 10 } },
+        config
+      )
+    );
+
+    expect(result?.state.routeKeySeq).toBe(10);
+  });
+
+  test('passes widened router options to the reducer', () => {
+    type Options = DefaultRouterOptions & { extra: string };
+    const seen: string[] = [];
+    const router = extendRouterActions(
+      StackRouter,
+      (
+        state,
+        action,
+        {
+          options,
+        }: RouterActionContext<
+          StackNavigationState<Record<string, object | undefined>>,
+          StackActionType | CommonNavigationAction,
+          Options
+        >
+      ) => {
+        seen.push(options.extra);
+        return RouterActionHandling.Delegate;
+      }
+    )({ extra: 'value' });
+
+    router.getStateForAction(stackState, StackActions.pop(1), config);
+
+    expect(seen).toEqual(['value']);
+  });
+
+  test('preserves custom action types', () => {
+    const router = extendRouterActions(
+      StackRouter,
+      (state, action: StackActionType | CommonNavigationAction | CustomAction) => {
+        if (action.type === 'CUSTOM') {
+          action.payload.value satisfies number;
+          return { state, affectedRouteKey: undefined };
+        }
+        return RouterActionHandling.Delegate;
+      }
+    )({});
+
+    const result = router.getStateForAction(
+      stackState,
+      { type: 'CUSTOM', payload: { value: 1 } },
+      config
+    );
+    const invalidResult = router.getStateForAction(
+      stackState,
+      // @ts-expect-error Custom action payload is checked by the extended router factory.
+      { type: 'CUSTOM', payload: { value: 'invalid' } },
+      config
+    );
+
+    expectHandled(result);
+    expectHandled(invalidResult);
+  });
+});

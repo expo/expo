@@ -80,9 +80,9 @@ class Asset: SharedObject {
     return assetMapper.mapMediaType(phAsset.mediaType)
   }
 
-  func getMediaSubtypes() async throws -> [String] {
+  func getMediaSubtypes() async throws -> [MediaSubtypeNext] {
     let phAsset = try await requirePHAsset()
-    return MediaSubtype.stringify(phAsset.mediaSubtypes)
+    return MediaSubtypeNext.from(phAsset.mediaSubtypes)
   }
 
   func getLivePhotoVideoUri() async throws -> String? {
@@ -127,16 +127,16 @@ class Asset: SharedObject {
     guard try await getMediaType() == MediaTypeNext.IMAGE else {
       return [:]
     }
-    let uri = try await UriExtractor.extract(from: phAsset)
+    let uri = try await UriExtractor.extract(from: phAsset, version: .CURRENT)
     guard let ciImage = CIImage(contentsOf: uri) else {
       return [:]
     }
     return ciImage.properties
   }
 
-  func getUri() async throws -> String {
+  func getUri(options: AssetUriOptions) async throws -> String {
     let phAsset = try await requirePHAsset()
-    return try await assetMapper.mapUri(phAsset)
+    return try await assetMapper.mapUri(phAsset, version: options.version)
   }
 
   func getInfo() async throws -> AssetInfo {

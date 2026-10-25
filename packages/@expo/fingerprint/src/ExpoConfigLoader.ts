@@ -2,18 +2,26 @@
  * A helper script to load the Expo config and loaded plugins from a project
  */
 
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import fs from 'fs/promises';
 import module from 'module';
 import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { fileURLToPath } from 'url';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
 import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
 
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
+
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
-    console.log(`Usage: ${programName} <projectRoot> [ignoredFile] [--skipPlugins]`);
+    console.log(
+      `Usage: ${programName} <projectRoot> [ignoredFile] --mode <development|production> [--skipPlugins]`
+    );
     return;
   }
 
@@ -22,8 +30,14 @@ async function runAsync(programName: string, args: string[] = []) {
   const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
   const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  const modeFlagIndex = args.indexOf('--mode');
+  const mode = modeFlagIndex >= 0 ? args[modeFlagIndex + 1] : undefined;
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(`Unsupported Expo config mode: ${mode}`);
+  }
+  consumeConfigEnvMode();
+  globalThis.__DEV__ = mode === 'development';
+  loadProjectEnv(projectRoot, { mode });
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
   let config;
@@ -98,14 +112,14 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
 }
 
 /**
- * A CommonJS module observed while `installModuleCaptureHook()` was active.
+ * A module observed while `installModuleCaptureHook()` was active.
  */
 export interface CapturedModule {
-  /** The module id (cache key). May diverge from `filename` for virtual modules. */
+  /** The CommonJS cache key, or an ES module's filename. May diverge from `filename` if virtual. */
   id: string;
   /** The filename Node compiled the module under. Authoritative even for transpiled sources. */
   filename: string;
-  /** The source content Node executed for the module. */
+  /** The source content Node received for the module, before Node strips any types. */
   content: string;
 }
 
@@ -120,31 +134,69 @@ export type LoadedModuleSource =
   | { type: 'contents'; id: string; contents: string };
 
 /**
- * Observe every CommonJS module compiled while the hook is installed.
- * We hook `Module.prototype._compile` to keep each module's authoritative filename and source
- * content.
+ * Observe the JavaScript and TypeScript modules that `require()` evaluates while the hook is
+ * installed.
+ * We hook `Module.prototype._compile` to keep each CommonJS module's authoritative filename and
+ * source content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it
+ * to strip types from a `.ts` file.
+ * The ES modules that an ES module imports never reach `_compile`, so a `module.registerHooks`
+ * load hook (Node 22.15+) records each ES module file that Node's loader evaluates.
  */
 export function installModuleCaptureHook(): {
   getCapturedModules: () => CapturedModule[];
   uninstall: () => void;
 } {
-  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const capturedModules: CapturedModule[] = [];
+  const loadHooks =
+    typeof module.registerHooks === 'function'
+      ? module.registerHooks({ load: createESModuleLoadHook(capturedModules) })
+      : null;
+  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const originalCompile = moduleProto._compile;
-  moduleProto._compile = function (this: { id?: string }, content: string, filename: string) {
+  moduleProto._compile = function (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) {
     capturedModules.push({ id: this.id ?? filename, filename, content });
-    return originalCompile.call(this, content, filename);
+    return originalCompile.call(this, content, filename, ...rest);
   };
   return {
     getCapturedModules: () => capturedModules,
     uninstall: () => {
       moduleProto._compile = originalCompile;
+      loadHooks?.deregister();
     },
   };
 }
 
+/**
+ * A `module.registerHooks` load hook that records each ES module loaded from a file.
+ * CommonJS is left to the `_compile` hook, which also sees a module that a transpiler compiles
+ * from a string.
+ */
+export function createESModuleLoadHook(capturedModules: CapturedModule[]): module.LoadHookSync {
+  return (url, context, nextLoad) => {
+    const result = nextLoad(url, context);
+    const isESModule = result.format === 'module' || result.format === 'module-typescript';
+    if (isESModule && url.startsWith('file:') && result.source != null) {
+      const filename = fileURLToPath(url);
+      const content =
+        typeof result.source === 'string' ? result.source : new TextDecoder().decode(result.source);
+      capturedModules.push({ id: filename, filename, content });
+    }
+    return result;
+  };
+}
+
 interface ModuleCompilePrototype {
-  _compile: (this: { id?: string }, content: string, filename: string) => unknown;
+  _compile: (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) => unknown;
 }
 
 /**
@@ -201,18 +253,6 @@ export async function resolveLoadedModuleSourcesAsync(
  */
 export function getExpoConfigLoaderPath() {
   return path.join(__dirname, 'ExpoConfigLoader.js');
-}
-
-/**
- * Set the environment to production or development
- * Replicates the code from `@expo/cli` to ensure the same environment is set.
- */
-function setNodeEnv(mode: 'development' | 'production') {
-  process.env.NODE_ENV = process.env.NODE_ENV || mode;
-  process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
-
-  // @ts-expect-error: Add support for external React libraries being loaded in the same process.
-  globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
 // Ignore known non-native packages loaded while applying config plugins, which the plugins-skipped

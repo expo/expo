@@ -3,12 +3,15 @@ import path from 'path';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
+  isPathInsideRoot,
   type Noxcturnal,
   type NoxcturnalTransformInput,
 } from '../noxcturnal-transformer';
 
 interface ExpoRouterExportState {
   input: NoxcturnalTransformInput;
+  enabled: boolean;
   isLoaderBundle: boolean;
   isServer: boolean;
   loaderReference?: string;
@@ -26,8 +29,14 @@ export function createExpoRouterServerExportsPlugin(
     },
     createState: (context) => {
       const input = expoPluginInput(context);
+      const routerRootOption = input.options.customTransformOptions?.routerRoot;
+      const routerRoot = typeof routerRootOption === 'string' ? decodeURI(routerRootOption) : 'app';
+      const absoluteRouterRoot = path.isAbsolute(routerRoot)
+        ? routerRoot
+        : path.join(input.projectRoot, routerRoot);
       return {
         input,
+        enabled: isPathInsideRoot(absoluteRouterRoot, resolveInputFilename(input)),
         isLoaderBundle: String(input.options.customTransformOptions?.isLoaderBundle) === 'true',
         isServer: input.options.customTransformOptions?.environment === 'node',
         performConstantFolding: false,
@@ -35,6 +44,7 @@ export function createExpoRouterServerExportsPlugin(
     },
     visitors: [
       nox.defineVisitor('ExportDefaultDeclaration', {}, (exportPath, state) => {
+        if (!state.enabled) return;
         if (!state.isLoaderBundle) return;
         exportPath.remove();
         state.performConstantFolding = true;
@@ -63,6 +73,7 @@ export function createExpoRouterServerExportsPlugin(
           },
         },
         (exportPath, state) => {
+          if (!state.enabled) return;
           if (
             exportPath.node.source ||
             (exportPath.node.exportKind && exportPath.node.exportKind !== 'value') ||
@@ -80,7 +91,7 @@ export function createExpoRouterServerExportsPlugin(
               );
             }
             if (name === 'loader') {
-              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+              state.loaderReference = resolveInputFilename(state.input);
             }
             const remove = state.isLoaderBundle
               ? name !== 'loader'
@@ -97,7 +108,7 @@ export function createExpoRouterServerExportsPlugin(
             const id = declarator.getChild('id');
             const name = id?.node.type === 'Identifier' ? id.node.name : undefined;
             if (name === 'loader') {
-              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+              state.loaderReference = resolveInputFilename(state.input);
             }
             return state.isLoaderBundle
               ? name === 'loader'
@@ -130,6 +141,7 @@ export function createExpoRouterServerExportsPlugin(
       ),
     ],
     post(context, state) {
+      if (!state.enabled) return;
       if (state.loaderReference) {
         context.metadata.set('loaderReference', state.loaderReference);
       }

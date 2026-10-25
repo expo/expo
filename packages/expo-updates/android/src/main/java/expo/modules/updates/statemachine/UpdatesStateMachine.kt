@@ -1,6 +1,7 @@
 package expo.modules.updates.statemachine
 
 import expo.modules.manifests.core.toMap
+import expo.modules.updates.BuildConfig
 import expo.modules.updates.EnabledUpdatesController
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
@@ -114,16 +115,44 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      reportDroppedEvent(event)
       return false
     }
     val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     if (!validUpdatesStateValues.contains(newStateValue)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      reportDroppedEvent(event)
       return false
     }
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   throws, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private fun reportDroppedEvent(event: UpdatesStateEvent) {
+    val message = droppedEventWarning(event)
+    logger.warn(message)
+    if (BuildConfig.EX_UPDATES_ASSERT_INVALID_STATE) {
+      throw AssertionError(message)
+    }
+  }
+
+  /**
+   The warning written when an event is dropped. It carries the error text of an error event,
+   because some callers do not log the failure themselves before sending the event, which would
+   leave the updates log with no record of what was lost.
+   */
+  private fun droppedEventWarning(event: UpdatesStateEvent): String {
+    val errorMessage = when (event) {
+      is UpdatesStateEvent.CheckError -> event.error.message
+      is UpdatesStateEvent.DownloadError -> event.error.message
+      else -> null
+    }
+    val error = errorMessage?.let { ", error = $it" } ?: ""
+    return "UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}$error"
   }
 
   fun sendContextToJS() {

@@ -5,7 +5,7 @@
       "name": "EXJSONUtils",
       "podName": "EXJSONUtils",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [],
       "targets": [

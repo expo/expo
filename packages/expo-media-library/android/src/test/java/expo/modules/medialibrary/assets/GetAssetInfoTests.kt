@@ -3,7 +3,6 @@ package expo.modules.medialibrary.assets
 import android.os.Bundle
 import android.provider.MediaStore
 import expo.modules.medialibrary.AssetQueryException
-import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.UnableToLoadException
@@ -12,7 +11,6 @@ import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -30,7 +28,9 @@ import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 
 private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
-  if (first == second) return
+  if (first == second) {
+    return
+  }
 
   if (first == null || second == null) {
     throw throw ComparisonFailure(message, first.toString(), second.toString())
@@ -94,8 +94,8 @@ internal class GetAssetInfoTests {
       )
     )
 
-    mockkStatic(MediaLibraryUtils::class)
-    every {
+    mockkStatic(::putAssetsInfo)
+    coEvery {
       putAssetsInfo(any(), any(), any(), any(), any(), any())
     } just runs
 

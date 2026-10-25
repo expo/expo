@@ -62,24 +62,6 @@ class ExponentSharedPreferences(val context: Context) {
 
   fun getOrCreateUUID(): String = exponentInstallationId.getOrCreateUUID()
 
-  fun updateSession(session: JSONObject) =
-    setString(ExponentSharedPreferencesKey.EXPO_AUTH_SESSION, session.toString())
-
-  fun removeSession() = setString(ExponentSharedPreferencesKey.EXPO_AUTH_SESSION, null)
-
-  val sessionSecret: String?
-    get() {
-      val sessionString = getString(ExponentSharedPreferencesKey.EXPO_AUTH_SESSION)
-        ?: return null
-      return try {
-        val session = JSONObject(sessionString)
-        session.getString(EXPO_AUTH_SESSION_SECRET_KEY)
-      } catch (e: Exception) {
-        EXL.e(TAG, e)
-        null
-      }
-    }
-
   fun removeLegacyManifest(manifestUrl: String) =
     sharedPreferences.edit(commit = true) { remove(manifestUrl) }
 
@@ -102,8 +84,6 @@ class ExponentSharedPreferences(val context: Context) {
 
   companion object {
     private val TAG = ExponentSharedPreferences::class.java.simpleName
-
-    const val EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret"
 
     // Metadata
     const val EXPERIENCE_METADATA_PREFIX = "experience_metadata_"
@@ -131,6 +111,7 @@ class ExponentSharedPreferences(val context: Context) {
         getBoolean(ExponentSharedPreferencesKey.NUX_HAS_FINISHED_FIRST_RUN_KEY)
       )
     }
+    delete(ExponentSharedPreferencesKey.LEGACY_AUTH_SESSION)
   }
 
   enum class ExponentSharedPreferencesKey(val preferenceKey: String) {
@@ -145,7 +126,7 @@ class ExponentSharedPreferences(val context: Context) {
     LAST_FATAL_ERROR_DATE_KEY("last_fatal_error_date_key"),
     SHOULD_NOT_USE_KERNEL_CACHE("should_not_use_kernel_cache"),
     KERNEL_REVISION_ID("kernel_revision_id"),
-    EXPO_AUTH_SESSION("expo_auth_session"),
+    LEGACY_AUTH_SESSION("expo_auth_session"),
     OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version"),
     HISTORY("history")
   }

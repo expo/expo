@@ -151,7 +151,19 @@ static SEL alwaysAuthorizationSelector;
     }
   }
   
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none"), @"accuracy": [self accuracyAuthorizationString] };
+  NSString *scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+  NSString *accuracy = [self accuracyAuthorizationString];
+
+  return @{ @"status": @(status),
+            @"ios": @{
+              @"scope": scope,
+              @"accuracy": accuracy
+            },
+            // Keep these long-standing fields during the migration to the platform-specific response shape.
+            // TODO: Remove the top-level `scope` and `accuracy` fields after SDK 59.
+            @"scope": scope,
+            @"accuracy": accuracy
+         };
 }
 
 @end

@@ -12,6 +12,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  PCH_CCACHE_CMAKE_CONTENTS,
   PCH_CMAKE_CONTENTS,
   PCH_HEADER_CONTENTS,
   PCH_ONLOAD_CONTENTS,
@@ -112,12 +113,28 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
     },
     {
+      propName: 'expo.gif.enabled',
+      propValueGetter: (config) => config.android?.gifEnabled?.toString(),
+    },
+    {
+      propName: 'expo.webp.enabled',
+      propValueGetter: (config) => config.android?.webpEnabled?.toString(),
+    },
+    {
+      propName: 'expo.webp.animated',
+      propValueGetter: (config) => config.android?.webpAnimated?.toString(),
+    },
+    {
       propName: 'reactNativeArchitectures',
       propValueGetter: (config) => config.android?.buildArchs?.join(','),
     },
     {
       propName: 'exclusiveEnterpriseRepository',
       propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
+    {
+      propName: 'expo.core.buildFromSource',
+      propValueGetter: (config) => config.android?.buildExpoModulesCoreFromSource?.toString(),
     },
     {
       propName: 'hermesV1Enabled',
@@ -396,6 +413,7 @@ export const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType> = (co
           path.join(jniDir, 'appmodules_pch_owner.cpp'),
           PCH_OWNER_SOURCE_CONTENTS
         ),
+        fs.promises.writeFile(path.join(jniDir, 'pch-ccache.cmake'), PCH_CCACHE_CMAKE_CONTENTS),
       ]);
       return config;
     },

@@ -37,12 +37,30 @@ internal import jsi
 /// - Note: BigInt values cannot be mixed with Number values in arithmetic operations in JavaScript.
 /// You must explicitly convert between them.
 public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  /// Handle to the runtime the BigInt belongs to.
+  internal let runtimeHandle: JavaScriptRuntimeHandle
+
+  /// The runtime the BigInt belongs to, or `nil` if it has been deallocated. Prefer ``jsiRuntime`` on
+  /// hot paths: it costs no reference counting.
+  internal var runtime: JavaScriptRuntime? {
+    return runtimeHandle.runtime
+  }
+
+  /// The engine runtime the BigInt belongs to, or `nil` if the runtime has been deallocated.
+  internal var jsiRuntime: facebook.jsi.IRuntime? {
+    return runtimeHandle.pointee
+  }
   internal var pointee: facebook.jsi.BigInt
 
   /// Creates a BigInt from an existing JSI BigInt.
-  internal init(_ runtime: JavaScriptRuntime, _ bigInt: consuming facebook.jsi.BigInt) {
-    self.runtime = runtime
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ bigInt: consuming facebook.jsi.BigInt) {
+    self.runtimeHandle = runtime.handle
+    self.pointee = bigInt
+  }
+
+  /// Creates a BigInt from an existing JSI BigInt, which belongs to the runtime behind `runtimeHandle`.
+  internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ bigInt: consuming facebook.jsi.BigInt) {
+    self.runtimeHandle = runtimeHandle
     self.pointee = bigInt
   }
 
@@ -51,8 +69,8 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   /// - Parameters:
   ///   - runtime: The JavaScript runtime
   ///   - value: The Int64 value to convert to BigInt
-  public init(_ runtime: JavaScriptRuntime, fromInt64 value: Int64) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, fromInt64 value: Int64) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.BigInt.fromInt64(runtime.pointee, value)
   }
 
@@ -61,8 +79,8 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   /// - Parameters:
   ///   - runtime: The JavaScript runtime
   ///   - value: The UInt64 value to convert to BigInt
-  public init(_ runtime: JavaScriptRuntime, fromUint64 value: UInt64) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, fromUint64 value: UInt64) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.BigInt.fromUint64(runtime.pointee, value)
   }
 
@@ -113,15 +131,19 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///   print("Failed to parse BigInt: \(error)")
   /// }
   /// ```
-  public init(_ runtime: JavaScriptRuntime, string: String) throws {
-    self.runtime = runtime
-    self.pointee =
-      try runtime
-      .global()
-      .getPropertyAsFunction("BigInt")
-      .call(arguments: string)
-      .pointee
-      .getBigInt(runtime.pointee)
+  @JavaScriptActor
+  public init(_ runtime: borrowing JavaScriptRuntime, string: String) throws {
+    self.runtimeHandle = runtime.handle
+    // The global `BigInt` function is looked up once per runtime and cached.
+    self.pointee = try runtime.withCached(
+      JavaScriptRuntime.CacheKeys.bigInt,
+      { try runtime.global().getPropertyAsFunction("BigInt") },
+      { (bigIntFunction: borrowing JavaScriptFunction) in
+        // A single borrowed argument is passed without allocating an arguments buffer.
+        let argument = JavaScriptValue(runtime, string)
+        return try bigIntFunction.call(argument: argument).pointee.getBigInt(runtime.pointee)
+      }
+    )
   }
 
   // MARK: - Conversions to Integer Types
@@ -132,10 +154,10 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: `true` if the BigInt fits in an Int64 range, `false` otherwise
   public func isInt64() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isInt64(runtime.pointee)
+    return pointee.isInt64(jsiRuntime)
   }
 
   /// Returns whether this BigInt can be losslessly converted to an unsigned 64-bit integer.
@@ -144,10 +166,10 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: `true` if the BigInt fits in a UInt64 range, `false` otherwise
   public func isUint64() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isUint64(runtime.pointee)
+    return pointee.isUint64(jsiRuntime)
   }
 
   /// Returns this BigInt truncated to a signed 64-bit integer.
@@ -157,10 +179,10 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: The truncated Int64 value
   public func getInt64() -> Int64 {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.getInt64(runtime.pointee)
+    return pointee.getInt64(jsiRuntime)
   }
 
   /// Returns this BigInt truncated to an unsigned 64-bit integer.
@@ -170,10 +192,10 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: The truncated UInt64 value
   public func getUint64() -> UInt64 {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.getUint64(runtime.pointee)
+    return pointee.getUint64(jsiRuntime)
   }
 
   /// Returns this BigInt as a signed 64-bit integer, throwing an error if the conversion is lossy.
@@ -225,31 +247,30 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   /// bigInt.toString(radix: 16)  // "ff"
   /// ```
   public func toString(radix: Int = 10) throws -> String {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     guard radix >= 2 && radix <= 36 else {
       throw BigIntConversionError.invalidRadix(radix)
     }
-    let jsiString = pointee.toString(runtime.pointee, Int32(radix))
-    return String(jsiString.utf16(runtime.pointee))
+    return String(jsiString: pointee.toString(jsiRuntime, Int32(radix)), in: jsiRuntime)
   }
 
   // MARK: - JavaScriptType
 
   public func asValue() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
+    return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
   /// Returns the BigInt as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return facebook.jsi.Value(runtime.pointee, pointee)
+    return facebook.jsi.Value(jsiRuntime, pointee)
   }
 
   // MARK: - Equality
@@ -263,15 +284,15 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   ///   - rhs: The second BigInt to compare
   /// - Returns: `true` if the BigInts represent the same value, `false` otherwise
   public static func == (lhs: borrowing JavaScriptBigInt, rhs: borrowing JavaScriptBigInt) -> Bool {
-    guard let runtime = lhs.runtime else {
+    guard let jsiRuntime = lhs.jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return facebook.jsi.BigInt.strictEquals(runtime.pointee, lhs.pointee, rhs.pointee)
+    return facebook.jsi.BigInt.strictEquals(jsiRuntime, lhs.pointee, rhs.pointee)
   }
 }
 
 extension JavaScriptBigInt: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptBigInt {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptBigInt {
     return value.getBigInt()
   }
 

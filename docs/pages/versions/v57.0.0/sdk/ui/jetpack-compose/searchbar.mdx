@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI SearchBar matches the official Jetpack Compose [Search](https://developer.android.com/develop/ui/compose/components/search-bar) API and provides a search input with support for placeholder text and expanded full-screen search.
@@ -28,7 +29,13 @@ Expo UI SearchBar matches the official Jetpack Compose [Search](https://develope
 
 ### Basic search bar
 
-```tsx BasicSearchBarExample.tsx
+<ComponentExample
+  title="BasicSearchBarExample.tsx"
+  src="/static/images/expo-ui/examples/searchbar-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/searchbar-basic-android-dark.webp"
+  alt="An empty rounded search field with no placeholder text">
+
+```tsx
 import { useState } from 'react';
 import { Host, SearchBar } from '@expo/ui/jetpack-compose';
 
@@ -43,13 +50,21 @@ export default function BasicSearchBarExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Search bar with placeholder
 
 Use the `SearchBar.Placeholder` sub-component to display hint text when the search field is empty.
 
-```tsx SearchBarPlaceholderExample.tsx
+<ComponentExample
+  title="SearchBarPlaceholderExample.tsx"
+  src="/static/images/expo-ui/examples/searchbar-placeholder-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/searchbar-placeholder-android-dark.webp"
+  alt="A rounded search field showing the placeholder text Search items">
+
+```tsx
 import { useState } from 'react';
-import { Host, SearchBar } from '@expo/ui/jetpack-compose';
+import { Host, SearchBar, Text } from '@expo/ui/jetpack-compose';
 
 export default function SearchBarPlaceholderExample() {
   const [query, setQuery] = useState('');
@@ -57,12 +72,16 @@ export default function SearchBarPlaceholderExample() {
   return (
     <Host matchContents>
       <SearchBar onSearch={searchText => setQuery(searchText)}>
-        <SearchBar.Placeholder>Search items...</SearchBar.Placeholder>
+        <SearchBar.Placeholder>
+          <Text>Search items...</Text>
+        </SearchBar.Placeholder>
       </SearchBar>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -70,4 +89,7 @@ export default function SearchBarPlaceholderExample() {
 import { SearchBar } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/searchbar" apiName="SearchBar" />
+<APISection
+  packageName="expo-ui/jetpack-compose/searchbar"
+  apiName="SearchBar"
+/>

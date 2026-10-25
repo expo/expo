@@ -4,7 +4,7 @@
     {
       "name": "ExpoHaptics",
       "podName": "ExpoHaptics",
-      "platforms": ["iOS(.v16)"],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -15,8 +15,6 @@
         {
           "type": "swift",
           "name": "ExpoHaptics",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",

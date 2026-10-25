@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
 import dns from 'dns';
-import url from 'url';
 
 /** Determine if you should use yarn offline or not */
 export async function isYarnOfflineAsync(): Promise<boolean> {
@@ -14,7 +13,7 @@ export async function isYarnOfflineAsync(): Promise<boolean> {
     return true;
   }
 
-  const { hostname } = url.parse(proxy);
+  const hostname = URL.parse(proxy, 'file:')?.hostname;
   if (!hostname) {
     return true;
   }

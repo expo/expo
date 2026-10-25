@@ -31,6 +31,8 @@ function makeEmit() {
   return jest.fn((..._args: any[]) => ({ defaultPrevented: false }));
 }
 
+const isPreloaded = (key: string) => key === 'preview-key' || key === 'other-preloaded';
+
 describe('usePreviewTransition', () => {
   let mockSetOpenPreviewKey: jest.Mock;
 
@@ -40,6 +42,7 @@ describe('usePreviewTransition', () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: false,
       openPreviewKey: undefined,
+      getOpenPreviewKey: () => undefined,
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
   });
@@ -48,35 +51,38 @@ describe('usePreviewTransition', () => {
     jest.restoreAllMocks();
   });
 
-  it('passes through original state and emit when no preview is active', () => {
+  it('passes through original state and emit when no preview is active', async () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     expect(result.current.computedState).toBe(state);
-    expect(result.current.emit).toBe(emit);
+    expect(result.current.emit).not.toBe(emit);
+    expect(result.current.isPreloaded('preview-key')).toBe(true);
   });
 
-  it('wraps emit when openPreviewKey is set', () => {
+  it('wraps emit when openPreviewKey is set', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     expect(result.current.emit).not.toBe(emit);
   });
 
-  it('intercepts transitionStart and promotes the preloaded preview screen', () => {
+  it('intercepts transitionStart and promotes the preloaded preview screen', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -86,10 +92,10 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     // Fire transitionStart for the preview key
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'preview-key',
@@ -101,15 +107,17 @@ describe('usePreviewTransition', () => {
     expect(result.current.computedState.routes).toHaveLength(2);
     expect(result.current.computedState.routes[1]!.key).toBe('preview-key');
     expect(result.current.computedState.index).toBe(1);
+    expect(result.current.isPreloaded('preview-key')).toBe(false);
 
     // Original emit should still have been called
     expect(emit).toHaveBeenCalledTimes(1);
   });
 
-  it('moves a later preloaded route right after the focused one when promoting it', () => {
+  it('moves a later preloaded route right after the focused one when promoting it', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -119,9 +127,9 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'preview-key',
@@ -135,21 +143,24 @@ describe('usePreviewTransition', () => {
       'other-preloaded',
     ]);
     expect(result.current.computedState.index).toBe(1);
+    expect(result.current.isPreloaded('preview-key')).toBe(false);
+    expect(result.current.isPreloaded('other-preloaded')).toBe(true);
   });
 
-  it('intercepts transitionEnd and calls setOpenPreviewKey(undefined)', () => {
+  it('intercepts transitionEnd and calls setOpenPreviewKey(undefined)', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionEnd',
         target: 'preview-key',
@@ -161,19 +172,20 @@ describe('usePreviewTransition', () => {
     expect(emit).toHaveBeenCalledTimes(1);
   });
 
-  it('does not intercept events with closing: true', () => {
+  it('does not intercept events with closing: true', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'preview-key',
@@ -187,19 +199,20 @@ describe('usePreviewTransition', () => {
     expect(emit).toHaveBeenCalledTimes(1);
   });
 
-  it('does not intercept events for a different target', () => {
+  it('does not intercept events for a different target', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'other-key',
@@ -212,10 +225,11 @@ describe('usePreviewTransition', () => {
     expect(emit).toHaveBeenCalledTimes(1);
   });
 
-  it('clears tracking when the transitioning screen becomes an active route', () => {
+  it('clears tracking when the transitioning screen becomes an active route', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -224,13 +238,13 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result, rerender } = renderHook(
-      ({ state }: HookProps) => usePreviewTransition(state, emit),
+    const { result, rerender } = await renderHook(
+      ({ state }: HookProps) => usePreviewTransition(state, emit, isPreloaded),
       { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
     // Start tracking
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'preview-key',
@@ -246,25 +260,26 @@ describe('usePreviewTransition', () => {
       index: 1,
       routes: [makeRoute('index-key'), makeRoute('preview-key')],
     });
-    rerender({ state: updatedState });
+    await rerender({ state: updatedState });
 
     // After state update, the hook should pass through the real state directly
     expect(result.current.computedState).toBe(updatedState);
   });
 
-  it('passes through emit events with no data property', () => {
+  it('passes through emit events with no data property', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
     const state = makeState();
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'gestureCancel',
         target: 'preview-key',
@@ -276,29 +291,30 @@ describe('usePreviewTransition', () => {
     expect(emit).toHaveBeenCalledTimes(1);
   });
 
-  it('preserves emit reference across re-renders when no preview is active', () => {
+  it('preserves emit reference across re-renders when no preview is active', async () => {
     const state = makeState();
     const emit = makeEmit();
 
-    const { result, rerender } = renderHook(
-      ({ state }: HookProps) => usePreviewTransition(state, emit),
+    const { result, rerender } = await renderHook(
+      ({ state }: HookProps) => usePreviewTransition(state, emit, isPreloaded),
       { initialProps: { state } as HookProps } as RenderHookOptions<HookProps>
     );
 
     const firstEmit = result.current.emit;
-    expect(firstEmit).toBe(emit);
+    expect(firstEmit).not.toBe(emit);
 
     // Rerender with new state but no preview active
     const newState = makeState({ index: 0 });
-    rerender({ state: newState });
+    await rerender({ state: newState });
 
-    expect(result.current.emit).toBe(emit);
+    expect(result.current.emit).toBe(firstEmit);
   });
 
-  it('falls through to original state when no matching preloaded route exists', () => {
+  it('falls through to original state when no matching preloaded route exists', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'preview-key',
+      getOpenPreviewKey: () => 'preview-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -308,10 +324,10 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
     // Start tracking
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'preview-key',
@@ -323,10 +339,11 @@ describe('usePreviewTransition', () => {
     expect(result.current.computedState).toBe(state);
   });
 
-  it('does not promote an already-active route', () => {
+  it('does not promote an already-active route', async () => {
     mockUseLinkPreviewContext.mockReturnValue({
       isStackAnimationDisabled: true,
       openPreviewKey: 'index-key',
+      getOpenPreviewKey: () => 'index-key',
       setOpenPreviewKey: mockSetOpenPreviewKey,
     });
 
@@ -336,9 +353,9 @@ describe('usePreviewTransition', () => {
     });
     const emit = makeEmit();
 
-    const { result } = renderHook(() => usePreviewTransition(state, emit));
+    const { result } = await renderHook(() => usePreviewTransition(state, emit, isPreloaded));
 
-    act(() => {
+    await act(() => {
       result.current.emit({
         type: 'transitionStart',
         target: 'index-key',
@@ -348,5 +365,55 @@ describe('usePreviewTransition', () => {
 
     // The route is already active (position <= index), so nothing is synthesized
     expect(result.current.computedState).toBe(state);
+  });
+});
+
+describe('native events before React commits the preview key', () => {
+  const actual = jest.requireActual(
+    '../../../link/preview/LinkPreviewContext'
+  ) as typeof import('../../../link/preview/LinkPreviewContext');
+  beforeEach(() => mockUseLinkPreviewContext.mockImplementation(actual.useLinkPreviewContext));
+
+  it('handles transitionStart in the same batch as the native tap', async () => {
+    const state = makeState({
+      routes: [makeRoute('index-key'), makeRoute('preview-key')],
+    });
+    const { result } = await renderHook(
+      () => ({
+        context: actual.useLinkPreviewContext(),
+        transition: usePreviewTransition(state, makeEmit(), isPreloaded),
+      }),
+      { wrapper: actual.LinkPreviewContextProvider }
+    );
+    await act(() => {
+      result.current.context.setOpenPreviewKey('preview-key');
+      result.current.transition.emit({
+        type: 'transitionStart',
+        target: 'preview-key',
+        data: { closing: false },
+      });
+    });
+    expect(result.current.transition.computedState.index).toBe(1);
+  });
+
+  it('does not let an old emitter clear the next committed preview', async () => {
+    const { result } = await renderHook(
+      () => ({
+        context: actual.useLinkPreviewContext(),
+        transition: usePreviewTransition(makeState(), makeEmit(), isPreloaded),
+      }),
+      { wrapper: actual.LinkPreviewContextProvider }
+    );
+    await act(() => result.current.context.setOpenPreviewKey('old-key'));
+    const oldEmit = result.current.transition.emit;
+    await act(() => {
+      result.current.context.setOpenPreviewKey('new-key');
+      oldEmit({
+        type: 'transitionEnd',
+        target: 'old-key',
+        data: { closing: false },
+      });
+    });
+    expect(result.current.context.openPreviewKey).toBe('new-key');
   });
 });

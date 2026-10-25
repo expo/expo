@@ -77,14 +77,6 @@ function DrawerViewBase({
     overlayAccessibilityLabel,
   } = descriptors[focusedRouteKey]!.options;
 
-  // Keys of routes that have been focused during this mount. Only blurred routes from this list are
-  // frozen, so a route is never frozen before it has rendered once.
-  const [loaded, setLoaded] = React.useState([focusedRouteKey]);
-
-  if (!loaded.includes(focusedRouteKey)) {
-    setLoaded([...loaded, focusedRouteKey]);
-  }
-
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
 
   React.useEffect(() => {
@@ -115,14 +107,14 @@ function DrawerViewBase({
   const drawerStatus = getDrawerStatusFromState(state, defaultStatus);
 
   const handleDrawerOpen = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.openDrawer(),
       target: state.key,
     });
   });
 
   const handleDrawerClose = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.closeDrawer(),
       target: state.key,
     });
@@ -217,7 +209,6 @@ function DrawerViewBase({
           }
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: DrawerHeaderProps) => (
               <Header
                 {...options}
@@ -246,10 +237,7 @@ function DrawerViewBase({
               key={route.key}
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               visible={isFocused}
-              enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
-              // TODO: A visited blurred route re-preloaded with new params stays frozen until focused.
-              shouldFreeze={!isFocused && loaded.includes(route.key)}>
+              enabled={detachInactiveScreens}>
               <Screen
                 focused={isFocused}
                 route={route}

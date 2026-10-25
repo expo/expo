@@ -1,16 +1,560 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
+import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
+import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
   createJSVirtualModule,
   serializeSplitAsync,
   serializeTo,
 } from '../fork/__tests__/serializer-test-utils';
+import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
+import * as chunkSerializer from '../serializeChunks';
 import type { SerialAsset } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+describe('Granular chunk emission', () => {
+  const publicGraph = {
+    'index.js': `import('./a'); import('./b');`,
+    'a.js': `import './shared';`,
+    'b.js': `import './shared';`,
+    'shared.js': `console.log('shared');`,
+  };
+
+  it('activates the complete opt-in path through the public serializer', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
+      chunkingStrategy: 'granular',
+    });
+    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('granular');
+    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(true);
+    expect(artifacts.some((asset) => asset.filename.includes('__common'))).toBe(false);
+    const paths = Object.values(artifacts[0]!.metadata.paths!).flatMap(Object.values);
+    expect(paths.every(Array.isArray)).toBe(true);
+    for (const asset of artifacts.filter((asset) => asset.metadata.isAsync)) {
+      expect(asset.source).toContain('__expo_chunk_completion__');
+    }
+  });
+
+  it.each([
+    { chunkingStrategy: 'legacy' as const },
+    { platform: 'ios' },
+    { dev: true },
+    { lazy: true },
+    { splitChunks: false },
+    { isServer: true },
+    { isReactServer: true },
+  ])('retains legacy output for %j', async (options) => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
+      chunkingStrategy: 'granular',
+      ...options,
+    });
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
+    expect(artifacts.every((asset) => !asset.source.includes('__expo_chunk_completion__'))).toBe(
+      true
+    );
+    expect(
+      artifacts
+        .flatMap((asset) => Object.values(asset.metadata.paths ?? {}).flatMap(Object.values))
+        .every((value) => typeof value === 'string')
+    ).toBe(true);
+  });
+
+  it('uses legacy page chunks when a worker dynamically imports a module', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        ...publicGraph,
+        'index.js': `import('./a'); import('./b'); require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import('./worker-target');`,
+        'worker-target.js': `console.log('worker target');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    const commonChunk = artifacts.find((asset) => asset.filename.includes('__common'));
+    expect(commonChunk?.metadata.modulePaths).toContain('/app/shared.js');
+    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(false);
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
+    expect(
+      artifacts
+        .flatMap((asset) => Object.values(asset.metadata.paths ?? {}).flatMap(Object.values))
+        .every((value) => typeof value === 'string')
+    ).toBe(true);
+  });
+
+  it('keeps DOM exports on the legacy pipeline even when requested', async () => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: publicGraph,
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'granular',
+      },
+    });
+    const domGraph = {
+      ...graph,
+      transformOptions: {
+        ...graph.transformOptions,
+        customTransformOptions: { ...graph.transformOptions.customTransformOptions, dom: 'true' },
+      },
+    };
+    const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
+    const { artifacts } = (await serializer(entry, premodules, domGraph, options)) as any;
+    expect(artifacts.some((asset: SerialAsset) => asset.filename.includes('__common'))).toBe(true);
+    expect(
+      artifacts.every((asset: SerialAsset) => asset.metadata.chunkingStrategy === undefined)
+    ).toBe(true);
+  });
+
+  async function serializeGranularAsync(fs: Record<string, string>, sourceMaps = false) {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs,
+      preModulesFs: { runtime: '/* runtime */' },
+      options: { platform: 'web', dev: false, output: 'static', splitChunks: true, sourceMaps },
+    });
+    return createGranularChunkingStrategy({
+      serializerConfig: {},
+      serializeChunkOptions: {
+        includeSourceMaps: sourceMaps,
+        splitChunks: true,
+        chunkingStrategy: 'granular',
+      },
+      entryFile: entry,
+      preModules: premodules,
+      graph,
+      options,
+    }).serializeAsync();
+  }
+
+  it('emits separate AB and BC shared owners and complete async arrays', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import('./a'); import('./b'); import('./c');`,
+      'a.js': `import './d';`,
+      'b.js': `import './d'; import './e';`,
+      'c.js': `import './e';`,
+      'd.js': `console.log('d');`,
+      'e.js': `console.log('e');`,
+    });
+    const entry = artifacts[0]!;
+    expect(entry.metadata.entryPaths).toEqual(['/app/index.js']);
+    const d = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/d.js'))!;
+    const e = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/e.js'))!;
+    expect(d).not.toBe(e);
+    expect(d.filename).toContain('__shared-');
+    expect(e.filename).toContain('__shared-');
+    expect(d.metadata.entryPaths).toEqual([]);
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
+    expect(b.metadata.requires).toEqual(expect.arrayContaining([d.filename, e.filename]));
+    const paths = Object.values(entry.metadata.paths!).flatMap(Object.values);
+    expect(paths).toContainEqual(
+      expect.arrayContaining(['/' + b.filename, '/' + d.filename, '/' + e.filename])
+    );
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === 'granular')).toBe(true);
+    const modulePaths = artifacts.flatMap((asset) => asset.metadata.modulePaths ?? []);
+    expect(new Set(modulePaths).size).toBe(modulePaths.length);
+  });
+
+  it('covers canonical requirements from an importer shared by multiple entries', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import './importer'; import './d';`,
+      'b.js': `import './importer';`,
+      'importer.js': `export const load = () => import('./c');`,
+      'c.js': `import './d';`,
+      'd.js': `console.log('d');`,
+    });
+    const importer = artifacts.find((asset) =>
+      asset.metadata.modulePaths?.includes('/app/importer.js')
+    )!;
+    const c = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/c.js'))!;
+    const d = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/d.js'))!;
+    const paths = importer.metadata.paths!['/app/importer.js']!['/app/c.js']!;
+    expect(paths).toEqual(expect.arrayContaining(['/' + c.filename, '/' + d.filename]));
+    const availableFilenames = new Set([
+      artifacts[0]!.filename,
+      importer.filename,
+      ...artifacts
+        .filter((asset) => !asset.metadata.isAsync && !asset.metadata.entryPaths?.length)
+        .map((asset) => asset.filename),
+    ]);
+    const coveredFilenames = new Set([
+      ...availableFilenames,
+      ...(paths as string[]).map((url) => url.slice(1)),
+    ]);
+    for (const required of [c.filename, ...c.metadata.requires!])
+      expect(coveredFilenames.has(required)).toBe(true);
+  });
+
+  it('omits an empty facade while preserving its entry requirements', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import('./a');`,
+      'a.js': `import './b'; export const load = () => import('./b');`,
+      'b.js': `console.log('b');`,
+    });
+    const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a.js'))!;
+    expect(artifacts).toHaveLength(3);
+    expect(a.metadata.modulePaths).toContain('/app/b.js');
+    expect(artifacts[0]!.metadata.entryChunks!['/app/b.js']).toEqual([a.filename]);
+    expect(artifacts.some((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))).toBe(false);
+    expect(a.metadata.paths).toEqual({});
+  });
+
+  it.each([false, true])(
+    'omits empty same-basename facades (source maps: %s)',
+    async (sourceMaps) => {
+      const artifacts = await serializeGranularAsync(
+        {
+          'index.js': `import('./a/index'); import('./b/index'); import('./x'); import('./y');`,
+          'a/index.js': `console.log('a');`,
+          'b/index.js': `console.log('b');`,
+          'x.js': `import './a/index';`,
+          'y.js': `import './b/index';`,
+        },
+        sourceMaps
+      );
+      const jsAssets = artifacts.filter((asset) => asset.type === 'js');
+      const a = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/a/index.js'))!;
+      const b = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/b/index.js'))!;
+      const entry = artifacts[0]!;
+      expect(jsAssets).toHaveLength(6);
+      expect(
+        artifacts.filter((asset) => asset.type === 'map').map((asset) => asset.filename)
+      ).toEqual(sourceMaps ? jsAssets.map((asset) => asset.filename + '.map') : []);
+      expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
+      expect(a.filename).toContain('__shared-');
+      expect(b.filename).toContain('__shared-');
+      expect(a.filename).not.toBe(b.filename);
+      expect(entry.metadata.entryChunks!['/app/a/index.js']).toEqual([a.filename]);
+      expect(entry.metadata.entryChunks!['/app/b/index.js']).toEqual([b.filename]);
+      expect(entry.metadata.paths!['/app/index.js']!['/app/a/index.js']).toEqual([
+        '/' + a.filename,
+      ]);
+      expect(entry.metadata.paths!['/app/index.js']!['/app/b/index.js']).toEqual([
+        '/' + b.filename,
+      ]);
+      expect(
+        artifacts
+          .filter((asset) => asset.metadata.isAsync)
+          .every((asset) => asset.metadata.modulePaths!.length > 0)
+      ).toBe(true);
+    }
+  );
+
+  it('skips fully initial-owned facades and records their aliases', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import './a'; import('./a');`,
+      'a.js': `console.log('a');`,
+    });
+    expect(artifacts).toHaveLength(1);
+    expect(artifacts[0]!.metadata.entryPaths).toEqual(['/app/a.js', '/app/index.js']);
+    expect(artifacts[0]!.metadata.entryChunks).toEqual({
+      '/app/a.js': [],
+      '/app/index.js': [],
+    });
+    expect(artifacts[0]!.metadata.paths).toEqual({});
+  });
+
+  it('keeps worker closures isolated and their URLs scalar', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import './shared'; import('./a'); require.unstable_resolveWorker('./worker');`,
+      'a.js': `console.log('a');`,
+      'worker.js': `import './shared'; require.unstable_resolveWorker('./nested');`,
+      'nested.js': `import './shared';`,
+      'shared.js': `console.log('shared');`,
+    });
+    const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+    const nested = artifacts.find((asset) => asset.originFilename === 'nested.js')!;
+    expect(worker.metadata.modulePaths).toContain('/app/shared.js');
+    expect(nested.metadata.modulePaths).toContain('/app/shared.js');
+    expect(worker.metadata.entryPaths).toEqual([]);
+    expect(worker.metadata.requires).toEqual([]);
+    expect(worker.source).toContain('"/app/runtime"');
+    expect(Object.values(artifacts[0]!.metadata.paths!).flatMap(Object.values)).toContain(
+      '/' + worker.filename
+    );
+    expect(Object.values(worker.metadata.paths!).flatMap(Object.values)).toEqual([
+      '/' + nested.filename,
+    ]);
+  });
+
+  it.each([true, false])(
+    'preserves weak worker IDs without collecting their targets (page imports target: %s)',
+    async (pageImportsTarget) => {
+      const artifacts = await serializeGranularAsync({
+        'index.js': `${pageImportsTarget ? "import './target';" : ''} require.unstable_resolveWorker('./worker');`,
+        'worker.js': `self.targetId = require.resolveWeak('./target');`,
+        'target.js': `export const value = 42;`,
+      });
+      const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+      expect(artifacts).toHaveLength(2);
+      expect(worker.metadata.modulePaths).toEqual(['/app/worker.js']);
+      expect(worker.source).toContain('["/app/target.js"]');
+      expect(worker.metadata.paths).toEqual({});
+      expect(artifacts[0]!.metadata.paths!['/app/index.js']!['/app/worker.js']).toBe(
+        '/' + worker.filename
+      );
+    }
+  );
+
+  it('emits acyclic requirements for circular dynamic imports', async () => {
+    const artifacts = await serializeGranularAsync({
+      'index.js': `import('./a');`,
+      'a.js': `import './shared'; export const load = () => import('./b');`,
+      'b.js': `import './shared'; export const load = () => import('./a');`,
+      'shared.js': `console.log('shared');`,
+    });
+    function visit(filename: string, ancestors: string[] = []) {
+      expect(ancestors).not.toContain(filename);
+      const asset = artifacts.find((asset) => asset.filename === filename)!;
+      expect(asset).toBeDefined();
+      for (const required of asset.metadata.requires ?? [])
+        visit(required, [...ancestors, filename]);
+    }
+    for (const asset of artifacts) visit(asset.filename);
+    const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a.js'))!;
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
+    expect(b.metadata.requires).toContain(a.filename);
+    expect(a.metadata.requires).not.toContain(b.filename);
+  });
+
+  it('changes embedded-path hashes when a shared prerequisite changes', async () => {
+    const fs = {
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import './shared';`,
+      'b.js': `import './shared';`,
+      'shared.js': `console.log('before');`,
+    };
+    const artifacts = await serializeGranularAsync(fs);
+    const artifactsChanged = await serializeGranularAsync({
+      ...fs,
+      'shared.js': `console.log('after');`,
+    });
+    const originalSharedChunk = artifacts.find((asset) => asset.filename.includes('__shared-'))!;
+    const updatedSharedChunk = artifactsChanged.find((asset) =>
+      asset.filename.includes('__shared-')
+    )!;
+    expect(updatedSharedChunk.originFilename).toBe(originalSharedChunk.originFilename);
+    expect(updatedSharedChunk.filename).not.toBe(originalSharedChunk.filename);
+    expect(artifactsChanged[0]!.filename).not.toBe(artifacts[0]!.filename);
+    expect(artifactsChanged[0]!.source).toContain(updatedSharedChunk.filename);
+    expect(artifactsChanged[0]!.source).not.toContain(originalSharedChunk.filename);
+    expect(await serializeGranularAsync(fs)).toEqual(artifacts);
+  });
+
+  it('retains per-chunk plugin preludes, maps and trailing annotations around completion', async () => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: {
+        'index.js': `import('./a'); import('./b');`,
+        'a.js': `import './shared';`,
+        'b.js': `import './shared';`,
+        'shared.js': `console.log('shared');`,
+      },
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        sourceMaps: true,
+      },
+    });
+    const unstablePlugin = jest.fn(({ premodules }: { premodules: readonly Module[] }) => [
+      ...premodules,
+      createJSVirtualModule('plugin', 'globalThis.pluginRan = true;'),
+    ]);
+    const artifacts = await createGranularChunkingStrategy({
+      serializerConfig: {},
+      serializeChunkOptions: {
+        includeSourceMaps: true,
+        splitChunks: true,
+        chunkingStrategy: 'granular',
+        unstable_beforeAssetSerializationPlugins: [unstablePlugin],
+      },
+      entryFile: entry,
+      preModules: premodules,
+      graph,
+      options,
+    }).serializeAsync();
+    const js = artifacts.filter((asset) => asset.type === 'js');
+    expect(unstablePlugin).toHaveBeenCalledTimes(js.length);
+    for (const asset of js) {
+      expect(asset.source).toContain('globalThis.pluginRan = true;');
+      const sourceMap = artifacts.find(
+        (candidate) => candidate.filename === asset.filename + '.map'
+      )!;
+      expect(JSON.parse(sourceMap.source).version).toBe(3);
+      expect(asset.source).toContain('//# debugId=');
+      if (asset.metadata.isAsync) {
+        const marker = asset.source.indexOf('__expo_chunk_completion__');
+        expect(marker).toBeGreaterThan(asset.source.indexOf('globalThis.pluginRan'));
+        expect(marker).toBeLessThan(asset.source.indexOf('//# sourceMappingURL='));
+        const footer = asset.source.slice(asset.source.lastIndexOf('(function(){'));
+        expect(footer.split('\n')[0]).not.toContain(asset.filename);
+      } else {
+        expect(asset.source).not.toContain('__expo_chunk_completion__');
+      }
+    }
+  });
+});
+
+describe('worker compatibility', () => {
+  let bundle: Awaited<ReturnType<typeof microBundle>>;
+  let chunkSerializerSpy: jest.SpyInstance;
+  beforeAll(async () => {
+    bundle = await microBundle({
+      fs: { 'index.js': `import('./route');`, 'route.js': 'export const value = 1;' },
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'granular',
+      },
+    });
+  });
+  beforeEach(() => {
+    chunkSerializerSpy = jest.spyOn(chunkSerializer, 'graphToSerialAssetsAsync');
+  });
+  afterEach(() => {
+    chunkSerializerSpy.mockRestore();
+  });
+
+  async function serialize(graph = bundle[2], options: ExpoSerializerOptions = bundle[3]) {
+    const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
+    await serializer(bundle[0], bundle[1], graph, options);
+  }
+
+  async function createWorkerBundle(workerSource: string) {
+    return microBundle({
+      fs: {
+        'index.js': `import './shared'; require.unstable_resolveWorker('./worker');`,
+        'worker.js': workerSource,
+        'shared.js': `export const load = () => import('./target');`,
+        'target.js': `export const value = 1;`,
+        'nested.js': `import './shared';`,
+      },
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'granular',
+      },
+    });
+  }
+
+  it.each(['async', 'maybeSync', 'prefetch'] as const)(
+    'falls back for a shared worker importer with a %s edge',
+    async (asyncType) => {
+      const [entry, , graph, options] = await createWorkerBundle(`import './shared';`);
+      const shared = graph.dependencies.get('/app/shared.js')!;
+      const [key, dependency] = [...shared.dependencies].find(
+        ([, dep]) => dep.data.data.asyncType === 'async'
+      )!;
+      shared.dependencies.set(key, {
+        ...dependency,
+        data: { ...dependency.data, data: { ...dependency.data.data, asyncType } },
+      });
+      expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
+        workerEntry: '/app/worker.js',
+        importer: '/app/shared.js',
+        target: '/app/target.js',
+        asyncType,
+      });
+      await serialize(graph, options);
+
+      expect(chunkSerializerSpy).toHaveBeenCalledWith(
+        { projectRoot },
+        expect.objectContaining({ chunkingStrategy: 'legacy' }),
+        bundle[0],
+        bundle[1],
+        graph,
+        expect.anything()
+      );
+    }
+  );
+
+  it('finds async edges inside nested workers', async () => {
+    const [entry, , graph] = await createWorkerBundle(
+      `require.unstable_resolveWorker('./nested');`
+    );
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
+      workerEntry: '/app/nested.js',
+      importer: '/app/shared.js',
+      target: '/app/target.js',
+      asyncType: 'async',
+    });
+  });
+
+  it('ignores weak worker edges even when the fixture manufactures their target', async () => {
+    const [entry, , graph] = await createWorkerBundle(`require.resolveWeak('./shared');`);
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+
+  it('does not treat page-only async edges as worker edges', async () => {
+    const [, , graph, options] = await createWorkerBundle(`import './target';`);
+    await serialize(graph, options);
+
+    expect(chunkSerializerSpy).toHaveBeenCalledWith(
+      { projectRoot },
+      expect.objectContaining({ chunkingStrategy: 'granular' }),
+      bundle[0],
+      bundle[1],
+      graph,
+      expect.anything()
+    );
+  });
+
+  it('ignores unresolved worker edges', async () => {
+    const [entry, , graph] = await createWorkerBundle(`import('./target');`);
+    const worker = graph.dependencies.get('/app/worker.js')!;
+    for (const [key, dependency] of worker.dependencies) {
+      if (dependency.data.data.asyncType === 'async') {
+        worker.dependencies.set(key, { data: dependency.data });
+      }
+    }
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+
+  it('does not scan workers when splitting is disabled', async () => {
+    const [, , graph, original] = await createWorkerBundle(`import('./target');`);
+    const options = original as ExpoSerializerOptions;
+    const scan = jest.spyOn(workerScan, 'findUnsupportedWorkerAsyncDependency');
+    try {
+      await serialize(graph, {
+        ...options,
+        serializerOptions: { ...options.serializerOptions, splitChunks: false },
+      });
+
+      expect(chunkSerializerSpy).toHaveBeenCalledWith(
+        { projectRoot },
+        expect.objectContaining({ chunkingStrategy: 'legacy', splitChunks: false }),
+        bundle[0],
+        bundle[1],
+        graph,
+        expect.anything()
+      );
+      expect(scan).not.toHaveBeenCalled();
+    } finally {
+      scan.mockRestore();
+    }
+  });
+
+  it('terminates on synchronous worker cycles', async () => {
+    const [entry, , graph] = await microBundle({
+      fs: {
+        'index.js': `require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import './other';`,
+        'other.js': `import './worker';`,
+      },
+      options: { platform: 'web', dev: false, splitChunks: true },
+    });
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+});
 
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {
@@ -123,9 +667,9 @@ describe('serializes', () => {
         expect(artifact.source.startsWith('testPreModule;')).toBeTruthy();
       });
       mapArtifacts.forEach((artifact: SerialAsset) => {
-        // Assert each map artifact has __testPreModule in sources
+        // Assert each map artifact has __testPreModule in the sources of its first (indexed) section
         const map = JSON.parse(artifact.source);
-        expect(map.sources[0]).toEqual('__testPreModule');
+        expect(map.sections[0].map.sources[0]).toEqual('__testPreModule');
       });
     });
     it(`generated async import paths match generated artifacts`, async () => {
@@ -275,7 +819,7 @@ describe('serializes', () => {
 
       // This will fail if the `module` -> `_module` transform doesn't work.
       expect(await serializer(...(await microBundle({ fs })))).toMatchInlineSnapshot(`
-        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
           let _module = {};
           let _require = {};
           let _global = {};
@@ -308,10 +852,10 @@ describe('serializes', () => {
           /\/\/# sourceMappingURL=https:\/\/localhost:8081\/indedx\.bundle\?dev=false/
         );
         // Debug ID annotation is included at the end.
-        expect(artifacts.code).toMatch(/\/\/# debugId=d582bbf1-5fdf-4ce7-afea-e784a502f5bc/);
+        expect(artifacts.code).toMatch(/\/\/# debugId=abeba873-c91b-4b9f-b0b3-ecba23cbadfb/);
 
         // Test that the debugId is added to the source map and matches the annotation.
-        const debugId = 'd582bbf1-5fdf-4ce7-afea-e784a502f5bc';
+        const debugId = 'abeba873-c91b-4b9f-b0b3-ecba23cbadfb';
         expect(artifacts.code).toContain(debugId);
 
         expect(JSON.parse(artifacts.map)).toEqual(
@@ -367,10 +911,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=35adadee-cd42-451d-a8cf-aaf69dd92d97/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '295379f8-3d45-4ee7-8da9-c63d70ba75f3';
+      const debugId = '35adadee-cd42-451d-a8cf-aaf69dd92d97';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }: SerialAsset) =>
@@ -408,10 +952,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=35adadee-cd42-451d-a8cf-aaf69dd92d97/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '295379f8-3d45-4ee7-8da9-c63d70ba75f3';
+      const debugId = '35adadee-cd42-451d-a8cf-aaf69dd92d97';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }: SerialAsset) =>
@@ -671,13 +1215,13 @@ describe('serializes', () => {
     };
 
     expect(await serializer(...(await microBundle({ fs })))).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
-        var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+        var _foo = require(_dependencyMap[0], "./foo");
         console.log(_foo.foo);
       },"/app/index.js",["/app/foo.js"],"index.js");
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -748,26 +1292,30 @@ describe('serializes', () => {
   });
 
   it(`bundle splits a weak import`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `
+    // Real Metro omits weak-only targets; this fixture preserves legacy test behavior.
+    const artifacts = await serializeSplitAsync(
+      {
+        'index.js': `
           require.resolveWeak('./foo')
         `,
-      'foo.js': `
+        'foo.js': `
           export const foo = 'foo';
         `,
-    });
+      },
+      { legacyTraverseWeakDependencies: true }
+    );
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-94948be0883c5c5ec85126a6f3367b2c.js",
-        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+        "_expo/static/js/web/index-7cf5bbda0f67ef0cdf5b051d24839059.js",
+        "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-94948be0883c5c5ec85126a6f3367b2c.js",
+          "filename": "_expo/static/js/web/index-7cf5bbda0f67ef0cdf5b051d24839059.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -777,7 +1325,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
               },
             },
             "reactClientReferences": [],
@@ -785,14 +1333,14 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "index.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _dependencyMap[0];
-      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+          "filename": "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -806,7 +1354,7 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "foo.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -851,15 +1399,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-1207f92ecd83de62d121a586b7d1a023.js",
-        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+        "_expo/static/js/web/index-37d09d8a8e233810d0ae346a931f271e.js",
+        "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-1207f92ecd83de62d121a586b7d1a023.js",
+          "filename": "_expo/static/js/web/index-37d09d8a8e233810d0ae346a931f271e.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -870,7 +1418,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
               },
             },
             "reactClientReferences": [],
@@ -878,17 +1426,17 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "index.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
-      },"/app/index.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        require(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
+      },"/app/index.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js"}});
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+          "filename": "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -902,7 +1450,7 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "foo.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -952,11 +1500,11 @@ describe('serializes', () => {
     });
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toEqual([
-      '_expo/static/js/web/index-bdef585f35abb73ade9d9bf09663cd76.js',
-      '_expo/static/js/web/index-25b349d9df4cf37e2ce96f19a911e4eb.js',
-      '_expo/static/js/web/[foo]-b99e2a64404cca4d65e32984620b7bf1.js',
-      '_expo/static/js/web/{foo}-d032e4cf31d79b9563f18fce5c4d4da8.js',
-      '_expo/static/js/web/+foo-2b47c1ed90cec08c1514324d9ade788c.js',
+      '_expo/static/js/web/index-46b289da7e31e98725166090f17b807b.js',
+      '_expo/static/js/web/index-1e9b37b7a0c3033d8b3385bd9a556dae.js',
+      '_expo/static/js/web/[foo]-1a2cc21e93a511f706afa2c3afea0a7f.js',
+      '_expo/static/js/web/{foo}-c42fc7ce5bc02ecac6a19badaeaf106d.js',
+      '_expo/static/js/web/+foo-844771169e7b021c9c9b7fc0c1eda77d.js',
     ]);
 
     // Split bundle
@@ -1015,15 +1563,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-e1fb337e6686dcaff5b891611f2351c2.js",
-        "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+        "_expo/static/js/web/index-6d33b8d5aa388d29c911f1ea070dd843.js",
+        "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-e1fb337e6686dcaff5b891611f2351c2.js",
+          "filename": "_expo/static/js/web/index-6d33b8d5aa388d29c911f1ea070dd843.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1035,7 +1583,7 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/two.js": {
-                "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+                "/app/foo.js": "/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
               },
             },
             "reactClientReferences": [],
@@ -1043,22 +1591,22 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "index.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
-        _$$_REQUIRE(_dependencyMap[0]);
+        require(_dependencyMap[0]);
       },"/app/index.js",["/app/two.js"]);
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
-      },"/app/two.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js"}});
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        require(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
+      },"/app/two.js",{"0":"/app/foo.js","1":"/app/expo-mock/async-require","paths":{"/app/foo.js":"/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js"}});
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
+          "filename": "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1072,7 +1620,7 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "foo.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1145,19 +1693,19 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-1a945ad9d39624147643462e65d5c9a5.js",
-        "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
-        "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
-        "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
-        "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
-        "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+        "_expo/static/js/web/index-4925080761c211aba74fbfd054336f49.js",
+        "_expo/static/js/web/a-12c7a49f9bd14cd5825ead8b8b20af16.js",
+        "_expo/static/js/web/b-530ae3505b2e7d48992cf467aa3b51b5.js",
+        "_expo/static/js/web/c-56e8e09d8263e0e34c2784569336ac37.js",
+        "_expo/static/js/web/__common-39fcae1c62a6d2e698c18534fd82e6c6.js",
+        "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-1a945ad9d39624147643462e65d5c9a5.js",
+          "filename": "_expo/static/js/web/index-4925080761c211aba74fbfd054336f49.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1168,32 +1716,32 @@ describe('serializes', () => {
             ],
             "paths": {
               "/app/index.js": {
-                "/app/a.js": "/_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
-                "/app/b.js": "/_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
-                "/app/c.js": "/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
+                "/app/a.js": "/_expo/static/js/web/a-12c7a49f9bd14cd5825ead8b8b20af16.js",
+                "/app/b.js": "/_expo/static/js/web/b-530ae3505b2e7d48992cf467aa3b51b5.js",
+                "/app/c.js": "/_expo/static/js/web/c-56e8e09d8263e0e34c2784569336ac37.js",
               },
             },
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
-              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+              "_expo/static/js/web/__common-39fcae1c62a6d2e698c18534fd82e6c6.js",
+              "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
             ],
           },
           "originFilename": "index.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
-        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[2], _dependencyMap.paths);
-        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[3], _dependencyMap.paths);
-      },"/app/index.js",{"0":"/app/a.js","1":"/app/expo-mock/async-require","2":"/app/b.js","3":"/app/c.js","paths":{"/app/a.js":"/_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js","/app/b.js":"/_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js","/app/c.js":"/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js"}});
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        require(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
+        require(_dependencyMap[1])(_dependencyMap[2], _dependencyMap.paths);
+        require(_dependencyMap[1])(_dependencyMap[3], _dependencyMap.paths);
+      },"/app/index.js",{"0":"/app/a.js","1":"/app/expo-mock/async-require","2":"/app/b.js","3":"/app/c.js","paths":{"/app/a.js":"/_expo/static/js/web/a-12c7a49f9bd14cd5825ead8b8b20af16.js","/app/b.js":"/_expo/static/js/web/b-530ae3505b2e7d48992cf467aa3b51b5.js","/app/c.js":"/_expo/static/js/web/c-56e8e09d8263e0e34c2784569336ac37.js"}});
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
+          "filename": "_expo/static/js/web/a-12c7a49f9bd14cd5825ead8b8b20af16.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1205,11 +1753,11 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+              "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
             ],
           },
           "originFilename": "a.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1221,14 +1769,14 @@ describe('serializes', () => {
             return a;
           }
         });
-        _$$_REQUIRE(_dependencyMap[0]);
-        _$$_REQUIRE(_dependencyMap[1]);
+        require(_dependencyMap[0]);
+        require(_dependencyMap[1]);
         const a = 'a';
       },"/app/a.js",["/app/d.js","/app/e.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
+          "filename": "_expo/static/js/web/b-530ae3505b2e7d48992cf467aa3b51b5.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1240,11 +1788,11 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+              "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
             ],
           },
           "originFilename": "b.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1256,13 +1804,13 @@ describe('serializes', () => {
             return b;
           }
         });
-        _$$_REQUIRE(_dependencyMap[0]);
+        require(_dependencyMap[0]);
         const b = 'b';
       },"/app/b.js",["/app/d.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
+          "filename": "_expo/static/js/web/c-56e8e09d8263e0e34c2784569336ac37.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
@@ -1274,11 +1822,11 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+              "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
             ],
           },
           "originFilename": "c.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1290,13 +1838,13 @@ describe('serializes', () => {
             return c;
           }
         });
-        _$$_REQUIRE(_dependencyMap[0]);
+        require(_dependencyMap[0]);
         const c = 'c';
       },"/app/c.js",["/app/e.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
+          "filename": "_expo/static/js/web/__common-39fcae1c62a6d2e698c18534fd82e6c6.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1309,11 +1857,11 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
-              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+              "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
             ],
           },
           "originFilename": "../__common.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1327,7 +1875,7 @@ describe('serializes', () => {
         });
         const d = 'd';
       },"/app/d.js",[]);
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -1344,7 +1892,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+          "filename": "_expo/static/js/web/__expo-metro-runtime-49146aac8fa3540454ba583868edfc36.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1356,7 +1904,7 @@ describe('serializes', () => {
             "requires": [],
           },
           "originFilename": "../__expo-metro-runtime.js",
-          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         console.log('PRE_MODULE_TEST');
       },"/app/__premodule__",[]);",
           "type": "js",
@@ -1488,97 +2036,138 @@ describe('serializes', () => {
     expect(artifacts[1].filename).not.toEqual(artifacts2[1].filename);
   });
 
-  it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util');`,
-      'util.js': `export const u = 'before';`,
+  describe.each(['legacy', 'granular'] as const)('%s chunk filenames', (chunkingStrategy) => {
+    it('treats worker entry paths literally instead of matching other graph entries', async () => {
+      const artifacts: SerialAsset[] = await serializeSplitAsync(
+        {
+          'index.js': `require.unstable_resolveWorker('./worker*'); import('./worker-other');`,
+          'worker*.js': `console.log('worker');`,
+          'worker-other.js': `console.log('page route');`,
+        },
+        { chunkingStrategy }
+      );
+      const worker = artifacts.find((asset) =>
+        asset.metadata.modulePaths?.includes('/app/worker*.js')
+      )!;
+      expect(worker.metadata.modulePaths).toEqual(['/app/worker*.js']);
+      expect(
+        artifacts.some((asset) => asset.metadata.modulePaths?.includes('/app/worker-other.js'))
+      ).toBe(true);
     });
 
-    const artifacts2 = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util');`,
-      'util.js': `export const u = 'after';`,
+    it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util');`,
+          'util.js': `export const u = 'before';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const artifacts2 = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util');`,
+          'util.js': `export const u = 'after';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const a = byOrigin(artifacts);
+      const b = byOrigin(artifacts2);
+
+      expect(a['util.js']!.filename).not.toEqual(b['util.js']!.filename);
+      expect(a['math.js']!.filename).not.toEqual(b['math.js']!.filename);
+      expect(a['index.js']!.filename).not.toEqual(b['index.js']!.filename);
     });
 
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const a = byOrigin(artifacts);
-    const b = byOrigin(artifacts2);
+    it(`invalidates both branches of a diamond when the shared leaf changes`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./a'); import('./b');`,
+          'a.js': `import('./leaf'); export const a = 'a';`,
+          'b.js': `import('./leaf'); export const b = 'b';`,
+          'leaf.js': `export const leaf = 'before';`,
+        },
+        { chunkingStrategy }
+      );
 
-    expect(a['util.js']!.filename).not.toEqual(b['util.js']!.filename);
-    expect(a['math.js']!.filename).not.toEqual(b['math.js']!.filename);
-    expect(a['index.js']!.filename).not.toEqual(b['index.js']!.filename);
-  });
+      const artifacts2 = await serializeSplitAsync(
+        {
+          'index.js': `import('./a'); import('./b');`,
+          'a.js': `import('./leaf'); export const a = 'a';`,
+          'b.js': `import('./leaf'); export const b = 'b';`,
+          'leaf.js': `export const leaf = 'after';`,
+        },
+        { chunkingStrategy }
+      );
 
-  it(`invalidates both branches of a diamond when the shared leaf changes`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./a'); import('./b');`,
-      'a.js': `import('./leaf'); export const a = 'a';`,
-      'b.js': `import('./leaf'); export const b = 'b';`,
-      'leaf.js': `export const leaf = 'before';`,
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const before = byOrigin(artifacts);
+      const after = byOrigin(artifacts2);
+
+      expect(before['leaf.js']!.filename).not.toEqual(after['leaf.js']!.filename);
+      expect(before['a.js']!.filename).not.toEqual(after['a.js']!.filename);
+      expect(before['b.js']!.filename).not.toEqual(after['b.js']!.filename);
+      expect(before['index.js']!.filename).not.toEqual(after['index.js']!.filename);
     });
 
-    const artifacts2 = await serializeSplitAsync({
-      'index.js': `import('./a'); import('./b');`,
-      'a.js': `import('./leaf'); export const a = 'a';`,
-      'b.js': `import('./leaf'); export const b = 'b';`,
-      'leaf.js': `export const leaf = 'after';`,
+    it(`parent chunk source references the child chunk's actual filename`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util'); export const m = 1;`,
+          'util.js': `export const u = 2;`,
+        },
+        { chunkingStrategy }
+      );
+
+      const byOrigin = Object.fromEntries(
+        artifacts.map((art: SerialAsset) => [art.originFilename, art] as const)
+      );
+      expect(byOrigin['index.js']!.source).toContain(byOrigin['math.js']!.filename);
+      expect(byOrigin['math.js']!.source).toContain(byOrigin['util.js']!.filename);
     });
 
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const before = byOrigin(artifacts);
-    const after = byOrigin(artifacts2);
+    it(`mutually async-importing chunks invalidate each other and reference each other's actual filenames`, async () => {
+      const sources = (aBody: string) => ({
+        'index.js': `import('./a');`,
+        'a.js': `import('./b'); export const a = ${JSON.stringify(aBody)};`,
+        'b.js': `import('./a'); export const b = 'b';`,
+      });
 
-    expect(before['leaf.js']!.filename).not.toEqual(after['leaf.js']!.filename);
-    expect(before['a.js']!.filename).not.toEqual(after['a.js']!.filename);
-    expect(before['b.js']!.filename).not.toEqual(after['b.js']!.filename);
-    expect(before['index.js']!.filename).not.toEqual(after['index.js']!.filename);
-  });
+      const artifacts = await serializeSplitAsync(sources('before'), {
+        chunkingStrategy,
+      });
+      const artifactsRepeat = await serializeSplitAsync(sources('before'), {
+        chunkingStrategy,
+      });
+      const artifactsChanged = await serializeSplitAsync(sources('after'), {
+        chunkingStrategy,
+      });
 
-  it(`parent chunk source references the child chunk's actual filename`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util'); export const m = 1;`,
-      'util.js': `export const u = 2;`,
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const first = byOrigin(artifacts);
+      const repeat = byOrigin(artifactsRepeat);
+      const changed = byOrigin(artifactsChanged);
+
+      // Deterministic: identical sources produce identical filenames.
+      expect(first['a.js']!.filename).toEqual(repeat['a.js']!.filename);
+      expect(first['b.js']!.filename).toEqual(repeat['b.js']!.filename);
+
+      // Cycle members cross-invalidate: changing only `a` shifts `b`'s filename too.
+      expect(first['a.js']!.filename).not.toEqual(changed['a.js']!.filename);
+      expect(first['b.js']!.filename).not.toEqual(changed['b.js']!.filename);
+
+      // Each member's emitted bundle references the other's actual filename.
+      expect(first['a.js']!.source).toContain(first['b.js']!.filename);
+      expect(first['b.js']!.source).toContain(first['a.js']!.filename);
     });
-
-    const byOrigin = Object.fromEntries(
-      artifacts.map((art: SerialAsset) => [art.originFilename, art] as const)
-    );
-    expect(byOrigin['index.js']!.source).toContain(byOrigin['math.js']!.filename);
-    expect(byOrigin['math.js']!.source).toContain(byOrigin['util.js']!.filename);
-  });
-
-  it(`mutually async-importing chunks invalidate each other and reference each other's actual filenames`, async () => {
-    const sources = (aBody: string) => ({
-      'index.js': `import('./a');`,
-      'a.js': `import('./b'); export const a = ${JSON.stringify(aBody)};`,
-      'b.js': `import('./a'); export const b = 'b';`,
-    });
-
-    const artifacts = await serializeSplitAsync(sources('before'));
-    const artifactsRepeat = await serializeSplitAsync(sources('before'));
-    const artifactsChanged = await serializeSplitAsync(sources('after'));
-
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const first = byOrigin(artifacts);
-    const repeat = byOrigin(artifactsRepeat);
-    const changed = byOrigin(artifactsChanged);
-
-    // Deterministic: identical sources produce identical filenames.
-    expect(first['a.js']!.filename).toEqual(repeat['a.js']!.filename);
-    expect(first['b.js']!.filename).toEqual(repeat['b.js']!.filename);
-
-    // Cycle members cross-invalidate: changing only `a` shifts `b`'s filename too.
-    expect(first['a.js']!.filename).not.toEqual(changed['a.js']!.filename);
-    expect(first['b.js']!.filename).not.toEqual(changed['b.js']!.filename);
-
-    // Each member's emitted bundle references the other's actual filename.
-    expect(first['a.js']!.source).toContain(first['b.js']!.filename);
-    expect(first['b.js']!.source).toContain(first['a.js']!.filename);
   });
 
   describe('client references', () => {
@@ -1613,12 +2202,12 @@ describe('serializes', () => {
       });
 
       expect(artifacts[0].source).toMatchInlineSnapshot(`
-        "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
           "use strict";
 
-          _$$_REQUIRE(_dependencyMap[0]);
+          require(_dependencyMap[0]);
         },"/app/index.js",["/app/other.js"]);
-        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
           "use strict";
 
           Object.defineProperty(exports, '__esModule', {
@@ -1630,13 +2219,13 @@ describe('serializes', () => {
               return foo;
             }
           });
-          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("./other.js");
+          const proxy = require(_dependencyMap[0]).createClientModuleProxy("./other.js");
           module.exports = proxy;
-          const foo = _$$_REQUIRE(_dependencyMap[0]).registerClientReference(function () {
+          const foo = require(_dependencyMap[0]).registerClientReference(function () {
             throw new Error("Attempted to call foo() of /app/other.js from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
           }, "./other.js", "foo");
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
-        __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
+        __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
         TEST_RUN_MODULE("/app/index.js");"
       `);
     });

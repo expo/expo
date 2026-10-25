@@ -6,5 +6,6 @@ import './index.fx';
 
 export { useNativeState, type ObservableState } from './useNativeState';
 export { useWorkletProp } from './useWorkletProp';
+export { useWorkletCallback, type WorkletCallback } from './useWorkletCallback';
 export { worklets } from './optionalWorklets';
 export { getStateId } from './utils';

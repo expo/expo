@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`TextInput`](../universal/textinput) — it renders the appropriate native component per platform.
@@ -32,19 +33,28 @@ Expo UI TextField matches the official SwiftUI [TextField API](https://developer
 
 Bind a [`useNativeState`](usenativestate) observable to `text`. The field tracks the user's input on its own, and you read the current value from `textState.value`.
 
-```tsx BasicTextFieldExample.tsx
+<ComponentExample
+  title="BasicTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-basic-ios-dark.webp"
+  alt="An empty text field showing the placeholder Username">
+
+```tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 
 export default function BasicTextFieldExample() {
   const textState = useNativeState('');
 
+  // A text field stretches to the width it is given, so give the host a size.
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <TextField placeholder="Username" text={textState} />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Controlled text field
 
@@ -52,7 +62,13 @@ Pass an `onTextChange` worklet to transform or validate input and write the resu
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
-```tsx ControlledTextFieldExample.tsx
+<ComponentExample
+  title="ControlledTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-controlled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-controlled-ios-dark.webp"
+  alt="An empty text field showing the placeholder Name">
+
+```tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { useCallback } from 'react';
 
@@ -68,18 +84,30 @@ export default function ControlledTextFieldExample() {
   );
 
   return (
-    <Host matchContents>
-      <TextField placeholder="Name" text={text} onTextChange={handleTextChange} />
+    <Host style={{ flex: 1 }}>
+      <TextField
+        placeholder="Name"
+        text={text}
+        onTextChange={handleTextChange}
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Multiline text field
 
-Set `axis="vertical"` to allow the text field to expand vertically. Use the [`lineLimit`](modifiers/#linelimit) modifier to control the visible line count. When using `Host matchContents`, add `fixedSize({ horizontal: false, vertical: true })` so the text field accepts the parent's width while using its ideal height.
+Set `axis="vertical"` to allow the text field to expand vertically. Use the [`lineLimit`](modifiers/#linelimit) modifier to control the visible line count. Give the `Host` an explicit size so the field has a width to expand within.
 
-```tsx MultilineTextFieldExample.tsx
+<ComponentExample
+  title="MultilineTextFieldExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-multiline-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-multiline-ios-dark.webp"
+  alt="An empty multiline text field showing the placeholder Tell us about yourself">
+
+```tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { lineLimit, fixedSize } from '@expo/ui/swift-ui/modifiers';
 
@@ -87,60 +115,14 @@ export default function MultilineTextFieldExample() {
   const textState = useNativeState('');
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <TextField
         axis="vertical"
         text={textState}
         placeholder="Tell us about yourself..."
-        modifiers={[lineLimit(5), fixedSize({ horizontal: false, vertical: true })]}
-      />
-    </Host>
-  );
-}
-```
-
-### Keyboard type
-
-Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to display a specific keyboard layout.
-
-```tsx KeyboardTypeExample.tsx
-import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
-import { keyboardType, autocorrectionDisabled } from '@expo/ui/swift-ui/modifiers';
-
-export default function KeyboardTypeExample() {
-  const textState = useNativeState('');
-
-  return (
-    <Host matchContents>
-      <TextField
-        placeholder="Email"
-        text={textState}
-        modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
-      />
-    </Host>
-  );
-}
-```
-
-### Submit handling
-
-Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) modifier to customize the return key and [`onSubmit`](modifiers/#onsubmithandler) to handle the submit action.
-
-```tsx SubmitHandlingExample.tsx
-import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
-import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
-
-export default function SubmitHandlingExample() {
-  const textState = useNativeState('');
-
-  return (
-    <Host matchContents>
-      <TextField
-        placeholder="Search..."
-        text={textState}
         modifiers={[
-          submitLabel('search'),
-          onSubmit(() => console.log('Submitted:', textState.value)),
+          lineLimit(5),
+          fixedSize({ horizontal: false, vertical: true }),
         ]}
       />
     </Host>
@@ -148,13 +130,94 @@ export default function SubmitHandlingExample() {
 }
 ```
 
+</ComponentExample>
+
+### Keyboard type
+
+Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to display a specific keyboard layout.
+
+<ComponentExample
+  title="KeyboardTypeExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-keyboard-type-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-keyboard-type-ios-dark.webp"
+  alt="An empty text field showing the placeholder Email">
+
+```tsx
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
+import {
+  keyboardType,
+  autocorrectionDisabled,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function KeyboardTypeExample() {
+  const textState = useNativeState('');
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <TextField
+        placeholder="Email"
+        text={textState}
+        modifiers={[
+          keyboardType('email-address'),
+          autocorrectionDisabled(),
+        ]}
+      />
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Submit handling
+
+Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) modifier to customize the return key and [`onSubmit`](modifiers/#onsubmithandler) to handle the submit action.
+
+<ComponentExample
+  title="SubmitHandlingExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-submit-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-submit-ios-dark.webp"
+  alt="An empty text field showing the placeholder Search">
+
+```tsx
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
+import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
+
+export default function SubmitHandlingExample() {
+  const textState = useNativeState('');
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <TextField
+        placeholder="Search..."
+        text={textState}
+        modifiers={[
+          submitLabel('search'),
+          onSubmit(() =>
+            console.log('Submitted:', textState.value)
+          ),
+        ]}
+      />
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
 ### Imperative ref
 
 Use a `ref` to imperatively set text, focus, blur, or select text.
 
 > **Note:** `setSelection` requires iOS 18.0+ / tvOS 18.0+. The other ref methods work on all supported versions.
 
-```tsx ImperativeRefExample.tsx
+<ComponentExample
+  title="ImperativeRefExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-imperative-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-imperative-ios-dark.webp"
+  alt="A text field reading Select me! above a row of Focus, Blur, Set text, Clear, and Select buttons">
+
+```tsx
 import { useRef } from 'react';
 import {
   Host,
@@ -172,9 +235,13 @@ export default function ImperativeRefExample() {
   const textState = useNativeState('Select me!');
 
   return (
-    <Host matchContents>
-      <VStack>
-        <TextField ref={ref} text={textState} placeholder="Imperative field" />
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={12}>
+        <TextField
+          ref={ref}
+          text={textState}
+          placeholder="Imperative field"
+        />
         <HStack spacing={12}>
           <Button
             modifiers={[buttonStyle('bordered')]}
@@ -186,6 +253,8 @@ export default function ImperativeRefExample() {
             onPress={() => ref.current?.blur()}
             label="Blur"
           />
+        </HStack>
+        <HStack spacing={12}>
           <Button
             modifiers={[buttonStyle('bordered')]}
             onPress={() => ref.current?.setText('SwiftUI rocks!')}
@@ -208,13 +277,21 @@ export default function ImperativeRefExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Worklet text masking
 
 When `onTextChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `text` and `selection` from the worklet to keep the cursor at the end of the formatted value.
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). The `selection` prop requires iOS 18.0+ / tvOS 18.0+. On older versions the worklet can still update the text but cursor positioning is unavailable.
 
-```tsx WorkletPhoneMaskExample.tsx
+<ComponentExample
+  title="WorkletPhoneMaskExample.tsx"
+  src="/static/images/expo-ui/examples/textfield-worklet-mask-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/textfield-worklet-mask-ios-dark.webp"
+  alt="An empty text field showing the placeholder formatted as a phone number">
+
+```tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType } from '@expo/ui/swift-ui/modifiers';
 import { useCallback } from 'react';
@@ -236,14 +313,17 @@ export default function WorkletPhoneMaskExample() {
       if (formatted !== v) {
         phone.value = formatted;
         // Snaps to end for demo. Real masks need smarter cursor handling.
-        selection.value = { start: formatted.length, end: formatted.length };
+        selection.value = {
+          start: formatted.length,
+          end: formatted.length,
+        };
       }
     },
     [phone, selection]
   );
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <TextField
         text={phone}
         selection={selection}
@@ -256,10 +336,15 @@ export default function WorkletPhoneMaskExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { TextField } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/textfield" apiName="TextField" />
+<APISection
+  packageName="expo-ui/swift-ui/textfield"
+  apiName="TextField"
+/>

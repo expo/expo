@@ -143,7 +143,10 @@ Expo lets you implement the entire OAuth flow directly in your app using:
 
 <BoxLink title="Expo AuthSession" href="/versions/latest/sdk/auth-session" Icon={DocsLogo} />
 
-Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. See [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication) reference.
+Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. You can integrate it using either of the following libraries:
+
+- [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication): An Expo SDK library for Sign in with Apple on iOS.
+- [`expo-apple-sign-in`](https://exsi.smartsquad.io): A library that adds Sign in with Apple on Android and web using Apple's web flow, alongside the native sheet on iOS. It requires a development build and Expo SDK 58.
 
 The following setup gives you full control over the login experience across Android, iOS, and web.
 
@@ -246,13 +249,13 @@ If you prefer not to build a full authentication system from scratch, several se
 
 <Collapsible summary="Supabase">
 
-[Supabase](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native) provides a full backend platform, including a built-in authentication service that works with any OAuth provider. It integrates well with Expo apps and also includes support for email, magic links, and more.
+[Supabase Auth](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native) is an authentication service you can use for Expo apps. It includes email/password, magic links, and OAuth providers. The Supabase JavaScript SDK supports persistent sessions and automatic token refresh. Refer to the [Expo guide for Supabase](/guides/using-supabase/) to set up authentication. Supabase also provides a full backend platform, including a Postgres database and other backend services.
 
 </Collapsible>
 
 <Collapsible summary="Cognito">
 
-[AWS Cognito](https://medium.com/@juliuscecilia33/aws-cognito-and-react-native-bf23ef7fea23) is Amazon's solution for managing user pools and identity. It connects seamlessly with other AWS services and can be integrated into Expo apps using AWS Amplify. It does require more configuration, but it's robust and scalable.
+[AWS Cognito](https://medium.com/@juliuscecilia33/aws-cognito-and-react-native-bf23ef7fea23) is Amazon's solution for managing user pools and identity. It connects seamlessly with other AWS services and can be integrated into Expo apps using AWS Amplify. It requires more configuration, but it scales well.
 
 </Collapsible>
 
@@ -268,9 +271,11 @@ Once you have a working authentication system in place, you can improve the user
 
 <Collapsible summary="Biometrics">
 
-Biometrics like Face ID and Touch ID can be used to unlock the app or confirm identity after a valid session is established. These are not authentication methods on their own, but act as a local gate that makes re-authentication faster and more secure.
+Biometrics like Face ID and Touch ID can unlock an app or confirm identity after a valid session is established. A biometric prompt alone does not authenticate with your server. It acts as a local gate that protects access to content or credentials on the device.
 
 React Native provides access to biometric APIs through libraries like [`expo-local-authentication`](/versions/latest/sdk/local-authentication) or [`react-native-biometrics`](https://github.com/SelfLender/react-native-biometrics).
+
+An authentication provider can combine the system biometric prompt with a device-bound credential to authenticate with its server and create a new session. For example, [Clerk biometric sign-in](https://clerk.com/docs/expo/guides/development/custom-flows/authentication/biometric-sign-in) enrolls an app installation as a trusted device. After the user approves the biometric prompt, the device signs a one-time challenge while the private key remains on the device. Unlike a passkey, this credential is scoped to the app installation and does not use [WebAuthn](https://www.w3.org/TR/webauthn-2/).
 
 </Collapsible>
 

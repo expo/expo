@@ -28,7 +28,6 @@ internal enum LiveActivityDismissalPolicy: String, Enumerable {
   case immediate
   case after
 
-  @available(iOS 16.1, *)
   internal func toDismissalPolicy(date: Date?) -> ActivityUIDismissalPolicy {
     return switch self {
     case .default: .default

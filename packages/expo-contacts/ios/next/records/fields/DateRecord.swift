@@ -2,13 +2,13 @@ import ExpoModulesCore
 
 struct NewDateRecord: NewRecord {
   @Field var date: ContactDateNext
-  @Field var label: String
+  @Field var label: String?
 }
 
 struct ExistingDateRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
   @Field var date: ContactDateNext
-  @Field var label: String
+  @Field var label: String?
 
   init() {}
 

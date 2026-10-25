@@ -8,10 +8,27 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A text input that routes to [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android, [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
 
 The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textinput), with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/textinput/android-light.webp',
+    darkSrc: '/static/images/expo-ui/textinput/android-dark.webp',
+    alt: 'A text field containing hello above a Clear button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/textinput/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/textinput/ios-dark.webp',
+    alt: 'A text field containing hello above a Clear button',
+  }}
+/>
 
 ## Installation
 
@@ -23,7 +40,20 @@ The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textin
 
 Omit [`value`](#value) and the field manages its own text internally. Use [`onChangeText`](#onchangetext) to observe edits, and use the [ref](#textinputref) for imperative actions like `focus`, `blur`, and `clear`.
 
-```tsx UncontrolledTextInputExample.tsx
+<ComponentExample
+  title="UncontrolledTextInputExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-textinput-uncontrolled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-uncontrolled-android-dark.webp',
+    alt: 'A Material 3 text field containing hello above a Clear button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-textinput-uncontrolled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-uncontrolled-ios-dark.webp',
+    alt: 'A text field containing hello above a Clear button',
+  }}>
+
+```tsx
 import { Button, Column, Host, TextInput, type TextInputRef } from '@expo/ui';
 import { useRef } from 'react';
 
@@ -31,7 +61,7 @@ export default function UncontrolledTextInputExample() {
   const inputRef = useRef<TextInputRef>(null);
 
   return (
-    <Host matchContents={{ vertical: true }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Column spacing={8}>
         <TextInput
           ref={inputRef}
@@ -46,16 +76,31 @@ export default function UncontrolledTextInputExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Controlled
 
 Pass [`value`](#value) to drive the field from a `useNativeState` observable. The example below replaces `Hello` with `World` as you type.
 
-```tsx ControlledTextInputExample.tsx
+<ComponentExample
+  title="ControlledTextInputExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-textinput-controlled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-controlled-android-dark.webp',
+    alt: 'A Material 3 text field containing Hello',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-textinput-controlled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-controlled-ios-dark.webp',
+    alt: 'A text field containing Hello',
+  }}>
+
+```tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';
 import { useCallback } from 'react';
 
 export default function ControlledTextInputExample() {
-  const text = useNativeState('');
+  const text = useNativeState('Hello');
 
   const handleChangeText = useCallback(
     (value: string) => {
@@ -66,12 +111,14 @@ export default function ControlledTextInputExample() {
   );
 
   return (
-    <Host matchContents={{ vertical: true }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <TextInput value={text} placeholder="Type here" onChangeText={handleChangeText} />
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Worklet masking
 
@@ -79,7 +126,20 @@ Add the `'worklet'` directive to [`onChangeText`](#onchangetext) for synchronous
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
-```tsx PhoneMaskExample.tsx
+<ComponentExample
+  title="PhoneMaskExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-textinput-mask-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-mask-android-dark.webp',
+    alt: 'A Material 3 text field containing a formatted phone number',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-textinput-mask-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-textinput-mask-ios-dark.webp',
+    alt: 'A text field containing a formatted phone number',
+  }}>
+
+```tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';
 import { useCallback } from 'react';
 
@@ -92,7 +152,7 @@ function formatPhone(input: string) {
 }
 
 export default function PhoneMaskExample() {
-  const phone = useNativeState('');
+  const phone = useNativeState('(555) 123-4567');
   const selection = useNativeState({ start: 0, end: 0 });
 
   const handleChangeText = useCallback(
@@ -109,7 +169,7 @@ export default function PhoneMaskExample() {
   );
 
   return (
-    <Host matchContents={{ vertical: true }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <TextInput
         value={phone}
         selection={selection}
@@ -122,6 +182,8 @@ export default function PhoneMaskExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Unsupported React Native props
 
 Some React Native `TextInput` props are not supported, because Compose's `TextField` or SwiftUI's `TextField` does not expose an equivalent, or because the prop is replaced by a different mechanism. See the [API](#api) section below for the supported props. If a missing prop blocks your use case, [open an issue](https://github.com/expo/expo/issues/new/choose) so it can be prioritized.
@@ -133,3 +195,5 @@ import { TextInput, useNativeState } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/textinput" apiName="TextInput" />
+
+</PlatformTabsGroup>

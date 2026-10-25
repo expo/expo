@@ -281,8 +281,10 @@ const LANGUAGE_SAMPLES: {
     code: `var y = {};
     var x = 1;
     var k = { x, ...y };`,
-    getCompiledCode() {
-      return `var y={};var x=1;var k={x,...y};`;
+    getCompiledCode({ platform }) {
+      return platform === 'web'
+        ? `var y={};var x=1;var k={x,...y};`
+        : `var y={};var x=1;var k=Object.assign({x},y);`;
     },
   },
   {

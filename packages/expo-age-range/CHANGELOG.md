@@ -1,6 +1,18 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
@@ -8,11 +20,11 @@
 
 ### 🎉 New features
 
+- [Android] Add `setFakeAgeSignals` to fake age signals from JS, through Google Play's `FakeAgeSignalsManager`. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
+
 ### 🐛 Bug fixes
 
 - [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))
-
-### 💡 Others
 
 ## 57.0.2 - 2026-07-15
 

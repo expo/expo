@@ -5,12 +5,14 @@ buildscript {
   ext {
     minSdkVersion = 24
     targetSdkVersion = 36
-    compileSdkVersion = 36
+    compileSdkVersion = 37
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '36.0.0'
-    kotlinVersion = "2.1.20"
-    kspVersion = "2.1.20-2.0.1"
+    buildToolsVersion = '37.0.0'
+    // The Expo Modules v2 compiler plugin only loads on Kotlin 2.2.x (expo/expo#50293).
+    // Keep the compose/serialization plugin pins in expoview/build.gradle in sync.
+    kotlinVersion = "2.2.10"
+    kspVersion = "2.2.10-2.0.2"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -28,6 +30,9 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
     classpath "com.facebook.react:react-native-gradle-plugin"
+    // Spotless reads the custom ktlint rules jar while it creates its tasks, before Gradle would
+    // build the included build. As a buildscript dependency, the jar is built before this script runs.
+    classpath "expo.ktlint:ktlint-rules:1.0.0"
   }
 }
 
@@ -84,11 +89,30 @@ allprojects {
       libs.fresco.imagepipeline.okhttp3,
       libs.fresco.ui.common
     )
+    // Stripe's optional push-provisioning SDK pulls in Google's private play-services-tapandpay,
+    // which AGP 9's lint classpath tries to resolve. Expo Go never uses push provisioning.
+    exclude group: "com.google.android.gms", module: "play-services-tapandpay"
   }
 }
 
 project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
-  reactAndroid.tasks.named("buildCodegenCLI").configure { it.enabled = false }
+  // react-native 0.87 no longer registers buildCodegenCLI; keep disabling it while the
+  // fork is on an older release. `matching` tolerates the task being absent.
+  reactAndroid.tasks.matching { it.name == "buildCodegenCLI" }.configureEach { it.enabled = false }
+}
+
+// Every module's generateCodegenSchemaFromJavaScript reads react-native-codegen/lib
+// directly, so build it once when it is missing.
+def labCodegenDir = file("$rootDir/../../../react-native-lab/react-native/packages/react-native-codegen")
+tasks.register("buildLabCodegenCli", Exec) {
+  onlyIf { !new File(labCodegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").exists() }
+  workingDir labCodegenDir
+  commandLine "bash", "scripts/oss/build.sh"
+}
+allprojects {
+  tasks.matching { it.name == "generateCodegenSchemaFromJavaScript" }.configureEach {
+    it.dependsOn(":buildLabCodegenCli")
+  }
 }
 
 // Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines
@@ -142,6 +166,8 @@ subprojects { project ->
         // The star "*" signs interferes with slash "/" and treated wildcard path as comment ¯\_(ツ)_/¯
         targetExclude(["**", "versioned/host/exp/exponent/modules/api", "**", "*.kt"].join("/"))
         ktlint("1.0.1")
+          // Provided by the included build in packages/expo-ktlint-rules
+          .customRuleSets(["expo.ktlint:ktlint-rules:1.0.0"])
           .editorConfigOverride([
             "ktlint_standard_no-wildcard-imports"           : "disabled",
             "ktlint_standard_import-ordering"               : "disabled",

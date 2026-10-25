@@ -1,6 +1,9 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.kotlin.AppContext
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -14,6 +17,28 @@ import java.util.UUID
  * see. These tests pin that shape down so renames require a deliberate change.
  */
 class NetworkRequestObserverTest {
+  @Test
+  fun `registers with the monitor on construction, regardless of JS listeners`() {
+    val appContext = mockk<AppContext>(relaxed = true)
+    val monitor = NetworkRequestMonitor()
+    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+
+    assertEquals(1, monitor.delegateCount)
+    assertTrue(observer.shouldObserveRequest("https://expo.dev", "GET"))
+  }
+
+  @Test
+  fun `release unregisters the observer`() {
+    val appContext = mockk<AppContext>(relaxed = true)
+    val monitor = NetworkRequestMonitor()
+    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+
+    observer.sharedObjectDidRelease()
+
+    assertEquals(0, monitor.delegateCount)
+    assertFalse(observer.shouldObserveRequest("https://expo.dev", "GET"))
+  }
+
   @Test
   fun `startedPayload contains the started-event keys`() {
     val id = UUID.randomUUID()
@@ -63,7 +88,13 @@ class NetworkRequestObserverTest {
         NetworkRequest.Redirect(
           fromUrl = "https://expo.dev/a",
           toUrl = "https://expo.dev/b",
-          statusCode = 301
+          statusCode = 301,
+          respondedAtMs = 2_250_000L
+        ),
+        NetworkRequest.Redirect(
+          fromUrl = "https://expo.dev/b",
+          toUrl = "https://expo.dev/end",
+          statusCode = 302
         )
       )
     )
@@ -83,10 +114,16 @@ class NetworkRequestObserverTest {
 
     @Suppress("UNCHECKED_CAST")
     val redirects = payload["redirects"] as List<Map<String, Any?>>
-    assertEquals(1, redirects.size)
+    assertEquals(2, redirects.size)
     assertEquals("https://expo.dev/a", redirects[0]["fromUrl"])
     assertEquals("https://expo.dev/b", redirects[0]["toUrl"])
     assertEquals(301, redirects[0]["statusCode"])
+    // Hop times use the same ISO 8601 UTC format as `startedAt`, but keep milliseconds because
+    // hops within one request are usually fractions of a second apart. An unreported time is
+    // `null`.
+    assertEquals("1970-01-01T00:37:30.000Z", redirects[0]["respondedAt"])
+    assertTrue(redirects[1].containsKey("respondedAt"))
+    assertNull(redirects[1]["respondedAt"])
   }
 
   @Test

@@ -24,7 +24,6 @@ test.describe(inputDir, () => {
     env: {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
       E2E_ROUTER_ASYNC: 'development',
       // Ensure CI is disabled otherwise the file watcher won't run.

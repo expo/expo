@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com/documentation/swiftui/menu) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle) modifier. Menu opens on a single tap. For long-press interactions, use [`ContextMenu`](contextmenu) instead.
@@ -30,33 +31,64 @@ Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com
 
 ### Simple text label
 
-```tsx SimpleMenuExample.tsx
+<ComponentExample
+  title="SimpleMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-simple-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-simple-ios-dark.webp"
+  alt="An open menu listing Option 1, Option 2, and Option 3">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 
 export default function SimpleMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu label="Options">
-        <Button label="Option 1" onPress={() => console.log('Option 1')} />
-        <Button label="Option 2" onPress={() => console.log('Option 2')} />
-        <Button label="Option 3" onPress={() => console.log('Option 3')} />
+        <Button
+          label="Option 1"
+          onPress={() => console.log('Option 1')}
+        />
+        <Button
+          label="Option 2"
+          onPress={() => console.log('Option 2')}
+        />
+        <Button
+          label="Option 3"
+          onPress={() => console.log('Option 3')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Text label with SF Symbol
 
-```tsx MenuWithIconExample.tsx
+<ComponentExample
+  title="MenuWithIconExample.tsx"
+  src="/static/images/expo-ui/examples/menu-with-icon-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-with-icon-ios-dark.webp"
+  alt="An open menu with Settings and Profile rows, a divider, and a red Delete row">
+
+```tsx
 import { Host, Menu, Button, Divider } from '@expo/ui/swift-ui';
 
 export default function MenuWithIconExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu label="More" systemImage="ellipsis.circle">
-        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
-        <Button label="Profile" systemImage="person" onPress={() => console.log('Profile')} />
+        <Button
+          label="Settings"
+          systemImage="gear"
+          onPress={() => console.log('Settings')}
+        />
+        <Button
+          label="Profile"
+          systemImage="person"
+          onPress={() => console.log('Profile')}
+        />
         <Divider />
         <Button
           label="Delete"
@@ -70,37 +102,64 @@ export default function MenuWithIconExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom label
 
 You can pass a React node as the label for custom styling.
 
-```tsx CustomLabelMenuExample.tsx
+<ComponentExample
+  title="CustomLabelMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-custom-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-custom-label-ios-dark.webp"
+  alt="A menu trigger labeled Custom Label in the accent color">
+
+```tsx
 import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
 import { foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CustomLabelMenuExample() {
   return (
-    <Host matchContents>
-      <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+    <Host style={{ flex: 1 }}>
+      <Menu
+        label={
+          <Text modifiers={[foregroundStyle('accentColor')]}>
+            Custom Label
+          </Text>
+        }>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### React Native components as label
 
 You can use a React Native view (such as `Pressable`) as the menu's label by wrapping it in [`RNHostView`](rnhostview).
 
-```tsx RNLabelMenuExample.tsx
+<ComponentExample
+  title="RNLabelMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-rn-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-rn-label-ios-dark.webp"
+  alt="A purple React Native Pressable used as the menu trigger">
+
+```tsx
 import { Host, Menu, Button, RNHostView } from '@expo/ui/swift-ui';
 import { Pressable, Text } from 'react-native';
 
 export default function RNLabelMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu
         label={
           <RNHostView matchContents>
@@ -113,83 +172,148 @@ export default function RNLabelMenuExample() {
                 borderRadius: 8,
                 backgroundColor: '#9B59B6',
               }}>
-              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+              <Text style={{ color: 'white', fontWeight: '600' }}>
+                RN Pressable Trigger
+              </Text>
             </Pressable>
           </RNHostView>
         }>
-        <Button label="Item 1" onPress={() => console.log('Item 1')} />
-        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+        <Button
+          label="Item 1"
+          onPress={() => console.log('Item 1')}
+        />
+        <Button
+          label="Item 2"
+          onPress={() => console.log('Item 2')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Nested menu
 
 Menus can be nested to create submenus.
 
-```tsx NestedMenuExample.tsx
+<ComponentExample
+  title="NestedMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-nested-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-nested-ios-dark.webp"
+  alt="An open menu with Item 1, a Submenu row with a chevron, and Item 2">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 
 export default function NestedMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu label="Main Menu">
-        <Button label="Item 1" onPress={() => console.log('Item 1')} />
+        <Button
+          label="Item 1"
+          onPress={() => console.log('Item 1')}
+        />
         <Menu label="Submenu">
-          <Button label="Sub Item 1" onPress={() => console.log('Sub Item 1')} />
-          <Button label="Sub Item 2" onPress={() => console.log('Sub Item 2')} />
+          <Button
+            label="Sub Item 1"
+            onPress={() => console.log('Sub Item 1')}
+          />
+          <Button
+            label="Sub Item 2"
+            onPress={() => console.log('Sub Item 2')}
+          />
         </Menu>
-        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+        <Button
+          label="Item 2"
+          onPress={() => console.log('Item 2')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### With primary action
 
 When `onPrimaryAction` is provided, a single tap triggers the primary action while a long-press shows the menu.
 
-```tsx PrimaryActionMenuExample.tsx
+<ComponentExample
+  title="PrimaryActionMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-primary-action-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-primary-action-ios-dark.webp"
+  alt="A menu trigger labeled Tap or hold with a play icon">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 
 export default function PrimaryActionMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu
         label="Tap or hold"
         systemImage="play.circle"
-        onPrimaryAction={() => console.log('Primary action triggered!')}>
-        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
-        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
-        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+        onPrimaryAction={() =>
+          console.log('Primary action triggered!')
+        }>
+        <Button
+          label="Menu Item 1"
+          onPress={() => console.log('Menu Item 1')}
+        />
+        <Button
+          label="Menu Item 2"
+          onPress={() => console.log('Menu Item 2')}
+        />
+        <Button
+          label="Menu Item 3"
+          onPress={() => console.log('Menu Item 3')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Styling with modifiers
 
 You can use the `buttonStyle` modifier to change the appearance of the menu trigger.
 
-```tsx StyledMenuExample.tsx
+<ComponentExample
+  title="StyledMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-styled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-styled-ios-dark.webp"
+  alt="A menu trigger rendered as a filled blue button">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function StyledMenuExample() {
   return (
-    <Host matchContents>
-      <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
-        <Button label="Styled Action 1" onPress={() => console.log('Styled 1')} />
-        <Button label="Styled Action 2" onPress={() => console.log('Styled 2')} />
+    <Host style={{ flex: 1 }}>
+      <Menu
+        label="Styled Menu"
+        modifiers={[buttonStyle('borderedProminent')]}>
+        <Button
+          label="Styled Action 1"
+          onPress={() => console.log('Styled 1')}
+        />
+        <Button
+          label="Styled Action 2"
+          onPress={() => console.log('Styled 2')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Plain trigger on Mac Catalyst
 
@@ -197,16 +321,30 @@ On a Mac Catalyst build that uses the Mac idiom (Xcode's **Optimize Interface fo
 
 ```tsx PlainTriggerMenuExample.tsx
 import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
-import { buttonStyle, menuIndicator, menuStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  buttonStyle,
+  menuIndicator,
+  menuStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function PlainTriggerMenuExample() {
   return (
     <Host matchContents>
       <Menu
         label={<Text>Custom Label</Text>}
-        modifiers={[menuStyle('button'), buttonStyle('plain'), menuIndicator('hidden')]}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+        modifiers={[
+          menuStyle('button'),
+          buttonStyle('plain'),
+          menuIndicator('hidden'),
+        ]}>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
@@ -219,36 +357,63 @@ To create a menu with the iOS Liquid Glass appearance, use `buttonStyle('glass')
 
 > **Important:** Do not apply the `glassEffect()` modifier to the Menu's label view to achieve a glass look. This causes a visual artifact where a rectangular halo briefly appears behind the trigger when the menu is dismissed. Always use `buttonStyle` instead, which correctly integrates with the Menu's dismiss animation.
 
-```tsx GlassMenuExample.tsx
+<ComponentExample
+  title="GlassMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-glass-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-glass-ios-dark.webp"
+  alt="A menu trigger rendered as a glass capsule with an ellipsis icon">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function GlassMenuExample() {
   return (
-    <Host matchContents>
-      <Menu label="Glass Menu" systemImage="ellipsis.circle" modifiers={[buttonStyle('glass')]}>
-        <Button label="Action 1" onPress={() => console.log('Action 1')} />
-        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+    <Host style={{ flex: 1 }}>
+      <Menu
+        label="Glass Menu"
+        systemImage="ellipsis.circle"
+        modifiers={[buttonStyle('glass')]}>
+        <Button
+          label="Action 1"
+          onPress={() => console.log('Action 1')}
+        />
+        <Button
+          label="Action 2"
+          onPress={() => console.log('Action 2')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 For a more prominent glass effect, use `glassProminent`:
 
-```tsx GlassProminentMenuExample.tsx
+<ComponentExample
+  title="GlassProminentMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-glass-prominent-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-glass-prominent-ios-dark.webp"
+  alt="A menu trigger rendered as a prominent blue glass capsule with a sliders icon">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function GlassProminentMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu
         label="Glass Prominent Menu"
         systemImage="slider.horizontal.3"
         modifiers={[buttonStyle('glassProminent')]}>
-        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
+        <Button
+          label="Settings"
+          systemImage="gear"
+          onPress={() => console.log('Settings')}
+        />
         <Button
           label="Filter"
           systemImage="line.3.horizontal.decrease"
@@ -260,20 +425,43 @@ export default function GlassProminentMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With control group
 
 Use a [`ControlGroup`](controlgroup) inside a menu to render a horizontal row of icon buttons, similar to the quick actions row in Apple Music or Safari menus.
 
-```tsx MenuWithControlGroupExample.tsx
-import { Host, Menu, ControlGroup, Button, Section, Divider } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="MenuWithControlGroupExample.tsx"
+  src="/static/images/expo-ui/examples/menu-control-group-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-control-group-ios-dark.webp"
+  alt="An open menu with an Add, Favorite, and Share row above two sections of list items">
+
+```tsx
+import {
+  Host,
+  Menu,
+  ControlGroup,
+  Button,
+  Section,
+  Divider,
+} from '@expo/ui/swift-ui';
 
 export default function MenuWithControlGroupExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu label="Song Options" systemImage="ellipsis.circle">
         <ControlGroup>
-          <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
-          <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+          <Button
+            systemImage="plus"
+            label="Add"
+            onPress={() => console.log('Add')}
+          />
+          <Button
+            systemImage="star"
+            label="Favorite"
+            onPress={() => console.log('Favorite')}
+          />
           <Button
             systemImage="square.and.arrow.up"
             label="Share"
@@ -304,19 +492,30 @@ export default function MenuWithControlGroupExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Disabled items
 
 Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive. The button still appears in the menu but won't fire `onPress`.
 
-```tsx DisabledMenuItemExample.tsx
+<ComponentExample
+  title="DisabledMenuItemExample.tsx"
+  src="/static/images/expo-ui/examples/menu-disabled-item-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-disabled-item-ios-dark.webp"
+  alt="An open menu with an Available row and a greyed-out Locked row">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 import { disabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function DisabledMenuItemExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Menu label="Options">
-        <Button label="Available" onPress={() => console.log('Available')} />
+        <Button
+          label="Available"
+          onPress={() => console.log('Available')}
+        />
         <Button
           label="Locked"
           systemImage="lock"
@@ -329,11 +528,19 @@ export default function DisabledMenuItemExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Selectable items (checkmarks)
 
-A SwiftUI [`Toggle`](toggle) placed inside a `Menu` automatically renders as a row with a leading SF Symbol (when `systemImage` is set) and a trailing checkmark when `isOn` is `true`. Use this pattern instead of inventing a custom checkmark item.
+A SwiftUI [`Toggle`](toggle) placed inside a `Menu` automatically renders as a row with its SF Symbol (when `systemImage` is set) and a checkmark before that symbol when `isOn` is `true`. Use this pattern instead of inventing a custom checkmark item.
 
-```tsx CheckmarkMenuItemExample.tsx
+<ComponentExample
+  title="CheckmarkMenuItemExample.tsx"
+  src="/static/images/expo-ui/examples/menu-checkmarks-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-checkmarks-ios-dark.webp"
+  alt="An open menu where Show completed has a checkmark and Show archived does not">
+
+```tsx
 import { Host, Menu, Button, Toggle } from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
@@ -342,8 +549,10 @@ export default function CheckmarkMenuItemExample() {
   const [showArchived, setShowArchived] = useState(false);
 
   return (
-    <Host matchContents>
-      <Menu label="Filter" systemImage="line.3.horizontal.decrease.circle">
+    <Host style={{ flex: 1 }}>
+      <Menu
+        label="Filter"
+        systemImage="line.3.horizontal.decrease.circle">
         <Toggle
           isOn={showCompleted}
           label="Show completed"
@@ -356,33 +565,58 @@ export default function CheckmarkMenuItemExample() {
           systemImage="archivebox"
           onIsOnChange={setShowArchived}
         />
-        <Button label="Clear filters" onPress={() => console.log('Clear')} />
+        <Button
+          label="Clear filters"
+          onPress={() => console.log('Clear')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Icon only menu button
 
 Use the `labelStyle('iconOnly')` modifier to display only the icon without the label text. The `label` prop should still be provided for accessibility purposes.
 
-```tsx IconOnlyMenuExample.tsx
+<ComponentExample
+  title="IconOnlyMenuExample.tsx"
+  src="/static/images/expo-ui/examples/menu-icon-only-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/menu-icon-only-ios-dark.webp"
+  alt="A menu trigger showing only a circled ellipsis icon">
+
+```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function IconOnlyMenuExample() {
   return (
-    <Host matchContents>
-      <Menu label="Icon Only Button" systemImage="gear" modifiers={[labelStyle('iconOnly')]}>
-        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
-        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
-        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+    <Host style={{ flex: 1 }}>
+      <Menu
+        label="More options"
+        systemImage="ellipsis.circle"
+        modifiers={[labelStyle('iconOnly')]}>
+        <Button
+          label="Menu Item 1"
+          onPress={() => console.log('Menu Item 1')}
+        />
+        <Button
+          label="Menu Item 2"
+          onPress={() => console.log('Menu Item 2')}
+        />
+        <Button
+          label="Menu Item 3"
+          onPress={() => console.log('Menu Item 3')}
+        />
       </Menu>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

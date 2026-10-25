@@ -11,12 +11,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String) {
+class AuthenticationPrompt(
+  private val currentActivity: FragmentActivity,
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean
+) {
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = PromptInfo.Builder()
-    .setTitle(title)
-    .setNegativeButtonText(context.getString(android.R.string.cancel))
-    .build()
+  private var promptInfo = buildAuthenticationPromptInfo(context, title, requireConfirmation)
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -58,3 +60,13 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
     }
   }
 }
+
+internal fun buildAuthenticationPromptInfo(
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean = true
+): PromptInfo = PromptInfo.Builder()
+  .setTitle(title)
+  .setNegativeButtonText(context.getString(android.R.string.cancel))
+  .setConfirmationRequired(requireConfirmation)
+  .build()

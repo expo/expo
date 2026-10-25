@@ -78,6 +78,10 @@ public final class ImageModule: Module {
         view.imageTintColor = tintColor
       }
 
+      Prop("svgVariables") { (view, svgVariables: [String: String]?) in
+        view.svgVariables = svgVariables
+      }
+
       Prop("priority") { (view, priority: ImagePriority?) in
         view.loadingOptions.remove([.lowPriority, .highPriority])
 
@@ -102,6 +106,11 @@ public final class ImageModule: Module {
 
       Prop("accessibilityLabel") { (view, label: String?) in
         view.sdImageView.accessibilityLabel = label
+      }
+
+      Prop("accessibilityElementsHidden") { (view, hidden: Bool?) in
+        view.accessibilityElementsHidden = hidden ?? false
+        view.sdImageView.accessibilityElementsHidden = hidden ?? false
       }
 
       Prop("recyclingKey") { (view, key: String?) in
@@ -362,7 +371,7 @@ public final class ImageModule: Module {
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
     SDImageCodersManager.shared.addCoder(PSDCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
-    SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+    SDImageCodersManager.shared.addCoder(SVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
   }
 

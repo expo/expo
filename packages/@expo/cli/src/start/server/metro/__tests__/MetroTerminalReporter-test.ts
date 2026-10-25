@@ -247,6 +247,70 @@ describe('symbolicate React stacks', () => {
   at index3.js:2:2"
 `);
   });
+
+  it(`shows the stack of a thrown error when all of its frames are collapsed`, async () => {
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockResolvedValueOnce({
+        isFallback: true,
+        stack: '\n\n  at fromImport (useScreens.js:189)',
+      })
+      .mockResolvedValueOnce({
+        isFallback: false,
+        stack: '\n\n  at Layout (_layout.tsx:4:10)',
+      });
+
+    reporter._log({
+      type: 'client_log',
+      level: 'error',
+      data: [
+        '[TypeError: Cannot read property of undefined]',
+        'TypeError: Cannot read property of undefined\n    at fromImport (http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios:1:1)',
+        '\n    at Layout (http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios:2:2)',
+      ],
+      mode: 'NOBRIDGE',
+    } as any);
+    await jest.runAllTimersAsync();
+
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+" ERROR [TypeError: Cannot read property of undefined]
+
+  at fromImport (useScreens.js:189)
+
+  at Layout (_layout.tsx:4:10)"
+`);
+  });
+
+  it(`hides the collapsed stack of a log call when another stack has visible frames`, async () => {
+    jest
+      .mocked(maybeSymbolicateAndFormatJSErrorStackLogAsync)
+      .mockResolvedValueOnce({
+        isFallback: true,
+        stack: '\n\n  at warn (VirtualizedList.js:1:1)',
+      })
+      .mockResolvedValueOnce({
+        isFallback: false,
+        stack: '\n\n  at NestedList (nested-list.tsx:8:7)',
+      });
+
+    reporter._log({
+      type: 'client_log',
+      level: 'error',
+      data: [
+        'VirtualizedLists should never be nested inside plain ScrollViews',
+        '\n    at warn (http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios:1:1)',
+        '\n    at NestedList (http://localhost:8081/node_modules/expo-router/entry.bundle//&platform=ios:2:2)',
+      ],
+      mode: 'NOBRIDGE',
+    } as any);
+    await jest.runAllTimersAsync();
+
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(''))).toMatchInlineSnapshot(`
+" ERROR VirtualizedLists should never be nested inside plain ScrollViews
+
+  at NestedList (nested-list.tsx:8:7)"
+`);
+  });
 });
 
 describe('client log platform prefix and format substitution', () => {

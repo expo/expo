@@ -26,12 +26,33 @@ public class DevMenuManager: NSObject {
 
   var window: DevMenuWindow?
   var fabWindow: DevMenuFABWindow?
+  private(set) var onboardingContentHeight: CGFloat?
   private var isNavigatingHome = false
   private var didHandleInitialContentAppear = false
 
   /// True when the current Snack session is a lesson or playground.
   /// Forces the FAB to stay visible even if the user disabled the preference.
   @objc var isLessonLikeSession: Bool = false
+
+  @objc var canLaunchDevMenuOnStart = true
+  @objc var canShowFloatingActionButton = true
+
+  @objc(applyLaunchParamsFromURL:)
+  @discardableResult
+  func applyLaunchParams(from url: URL) -> URL {
+    let launch = ExpoLauncherURL(url)
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    if launch.disablesFab {
+      canShowFloatingActionButton = false
+      updateFABVisibility()
+    }
+    if launch.disablesAutoLaunch {
+      canLaunchDevMenuOnStart = false
+    }
+    return launch.targetURL ?? launch.strippedURL
+  }
 
   override init() {
     super.init()
@@ -238,6 +259,7 @@ public class DevMenuManager: NSObject {
       }
 
       let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
+        && self.canShowFloatingActionButton
         && !self.isVisible
         && self.hasActiveApp
         && !self.isNavigatingHome
@@ -282,6 +304,14 @@ public class DevMenuManager: NSObject {
     DevMenuPreferences.isOnboardingFinished = finished
   }
 
+  func setOnboardingContentHeight(_ height: CGFloat?) {
+    guard onboardingContentHeight != height else {
+      return
+    }
+    onboardingContentHeight = height
+    window?.invalidateSheetDetents()
+  }
+
   @objc func getMotionGestureEnabled() -> Bool {
     return DevMenuPreferences.motionGestureEnabled
   }
@@ -309,7 +339,7 @@ public class DevMenuManager: NSObject {
     // (e.g. switching between lessons).
     if !didHandleInitialContentAppear {
       didHandleInitialContentAppear = true
-      if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+      if canLaunchDevMenuOnStart && (shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch) {
         openMenu()
         return
       }

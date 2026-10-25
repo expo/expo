@@ -41,6 +41,13 @@ export type DefaultNavigatorOptions<
   children: React.ReactNode;
 
   /**
+   * Enables React Activity for nested Expo Router screens. For stack navigators, a number specifies
+   * how many screens must be above a route before its content is hidden.
+   * @default false
+   */
+  activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
+
+  /**
    * Layout for the navigator.
    * Useful for wrapping with a component with access to navigator's state and options.
    */
@@ -120,8 +127,24 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction } };
   removePrevented: { data: { action: NavigationAction } };
+  /**
+   * Emitted after the route is removed and its component unmounts. The listener cannot rely on
+   * component state or update the unmounted component. Since effect cleanup runs before this event,
+   * it must defer unsubscription until the next microtask.
+   *
+   * @example
+   * ```tsx
+   * React.useEffect(() => {
+   *   const unsubscribe = navigation.addListener('removed', (event) => {
+   *     logRemovedRoute(event.data.action);
+   *   });
+   *
+   *   return () => queueMicrotask(unsubscribe);
+   * }, [navigation]);
+   * ```
+   */
+  removed: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -219,21 +242,26 @@ type NavigationHelpersCommon<
   State extends NavigationState = NavigationState,
 > = {
   /**
-   * Dispatch an action or an update function to the router.
-   * The update function will receive the current state,
+   * Queues an action to be dispatched after the current React commit.
    *
-   * @param action Action object or update function.
+   * @param action Action object to dispatch.
    */
-  dispatch(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
+  dispatch(action: NavigationAction): void;
+
+  /**
+   * Dispatches an action synchronously.
+   *
+   * @param action Action object to dispatch synchronously.
+   */
+  dispatchSync(action: NavigationAction): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.
    * If we're already on the screen, update the params instead.
    *
-   * @param screen Name of the route to navigate to.
-   * @param [params] Params object for the route.
-   * @param [options.merge] Whether to merge the params onto the route. Defaults to `false`.
-   * @param [options.pop] Whether to pop routes in a stack to go back to the matching route. Defaults to `false`.
+   * `screen` is the name of the route to navigate to. `params` contains the route params.
+   * `options.merge` merges the params onto the route, and `options.pop` pops routes in a stack
+   * to go back to the matching route. Both options default to `false`.
    */
   navigate<RouteName extends keyof ParamList>(
     ...args: // This condition allows us to iterate over a union type
@@ -259,11 +287,10 @@ type NavigationHelpersCommon<
   /**
    * Navigate to a route in current navigation tree.
    *
-   * @param options.name Name of the route to navigate to.
-   * @param [options.params] Params object for the route.
-   * @param [options.path] Path to associate the route with (e.g. for deep links).
-   * @param [options.merge] Whether to merge the params onto the route. Defaults to `false`.
-   * @param [options.pop] Whether to pop routes in a stack to go back to the matching route. Defaults to `false`.
+   * `options.name` is the name of the route to navigate to, `options.params` contains the route
+   * params, and `options.path` associates a path with the route for deep links. `options.merge`
+   * merges the params onto the route, and `options.pop` pops routes in a stack to go back to the
+   * matching route. Both options default to `false`.
    */
   navigate<RouteName extends keyof ParamList>(
     options: RouteName extends unknown
@@ -278,43 +305,9 @@ type NavigationHelpersCommon<
   ): void;
 
   /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param screen Name of the route to navigate to.
-   * @param [params] Params object for the route.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    ...args: RouteName extends unknown
-      ? undefined extends ParamList[RouteName]
-        ? [screen: RouteName, params?: ParamList[RouteName]]
-        : [screen: RouteName, params: ParamList[RouteName]]
-      : never
-  ): void;
-
-  /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param options Object with `name` for the route to navigate to, and a `params` object.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    options: RouteName extends unknown
-      ? {
-          name: RouteName;
-          params: ParamList[RouteName];
-          merge?: boolean;
-        }
-      : never
-  ): void;
-
-  /**
    * Preloads the route in current navigation tree.
    *
-   * @param screen Name of the route to preload.
-   * @param [params] Params object for the route.
+   * `screen` is the name of the route to preload. `params` contains the route params.
    */
   preload<RouteName extends keyof ParamList>(
     ...args: RouteName extends unknown
@@ -411,28 +404,6 @@ export type NavigationContainerProps = {
    */
   initialState?: InitialState;
   /**
-   * Callback which is called with the latest navigation state when it changes.
-   */
-  onStateChange?: (state: Readonly<NavigationState> | undefined) => void;
-  /**
-   * Callback which is called after the navigation tree mounts.
-   */
-  onReady?: () => void;
-  /**
-   * Callback which is called when an action is not handled.
-   */
-  onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
-  /**
-   * Whether child navigator should handle a navigation action.
-   * The child navigator needs to be mounted before it can handle the action.
-   * Defaults to `false`.
-   *
-   * This will be removed in the next major release.
-   *
-   * @deprecated Use nested navigation API instead
-   */
-  navigationInChildEnabled?: boolean;
-  /**
    * Theme object for the UI elements.
    */
   theme?: ReactNavigation.Theme;
@@ -466,7 +437,7 @@ export type NavigationProp<
    * Update the options for the route.
    * The options object will be shallow merged with default options object.
    *
-   * @param update Options object or a callback which takes the options from navigator config and returns a new options object.
+   * @param options Options object to merge with the options from the navigator config.
    */
   setOptions(options: Partial<ScreenOptions>): void;
 } & NavigationHelpersRoute<ParamList, RouteName> &
@@ -703,6 +674,12 @@ export type RouteConfigProps<
    * or inferred from the filesystem.
    */
   routeSource?: RouteSource;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator for this Expo Router screen.
+   * Stack screens also accept the number of screens that must be above the route before it hides.
+   */
+  activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type RouteConfig<
@@ -755,12 +732,6 @@ export type RouteGroupConfig<
 
 export type NavigationContainerEventMap = {
   /**
-   * Event that fires when the navigation container is ready to be used.
-   */
-  ready: {
-    data: undefined;
-  };
-  /**
    * Event that fires when the navigation state changes.
    */
   state: {
@@ -771,42 +742,10 @@ export type NavigationContainerEventMap = {
       state: NavigationState | PartialState<NavigationState> | undefined;
     };
   };
-  /**
-   * Event that fires when current options changes.
-   */
-  options: { data: { options: object } };
-  /**
-   * Event that fires when an action is dispatched.
-   * Only intended for debugging purposes, don't use it for app logic.
-   * This event will be emitted before state changes have been applied.
-   */
-  __unsafe_action__: {
-    data: {
-      /**
-       * The action object that was dispatched.
-       */
-      action: NavigationAction;
-      /**
-       * Whether the action was a no-op, i.e. resulted in any state changes.
-       */
-      noop: boolean;
-      /**
-       * Stack trace of the action, this will only be available during development.
-       */
-      stack: string | undefined;
-    };
-  };
 };
 
-type NotUndefined<T> = T extends undefined ? never : T;
-
 export type ParamListRoute<ParamList extends ParamListBase> = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  [RouteName in keyof ParamList]: NavigatorScreenParams<{}> extends ParamList[RouteName]
-    ? NotUndefined<ParamList[RouteName]> extends NavigatorScreenParams<infer T>
-      ? ParamListRoute<T>
-      : Route<Extract<RouteName, string>, ParamList[RouteName]>
-    : Route<Extract<RouteName, string>, ParamList[RouteName]>;
+  [RouteName in keyof ParamList]: Route<Extract<RouteName, string>, ParamList[RouteName]>;
 }[keyof ParamList];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -818,13 +757,7 @@ type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
 export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
   EventConsumer<NavigationContainerEventMap> & {
     /**
-     * Reset the navigation state of the root navigator to the provided state.
-     *
-     * @param state Navigation state object.
-     */
-    resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
-    /**
-     * Get the rehydrated navigation state of the navigation tree.
+     * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;
     /**
@@ -961,39 +894,6 @@ type TypedNavigatorInternal<
   ) => null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NavigatorScreenParams<ParamList extends {}> =
-  | {
-      screen?: never;
-      params?: never;
-      merge?: never;
-      initial?: never;
-      pop?: never;
-      path?: string;
-      state: PartialState<NavigationState> | NavigationState | undefined;
-    }
-  | {
-      [RouteName in keyof ParamList]: undefined extends ParamList[RouteName]
-        ? {
-            screen: RouteName;
-            params?: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          }
-        : {
-            screen: RouteName;
-            params: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          };
-    }[keyof ParamList];
-
 type PathConfigAlias = {
   /**
    * Path string to match against.
@@ -1046,11 +946,5 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type PathConfigMap<ParamList extends {}> = {
-  [RouteName in keyof ParamList]?: NonNullable<ParamList[RouteName]> extends NavigatorScreenParams<
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    infer T extends {}
-  >
-    ? string | PathConfig<T>
-    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
+  [RouteName in keyof ParamList]?: string | PathConfig<ParamListBase>;
 };

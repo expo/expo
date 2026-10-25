@@ -22,16 +22,12 @@ import { vol } from 'memfs';
 import * as path from 'path';
 
 import type { ExpoJsOutput } from '../../serializer/jsOutput';
-import { materializeMap } from '../../serializer/packedMap';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: ExpoJsOutput, contents: string) => {
-  // `fromRawMappings` needs plain tuples; the worker emits the packed
-  // wire shape, so materialize at the boundary.
   const map = fromRawMappings([
     {
       ...output.data,
-      map: materializeMap(output.data.map),
       path: '',
       source: contents,
       isIgnored: false,
@@ -81,7 +77,7 @@ const babelTransformerPath = require.resolve('@expo/metro-config/babel-transform
 const transformerContents = jest.requireActual('fs').readFileSync(babelTransformerPath);
 
 const HEADER_DEV =
-  '__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {';
+  '__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {';
 const HEADER_PROD = '__d(function (g, r, i, a, m, e, d) {';
 
 // let fs: typeof import('fs');
@@ -182,7 +178,10 @@ export function Component(props: Props) {
   const output = result.output[0]!;
 
   expect(output.data.code).toContain('react/compiler-runtime');
-  expect(output.data.code).toMatch(/reactcompilerruntime\.c\)\(2\)/i);
+  expect(output.data.code).toMatch(/reactcompilerruntime\.c\)\(3\)/i);
+  expect(output.data.code).toMatch(
+    /if \(\$\[0\] !== "([a-f0-9]+)"\) \{\s*for \(let i = 1; i < 3; i\+\+\) \$\[i\] = Symbol\.for\("react\.memo_cache_sentinel"\);\s*\$\[0\] = "\1";/
+  );
   expect(output.data.code).toContain('$RefreshReg$');
   expect(output.data.code).not.toContain('type Props');
   expect(output.data.code).not.toContain('<View>');
@@ -301,6 +300,119 @@ it('transforms a simple module', async () => {
   expect(result.dependencies).toEqual([]);
 });
 
+it.each([
+  ['native', 'ios', {}, false],
+  ['minified native', 'ios', {}, true],
+  ['graph-optimized native', 'ios', { optimize: 'true' }, false],
+  ['web', 'web', {}, false],
+  ['native server reference', 'ios', { environment: 'react-server' }, false],
+  ['web server', 'web', { environment: 'react-server' }, false],
+] as const)(
+  'uses the native module pipeline for %s assets',
+  async (_name, platform, custom, minify) => {
+    jest.spyOn(require('../getAssets'), 'getUniversalAssetData').mockResolvedValue({
+      __packager_asset: true,
+      fileSystemLocation: '/root/local',
+      httpServerLocation: '/assets/local',
+      files: ['/root/local/icon.png'],
+      path: '/root/local/icon.png',
+      name: 'icon',
+      type: 'png',
+      width: 10,
+      height: 20,
+      scales: [1],
+      hash: 'hash',
+      fileHashes: ['file-hash'],
+    });
+    const noxcturnal = require('noxcturnal') as typeof import('noxcturnal');
+    const nativeTransform = jest.spyOn(noxcturnal, 'transform');
+    const config = { ...baseConfig, assetRegistryPath: 'asset-registry' };
+    const options = {
+      ...baseTransformOptions,
+      type: 'asset' as const,
+      platform,
+      customTransformOptions: custom,
+      dev: !minify,
+      minify,
+    };
+    const transformAsset = (enabled: boolean) => {
+      const assetConfig = { ...config, unstable_noxcturnalTransformWorker: enabled };
+      return Transformer.transform(
+        assetConfig,
+        '/root',
+        '/root/local/icon.png',
+        Buffer.from('image data'),
+        options
+      );
+    };
+    const native = await transformAsset(true);
+    expect(nativeTransform).toHaveBeenCalled();
+    expect(nativeTransform.mock.results.at(-1)?.value.status).toBe('complete');
+    nativeTransform.mockRestore();
+    const legacy = await transformAsset(false);
+
+    const execute = (result: typeof native) => {
+      const module = { exports: undefined as any };
+      const load = (name: string) => {
+        if (name === 'asset-registry') return { registerAsset: (data: unknown) => data };
+        if (name === 'react-server-dom-webpack/server') {
+          return { createClientModuleProxy: (id: string) => ({ id }) };
+        }
+        throw new Error(`Unexpected asset dependency: ${name}`);
+      };
+      new Function('__d', result.output[0]!.data.code)((factory: Function) =>
+        factory(
+          {},
+          load,
+          load,
+          load,
+          module,
+          module.exports,
+          result.dependencies.map((d) => d.name)
+        )
+      );
+      return JSON.parse(JSON.stringify(module.exports));
+    };
+    expect(execute(native)).toEqual(execute(legacy));
+    expect(native.dependencies).toEqual(legacy.dependencies);
+    expect(native.output[0]!.type).toBe('js/module/asset');
+    expect(native.output[0]!.data.reactClientReference).toBe(
+      legacy.output[0]!.data.reactClientReference
+    );
+    expect(native.output[0]!.data.functionMap).toBeNull();
+    expect(native.output[0]!.data.map.names).toEqual([]);
+    expect(
+      originalPositionFor(toTraceMap(native.output[0]!, 'image data'), { line: 2, column: 0 })
+        .source
+    ).toBeNull();
+    if (platform === 'ios' && !('environment' in custom)) {
+      expect(execute(native)).not.toHaveProperty('files');
+      expect(execute(native)).not.toHaveProperty('fileSystemLocation');
+      expect(execute(native)).not.toHaveProperty('path');
+      expect(execute(native)).toHaveProperty('fileHashes', ['file-hash']);
+    }
+  }
+);
+
+it('reports a native asset transform bailout instead of falling back to Babel', async () => {
+  const noxcturnal = require('noxcturnal') as typeof import('noxcturnal');
+  jest.spyOn(noxcturnal, 'transform').mockReturnValueOnce({
+    status: 'bailout',
+    reason: 'unsupported-generated-source',
+    source: '',
+    diagnostics: [],
+  });
+
+  await expect(
+    Transformer.transform(baseConfig, '/root', '/root/local/icon.png', Buffer.from('image data'), {
+      ...baseTransformOptions,
+      type: 'asset',
+      platform: 'ios',
+      customTransformOptions: { environment: 'react-server' },
+    })
+  ).rejects.toThrow(/asset.*unsupported-generated-source/i);
+});
+
 it('uses Noxcturnal instead of the Babel preset for eligible node_modules', async () => {
   const contents = `module.exports = [process.env.EXPO_OS, process.env.NODE_ENV, __DEV__, require('dep')];`;
 
@@ -318,7 +430,7 @@ it('uses Noxcturnal instead of the Babel preset for eligible node_modules', asyn
   );
 
   expect(result.output[0]!.data.code).toMatch(
-    /module\.exports = \[\s*"ios",\s*"production",\s*false,\s*_\$\$_REQUIRE\(_dependencyMap\[0\]\)\s*\]/
+    /module\.exports = \[\s*"ios",\s*"production",\s*false,\s*require\(_dependencyMap\[0\]\)\s*\]/
   );
   expect(result.output[0]!.data.hasCjsExports).toBe(true);
   expect(result.output[0]!.data.functionMap).toEqual({
@@ -352,7 +464,7 @@ it.each([
   );
 
   expect(result.output[0]!.data.code).toMatch(
-    /module\.exports\s*=\s*_\$\$_REQUIRE\(_dependencyMap\[0\], "dep"\);/
+    /module\.exports\s*=\s*require\(_dependencyMap\[0\], "dep"\);/
   );
   expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['dep']);
 });
@@ -864,7 +976,7 @@ it('uses Noxcturnal for the complete Metro transform of eligible dependencies', 
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
-      `var oddly_spaced= _$$_REQUIRE(_dependencyMap[0], "dep");`,
+      `var oddly_spaced= require(_dependencyMap[0], "dep");`,
       'module.exports=oddly_spaced;',
       '});',
     ].join('\n')
@@ -988,10 +1100,11 @@ it('transforms a module with dependencies', async () => {
     [
       HEADER_DEV,
       '"use strict";',
-      '_$$_REQUIRE(_dependencyMap[2], "./c");',
-      '_$$_REQUIRE(_dependencyMap[0], "./a");',
+      'require(_dependencyMap[2], "./c");',
+      ';',
+      'require(_dependencyMap[0], "./a");',
       'arbitrary(code);',
-      'var b = _$$_REQUIRE(_dependencyMap[1], "b");',
+      'var b = require(_dependencyMap[1], "b");',
       '',
       '',
       '});',
@@ -1002,14 +1115,14 @@ it('transforms a module with dependencies', async () => {
 
   expect(
     generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
-  ).toMatchObject({ line: 4, column: 0 });
+  ).toMatchObject({ line: 5, column: 0 });
 
-  expect(originalPositionFor(trace, { line: 5, column: 0 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 6, column: 0 })).toMatchObject({
     line: 3,
     column: 0,
     name: null,
   });
-  expect(originalPositionFor(trace, { line: 6, column: 6 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 7, column: 6 })).toMatchObject({
     line: 4,
     column: 6,
     name: null,
@@ -1041,11 +1154,11 @@ it('transforms an es module with asyncToGenerator', async () => {
   const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
-    line: 10,
+    line: 11,
     column: 0,
   });
 
-  expect(originalPositionFor(trace, { line: 10, column: 9 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 11, column: 9 })).toMatchObject({
     line: 1,
     column: 22,
     name: null,
@@ -1098,8 +1211,9 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       'function _interopDefault(e) {',
       '  return e && e.__esModule ? e : { default: e };',
       '}',
-      'var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
+      'var _c = require(_dependencyMap[0], "./c");',
       'var c = _interopDefault(_c);',
+      ';',
       '',
       'test(c.default);',
       '',
@@ -1109,7 +1223,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   const trace = toTraceMap(result.output[0]!, contents);
 
-  expect(originalPositionFor(trace, { line: 8, column: 5 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 9, column: 5 })).toMatchObject({
     line: 1,
     column: 26,
     name: null,
@@ -1295,7 +1409,7 @@ it('allows disabling the normalizePseudoGlobals pass when minifying', async () =
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     minified(code);
 
     });"
@@ -1311,7 +1425,7 @@ it('allows emitting compact code when not minifying', async () => {
     { ...baseTransformOptions, dev: false, minify: false }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(
-    `"__d(function(global,_$$_REQUIRE,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code)});"`
+    `"__d(function(global,require,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code)});"`
   );
 });
 
@@ -1330,7 +1444,7 @@ it('skips minification in Hermes stable transform profile', async () => {
     }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     arbitrary(code);
 
     });"
@@ -1352,7 +1466,7 @@ it('skips minification in Hermes canary transform profile', async () => {
     }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     arbitrary(code);
 
     });"
@@ -1406,7 +1520,7 @@ it('outputs comments when `minify: false`', async () => {
     { ...baseTransformOptions, dev: false, minify: false }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     /*#__PURE__*/arbitrary(code);
     });"
   `);

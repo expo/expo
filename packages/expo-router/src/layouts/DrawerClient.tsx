@@ -18,13 +18,13 @@ import {
   type DrawerRouterOptions,
   type ParamListBase,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 
-export const Drawer = unstable_integrateWithRouter<
+export const Drawer = integrateWithRouter<
   DrawerNavigationOptions,
   DrawerNavigationState<ParamListBase>,
   StandardDrawerNavigationEventMap,
@@ -32,10 +32,13 @@ export const Drawer = unstable_integrateWithRouter<
   DrawerRouterOptions,
   DrawerNavigatorCreateProps
 >(createStandardDrawerNavigator, DrawerRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, navigation, dispatch }) => ({
+  createProps: ({ state, navigation, dispatch, isPreloaded, isRemovalPrevented }) => ({
     drawerState: state,
+    isPreloaded,
+    isRemovalPrevented,
     // `createProps` exposes base helpers, but `DrawerRouter` adds drawer action helpers at runtime.
     navigation: navigation as DrawerNavigationHelpers,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),

@@ -43,6 +43,7 @@ describe('iOS Updates config', () => {
             testheader: 'test',
           },
           enableBsdiffPatchSupport: true,
+          maxUpdatesToKeep: 5,
         },
       },
       {} as any,
@@ -62,6 +63,42 @@ describe('iOS Updates config', () => {
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
       EXUpdatesEnableBsdiffPatchSupport: true,
+      EXUpdatesMaxUpdatesToKeep: 5,
     });
   });
+
+  it('writes EXUpdatesExcludeFromBackup only when updates.excludeFromBackup is true', async () => {
+    const enabled = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x', excludeFromBackup: true },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(enabled).toMatchObject({ EXUpdatesExcludeFromBackup: true });
+
+    const omitted = await Updates.setUpdatesConfigAsync(
+      '/app',
+      {
+        runtimeVersion: '1.0.0',
+        slug: 'my-app',
+        updates: { url: 'https://u.expo.dev/x' },
+      },
+      {} as any,
+      '0.11.0'
+    );
+    expect(omitted).not.toHaveProperty('EXUpdatesExcludeFromBackup');
+  });
+});
+
+it('removes a stale retention setting when the option is omitted', async () => {
+  const config = await Updates.setUpdatesConfigAsync(
+    '/app',
+    { slug: 'my-app', runtimeVersion: '1.0.0', updates: { url: 'https://u.expo.dev/x' } },
+    { EXUpdatesMaxUpdatesToKeep: 5 }
+  );
+  expect(config).not.toHaveProperty('EXUpdatesMaxUpdatesToKeep');
 });

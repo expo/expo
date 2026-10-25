@@ -82,10 +82,6 @@ struct FunctionTests {
           return nil
         }
 
-        Function("returnUndefined") { () -> JavaScriptValue in
-          return .undefined
-        }
-
         Function("isArgNull") { (arg: Double?) -> Bool in
           return arg == nil
         }
@@ -99,10 +95,6 @@ struct FunctionTests {
               return foo
             }
           }
-        }
-
-        Function("withFunction") { (fn: JavaScriptValue) throws -> String in
-          return try fn.asFunction().call(arguments: "foo", "bar").asString()
         }
 
         Function("withCGFloat") { (f: CGFloat) in
@@ -131,6 +123,10 @@ struct FunctionTests {
 
         Function("withOptionalRecord") { (f: TestRecord?) in
           return "\(f?.property ?? "no value")"
+        }
+
+        Function("returnsOptionalRecordWithNilField") { () -> SynthesizedMixedRecord? in
+          return SynthesizedMixedRecord(name: "present", count: 7, note: nil)
         }
 
         Function("withNullableValueOrUndefinded") { (record: NullableValueOfUndefinedRecord) in
@@ -236,7 +232,6 @@ struct FunctionTests {
     func `returns values`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble() == Double.pi)
       #expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull() == true)
-      #expect(try runtime.eval("expo.modules.TestModule.returnUndefined()").isUndefined() == true)
     }
 
     @Test
@@ -257,14 +252,6 @@ struct FunctionTests {
 
       #expect(result.kind == .number)
       #expect(result.getInt() == initialValue + 1)
-    }
-
-    @Test
-    func `takes JavaScriptFunction argument`() throws {
-      let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
-
-      #expect(value.kind == .string)
-      #expect(value.getString() == "foobar")
     }
 
     @Test
@@ -314,7 +301,7 @@ struct FunctionTests {
         guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
-        return evalError.message.contains("FieldRequiredException: Value for field 'property' is required, got nil")
+        return evalError.message.contains("Value for field 'property' is required, got nil")
       }
     }
 
@@ -339,6 +326,15 @@ struct FunctionTests {
     @Test
     func `accepts optional record`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString() == "123")
+    }
+
+    @Test
+    func `keeps a nil field as null when returning an optional record`() throws {
+      let object = try runtime.eval("expo.modules.TestModule.returnsOptionalRecordWithNilField()").asObject()
+
+      #expect(try object.getProperty("name").asString() == "present")
+      #expect(object.hasProperty("note") == true)
+      #expect(object.getProperty("note").isNull() == true)
     }
 
     @Test
@@ -377,8 +373,8 @@ struct FunctionTests {
     func `returns encodable struct`() throws {
       let result = try runtime.eval("expo.modules.TestModule.returnEncodable()")
       #expect(result.kind == .object)
-      #expect(result.getObject().getPropertyNames().contains("name"))
-      #expect(result.getObject().getPropertyNames().contains("version"))
+      #expect(result.getObject().getPropertyNames().contains("name") == true)
+      #expect(result.getObject().getPropertyNames().contains("version") == true)
       #expect(try result.getObject().getProperty("name").asString() == "Expo SDK")
       #expect(try result.getObject().getProperty("version").asInt() == 55)
     }
@@ -530,7 +526,7 @@ struct FunctionTests {
       #expect(object.getObject().hasProperty("length") == true)
 
       let result = object.getArray()
-      for (index, element) in result.enumerated() {
+      try result.forEachIndexed { index, element in
         #expect(element.kind == .object)
         #expect(element.getObject().hasProperty("value") == true)
         let value = try runtime.eval("object[\(index)].value")

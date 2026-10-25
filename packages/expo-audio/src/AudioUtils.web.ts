@@ -50,6 +50,11 @@ export function safeDuration(duration: number): number {
   return isNaN(duration) || !isFinite(duration) ? 0 : duration;
 }
 
+// `play()` rejects with an `AbortError` when `pause()` or a new source interrupts it, which is not a failure.
+export function isPlayInterrupted(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError';
+}
+
 export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioStatus {
   const isPlaying = !!(
     media.currentTime > 0 &&

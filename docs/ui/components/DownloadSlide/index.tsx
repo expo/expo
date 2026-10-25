@@ -15,7 +15,7 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
       download
       href={imageUrl}
       className={mergeClasses(
-        'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        'relative flex items-stretch overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
         'hocus:opacity-80 hocus:shadow-sm',
         'max-sm:flex-col',
         '[&+hr]:mt-6!',

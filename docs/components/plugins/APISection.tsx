@@ -23,8 +23,10 @@ import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces'
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
+  APISectionPackageContext,
   getCommentContent,
   getPossibleComponentPropsNames,
+  unwrapPropsWithChildren,
 } from '~/components/plugins/api/APISectionUtils';
 import { type ApiSectionData, useApiSectionData } from '~/providers/api-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -280,11 +282,16 @@ const renderAPI = (
     const props = filterDataByKind(
       data,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
-      entry =>
-        isProp(entry) &&
-        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
-          ? !!(entry.type?.types ?? entry.type?.declaration?.children ?? entry.children)
-          : true)
+      entry => {
+        if (!isProp(entry)) {
+          return false;
+        }
+        if (![TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)) {
+          return true;
+        }
+        const propsType = unwrapPropsWithChildren(entry.type);
+        return !!(propsType?.types ?? propsType?.declaration?.children ?? entry.children);
+      }
     );
     const classChildren = data
       .filter(entry => entry.kind === TypeDocKind.Class)
@@ -413,8 +420,14 @@ const renderAPI = (
       )
     );
 
+    const packageNames = Array.isArray(packageName)
+      ? packageName
+      : packageName
+        ? [packageName]
+        : [];
+
     return (
-      <>
+      <APISectionPackageContext.Provider value={packageNames}>
         {hasCategorizedMethods &&
           (hasHeadersMapping
             ? Object.entries(headersMapping).map(([key, header], index) => (
@@ -466,7 +479,7 @@ const renderAPI = (
           header="Config plugin types"
         />
         <APISectionEnums data={enums} />
-      </>
+      </APISectionPackageContext.Provider>
     );
   } catch (error) {
     console.error(error);

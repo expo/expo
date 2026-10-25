@@ -4,4 +4,5 @@ export type {
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
   AgeSignalsStatus,
+  FakeAgeSignals,
 } from './ExpoAgeRange.types';

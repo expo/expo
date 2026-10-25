@@ -3,7 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
-import type { NativeTabsLabelStyle } from '../types';
+import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
 
 export interface NativeTabsTriggerLabelProps {
   /**
@@ -66,7 +66,7 @@ export interface SrcIcon {
    *
    * @platform ios
    */
-  renderingMode?: 'template' | 'original';
+  renderingMode?: IconRenderingMode;
 }
 
 export interface SFSymbolIcon {
@@ -97,11 +97,12 @@ export interface XcassetIcon {
    * The name of the iOS asset catalog image to use as an icon.
    *
    * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
-   * and device-specific images via `[UIImage imageNamed:]`.
+   * and device-specific images via `[UIImage imageNamed:]`. Both image sets and
+   * symbol sets are supported.
    *
-   * The rendering mode (template vs original) can be controlled via the `renderingMode` prop
-   * on the `Icon` component. By default, icons are tinted when `iconColor` is set, and
-   * rendered as original otherwise.
+   * > **Note:** The rendering mode comes from the asset's **Render As** setting in the
+   * > asset catalog, not from the `renderingMode` prop. Set it to **Template Image** for
+   * > the icon to be tinted with `iconColor` and `selectedIconColor`.
    *
    * The value can be provided in two ways:
    * - As a string with the asset catalog image name
@@ -212,7 +213,7 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
@@ -264,7 +265,7 @@ export interface NativeTabsBottomAccessoryProps {
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default Layout(){
  *   return (

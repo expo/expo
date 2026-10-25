@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Picker`](../universal/picker) — it renders the appropriate native component per platform.
@@ -28,7 +29,13 @@ Expo UI Picker matches the official SwiftUI [Picker API](https://developer.apple
 
 ## Segmented picker
 
-```tsx SegmentedPickerExample.tsx
+<ComponentExample
+  title="SegmentedPickerExample.tsx"
+  src="/static/images/expo-ui/examples/picker-segmented-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/picker-segmented-ios-dark.webp"
+  alt="A segmented control with Apple selected, next to Banana and Orange">
+
+```tsx
 import { useState } from 'react';
 import { Host, Picker, Text } from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
@@ -38,8 +45,10 @@ const options = ['Apple', 'Banana', 'Orange'];
 export default function SegmentedPickerExample() {
   const [selectedTag, setSelectedTag] = useState(options[0]);
 
+  // Segmented and wheel pickers stretch to the width they are given, so they
+  // collapse under `matchContents`.
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Picker
         modifiers={[pickerStyle('segmented')]}
         label="Select a fruit"
@@ -58,9 +67,17 @@ export default function SegmentedPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Menu picker
 
-```tsx MenuPickerExample.tsx
+<ComponentExample
+  title="MenuPickerExample.tsx"
+  src="/static/images/expo-ui/examples/picker-menu-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/picker-menu-ios-dark.webp"
+  alt="An open menu picker listing Apple with a checkmark, Banana, and Orange">
+
+```tsx
 import { useState } from 'react';
 import { Host, Picker, Text } from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
@@ -71,7 +88,7 @@ export default function MenuPickerExample() {
   const [selectedTag, setSelectedTag] = useState(options[0]);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Picker
         modifiers={[pickerStyle('menu')]}
         label="Select a fruit"
@@ -90,11 +107,19 @@ export default function MenuPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Wheel picker
 
 > **Warning** The wheel variant is not available on Apple TV.
 
-```tsx WheelPickerExample.tsx
+<ComponentExample
+  title="WheelPickerExample.tsx"
+  src="/static/images/expo-ui/examples/picker-wheel-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/picker-wheel-ios-dark.webp"
+  alt="A wheel picker with Apple selected in the center band above Banana and Orange">
+
+```tsx
 import { useState } from 'react';
 import { Host, Picker, Text } from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
@@ -105,7 +130,7 @@ export default function WheelPickerExample() {
   const [selectedTag, setSelectedTag] = useState(options[0]);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Picker
         modifiers={[pickerStyle('wheel')]}
         label="Select a fruit"
@@ -124,10 +149,15 @@ export default function WheelPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Picker } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/picker" apiName="Picker" />
+<APISection
+  packageName="expo-ui/swift-ui/picker"
+  apiName="Picker"
+/>

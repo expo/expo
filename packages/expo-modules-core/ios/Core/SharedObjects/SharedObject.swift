@@ -36,6 +36,31 @@ open class SharedObject: AnySharedObject {
    */
   public init() {}
 
+  /// The value of `nativeRefType` on the JavaScript object, or `nil` when the object does not conform to
+  /// `AnySharedRef`.
+  internal var sharedRefType: String? {
+    guard Self.conformsToAnySharedRef(Swift.type(of: self)) else {
+      return nil
+    }
+    return (self as? AnySharedRef)?.nativeRefType
+  }
+
+  /// Whether each `SharedObject` class conforms to `AnySharedRef`. A failing `as? AnySharedRef` walks the
+  /// whole class hierarchy on every call, so the result is looked up once per class.
+  private static let anySharedRefConformances = Mutex([ObjectIdentifier: Bool]())
+
+  private static func conformsToAnySharedRef(_ type: SharedObject.Type) -> Bool {
+    let key = ObjectIdentifier(type)
+    return anySharedRefConformances.withLock { conformances in
+      if let conforms = conformances[key] {
+        return conforms
+      }
+      let conforms = type is AnySharedRef.Type
+      conformances[key] = conforms
+      return conforms
+    }
+  }
+
   /**
    A function that will be called before the object is removed from the registry.
    */
@@ -86,15 +111,26 @@ open class SharedObject: AnySharedObject {
 
   // MARK: - Macro-synthesized JSI hooks
 
+  /// The name of the class in JavaScript. Overridden by the `@SharedObject` macro with the class name
+  /// or the `@SharedObject("CustomName")` argument. A module registers the class through `_classTypes`.
+  open class var _jsName: String {
+    return unqualifiedTypeName(self)
+  }
+
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
   /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
   @JavaScriptActor
   open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
+  /// Binds the class's `static` and `class` `@JS` members onto its JavaScript constructor. Overridden by
+  /// the `@SharedObject` macro.
+  @JavaScriptActor
+  open class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
   @JavaScriptActor
-  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+  open class func _constructSharedObject(this: borrowing JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
     return nil
   }
 }
@@ -119,13 +155,13 @@ extension SharedObject {
   /// Returns the base `SharedObject`. Callers wanting a concrete subclass use the `as:` overload, which
   /// performs a checked downcast.
   ///
-  /// Throws `NotFoundException` when the object carries no native state.
+  /// Throws `NotFoundException` when the object carries no native state or its native object was released.
   @JavaScriptActor
   public static func native(from jsObject: borrowing JavaScriptObject) throws -> SharedObject {
-    guard let native = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native else {
+    guard let nativeState = jsObject.getNativeState(as: SharedObjectNativeState.self), !nativeState.isReleased else {
       throw NotFoundException()
     }
-    return native
+    return nativeState.native
   }
 
   /// Recovers the native shared object and casts it to the given subclass, e.g.

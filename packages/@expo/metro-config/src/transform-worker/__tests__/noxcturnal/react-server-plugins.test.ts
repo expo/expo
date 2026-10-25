@@ -1,8 +1,10 @@
 import * as babel from '@babel/core';
 import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -103,6 +105,9 @@ const loadedBabelPresetExpo = require(
   path.join(__dirname, '../../../../../../babel-preset-expo/src')
 );
 const babelPresetExpo = loadedBabelPresetExpo.default ?? loadedBabelPresetExpo;
+const { reactClientReferencesPlugin } = require(
+  path.join(__dirname, '../../../../../../babel-preset-expo/src/plugins/client-module-proxy-plugin')
+);
 const requireFromBabelPresetExpo = createRequire(
   path.join(__dirname, '../../../../../../babel-preset-expo/package.json')
 );
@@ -452,13 +457,64 @@ it.each([
   expect(result.result.code).not.toContain('react/compiler-runtime');
 });
 
-it('keeps compiled Expo workspace client directives on the Babel path', async () => {
-  const result = await transformNodeModuleWithNoxcturnal({
+it.each([
+  [true, undefined, workspaceFilename],
+  [false, undefined, workspaceFilename],
+  [true, 'node', workspaceFilename],
+  [false, 'node', workspaceFilename],
+  [true, 'node', filename],
+  [false, 'node', filename],
+] as const)(
+  'matches Babel for client directives (dev: %s, environment: %s, filename: %s)',
+  async (dev, environment, filename) => {
+    const source = `"use client"; module.exports = 1;`;
+    const input = {
+      filename,
+      projectRoot: '/repo/apps/example',
+      source,
+      options: options({ dev, customTransformOptions: { engine: 'hermes', environment } }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    };
+    const babelResult = babel.transformSync(source, {
+      filename: input.filename,
+      babelrc: false,
+      configFile: false,
+      plugins: [reactClientReferencesPlugin],
+      caller: {
+        name: 'metro',
+        isServer: environment === 'node',
+        isReactServer: false,
+        projectRoot: input.projectRoot,
+      } as babel.TransformCaller,
+    });
+    expect(canonicalModuleBody(babelResult!.code!)).toBe(canonicalModuleBody(source));
+
+    const result = await transformNodeModuleWithNoxcturnal(input);
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
+
+    const metroResult = await transformFileFullyWithNoxcturnal(input);
+    expect(metroResult.status).toBe('complete');
+    if (metroResult.status !== 'complete') return;
+    expect(canonicalModuleBody(metroResult.result.code, true)).toBe(canonicalModuleBody(source));
+    expect(metroResult.dependencies).toEqual([]);
+    expect(metroResult.result.metadata.reactClientReference).toBeUndefined();
+  }
+);
+
+it.each([
+  `"use client"; "use server"; export async function save() { return 1; }`,
+  `"use client"; "use dom"; export default function Component() { return null; }`,
+])('keeps actionable workspace client directives on Babel: %s', async (source) => {
+  const result = await transformFileFullyWithNoxcturnal({
     filename: '/repo/packages/expo-router/build/value.js',
     projectRoot: '/repo/apps/example',
-    source: `'use client'; module.exports = 1;`,
+    source,
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
+    config: fullConfig(),
   });
   expect(result).toEqual({ status: 'fallback', reason: 'expo-directive' });
 });
@@ -566,6 +622,52 @@ it.each(['use client', 'use dom'])(
     expect(native.result.code).not.toContain('value: number');
   }
 );
+
+it('excludes type-only and export-all declarations from client proxy exports', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/src/client.ts',
+    projectRoot: '/app',
+    source: `'use client';
+      export interface Props { value: string }
+      export type Value = string;
+      export type { External } from './types';
+      const mixed = 2;
+      export { type Value as MixedType, mixed };
+      export * from './other';
+      export const value = 1;`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.proxyExports).toEqual(['mixed', 'value']);
+  expect(result.result.code).not.toContain('registerClientReference(proxy, "*"');
+});
+
+it('excludes Flow type declarations from client proxy exports', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/src/client.js',
+    projectRoot: '/app',
+    source: `// @flow
+      'use client';
+      export interface Props { value: string }
+      export type Value = string;
+      export const value = 1;`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.proxyExports).toEqual(['value']);
+});
 
 it("keeps conflicting React Server directives on Babel's diagnostic path", async () => {
   const result = await transformFileFullyWithNoxcturnal({
@@ -718,3 +820,128 @@ it.each([
     expect(result.reason).toContain('dom-component-');
   }
 );
+
+it.each(['one', '"one"', '["one"]'])(
+  'extracts an inline server action from an object method with key %s',
+  async (key) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/actions.ts',
+      projectRoot: '/app',
+      source: `export function createActions(value) {
+        return { async ${key}() { "use server"; return value; } };
+      }`,
+      options: options({
+        platform: 'web',
+        customTransformOptions: { environment: 'react-server' },
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(() => babel.parseSync(result.result.code, { sourceType: 'script' })).not.toThrow();
+    expect(result.result.code).toContain('registerServerReference');
+    expect(result.result.code).toContain('.bind(null,');
+    expect(result.result.metadata.reactServerActions).toEqual({
+      id: './actions.ts',
+      names: [expect.stringContaining('$$INLINE_ACTION')],
+    });
+  }
+);
+
+describe('project-relative filenames', () => {
+  const projectRoot = '/workspace/apps/mobile';
+
+  function transform(
+    filename: string,
+    source: string,
+    customTransformOptions: JsTransformOptions['customTransformOptions'] = {},
+    dev = false
+  ) {
+    const result = transformFileFullyWithNoxcturnalSync({
+      filename,
+      source,
+      projectRoot,
+      isDefaultExpoTransformer: true,
+      options: options({
+        dev,
+        inlinePlatform: false,
+        customTransformOptions: { engine: 'hermes', ...customTransformOptions },
+      }),
+      config: fullConfig(),
+    });
+    if (result.status !== 'complete') throw new Error(result.reason);
+    return result.result;
+  }
+
+  it.each([
+    {
+      name: 'client reference',
+      filename: 'components/Card.tsx',
+      source: '"use client"; export const value = 1;',
+      environment: 'react-server',
+      metadata: 'reactClientReference',
+      moduleId: './components/Card.tsx',
+    },
+    {
+      name: 'server reference',
+      filename: 'actions/save.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: undefined,
+      metadata: 'reactServerReference',
+      moduleId: './actions/save.ts#save',
+    },
+    {
+      name: 'server action registration',
+      filename: '../shared/actions.ts',
+      source: '"use server"; export async function save() { return 1; }',
+      environment: 'react-server',
+      metadata: 'reactServerReference',
+      moduleId: './../shared/actions.ts',
+    },
+  ])('resolves the $name against the app root while keeping its module ID relative', (testCase) => {
+    const result = transform(testCase.filename, testCase.source, {
+      environment: testCase.environment,
+    });
+    const absoluteFilename = path.resolve(projectRoot, testCase.filename);
+    expect(result.metadata[testCase.metadata]).toBe(pathToFileURL(absoluteFilename).href);
+    expect(result.code).toContain(JSON.stringify(testCase.moduleId));
+  });
+
+  it.each([false, true])(
+    'resolves DOM component file URLs against the app root in dev=%s',
+    (dev) => {
+      const filename = 'components/Card.tsx';
+      const result = transform(
+        filename,
+        '"use dom"; export default function Card() { return null; }',
+        {},
+        dev
+      );
+      const fileUrl = pathToFileURL(path.resolve(projectRoot, filename)).href;
+      expect(result.metadata.expoDomComponentReference).toBe(fileUrl);
+      expect(result.code).toContain(
+        dev ? fileUrl : createHash('md5').update(fileUrl).digest('hex') + '.html'
+      );
+    }
+  );
+
+  it.each(['app/_layout.tsx', 'app/value+api.tsx'])(
+    'retains the DOM component boundary for a relative app path: %s',
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Route() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
+
+  it.each(['../mobile-other/_layout.tsx', '../mobile-other/value+api.tsx'])(
+    "matches Babel's DOM validation for a relative sibling path sharing the app prefix: %s",
+    (filename) => {
+      expect(() =>
+        transform(filename, '"use dom"; export default function Card() { return null; }')
+      ).toThrow(/dom-component-(?:layout|api)-route/);
+    }
+  );
+});

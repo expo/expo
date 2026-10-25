@@ -6,6 +6,7 @@ import { loadEnvFiles } from '../../../utils/nodeEnv';
 import { logProjectLogsLocation } from '../../hints';
 import { startBundlerAsync } from '../../startBundler';
 import { buildAsync } from '../XcodeBuild';
+import type { XcodeConfiguration } from '../XcodeBuild.types';
 import { launchAppAsync } from '../launchApp';
 import { isSimulatorDevice, resolveDeviceAsync } from '../options/resolveDevice';
 import { runIosAsync } from '../runIosAsync';
@@ -99,6 +100,28 @@ describe(runIosAsync, () => {
       '/',
       expect.objectContaining({ mode: 'production' })
     );
+  });
+
+  it.each([
+    { configuration: 'Debug', mode: 'development' },
+    { configuration: 'Staging', mode: 'production' },
+  ])('uses $mode mode for the $configuration configuration', async ({ configuration, mode }) => {
+    mockPlatform('darwin');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runIosAsync('/', { configuration: configuration as XcodeConfiguration });
+
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+    expect(startBundlerAsync).toHaveBeenCalledWith('/', expect.objectContaining({ mode }));
   });
 
   it(`asserts that the function only runs on darwin machines`, async () => {

@@ -93,6 +93,9 @@ function LogBoxRNPolyfill(props: {
   );
 
   return (
+    // `LogBoxWrapper` is memoized with empty dependencies, so its identity is stable
+    // across renders.
+    // oxlint-disable-next-line react/static-components
     <LogBoxWrapper open={open}>
       <View
         style={{

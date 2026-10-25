@@ -22,6 +22,19 @@ public struct Button: ExpoSwiftUI.View {
         }
       }
     } else {
+      labelLessButton
+    }
+  }
+
+  @ViewBuilder
+  private var labelLessButton: some View {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *),
+      props.children?.isEmpty ?? true,
+      let role = props.role?.toNativeRole() {
+      SwiftUI.Button(role: role) {
+        props.onButtonPress()
+      }
+    } else {
       SwiftUI.Button(role: props.role?.toNativeRole(), action: {
         props.onButtonPress()
       }) {

@@ -17,12 +17,12 @@ it(`returns sync results`, () => {
 
     expect(Font.isLoaded(name)).toBe(true);
     expect(Server.getServerResources()).toEqual([
-      '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}</style>',
+      '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf")}</style>',
       '<link rel="preload" href="font.ttf" as="font" crossorigin="" />',
     ]);
     expect(Server.getServerResourceDescriptors()).toEqual([
       {
-        css: '@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}',
+        css: '@font-face{font-family:"foo bar";src:url("font.ttf")}',
         id: 'expo-generated-fonts',
         type: 'style',
       },
@@ -46,6 +46,25 @@ it('`getLoadedFonts()` is available', () => {
 
 it('`Font.loadAsync()` throws when called outside `withServerContext()`', () => {
   expect(() => Font.loadAsync('A', { uri: 'a.ttf' })).toThrow(/outside of withServerContext/);
+});
+
+it('throws synchronously for an array with a duplicate fontFamily (static render discards the promise)', () => {
+  Server.withServerContext(() => {
+    expect(() =>
+      Font.loadAsync([
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'a.ttf' }] },
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'b.ttf' }] },
+      ])
+    ).toThrow(expect.objectContaining({ code: 'ERR_FONT_API' }));
+  });
+});
+
+it('throws synchronously for an array element that is not a well-shaped FontFamilyDefinition', () => {
+  Server.withServerContext(() => {
+    expect(() => Font.loadAsync([null as any])).toThrow(
+      expect.objectContaining({ code: 'ERR_FONT_API' })
+    );
+  });
 });
 
 it('isolates fonts between two concurrent server renders', async () => {

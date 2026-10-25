@@ -2,7 +2,12 @@
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
-version_file="$repo_root/.expo-code-review/cli-version"
+# The setup dir is .expo-agents/code-review/ (ecr 0.15+); the legacy
+# .expo-code-review/ is honored so older checkouts keep working.
+version_file="$repo_root/.expo-agents/code-review/cli-version"
+if [[ ! -f "$version_file" ]]; then
+  version_file="$repo_root/.expo-code-review/cli-version"
+fi
 
 if [[ ! -f "$version_file" ]]; then
   echo "Missing Expo code review version file: $version_file" >&2

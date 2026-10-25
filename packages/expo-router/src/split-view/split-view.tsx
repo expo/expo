@@ -1,45 +1,43 @@
-import React, { createContext, isValidElement, use, type ReactNode } from 'react';
-import { Split, type SplitHostProps } from 'react-native-screens/experimental';
+import React, { isValidElement, use, type ReactElement, type ReactNode } from 'react';
 
-import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
+import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
+import { IsWithinNativeNavigator } from '../standard-navigation';
 import { Slot } from '../views/Navigator';
-import { SplitViewColumn, SplitViewInspector } from './elements';
-
-const IsWithinSplitViewContext = createContext(false);
+import {
+  getSplitColumnChildren,
+  SplitViewColumn,
+  SplitViewInspector,
+  type SplitViewColumnProps,
+} from './elements';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
  */
 export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   children?: ReactNode;
+  /**
+   * Enables React Activity for screens rendered by the detail slot.
+   * @default false
+   */
+  activityEnabled?: boolean;
 }
 
-function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps) {
-  if (use(IsWithinSplitViewContext)) {
-    throw new Error('There can only be one SplitView in the navigation hierarchy.');
-  }
-
-  // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
-  if (use(IsWithinLayoutContext)) {
-    throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
+function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {
+  if (use(IsWithinNativeNavigator)) {
+    throw new Error('SplitView cannot be used inside another native navigator.');
   }
 
   if (process.env.EXPO_OS !== 'ios') {
     console.warn(
       'SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.'
     );
-    return <Slot />;
+    return <Slot activityEnabled={activityEnabled} />;
   }
-
-  const WrappedSlot = () => (
-    <IsWithinLayoutContext value>
-      <Slot />
-    </IsWithinLayoutContext>
-  );
 
   const allChildrenArray = React.Children.toArray(children);
   const columnChildren = allChildrenArray.filter(
-    (child) => isValidElement(child) && child.type === SplitViewColumn
+    (child): child is ReactElement<SplitViewColumnProps> =>
+      isValidElement(child) && child.type === SplitViewColumn
   );
   const inspectorChildren = allChildrenArray.filter(
     (child) => isValidElement(child) && child.type === SplitViewInspector
@@ -59,18 +57,25 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
 
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
-    return <Slot />;
+    return <Slot activityEnabled={activityEnabled} />;
   }
+
+  // Split.Host gives a column index only to direct children whose type is Split.Column.
+  const columns = columnChildren.map((child) => (
+    <Split.Column key={child.key}>{getSplitColumnChildren(child.props.children)}</Split.Column>
+  ));
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
-    <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-      {columnChildren}
-      <Split.Column>
-        <WrappedSlot />
-      </Split.Column>
-      {inspectorChildren}
-    </Split.Host>
+    <IsWithinNativeNavigator value>
+      <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+        {columns}
+        <Split.Column>
+          <Slot activityEnabled={activityEnabled} />
+        </Split.Column>
+        {inspectorChildren}
+      </Split.Host>
+    </IsWithinNativeNavigator>
   );
 }
 

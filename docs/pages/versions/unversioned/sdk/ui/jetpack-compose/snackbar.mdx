@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI exposes two components that mirror Jetpack Compose's [Snackbar](https://developer.android.com/develop/ui/compose/components/snackbar) APIs:
@@ -33,7 +34,13 @@ Expo UI exposes two components that mirror Jetpack Compose's [Snackbar](https://
 
 Place a [`SnackbarHost`](#snackbarhost) once in your layout and call `showSnackbar` on its ref to display a message. The returned promise resolves with `'actionPerformed'` or `'dismissed'` once the snackbar goes away.
 
-```tsx SnackbarExample.tsx
+<ComponentExample
+  title="SnackbarExample.tsx"
+  src="/static/images/expo-ui/examples/snackbar-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/snackbar-basic-android-dark.webp"
+  alt="A Material 3 snackbar at the bottom of the screen reading 'Item archived' with an Undo action">
+
+```tsx
 import { useRef } from 'react';
 import {
   Box,
@@ -44,7 +51,12 @@ import {
   Text,
   type SnackbarHostRef,
 } from '@expo/ui/jetpack-compose';
-import { align, fillMaxSize, fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  align,
+  fillMaxSize,
+  fillMaxWidth,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SnackbarExample() {
   const hostRef = useRef<SnackbarHostRef>(null);
@@ -78,11 +90,19 @@ export default function SnackbarExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom styling
 
 Pass a [`Snackbar`](#snackbar) child to [`SnackbarHost`](#snackbarhost) to override colors or place the action on a new line. The [`Snackbar`](#snackbar) itself takes no content, the message and action come from each `showSnackbar` call.
 
-```tsx StyledSnackbar.tsx
+<ComponentExample
+  title="StyledSnackbar.tsx"
+  src="/static/images/expo-ui/examples/snackbar-styled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/snackbar-styled-android-dark.webp"
+  alt="A snackbar with a dark navy container, light lavender message reading 'Saved', an Undo action, and a close icon">
+
+```tsx
 import { useRef } from 'react';
 import {
   Box,
@@ -94,7 +114,12 @@ import {
   Text,
   type SnackbarHostRef,
 } from '@expo/ui/jetpack-compose';
-import { align, fillMaxSize, fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  align,
+  fillMaxSize,
+  fillMaxWidth,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function StyledSnackbar() {
   const hostRef = useRef<SnackbarHostRef>(null);
@@ -103,6 +128,7 @@ export default function StyledSnackbar() {
     hostRef.current?.showSnackbar({
       message: 'Saved',
       actionLabel: 'Undo',
+      withDismissAction: true,
     });
   };
 
@@ -131,10 +157,15 @@ export default function StyledSnackbar() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Snackbar, SnackbarHost } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/snackbar" apiName="Snackbar" />
+<APISection
+  packageName="expo-ui/jetpack-compose/snackbar"
+  apiName="Snackbar"
+/>

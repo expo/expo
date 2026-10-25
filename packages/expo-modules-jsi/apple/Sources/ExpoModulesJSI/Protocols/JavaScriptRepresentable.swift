@@ -5,13 +5,13 @@ internal import jsi
 /// A type whose values can be represented in the JS runtime.
 public protocol JavaScriptRepresentable: Sendable, ~Copyable {
   /// Creates an instance of this type from the given JS value.
-  static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self
+  static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self
   /// Creates a JS value representing this value in the given runtime.
   func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue
 }
 
 extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     if value.isNull() || value.isUndefined() {
       return nil
     }
@@ -20,30 +20,44 @@ extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentab
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     guard let self else {
-      return .null
+      return .null()
     }
     return self.toJavaScriptValue(in: runtime)
   }
 }
 
 extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     return value.getArray().map { Element.fromJavaScriptValue($0) }
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    let values = map { $0.toJavaScriptValue(in: runtime) }
-    return JavaScriptArray(runtime, items: values).asValue()
+    let array = JavaScriptArray(runtime, length: count)
+    for (index, element) in enumerated() {
+      array[index] = element.toJavaScriptValue(in: runtime)
+    }
+    return array.asValue()
   }
 }
 
 extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
-    let object = value.getObject()
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
+    guard let runtimeHandle = value.runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
+      FatalError.runtimeLost()
+    }
+    let object = value.pointee.getObject(jsiRuntime)
+    let propertyNames = object.getPropertyNames(jsiRuntime)
+    let size = propertyNames.size(jsiRuntime)
     var result: Self = [:]
 
-    for key in object.getPropertyNames() {
-      result[key] = Value.fromJavaScriptValue(object.getProperty(key))
+    result.reserveCapacity(size)
+
+    for index in 0..<size {
+      // Look the value up by the key string the engine handed back instead of re-encoding the Swift
+      // key: it skips one engine string allocation per entry and round-trips any name exactly.
+      let jsiKey = propertyNames.getValueAtIndex(jsiRuntime, index).getString(jsiRuntime)
+      let jsiValue = JavaScriptValue(runtimeHandle, object.getProperty(jsiRuntime, jsiKey))
+      result[String(jsiString: jsiKey, in: jsiRuntime)] = Value.fromJavaScriptValue(jsiValue)
     }
     return result
   }

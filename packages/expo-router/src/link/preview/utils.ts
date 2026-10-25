@@ -1,120 +1,51 @@
-import { store, type ReactNavigationState } from '../../global-state/router-store';
-import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
-import { removeInternalExpoRouterParams } from '../../navigationParams';
-import type {
-  ParamListBase,
-  StackNavigationState,
-  NavigationRoute,
-  NavigationState,
-  TabNavigationState,
-} from '../../react-navigation/native';
-import type { Href } from '../../types';
-import { resolveHref } from '../href';
-import type { TabPath } from './native';
+import isEqual from 'react-fast-compare';
 
-export function getTabPathFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState
-): TabPath[] {
-  const hrefState = store.getStateForHref(resolveHref(href));
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return [];
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationRoutes } = findDivergentState(hrefState, state as NavigationState, true);
+import {
+  getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
+  removeInternalExpoRouterParams,
+} from '../../navigationParams';
+import type { NavigationState } from '../../react-navigation/native';
+import type { PreviewActivationRoute } from './native';
 
-  if (!navigationRoutes.length) {
-    return [];
-  }
-
-  const tabPath: TabPath[] = [];
-  navigationRoutes.forEach((route, i, arr) => {
-    // TODO(ENG-22021): Fix link preview by detecting navigator type on native. https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-    if (route.state?.type === 'tab') {
-      const tabState = route.state as TabNavigationState<ParamListBase>;
-      const oldTabKey = tabState.routes[tabState.index]!.key;
-      // The next route will be either stack inside a tab or a new tab key
-      if (!arr[i + 1]) {
-        throw new Error(
-          `New tab route is missing for ${route.key}. This is likely an internal Expo Router bug.`
-        );
-      }
-      const newTabKey = arr[i + 1]!.key;
-      tabPath.push({ oldTabKey, newTabKey });
-    }
-  });
-  return tabPath;
-}
-
-export function getPreloadedRouteFromRootStateByHref(
-  href: Href,
-  rootState: ReactNavigationState
-): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = store.getStateForHref(resolveHref(href));
-  const state: ReactNavigationState | undefined = rootState;
-  if (!hrefState || !state) {
-    return undefined;
-  }
-  // Replicating the logic from `linkTo`
-  const { navigationState, actionStateRoute } = findDivergentState(
-    hrefState,
-    state as NavigationState,
-    true
-  );
-
-  if (!navigationState || !actionStateRoute) {
-    return undefined;
-  }
-
-  if (navigationState.type === 'stack') {
-    const stackState = navigationState as StackNavigationState<ParamListBase>;
-    const payload = getPayloadFromStateRoute(actionStateRoute);
-    const activeRoutes = stackState.routes.slice(0, stackState.index + 1);
-    const preloadedRoutes = stackState.routes.slice(stackState.index + 1);
-
-    const preloadedRoute = preloadedRoutes.find(
-      (route) =>
-        route.name === actionStateRoute.name &&
-        deepEqual(
-          removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(payload.params)
-        )
-    );
-
-    const activeRoute = activeRoutes[stackState.index]!;
-    // When the active route is the same as the preloaded route,
-    // then we should not navigate. It aligns with base link behavior.
+export function findPreviewActivationPath(
+  state: NavigationState,
+  routeKey: string,
+  previewId: string
+): PreviewActivationRoute[] | undefined {
+  const routeIndex = state.routes.findIndex((route) => route.key === routeKey);
+  if (routeIndex !== -1) {
+    const route = state.routes[routeIndex]!;
     if (
-      activeRoute.name === preloadedRoute?.name &&
-      deepEqual(
-        // using ?? {}, because from our perspective undefined === {}, as both mean no params
-        removeInternalExpoRouterParams(activeRoute.params ?? {}),
-        removeInternalExpoRouterParams(payload.params ?? {})
-      )
+      getInternalExpoRouterParams(route.params)[INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME] !==
+        previewId ||
+      isDuplicateOfFocusedRoute(state, routeIndex)
     ) {
       return undefined;
     }
-
-    return preloadedRoute;
+    return [{ key: route.key }];
   }
 
+  for (const route of state.routes) {
+    if (route.state?.stale === false) {
+      const childPath = findPreviewActivationPath(route.state, routeKey, previewId);
+      if (childPath) {
+        return [{ key: route.key }, ...childPath];
+      }
+    }
+  }
   return undefined;
 }
 
-export function deepEqual(
-  a: { [key: string]: any } | undefined,
-  b: { [key: string]: any } | undefined
-): boolean {
-  if (a === b) {
-    return true;
-  }
-  if (a == null || b == null) {
-    return false;
-  }
-  if (typeof a !== 'object' || typeof b !== 'object') {
-    return false;
-  }
-  const keys = Object.keys(a);
-  return keys.length === Object.keys(b).length && keys.every((key) => deepEqual(a[key], b[key]));
+function isDuplicateOfFocusedRoute(state: NavigationState, routeIndex: number): boolean {
+  const route = state.routes[routeIndex]!;
+  const focusedRoute = state.routes[state.index];
+  return (
+    routeIndex !== state.index &&
+    focusedRoute?.name === route.name &&
+    isEqual(
+      removeInternalExpoRouterParams(focusedRoute.params ?? {}),
+      removeInternalExpoRouterParams(route.params ?? {})
+    )
+  );
 }

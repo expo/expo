@@ -11,7 +11,7 @@ import { renderRouter } from '../../testing-library';
 import { useStandardState } from '../useStandardState';
 
 // Integration: exercises useStandardState together with the real useBuildHref → useStateForPath →
-// getCachedRouteInfo pipeline, asserting the actual resolved href strings. The isolated mapping and
+// getRouteInfoFromState pipeline, asserting the actual resolved href strings. The isolated mapping and
 // memo logic is covered by the unit test in useStandardState.test.ios.tsx.
 
 // useStandardState only reads `index` and `routes` off the builder state, so a minimal
@@ -27,6 +27,7 @@ function makeBuilderState(
     routes,
     type: 'tab',
     stale: false,
+    routeKeySeq: 0,
   } as unknown as NavigationState;
 }
 
@@ -52,7 +53,7 @@ function renderProbe(currentState: FocusedRouteState | undefined, builderState: 
 }
 
 describe('useStandardState (integration with useBuildHref)', () => {
-  it('resolves a real href per route from the focused-route state', () => {
+  it('resolves a real href per route from the focused-route state', async () => {
     const builderState = makeBuilderState(
       [
         { key: 'feed-1', name: 'feed' },
@@ -60,14 +61,14 @@ describe('useStandardState (integration with useBuildHref)', () => {
       ],
       1
     );
-    renderProbe(makeCurrentState('group'), builderState);
+    await renderProbe(makeCurrentState('group'), builderState);
 
     expect(screen.getByTestId('hrefs')).toHaveTextContent('/group/feed|/group/profile');
   });
 
-  it('handles an empty route list', () => {
+  it('handles an empty route list', async () => {
     const builderState = makeBuilderState([], 0);
-    renderProbe(makeCurrentState('group'), builderState);
+    await renderProbe(makeCurrentState('group'), builderState);
 
     expect(screen.getByTestId('hrefs')).toHaveTextContent('');
   });
@@ -75,14 +76,14 @@ describe('useStandardState (integration with useBuildHref)', () => {
   // Regression: the href embeds the parent focused path (via useBuildHref → useStateForPath).
   // If the memo only depends on [builderState], a parent-path change with a stable builderState
   // reference leaves stale hrefs. This reproduces a parent re-parenting the navigator.
-  it('recomputes hrefs when the parent focused path changes even if builderState is stable', () => {
+  it('recomputes hrefs when the parent focused path changes even if builderState is stable', async () => {
     const builderState = makeBuilderState([{ key: 'feed-1', name: 'feed' }], 0);
 
-    const { rerender } = renderProbe(makeCurrentState('acme'), builderState);
+    const { rerender } = await renderProbe(makeCurrentState('acme'), builderState);
     expect(screen.getByTestId('hrefs')).toHaveTextContent('/acme/feed');
 
     // Same builderState reference, different parent focused path.
-    rerender(
+    await rerender(
       <NavigationFocusedRouteStateContext.Provider value={makeCurrentState('globex')}>
         <HrefProbe builderState={builderState} />
       </NavigationFocusedRouteStateContext.Provider>
@@ -90,14 +91,14 @@ describe('useStandardState (integration with useBuildHref)', () => {
     expect(screen.getByTestId('hrefs')).toHaveTextContent('/globex/feed');
   });
 
-  it('does not recompute when neither builderState nor the parent path change', () => {
+  it('does not recompute when neither builderState nor the parent path change', async () => {
     const builderState = makeBuilderState([{ key: 'feed-1', name: 'feed' }], 0);
     const currentState = makeCurrentState('acme');
 
-    const { rerender } = renderProbe(currentState, builderState);
+    const { rerender } = await renderProbe(currentState, builderState);
     const first = screen.getByTestId('hrefs').props.children;
 
-    rerender(
+    await rerender(
       <NavigationFocusedRouteStateContext.Provider value={currentState}>
         <HrefProbe builderState={builderState} />
       </NavigationFocusedRouteStateContext.Provider>
@@ -126,8 +127,8 @@ describe('useStandardState (integration via renderRouter)', () => {
     );
   }
 
-  it('maps a builder state to hrefs relative to the current page', () => {
-    renderRouter(
+  it('maps a builder state to hrefs relative to the current page', async () => {
+    await renderRouter(
       {
         _layout: () => <Stack />,
         home: Probe,

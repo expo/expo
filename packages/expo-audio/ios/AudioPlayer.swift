@@ -25,6 +25,15 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  /// Forward-buffer preference. `AVPlayerItem.preferredForwardBufferDuration` is per item and
+  /// resets to the default when the item is replaced (source swap, reconnect, media-services
+  /// reset), so the value is stored and re-applied to every new item.
+  var preferredForwardBufferDuration: TimeInterval = 0 {
+    didSet {
+      applyPreferredForwardBufferDuration()
+    }
+  }
+  var onRelease: (() -> Void)?
 
   var isLooping = false {
     didSet {
@@ -74,7 +83,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   var currentOffsetFromLive: Double? {
-    guard let currentDate = ref.currentItem?.currentDate() else {
+    // currentDate() blocks until the item has loaded, and a still-loading item looks live too.
+    guard let item = ref.currentItem, item.status == .readyToPlay, item.duration.isIndefinite,
+      let currentDate = item.currentDate()
+    else {
       return nil
     }
     return Date().timeIntervalSince1970 - currentDate.timeIntervalSince1970
@@ -135,12 +147,12 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func currentStatus() -> [String: Any?] {
+  func currentStatus(knownCurrentTime: Double? = nil) -> [String: Any?] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
     return [
       "id": id,
-      "currentTime": currentTime,
+      "currentTime": knownCurrentTime ?? currentTime,
       "playbackState": statusToString(status: ref.status),
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
@@ -171,7 +183,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func updateStatus(with dict: [String: Any]) {
-    var arguments = currentStatus()
+    // Reading currentTime waits on the player's lock while a source swap pauses it.
+    var arguments = currentStatus(knownCurrentTime: dict["currentTime"] as? Double)
     arguments.merge(dict) { _, new in
       new
     }
@@ -201,6 +214,13 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
         continuation.resume()
       }
     }
+  }
+
+  private func applyPreferredForwardBufferDuration() {
+    guard preferredForwardBufferDuration > 0 else {
+      return
+    }
+    ref.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
   }
 
   private func setupPublisher() {
@@ -234,6 +254,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
         guard let self else {
           return
         }
+        self.applyPreferredForwardBufferDuration()
         if self.isLooping {
           self.enqueueNextLoopItem()
           self.addPlaybackEndNotification()
@@ -432,6 +453,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
     let nextItem = AVPlayerItem(asset: currentItem.asset)
     nextItem.audioTimePitchAlgorithm = currentItem.audioTimePitchAlgorithm
+    nextItem.preferredForwardBufferDuration = currentItem.preferredForwardBufferDuration
     queuePlayer.insert(nextItem, after: currentItem)
   }
 
@@ -510,6 +532,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   public override func sharedObjectWillRelease() {
+    onRelease?()
+    onRelease = nil
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 

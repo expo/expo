@@ -41,7 +41,7 @@ export function useVideoPlayer(
       },
       update: (player) => {
         // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
-        player.replaceAsync(parsedSource).catch(() => {
+        return player.replaceAsync(parsedSource).catch(() => {
           setForceRecreateCount((c) => c + 1);
         });
       },

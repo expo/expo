@@ -15,13 +15,10 @@ import Foundation
 /// unset places no constraint on its dimension, while a field set to an empty array allows nothing
 /// through it (an empty allow-list matches no value), so any empty field drops every request. A
 /// filter with no fields set matches every request, matching the no-filter default.
-public struct NetworkRequestFilter: Record, Sendable {
-  public init() {}
-
-  @Field
+@Record
+public struct NetworkRequestFilter: Sendable {
   public var hosts: [String]?
 
-  @Field
   public var methods: [String]?
 
   /// Returns whether a request with the given URL and method passes this filter. Host and method

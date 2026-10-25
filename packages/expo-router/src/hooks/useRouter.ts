@@ -1,7 +1,7 @@
 'use client';
 
+import { useRouterActions } from '../global-state/useRouterActions';
 import type { ImperativeRouter } from '../imperative-api';
-import { router } from '../imperative-api';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 
 const displayWarningForProp = (prop: string) => {
@@ -33,6 +33,7 @@ const routerWithWarnings: ImperativeRouter = {
   setParams: createNOOPWithWarning('setParams'),
   reload: createNOOPWithWarning('reload'),
   prefetch: createNOOPWithWarning('prefetch'),
+  setTransitionMode: createNOOPWithWarning('setTransitionMode'),
 };
 
 /**
@@ -55,6 +56,7 @@ const routerWithWarnings: ImperativeRouter = {
  */
 export function useRouter(): ImperativeRouter {
   const { isPreview } = usePreviewInfo();
+  const router = useRouterActions();
   if (isPreview) {
     return routerWithWarnings;
   }

@@ -88,7 +88,7 @@ internal class MediaFileHandle {
 
     do {
       try readHandle.seek(toOffset: UInt64(offset))
-      let data = readHandle.readData(ofLength: length)
+      let data = try readHandle.read(upToCount: length) ?? Data()
 
       if data.count < length && offset + Int64(data.count) < currentSize {
         log.warn("[expo-video] Read \(data.count) bytes but expected \(length) bytes")
@@ -116,8 +116,8 @@ internal class MediaFileHandle {
 
     try writeHandle.seek(toOffset: UInt64(offset))
 
-    writeHandle.write(data)
-    writeHandle.synchronizeFile()
+    try writeHandle.write(contentsOf: data)
+    try writeHandle.synchronize()
   }
 
   func append(data: Data) {
@@ -127,13 +127,17 @@ internal class MediaFileHandle {
       return
     }
 
-    writeHandle.seekToEndOfFile()
-    writeHandle.write(data)
-    writeHandle.synchronizeFile()
+    do {
+      try writeHandle.seekToEnd()
+      try writeHandle.write(contentsOf: data)
+      try writeHandle.synchronize()
+    } catch {
+      log.warn("[expo-video] Failed to append data to the file at \(filePath): \(error)")
+    }
   }
 
   func close() {
-    readHandle?.closeFile()
-    writeHandle?.closeFile()
+    try? readHandle?.close()
+    try? writeHandle?.close()
   }
 }

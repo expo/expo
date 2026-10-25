@@ -12,7 +12,16 @@ struct AudioMode: Record {
 enum InterruptionMode: String, Enumerable {
   case mixWithOthers
   case doNotMix
+  case doNotMixPersistent
   case duckOthers
+
+  var preventsMixing: Bool {
+    self == .doNotMix || self == .doNotMixPersistent
+  }
+
+  var shouldNotifyOthersOnDeactivation: Bool {
+    self != .doNotMixPersistent
+  }
 }
 
 enum LoopMode: String, Enumerable {
@@ -73,6 +82,8 @@ struct LockScreenOptions: Record {
   @Field var showNextTrack: Bool = false
   @Field var showPreviousTrack: Bool = false
   @Field var isLiveStream: Bool? = false
+  @Field var seekForwardIntervalSeconds: Double = 10.0
+  @Field var seekBackwardIntervalSeconds: Double = 10.0
 }
 
 enum BitRateStrategy: String, Enumerable {

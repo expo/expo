@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreImage
 
 public struct BarcodeUtils {
   static func getResultFrom(_ features: [CIFeature]) -> [[AnyHashable: Any]?] {

@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI DockedSearchBar matches the official Jetpack Compose [SearchBar API](https://developer.android.com/develop/ui/compose/components/search-bar) and displays a search input that remains anchored in its parent layout rather than expanding to full screen.
@@ -28,7 +29,13 @@ Expo UI DockedSearchBar matches the official Jetpack Compose [SearchBar API](htt
 
 ### Basic docked search bar
 
-```tsx BasicDockedSearchBarExample.tsx
+<ComponentExample
+  title="BasicDockedSearchBarExample.tsx"
+  src="/static/images/expo-ui/examples/dockedsearchbar-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dockedsearchbar-basic-android-dark.webp"
+  alt="An empty rounded search field with no placeholder text and no icon">
+
+```tsx
 import { useState } from 'react';
 import { Host, DockedSearchBar } from '@expo/ui/jetpack-compose';
 
@@ -43,13 +50,25 @@ export default function BasicDockedSearchBarExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With placeholder and leading icon
 
 Use the `DockedSearchBar.Placeholder` and `DockedSearchBar.LeadingIcon` slot components to customize the search bar appearance.
 
-```tsx DockedSearchBarWithSlotsExample.tsx
+<ComponentExample
+  title="DockedSearchBarWithSlotsExample.tsx"
+  src="/static/images/expo-ui/examples/dockedsearchbar-slots-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dockedsearchbar-slots-android-dark.webp"
+  alt="A rounded search field with a magnifier icon and placeholder text reading Search items">
+
+```tsx
 import { useState } from 'react';
-import { Host, DockedSearchBar, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  DockedSearchBar,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function DockedSearchBarWithSlotsExample() {
   const [query, setQuery] = useState('');
@@ -69,10 +88,15 @@ export default function DockedSearchBarWithSlotsExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { DockedSearchBar } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/dockedsearchbar" apiName="DockedSearchBar" />
+<APISection
+  packageName="expo-ui/jetpack-compose/dockedsearchbar"
+  apiName="DockedSearchBar"
+/>

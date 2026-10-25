@@ -110,9 +110,9 @@ In this case:
 - `/private` is only protected if the user is logged in and is an admin.
 - `/about` is protected to any logged-in user.
 
-## Falling back to a specific screen
+## Use the default redirect
 
-You can configure the navigator to fall back to a specific screen if access is denied.
+If access is denied, the navigator redirects to its anchor route or the first available screen.
 
 <FileTree
   files={[
@@ -145,14 +145,38 @@ export function AppLayout() {
 }
 ```
 
-In the above example, since the **index** screen is protected and the `guard` is **false**, the router redirects to the first available screen — **login**.
+In this example, the **index** screen is protected and the `guard` is **false**, so the router redirects to the first available screen: **login**.
+
+## Redirect to a specific route
+
+> **info** Available in **SDK 58 and later**.
+
+Use the `redirectTo` prop when a protected route should redirect to a specific route. It accepts the same string or object href as [`Link`](/router/basics/navigation/#links-and-buttons).
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+const isLoggedIn = false;
+
+export function AppLayout() {
+  return (
+    <Stack>
+      <Stack.Protected guard={isLoggedIn} redirectTo="/login">
+        <Stack.Screen name="private" />
+      </Stack.Protected>
+
+      <Stack.Screen name="login" />
+    </Stack>
+  );
+}
+```
 
 ## Tabs and Drawer
 
 Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
 
 ```tsx src/app/_layout.tsx
-import { Tabs } from 'expo-router';
+import { Tabs } from 'expo-router/js-tabs';
 
 const isLoggedIn = false;
 
@@ -175,7 +199,9 @@ export default function TabLayout() {
 
 ## Custom navigators
 
-`Protected` is also available for [custom navigators](/router/migrate/from-react-navigation/#rewrite-custom-navigators) using the `withLayoutContext` hook.
+> **info** The stable custom navigator APIs are available in **SDK 58 and later**.
+
+Navigators created with `createStandardRouterNavigator` or `integrateWithRouter` include a `.Protected` child. See [Custom navigators](/router/advanced/custom-navigators/) to create or integrate one.
 
 ## Static rendering considerations
 

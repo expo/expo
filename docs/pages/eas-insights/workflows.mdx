@@ -5,16 +5,19 @@ description: Track run counts, success rates, and trends for your EAS Workflows 
 ---
 
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **info** Workflows insights is available on the Production and Enterprise plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+> **info** Workflows insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [EAS pricing](https://expo.dev/pricing).
 
 The **Workflows** tab in the dashboard shows how your [EAS Workflows](/eas/workflows/introduction/) are doing over time: how often they run, how often they succeed, and which workflows fail most. Data appears automatically as your workflows run.
 
 - To view these insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Workflows** tab.
 - Choose a time range to load the data. Every metric also compares against the previous period of equal length so you can see whether a number is trending up or down.
+
+You can also [query these metrics from the terminal with EAS CLI](/eas-insights/eas-cli/). Exporting runs stays in the dashboard.
 
 <ContentSpotlight
   alt="The Workflows tab in EAS Insights showing run metrics, a runs-over-time chart, and a table of workflows."
@@ -54,6 +57,13 @@ Export the workflow runs that match your current filters and time range as CSV o
 > **info** Insights are aggregated for trend analysis and can lag behind real time or omit recent runs. Use exports to investigate trends rather than as an authoritative record for billing or auditing.
 
 ## More
+
+<BoxLink
+  title="Query EAS Insights with EAS CLI"
+  description="Query the same run counts, success rates, and trends from the terminal or a CI job."
+  href="/eas-insights/eas-cli/"
+  Icon={TerminalBrowserIcon}
+/>
 
 <BoxLink
   title="Introduction to EAS Workflows"

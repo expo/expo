@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
 
-// Forward-declared React types. The React.xcframework is linked but its
-// headers require a VFS overlay to import, so we declare the minimal
-// types needed to define a bridge module directly.
+// Forward-declared React types. This app links React.xcframework but does not
+// import its headers, so it declares the minimum needed to define a bridge module.
 typedef void (^RCTPromiseResolveBlock)(id result);
 typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
 

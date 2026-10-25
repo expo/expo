@@ -1,6 +1,9 @@
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 
-import { tryTransformJSWithNoxcturnal } from '../../noxcturnal/metro-transform-worker';
+import {
+  getNoxcturnalCacheKeyFiles,
+  tryTransformJSWithNoxcturnal,
+} from '../../noxcturnal/metro-transform-worker';
 import { transformFileFullyWithNoxcturnalSync } from '../../noxcturnal/noxcturnal-transformer';
 
 jest.mock('../../noxcturnal/noxcturnal-transformer', () => ({
@@ -22,9 +25,15 @@ it('falls back after one full native attempt without producing an intermediate t
     config: {} as JsTransformerConfig,
     projectRoot: '/app',
     options: {
+      dev: true,
+      minify: false,
+      inlinePlatform: false,
+      inlineRequires: false,
+      platform: null,
       type: 'module',
+      unstable_transformProfile: 'default',
       customTransformOptions: { engine: 'hermes' },
-    } as JsTransformOptions,
+    } satisfies JsTransformOptions,
   };
   const completeFullTransform = jest.fn();
 
@@ -42,4 +51,8 @@ it('falls back after one full native attempt without producing an intermediate t
 
   expect(transformFileFullyWithNoxcturnalSync).toHaveBeenCalledTimes(1);
   expect(completeFullTransform).not.toHaveBeenCalled();
+});
+
+it('resolves the files used to invalidate the native transform cache', () => {
+  expect(() => getNoxcturnalCacheKeyFiles()).not.toThrow();
 });

@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Alert matches the official SwiftUI [alert API](<https://developer.apple.com/documentation/swiftui/view/alert(_:ispresented:actions:message:)>) and presents a native iOS alert dialog with a title, actions, and an optional message.
@@ -32,7 +33,13 @@ Expo UI Alert matches the official SwiftUI [alert API](<https://developer.apple.
 
 Use `Alert.Trigger` to define the visible element and `Alert.Actions` to provide the dialog buttons.
 
-```tsx BasicAlertExample.tsx
+<ComponentExample
+  title="BasicAlertExample.tsx"
+  src="/static/images/expo-ui/examples/alert-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/alert-basic-ios-dark.webp"
+  alt="Alert titled Saved with a single OK button, above the Show alert trigger">
+
+```tsx
 import { useState } from 'react';
 import { Host, Alert, Button } from '@expo/ui/swift-ui';
 
@@ -40,13 +47,22 @@ export default function BasicAlertExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
-      <Alert title="Saved" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+    <Host style={{ flex: 1 }}>
+      <Alert
+        title="Saved"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Show alert" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Show alert"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
-          <Button label="OK" onPress={() => setIsPresented(false)} />
+          <Button
+            label="OK"
+            onPress={() => setIsPresented(false)}
+          />
         </Alert.Actions>
       </Alert>
     </Host>
@@ -54,11 +70,19 @@ export default function BasicAlertExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Cancel and confirm
 
 Combine `role="cancel"` with a confirm button to build a standard yes/no alert.
 
-```tsx CancelConfirmAlertExample.tsx
+<ComponentExample
+  title="CancelConfirmAlertExample.tsx"
+  src="/static/images/expo-ui/examples/alert-cancel-confirm-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/alert-cancel-confirm-ios-dark.webp"
+  alt="Alert titled Sign out? with a message and Cancel and Sign out buttons">
+
+```tsx
 import { useState } from 'react';
 import { Host, Alert, Button, Text } from '@expo/ui/swift-ui';
 
@@ -66,17 +90,28 @@ export default function CancelConfirmAlertExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
-      <Alert title="Sign out?" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+    <Host style={{ flex: 1 }}>
+      <Alert
+        title="Sign out?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Sign out" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Sign out"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
-          <Button label="Sign out" onPress={() => console.log('Signed out')} />
+          <Button
+            label="Sign out"
+            onPress={() => console.log('Signed out')}
+          />
           <Button label="Cancel" role="cancel" />
         </Alert.Actions>
         <Alert.Message>
-          <Text>You will need to sign in again to access your account.</Text>
+          <Text>
+            You will need to sign in again to access your account.
+          </Text>
         </Alert.Message>
       </Alert>
     </Host>
@@ -84,11 +119,19 @@ export default function CancelConfirmAlertExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Destructive action
 
 Use `role="destructive"` on a `Button` inside `Alert.Actions` to style it as a destructive action.
 
-```tsx DestructiveAlertExample.tsx
+<ComponentExample
+  title="DestructiveAlertExample.tsx"
+  src="/static/images/expo-ui/examples/alert-destructive-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/alert-destructive-ios-dark.webp"
+  alt="Alert titled Delete account? with a message, a Cancel button, and a red Delete button">
+
+```tsx
 import { useState } from 'react';
 import { Host, Alert, Button, Text } from '@expo/ui/swift-ui';
 
@@ -96,10 +139,17 @@ export default function DestructiveAlertExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host matchContents>
-      <Alert title="Delete account?" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+    <Host style={{ flex: 1 }}>
+      <Alert
+        title="Delete account?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Delete account" role="destructive" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Delete account"
+            role="destructive"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
           <Button
@@ -113,13 +163,18 @@ export default function DestructiveAlertExample() {
           <Button label="Cancel" role="cancel" />
         </Alert.Actions>
         <Alert.Message>
-          <Text>This permanently deletes your account and all data. This cannot be undone.</Text>
+          <Text>
+            This permanently deletes your account and all data. This
+            cannot be undone.
+          </Text>
         </Alert.Message>
       </Alert>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

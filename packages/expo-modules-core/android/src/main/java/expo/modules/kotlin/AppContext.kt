@@ -32,6 +32,7 @@ import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.v2.ExpoModulesV2Host
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -153,6 +154,7 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
+    runtime.reactContext?.let(ExpoModulesV2Host::install)
   }
 
   /**
@@ -283,6 +285,8 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+
+    ExpoModulesV2Host.uninstall()
 
     runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {

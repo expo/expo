@@ -47,7 +47,7 @@ export function binaryInputBytes(input: BinaryInput): Uint8Array {
   }
 
   if (ArrayBuffer.isView(input)) {
-    return new Uint8Array(input.buffer);
+    return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
   }
 
   if (typeof input === 'string') {

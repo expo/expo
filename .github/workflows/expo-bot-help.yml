@@ -43,7 +43,7 @@ jobs:
         run: |
           # `|| echo none` on purpose: a non-collaborator gets a 404, and under
           # `bash -e` a bare assignment would kill the step before the error
-          # below could name the reason. Same pattern as agent-commands.yml.
+          # below could name the reason.
           permission=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission 2>/dev/null || echo none)
           case "$permission" in
             admin|maintain|write) ;;

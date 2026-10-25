@@ -85,11 +85,22 @@ export type SecureStoreOptions = {
    */
   requireAuthentication?: boolean;
   /**
+   * Sets a hint to the system for whether to require user confirmation after authentication.
+   * This may be ignored by the system if the user has disabled implicit authentication in Settings
+   * or if it does not apply to a particular biometric modality. Defaults to `true`.
+   *
+   * This option is only used when `requireAuthentication` is enabled.
+   * @platform android
+   */
+  requireConfirmation?: boolean;
+  /**
    * Custom message displayed to the user while `requireAuthentication` option is turned on.
    */
   authenticationPrompt?: string;
   /**
    * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
+   * When an existing entry is overwritten, passing this option updates the entry's accessibility,
+   * and omitting it keeps the accessibility the entry was stored with.
    * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/documentation/security/ksecattraccessible/).
    * @default SecureStore.WHEN_UNLOCKED
    * @platform ios

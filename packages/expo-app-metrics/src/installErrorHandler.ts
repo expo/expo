@@ -24,7 +24,7 @@ export function setErrorHandlerEnabled(value: boolean): void {
 /**
  * Installs a handler for unhandled JavaScript errors by wrapping React Native's
  * `global.ErrorUtils` global handler. The error is reported to the native module (recorded as an
- * `exception` log event following OpenTelemetry's exception conventions), then the
+ * `js.exception` log event following OpenTelemetry's exception conventions), then the
  * previously-installed handler runs so React Native's default behavior (red box in development,
  * fatal termination in production) is unchanged.
  *

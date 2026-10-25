@@ -24,9 +24,13 @@ function withWatchPlugins({ watchPlugins = [], ...config }) {
   if (Array.isArray(config.projects)) {
     let projectsWantPass = false;
     config.projects = config.projects.map((project) => {
-      if (project && typeof project === 'object' && 'passWithNoTests' in project) {
-        const { passWithNoTests, ...rest } = project;
-        projectsWantPass ||= passWithNoTests;
+      if (project && typeof project === 'object') {
+        // `watchPlugins` and `passWithNoTests` are root-only options in multi-project mode.
+        // Strip them from each project to avoid Jest's validation warnings.
+        const { watchPlugins, passWithNoTests, ...rest } = project;
+        if ('passWithNoTests' in project) {
+          projectsWantPass ||= passWithNoTests;
+        }
         return rest;
       }
       return project;

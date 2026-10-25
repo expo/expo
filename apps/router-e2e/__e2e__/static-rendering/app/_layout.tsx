@@ -1,10 +1,10 @@
-// Tests nested Head metadata in a static rendering app.
-
 import * as Font from 'expo-font';
-import { Stack } from 'expo-router';
-import Head from 'expo-router/head';
+import { Slot, Stack, usePathname } from 'expo-router';
+
+import '../safe-area.css';
 
 export default function Layout() {
+  const pathname = usePathname();
   const [isLoaded] = Font.useFonts({ sweet: require('../sweet.ttf') });
 
   // This is important for the test because static font extraction will ensure this is never called
@@ -13,20 +13,11 @@ export default function Layout() {
     return null;
   }
 
-  return (
-    <>
-      <Head>
-        <meta name="expo-nested-layout" content="TEST_VALUE" />
+  if (pathname === '/safe-area') {
+    return <Slot />;
+  }
 
-        {/* Test that public env vars are exposed. */}
-        <meta name="expo-e2e-public-env-var-client" content={process.env.EXPO_PUBLIC_TEST_VALUE} />
-        {/* Test that server env vars can be inlined during SSG. */}
-        <meta
-          name="expo-e2e-private-env-var-client"
-          content={process.env.EXPO_NOT_PUBLIC_TEST_VALUE}
-        />
-      </Head>
-      <Stack />
-    </>
+  return (
+    <Stack screenOptions={pathname === '/safe-area-stack' ? { headerShown: false } : undefined} />
   );
 }

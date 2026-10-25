@@ -32,6 +32,8 @@ class NativeDatabase {
   }
 
   async closeAsync(): Promise<void> {}
+  interruptSync(): void {}
+
   closeSync(): void {}
 
   async execAsync(source: string): Promise<void> {}

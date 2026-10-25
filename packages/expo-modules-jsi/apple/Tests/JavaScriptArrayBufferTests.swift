@@ -30,6 +30,16 @@ struct JavaScriptArrayBufferTests {
   }
 
   @Test
+  func `create array buffer reports its memory to the garbage collector`() throws {
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let buffer = runtime.createArrayBuffer(size: 1 << 20)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(buffer.size == 1 << 20)
+    #expect(bytesAfter - bytesBefore >= Double(1 << 20))
+  }
+
+  @Test
   func `create array buffer wrapping native data`() {
     nonisolated(unsafe) let data = UnsafeMutablePointer<UInt8>.allocate(capacity: 4)
     data[0] = 10
@@ -182,8 +192,7 @@ struct JavaScriptArrayBufferTests {
       // Buffer goes out of scope here
     }
 
-    // Hermes collects synchronously, so the buffer should be collected immediately.
-    runtime.collectGarbage()
+    runtime.collectGarbage { flag.pointee }
 
     cleanupCalled = flag.pointee
     flag.deallocate()
