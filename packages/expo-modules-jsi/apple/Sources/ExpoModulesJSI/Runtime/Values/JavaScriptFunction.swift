@@ -156,25 +156,10 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
       emplacing: emplacing
     ) { arguments in
       let result = try call(arguments: arguments)
-      return try Self.decodeResult(result, as: R.self, in: runtime)
-    }
-  }
-
-  /// Decodes the result of a call as `R`, on the JavaScript thread that made the call.
-  private static func decodeResult<R: JavaScriptDecodable & ~Copyable>(
-    _ result: borrowing JavaScriptValue,
-    as type: R.Type,
-    in runtime: JavaScriptRuntime
-  ) throws -> R {
-    // The nonthrowing `assumeIsolated`, because the throwing one checks the current executor on every call.
-    let decoded = JavaScriptActor.assumeIsolated { () -> Result<R, any Error> in
-      do {
-        return .success(try R.decode(result, in: runtime))
-      } catch {
-        return .failure(error)
+      return try JavaScriptActor.assumeIsolated {
+        try R.decode(result, in: runtime)
       }
     }
-    return try decoded.get()
   }
 
   /// Calls the function as a constructor with the given buffer of arguments. It's like calling a function with the `new` keyword.

@@ -187,16 +187,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
         }
       }
       let buffer = JavaScriptValuesBuffer(runtime, start: start, count: count)
-      let error = JavaScriptActor.assumeIsolated { () -> (any Error)? in
-        do {
-          try emplaceValues(buffer, runtime)
-          return nil
-        } catch {
-          return error
-        }
-      }
-      if let error {
-        throw error
+      try JavaScriptActor.assumeIsolated {
+        try emplaceValues(buffer, runtime)
       }
       return try body(buffer)
     }
