@@ -1,7 +1,7 @@
 {
   "name": "expo-selectable-text",
   "version": "58.0.0",
-  "description": "React Native Text with native range selection and custom selection menu items.",
+  "description": "Native range selection and custom selection menu items for React Native Text.",
   "keywords": [
     "expo",
     "expo-selectable-text",
@@ -47,23 +47,15 @@
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
-    "test-renderer": "^1.3.0"
+    "test-renderer": "^1.3.0",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   },
   "jest": {
     "preset": "@expo/internal-scripts"
-  },
-  "codegenConfig": {
-    "name": "ExpoSelectableTextSpec",
-    "type": "components",
-    "jsSrcsDir": "src",
-    "ios": {
-      "componentProvider": {
-        "ExpoSelectableText": "ExpoSelectableTextComponentView"
-      }
-    }
   }
 }

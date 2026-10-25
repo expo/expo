@@ -24,7 +24,6 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
 
 @implementation ExpoSelectableTextSelectionView {
   UITapGestureRecognizer *_dismissSelectionRecognizer;
-  BOOL _didCancelTouchesForSelection;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer
@@ -93,19 +92,24 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
 
 /*
  * The selection gesture and `RCTSurfaceTouchHandler` track the same touch.
- * Once a selection exists the touch belongs to the selection, so lifting the
- * finger must not press the <Text> under it. Disabling a recognizer cancels
- * what it tracks, which reaches React Native as a cancelled touch.
+ * While a selection exists the touch belongs to the selection, so lifting the
+ * finger, or dragging a handle that starts on a pressable <Text>, must not press
+ * it. Disabling a recognizer cancels what it tracks, which reaches React Native
+ * as a cancelled touch.
  */
 - (void)textViewDidChangeSelection:(UITextView *)textView
 {
-  BOOL hasSelection = textView.selectedRange.length > 0;
-  if (hasSelection && !_didCancelTouchesForSelection) {
-    _didCancelTouchesForSelection = YES;
+  if (textView.selectedRange.length > 0) {
     [self _cancelSurfaceTouches];
-  } else if (!hasSelection) {
-    _didCancelTouchesForSelection = NO;
   }
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  if (self.selectedRange.length > 0) {
+    [self _cancelSurfaceTouches];
+  }
+  [super touchesBegan:touches withEvent:event];
 }
 
 - (void)_cancelSurfaceTouches
@@ -127,6 +131,9 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
   BOOL didBecomeFirstResponder = [super becomeFirstResponder];
   if (didBecomeFirstResponder) {
     [self _addDismissSelectionRecognizer];
+    if (self.onFirstResponderChange) {
+      self.onFirstResponderChange(YES);
+    }
   }
   return didBecomeFirstResponder;
 }
@@ -137,6 +144,9 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
   if (didResignFirstResponder) {
     [self _removeDismissSelectionRecognizer];
     self.selectedRange = NSMakeRange(0, 0);
+    if (self.onFirstResponderChange) {
+      self.onFirstResponderChange(NO);
+    }
   }
   return didResignFirstResponder;
 }

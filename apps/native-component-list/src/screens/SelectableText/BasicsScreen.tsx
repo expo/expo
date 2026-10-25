@@ -1,21 +1,19 @@
-import { Text, type SelectionMenuActionEvent } from 'expo-selectable-text';
+import { SelectableText, type SelectionMenuActionEvent } from 'expo-selectable-text';
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View } from 'react-native';
+
+const MENU = [
+  { id: 'add-to-chat', title: 'Add to chat' },
+  { id: 'quote', title: 'Quote' },
+];
 
 export default function BasicsScreen() {
   const [lastAction, setLastAction] = React.useState('None');
   const [presses, setPresses] = React.useState(0);
 
-  const onAction = (name: string) => (event: SelectionMenuActionEvent) => {
-    setLastAction(`${name}: "${event.selectedText}" [${event.start}, ${event.end})`);
+  const onMenuAction = (event: SelectionMenuActionEvent) => {
+    setLastAction(`${event.id}: "${event.selectedText}" [${event.start}, ${event.end})`);
   };
-
-  const menu = (
-    <Text.Menu>
-      <Text.MenuAction onPress={onAction('Add to chat')}>Add to chat</Text.MenuAction>
-      <Text.MenuAction onPress={onAction('Quote')}>Quote</Text.MenuAction>
-    </Text.Menu>
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -27,25 +25,27 @@ export default function BasicsScreen() {
       </RNText>
 
       <Section title="Plain paragraph">
-        <Text selectable style={styles.body}>
-          {menu}
-          Long press to select part of this text, then pick a custom action from the menu.
-        </Text>
+        <SelectableText menu={MENU} onMenuAction={onMenuAction}>
+          <RNText style={styles.body}>
+            Long press to select part of this text, then pick a custom action from the menu.
+          </RNText>
+        </SelectableText>
         <RNText selectable style={styles.body}>
           Long press to select part of this text, then pick a custom action from the menu.
         </RNText>
       </Section>
 
       <Section title="Nested styles and a pressable link">
-        <Text selectable style={styles.body}>
-          {menu}
-          Some <RNText style={styles.bold}>bold</RNText>, some{' '}
-          <RNText style={styles.italic}>italic</RNText>, and a{' '}
-          <RNText style={styles.link} onPress={() => setPresses((count) => count + 1)}>
-            pressable link
-          </RNText>{' '}
-          in one paragraph.
-        </Text>
+        <SelectableText menu={MENU} onMenuAction={onMenuAction}>
+          <RNText style={styles.body}>
+            Some <RNText style={styles.bold}>bold</RNText>, some{' '}
+            <RNText style={styles.italic}>italic</RNText>, and a{' '}
+            <RNText style={styles.link} onPress={() => setPresses((count) => count + 1)}>
+              pressable link
+            </RNText>{' '}
+            in one paragraph.
+          </RNText>
+        </SelectableText>
         <RNText selectable style={styles.body}>
           Some <RNText style={styles.bold}>bold</RNText>, some{' '}
           <RNText style={styles.italic}>italic</RNText>, and a{' '}
@@ -57,12 +57,13 @@ export default function BasicsScreen() {
       </Section>
 
       <Section title="numberOfLines and decorations">
-        <Text selectable numberOfLines={2} style={[styles.body, styles.decorated]}>
-          {menu}
-          This paragraph is truncated after two lines. It has an underline and a padded background
-          so that the selection highlight and the drawn glyphs can be compared with the control
-          below, which is React Native Text with the same props.
-        </Text>
+        <SelectableText menu={MENU} onMenuAction={onMenuAction}>
+          <RNText numberOfLines={2} style={[styles.body, styles.decorated]}>
+            This paragraph is truncated after two lines. It has an underline and a padded
+            background so that the selection highlight and the drawn glyphs can be compared with
+            the control below, which is React Native Text with the same props.
+          </RNText>
+        </SelectableText>
         <RNText selectable numberOfLines={2} style={[styles.body, styles.decorated]}>
           This paragraph is truncated after two lines. It has an underline and a padded background
           so that the selection highlight and the drawn glyphs can be compared with the control

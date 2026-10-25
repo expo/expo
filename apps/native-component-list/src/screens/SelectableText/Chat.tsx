@@ -1,8 +1,9 @@
-import { Text, type SelectionMenuActionEvent } from 'expo-selectable-text';
+import { SelectableText, type SelectionMenuActionEvent } from 'expo-selectable-text';
 import * as React from 'react';
 import { FlatList, StyleSheet, Text as RNText, View } from 'react-native';
 
 const MESSAGE_COUNT = 500;
+const MENU = [{ id: 'add-to-chat', title: 'Add to chat' }];
 
 type Message = { id: number; parts: [string, string, string] };
 
@@ -35,20 +36,16 @@ export default function SelectableTextChat({ useMenu }: { useMenu: boolean }) {
       return (
         <View style={styles.bubble}>
           {useMenu ? (
-            <Text selectable style={styles.body}>
-              <Text.Menu>
-                <Text.MenuAction
-                  onPress={(event: SelectionMenuActionEvent) => {
-                    const match = source.slice(event.start, event.end) === event.selectedText;
-                    setStatus(
-                      `row ${item.id}: ${JSON.stringify(event.selectedText)} slice-match=${match ? 'YES' : 'NO'}`
-                    );
-                  }}>
-                  Add to chat
-                </Text.MenuAction>
-              </Text.Menu>
-              {children}
-            </Text>
+            <SelectableText
+              menu={MENU}
+              onMenuAction={(event: SelectionMenuActionEvent) => {
+                const match = source.slice(event.start, event.end) === event.selectedText;
+                setStatus(
+                  `row ${item.id}: ${JSON.stringify(event.selectedText)} slice-match=${match ? 'YES' : 'NO'}`
+                );
+              }}>
+              <RNText style={styles.body}>{children}</RNText>
+            </SelectableText>
           ) : (
             <RNText selectable style={styles.body}>
               {children}

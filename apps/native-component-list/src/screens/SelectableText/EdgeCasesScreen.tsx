@@ -1,9 +1,10 @@
-import { Text, type SelectionMenuActionEvent } from 'expo-selectable-text';
+import { SelectableText, type SelectionMenuActionEvent } from 'expo-selectable-text';
 import * as React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text as RNText } from 'react-native';
 
 const RTL = 'مرحبا بك في هذا التطبيق، اضغط مطولا لتحديد جزء من النص.';
 const EMOJI = 'Hi 👋🏽 family 👨‍👩‍👧 and café ☕️ end of line.';
+const MENU = [{ id: 'add-to-chat', title: 'Add to chat' }];
 const LONG = Array.from(
   { length: 40 },
   (_, i) => `Sentence ${i + 1} of a long bot message that keeps going.`
@@ -20,19 +21,15 @@ export default function EdgeCasesScreen() {
     return () => clearInterval(id);
   }, []);
 
-  const menu = (name: string, source: string) => (
-    <Text.Menu>
-      <Text.MenuAction
-        onPress={(event: SelectionMenuActionEvent) => {
-          const match = source.slice(event.start, event.end) === event.selectedText;
-          setStatus(
-            `${name}: ${JSON.stringify(event.selectedText)} [${event.start}, ${event.end}) slice-match=${match ? 'YES' : 'NO'}`
-          );
-        }}>
-        Add to chat
-      </Text.MenuAction>
-    </Text.Menu>
-  );
+  const menuProps = (name: string, source: string) => ({
+    menu: MENU,
+    onMenuAction: (event: SelectionMenuActionEvent) => {
+      const match = source.slice(event.start, event.end) === event.selectedText;
+      setStatus(
+        `${name}: ${JSON.stringify(event.selectedText)} [${event.start}, ${event.end}) slice-match=${match ? 'YES' : 'NO'}`
+      );
+    },
+  });
 
   const changing = `Changing text, tick ${tick}. Select a word while this number updates.`;
 
@@ -46,33 +43,32 @@ export default function EdgeCasesScreen() {
       </RNText>
 
       <RNText style={styles.title}>RTL</RNText>
-      <Text selectable style={styles.body}>
-        {menu('rtl', RTL)}
-        {RTL}
-      </Text>
+      <SelectableText {...menuProps('rtl', RTL)}>
+        <RNText style={styles.body}>{RTL}</RNText>
+      </SelectableText>
       <RNText selectable style={styles.body}>
         {RTL}
       </RNText>
 
       <RNText style={styles.title}>Emoji and surrogate pairs</RNText>
-      <Text selectable style={styles.body}>
-        {menu('emoji', EMOJI)}
-        {EMOJI}
-      </Text>
+      <SelectableText {...menuProps('emoji', EMOJI)}>
+        <RNText style={styles.body}>{EMOJI}</RNText>
+      </SelectableText>
       <RNText selectable style={styles.body}>
         {EMOJI}
       </RNText>
 
       <RNText style={styles.title}>Inline view</RNText>
-      <Text selectable style={styles.body}>
-        {menu('inline', 'Before ￼ after the inline view.')}
-        Before{' '}
-        <Pressable
-          style={styles.inlineView}
-          onPress={() => setInlinePresses((count) => count + 1)}
-        />{' '}
-        after the inline view.
-      </Text>
+      <SelectableText {...menuProps('inline', 'Before ￼ after the inline view.')}>
+        <RNText style={styles.body}>
+          Before{' '}
+          <Pressable
+            style={styles.inlineView}
+            onPress={() => setInlinePresses((count) => count + 1)}
+          />{' '}
+          after the inline view.
+        </RNText>
+      </SelectableText>
       <RNText selectable style={styles.body}>
         Before{' '}
         <Pressable
@@ -83,25 +79,24 @@ export default function EdgeCasesScreen() {
       </RNText>
 
       <RNText style={styles.title}>Root onPress</RNText>
-      <Text selectable style={styles.body} onPress={() => setRootPresses((count) => count + 1)}>
-        {menu('root-press', 'A short tap presses this whole paragraph.')}A short tap presses this
-        whole paragraph.
-      </Text>
+      <SelectableText {...menuProps('root-press', 'A short tap presses this whole paragraph.')}>
+        <RNText style={styles.body} onPress={() => setRootPresses((count) => count + 1)}>
+          A short tap presses this whole paragraph.
+        </RNText>
+      </SelectableText>
 
       <RNText style={styles.title}>Changing text</RNText>
-      <Text selectable style={styles.body}>
-        {menu('changing', changing)}
-        {changing}
-      </Text>
+      <SelectableText {...menuProps('changing', changing)}>
+        <RNText style={styles.body}>{changing}</RNText>
+      </SelectableText>
       <RNText selectable style={styles.body}>
         {changing}
       </RNText>
 
       <RNText style={styles.title}>Long message</RNText>
-      <Text selectable style={styles.body}>
-        {menu('long', LONG)}
-        {LONG}
-      </Text>
+      <SelectableText {...menuProps('long', LONG)}>
+        <RNText style={styles.body}>{LONG}</RNText>
+      </SelectableText>
     </ScrollView>
   );
 }

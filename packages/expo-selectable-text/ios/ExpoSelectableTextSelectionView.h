@@ -23,6 +23,8 @@ NSAttributedString *ExpoSelectableTextUnpaintedString(NSAttributedString *attrib
 
 @property (nonatomic, copy, nullable) void (^onMenuAction)(NSString *actionId, NSRange range);
 
+@property (nonatomic, copy, nullable) void (^onFirstResponderChange)(BOOL isFirstResponder);
+
 @end
 
 NS_ASSUME_NONNULL_END
