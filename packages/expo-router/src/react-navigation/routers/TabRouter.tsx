@@ -295,7 +295,11 @@ const changeIndex = (
     } else if (backBehavior === 'fullHistory') {
       const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
 
-      if (currentRoute.key === history[lastHistoryRouteItemIndex]?.key) {
+      const lastHistoryRouteItem = history[lastHistoryRouteItemIndex];
+      if (
+        currentRoute.key === lastHistoryRouteItem?.key &&
+        isEqual(currentRoute.params ?? {}, lastHistoryRouteItem.params ?? {})
+      ) {
         // For full-history, only remove if it matches the last route
         // Useful for drawer, if current route was in history, then drawer state changed
         // Then we only need to move the route to the front
@@ -587,7 +591,9 @@ function tabRouterExtension({
 
           const result =
             action.type === 'REPLACE'
-              ? removeReplacedRouteFromHistory(state, updatedState)
+              ? backBehavior === 'fullHistory'
+                ? replaceLastHistoryVisit(state, updatedState)
+                : removeReplacedRouteFromHistory(state, updatedState)
               : updatedState;
           return { state: result, affectedRouteKey: result.routes[result.index]?.key };
         }
@@ -823,6 +829,19 @@ function tabRouterExtension({
  */
 export const TabRouter = extendRouter(BaseRouter, tabRouterExtension, { type: 'tab' });
 
+function replaceLastHistoryVisit(
+  previousState: TabNavigationStateWithHistory,
+  nextState: TabNavigationStateWithHistory
+) {
+  return {
+    ...nextState,
+    history: [
+      ...previousState.history.slice(0, -1),
+      nextState.history[nextState.history.length - 1]!,
+    ],
+  };
+}
+
 function removeReplacedRouteFromHistory(
   previousState: TabNavigationStateWithHistory,
   nextState: TabNavigationStateWithHistory
@@ -843,3 +862,4 @@ function removeReplacedRouteFromHistory(
     history: nextState.history.filter((_, index) => index !== replacedIndex),
   };
 }
+

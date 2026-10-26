@@ -2235,6 +2235,95 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   expect(state.routes[1]!.params).toEqual({ value: 'first' });
 });
 
+test('keeps parameter-distinct visits to the same tab with fullHistory', () => {
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const initial = createTabState(options);
+  const first = expectHandled(
+    router.getStateForAction(initial, CommonActions.navigate('baz', { id: 'a' }), options)
+  );
+  const second = expectHandled(
+    router.getStateForAction(first.state, CommonActions.navigate('baz', { id: 'b' }), options)
+  );
+  const articleKey = first.state.routes[first.state.index]!.key;
+
+  expect(second.state.history).toEqual([
+    ...first.state.history!,
+    { type: 'route', key: articleKey, params: { id: 'b' } },
+  ]);
+  expect(second.browserHistory).toEqual({ type: 'push' });
+
+  const back = expectHandled(
+    router.getStateForAction(second.state, CommonActions.goBack(), options)
+  );
+  expect(back.state.routes[back.state.index]!.params).toEqual({ id: 'a' });
+  expect(first.state.routes[first.state.index]!.params).toEqual({ id: 'a' });
+});
+
+test('deduplicates equal and absent or empty params with fullHistory', () => {
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const initial = createTabState(options);
+  const empty = expectHandled(
+    router.getStateForAction(initial, CommonActions.navigate('bar', {}), options)
+  );
+  expect(empty.state.history).toHaveLength(1);
+  expect(empty.browserHistory).toBeUndefined();
+
+  const first = expectHandled(
+    router.getStateForAction(initial, CommonActions.navigate('baz', { nested: { id: 'a' } }), options)
+  );
+  const same = expectHandled(
+    router.getStateForAction(first.state, CommonActions.navigate('baz', { nested: { id: 'a' } }), options)
+  );
+  expect(same.state.history).toEqual(first.state.history);
+  expect(same.browserHistory).toBeUndefined();
+});
+
+test.each(['bar', 'baz'])('replaces only the current fullHistory visit with %s', (name) => {
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  // Seed the prior visits so this also tests REPLACE independently of NAVIGATE.
+  const state: TabNavigationState<ParamListBase> = {
+    ...createTabState(options),
+    index: 1,
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz', params: { id: 'c' } },
+    ],
+    history: [
+      { type: 'route', key: 'bar-test' },
+      { type: 'route', key: 'baz-test', params: { id: 'a' } },
+      { type: 'route', key: 'baz-test', params: { id: 'b' } },
+      { type: 'route', key: 'baz-test', params: { id: 'c' } },
+    ],
+  };
+  const params = name === 'baz' ? { id: 'd' } : undefined;
+  const replaced = expectHandled(
+    router.getStateForAction(state, TabActions.replace(name, params), options)
+  );
+  expect(replaced.state.history).toEqual([
+    ...state.history!.slice(0, -1),
+    { type: 'route', key: name === 'baz' ? 'baz-test' : 'bar-test', params },
+  ]);
+  expect(replaced.browserHistory).toBeUndefined();
+
+  const back = expectHandled(
+    router.getStateForAction(replaced.state, CommonActions.goBack(), options)
+  );
+  expect(back.state.routes[back.state.index]!.params).toEqual({ id: 'b' });
+  expect(state.routes[1]!.params).toEqual({ id: 'c' });
+});
+
 test('updates route key history on focus change with backBehavior: fullHistory', () => {
   const router = TabRouter({ backBehavior: 'fullHistory' });
 
@@ -3347,3 +3436,4 @@ describe('extended tab router', () => {
     expect(result.state.routes[1]?.isPreloaded).toBeUndefined();
   });
 });
+
