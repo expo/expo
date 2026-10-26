@@ -148,8 +148,10 @@ public final class JavaScriptCallback: Sendable {
       throws -> Void
   ) {
     let box = UncheckedSendableBox(values)
-    runDetached { runtime in
-      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
+    runDetached { function, _ in
+      _ = try function.call(argumentCount: argumentCount) { arguments, runtime in
+        try emplacing(box.value, arguments, runtime)
+      }
     }
   }
 
@@ -166,10 +168,10 @@ public final class JavaScriptCallback: Sendable {
       throws -> Void
   ) throws {
     let box = UncheckedSendableBox(values)
-    let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
-      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
-    } decodeResult: { _, _ in
-      UncheckedSendableBox(())
+    try runBlocking { function, _ in
+      _ = try function.call(argumentCount: argumentCount) { arguments, runtime in
+        try emplacing(box.value, arguments, runtime)
+      }
     }
   }
 
@@ -187,10 +189,11 @@ public final class JavaScriptCallback: Sendable {
       throws -> Void
   ) throws -> sending R {
     let box = UncheckedSendableBox(values)
-    let result = try runBlocking { runtime in
-      return try Self.emplaceArguments(box.value, count: argumentCount, in: runtime, emplacing: emplacing)
-    } decodeResult: { result, runtime in
-      UncheckedSendableBox(try R.decode(result, in: runtime))
+    let result = try runBlocking { function, runtime in
+      let value = try function.call(argumentCount: argumentCount) { arguments, runtime in
+        try emplacing(box.value, arguments, runtime)
+      }
+      return UncheckedSendableBox(try R.decode(value, in: runtime))
     }
     return result.value
   }
@@ -255,20 +258,6 @@ public final class JavaScriptCallback: Sendable {
     index += 1
   }
 
-  /// Allocates `count` arguments that hold `undefined`, and lets `emplacing` encode `values` into them.
-  @inlinable
-  @JavaScriptActor
-  internal static func emplaceArguments<Values>(
-    _ values: Values,
-    count: Int,
-    in runtime: JavaScriptRuntime,
-    emplacing: @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
-  ) throws -> JavaScriptValuesBuffer {
-    let arguments = JavaScriptValuesBuffer.allocateUndefined(in: runtime, count: count)
-    try emplacing(values, arguments, runtime)
-    return arguments
-  }
-
   /// Reports an error from a closure that can't throw it: to React Native's `ErrorUtils.reportError`,
   /// or to `console.error` without it, or prints it without a console.
   public func reportError(_ error: any Error) {
@@ -283,8 +272,38 @@ public final class JavaScriptCallback: Sendable {
 
   // MARK: - Running on the JavaScript thread
 
-  // The non-generic part of the calls, compiled in the framework. `encodeArguments` and
-  // `decodeResult` run on the JavaScript thread.
+  // The non-generic part of the calls, compiled in the framework. `encodeArguments`, `decodeResult`
+  // and `call` run on the JavaScript thread.
+
+  @usableFromInline
+  internal func runDetached(
+    call: @escaping @JavaScriptActor (borrowing JavaScriptFunction, JavaScriptRuntime) throws -> Void
+  ) {
+    guard scheduler.mayBeAlive else {
+      print("Error in a JavaScript callback: \(RuntimeLostError())")
+      return
+    }
+    scheduler.runOrSchedule { runtime in
+      do {
+        try self.withFunction { function in
+          try call(function, runtime)
+        }
+      } catch {
+        self.report(error, in: runtime)
+      }
+    }
+  }
+
+  @usableFromInline
+  internal func runBlocking<R: Sendable>(
+    call: @escaping @JavaScriptActor (borrowing JavaScriptFunction, JavaScriptRuntime) throws -> R
+  ) throws -> R {
+    return try scheduler.execute { runtime in
+      try self.withFunction { function in
+        try call(function, runtime)
+      }
+    }
+  }
 
   @usableFromInline
   internal func runDetached(
@@ -360,10 +379,18 @@ public final class JavaScriptCallback: Sendable {
     _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptValue {
+    return try withFunction { function in
+      try function.call(arguments: encodeArguments(runtime))
+    }
+  }
+
+  /// Calls `body` with the function. Throws ``RuntimeLostError`` after the teardown sweep released it.
+  @JavaScriptActor
+  private func withFunction<R: ~Copyable>(_ body: (borrowing JavaScriptFunction) throws -> R) throws -> R {
     // Borrowed rather than cloned out of the state: a clone allocates an engine handle on every call.
     switch longLivedState.function {
     case .some(let function):
-      return try function.call(arguments: encodeArguments(runtime))
+      return try body(function)
     case .none:
       throw RuntimeLostError()
     }

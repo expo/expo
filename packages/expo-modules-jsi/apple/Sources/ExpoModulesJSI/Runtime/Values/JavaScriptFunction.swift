@@ -121,6 +121,47 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     return try self.call(arguments: argumentsBuffer)
   }
 
+  /// Calls the function with `argumentCount` arguments. The `emplacing` closure encodes the arguments and
+  /// moves each one into the buffer with ``JavaScriptValuesBuffer/emplace(_:at:in:)``. Slots that it
+  /// doesn't fill pass `undefined`.
+  @discardableResult
+  public func call(
+    argumentCount: Int,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
+  ) throws -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try JavaScriptValuesBuffer.withEmplacedValues(
+      count: argumentCount,
+      in: runtime,
+      emplacing: emplacing
+    ) { arguments in
+      return try call(arguments: arguments)
+    }
+  }
+
+  /// Calls the function like ``call(argumentCount:emplacing:)`` and decodes its result as `R`.
+  public func call<R: JavaScriptDecodable & ~Copyable>(
+    argumentCount: Int,
+    returning: R.Type,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
+  ) throws -> R {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try JavaScriptValuesBuffer.withEmplacedValues(
+      count: argumentCount,
+      in: runtime,
+      emplacing: emplacing
+    ) { arguments in
+      let result = try call(arguments: arguments)
+      return try JavaScriptActor.assumeIsolated {
+        try R.decode(result, in: runtime)
+      }
+    }
+  }
+
   /// Calls the function as a constructor with the given buffer of arguments. It's like calling a function with the `new` keyword.
   public func callAsConstructor(_ arguments: consuming JavaScriptValuesBuffer? = nil) throws -> JavaScriptValue {
     guard let jsiRuntime else {

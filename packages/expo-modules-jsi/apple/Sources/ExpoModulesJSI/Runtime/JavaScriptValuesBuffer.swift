@@ -142,7 +142,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // MARK: - Allocation
 
   /// Allocates new values buffer with the given capacity. Each value is `undefined` until you replace
-  /// it with ``emplace(_:at:in:)``.
+  /// it with ``emplace(_:at:)`` or ``emplace(_:at:in:)``.
   public static func allocate(in runtime: JavaScriptRuntime, capacity: Int) -> JavaScriptValuesBuffer {
     return allocateUndefined(in: runtime, count: capacity)
   }
@@ -161,9 +161,41 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }
 
+  /// Calls `body` with a buffer of `count` values that lives on the stack. Each value is `undefined`
+  /// until `emplaceValues` replaces it, and all values are destroyed when `body` returns.
+  @inline(__always)
+  internal static func withEmplacedValues<R: ~Copyable>(
+    count: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing emplaceValues:
+      @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    _ body: (consuming JavaScriptValuesBuffer) throws -> R
+  ) throws -> R {
+    // The slots hold `undefined` first, so they stay valid to destroy when an encode throws. This part
+    // is nonisolated: an isolated closure passed to the standard library checks the current executor
+    // on every call.
+    return try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: count) { storage in
+      let start = storage.baseAddress
+      if let start {
+        for index in 0..<count {
+          expo.emplaceUndefined(start + index)
+        }
+      }
+      defer {
+        if let start {
+          expo.destroyValues(start, count)
+        }
+      }
+      let buffer = JavaScriptValuesBuffer(runtime, start: start, count: count)
+      try JavaScriptActor.assumeIsolated {
+        try emplaceValues(buffer, runtime)
+      }
+      return try body(buffer)
+    }
+  }
+
   /// Moves `value` into the buffer at `index`, without a clone, and releases the value it replaces.
-  @usableFromInline
-  internal func emplace(_ value: consuming JavaScriptValue, at index: Int) {
+  public func emplace(_ value: consuming JavaScriptValue, at index: Int) {
     guard (0..<count).contains(index) else {
       FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
     }
