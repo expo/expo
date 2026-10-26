@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `npx expo start --localhost` refusing connections on `127.0.0.1`. ([#52324](https://github.com/expo/expo/pull/52324) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 56.1.27 — 2026-10-21

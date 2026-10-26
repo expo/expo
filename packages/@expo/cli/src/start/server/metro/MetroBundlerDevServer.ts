@@ -1320,7 +1320,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
-      host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
+      host: options.location.hostType === 'localhost' ? '127.0.0.1' : undefined,
       port: options.port,
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
