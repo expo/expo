@@ -627,6 +627,7 @@ export const eas = [
     makePage('eas/observe/dashboard.mdx'),
     makePage('eas/observe/eas-cli.mdx'),
     makePage('eas/observe/mcp.mdx'),
+    makePage('eas/observe/ai-agents.mdx'),
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
     makePage('eas/observe/errors.mdx'),
