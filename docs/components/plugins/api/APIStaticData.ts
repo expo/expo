@@ -452,6 +452,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
   SharedRefType: '/versions/latest/sdk/expo/#sharedreftype',
+  SharedValue: 'https://docs.swmansion.com/react-native-reanimated/docs/core/useSharedValue/',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SingularOptions: '/versions/latest/sdk/router/#singularoptions',
   SpeechEventCallback: '/versions/latest/sdk/speech/#speecheventcallbackthis-ev',
@@ -692,6 +693,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/unversioned/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/unversioned/sdk/router/#hreft',
     HrefObject: '/versions/unversioned/sdk/router/#hrefobject',
+    MaterialColors: '/versions/unversioned/sdk/ui/jetpack-compose/colors/#materialcolors',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
