@@ -64,11 +64,27 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     }
   }
 
+  /// Makes the scheduler drain the runtime's microtask queue after each operation. Call on the
+  /// scheduler's thread.
+  fileprivate func drainMicrotasksAfterEachOperation(of runtime: JavaScriptRuntime) {
+    state.afterEachOperation = { [weak runtime] in
+      guard let runtime else {
+        return
+      }
+      JavaScriptActor.assumeIsolated {
+        // React Native reports these errors to its JavaScript error handler, which tests don't have.
+        try? runtime.drainMicrotasks()
+      }
+    }
+  }
+
   /// Creates a runtime on the scheduler's thread and wraps it in a non-owning runtime whose scheduled
   /// work dispatches back to that thread.
   func makeRuntime() async -> TestRuntime {
     let owningRuntime = await run {
-      JavaScriptRuntime()
+      let owningRuntime = JavaScriptRuntime()
+      self.drainMicrotasksAfterEachOperation(of: owningRuntime)
+      return owningRuntime
     }
     let runtime = await run {
       owningRuntime.withUnsafePointee { runtimePointer in
@@ -87,6 +103,10 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     private let ready = DispatchSemaphore(value: 0)
     private var operations: [@convention(block) () -> Void] = []
     private var isStopped = false
+
+    /// Runs on the scheduler's thread after each operation, like the microtask checkpoint that React
+    /// Native's runtime scheduler performs after each task. Set and read only on that thread.
+    var afterEachOperation: (() -> Void)?
 
     func schedule(_ operation: @escaping @convention(block) () -> Void) {
       condition.lock()
@@ -134,6 +154,7 @@ final class TestRuntimeScheduler: @unchecked Sendable {
         condition.unlock()
 
         operation()
+        afterEachOperation?()
       }
     }
   }
@@ -145,6 +166,28 @@ struct TestRuntime: Sendable {
   let scheduler: TestRuntimeScheduler
   let owningRuntime: JavaScriptRuntime
   let runtime: JavaScriptRuntime
+}
+
+extension TestRuntime {
+  /// Starts an async test body on the runtime's JavaScript thread, as a task of the scheduler. The
+  /// scheduler drains the microtask queue after each task, like React Native does, so promise reactions
+  /// run once the body suspends. `JavaScriptPromise.await()` and the APIs built on it resume the body
+  /// off the JavaScript thread, so work that touches the runtime after them goes through `execute`.
+  func run(_ body: @escaping @Sendable @JavaScriptActor (JavaScriptRuntime) async throws -> Void) async throws {
+    let runtime = self.runtime
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+      scheduler.schedule {
+        Task.immediate_polyfill { @JavaScriptActor in
+          do {
+            try await body(runtime)
+            continuation.resume()
+          } catch {
+            continuation.resume(throwing: error)
+          }
+        }
+      }
+    }
+  }
 }
 
 /// Carries a non-`Sendable`, possibly non-copyable value out of a ``TestRuntimeScheduler/runIsolated(_:)``
@@ -192,6 +235,7 @@ final class ReleasableTestRuntime: @unchecked Sendable {
   ) async {
     let runtimes = await scheduler.run { [scheduler] in
       let owningRuntime = JavaScriptRuntime()
+      scheduler.drainMicrotasksAfterEachOperation(of: owningRuntime)
       let runtime = owningRuntime.withUnsafePointee { runtimePointer in
         JavaScriptRuntime(
           unsafePointer: runtimePointer,

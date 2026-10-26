@@ -219,6 +219,13 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
 jsi::Runtime* createHermesRuntime();
 
 /**
+ Runs the runtime's microtasks until the queue is empty, like React Native's microtask checkpoint
+ after each task. Returns `false` and stores a `CppError` when a microtask throws or the queue does
+ not empty within the retries bound.
+ */
+bool drainMicrotasks(jsi::IRuntime &runtime);
+
+/**
  Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
  Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
  the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must

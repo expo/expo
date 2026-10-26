@@ -22,6 +22,22 @@ public final class TestAppContext: AppContext {
         setRuntime(runtimePointer, scheduler: scheduler.opaquePointer, dispatch: scheduler.dispatch)
       }
       self.owningRuntime = owningRuntime
+
+      // React Native drains the microtask queue after each task on the JavaScript thread. Without
+      // it, promise reactions would never run.
+      scheduler.thread.afterEachOperation = { [weak owningRuntime] in
+        guard let owningRuntime else {
+          return
+        }
+        JavaScriptActor.assumeIsolated {
+          do {
+            try owningRuntime.drainMicrotasks()
+          } catch {
+            // React Native reports these to its JavaScript error handler, which tests don't have.
+            print("[TestAppContext] A microtask threw an error: \(error)")
+          }
+        }
+      }
     }
   }
 

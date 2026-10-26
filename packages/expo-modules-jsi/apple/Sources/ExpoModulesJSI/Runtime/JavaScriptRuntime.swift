@@ -67,6 +67,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   /// Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
   /// no React scheduler is wired up.
+  ///
+  /// The runtime has the config of React Native's bridgeless runtime, so promise reactions go to the
+  /// microtask queue. Without React Native's event loop, call ``drainMicrotasks()`` after each task.
   public init() {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
@@ -730,6 +733,22 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return try await execute { () async throws -> JavaScriptValue in
       let value = try self.eval(label: label, source)
       return value.is("Promise") ? try await value.getPromise().await() : value
+    }
+  }
+
+  // MARK: - Microtasks
+
+  /// Runs the queued microtasks, such as promise reactions, until the queue is empty.
+  ///
+  /// React Native does this after each task it runs on the JavaScript thread, so a runtime that it
+  /// hosts never needs this call. A standalone runtime has no such loop: its host must call this after
+  /// each top-level task, or promise reactions never run.
+  ///
+  /// - Throws: The first error thrown by a microtask, after the rest of the queue ran.
+  @JavaScriptActor
+  public func drainMicrotasks() throws {
+    _ = try capturingCppErrors {
+      expo.drainMicrotasks(pointee)
     }
   }
 

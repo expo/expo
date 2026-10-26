@@ -5,23 +5,53 @@
 namespace expo {
 
 jsi::Runtime* createHermesRuntime() {
-  std::unique_ptr<facebook::hermes::HermesRuntime> runtimePtr = facebook::hermes::makeHermesRuntime();
-  jsi::Runtime *runtime = runtimePtr.release();
+  // The config React Native uses for its bridgeless runtime (`HermesInstance::createJSRuntime`), so
+  // code runs on a standalone runtime as it does in an app. Most importantly, promise jobs go to the
+  // native microtask queue, which the host drains with `drainMicrotasks` after each task. Sample
+  // profiling is left out: nothing samples a standalone runtime, and it may cost about 1% in benchmarks.
+  auto gcConfig = ::hermes::vm::GCConfig::Builder()
+                      .withMaxHeapSize(3072u << 20)
+                      .withName("ExpoStandalone")
+                      .build();
+  auto runtimeConfig = ::hermes::vm::RuntimeConfig::Builder()
+                           .withGCConfig(gcConfig)
+                           .withMicrotaskQueue(true)
+                           .build();
 
-  // This version of the Hermes uses a Promise implementation that is provided by the RN.
-  // The `setImmediate` function isn't defined, but is required by the Promise implementation.
-  // That's why we inject it here.
-  auto setImmediatePropName = jsi::PropNameID::forUtf8(*runtime, "setImmediate");
-  auto setImmediateFunction = jsi::Function::createFromHostFunction(*runtime, setImmediatePropName, 1, [](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
-    if (count < 1) {
-      return jsi::Value::undefined();
+  std::unique_ptr<facebook::hermes::HermesRuntime> runtimePtr = facebook::hermes::makeHermesRuntime(runtimeConfig);
+  return runtimePtr.release();
+}
+
+bool drainMicrotasks(jsi::IRuntime &runtime) {
+  // Mirrors `RuntimeScheduler_Modern::performMicrotaskCheckpoint` in React Native: drain until the
+  // queue is empty, resuming after a microtask throws, with the same bound on the number of attempts.
+  // React Native reports each error to its error handler; here the first one is kept for the caller.
+  constexpr unsigned int retriesBound = 255;
+  std::unique_ptr<jsi::JSError> firstError;
+  bool isDrained = false;
+
+  for (unsigned int retries = 0; retries < retriesBound && !isDrained; retries++) {
+    try {
+      isDrained = runtime.drainMicrotasks();
+    } catch (jsi::JSError &error) {
+      if (!firstError) {
+        firstError = std::make_unique<jsi::JSError>(std::move(error));
+      }
+    } catch (std::exception &ex) {
+      if (!firstError) {
+        firstError = std::make_unique<jsi::JSError>(runtime, std::string("Non-JS exception: ") + ex.what());
+      }
     }
-    args[0].asObject(rt).asFunction(rt).call(rt);
-    return jsi::Value::undefined();
-  });
-  runtime->global().setProperty(*runtime, setImmediatePropName, setImmediateFunction);
+  }
+  if (!isDrained && !firstError) {
+    firstError = std::make_unique<jsi::JSError>(runtime, "Hits microtasks retries bound.");
+  }
 
-  return runtime;
+  if (firstError) {
+    CppError::setCurrent(std::move(*firstError));
+    return false;
+  }
+  return true;
 }
 
 } // namespace expo
