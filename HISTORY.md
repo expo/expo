@@ -1,3 +1,7 @@
+## 2026-10-26 11:01 — Consolidate the split-view spike around Mail
+**Asked:** Keep `/split-view-mail` as the spike's only dedicated demo, remove the toolbar-isolation route and old ENG-28595 PNGs, and prepare the report for fresh screenshots.
+**Did / why:** Removed the reduced repro because its toolbar stayed aligned and it did not reproduce the Mail offset. Replaced all old ENG-28595 images with three fresh EAS iPad screenshots of the Mail-only demo: the initial three-column layout, the selected-message state, and the sidebar-hidden two-column layout. In the selected-message state, the accessibility tree contains the title and toolbar buttons, but their visible title and symbols are missing or blank and the content starts below extra space. Sidebar hiding correctly leaves two columns visible.
+
 ## 2026-10-26 10:37 — Reduce the split-view toolbar issue
 **Asked:** Create a minimal reproduction of incorrect toolbar positioning for a hidden-header Router Stack hosted under `NavigationSplitView.Detail → Toolbar → VStack → RNHostView`.
 **Did / why:** Added a dedicated two-screen router-tester route and reduced the columns and content to labels. A fresh EAS iPad run showed that the exact direct hierarchy stays aligned, and the adapter reduction also keeps its toolbar level after a push, although its registered title disappears. Kept the reduction and screenshot because they disprove the host hierarchy as a sufficient cause and narrow the remaining issue to additional adapter or Mail-demo state.
