@@ -37,10 +37,8 @@ async function takeIOSScreenshot(outputPath: string): Promise<void> {
     await spawnAsync('xcrun', ['simctl', 'io', 'booted', 'screenshot', outputPath]);
 
     console.log(`iOS screenshot saved to: ${outputPath}`);
-  } catch (error) {
-    throw new Error(
-      `Failed to take iOS screenshot: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+  } catch (error: any) {
+    throw new Error(`Failed to take iOS screenshot: ${error.message}\n${error.stderr ?? ''}`);
   }
 }
 
@@ -61,9 +59,7 @@ async function takeAndroidScreenshot(outputPath: string): Promise<void> {
     });
 
     console.log(`Android screenshot saved to: ${outputPath}`);
-  } catch (error) {
-    throw new Error(
-      `Failed to take Android screenshot: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+  } catch (error: any) {
+    throw new Error(`Failed to take Android screenshot: ${error.message}\n${error.stderr ?? ''}`);
   }
 }
