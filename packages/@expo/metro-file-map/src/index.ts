@@ -16,6 +16,7 @@ import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
 import createFallbackFilesystem from './crawlers/node/fallback';
+import { debugEvent, event } from './events';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';
 import { RootPathUtils } from './lib/RootPathUtils';
@@ -308,6 +309,7 @@ export default class FileMap extends EventEmitter {
   readonly #plugins: readonly IndexedPlugin[];
   readonly #startupPerfLogger: PerfLogger | null | undefined;
   #watcher: Watcher | null | undefined;
+  #usedWatchman: boolean = false;
 
   static create(options: InputOptions): FileMap {
     return new FileMap(options);
@@ -424,7 +426,9 @@ export default class FileMap extends EventEmitter {
   build(): Promise<BuildResult> {
     this.#startupPerfLogger?.point('build_start');
     if (!this.#buildPromise) {
+      const doneBuild = event.span();
       this.#buildPromise = (async () => {
+        const doneHydrate = debugEvent.span();
         let initialData: CacheData | null | undefined;
         if (this.#options.resetCache !== true) {
           initialData = await this.read();
@@ -485,6 +489,7 @@ export default class FileMap extends EventEmitter {
               })
             : new TreeFS({ processFile, rootDir, fallbackFilesystem, roots, serverRoot });
         this.#startupPerfLogger?.point('constructFileSystem_end');
+        doneHydrate('hydrate', { fromCache: initialData != null });
 
         const plugins = this.#plugins;
 
@@ -586,6 +591,10 @@ export default class FileMap extends EventEmitter {
 
         await this.#watch(fileSystem, watchmanClocks, plugins);
         this.#fileSystem = fileSystem;
+        doneBuild('build', {
+          crawler: this.#usedWatchman ? 'watchman' : 'node',
+          fromCache: initialData != null,
+        });
         return { fileSystem };
       })();
     }
@@ -721,6 +730,7 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.annotate({
         string: { cacheReadError: (e as Error).toString() },
       });
+      event('cache:read_error', { error: event.error(e as Error) });
     }
     this.#startupPerfLogger?.point('read_end');
     return data;
@@ -744,6 +754,13 @@ export default class FileMap extends EventEmitter {
       watchmanDeferStates,
     } = this.#options;
 
+    // A supplied crawler makes the Watchman capability probe - which spawns
+    // watchman - pointless.
+    this.#usedWatchman = this.#crawler == null && (await this.#shouldUseWatchman());
+    const crawler = this.#usedWatchman ? 'watchman' : 'node';
+    const full = !previousState.clocks || previousState.clocks.size === 0;
+    const doneCrawl = debugEvent.span();
+
     this.#watcher = new Watcher({
       abortSignal: this.#crawlerAbortController.signal,
       computeSha1,
@@ -762,9 +779,7 @@ export default class FileMap extends EventEmitter {
       previousState,
       rootDir,
       roots,
-      // A supplied crawler makes the Watchman capability probe - which spawns
-      // watchman - pointless.
-      useWatchman: this.#crawler == null && (await this.#shouldUseWatchman()),
+      useWatchman: this.#usedWatchman,
       watch,
       watchmanDeferStates,
     });
@@ -774,6 +789,12 @@ export default class FileMap extends EventEmitter {
 
     const result = await watcher.crawl();
     this.#startupPerfLogger?.point('buildFileDelta_end');
+    doneCrawl('crawl', {
+      crawler,
+      full,
+      changed: result.changedFiles.size,
+      removed: result.removedFiles.size,
+    });
     return result;
   }
 
@@ -803,6 +824,7 @@ export default class FileMap extends EventEmitter {
     }>
   ): Promise<FileSystemChangeAggregator> {
     this.#startupPerfLogger?.point('applyFileDelta_start');
+    const doneProcess = debugEvent.span();
     const { changedFiles, removedFiles } = delta;
     this.#startupPerfLogger?.point('applyFileDelta_preprocess_start');
     // Remove files first so that we don't mistake moved modules
@@ -898,6 +920,7 @@ export default class FileMap extends EventEmitter {
     this.#startupPerfLogger?.point('applyFileDelta_updatePlugins_end');
     this.#startupPerfLogger?.point('applyFileDelta_end');
 
+    doneProcess('process', { processed: filesToProcess.length });
     return changeAggregator;
   }
 
@@ -911,6 +934,7 @@ export default class FileMap extends EventEmitter {
     changedSinceCacheRead: boolean
   ) {
     this.#startupPerfLogger?.point('persist_start');
+    const donePersist = debugEvent.span();
     await this.#cacheManager.write(
       () => ({
         clocks: new Map(clocks),
@@ -940,6 +964,7 @@ export default class FileMap extends EventEmitter {
       }
     );
     this.#startupPerfLogger?.point('persist_end');
+    donePersist('persist', {});
   }
 
   /**
@@ -1260,6 +1285,7 @@ export default class FileMap extends EventEmitter {
               watchmanFailedCapabilityCheck: (e as Error | null)?.message ?? '[missing]',
             },
           });
+          event('watchman:unavailable', { reason: (e as Error | null)?.message ?? '[missing]' });
           return false;
         });
     }

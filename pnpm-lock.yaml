@@ -3003,6 +3003,9 @@ importers:
 
   packages/@expo/metro-file-map:
     dependencies:
+      2g:
+        specifier: ^1.0.1
+        version: 1.0.1(typescript@6.0.3)
       debug:
         specifier: ^4.3.4
         version: 4.4.3
