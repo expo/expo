@@ -9,19 +9,28 @@ const lockfiles = {
   bun: ['bun.lock', 'bun.lockb'],
 };
 
+async function findPnpmWorkspace(project: string): Promise<string | undefined> {
+  for (let directory = resolve(project); ; directory = dirname(directory)) {
+    if (await exists(join(directory, 'pnpm-workspace.yaml'))) return directory;
+    if (dirname(directory) === directory) return;
+  }
+}
+
 export async function getInstallArguments(
   project: string,
   manager: keyof typeof lockfiles,
   frozen: boolean
 ): Promise<string[]> {
   if (!frozen) return ['install'];
+  const lockfileRoot =
+    manager === 'pnpm' ? ((await findPnpmWorkspace(project)) ?? project) : project;
   if (
-    !(await Promise.all(lockfiles[manager].map((file) => exists(join(project, file))))).some(
+    !(await Promise.all(lockfiles[manager].map((file) => exists(join(lockfileRoot, file))))).some(
       Boolean
     )
   ) {
     throw new Error(
-      `A frozen ${manager} install requires a lockfile in ${project}. Run init locally and commit its lockfile before retrying --frozen-lockfile.`
+      `A frozen ${manager} install requires a lockfile in ${lockfileRoot}. Run init locally and commit its lockfile before retrying --frozen-lockfile.`
     );
   }
   return manager === 'npm' ? ['ci'] : ['install', '--frozen-lockfile'];
@@ -48,7 +57,7 @@ export async function getPackageManager(project: string): Promise<'npm' | 'pnpm'
       'Multiple package manager lockfiles exist in expo/. Set packageManager in expo/package.json or remove the obsolete lockfiles, then rerun init.'
     );
   }
-  return managers[0] ?? 'npm';
+  return managers[0] ?? ((await findPnpmWorkspace(project)) ? 'pnpm' : 'npm');
 }
 
 export async function detachSharedNodeModules(
@@ -69,6 +78,8 @@ export async function detachSharedNodeModules(
   const isExternalLink = async (path: string) => {
     if (!(await lstat(path)).isSymbolicLink()) return false;
     const target = resolve(dirname(path), await readlink(path));
+    // pnpm workspace members link into the workspace's virtual store.
+    if (target.includes('/node_modules/.pnpm/')) return false;
     const pathFromModules = relative(modules, target);
     return (
       pathFromModules === '..' || pathFromModules.startsWith('../') || isAbsolute(pathFromModules)

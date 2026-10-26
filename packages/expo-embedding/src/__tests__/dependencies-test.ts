@@ -26,6 +26,31 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));
 describe('Installing app-owned dependencies', () => {
+  it('should preserve pnpm workspace store links and use the workspace lockfile', async () => {
+    const workspace = join(root, 'app');
+    writeFileSync(join(workspace, 'pnpm-workspace.yaml'), 'packages:\n  - expo\n');
+    writeFileSync(join(workspace, 'pnpm-lock.yaml'), 'lockfileVersion: 9');
+    mkdirSync(join(project, 'node_modules/@expo'), { recursive: true });
+    for (const name of ['expo', '@expo/example']) {
+      const store = join(
+        workspace,
+        'node_modules/.pnpm',
+        name.replace('/', '+'),
+        'node_modules',
+        name
+      );
+      mkdirSync(store, { recursive: true });
+      symlinkSync(store, join(project, 'node_modules', name));
+    }
+    expect(await detachSharedNodeModules(project, true)).toBeUndefined();
+    expect(await detachSharedNodeModules(project)).toBeUndefined();
+    expect(await getPackageManager(project)).toBe('pnpm');
+    expect(await getInstallArguments(project, 'pnpm', true)).toEqual([
+      'install',
+      '--frozen-lockfile',
+    ]);
+    expect(lstatSync(join(project, 'node_modules/expo')).isSymbolicLink()).toBe(true);
+  });
   it('should use reproducible installs when a matching lockfile exists', async () => {
     writeFileSync(join(project, 'package-lock.json'), '{}');
     expect(await getInstallArguments(project, 'npm', true)).toEqual(['ci']);
