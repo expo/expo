@@ -46,18 +46,12 @@ function isBlob(obj: any): obj is Blob {
 }
 
 /**
- * The Content-Type that a body needs.
- * `override` is true when the header must match the body bytes, like the FormData boundary.
- * Otherwise, a Content-Type that the caller sets wins.
- */
-export type BodyContentType = { value: string; override: boolean };
-
-/**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
 export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
   body: Uint8Array | null;
-  contentType?: BodyContentType;
+  defaultHeaders?: NativeHeadersType;
+  overriddenHeaders?: NativeHeadersType;
 }> {
   if (body == null) {
     return { body: null };
@@ -78,10 +72,10 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
 
   if (body instanceof Blob || isBlob(body)) {
     // An empty type still sets the header.
-    // Without a Content-Type, URLSession sends `application/x-www-form-urlencoded` for a POST body.
+    // On iOS, URLSession sends `application/x-www-form-urlencoded` for a POST body without a Content-Type.
     return {
       body: new Uint8Array(await blobToArrayBufferAsync(body)),
-      contentType: { value: body.type ?? '', override: false },
+      defaultHeaders: [['Content-Type', body.type ?? '']],
     };
   }
 
@@ -100,7 +94,7 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
 
     return {
       body: result,
-      contentType: { value: `multipart/form-data; boundary=${boundary}`, override: true },
+      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
     };
   }
 
@@ -114,9 +108,6 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
   if (headers == null) {
     return [];
   }
-  if (Array.isArray(headers)) {
-    return headers;
-  }
   if (headers instanceof Headers) {
     const results: [string, string][] = [];
     headers.forEach((value: any, key: any) => {
@@ -124,7 +115,9 @@ export function normalizeHeadersInit(headers: HeadersInit | null | undefined): N
     });
     return results;
   }
-  return Object.entries(headers);
+  const entries = Array.isArray(headers) ? headers : Object.entries(headers);
+  // The native side accepts only string values.
+  return entries.filter(([, value]) => value != null);
 }
 
 /**
@@ -145,26 +138,6 @@ export function overrideHeaders(
     result.push([key, value]);
   }
   return result;
-}
-
-/**
- * Set the Content-Type header from the body.
- * Keep the caller header unless the body must override it.
- */
-export function applyBodyContentType(
-  headers: NativeHeadersType,
-  contentType: BodyContentType | undefined
-): NativeHeadersType {
-  if (contentType == null) {
-    return headers;
-  }
-  const hasCallerContentType = headers.some(
-    ([key, value]) => key.toLocaleLowerCase() === 'content-type' && value != null
-  );
-  if (hasCallerContentType && !contentType.override) {
-    return headers;
-  }
-  return overrideHeaders(headers, [['Content-Type', contentType.value]]);
 }
 
 /** Normalizes known HTTP methods to uppercase */

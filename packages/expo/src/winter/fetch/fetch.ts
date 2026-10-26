@@ -3,9 +3,9 @@ import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
 import {
-  applyBodyContentType,
   normalizeBodyInitAsync,
   normalizeHeadersInit,
+  overrideHeaders,
   normalizeMethod,
 } from './RequestUtils';
 import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
@@ -50,7 +50,7 @@ export async function fetch(
     credentials = 'include';
   }
 
-  const callerHeaders = normalizeHeadersInit(
+  let headers = normalizeHeadersInit(
     init?.headers ?? (initFromRequest ? input.headers : undefined)
   );
 
@@ -62,8 +62,18 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
-  const { body: requestBody, contentType } = await normalizeBodyInitAsync(body);
-  const headers = applyBodyContentType(callerHeaders, contentType);
+  const {
+    body: requestBody,
+    defaultHeaders,
+    overriddenHeaders,
+  } = await normalizeBodyInitAsync(body);
+  if (defaultHeaders) {
+    // Caller headers win over the body defaults.
+    headers = overrideHeaders(defaultHeaders, headers);
+  }
+  if (overriddenHeaders) {
+    headers = overrideHeaders(headers, overriddenHeaders);
+  }
 
   const nativeRequestInit: NativeRequestInit = {
     credentials: credentials ?? 'include',

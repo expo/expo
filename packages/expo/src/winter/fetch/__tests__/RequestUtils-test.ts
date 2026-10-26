@@ -99,8 +99,10 @@ describe(normalizeBodyInitAsync, () => {
     const result = await normalizeBodyInitAsync(body as any);
     const resultBodyString = new TextDecoder().decode(result.body);
     expect(resultBodyString).toMatch(/------ExpoFetchFormBoundary[\w]{16}/);
-    expect(result.contentType?.override).toBe(true);
-    expect(result.contentType?.value).toMatch(
+    const overrideHeaders = result.overriddenHeaders;
+    expect(overrideHeaders?.length).toBe(1);
+    expect(overrideHeaders?.[0]?.[0]).toBe('Content-Type');
+    expect(overrideHeaders?.[0]?.[1]).toMatch(
       /^multipart\/form-data; boundary=----ExpoFetchFormBoundary[\w]{16}$/
     );
   });
