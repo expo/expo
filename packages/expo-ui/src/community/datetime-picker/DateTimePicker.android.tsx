@@ -128,6 +128,8 @@ export function DateTimePicker(props: DateTimePickerProps) {
         selectableDates={selectableDates}
         is24Hour={is24Hour}
         color={accentColor}
+        // Match iOS, where the inline picker has no background of its own.
+        elementColors={{ containerColor: 'transparent' }}
         onDateSelected={onDateSelected}
         showVariantToggle={false}
         // Match iOS, where the inline picker has no label: hide Material 3's "Select date" title

@@ -45,6 +45,14 @@ describe('DateTimePicker (Android)', () => {
     );
   });
 
+  it('has no container color when inline, like iOS', async () => {
+    await render(<DateTimePicker value={value} presentation="inline" />);
+
+    expect(getNativeProps('DateTimePickerView')).toEqual(
+      expect.objectContaining({ elementColors: { containerColor: 'transparent' } })
+    );
+  });
+
   it('keeps the dialog title and headline', async () => {
     await render(<DateTimePicker value={value} presentation="dialog" />);
 
