@@ -21,13 +21,13 @@ Bun.serve({
     if (req.method === 'POST' && url.pathname === '/process') {
       // Browsers can send text/plain cross-origin without a CORS preflight, but not application/json.
       if (!req.headers.get('content-type')?.startsWith('application/json')) {
-        return new Response(
-          JSON.stringify({
+        return Response.json(
+          {
             success: false,
             message:
               'The image comparison server rejected the request because its Content-Type is not application/json. Send the request body as JSON with the Content-Type: application/json header.',
-          }),
-          { status: 415, headers: jsonHeaders }
+          },
+          { status: 415 }
         );
       }
       try {
@@ -109,16 +109,7 @@ Bun.serve({
           const errorMessage = `Files(s) not found: ${missingFiles.join(', ')}`;
           console.error(errorMessage);
 
-          return new Response(
-            JSON.stringify({
-              success: false,
-              message: errorMessage,
-            }),
-            {
-              status: 404,
-              headers: jsonHeaders,
-            }
-          );
+          return Response.json({ success: false, message: errorMessage }, { status: 404 });
         }
 
         const result: ComparisonResult = await compareImages({
@@ -138,22 +129,16 @@ Bun.serve({
           console.log(`Diff image written to: ${result.diffImagePath}`);
         }
 
-        return new Response(JSON.stringify(result), {
-          status: result.success ? 200 : 400,
-          headers: jsonHeaders,
-        });
+        return Response.json(result, { status: result.success ? 200 : 400 });
       } catch (error) {
         console.error('Error processing image comparison:', error);
-        return new Response(
-          JSON.stringify({
+        return Response.json(
+          {
             success: false,
             message: 'Image comparison failed',
             error: error instanceof Error ? error.message : 'Unknown error occurred',
-          }),
-          {
-            status: 500,
-            headers: jsonHeaders,
-          }
+          },
+          { status: 500 }
         );
       }
     }
@@ -161,8 +146,6 @@ Bun.serve({
     return new Response('Not Found', { status: 404 });
   },
 });
-
-const jsonHeaders = { 'Content-Type': 'application/json' };
 
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
