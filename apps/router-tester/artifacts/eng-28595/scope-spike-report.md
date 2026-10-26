@@ -81,13 +81,14 @@ Prior runtime evidence exists on commit `acb594d5` for direct `NavigationSplitVi
 2. The adapter reads declarations from the focused route. More tests are needed for push/pop transitions, multiple title/toolbar declarations, and route unmount timing before replacing the RNS implementation by default.
 3. The nested detail remains a real native Stack, but expo-ui owns its visible header. Header configuration supplied only through `Stack.Screen` options is not yet adapted; the proof uses `Stack.Title` and `Stack.Toolbar` as requested.
 4. The working pure-SwiftUI example places `Toolbar` directly in the detail slot and applies `navigationTitle` to its SwiftUI content. Reproducing that structure with a `VStack` around `RNHostView` did not remove the gap. The accessibility tree still reported both `_TtGC7SwiftUI32NavigationStackHosting` and `Google Photos` navigation bars, showing that the embedded UIKit Stack remains a second navigation host even when `headerShown` is false.
-5. The public props are a discriminated union. The default `rns` branch accepts the full RNS host API. The `expo-ui` branch accepts only `ref`, `topColumnForCollapsing`, `preferredDisplayMode`, `preferredSplitBehavior`, and a narrowed `columnMetrics`; RNS-only props and secondary/inspector metrics are rejected by TypeScript rather than silently discarded.
-6. expo-ui `columnMetrics` uses point-only `preferredPrimaryColumnWidth` and `preferredSupplementaryColumnWidth` names instead of RNS's ambiguous `*WidthOrFraction` names. Minimum and maximum values work without a preferred width; the adapter uses the supplied bound as SwiftUI's required ideal value.
-7. UIKit display modes and split behaviors map to their closest SwiftUI equivalents.
-8. SwiftUI column visibility and compact-column values are stateful. Prop changes reseed the state, while user/system changes can subsequently update it.
-9. `SplitView.Inspector` remains a shared child API but is an unavoidable expo-ui no-op. The implementation warns once in development and omits inspector content.
-10. The expo-ui path requires `@expo/ui` to be installed and the native app rebuilt. The router-tester dependency is added, but no native files are changed.
-11. The old prototype's native navigation modifiers and toolbar bridge must not be copied into this ticket. They are the only evidence for some richer header controls, not available dependency API.
+5. Removing both `RNHostView` and Stack from the detail column eliminates the gap. A pure `NavigationSplitView.Detail → Toolbar → VStack` experiment rendered one `Google Photos` navigation bar, level with the sidebar and content headers. This isolates the extra region to the embedded React Navigation Stack rather than expo-ui's split view or toolbar: [pure SwiftUI detail](./media/ipad-mail-pure-swiftui-toolbar.png).
+6. The public props are a discriminated union. The default `rns` branch accepts the full RNS host API. The `expo-ui` branch accepts only `ref`, `topColumnForCollapsing`, `preferredDisplayMode`, `preferredSplitBehavior`, and a narrowed `columnMetrics`; RNS-only props and secondary/inspector metrics are rejected by TypeScript rather than silently discarded.
+7. expo-ui `columnMetrics` uses point-only `preferredPrimaryColumnWidth` and `preferredSupplementaryColumnWidth` names instead of RNS's ambiguous `*WidthOrFraction` names. Minimum and maximum values work without a preferred width; the adapter uses the supplied bound as SwiftUI's required ideal value.
+8. UIKit display modes and split behaviors map to their closest SwiftUI equivalents.
+9. SwiftUI column visibility and compact-column values are stateful. Prop changes reseed the state, while user/system changes can subsequently update it.
+10. `SplitView.Inspector` remains a shared child API but is an unavoidable expo-ui no-op. The implementation warns once in development and omits inspector content.
+11. The expo-ui path requires `@expo/ui` to be installed and the native app rebuilt. The router-tester dependency is added, but no native files are changed.
+12. The old prototype's native navigation modifiers and toolbar bridge must not be copied into this ticket. They are the only evidence for some richer header controls, not available dependency API.
 
 ## Router-tester proof of concept
 
@@ -103,6 +104,7 @@ The demo resembles Apple Mail with mailbox, message-list, and message-detail col
 - `expo-router` lint: passed.
 - Formatting: applied; final check is part of the handoff checks.
 - A fresh EAS iPad Pro 13-inch (M5) pass tested the pure-SwiftUI example's modifier placement by putting `navigationTitle` on a SwiftUI `VStack` around `RNHostView`. The empty navigation row remained unchanged: [VStack experiment](./media/ipad-mail-vstack-toolbar.png). This rules out modifier placement as the cause and isolates the embedded Stack/navigation host as the remaining boundary.
+- A control run removed `RNHostView` and Stack entirely and rendered `Toolbar` with pure SwiftUI content directly in the detail slot. It produced one correctly aligned navigation bar with no gap: [pure SwiftUI detail](./media/ipad-mail-pure-swiftui-toolbar.png).
 - The three-column demo uses bounded sidebar/content widths. The native sidebar control transitions from [all three columns](./media/ipad-mail-three-column.png) to [content and detail](./media/ipad-mail-two-columns-sidebar-hidden.png), keeping at least two columns visible on the tested iPad.
 - Runtime media: [initial detail](./media/ipad-mail-detail.png), [message list](./media/ipad-mail-list.png), [detail toolbar](./media/ipad-mail-toolbar.png), [three-column view](./media/ipad-mail-three-column.png), and [sidebar hidden](./media/ipad-mail-two-columns-sidebar-hidden.png).
 - Prior header inset evidence: [before removing the nested provider](./media/ipad-mail-toolbar-before-inset-fix.png) and [after](./media/ipad-mail-toolbar.png). These demonstrate why safe-area changes alone were insufficient.

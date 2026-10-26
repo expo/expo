@@ -1,3 +1,7 @@
+## 2026-10-26 09:50 — Isolate the toolbar without Stack
+**Asked:** Check whether rendering the expo-ui toolbar directly in the split-view detail, without Stack, still leaves a gap.
+**Did / why:** Replaced the detail temporarily with pure SwiftUI `Toolbar` and content, rebuilt Expo Router, and verified it on EAS Simulator. It rendered one navigation bar aligned with the other columns and no gap, confirming the extra region is introduced only when the React Navigation Stack is embedded. Reverted the temporary implementation and retained the screenshot and conclusion in the scope report.
+
 ## 2026-10-26 09:45 — Test the pure-SwiftUI toolbar structure around Stack
 **Asked:** Render `Stack.Toolbar` directly in the split view's expo-ui toolbar while keeping the UIKit Stack header hidden.
 **Did / why:** Moved the navigation modifiers to a SwiftUI `VStack` around `RNHostView`, matching the working pure-SwiftUI example's structure, and verified it on EAS Simulator. The gap remained and accessibility still exposed two navigation bars, proving the embedded native Stack is the remaining navigation-host boundary. Reverted the ineffective code change and retained the screenshot and finding in the scope report.
