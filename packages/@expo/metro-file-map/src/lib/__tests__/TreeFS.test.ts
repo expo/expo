@@ -2499,6 +2499,60 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
+    describe('roots that are the root dir or its ancestors', () => {
+      test.each([
+        // The root dir's own entries are not under '..', and each ancestor's
+        // entries are under one more '..'.
+        [p('/project'), ['src', p('src/app.js')], ['..']],
+        [
+          p('/'),
+          ['src', p('src/app.js'), '..', p('../packages/expo/index.js')],
+          [p('../../beyond.js')],
+        ],
+      ])('includes everything within %s in the snapshot', (root, included, excluded) => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map<CanonicalPath, FileMetadata>([
+            [p('src/app.js'), [100, 5, 0, null, 0, null]],
+            [p('../packages/expo/index.js'), [200, 3, 0, null, 0, null]],
+            [p('../../beyond.js'), [300, 3, 0, null, 0, null]],
+          ]),
+          roots: [root],
+        });
+
+        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
+        const has = (normalPath: string) => {
+          let node: any = snapshot;
+          for (const segment of normalPath.split(mockPathModule.sep)) {
+            if (!(node instanceof Map) || !node.has(segment)) {
+              return false;
+            }
+            node = node.get(segment);
+          }
+          return true;
+        };
+        for (const normalPath of included) {
+          expect([normalPath, has(normalPath)]).toEqual([normalPath, true]);
+        }
+        for (const normalPath of excluded) {
+          expect([normalPath, has(normalPath)]).toEqual([normalPath, false]);
+        }
+      });
+
+      test('does not use the fallback within a root above the root dir', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map<CanonicalPath, FileMetadata>([
+            [p('src/app.js'), [100, 5, 0, null, 0, null]],
+          ]),
+          roots: [p('/')],
+        });
+
+        expect(fbTfs.lookup(p('/project/src/missing.js'))).toMatchObject({ exists: false });
+        expect(fbTfs.lookup(p('/sibling/missing.js'))).toMatchObject({ exists: false });
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+        expect(mockFallback.readdir).not.toHaveBeenCalled();
+      });
+    });
+
     describe('fromDeserializedSnapshot + fallback integration', () => {
       test('fallback extends a deserialized tree', () => {
         // Create initial tree data (simulating a deserialized snapshot)

@@ -355,16 +355,34 @@ export function getAncestorOfRootIdx(normalPath: string): number {
   return pos / UP_FRAGMENT_SEP_LENGTH;
 }
 
+/**
+ * Whether a normal path is the root dir ('') or one of its ancestors ('..',
+ * '../..', with or without a trailing separator).
+ */
+export function isRootDirOrAncestor(normalPath: string): boolean {
+  if (normalPath === '') {
+    return true;
+  }
+  const ancestorOfRootIdx = getAncestorOfRootIdx(normalPath);
+  return (
+    ancestorOfRootIdx > 0 &&
+    normalPath.length <= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH &&
+    normalPath.length >= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH - 1
+  );
+}
+
 export function pathsToPattern(paths: readonly string[], pathUtils: RootPathUtils): RegExp | null {
   if (paths.length === 0) {
     return null;
   }
   const pathsPatterns = paths.map((input) => {
     let pattern = pathUtils.absoluteToNormal(input);
-    // When pattern is '' (root === rootDir), match any normal path that
-    // doesn't escape the root via '..' indirections.
-    if (pattern === '') {
-      return `(?!\\.\\.(?:\\${path.sep}|$))`;
+    // When pattern is the root dir ('') or one of its ancestors ('..', '../..'),
+    // match any normal path that doesn't escape it via a further '..'
+    if (isRootDirOrAncestor(pattern)) {
+      const ancestorOfRootIdx = getAncestorOfRootIdx(pattern);
+      const sep = '\\' + path.sep;
+      return `(?!(?:\\.\\.${sep}){${ancestorOfRootIdx}}\\.\\.(?:${sep}|$))`;
     }
     // Append separator so that 'src' matches 'src/foo' but not 'src2'.
     if (!pattern.endsWith(path.sep)) {

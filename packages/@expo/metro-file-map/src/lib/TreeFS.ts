@@ -23,7 +23,12 @@ import type {
   Path,
   ProcessFileFunction,
 } from '../types';
-import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
+import {
+  RootPathUtils,
+  getAncestorOfRootIdx,
+  isRootDirOrAncestor,
+  pathsToPattern,
+} from './RootPathUtils';
 import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
@@ -1861,18 +1866,43 @@ export default class TreeFS implements MutableFileSystem {
       }
     }
 
+    // A root that is the root dir ('') or an ancestor of it ('..', '../..')
+    // holds the root dir's own entries and those of each directory up to the
+    // root, each one level further under '..'
+    function copyAncestorRootInto(
+      depth: number,
+      source: DirectoryNode,
+      clone: DirectoryNode
+    ): void {
+      let currentSource: DirectoryNode = source;
+      let currentClone = clone;
+      for (let level = 0; ; level++) {
+        for (const [name, node] of currentSource) {
+          if (node != null && name !== '..') {
+            currentClone.set(name, node);
+          }
+        }
+        const parentSource = currentSource.get('..');
+        if (level === depth || !isDirectory(parentSource)) {
+          return;
+        }
+        let parentClone = currentClone.get('..');
+        if (!isDirectory(parentClone)) {
+          parentClone = new Map();
+          currentClone.set('..', parentClone);
+        }
+        currentSource = parentSource;
+        currentClone = parentClone;
+      }
+    }
+
     if (this.#roots.length === 0) {
       return rootNode;
     }
     const clone: DirectoryNode = new Map();
     for (const normalRoot of this.#roots) {
-      if (normalRoot === '') {
-        // Root is rootDir itself — include everything except '..'
-        for (const [name, node] of rootNode) {
-          if (node != null && name !== '..') {
-            clone.set(name, node);
-          }
-        }
+      if (isRootDirOrAncestor(normalRoot)) {
+        copyAncestorRootInto(getAncestorOfRootIdx(normalRoot), rootNode, clone);
       } else {
         copyRootInto(normalRoot, rootNode, clone);
       }

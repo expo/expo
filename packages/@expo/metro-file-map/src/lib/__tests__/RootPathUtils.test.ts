@@ -269,17 +269,34 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       expect(pattern.test(p('srcXlib/foo.js'))).toBe(false);
     });
 
-    test('handles root above rootDir (produces ..-relative pattern)', () => {
-      // pathUtils has rootDir = /project, so root '/' produces '../' pattern
-      const pattern = pathsToPattern([p('/')], pathUtils)!;
-      expect(pattern).not.toBeNull();
-      // '../foo' is inside '/' (one level above /project)
-      expect(pattern.test(p('../foo'))).toBe(true);
-      // '../../foo' would be above '/' — but since '/' is the filesystem root,
-      // the pattern for '/' relative to '/project' is '../' which matches '../anything'
-      expect(pattern.test(p('../nested/bar.js'))).toBe(true);
-      // Paths inside /project (no '..' prefix) should not match the '../' pattern
+    test('handles a root outside rootDir', () => {
+      const pattern = pathsToPattern([p('/other')], pathUtils)!;
+      expect(pattern.test(p('../other/foo.js'))).toBe(true);
+      expect(pattern.test(p('../another/foo.js'))).toBe(false);
       expect(pattern.test(p('src/foo.js'))).toBe(false);
+    });
+
+    // An ancestor of rootDir contains rootDir, and everything between them.
+    test.each([
+      [
+        p('/'),
+        [p('src/foo.js'), p('../foo'), p('../nested/bar.js'), p('../')],
+        [p('../../foo.js'), p('../../')],
+      ],
+      [
+        p('/project/a'),
+        [p('b/foo.js'), p('../foo.js'), p('../c/foo.js')],
+        [p('../../foo.js'), p('../../a/foo.js')],
+      ],
+    ])('handles a root (%s) above rootDir', (root, inside, outside) => {
+      pathUtils = new RootPathUtils(root === p('/') ? p('/project') : p('/project/a/b'));
+      const pattern = pathsToPattern([root], pathUtils)!;
+      for (const normalPath of inside) {
+        expect([normalPath, pattern.test(normalPath)]).toEqual([normalPath, true]);
+      }
+      for (const normalPath of outside) {
+        expect([normalPath, pattern.test(normalPath)]).toEqual([normalPath, false]);
+      }
     });
   });
 
