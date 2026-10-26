@@ -27,8 +27,9 @@ import fs from 'fs-extra';
 import { glob } from 'node:fs/promises';
 import path from 'path';
 
-import { getPackagesDir, getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
 import logger from '../Logger';
+import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
 
 export type PruneOptions = {
@@ -50,7 +51,7 @@ export type PruneResult = {
 
 /** Root of the centralized prebuild cache: `packages/precompile/.build/`. */
 function getBuildCacheRoot(): string {
-  return path.join(getPrecompileDir(), '.build');
+  return getMonorepoBuildDir(getExpoRepositoryRootDir());
 }
 
 /**
