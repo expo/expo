@@ -116,6 +116,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
   /// Waits for the promise to settle. Throws ``JavaScriptCallback/RuntimeLostError`` when the runtime
   /// is gone before it subscribes to the promise.
+  ///
+  /// The settlement reaches this through a promise reaction, which runs only when the host drains the
+  /// microtask queue. React Native does that after each task. On a runtime created with
+  /// ``JavaScriptRuntime/init()`` that nothing drains, this never returns; see
+  /// ``JavaScriptRuntime/drainMicrotasks()``.
   @JavaScriptActor
   public func `await`() async throws -> JavaScriptValue {
     let deferredPromise = try await deferredPromiseForAwait()
