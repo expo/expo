@@ -10,11 +10,11 @@ A **.easignore** file defines which files [EAS](https://expo.dev/services) shoul
 
 > **info** Ignoring unnecessary files can help reduce your app's archive size and upload time.
 
-By default, the [EAS CLI](/build/setup/#install-the-latest-eas-cli) refers to the [**.gitignore**](https://git-scm.com/docs/gitignore) file (if it exists) to determine which files to ignore. If you create a **.easignore** file, the EAS CLI uses it instead of all **.gitignore** files in your repository. When creating a **.easignore** file, include all files and directories from your **.gitignore** file and add additional files you want to ignore.
+By default, [EAS CLI](/build/setup/#install-the-latest-eas-cli) refers to the [**.gitignore**](https://git-scm.com/docs/gitignore) file (if it exists) to determine which files to ignore. If you create a **.easignore** file, EAS CLI uses it instead of all **.gitignore** files in your repository. When creating a **.easignore** file, include all files and directories from your **.gitignore** file and add additional files you want to ignore.
 
 <Step label="1">
 
-Create a **.easignore** file in the root of your project.
+Create a **.easignore** file in the root of your Git repository.
 
 </Step>
 
@@ -74,6 +74,7 @@ Run `eas build:inspect` with the `archive` stage to copy the files that EAS CLI 
 
 - Log in to your Expo account with `eas login` before you run this command.
 - The output directory must not exist. To delete an existing output directory first, add `--force`.
+- In the full Git workflow, commit your changes before you run this command. The command does not offer to commit them.
 
 Open the output directory and confirm that it contains the files your build needs and none of the files you want to ignore.
 
@@ -84,4 +85,4 @@ Open the output directory and confirm that it contains the files your build need
 - To exclude the shallow **.git** directory from the project archive, add `.git` to **.easignore**.
 - In the [full Git workflow](/build-reference/project-upload/#full-git-workflow), EAS CLI still applies **.easignore** and deletes the matching files from the clone. The project on EAS Build no longer matches your commit, so EAS CLI shows a warning. To hide the warning, set the `EAS_SUPPRESS_REQUIRE_COMMIT_EASIGNORE_WARNING` environment variable to `1`.
 
-To learn which files EAS CLI uploads in each workflow, see [How EAS Build uploads your project](/build-reference/project-upload/).
+To learn which files EAS CLI uploads in each workflow, see [How EAS CLI uploads your project](/build-reference/project-upload/).

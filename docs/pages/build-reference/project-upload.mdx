@@ -1,5 +1,5 @@
 ---
-title: How EAS Build uploads your project
+title: How EAS CLI uploads your project
 sidebar_title: Project upload process
 description: Learn which files EAS CLI uploads to EAS Build and how the version control workflow changes them.
 ---
@@ -59,13 +59,13 @@ EAS CLI uses the absolute path in the `EAS_PROJECT_ROOT` environment variable as
 
 EAS CLI follows these rules when it creates the project archive:
 
-- EAS CLI excludes the files that your **.gitignore** files list. If a **.easignore** file exists, EAS CLI uses it instead of all **.gitignore** files. For more information, see [Ignore files via .easignore](/build-reference/easignore/).
+- In the default and No VCS workflows, EAS CLI excludes the files that your **.gitignore** files list, including files that Git tracks. If a **.easignore** file exists, EAS CLI uses it instead of all **.gitignore** files. For more information, see [Ignore files via .easignore](/build-reference/easignore/).
 - In the default and No VCS workflows, EAS CLI does not copy **node_modules**, even if no ignore file lists it. EAS Build installs your dependencies on the build server.
 - In the default and full Git workflows, the project archive includes a shallow **.git** directory.
 - In the default and No VCS workflows, EAS CLI reads each **.gitignore** file separately. A negation rule in a subdirectory, such as `!keep.log`, does not override a rule in a parent directory, such as `*.log`. Git keeps such a file, but EAS CLI excludes it. To include it, use **.easignore**.
 - In the default workflow, the project archive includes your Git submodules as they are in your working directory. For the full Git workflow and CI, see [Using Git submodules](/build-reference/git-submodules/).
 - In the default and No VCS workflows, EAS CLI copies files as they are on disk. If you use git-crypt and your files are unlocked, EAS CLI uploads them unencrypted.
 
-EAS CLI shows a warning when the project archive is larger than 150 MiB. It stops with an error when the project archive is larger than 2 GiB. To make the project archive smaller, exclude files with [.easignore](/build-reference/easignore/).
+EAS CLI shows a warning when the project archive is larger than 150 MiB. It stops with an error when the project archive is larger than 2 GiB. The error message is "Project archive is too big. Maximum allowed size is 2.0 GB." To make the project archive smaller, exclude files with [.easignore](/build-reference/easignore/).
 
 To see the files that EAS CLI uploads for your project, follow the steps in [Check which files EAS uploads](/build-reference/easignore/#check-which-files-eas-uploads).
