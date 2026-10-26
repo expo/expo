@@ -57,6 +57,10 @@ struct JavaScriptCallbackTests {
 
   /// Evaluates `source` and decodes the result the way generated bindings decode a closure argument.
   private func callback(_ source: String) throws -> JavaScriptCallback {
+    return try callback(source, in: runtime)
+  }
+
+  private func callback(_ source: String, in runtime: JavaScriptRuntime) throws -> JavaScriptCallback {
     let value = try runtime.eval(source)
     return try value.withUnownedValue(in: runtime) { unownedValue in
       try JavaScriptCallback.decode(unownedValue, in: runtime)
@@ -204,8 +208,10 @@ struct JavaScriptCallbackTests {
 
   @Test
   func `invokeAsync awaits a returned promise and decodes the resolved value`() async throws {
-    let callback = try callback("async (value) => value * 2")
-    #expect(try await callback.invokeAsync(4, returning: Int.self) == 8)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let callback = try callback("async (value) => value * 2", in: runtime)
+      #expect(try await callback.invokeAsync(4, returning: Int.self) == 8)
+    }
   }
 
   @Test
@@ -216,9 +222,11 @@ struct JavaScriptCallbackTests {
 
   @Test
   func `invokeAsync rethrows a promise rejection`() async throws {
-    let callback = try callback("async () => { throw new Error('rejected') }")
-    await #expect(throws: (any Error).self) {
-      try await callback.invokeAsync()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let callback = try callback("async () => { throw new Error('rejected') }", in: runtime)
+      await #expect(throws: (any Error).self) {
+        try await callback.invokeAsync()
+      }
     }
   }
 
@@ -532,6 +540,10 @@ struct JavaScriptCallbackGeneratedCodeTests {
   let runtime = JavaScriptRuntime()
 
   private func callback(_ source: String) throws -> JavaScriptCallback {
+    return try callback(source, in: runtime)
+  }
+
+  private func callback(_ source: String, in runtime: JavaScriptRuntime) throws -> JavaScriptCallback {
     let value = try runtime.eval(source)
     return try value.withUnownedValue(in: runtime) { unownedValue in
       try JavaScriptCallback.decode(unownedValue, in: runtime)
@@ -559,26 +571,30 @@ struct JavaScriptCallbackGeneratedCodeTests {
 
   @Test
   func `async throwing closure with a result`() async throws {
-    let arg0Callback = try callback("async (point) => point + 1")
-    let arg0: (Point) async throws -> Size = { @Sendable p0 in
-      try await arg0Callback.invokeAsync(p0, returning: Size.self)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let arg0Callback = try callback("async (point) => point + 1", in: runtime)
+      let arg0: (Point) async throws -> Size = { @Sendable p0 in
+        try await arg0Callback.invokeAsync(p0, returning: Size.self)
+      }
+      #expect(try await arg0(Point(x: 1)).width == 2)
     }
-    #expect(try await arg0(Point(x: 1)).width == 2)
   }
 
   @Test
   func `non-throwing async closure`() async throws {
-    try runtime.eval("globalThis.ErrorUtils = { reportError(error) { globalThis.reported = error.message } }")
-    let arg0Callback = try callback("async () => { throw new Error('async boom') }")
-    let arg0: () async -> Void = { @Sendable in
-      do {
-        try await arg0Callback.invokeAsync()
-      } catch {
-        arg0Callback.reportError(error)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      try runtime.eval("globalThis.ErrorUtils = { reportError(error) { globalThis.reported = error.message } }")
+      let arg0Callback = try callback("async () => { throw new Error('async boom') }", in: runtime)
+      let arg0: () async -> Void = { @Sendable in
+        do {
+          try await arg0Callback.invokeAsync()
+        } catch {
+          arg0Callback.reportError(error)
+        }
       }
+      await arg0()
+      #expect(try await runtime.execute { try runtime.eval("globalThis.reported").asString() } == "async boom")
     }
-    await arg0()
-    #expect(try runtime.eval("globalThis.reported").asString() == "async boom")
   }
 
   @Test
