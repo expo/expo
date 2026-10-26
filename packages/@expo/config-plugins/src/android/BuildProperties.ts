@@ -88,7 +88,7 @@ export function updateAndroidBuildProperty(
     (prop) => prop.type === 'property' && prop.key === name
   );
   const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
-  if (value != null) {
+  if (value) {
     // found the matched value, add or merge new property
     const newProp: PropertiesItem = {
       type: 'property',
@@ -117,7 +117,7 @@ export function updateAndroidBuildProperty(
     gradleProperties.push(newProp);
     return gradleProperties;
   }
-  if (oldPropIndex >= 0) {
+  if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
     return gradleProperties;
   }

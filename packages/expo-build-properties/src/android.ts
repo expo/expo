@@ -21,6 +21,7 @@ import {
 } from './androidPCHTemplates';
 import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
+import { ANDROID_HERMES_V1_PROPERTY } from './hermesV1';
 import type { PluginConfigType } from './pluginConfig';
 import { resolveConfigValue } from './pluginConfig';
 
@@ -137,7 +138,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.buildExpoModulesCoreFromSource?.toString(),
     },
     {
-      propName: 'hermesV1Enabled',
+      propName: ANDROID_HERMES_V1_PROPERTY,
       propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
     },
   ],
