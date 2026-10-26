@@ -308,3 +308,65 @@ export class RootPathUtils {
     }
   }
 }
+
+/**
+ * The number of leading '..' segments of a normal path, i.e. how many levels
+ * above the root dir it starts.
+ */
+export function getAncestorOfRootIdx(normalPath: string): number {
+  let pos = 0;
+  while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
+    pos += UP_FRAGMENT_SEP_LENGTH;
+  }
+  if (
+    normalPath.length === pos + 2 &&
+    normalPath.charCodeAt(pos) === 46 &&
+    normalPath.charCodeAt(pos + 1) === 46
+  ) {
+    return pos / UP_FRAGMENT_SEP_LENGTH + 1;
+  }
+  return pos / UP_FRAGMENT_SEP_LENGTH;
+}
+
+/**
+ * Whether a normal path is the root dir ('') or one of its ancestors ('..',
+ * '../..', with or without a trailing separator).
+ */
+export function isRootDirOrAncestor(normalPath: string): boolean {
+  if (normalPath === '') {
+    return true;
+  }
+  const ancestorOfRootIdx = getAncestorOfRootIdx(normalPath);
+  return (
+    ancestorOfRootIdx > 0 &&
+    normalPath.length <= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH &&
+    normalPath.length >= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH - 1
+  );
+}
+
+/**
+ * A pattern matching the normal path, with a trailing separator, of anything
+ * within one of the given absolute paths.
+ */
+export function pathsToPattern(paths: readonly string[], pathUtils: RootPathUtils): RegExp | null {
+  if (paths.length === 0) {
+    return null;
+  }
+  const pathsPatterns = paths.map((input) => {
+    let pattern = pathUtils.absoluteToNormal(input);
+    // NOTE(@robhogan): A path that is the root dir ('') or one of its ancestors ('..',
+    // '../..') contains every normal path that doesn't escape it via a further '..'
+    if (isRootDirOrAncestor(pattern)) {
+      const ancestorOfRootIdx = getAncestorOfRootIdx(pattern);
+      const sep = '\\' + path.sep;
+      return `(?!(?:\\.\\.${sep}){${ancestorOfRootIdx}}\\.\\.(?:${sep}|$))`;
+    }
+    // Append separator so that 'src' matches 'src/foo' but not 'src2'.
+    if (!pattern.endsWith(path.sep)) {
+      pattern += path.sep;
+    }
+    // Escape all regex-special characters.
+    return pattern.replace(/[-[\]{}()*+?.\\^$|/]/g, '\\$&');
+  });
+  return new RegExp(`^(?:${pathsPatterns.join('|')})`);
+}

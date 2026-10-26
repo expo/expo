@@ -296,4 +296,110 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       });
     }
   });
+
+  describe('getAncestorOfRootIdx (free function)', () => {
+    let getAncestorOfRootIdx: typeof import('../RootPathUtils').getAncestorOfRootIdx;
+
+    beforeEach(() => {
+      getAncestorOfRootIdx = require('../RootPathUtils').getAncestorOfRootIdx;
+    });
+
+    test.each([
+      ['', 0],
+      ['..', 1],
+      [p('../..'), 2],
+      [p('../../..'), 3],
+      ['foo', 0],
+      [p('../foo'), 1],
+      [p('../../foo'), 2],
+    ] as const)('getAncestorOfRootIdx(%s) => %s', (input, expected) => {
+      expect(getAncestorOfRootIdx(input)).toEqual(expected);
+    });
+  });
+
+  describe('pathsToPattern', () => {
+    let pathsToPattern: typeof import('../RootPathUtils').pathsToPattern;
+
+    beforeEach(() => {
+      pathsToPattern = require('../RootPathUtils').pathsToPattern;
+      pathUtils = new RootPathUtils(p('/project'));
+    });
+
+    test('returns null for empty paths array', () => {
+      expect(pathsToPattern([], pathUtils)).toBeNull();
+    });
+
+    test('creates pattern that matches paths inside a root', () => {
+      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
+      expect(pattern).not.toBeNull();
+      expect(pattern.test(p('src/foo.js'))).toBe(true);
+      expect(pattern.test(p('src/sub/bar.js'))).toBe(true);
+    });
+
+    test('pattern does not match paths outside the root', () => {
+      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
+      expect(pattern.test(p('lib/foo.js'))).toBe(false);
+      expect(pattern.test(p('src2/foo.js'))).toBe(false);
+    });
+
+    test('pattern matches root directory with trailing separator', () => {
+      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
+      // The root itself + separator should match
+      expect(pattern.test('src' + sep)).toBe(true);
+    });
+
+    test('handles rootDir as a watched root (empty normal path)', () => {
+      const pattern = pathsToPattern([p('/project')], pathUtils)!;
+      expect(pattern).not.toBeNull();
+      // Paths within root should match
+      expect(pattern.test(p('foo/bar.js'))).toBe(true);
+      // Paths above root should not match
+      expect(pattern.test(p('../outside/foo.js'))).toBe(false);
+      expect(pattern.test('..')).toBe(false);
+    });
+
+    test('handles multiple roots', () => {
+      const pattern = pathsToPattern([p('/project/src'), p('/project/lib')], pathUtils)!;
+      expect(pattern.test(p('src/foo.js'))).toBe(true);
+      expect(pattern.test(p('lib/bar.js'))).toBe(true);
+      expect(pattern.test(p('other/baz.js'))).toBe(false);
+    });
+
+    test('escapes regex-special characters in paths', () => {
+      const pattern = pathsToPattern([p('/project/src+lib')], pathUtils)!;
+      // Should match literally, not as regex +
+      expect(pattern.test(p('src+lib/foo.js'))).toBe(true);
+      expect(pattern.test(p('srcXlib/foo.js'))).toBe(false);
+    });
+
+    test('handles a root outside rootDir', () => {
+      const pattern = pathsToPattern([p('/other')], pathUtils)!;
+      expect(pattern.test(p('../other/foo.js'))).toBe(true);
+      expect(pattern.test(p('../another/foo.js'))).toBe(false);
+      expect(pattern.test(p('src/foo.js'))).toBe(false);
+    });
+
+    // An ancestor of rootDir contains rootDir, and everything between them.
+    test.each([
+      [
+        p('/'),
+        [p('src/foo.js'), p('../foo'), p('../nested/bar.js'), p('../')],
+        [p('../../foo.js'), p('../../')],
+      ],
+      [
+        p('/project/a'),
+        [p('b/foo.js'), p('../foo.js'), p('../c/foo.js')],
+        [p('../../foo.js'), p('../../a/foo.js')],
+      ],
+    ])('handles a root (%s) above rootDir', (root, inside, outside) => {
+      pathUtils = new RootPathUtils(root === p('/') ? p('/project') : p('/project/a/b'));
+      const pattern = pathsToPattern([root], pathUtils)!;
+      for (const normalPath of inside) {
+        expect([normalPath, pattern.test(normalPath)]).toEqual([normalPath, true]);
+      }
+      for (const normalPath of outside) {
+        expect([normalPath, pattern.test(normalPath)]).toEqual([normalPath, false]);
+      }
+    });
+  });
 });

@@ -15,6 +15,7 @@ import { performance } from 'perf_hooks';
 import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
+import createFallbackFilesystem from './crawlers/node/fallback';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';
 import { RootPathUtils } from './lib/RootPathUtils';
@@ -76,6 +77,11 @@ export type {
 
 export type InputOptions = Readonly<{
   computeSha1?: boolean | null | undefined;
+  /**
+   * Populate paths outside `roots` from the filesystem when they are first
+   * looked up (the on-demand filesystem). Default: true.
+   */
+  enableFallback?: boolean | null | undefined;
   enableSymlinks?: boolean | null | undefined;
   extensions: readonly string[];
   ignorePattern?: RegExp | null | undefined;
@@ -83,6 +89,13 @@ export type InputOptions = Readonly<{
   retainAllFiles: boolean;
   rootDir: string;
   roots: readonly string[];
+  /**
+   * Limit the on-demand filesystem to `serverRoot` and below, except through a
+   * symlink. Default: true.
+   */
+  scopeFallback?: boolean | null | undefined;
+  /** The directory `scopeFallback` limits the on-demand filesystem to. */
+  serverRoot?: string | null | undefined;
 
   cacheManagerFactory?: CacheManagerFactory | null | undefined;
   console?: Console;
@@ -110,6 +123,9 @@ type HealthCheckOptions = Readonly<{
 
 type InternalOptions = Readonly<
   BuildParameters & {
+    enableFallback: boolean;
+    scopeFallback: boolean;
+    serverRoot: string | null | undefined;
     healthCheck: HealthCheckOptions;
     perfLoggerFactory: PerfLoggerFactory | null | undefined;
     resetCache: boolean | null | undefined;
@@ -341,6 +357,11 @@ export default class FileMap extends EventEmitter {
     }
     this.#plugins = indexedPlugins;
 
+    // NOTE(@robhogan): The on-demand filesystem is on by default. Neither option is a build
+    // parameter, since neither changes what is crawled
+    const enableFallback = options.enableFallback ?? true;
+    const scopeFallback = options.scopeFallback ?? true;
+
     const buildParameters: BuildParameters = {
       cacheBreaker: CACHE_BREAKER,
       computeSha1: options.computeSha1 || false,
@@ -364,6 +385,9 @@ export default class FileMap extends EventEmitter {
       useWatchman: options.useWatchman ?? false,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
+      enableFallback,
+      scopeFallback: enableFallback && scopeFallback,
+      serverRoot: options.serverRoot,
     };
 
     this.#crawler = options.crawlerFactory
@@ -423,6 +447,27 @@ export default class FileMap extends EventEmitter {
           this.emit('metadata');
           return result?.content;
         };
+        const ignorePattern = this.#options.ignorePattern;
+        const fallbackFilesystem = this.#options.enableFallback
+          ? createFallbackFilesystem({
+              rootPathUtils: this.#pathUtils,
+              extensions: this.#options.extensions,
+              ignore: ignorePattern ? (filePath) => ignorePattern.test(filePath) : () => false,
+              includeSymlinks: this.#options.enableSymlinks,
+            })
+          : null;
+        // Watchman lists a symlinked root's files under its real path. A custom
+        // crawler's files may not be on disk.
+        const realRoots =
+          this.#crawler == null
+            ? await Promise.all(
+                this.#options.roots.map((root) => fsPromises.realpath(root).catch(() => root))
+              )
+            : [];
+        // NOTE(@robhogan): The file system's snapshot holds only what is under these roots, so
+        // they include the real paths of symlinked roots
+        const roots = removeOverlappingRoots([...this.#options.roots, ...realRoots]);
+        const serverRoot = this.#options.scopeFallback ? this.#options.serverRoot : null;
         const fileSystem =
           initialData != null
             ? TreeFS.fromDeserializedSnapshot({
@@ -434,8 +479,11 @@ export default class FileMap extends EventEmitter {
                 >[0]['fileSystemData'],
                 processFile,
                 rootDir,
+                fallbackFilesystem,
+                roots,
+                serverRoot,
               })
-            : new TreeFS({ processFile, rootDir });
+            : new TreeFS({ processFile, rootDir, fallbackFilesystem, roots, serverRoot });
         this.#startupPerfLogger?.point('constructFileSystem_end');
 
         const plugins = this.#plugins;
@@ -514,16 +562,8 @@ export default class FileMap extends EventEmitter {
 
         // The cache key does not include roots added by `addRoot`, so the
         // cache may hold files from an earlier instance's added roots. Drop
-        // them, including from plugins. Watchman lists a symlinked root's
-        // files under its real path. A custom crawler's files may not be on
-        // disk.
+        // them, including from plugins.
         if (initialData != null) {
-          const realRoots =
-            this.#crawler == null
-              ? await Promise.all(
-                  this.#options.roots.map((root) => fsPromises.realpath(root).catch(() => root))
-                )
-              : [];
           for (const canonicalPath of fileSystem.pathsOutsideRoots([
             ...this.#options.roots,
             ...realRoots,
@@ -651,6 +691,9 @@ export default class FileMap extends EventEmitter {
       abortSignal.throwIfAborted();
       const changeAggregator = await this.#applyFileDelta(fileSystem, this.#plugins, crawlResult);
       abortSignal.throwIfAborted();
+      // NOTE(@robhogan): The root is now crawled and watched, so the on-demand filesystem no
+      // longer needs to look for paths within it
+      fileSystem.excludeFromFallback(absoluteRoot);
       if (changeAggregator.getSize() === 0) {
         return;
       }

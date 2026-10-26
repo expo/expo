@@ -214,6 +214,28 @@ describe('FileMap.addRoot', () => {
     expect(rootPaths(fileMap)).toEqual(expectedRoots);
   });
 
+  test('stops looking for paths on disk within a root once it is added', async () => {
+    // `jest.resetModules()` gives the file map a fresh instance of the
+    // memfs-backed `fs` mock, so use the one it uses.
+    const { vol } = require('memfs') as typeof import('memfs');
+    const hiddenDir = path.join(EXTERNAL_DIR, '.hidden');
+    vol.fromJSON({
+      [path.join(hiddenDir, 'early.js')]: '',
+      [path.join(hiddenDir, 'late.js')]: '',
+    });
+    mockFiles.set(path.join(hiddenDir, 'early.js'), 1);
+    const { fileSystem } = await fileMap.build();
+
+    // Outside the roots, the on-demand filesystem finds files on disk.
+    expect(fileSystem.exists(path.join(hiddenDir, 'early.js'))).toBe(true);
+
+    await fileMap.addRoot(EXTERNAL_DIR);
+
+    // Within a crawled root, a path the crawl didn't find is missing.
+    expect(fileSystem.exists(path.join(hiddenDir, 'early.js'))).toBe(true);
+    expect(fileSystem.exists(path.join(hiddenDir, 'late.js'))).toBe(false);
+  });
+
   test('does not crawl a root within one added earlier, and waits for it', async () => {
     const { fileSystem } = await fileMap.build();
     // Awaited through the nested root below

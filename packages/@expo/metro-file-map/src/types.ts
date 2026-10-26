@@ -598,6 +598,28 @@ export interface MutableFileSystem extends FileSystem {
 
 export type Path = string;
 
+// A node in TreeFS. `null` in a directory is a path the fallback filesystem
+// has found to be missing.
+export type FallbackDirectoryNode = Map<string, FallbackNode | null>;
+export type FallbackNode = FileMetadata | FallbackDirectoryNode;
+
+/**
+ * Synchronous on-demand access to paths outside the crawled roots, used by
+ * TreeFS to populate missing nodes.
+ */
+export interface FallbackFilesystem {
+  lookup(
+    normalPath: Path,
+    absolutePath: string,
+    prevNode: FallbackNode | null | undefined
+  ): FallbackNode | null;
+  readdir(
+    normalPath: Path,
+    absolutePath: string,
+    dirNode: FallbackDirectoryNode | null | undefined
+  ): FallbackDirectoryNode | null;
+}
+
 export type ProcessFileFunction = (
   normalPath: string,
   metadata: FileMetadata,
