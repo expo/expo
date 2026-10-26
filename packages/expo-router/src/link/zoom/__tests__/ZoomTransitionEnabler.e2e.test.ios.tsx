@@ -8,6 +8,7 @@ import Stack from '../../../layouts/Stack';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
+import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDismissal';
 import { ZoomTransitionTargetContext } from '../zoom-transition-context';
 
 jest.mock('../../preview/native', () => {
@@ -72,6 +73,26 @@ function IndexWithZoomLink() {
     </View>
   );
 }
+
+describe('ZoomTransitionEnabler with usePreventZoomTransitionDismissal', () => {
+  beforeEach(() => {
+    MockedLinkZoomTransitionEnabler.mockClear();
+  });
+
+  it('passes the dismissal bounds from the hook to the native enabler', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: IndexWithZoomLink,
+      dest: function Dest() {
+        usePreventZoomTransitionDismissal({ unstable_dismissalBoundsRect: { maxX: 44 } });
+        return <View testID="dest-page" />;
+      },
+    });
+
+    await navigateViaZoomLink();
+    expect(getLastDismissalBoundsRect()).toEqual({ maxX: 44 });
+  });
+});
 
 describe('ZoomTransitionEnabler with gestureEnabled', () => {
   beforeEach(() => {

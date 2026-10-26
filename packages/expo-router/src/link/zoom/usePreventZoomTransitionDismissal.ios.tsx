@@ -83,6 +83,7 @@ export function usePreventZoomTransitionDismissal(
     options?.unstable_dismissalBoundsRect?.maxX,
     options?.unstable_dismissalBoundsRect?.minY,
     options?.unstable_dismissalBoundsRect?.maxY,
+    context.hasEnabler,
     context.setDismissalBoundsRect,
     gestureEnabled,
     navigation,
