@@ -61,6 +61,67 @@ extension JSIBenchmarks {
   }
 
   @Test(arguments: [10, 1000])
+  func `encode an Array of doubles`(count: Int) async throws {
+    try await benchmarkCase { runtime in
+      let array = (0..<count).map { Double($0) + 0.5 }
+      try benchmark("[Double].encode: \(count) elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [Double].encode(array, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test(arguments: [10, 1000])
+  func `encode an Array of bools`(count: Int) async throws {
+    try await benchmarkCase { runtime in
+      let array = (0..<count).map { $0 % 2 == 0 }
+      try benchmark("[Bool].encode: \(count) elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [Bool].encode(array, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test(arguments: [10, 1000])
+  func `encode an Array of strings`(count: Int) async throws {
+    try await benchmarkCase { runtime in
+      let array = (0..<count).map { "item \($0)" }
+      try benchmark("[String].encode: \(count) elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [String].encode(array, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test(arguments: [10, 1000])
+  func `encode an Array of optional ints`(count: Int) async throws {
+    try await benchmarkCase { runtime in
+      let array: [Int?] = (0..<count).map { $0 % 2 == 0 ? $0 : nil }
+      try benchmark("[Int?].encode: \(count) elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [Int?].encode(array, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test(arguments: [10, 1000])
+  func `encode an Array through the default slot encode`(count: Int) async throws {
+    // `DefaultEncodedNumber` has no `encode(_:into:in:)`, so this measures the default implementation.
+    try await benchmarkCase { runtime in
+      let array = (0..<count).map { DefaultEncodedNumber(value: Double($0)) }
+      try benchmark("[DefaultEncodedNumber].encode: \(count) elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [DefaultEncodedNumber].encode(array, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test(arguments: [10, 1000])
   func `encode a Set of ints`(count: Int) async throws {
     try await benchmarkCase { runtime in
       let set = Set(0..<count)
@@ -70,5 +131,16 @@ extension JSIBenchmarks {
         }
       }
     }
+  }
+}
+
+/// Encodes as a number through the default `encode(_:into:in:)`.
+private struct DefaultEncodedNumber: JavaScriptEncodable {
+  let value: Double
+
+  static func encode(_ value: DefaultEncodedNumber, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return .number(value.value)
   }
 }

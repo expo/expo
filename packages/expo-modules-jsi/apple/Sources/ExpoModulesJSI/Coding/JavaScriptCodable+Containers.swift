@@ -50,8 +50,10 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
   public static func encode(_ value: [Element], in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    return try runtime.createArray(count: value.count) { index in
-      return try Element.encode(value[index], in: runtime)
+    // Each element is encoded into its slot in the array's chunk, with no type checks: element types that
+    // can skip the intermediate `JavaScriptValue` override `encode(_:into:in:)`.
+    return try runtime.createArray(count: value.count) { (index: Int, slot: borrowing JavaScriptValue.Slot) in
+      try Element.encode(value[index], into: slot, in: runtime)
     }
   }
 }

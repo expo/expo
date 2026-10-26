@@ -5,7 +5,8 @@ internal import jsi
 
 extension JavaScriptValue {
   /// Memory for one engine value that a `JavaScriptEncodable` type encodes into with
-  /// ``JavaScriptEncodable/encode(_:into:in:)``, for example an argument of a JavaScript function call.
+  /// ``JavaScriptEncodable/encode(_:into:in:)``, for example an argument of a JavaScript function call or an
+  /// element of a new array.
   ///
   /// The slot holds no value at first. An encode that returns normally writes exactly one value into it,
   /// and one that throws writes nothing: the slot's owner releases only the values that were written, so a

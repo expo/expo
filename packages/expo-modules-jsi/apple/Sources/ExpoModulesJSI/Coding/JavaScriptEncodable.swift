@@ -13,8 +13,8 @@ public protocol JavaScriptEncodable: ~Copyable {
   @JavaScriptActor
   static func encode(_ value: consuming Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
 
-  /// Encodes `value` straight into `slot`, for example an argument of a JavaScript function call. See
-  /// `JavaScriptValue.Slot` for what the encode must write.
+  /// Encodes `value` straight into `slot`, for example an argument of a JavaScript function call or an
+  /// element of a new array. See `JavaScriptValue.Slot` for what the encode must write.
   ///
   /// The default implementation moves the result of ``encode(_:in:)`` into the slot. Numbers, booleans,
   /// strings and optionals of them override it to construct the value in the slot: each move or destroy
