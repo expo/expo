@@ -6,12 +6,13 @@ import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
-import { getIconButtonContainerColors, useToolbarColors } from '../context';
+import { useToolbarColors } from '../context';
 import {
   DEFAULT_DESTRUCTIVE_COLOR,
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
   DEFAULT_TOOLBAR_TINT_COLOR,
 } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
 import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');

@@ -3,8 +3,9 @@
 import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
-import { getIconButtonContainerColors, useToolbarColors } from '../context';
+import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
 import type { NativeToolbarButtonProps } from './types';
 
 /**

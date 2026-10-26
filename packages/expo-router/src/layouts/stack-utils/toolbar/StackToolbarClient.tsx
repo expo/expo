@@ -79,12 +79,8 @@ export interface StackToolbarProps {
    */
   backgroundColor?: ColorValue;
   /**
-   * Container color for the toolbar's buttons and menu buttons. Each one is
-   * drawn on a round Material icon button container in this color. Use it to
-   * keep header buttons visible over content, like a photo or a map.
-   * When it is not set, the buttons have no container.
-   *
-   * Only applies to `placement="left"` and `placement="right"` on Android.
+   * Color of the round container behind each header button and menu button.
+   * Use it to keep buttons visible over content, like a photo or a map.
    *
    * @platform android
    */
