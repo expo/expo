@@ -44,12 +44,20 @@ describe('Installing app-owned dependencies', () => {
     }
     expect(await detachSharedNodeModules(project, true)).toBeUndefined();
     expect(await detachSharedNodeModules(project)).toBeUndefined();
-    expect(await getPackageManager(project)).toBe('pnpm');
-    expect(await getInstallArguments(project, 'pnpm', true)).toEqual([
+    expect(await getPackageManager(project, workspace)).toBe('pnpm');
+    expect(await getInstallArguments(project, 'pnpm', true, workspace)).toEqual([
       'install',
       '--frozen-lockfile',
     ]);
     expect(lstatSync(join(project, 'node_modules/expo')).isSymbolicLink()).toBe(true);
+  });
+  it('should ignore workspace declarations above the integration root', async () => {
+    writeFileSync(join(root, 'pnpm-workspace.yaml'), 'packages:\n  - other/*\n');
+    writeFileSync(join(root, 'pnpm-lock.yaml'), 'lockfileVersion: 9');
+    expect(await getPackageManager(project, join(root, 'app'))).toBe('npm');
+    await expect(getInstallArguments(project, 'pnpm', true, join(root, 'app'))).rejects.toThrow(
+      `requires a lockfile in ${project}`
+    );
   });
   it('should use reproducible installs when a matching lockfile exists', async () => {
     writeFileSync(join(project, 'package-lock.json'), '{}');

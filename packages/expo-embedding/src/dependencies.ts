@@ -9,21 +9,27 @@ const lockfiles = {
   bun: ['bun.lock', 'bun.lockb'],
 };
 
-async function findPnpmWorkspace(project: string): Promise<string | undefined> {
+async function findPnpmWorkspace(
+  project: string,
+  integrationRoot: string
+): Promise<string | undefined> {
   for (let directory = resolve(project); ; directory = dirname(directory)) {
+    const pathFromRoot = relative(resolve(integrationRoot), directory);
+    if (pathFromRoot === '..' || pathFromRoot.startsWith('../') || isAbsolute(pathFromRoot)) return;
     if (await exists(join(directory, 'pnpm-workspace.yaml'))) return directory;
-    if (dirname(directory) === directory) return;
+    if (!pathFromRoot || dirname(directory) === directory) return;
   }
 }
 
 export async function getInstallArguments(
   project: string,
   manager: keyof typeof lockfiles,
-  frozen: boolean
+  frozen: boolean,
+  integrationRoot = project
 ): Promise<string[]> {
   if (!frozen) return ['install'];
   const lockfileRoot =
-    manager === 'pnpm' ? ((await findPnpmWorkspace(project)) ?? project) : project;
+    manager === 'pnpm' ? ((await findPnpmWorkspace(project, integrationRoot)) ?? project) : project;
   if (
     !(await Promise.all(lockfiles[manager].map((file) => exists(join(lockfileRoot, file))))).some(
       Boolean
@@ -36,7 +42,10 @@ export async function getInstallArguments(
   return manager === 'npm' ? ['ci'] : ['install', '--frozen-lockfile'];
 }
 
-export async function getPackageManager(project: string): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> {
+export async function getPackageManager(
+  project: string,
+  integrationRoot = project
+): Promise<'npm' | 'pnpm' | 'yarn' | 'bun'> {
   const manifest = await readJSON(join(project, 'package.json'));
   if (manifest.packageManager) {
     const name = manifest.packageManager.split('@')[0];
@@ -57,7 +66,7 @@ export async function getPackageManager(project: string): Promise<'npm' | 'pnpm'
       'Multiple package manager lockfiles exist in expo/. Set packageManager in expo/package.json or remove the obsolete lockfiles, then rerun init.'
     );
   }
-  return managers[0] ?? ((await findPnpmWorkspace(project)) ? 'pnpm' : 'npm');
+  return managers[0] ?? ((await findPnpmWorkspace(project, integrationRoot)) ? 'pnpm' : 'npm');
 }
 
 export async function detachSharedNodeModules(
