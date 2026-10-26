@@ -70,6 +70,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///
   /// The runtime has the config of React Native's bridgeless runtime, so promise reactions go to the
   /// microtask queue. Without React Native's event loop, call ``drainMicrotasks()`` after each task.
+  /// Nothing else drains the queue: on a runtime without a host that does, ``evalAsync(label:_:)`` and
+  /// ``JavaScriptPromise/await()`` never complete.
   public init() {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
@@ -724,6 +726,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Evaluates given JavaScript source code in an async context. If the evaluated source returns a Promise, it awaits until the promise is resolved/rejected.
+  ///
+  /// Awaiting a promise needs a host that drains the microtask queue, like React Native. On a runtime
+  /// created with ``init()`` that nothing drains, a returned promise never settles and this never returns.
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
@@ -740,16 +745,33 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   /// Runs the queued microtasks, such as promise reactions, until the queue is empty.
   ///
-  /// React Native does this after each task it runs on the JavaScript thread, so a runtime that it
-  /// hosts never needs this call. A standalone runtime has no such loop: its host must call this after
-  /// each top-level task, or promise reactions never run.
+  /// Call this only for a runtime created with ``init()``. Its host must call this after each top-level
+  /// task, or promise reactions never run. React Native does this itself after each task it runs on the
+  /// JavaScript thread; calling it on a runtime that React Native hosts would bypass React Native's
+  /// error handling. Like React Native's checkpoint, a call from a microtask does nothing, so the
+  /// remaining microtasks run after the current one.
   ///
-  /// - Throws: The first error thrown by a microtask, after the rest of the queue ran.
+  /// - Throws: A ``JavaScriptError`` with the first value thrown by a microtask, after the rest of the
+  ///   queue ran.
   @JavaScriptActor
   public func drainMicrotasks() throws {
-    _ = try capturingCppErrors {
-      expo.drainMicrotasks(pointee)
+    do {
+      _ = try capturingCppErrors {
+        expo.drainMicrotasks(pointee)
+      }
+    } catch let error as expo.CppError {
+      throw JavaScriptError(self, error.jsError)
+    } catch {
+      throw JavaScriptError(self, message: String(describing: error))
     }
+  }
+
+  /// Queues a function in the microtask queue, for tests of ``drainMicrotasks()``: the standalone
+  /// runtime has no `queueMicrotask` global.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func queueMicrotask(_ callback: borrowing JavaScriptFunction) {
+    expo.queueMicrotask(pointee, callback.pointee)
   }
 
   // MARK: - Garbage collection

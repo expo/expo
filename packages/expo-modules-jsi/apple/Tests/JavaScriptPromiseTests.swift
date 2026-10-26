@@ -105,8 +105,8 @@ struct JavaScriptPromiseTests {
       promise.resolve("late")
       // Let the engine run its reactions before anything is awaited.
       try runtime.drainMicrotasks()
-      let result = try await promise.await()
-      #expect(result.getString() == "late")
+      let result = try await promise.await().ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "late")
     }
   }
 
@@ -183,8 +183,8 @@ struct JavaScriptPromiseTests {
 
       promise.resolve(JavaScriptValue(runtime, "hello"))
 
-      let result = try await promise.await()
-      #expect(result.getString() == "hello")
+      let result = try await promise.await().ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "hello")
     }
   }
 
@@ -288,7 +288,10 @@ struct JavaScriptPromiseTests {
   @Test
   func `wrap pending promise that resolves later`() async throws {
     try await TestRuntimeScheduler().makeRuntime().run { runtime in
-      let pendingPromise = try runtime.eval("new Promise((resolve) => { Promise.resolve().then(() => resolve(100)) })").getPromise()
+      let pendingPromise =
+        try runtime
+        .eval("new Promise((resolve) => { Promise.resolve().then(() => resolve(100)) })")
+        .getPromise()
       let result = try await pendingPromise.await()
 
       #expect(result.getInt() == 100)

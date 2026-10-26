@@ -11,7 +11,8 @@ struct TestAppContextTests {
   @Test
   func `promise reactions run after the synchronous code`() async throws {
     let appContext = TestAppContext()
-    let result = try await appContext.runtime.evalAsync(
+    let runtime = try appContext.runtime
+    let result = try await runtime.evalAsync(
       """
       (() => {
         const log = [];
@@ -20,14 +21,16 @@ struct TestAppContextTests {
         return Promise.resolve().then(() => log.join(','));
       })()
       """
-    )
-    #expect(try result.asString() == "sync,then")
+    ).ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "sync,then")
   }
 
   @Test
   func `awaits in a loop do not grow the native stack`() async throws {
     let appContext = TestAppContext()
-    let result = try await appContext.runtime.evalAsync(
+    let runtime = try appContext.runtime
+    let result = try await runtime.evalAsync(
       """
       (async () => {
         for (let i = 0; i < 10000; i++) {
@@ -36,7 +39,7 @@ struct TestAppContextTests {
         return 'done';
       })()
       """
-    )
-    #expect(try result.asString() == "done")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
   }
 }

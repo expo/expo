@@ -145,9 +145,9 @@ struct JavaScriptRuntimeTests {
   func `execute async awaits JavaScript evaluation`() async throws {
     try await TestRuntimeScheduler().makeRuntime().run { runtime in
       let result = try await runtime.execute {
-        try await runtime.evalAsync("Promise.resolve('async result')").getString()
+        try await runtime.evalAsync("Promise.resolve('async result')").ref()
       }
-      #expect(result == "async result")
+      #expect(try await runtime.execute { try result.take().getString() } == "async result")
     }
   }
 
@@ -1047,9 +1047,9 @@ struct JavaScriptRuntimeTests {
       }
 
       runtime.global().setProperty("greet", value: fn.asValue())
-      let result = try await runtime.evalAsync("Promise.resolve(greet('World'))")
+      let result = try await runtime.evalAsync("Promise.resolve(greet('World'))").ref()
 
-      #expect(result.getString() == "Hello, World!")
+      #expect(try await runtime.execute { try result.take().getString() } == "Hello, World!")
     }
   }
 
@@ -1381,6 +1381,44 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `drainMicrotasks throws the first error after running the rest of the queue`() throws {
+    try runtime.eval("globalThis.log = []")
+    runtime.queueMicrotask(try runtime.eval("() => { throw new Error('first') }").getFunction())
+    runtime.queueMicrotask(try runtime.eval("() => { throw new Error('second') }").getFunction())
+    runtime.queueMicrotask(try runtime.eval("() => { log.push('after') }").getFunction())
+
+    let error = #expect(throws: JavaScriptError.self) {
+      try runtime.drainMicrotasks()
+    }
+    #expect(error?.toValue().getObject().getProperty("message").getString() == "first")
+    #expect(try runtime.eval("log.join(',')").getString() == "after")
+  }
+
+  @Test
+  func `drainMicrotasks called from a microtask leaves the rest of the queue for later`() throws {
+    let drain = runtime.createFunction("drain") { [runtime] _, _ in
+      try runtime.drainMicrotasks()
+      return .undefined()
+    }
+    runtime.global().setProperty("drain", value: drain)
+    try runtime.eval(
+      """
+      globalThis.log = [];
+      Promise.resolve().then(() => {
+        log.push('first start');
+        drain();
+        log.push('first end');
+      });
+      Promise.resolve().then(() => log.push('second'));
+      """
+    )
+    try runtime.drainMicrotasks()
+    // Like React Native's checkpoint, the nested call returns at once, so the first microtask runs
+    // to completion before the second one starts.
+    #expect(try runtime.eval("log.join(',')").getString() == "first start,first end,second")
+  }
+
+  @Test
   func `awaits in a loop do not grow the native stack`() async throws {
     try await TestRuntimeScheduler().makeRuntime().run { runtime in
       // Each `await` continuation runs from the microtask queue, not nested in the code that
@@ -1394,8 +1432,8 @@ struct JavaScriptRuntimeTests {
           return 'done';
         })()
         """
-      )
-      #expect(result.getString() == "done")
+      ).ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "done")
     }
   }
 
