@@ -21,7 +21,7 @@ echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 if ! $has_device; then
     if ! $ANDROID_SDK_ROOT/emulator/emulator -list-avds | grep -qx bare-expo; then
         echo " ⚠️  No emulator for bare Expo found, creating one..."
-        $DIR/create-emulator.sh 34
+        $DIR/create-emulator.sh 36
     fi
 
     if $ANDROID_SDK_ROOT/platform-tools/adb devices -l | grep -q emulator; then
