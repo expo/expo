@@ -439,6 +439,22 @@ describe('FileMap', () => {
     expect(FileMap.H).toBe(require('../constants').default);
   });
 
+  test('drops duplicate roots and roots nested inside another root', () => {
+    const fileMap = new FileMap({
+      ...defaultConfig,
+      roots: [
+        p('/project/vegetables'),
+        p('/project/fruits/apples'),
+        p('/project/fruits'),
+        p('/project/vegetables/'),
+      ],
+    });
+    expect(fileMap.getRoots()).toEqual([
+      { absolutePath: p('/project/fruits'), rootRelativePath: 'fruits', dynamic: false },
+      { absolutePath: p('/project/vegetables'), rootRelativePath: 'vegetables', dynamic: false },
+    ]);
+  });
+
   test('getOrComputeFileData records a file found as content, as well as what lookup records', async () => {
     const { dependencyPlugin } = await buildNewFileMap();
     if (dependencyPlugin == null) {
