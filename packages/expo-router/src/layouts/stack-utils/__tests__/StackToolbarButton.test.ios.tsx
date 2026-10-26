@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
+import { Platform } from 'react-native';
 
 import {
   StackToolbarButton,
@@ -399,16 +400,48 @@ describe('StackToolbarButton component', () => {
     afterEach(() => {
       process.env.NODE_ENV = originalEnv;
       consoleSpy.mockRestore();
+      jest.restoreAllMocks();
     });
 
-    it('does not warn about Badge in bottom placement', async () => {
+    it('does not warn about Badge on iOS 27', async () => {
       process.env.NODE_ENV = 'development';
+      jest.spyOn(Platform, 'Version', 'get').mockReturnValue('27.0');
 
       await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton icon="star.fill">
             <StackToolbarBadge>3</StackToolbarBadge>
           </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+
+    it('warns that Badge is ignored on iOS 26', async () => {
+      process.env.NODE_ENV = 'development';
+      jest.spyOn(Platform, 'Version', 'get').mockReturnValue('26.4');
+
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill">
+            <StackToolbarBadge>3</StackToolbarBadge>
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Badge on Stack.Toolbar.Button in placement="bottom" is not displayed on iOS versions earlier than 27. UIKit does not draw the badge on a bottom toolbar item there, so the badge is ignored. Run the app on iOS 27 or later to see the badge.'
+      );
+    });
+
+    it('does not warn when Button has no Badge on iOS 26', async () => {
+      process.env.NODE_ENV = 'development';
+      jest.spyOn(Platform, 'Version', 'get').mockReturnValue('26.4');
+
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="star.fill" />
         </ToolbarPlacementContext.Provider>
       );
 

@@ -60,7 +60,7 @@ export interface StackToolbarButtonProps {
    * }
    * ```
    *
-   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only. On iOS, the badge requires iOS 26 or later.
+   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only. In the bottom toolbar on iOS, the badge is displayed on iOS 27 or later.
    */
   children?: ReactNode;
   /**
@@ -185,7 +185,7 @@ export interface NativeToolbarButtonProps {
   label?: string;
   /* @platform android */
   source?: ImageSourcePropType;
-  /** Badge overlay on the icon. On iOS, requires iOS 26 or later.
+  /** Badge overlay on the icon. In the bottom toolbar on iOS, displayed on iOS 27 or later.
    * @platform android
    * @platform ios */
   badge?: NativeStackHeaderItemButton['badge'];
