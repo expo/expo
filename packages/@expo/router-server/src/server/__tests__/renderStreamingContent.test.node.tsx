@@ -8,10 +8,18 @@ const mockRenderContent = jest.fn<ReactNode, []>();
 
 // Metro provides these require.context modules when bundling an app.
 jest.mock('expo-router/_ctx', () => {
+  const { useLoaderData } = require('expo-router');
+
+  function LocaleIndex() {
+    const data = useLoaderData();
+    return data?.message ?? 'MISSING';
+  }
+
   const routes = {
     './index.tsx': { default: () => 'Index route' },
     './post.tsx': { default: () => 'Post route' },
     './suspense.tsx': { default: () => mockRenderContent() },
+    './[locale]/index.tsx': { default: LocaleIndex },
   };
   return {
     ctx: Object.assign((key: keyof typeof routes) => routes[key], {
@@ -62,6 +70,57 @@ it.each(['server', 'static'] as const)(
     });
   }
 );
+
+describe.each(['server', 'static'] as const)('%s output with loader data', (output) => {
+  it.each([
+    ['plain query', '?page=2', '/en/index?page=2'],
+    ['re-encoded comma', '?a=b,c', '/en/index?a=b%2Cc'],
+    ['re-encoded space', '?a=b%20c', '/en/index?a=b+c'],
+    ['re-encoded at sign', '?foo=a@b.example', '/en/index?foo=a%40b.example'],
+    ['re-encoded colon', '?a=x:y', '/en/index?a=x%3Ay'],
+    ['query key matching a route param', '?locale=fr', '/en/index'],
+    ['repeated keys', '?a=1&b=2&a=3', '/en/index?a=1&a=3&b=2'],
+    ['integer-like keys', '?2=x&1=y', '/en/index?1=y&2=x'],
+  ])('renders and stores loader data for a %s', async (_name, search, expectedKey) => {
+    const location = new URL(`http://localhost/en${search}`);
+    const loaderData = { message: 'LOADER DATA RENDERED' };
+    const options = {
+      route: { file: './[locale]/index.tsx', page: '/[locale]/index' },
+      params: { locale: 'en' },
+      loader: { key: '/en/index', data: loaderData },
+    };
+    const warn = console.warn;
+    const consoleWarn =
+      search === '?locale=fr'
+        ? jest.spyOn(console, 'warn').mockImplementation((message, ...rest) => {
+            if (
+              typeof message === 'string' &&
+              message.includes('was specified both in the path and as a param')
+            ) {
+              return;
+            }
+            warn(message, ...rest);
+          })
+        : undefined;
+
+    try {
+      const content =
+        output === 'static'
+          ? await getStreamingContent(location, { ...options, output: 'static' })
+          : await new Response(await getStreamingContent(location, options)).text();
+      const html = parse(content);
+
+      expect(html.querySelector('#root')?.textContent).toContain(loaderData.message);
+      const bootstrap = html.querySelector('script:not([src])');
+      expect(bootstrap).not.toBeNull();
+      const globals: Record<string, unknown> = {};
+      runInNewContext(bootstrap!.textContent, globals);
+      expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ [expectedKey]: loaderData });
+    } finally {
+      consoleWarn?.mockRestore();
+    }
+  });
+});
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
