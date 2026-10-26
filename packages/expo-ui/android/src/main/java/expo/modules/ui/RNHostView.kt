@@ -26,9 +26,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
@@ -216,7 +213,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       val modifiers = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher)
         .then(sizingModifier)
         .then(publishContentOriginModifier())
-        .then(yieldToReactNativeModifier(wrapper))
 
       // `addView` creates a new wrapper for each mounted child, and `AndroidView` only calls `factory` once.
       key(wrapper) {
@@ -308,25 +304,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       }
     }
   }
-
-  /**
-   * A tap on plain hosted content goes to the Compose parent, for example a `clickable` row. When
-   * hosted content claims the gesture in JavaScript, like a `Pressable`, this consumes the rest of
-   * it, so the parent cancels its press, the same as a native parent of a clickable child.
-   */
-  private fun yieldToReactNativeModifier(wrapper: TouchDispatchingRootViewGroup): Modifier =
-    Modifier.pointerInput(wrapper) {
-      awaitPointerEventScope {
-        while (true) {
-          val event = awaitPointerEvent(PointerEventPass.Initial)
-          if (event.changes.any { it.changedToDownIgnoreConsumed() }) {
-            wrapper.reactNativeClaimedGesture = false
-          } else if (wrapper.reactNativeClaimedGesture) {
-            event.changes.forEach { it.consume() }
-          }
-        }
-      }
-    }
 
   // Sets Yoga node size from Compose view size
   // Listens to Compose view size changes and updates the Yoga node size
@@ -472,14 +449,6 @@ private class TouchDispatchingRootViewGroup(
    */
   var dispatchesTouchesToJS: Boolean = false
 
-  // Whether this view left the current gesture to Compose, because only plain React Native views
-  // are under the finger. The ancestor root still streams the gesture to JavaScript.
-  private var leftGestureToCompose = false
-
-  // Whether hosted content claimed a gesture that this view left to Compose. React Native's
-  // responder system asks ancestors not to intercept when JavaScript takes a touch.
-  var reactNativeClaimedGesture = false
-
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
 
@@ -522,8 +491,7 @@ private class TouchDispatchingRootViewGroup(
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
       // Like a native view that doesn't handle touches, plain hosted content lets the Compose
       // parent handle the gesture. Only a host that dispatches to JavaScript must own its gestures.
-      leftGestureToCompose = !dispatchesTouchesToJS && !hasNativeTouchTarget(this, ev.x, ev.y)
-      if (leftGestureToCompose) {
+      if (!dispatchesTouchesToJS && !hasNativeTouchTarget(this, ev.x, ev.y)) {
         return false
       }
     }
@@ -726,9 +694,6 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (disallowIntercept && leftGestureToCompose) {
-      reactNativeClaimedGesture = true
-    }
     // Forward the request up so Compose learns the list claimed the gesture and its own sheet-drag
     // yields. But don't call super: setting our own FLAG_DISALLOW_INTERCEPT would skip
     // onInterceptTouchEvent, which must keep firing to dispatch touches to JS (the reason #43716
