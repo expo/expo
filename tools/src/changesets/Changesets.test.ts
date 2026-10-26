@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
+import { EXPO_DIR } from '../Constants';
 import {
   assertReleaseBranch,
   assertChangesetPrerequisiteAsync,
@@ -14,6 +15,9 @@ import {
   runChangesetsAsync,
 } from './Changesets';
 
+const config = JSON.parse(fs.readFileSync(path.join(EXPO_DIR, '.changeset/expo.json'), 'utf8')) as {
+  branches: Record<string, { publish: string | null; canary: string | null; allowMajor: boolean }>;
+};
 const temporaryDirectories: string[] = [];
 
 async function makeChangesetsDirAsync(files: Record<string, string>): Promise<string> {
@@ -39,11 +43,19 @@ afterEach(async () => {
 
 describe('Changesets release prerequisites', () => {
   it('restricts stable and canary release branches independently', async () => {
-    await assert.doesNotReject(assertReleaseBranch('main', 'stable'));
-    await assert.rejects(assertReleaseBranch('sdk-58', 'stable'), /not enabled/);
-    await assert.doesNotReject(assertReleaseBranch('sdk-57', 'stable'));
-    await assert.doesNotReject(assertReleaseBranch('main', 'canary'));
-    await assert.doesNotReject(assertReleaseBranch('sdk-58', 'canary'));
+    for (const [branch, policy] of Object.entries(config.branches)) {
+      for (const [kind, tag] of [
+        ['stable', policy.publish],
+        ['canary', policy.canary],
+      ] as const) {
+        if (tag) {
+          await assert.doesNotReject(assertReleaseBranch(branch, kind));
+        } else {
+          await assert.rejects(assertReleaseBranch(branch, kind), /not enabled/);
+        }
+      }
+    }
+    await assert.doesNotReject(assertReleaseBranch('sdk-0', 'stable'));
     await assert.rejects(assertReleaseBranch('feature', 'canary'), /not enabled/);
   });
 
@@ -84,21 +96,27 @@ describe('Changesets release prerequisites', () => {
     });
 
     const changesets = await getPendingChangesetsAsync(directory);
-    await assert.rejects(assertNoMajorChangesetsAsync(changesets, 'sdk-58'), /major\.md/);
-    await assert.rejects(
-      assertNoMajorChangesetsAsync(
-        changesets.filter((changeset) => changeset.id === 'quoted-major'),
-        'sdk-58'
-      ),
-      /quoted-major\.md/
-    );
-    await assert.doesNotReject(
-      assertNoMajorChangesetsAsync(
-        changesets.filter((changeset) => changeset.id === 'patch'),
-        'sdk-58'
-      )
-    );
-    await assert.rejects(assertNoMajorChangesetsAsync(changesets, 'main'), /major\.md/);
+    for (const [branch, policy] of Object.entries(config.branches)) {
+      if (policy.allowMajor) {
+        await assert.doesNotReject(assertNoMajorChangesetsAsync(changesets, branch));
+      } else {
+        await assert.rejects(assertNoMajorChangesetsAsync(changesets, branch), /major\.md/);
+        await assert.rejects(
+          assertNoMajorChangesetsAsync(
+            changesets.filter((changeset) => changeset.id === 'quoted-major'),
+            branch
+          ),
+          /quoted-major\.md/
+        );
+      }
+      await assert.doesNotReject(
+        assertNoMajorChangesetsAsync(
+          changesets.filter((changeset) => changeset.id === 'patch'),
+          branch
+        )
+      );
+    }
+    await assert.rejects(assertNoMajorChangesetsAsync(changesets, 'sdk-0'), /major\.md/);
     await assert.doesNotReject(assertNoMajorChangesetsAsync(changesets, 'feature'));
   });
 
@@ -131,19 +149,31 @@ describe('Changesets release prerequisites', () => {
     const prerelease = await makeChangesetsDirAsync({
       'pre.json': JSON.stringify({ mode: 'pre', tag: 'next' }),
     });
-    assert.deepEqual(await getStablePublishArgsAsync('sdk-57', stable), [
-      'publish',
-      '--tag',
-      'sdk-57',
-    ]);
-    assert.deepEqual(await getStablePublishArgsAsync('main', stable), [
+    const latestBranches = Object.entries(config.branches)
+      .filter(([, policy]) => policy.publish === 'latest')
+      .map(([branch]) => branch);
+    assert.equal(latestBranches.length, 1, 'Exactly one branch must publish latest');
+    const [latestBranch] = latestBranches;
+    assert.deepEqual(await getStablePublishArgsAsync(latestBranch, stable), [
       'publish',
       '--tag',
       'latest',
     ]);
-    assert.deepEqual(await getStablePublishArgsAsync('main', prerelease), ['publish']);
-    await assert.rejects(getStablePublishArgsAsync('sdk-58', stable), /not enabled/);
-    assert.equal(await getReleaseTagAsync('sdk-57', 'canary'), 'canary-sdk-57');
-    assert.equal(await getReleaseTagAsync('sdk-58', 'canary'), 'canary');
+    assert.deepEqual(await getStablePublishArgsAsync(latestBranch, prerelease), ['publish']);
+    for (const [branch, policy] of Object.entries(config.branches)) {
+      for (const route of ['publish', 'canary'] as const) {
+        if (policy[route]) {
+          assert.equal(await getReleaseTagAsync(branch, route), policy[route]);
+        } else {
+          await assert.rejects(getReleaseTagAsync(branch, route), /not enabled/);
+        }
+      }
+    }
+    assert.deepEqual(await getStablePublishArgsAsync('sdk-0', stable), [
+      'publish',
+      '--tag',
+      'sdk-0',
+    ]);
+    assert.equal(await getReleaseTagAsync('sdk-0', 'canary'), 'canary-sdk-0');
   });
 });
