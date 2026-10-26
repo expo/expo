@@ -34,7 +34,7 @@ internal struct ObservabilityManager {
   private static let serializer = DispatchSerializer()
 
   /// Log names that `errorSampleRate` applies to.
-  private nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
+  internal nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
 
   internal static func dispatch() async {
     await serializer.run {
@@ -199,7 +199,7 @@ internal struct ObservabilityManager {
           guard !event.logs.isEmpty else {
             return nil
           }
-          return event.toOTResourceLogs(easClientId)
+          return event.toOTResourceLogs(easClientId, inSampleRate: shouldDispatch)
         }
         guard !resourceLogs.isEmpty else {
           return nil

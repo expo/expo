@@ -280,11 +280,14 @@ extension Event.Metric {
 }
 
 extension Event.Log {
-  func toOTLogRecord() -> OTLogRecord {
+  func toOTLogRecord(inSampleRate: Bool) -> OTLogRecord {
     var attributes: [OTAttribute] = [
       OTAttribute(key: "session.id", rawValue: sessionId),
       OTAttribute(key: "event.name", rawValue: name),
     ]
+    if ObservabilityManager.errorLogNames.contains(name) {
+      attributes.append(OTAttribute(key: "expo.error.in_sample_rate", value: .bool(inSampleRate)))
+    }
 
     var encodeTimeDrops = 0
     if let userDict = self.attributes?.value as? [String: Any] {
@@ -528,13 +531,13 @@ extension Event {
     )
   }
 
-  func toOTResourceLogs(_ easClientId: String) -> OTResourceLogs {
+  func toOTResourceLogs(_ easClientId: String, inSampleRate: Bool) -> OTResourceLogs {
     OTResourceLogs(
       resource: toOTMetadata(easClientId),
       scopeLogs: [
         OTScopeLogs(
           scope: OTScope(name: "expo-observe", version: ObserveVersions.clientVersion),
-          logRecords: self.logs.map { $0.toOTLogRecord() }
+          logRecords: self.logs.map { $0.toOTLogRecord(inSampleRate: inSampleRate) }
         )
       ],
       schemaUrl: semConvSchemaUrl
