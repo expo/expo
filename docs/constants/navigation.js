@@ -548,6 +548,7 @@ export const eas = [
         makePage('build-reference/caching.mdx'),
         makePage('build-reference/android-builds.mdx'),
         makePage('build-reference/ios-builds.mdx'),
+        makePage('build-reference/project-upload.mdx'),
         makePage('build-reference/build-configuration.mdx'),
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),

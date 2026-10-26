@@ -102,7 +102,7 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 
 - Remove any files or directories Metro was unable to resolve from your **.gitignore**. However, this poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
 
-- Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See [How can I upload files to EAS Build if they are gitignored?](https://expo.fyi/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
+- Store the file as a [file environment variable](/eas/environment-variables/faq/#can-i-use-file-environment-variables-in-my-eas-project). If the file does not contain secrets, you can include it in the project archive with [.easignore](/build-reference/easignore/#adding-files-to-your-project-upload-with-easignore).
 
 - Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/eas/environment-variables/#visibility-settings-for-environment-variables) for more information.
 
@@ -153,7 +153,7 @@ If the logs weren't enough to immediately help you understand and fix the root c
 
 - Relevant [Build tool versions](/build/eas-json#configuring-build-tools) (for example, Xcode, Node.js, npm, Yarn) are the same in both environments.
 - Relevant [environment variables](/eas/environment-variables) are the same in both environments.
-- The [archive](https://expo.fyi/eas-build-archive) that is uploaded to EAS Build includes the same relevant source files.
+- The [project archive](/build-reference/project-upload/#what-the-project-archive-includes) that EAS CLI uploads to EAS Build includes the same relevant source files.
 
 You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
 
@@ -216,7 +216,7 @@ By default, EAS Build follows a relatively straightforward process for building 
 - Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
 - Check that your [environment variables](/guides/environment-variables) are properly configured.
 - Verify that versions of Node.js, npm, Yarn, Xcode, Java, and other tools are the same in both environments.
-- Ensure that the [archive you are uploading to EAS Build](https://expo.fyi/eas-build-archive) includes the same relevant source files.
+- Ensure that the [project archive you are uploading to EAS Build](/build-reference/project-upload/#what-the-project-archive-includes) includes the same relevant source files.
 
 </Collapsible>
 
