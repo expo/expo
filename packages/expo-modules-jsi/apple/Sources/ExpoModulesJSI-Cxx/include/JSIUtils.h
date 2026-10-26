@@ -256,6 +256,15 @@ inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
 }
 
 /**
+ Creates a string from UTF-8 bytes straight in the slot. Placement new, like the helpers above: the slot must
+ hold a value that owns nothing. The `jsi::String` is moved into the value with the inline constructors, so
+ the only engine call is the one that creates the string.
+ */
+inline void emplaceStringFromUtf8(jsi::Value *_Nonnull slot, jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  ::new (slot) jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
  Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
  helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
  pointer, so destroying it afterwards releases nothing.
@@ -290,13 +299,6 @@ inline void emplaceValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source)
  */
 inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
   return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
-}
-
-/**
- Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
- */
-inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
-  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
 }
 
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
