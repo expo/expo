@@ -5,7 +5,6 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.MotionEvent
-import android.view.ViewConfiguration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -58,7 +57,6 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
 import expo.modules.ui.colors.withOverrides
-import kotlin.math.hypot
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -142,28 +140,15 @@ internal class HostView(context: Context, appContext: AppContext) :
   internal var isDispatchingCancelFromParent = false
     private set
 
-  // Set while a gesture is dispatched: Compose consumed its down, or hosted React Native content kept it.
+  // Per gesture: whether Compose consumed the down, and whether hosted React Native content kept it.
   private var composeConsumedDown = false
   internal var reactNativeContentKeptDown = false
-
   private var ownsNativeGesture = false
-  private var blocksParentIntercept = false
-  private var downX = 0f
-  private var downY = 0f
-  private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    when (ev.actionMasked) {
-      MotionEvent.ACTION_DOWN -> {
-        composeConsumedDown = false
-        reactNativeContentKeptDown = false
-      }
-      MotionEvent.ACTION_MOVE -> {
-        // Past the touch slop, let a scrolling parent take the gesture as it would from a native control.
-        if (blocksParentIntercept && hypot(ev.rawX - downX, ev.rawY - downY) > touchSlop) {
-          stopBlockingParentIntercept()
-        }
-      }
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      composeConsumedDown = false
+      reactNativeContentKeptDown = false
     }
 
     val handled = if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
@@ -179,30 +164,16 @@ internal class HostView(context: Context, appContext: AppContext) :
 
     when (ev.actionMasked) {
       MotionEvent.ACTION_DOWN -> if (composeConsumedDown && !reactNativeContentKeptDown) {
-        // A Compose control took the press: cancel the JS touch and keep the JS responder from stealing it.
+        // A Compose control took the press, like a native view does, so JS cancels its touch.
         ownsNativeGesture = true
         NativeGestureUtil.notifyNativeGestureStarted(this, ev)
-        downX = ev.rawX
-        downY = ev.rawY
-        blocksParentIntercept = true
-        parent?.requestDisallowInterceptTouchEvent(true)
       }
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-        stopBlockingParentIntercept()
-        if (ownsNativeGesture) {
-          ownsNativeGesture = false
-          NativeGestureUtil.notifyNativeGestureEnded(this, ev)
-        }
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (ownsNativeGesture) {
+        ownsNativeGesture = false
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev)
       }
     }
     return handled
-  }
-
-  private fun stopBlockingParentIntercept() {
-    if (blocksParentIntercept) {
-      blocksParentIntercept = false
-      parent?.requestDisallowInterceptTouchEvent(false)
-    }
   }
 
   // Records whether Compose consumed the down, after every handler has seen it.
