@@ -102,7 +102,7 @@ The demo resembles Apple Mail with mailbox, message-list, and message-detail col
 - The reduced EAS experiment stayed aligned after a push, but its registered title did not render. This remains an unresolved observation; the isolation route has been removed.
 - The Mail demo has bounded sidebar/content widths and is configured to retain content and detail when the sidebar is hidden.
 - A fresh EAS iPad run verified the three-column layout, selected-message state, and sidebar-hidden two-column layout.
-- In the selected-message state, the accessibility tree contains the `Google Photos` navigation title and seven toolbar buttons, but the visible title and button symbols are missing or blank. The detail content also begins below extra vertical space. Hiding the sidebar preserves the message-list and detail columns, as intended.
+- The selected-message state visibly renders all seven SF Symbol toolbar buttons. With three columns, the narrow detail column omits the navigation title to make room for the controls; after hiding the sidebar, the wider detail column shows both `Google Photos` and the controls. Hiding the sidebar preserves the message-list and detail columns, as intended.
 - Current screenshots:
   - `media/ipad-mail-three-columns.png`
   - `media/ipad-mail-message.png`

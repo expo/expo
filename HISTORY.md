@@ -1,3 +1,7 @@
+## 2026-10-26 11:18 — Render the Mail toolbar symbols
+**Asked:** Fix the fresh Mail evidence because the toolbar was not visible in the screenshot.
+**Did / why:** The expo-ui `Button` only uses `systemImage` when it also receives a label, while icon-only `Stack.Toolbar.Button` declarations do not require one. The adapter now supplies the SF Symbol name as a fallback label and applies the icon-only label style. Added a focused regression assertion, rebuilt the local router package, and replaced all three EAS iPad screenshots; the toolbar symbols are now visible in both three- and two-column states.
+
 ## 2026-10-26 11:01 — Consolidate the split-view spike around Mail
 **Asked:** Keep `/split-view-mail` as the spike's only dedicated demo, remove the toolbar-isolation route and old ENG-28595 PNGs, and prepare the report for fresh screenshots.
 **Did / why:** Removed the reduced repro because its toolbar stayed aligned and it did not reproduce the Mail offset. Replaced all old ENG-28595 images with three fresh EAS iPad screenshots of the Mail-only demo: the initial three-column layout, the selected-message state, and the sidebar-hidden two-column layout. In the selected-message state, the accessibility tree contains the title and toolbar buttons, but their visible title and symbols are missing or blank and the content starts below extra space. Sidebar hiding correctly leaves two columns visible.

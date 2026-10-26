@@ -207,6 +207,7 @@ function renderToolbarButtons(
 ) {
   const {
     expoUI: { Button },
+    modifiers: { labelStyle },
   } = requireExpoUISwiftUI(EXPO_UI_ERROR_MESSAGE);
   return Children.toArray(children).map((child, index) => {
     if (!isValidElement(child) || !isChildOfType(child, StackToolbarButton) || child.props.hidden) {
@@ -217,7 +218,8 @@ function renderToolbarButtons(
     return (
       <ToolbarItem key={child.key ?? index} placement={placement}>
         <Button
-          label={item.label || item.accessibilityLabel}
+          label={item.label || item.accessibilityLabel || systemImage}
+          modifiers={[labelStyle('iconOnly')]}
           onPress={child.props.onPress}
           systemImage={systemImage}
         />

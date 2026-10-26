@@ -66,6 +66,7 @@ jest.mock('@expo/ui/swift-ui', () => {
 });
 
 jest.mock('@expo/ui/swift-ui/modifiers', () => ({
+  labelStyle: (style: string) => ({ $type: 'labelStyle', style }),
   navigationBarBackButtonHidden: (hidden: boolean) => ({
     $type: 'navigationBarBackButtonHidden',
     hidden,
@@ -220,11 +221,7 @@ it('renders page-level Stack.Title and Stack.Toolbar in the expo-ui detail toolb
         <>
           <Stack.Title>Inbox</Stack.Title>
           <Stack.Toolbar placement="right">
-            <Stack.Toolbar.Button
-              accessibilityLabel="Search mail"
-              icon="magnifyingglass"
-              onPress={() => {}}
-            />
+            <Stack.Toolbar.Button icon="magnifyingglass" onPress={() => {}} />
           </Stack.Toolbar>
           <Text>Message</Text>
         </>
@@ -242,7 +239,8 @@ it('renders page-level Stack.Title and Stack.Toolbar in the expo-ui detail toolb
     expect(screen.getByTestId('ToolbarItem').props.placement).toBe('topBarTrailing');
     expect(mockSwiftUIButton).toHaveBeenCalledWith(
       expect.objectContaining({
-        label: 'Search mail',
+        label: 'magnifyingglass',
+        modifiers: [{ $type: 'labelStyle', style: 'iconOnly' }],
         systemImage: 'magnifyingglass',
       })
     );
