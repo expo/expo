@@ -38,3 +38,15 @@ appId: dev.expo.payments
       id: inside-button
     direction: UP
 - assertVisible: 'inside: button 1, pressable 1'
+
+# A swipe on a Host's content that isn't a control reaches the scroll view under it.
+- scrollUntilVisible:
+    element:
+      id: overlay-host
+    direction: DOWN
+    centerElement: true
+- swipe:
+    from:
+      id: overlay-host
+    direction: LEFT
+- assertVisible: 'overlay: scrolled'

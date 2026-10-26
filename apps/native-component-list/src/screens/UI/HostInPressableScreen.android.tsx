@@ -25,6 +25,7 @@ export default function HostInPressableScreen() {
   const [isReactNativeSwitchOn, setIsReactNativeSwitchOn] = useState(false);
   const [focusCount, countFocus] = useCounter();
   const [textPressable, pressTextPressable] = useCounter();
+  const [scrolledUnderHost, setScrolledUnderHost] = useState(false);
 
   return (
     // A scroll that starts on a control still scrolls the screen.
@@ -79,6 +80,21 @@ export default function HostInPressableScreen() {
         </Host>
       </Pressable>
       <Text testID="text-counts">{`text: pressable ${textPressable}`}</Text>
+
+      <Text style={styles.title}>7. Text Host over a ScrollView</Text>
+      <View style={styles.overlayArea}>
+        <ScrollView
+          horizontal
+          onScroll={(event) => setScrolledUnderHost(event.nativeEvent.contentOffset.x > 0)}
+          scrollEventThrottle={16}>
+          <View style={styles.wideContent} />
+        </ScrollView>
+        {/* A touch on content that isn't a control falls through to the scroll view. */}
+        <Host style={StyleSheet.absoluteFill} testID="overlay-host">
+          <ExpoUIText>Swipe me</ExpoUIText>
+        </Host>
+      </View>
+      <Text testID="overlay-counts">{`overlay: ${scrolledUnderHost ? 'scrolled' : 'not scrolled'}`}</Text>
     </ScrollView>
   );
 }
@@ -94,4 +110,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   field: { alignSelf: 'stretch' },
+  overlayArea: { height: 80, borderWidth: 1, borderColor: '#999' },
+  wideContent: { width: 2000, height: 80, backgroundColor: '#dde' },
 });

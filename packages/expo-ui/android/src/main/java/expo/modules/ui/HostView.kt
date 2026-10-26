@@ -28,9 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.ComposeView
@@ -140,15 +137,14 @@ internal class HostView(context: Context, appContext: AppContext) :
   internal var isDispatchingCancelFromParent = false
     private set
 
-  // Per gesture: whether Compose consumed the down, and whether hosted React Native content kept it.
-  private var composeConsumedDown = false
-  internal var reactNativeContentKeptDown = false
+  // Set by a hosted `RNHostView` under the down. That content handles its touches in JS.
+  internal var reactNativeContentHit = false
   private var ownsNativeGesture = false
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
-      composeConsumedDown = false
-      reactNativeContentKeptDown = false
+      reactNativeContentHit = false
+      ownsNativeGesture = false
     }
 
     val handled = if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
@@ -163,29 +159,19 @@ internal class HostView(context: Context, appContext: AppContext) :
     }
 
     when (ev.actionMasked) {
-      MotionEvent.ACTION_DOWN -> if (composeConsumedDown && !reactNativeContentKeptDown) {
-        // A Compose control took the press, like a native view does, so JS cancels its touch.
+      // Compose only handles a down that a touch handler is under, like a native view.
+      // Then cancel the JS touch, so a JS responder around this view can't take the gesture.
+      MotionEvent.ACTION_DOWN -> if (handled && !reactNativeContentHit) {
         ownsNativeGesture = true
         NativeGestureUtil.notifyNativeGestureStarted(this, ev)
       }
-      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (ownsNativeGesture) {
+      // On a cancel, a native parent like a scroll view took over and ends the gesture itself.
+      MotionEvent.ACTION_UP -> if (ownsNativeGesture) {
         ownsNativeGesture = false
         NativeGestureUtil.notifyNativeGestureEnded(this, ev)
       }
     }
     return handled
-  }
-
-  // Records whether Compose consumed the down, after every handler has seen it.
-  private val composeDownObserver = Modifier.pointerInput(Unit) {
-    awaitPointerEventScope {
-      while (true) {
-        val event = awaitPointerEvent(PointerEventPass.Final)
-        if (event.changes.any { it.changedToDownIgnoreConsumed() && it.isConsumed }) {
-          composeConsumedDown = true
-        }
-      }
-    }
   }
 
   @Composable
@@ -258,8 +244,7 @@ internal class HostView(context: Context, appContext: AppContext) :
             Modifier
           }
         )
-        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) }
-        .then(composeDownObserver),
+        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
       content = content
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
