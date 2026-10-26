@@ -68,7 +68,6 @@ export async function fetch(
     overriddenHeaders,
   } = await normalizeBodyInitAsync(body);
   if (defaultHeaders) {
-    // Caller headers win over the body defaults.
     headers = overrideHeaders(defaultHeaders, headers);
   } else if (overriddenHeaders) {
     headers = overrideHeaders(headers, overriddenHeaders);
