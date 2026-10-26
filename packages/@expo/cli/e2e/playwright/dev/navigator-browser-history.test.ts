@@ -338,8 +338,13 @@ test.describe(`${inputDir} with server output`, () => {
       return;
     }
     const overlay = page.locator('#error-overlay');
+    // LogBox renders into an open shadow root, so the host has no innerText.
     const overlayText = (await overlay.count())
-      ? await overlay.innerText({ timeout: 5_000 }).catch((error) => `<unreadable: ${error}>`)
+      ? await page
+          .locator('#error-overlay > div')
+          .last()
+          .innerText({ timeout: 5_000 })
+          .catch((error) => `<unreadable: ${error}>`)
       : '<no #error-overlay>';
     const report = [
       `--- browser output (${browserOutput.length} entries) ---`,
