@@ -297,6 +297,20 @@ extension JavaScriptRuntime {
       }
     }
 
+    /// The runtime, not retained, when called on the JavaScript thread, or `nil` on any other thread.
+    /// Throws ``JavaScriptCallback/RuntimeLostError`` on the JavaScript thread once the runtime is
+    /// gone. The runtime stays alive while the JavaScript thread runs the caller.
+    @inline(__always)
+    internal func unretainedLiveRuntimeIfOnJavaScriptThread() throws -> Unmanaged<JavaScriptRuntime>? {
+      guard isOnJavaScriptThread() else {
+        return nil
+      }
+      guard let runtime = handle.unretainedRuntime else {
+        throw JavaScriptCallback.RuntimeLostError()
+      }
+      return runtime
+    }
+
     // MARK: - Liveness on the JavaScript thread
 
     @JavaScriptActor
