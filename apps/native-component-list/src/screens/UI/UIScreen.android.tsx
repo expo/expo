@@ -467,6 +467,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'RNHostView in a clickable',
+    route: 'ui/rnhostview-in-clickable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewInClickableScreen'));
+    },
+  },
+  {
     name: 'Loading Indicator component',
     route: 'ui/loading-indicator',
     options: {},
