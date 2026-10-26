@@ -103,6 +103,10 @@ type MountedAnimationNode = {
   status: NodeStatus;
 };
 
+const subscribeToNothing = () => () => {};
+const getFalse = () => false;
+const getTrue = () => true;
+
 export default function AnimationManager({
   children: renderFunction,
   initial,
@@ -117,7 +121,12 @@ export default function AnimationManager({
   const animation = getAnimatorFromTransition(transition);
 
   const initialNode = useAnimationManagerNode(initial, 'active');
-  const newNode = useAnimationManagerNode(renderFunction);
+  // In server rendering and while hydrating, the image is shown as it is (`active`): the browser
+  // can load it before the page hydrates, and React then gets no `load` event (see `ImageWrapper`).
+  // As `mounted`, it would hide when the transition's CSS loads. The memoized node keeps this
+  // status once hydrated.
+  const isHydrating = React.useSyncExternalStore(subscribeToNothing, getFalse, getTrue);
+  const newNode = useAnimationManagerNode(renderFunction, isHydrating ? 'active' : undefined);
 
   // Without a placeholder, start with the image. Effects do not run in server rendering,
   // so the image must be in the first render to be in the HTML.
