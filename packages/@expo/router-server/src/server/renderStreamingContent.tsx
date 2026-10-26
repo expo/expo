@@ -30,6 +30,7 @@ import {
   createInjectedScriptAsNodes,
   getBootstrapContents,
 } from '../utils/react';
+import { isCrawler } from './isCrawler';
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
@@ -112,7 +113,7 @@ function FontResources() {
 
 /**
  * Renders the document using `renderToReadableStream`. Static output waits for Suspense
- * and returns HTML; server output returns a progressive stream.
+ * and returns HTML; server output returns a stream, waiting for Suspense for known crawlers.
  */
 export function getStreamingContent(
   location: URL,
@@ -183,8 +184,10 @@ export async function getStreamingContent(
         },
       }
     );
-    if (isStatic) {
+    if (isStatic || isCrawler(options.request?.headers.get('user-agent') ?? '')) {
       await stream.allReady;
+    }
+    if (isStatic) {
       if (renderErrors.length > 0) {
         throw renderErrors[0];
       }

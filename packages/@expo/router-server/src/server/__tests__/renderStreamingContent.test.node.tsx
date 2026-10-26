@@ -147,6 +147,74 @@ it('returns the live shell while Suspense is still pending', async () => {
   }
 });
 
+it('waits for complete HTML for crawlers', async () => {
+  const deferred = createDeferred<string>();
+  function Content() {
+    return <p>{use(deferred.promise)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  const location = new URL('http://localhost/suspense');
+  let returned = false;
+  const result = getStreamingContent(location, {
+    request: new Request(location, { headers: { 'User-Agent': 'Twitterbot/1.0' } }),
+    route: { file: './suspense.tsx', page: '/suspense' },
+  }).then((stream) => {
+    returned = true;
+    return stream;
+  });
+  try {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(returned).toBe(false);
+
+    deferred.resolve('Finished live content');
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Finished live content');
+    expect(content).not.toContain('Loading live content');
+    expect(content).not.toContain('<template');
+  } finally {
+    deferred.resolve('Finished live content');
+  }
+});
+
+it('stops waiting for crawler content when the request is aborted', async () => {
+  const deferred = createDeferred<string>();
+  function Content() {
+    return <p>{use(deferred.promise)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  const controller = new AbortController();
+  const location = new URL('http://localhost/suspense');
+  let returned = false;
+  const result = getStreamingContent(location, {
+    request: new Request(location, {
+      headers: { 'User-Agent': 'Twitterbot/1.0' },
+      signal: controller.signal,
+    }),
+    route: { file: './suspense.tsx', page: '/suspense' },
+  }).then((stream) => {
+    returned = true;
+    return stream;
+  });
+  try {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(returned).toBe(false);
+
+    controller.abort();
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Loading live content');
+  } finally {
+    deferred.resolve('Finished live content');
+  }
+});
+
 it('rejects static output when a Suspense boundary fails', async () => {
   const error = new Error('render failed');
   function BrokenContent(): ReactNode {
