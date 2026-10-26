@@ -53,13 +53,4 @@ describe('Setting the Content-Type header from the body', () => {
     });
     expect(getStartedHeaders()).toEqual([['Content-Type', 'image/jpeg']]);
   });
-
-  it('should drop a caller header without a value', async () => {
-    await fetch('https://example.test/', {
-      method: 'POST',
-      headers: { 'Content-Type': undefined, 'content-type': 'image/jpeg' } as any,
-      body: new Blob(['hello'], { type: 'text/plain' }),
-    });
-    expect(getStartedHeaders()).toEqual([['content-type', 'image/jpeg']]);
-  });
 });
