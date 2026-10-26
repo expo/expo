@@ -1,6 +1,10 @@
+## 2026-10-26 09:45 — Test the pure-SwiftUI toolbar structure around Stack
+**Asked:** Render `Stack.Toolbar` directly in the split view's expo-ui toolbar while keeping the UIKit Stack header hidden.
+**Did / why:** Moved the navigation modifiers to a SwiftUI `VStack` around `RNHostView`, matching the working pure-SwiftUI example's structure, and verified it on EAS Simulator. The gap remained and accessibility still exposed two navigation bars, proving the embedded native Stack is the remaining navigation-host boundary. Reverted the ineffective code change and retained the screenshot and finding in the scope report.
+
 ## 2026-10-26 09:35 — Render the detail header with expo-ui
 **Asked:** Keep the detail as a Stack navigator but use the expo-ui toolbar for its visible header so the Mail toolbar aligns with the other split-view headers and has no gap.
-**Did / why:** Added a JavaScript adapter that forwards the focused route's `Stack.Title` and top `Stack.Toolbar.Button` declarations to the `@expo/ui` toolbar while hiding only the Stack's native header. This keeps Stack navigation without nesting two visible navigation bars. Verified the aligned three-column result on EAS Simulator and stored it at `apps/router-tester/artifacts/eng-28595/media/ipad-mail-expo-ui-toolbar.png`.
+**Did / why:** Added a JavaScript adapter that forwards the focused route's `Stack.Title` and top `Stack.Toolbar.Button` declarations to the `@expo/ui` toolbar while hiding the Stack's native header. Follow-up EAS inspection showed that the embedded Stack still creates a second navigation-host region, so the adapter renders the controls but does not eliminate the gap.
 
 ## 2026-10-26 08:45 — Keep two Mail columns visible
 **Asked:** Use a three-column Mail layout where the system control only hides or shows the sidebar, leaving at least the message list and detail visible.

@@ -7,7 +7,7 @@ The spike adds an adapter between Expo Router's unstable split view API and two 
 - `rns` (default): `Split.Host` from React Native Screens.
 - `expo-ui`: `NavigationSplitView` from `@expo/ui/swift-ui`.
 
-Both implementations receive the same Expo Router `Stack` as the main/detail navigator. For the expo-ui renderer, the Stack's native header is hidden and a JavaScript adapter forwards page-level `Stack.Title` and top `Stack.Toolbar` declarations to the SwiftUI detail toolbar. This removes the nested UIKit navigation bar that caused the empty band above the detail header while retaining Stack navigation and route state.
+Both implementations receive the same Expo Router `Stack` as the main/detail navigator. For the expo-ui renderer, the Stack's native header is hidden and a JavaScript adapter forwards page-level `Stack.Title` and top `Stack.Toolbar` declarations to the SwiftUI detail toolbar. The adapter works, but the embedded native Stack still contributes a separate navigation-host region, leaving one empty row above the expo-ui toolbar. Matching the working pure-SwiftUI toolbar structure did not remove it.
 
 No native code is changed.
 
@@ -48,7 +48,7 @@ export default function Layout() {
 | Default               | Keep `rns`                                                                               | Avoids changing existing apps unless they opt in.                                                                       |
 | expo-ui loading       | Require `@expo/ui` lazily only when selected                                             | Other platforms and RNS users do not load SwiftUI entry points.                                                         |
 | Column headers        | Support only title and title display mode                                                | These are the only required header modifiers present in current `@expo/ui` without native changes.                      |
-| Detail toolbar        | Adapt `Stack.Title` and top `Stack.Toolbar.Button` declarations to expo-ui               | Lets SwiftUI own the one visible navigation bar, removing the double-header gap without native changes.                |
+| Detail toolbar        | Adapt `Stack.Title` and top `Stack.Toolbar.Button` declarations to expo-ui               | Proves the API bridge, but the embedded UIKit Stack still creates a second navigation region.                           |
 | Unsupported inspector | Ignore it in expo-ui and warn in development                                             | `NavigationSplitView` has no matching trailing inspector API in current `@expo/ui`.                                     |
 | Non-iOS fallback      | Render the same `Stack`                                                                  | Keeps the “always Stack” contract and route header behavior.                                                            |
 
@@ -68,9 +68,9 @@ Runtime observation used the existing expo-ui-capable router-tester development 
 | `preferredSplitBehavior`   | Maps tile to balanced and overlay/displace to prominent detail                         | Observed: tiled content/detail columns           | [Detail toolbar](./media/ipad-mail-toolbar.png) |
 | `columnMetrics`            | Accepts only primary/supplementary point widths and maps every min/preferred/max field | Not exercised                                    | — |
 | `ref.show(column)`         | Updates compact column and visibility; secondary selects `detailOnly`                  | Not exercised                                    | — |
-| `SplitView.Screen`         | Delegates to `Stack.Screen`, forcing its native header off for expo-ui                 | Observed: detail remains route-driven without duplicate native header | [Expo UI toolbar](./media/ipad-mail-expo-ui-toolbar.png) |
+| `SplitView.Screen`         | Delegates to `Stack.Screen`, forcing its native header off for expo-ui                 | Observed: detail remains route-driven, but its navigation host still contributes an empty region | [VStack experiment](./media/ipad-mail-vstack-toolbar.png) |
 | `Stack.Title`              | Registers the focused route's string title with the expo-ui toolbar                   | Observed: Google Photos title rendered in SwiftUI navigation chrome | [Expo UI toolbar](./media/ipad-mail-expo-ui-toolbar.png) |
-| Top `Stack.Toolbar.Button` | Maps direct button children and SF Symbol icons to expo-ui `ToolbarItem` and `Button`  | Observed: Mail-style controls aligned with other column headers | [Expo UI toolbar](./media/ipad-mail-expo-ui-toolbar.png) |
+| Top `Stack.Toolbar.Button` | Maps direct button children and SF Symbol icons to expo-ui `ToolbarItem` and `Button`  | Observed: controls render, but one navigation-row gap remains above them | [VStack experiment](./media/ipad-mail-vstack-toolbar.png) |
 | `SplitView.Inspector`      | Warns and is omitted for expo-ui                                                       | Not exercised                                    | — |
 
 Prior runtime evidence exists on commit `acb594d5` for direct `NavigationSplitView` hosting and on the `origin/tuft/1789123608.307849/expo-7783ac2e` prototype branch. It is reference evidence only; this branch requires a fresh runtime pass because the detail navigator architecture is different.
@@ -80,7 +80,7 @@ Prior runtime evidence exists on commit `acb594d5` for direct `NavigationSplitVi
 1. The adapter currently covers string `Stack.Title` values and direct `Stack.Toolbar.Button` children in left/right placements. Menus, custom views, spacers, search-bar slots, bottom toolbars, `asChild`, non-SF-Symbol icons, title styles, badges, and the full button styling/state surface still need explicit mappings or development warnings before this can be production API.
 2. The adapter reads declarations from the focused route. More tests are needed for push/pop transitions, multiple title/toolbar declarations, and route unmount timing before replacing the RNS implementation by default.
 3. The nested detail remains a real native Stack, but expo-ui owns its visible header. Header configuration supplied only through `Stack.Screen` options is not yet adapted; the proof uses `Stack.Title` and `Stack.Toolbar` as requested.
-4. The earlier implementation rendered the UIKit Stack header inside SwiftUI's detail navigation region. Removing a nested `SafeAreaProvider` was insufficient because two navigation systems still reserved chrome. Hiding the Stack header and rendering the visible title/buttons in expo-ui is the JavaScript-only route around that structural gap.
+4. The working pure-SwiftUI example places `Toolbar` directly in the detail slot and applies `navigationTitle` to its SwiftUI content. Reproducing that structure with a `VStack` around `RNHostView` did not remove the gap. The accessibility tree still reported both `_TtGC7SwiftUI32NavigationStackHosting` and `Google Photos` navigation bars, showing that the embedded UIKit Stack remains a second navigation host even when `headerShown` is false.
 5. The public props are a discriminated union. The default `rns` branch accepts the full RNS host API. The `expo-ui` branch accepts only `ref`, `topColumnForCollapsing`, `preferredDisplayMode`, `preferredSplitBehavior`, and a narrowed `columnMetrics`; RNS-only props and secondary/inspector metrics are rejected by TypeScript rather than silently discarded.
 6. expo-ui `columnMetrics` uses point-only `preferredPrimaryColumnWidth` and `preferredSupplementaryColumnWidth` names instead of RNS's ambiguous `*WidthOrFraction` names. Minimum and maximum values work without a preferred width; the adapter uses the supplied bound as SwiftUI's required ideal value.
 7. UIKit display modes and split behaviors map to their closest SwiftUI equivalents.
@@ -102,7 +102,7 @@ The demo resembles Apple Mail with mailbox, message-list, and message-detail col
 - Router-tester TypeScript check: passed.
 - `expo-router` lint: passed.
 - Formatting: applied; final check is part of the handoff checks.
-- A fresh EAS iPad Pro 13-inch (M5) pass verified that the expo-ui toolbar renders the focused route title and Mail-style controls at the same vertical level as the other column headers, without the previous empty navigation band: [aligned expo-ui toolbar](./media/ipad-mail-expo-ui-toolbar.png).
+- A fresh EAS iPad Pro 13-inch (M5) pass tested the pure-SwiftUI example's modifier placement by putting `navigationTitle` on a SwiftUI `VStack` around `RNHostView`. The empty navigation row remained unchanged: [VStack experiment](./media/ipad-mail-vstack-toolbar.png). This rules out modifier placement as the cause and isolates the embedded Stack/navigation host as the remaining boundary.
 - The three-column demo uses bounded sidebar/content widths. The native sidebar control transitions from [all three columns](./media/ipad-mail-three-column.png) to [content and detail](./media/ipad-mail-two-columns-sidebar-hidden.png), keeping at least two columns visible on the tested iPad.
 - Runtime media: [initial detail](./media/ipad-mail-detail.png), [message list](./media/ipad-mail-list.png), [detail toolbar](./media/ipad-mail-toolbar.png), [three-column view](./media/ipad-mail-three-column.png), and [sidebar hidden](./media/ipad-mail-two-columns-sidebar-hidden.png).
 - Prior header inset evidence: [before removing the nested provider](./media/ipad-mail-toolbar-before-inset-fix.png) and [after](./media/ipad-mail-toolbar.png). These demonstrate why safe-area changes alone were insufficient.
