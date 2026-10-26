@@ -169,7 +169,7 @@ export type Props = {
   apiRoutes?: boolean;
   /**
    * Stream server-rendered pages with `web.output: "server"`. When `false`, the server waits for
-   * all Suspense boundaries to resolve, for up to 10 seconds after the shell is rendered, and then
+   * all Suspense boundaries to resolve, for up to 10 seconds after the shell is ready, and then
    * sends the page. Static output always waits for all Suspense boundaries.
    * @default true
    */
