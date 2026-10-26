@@ -162,6 +162,61 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
   }
 
+  /// Calls the function like ``call(argumentCount:emplacing:)`` in `runtime`, the runtime of the function,
+  /// and passes its result to `withResult` without making an owned value of it.
+  @usableFromInline
+  internal func call(
+    argumentCount: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    withResult:
+      @JavaScriptActor (borrowing JavaScriptUnownedValue, borrowing JavaScriptRuntime) throws
+      -> Void = { _, _ in }
+  ) throws {
+    // The arguments and the result live on the stack. All slots hold `undefined` first, so they stay
+    // valid to destroy when an encode or the call throws. This part is nonisolated: an isolated closure
+    // passed to the standard library checks the current executor on every call.
+    try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: argumentCount + 1) { storage in
+      // The isolated closures below run synchronously on this thread.
+      nonisolated(unsafe) let arguments = storage.baseAddress!
+      nonisolated(unsafe) let result = arguments + argumentCount
+      for index in 0...argumentCount {
+        expo.emplaceUndefined(arguments + index)
+      }
+      defer {
+        expo.destroyValues(arguments, argumentCount + 1)
+      }
+      try JavaScriptActor.assumeIsolated {
+        try emplacing(JavaScriptValuesBuffer(runtime, start: arguments, count: argumentCount), runtime)
+      }
+      try throwCppErrorUnlessSucceeded(
+        expo.callFunctionInto(runtime.pointee, pointee, arguments, argumentCount, result)
+      )
+      try JavaScriptActor.assumeIsolated {
+        try withResult(JavaScriptUnownedValue(runtime.pointee, result), runtime)
+      }
+    }
+  }
+
+  /// Calls the function like ``call(argumentCount:in:emplacing:withResult:)`` and returns what
+  /// `withResult` returns.
+  @inlinable
+  @JavaScriptActor
+  internal func call<R: ~Copyable>(
+    argumentCount: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    withResult: @JavaScriptActor (borrowing JavaScriptUnownedValue, borrowing JavaScriptRuntime) throws -> R
+  ) throws -> R {
+    // Inlinable, so it specializes in the caller's module, while the call it wraps stays non-generic.
+    var value: R?
+    try call(argumentCount: argumentCount, in: runtime, emplacing: emplacing) { result, runtime in
+      value = try withResult(result, runtime)
+    }
+    // `call` returns only after `withResult` set the value.
+    return value.take()!
+  }
+
   /// Calls the function as a constructor with the given buffer of arguments. It's like calling a function with the `new` keyword.
   public func callAsConstructor(_ arguments: consuming JavaScriptValuesBuffer? = nil) throws -> JavaScriptValue {
     guard let jsiRuntime else {
