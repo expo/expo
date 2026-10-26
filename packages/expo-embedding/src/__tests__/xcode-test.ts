@@ -40,17 +40,22 @@ describe('Generating Xcode subprojects without Ruby', () => {
     b.addTarget('Extra', 'com.apple.product-type.framework', ['Debug']);
     expect(b.addTarget('One', 'com.apple.product-type.framework', ['Debug'])).toBe(first);
   });
-  it('should attach the subproject once and preserve other targets', () => {
-    const { host, app, extra, sub, framework } = fixture();
-    const original = JSON.stringify(host.object(extra));
-    attachSubproject(host, app, sub, framework);
-    const once = host.serialize();
-    attachSubproject(host, app, sub, framework);
-    expect(host.serialize()).toBe(once);
-    expect(JSON.stringify(host.object(extra))).toBe(original);
-    expect(host.object(app).dependencies).toHaveLength(1);
-    expect(Project.parse(once).object(app).name).toBe('Example');
-  });
+  it.each(['empty', 'omitted'])(
+    'should attach the subproject once with %s dependencies and preserve other targets',
+    (dependencies) => {
+      const { host, app, extra, sub, framework } = fixture();
+      if (dependencies === 'omitted') delete host.object(app).dependencies;
+      const original = JSON.stringify(host.object(extra));
+      expect(selectHost(host, 'Example', {}).target).toBe(app);
+      attachSubproject(host, app, sub, framework);
+      const once = host.serialize();
+      attachSubproject(host, app, sub, framework);
+      expect(host.serialize()).toBe(once);
+      expect(JSON.stringify(host.object(extra))).toBe(original);
+      expect(host.object(app).dependencies).toHaveLength(1);
+      expect(Project.parse(once).object(app).name).toBe('Example');
+    }
+  );
   it('should reject ambiguous targets and unmapped configurations', () => {
     const { host, app } = fixture();
     expect(() => selectHost(host, '', {})).toThrow('--target');

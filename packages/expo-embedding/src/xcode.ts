@@ -252,7 +252,7 @@ export function selectHost(project: Project, targetName: string, mappings: Recor
     .find(([, ref]) => ref.path === subprojectPath);
   const hasDependency = project
     .object(target)
-    .dependencies.some((id: string) => project.object(id).name === 'expoappbrownfield');
+    .dependencies?.some((id: string) => project.object(id).name === 'expoappbrownfield');
   if (existing && !hasDependency)
     throw new Error(
       'This project already has an Expo subproject attached to another target. Select that application target with --target; each integration supports one application target.'
@@ -320,9 +320,9 @@ export function attachSubproject(
     host.object(reference.ProductGroup).children.push(proxy);
   }
   host.object(host.object(proxy).remoteRef).remoteGlobalIDString = product;
-  let dependency = host
-    .object(target)
-    .dependencies.find((id: string) => host.object(id).name === 'expoappbrownfield');
+  host.object(target).dependencies ??= [];
+  const dependencies = host.object(target).dependencies;
+  let dependency = dependencies.find((id: string) => host.object(id).name === 'expoappbrownfield');
   if (!dependency) {
     const targetProxy = host.add('PBXContainerItemProxy', 'expo-host-target', {
       containerPortal: ref,
@@ -335,7 +335,7 @@ export function attachSubproject(
       targetProxy,
       platformFilter: 'ios',
     });
-    host.object(target).dependencies.push(dependency);
+    dependencies.push(dependency);
   }
   host.object(host.object(dependency).targetProxy).remoteGlobalIDString = framework;
   // Only the host product is exposed across the project boundary.
