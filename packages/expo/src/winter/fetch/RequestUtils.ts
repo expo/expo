@@ -47,7 +47,8 @@ function isBlob(obj: any): obj is Blob {
 
 /**
  * The Content-Type that a body needs.
- * When `override` is false, a Content-Type that the caller sets wins.
+ * `override` is true when the header must match the body bytes, like the FormData boundary.
+ * Otherwise, a Content-Type that the caller sets wins.
  */
 export type BodyContentType = { value: string; override: boolean };
 

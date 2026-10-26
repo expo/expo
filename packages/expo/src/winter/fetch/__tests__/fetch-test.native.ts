@@ -1,7 +1,5 @@
 /// <reference types="node" />
 
-/** @jest-environment node */
-
 import { fetch } from '../fetch';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;
@@ -35,7 +33,7 @@ describe('Setting the Content-Type header from the body', () => {
     mockStart.mockClear();
   });
 
-  it('should keep the caller Content-Type header for a Blob body', async () => {
+  it('should keep the caller content-type header for a blob body', async () => {
     await fetch('https://example.test/', {
       method: 'POST',
       headers: { Accept: '*/*', 'content-type': 'application/octet-stream' },
