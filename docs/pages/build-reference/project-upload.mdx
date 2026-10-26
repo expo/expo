@@ -43,7 +43,7 @@ To require a commit before each build, set `cli.requireCommit` to `true` in **ea
 
 Before a build, EAS CLI checks for uncommitted changes. If it finds any, EAS CLI asks whether to commit them. In non-interactive mode, the build stops instead.
 
-The project archive is a shallow Git clone of your last commit, so each build matches a commit exactly. EAS CLI still applies **.easignore** in this workflow. For details, see [How EAS CLI applies .easignore](/build-reference/easignore/#how-eas-cli-applies-easignore).
+The project archive is a shallow Git clone of your last commit. EAS CLI still applies **.easignore** in this workflow, so the project archive can differ from the commit. For details, see [How EAS CLI applies .easignore](/build-reference/easignore/#how-eas-cli-applies-easignore).
 
 ### No VCS workflow
 
@@ -60,7 +60,7 @@ EAS CLI uses the absolute path in the `EAS_PROJECT_ROOT` environment variable as
 EAS CLI follows these rules when it creates the project archive:
 
 - EAS CLI excludes the files that your **.gitignore** files list. If a **.easignore** file exists, EAS CLI uses it instead of all **.gitignore** files. For more information, see [Ignore files via .easignore](/build-reference/easignore/).
-- EAS CLI does not copy **node_modules**, even if no ignore file lists it. EAS Build installs your dependencies on the build server.
+- In the default and No VCS workflows, EAS CLI does not copy **node_modules**, even if no ignore file lists it. EAS Build installs your dependencies on the build server.
 - In the default and full Git workflows, the project archive includes a shallow **.git** directory.
 - In the default and No VCS workflows, EAS CLI reads each **.gitignore** file separately. A negation rule in a subdirectory, such as `!keep.log`, does not override a rule in a parent directory, such as `*.log`. Git keeps such a file, but EAS CLI excludes it. To include it, use **.easignore**.
 - In the default workflow, the project archive includes your Git submodules as they are in your working directory. For the full Git workflow and CI, see [Using Git submodules](/build-reference/git-submodules/).

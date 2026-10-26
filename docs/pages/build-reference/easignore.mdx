@@ -81,7 +81,7 @@ Open the output directory and confirm that it contains the files your build need
 ## How EAS CLI applies .easignore
 
 - EAS CLI reads **.easignore** only from the root of your Git repository. In a monorepo, the repository root can be above your project directory.
-- In the [No VCS workflow](/build-reference/project-upload/#no-vcs-workflow), place **.easignore** in your project directory.
+- In the [No VCS workflow](/build-reference/project-upload/#no-vcs-workflow), EAS CLI reads **.easignore** from the directory in the `EAS_PROJECT_ROOT` environment variable. If it is not set, EAS CLI reads it from the root of your Git repository, or from the current directory if there is no repository.
 - To exclude the shallow **.git** directory from the project archive, add `.git` to **.easignore**.
 - In the [full Git workflow](/build-reference/project-upload/#full-git-workflow), EAS CLI still applies **.easignore** and deletes the matching files from the clone. The project on EAS Build no longer matches your commit, so EAS CLI shows a warning. To hide the warning, set the `EAS_SUPPRESS_REQUIRE_COMMIT_EASIGNORE_WARNING` environment variable to `1`.
 
