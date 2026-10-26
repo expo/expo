@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import expo.modules.ExpoReactHostFactory
+import java.io.IOException
 
 class ExpoHost(
   application: Application,
@@ -18,7 +19,14 @@ class ExpoHost(
       "Metro is only available in debuggable applications. Use BundleSource.Embedded for release builds."
     }
     if (bundleSource == BundleSource.Embedded) {
-      application.assets.open("index.android.bundle").close()
+      try {
+        application.assets.open("index.android.bundle").close()
+      } catch (cause: IOException) {
+        throw IllegalStateException(
+          "ExpoHost could not open the embedded asset index.android.bundle. Run expo-embedding init and rebuild the app with the generated JavaScript bundling task enabled.",
+          cause,
+        )
+      }
     }
   }
 

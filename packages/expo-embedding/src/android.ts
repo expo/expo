@@ -1,7 +1,7 @@
 import { minimatch } from 'minimatch';
-import { readdir, rm } from 'node:fs/promises';
+import { readdir, realpath, rm } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 import type { HostFileChange } from './android-host';
 import { getPackageManager } from './dependencies';
@@ -256,10 +256,11 @@ export async function configureAndroidProject(
     }
   }
   await copy(templates);
+  const physicalRoot = await realpath(root);
   let settings = editGradleBlock(
     await read(paths.settings),
     'pluginManagement',
-    `includeBuild(${quote(packageRoot('@react-native/gradle-plugin'))})\nincludeBuild(${quote(gradlePlugin)})`,
+    `includeBuild(${quote(relative(physicalRoot, packageRoot('@react-native/gradle-plugin')))})\nincludeBuild(${quote(relative(physicalRoot, gradlePlugin))})`,
     'plugin-management'
   );
   settings = editGradleBlock(
@@ -271,12 +272,12 @@ export async function configureAndroidProject(
   settings = append(
     settings,
     'settings',
-    `apply(from = ${quote(join(generated, 'settings.gradle'))})`
+    'apply(from = file(".expo-source/android/settings.gradle"))'
   );
   if (!paths.settings.endsWith('.kts'))
     settings = settings.replace(
-      `apply(from = ${quote(join(generated, 'settings.gradle'))})`,
-      `apply from: ${quote(join(generated, 'settings.gradle'))}`
+      'apply(from = file(".expo-source/android/settings.gradle"))',
+      'apply from: file(".expo-source/android/settings.gradle")'
     );
   // Keep settings repositories authoritative while allowing Expo/RN plugins to declare theirs.
   settings = settings.replace(
@@ -299,13 +300,13 @@ export async function configureAndroidProject(
     app,
     'app',
     paths.app.endsWith('.kts')
-      ? `apply(from = ${quote(join(generated, 'app.gradle'))})`
-      : `apply from: ${quote(join(generated, 'app.gradle'))}`
+      ? 'apply(from = rootProject.file(".expo-source/android/app.gradle"))'
+      : 'apply from: rootProject.file(".expo-source/android/app.gradle")'
   );
   const propertiesUpdated = append(
     properties.replace(/^# expo-embedding:/gm, '// expo-embedding:'),
     'android-properties',
-    `expo.precompileAndroid.expoPlugin=${gradlePlugin}\nandroid.useAndroidX=true\nandroid.newDsl=false\nhermesEnabled=true\nnewArchEnabled=true`
+    'android.useAndroidX=true\nandroid.newDsl=false\nhermesEnabled=true\nnewArchEnabled=true'
   ).replace(/\/\/ expo-embedding:/g, '# expo-embedding:');
   const files = new Map([
     ...generatedFiles,

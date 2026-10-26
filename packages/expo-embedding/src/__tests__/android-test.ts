@@ -185,6 +185,36 @@ describe('Embedding Expo in Android projects', () => {
     expect(before[3].match(/expo-embedding:android-properties:begin/g)).toHaveLength(1);
     expect(before[4]).toContain('debuggableVariants = []');
   });
+  it.each(['kts', 'groovy'])('should keep %s host files portable across checkouts', async (dsl) => {
+    installFixtureDependencies();
+    const suffix = dsl === 'kts' ? '.gradle.kts' : '.gradle';
+    if (dsl === 'groovy') {
+      for (const name of ['settings', 'build', 'app/build']) {
+        await fs.rename(join(root, `${name}.gradle.kts`), join(root, `${name}.gradle`));
+      }
+    }
+    const templates = join(__dirname, '../../templates/android');
+    await configureAndroidProject(root, templates, process.execPath);
+    const files = [
+      `settings${suffix}`,
+      `build${suffix}`,
+      `app/build${suffix}`,
+      'gradle.properties',
+    ];
+    const before = await Promise.all(files.map((file) => fs.readFile(join(root, file), 'utf8')));
+    for (const contents of before) expect(contents).not.toContain(root);
+    expect(before[0]).toContain('includeBuild("expo/node_modules/@react-native/gradle-plugin")');
+    expect(before[0]).toContain('file(".expo-source/android/settings.gradle")');
+    expect(before[2]).toContain('rootProject.file(".expo-source/android/app.gradle")');
+    expect(before[3]).not.toContain('expo.precompileAndroid.expoPlugin');
+    const movedRoot = `${root}-moved`;
+    await fs.rename(root, movedRoot);
+    root = movedRoot;
+    await configureAndroidProject(root, templates, process.execPath);
+    expect(await Promise.all(files.map((file) => fs.readFile(join(root, file), 'utf8')))).toEqual(
+      before
+    );
+  });
   it('should roll back approved host edits when native generation fails', async () => {
     installFixtureDependencies();
     const path = join(root, 'app/src/main/MainActivity.kt');
