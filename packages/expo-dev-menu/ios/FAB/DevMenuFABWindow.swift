@@ -48,8 +48,8 @@ class DevMenuFABWindow: UIWindow {
     rootViewController = hostingController
   }
 
-  // A per-screen orientation change rotates only the app window.
-  // UIKit does not ask this window again, so it would keep the scene in the old orientation.
+  // react-native-screens rotates only the app window, and UIKit does not ask this overlay for its orientations again.
+  // The scene would then report the overlay's old orientation, and react-native-screens would skip the next rotation.
   private func observeAppWindowRotation(in windowScene: UIWindowScene) {
     guard let appWindow = windowScene.windows.first(where: { $0.windowLevel == .normal }) else {
       return
