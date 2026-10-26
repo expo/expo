@@ -52,3 +52,17 @@ internal final class VoidHostFunctionContext: HostCallbackContext, Sendable {
     self.call = function
   }
 }
+
+/// Counterpart to ``UnownedThisHostFunctionContext`` for ``JavaScriptRuntime/HostFunctionClosure``.
+internal final class ResultSlotHostFunctionContext: HostCallbackContext, Sendable {
+  // `Unmanaged` for the same reason as in ``UnownedThisHostFunctionContext``.
+  let runtime: Unmanaged<JavaScriptRuntime>
+  let name: String?
+  let call: JavaScriptRuntime.HostFunctionClosure
+
+  init(runtime: JavaScriptRuntime, name: String? = nil, _ function: @escaping JavaScriptRuntime.HostFunctionClosure) {
+    self.runtime = Unmanaged.passUnretained(runtime)
+    self.name = name
+    self.call = function
+  }
+}
