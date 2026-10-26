@@ -117,6 +117,28 @@ struct JavaScriptCodableContainersTests {
   }
 
   @Test
+  func `encodes nested arrays and dictionaries into slots`() throws {
+    let nested = try [[Int]].encode([[1, 2], [], [3]], in: runtime).getArray()
+    #expect(try [[Int]].decode(nested.asValue(), in: runtime) == [[1, 2], [], [3]])
+    let dictionaries = try [[String: Int]].encode([["a": 1], ["b": 2]], in: runtime).getArray()
+    #expect(try [[String: Int]].decode(dictionaries.asValue(), in: runtime) == [["a": 1], ["b": 2]])
+    let object = runtime.createObject()
+    try object.setProperty("tags", encoding: ["x", "y"], in: runtime)
+    try object.setProperty("counts", encoding: ["x": 1], in: runtime)
+    #expect(try [String].decode(object.getProperty("tags"), in: runtime) == ["x", "y"])
+    #expect(try [String: Int].decode(object.getProperty("counts"), in: runtime) == ["x": 1])
+  }
+
+  @Test
+  func `throws from a nested array element without leaking the outer chunk`() throws {
+    var values = Array(repeating: [1], count: 70)
+    values[69] = [1, Int.max]
+    #expect(throws: UnsafeIntegerException.self) {
+      _ = try [[Int]].encode(values, in: runtime)
+    }
+  }
+
+  @Test
   func `encodes elements without a slot override`() throws {
     // `Array` goes through the default `encode(_:into:in:)`, also when `Optional` forwards to it.
     let array = try [[Int]?].encode([[1, 2], nil, []], in: runtime).getArray()

@@ -346,10 +346,31 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     count: Int,
     _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
   ) throws -> JavaScriptValue {
+    var array = try createJSIArray(count: count, element)
+    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+  }
+
+  /// Same as ``createArray(count:_:)``, but moves the array into `slot` instead of returning it, with no
+  /// `JavaScriptValue` in between.
+  @usableFromInline
+  internal final func createArray(
+    count: Int,
+    into slot: borrowing JavaScriptValue.Slot,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws {
+    var array = try createJSIArray(count: count, element)
+    expo.emplaceMovedArray(slot.pointer, &array)
+  }
+
+  /// The array that the `createArray(count:…)` variants return or move into a slot.
+  private final func createJSIArray(
+    count: Int,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws -> facebook.jsi.Array {
     guard count > 0 else {
-      return createArray(length: 0).takeValue()
+      return facebook.jsi.Array(pointee, 0)
     }
-    var array = expo.createArrayForPushing(pointee, count)
+    let array = expo.createArrayForPushing(pointee, count)
     // `withUnsafeTemporaryAllocation` keeps a buffer of up to 1 KiB on the stack and allocates a larger
     // one on the heap.
     let chunkCapacity = 1024 / MemoryLayout<facebook.jsi.Value>.stride
@@ -379,7 +400,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         expo.pushValues(pointee, array, pushed, start, pending)
       }
     }
-    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+    return array
   }
 
   /// Keeps the ABI symbol of `createArray(count:_:)` with a closure that returns each value, which prebuilt
