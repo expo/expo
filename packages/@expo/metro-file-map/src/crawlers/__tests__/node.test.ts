@@ -128,6 +128,10 @@ jest.mock('node:fs', () => {
         );
       } else if (dir === mockP('/error')) {
         setTimeout(() => callback({ code: 'ENOTDIR' }, undefined), 0);
+      } else if (dir === mockP('/vanished')) {
+        setTimeout(() => callback({ code: 'ENOENT' }, undefined), 0);
+      } else if (dir === mockP('/denied')) {
+        setTimeout(() => callback({ code: 'EACCES' }, undefined), 0);
       }
     }),
     stat: jest.fn(stat),
@@ -259,6 +263,32 @@ describe.each([['win32'], ['posix']])('node crawler on %s', (platform) => {
     );
     expect(changedFiles).toEqual(new Map());
     expect(removedFiles).toEqual(new Set());
+  });
+
+  test.each([
+    ['a directory that disappeared during the crawl', '/vanished', 'ENOENT', false],
+    ['a directory that cannot be read', '/denied', 'EACCES', true],
+  ])('warns only about %s if fs.readdir fails', async (_, root, code, warns) => {
+    nodeCrawl = require('../node').default;
+    const mockConsole = { ...global.console, warn: jest.fn() };
+
+    const { changedFiles } = await nodeCrawl({
+      console: mockConsole,
+      previousState: { fileSystem: emptyFS },
+      extensions: ['js'],
+      ignore: pearMatcher,
+      rootDir,
+      roots: [p(root)],
+    });
+
+    if (warns) {
+      expect(mockConsole.warn).toHaveBeenCalledWith(
+        expect.stringContaining(`Error "${code}" reading contents of "${p(root)}"`)
+      );
+    } else {
+      expect(mockConsole.warn).not.toHaveBeenCalled();
+    }
+    expect(changedFiles).toEqual(new Map());
   });
 
   test('uses the withFileTypes option with readdir', async () => {

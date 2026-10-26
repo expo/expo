@@ -40,9 +40,13 @@ function find(options: CrawlerOptions): Promise<FileData> {
       fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
         activeCalls--;
         if (err) {
-          console.warn(
-            `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
-          );
+          // NOTE(@robhogan): A directory that disappeared between being listed and being read
+          // (e.g. ephemeral Android build output) isn't worth a warning. See expo/expo#45722
+          if (err.code !== 'ENOENT') {
+            console.warn(
+              `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
+            );
+          }
         } else {
           for (const entry of entries) {
             const name = entry.name.toString();
