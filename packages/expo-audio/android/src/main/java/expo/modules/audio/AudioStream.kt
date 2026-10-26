@@ -52,8 +52,13 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+  @Volatile
   var isStreaming: Boolean = false
     private set
+
+  // Incremented by each start(). A queued buffer event compares it to drop audio from a stopped session.
+  @Volatile
+  private var session: Int = 0
 
   private var startTimeNanos: Long = 0
 
@@ -82,6 +87,7 @@ class AudioStream(
     channels = config.channelCount
     audioRecord = recorder
     startTimeNanos = System.nanoTime()
+    session += 1
     isStreaming = true
     emitStatus()
 
@@ -265,18 +271,23 @@ class AudioStream(
   }
 
   private fun emitStatus() {
+    val streaming = isStreaming
     appContext?.mainQueue?.launch {
       emit(
         AUDIO_STREAM_STATUS,
-        mapOf("isStreaming" to isStreaming)
+        mapOf("isStreaming" to streaming)
       )
     }
   }
 
   private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int) {
     val timestamp = (System.nanoTime() - startTimeNanos) / 1_000_000_000.0
+    val bufferSession = session
 
     appContext?.mainQueue?.launch {
+      if (!isStreaming || bufferSession != session) {
+        return@launch
+      }
       emit(
         AUDIO_STREAM_BUFFER,
         mapOf(
