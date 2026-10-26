@@ -612,6 +612,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/v58.0.0/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/v58.0.0/sdk/router/#hreft',
     HrefObject: '/versions/v58.0.0/sdk/router/#hrefobject',
+    MaterialColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/colors/#materialcolors',
     NativeModule: '/versions/v58.0.0/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
       '/versions/v58.0.0/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
@@ -652,6 +653,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/latest/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/latest/sdk/router/#hreft',
     HrefObject: '/versions/latest/sdk/router/#hrefobject',
+    MaterialColors: '/versions/latest/sdk/ui/jetpack-compose/colors/#materialcolors',
     NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
