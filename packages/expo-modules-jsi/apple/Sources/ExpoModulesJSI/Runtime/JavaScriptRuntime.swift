@@ -337,12 +337,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return JavaScriptArray(self, facebook.jsi.Array(pointee, length))
   }
 
-  /// Creates an array of `count` values, where `element` returns the value at each index. The values
-  /// are pushed to the array in chunks, with one engine call per chunk on React Native 0.86 and later.
+  /// Creates an array of `count` values, where `element` encodes the value at each index into the given
+  /// slot. The values are pushed to the array in chunks, with one engine call per chunk on React Native 0.86
+  /// and later. `element` must write exactly one value into the slot unless it throws (see
+  /// `JavaScriptValue.Slot`).
   @usableFromInline
-  internal final func createArray(count: Int, _ element: (_ index: Int) throws -> JavaScriptValue) throws
-    -> JavaScriptValue
-  {
+  internal final func createArray(
+    count: Int,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws -> JavaScriptValue {
     guard count > 0 else {
       return createArray(length: 0).takeValue()
     }
@@ -356,10 +359,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       var pending = 0
       do {
         for index in 0..<count {
-          // A local `var` takes the returned value in place. Passing the call result straight to a
-          // `consuming` parameter moves it once more, and each move of a `jsi::Value` calls into the engine.
-          var value = try element(index)
-          expo.emplaceValue(start + pending, &value.pointee)
+          // The element is encoded straight into the chunk, so a number or a string never becomes a
+          // `JavaScriptValue`, whose moves and destroys call into the engine.
+          try element(index, JavaScriptValue.Slot(start + pending))
           pending += 1
           if pending == chunk.count {
             expo.pushValues(pointee, array, pushed, start, pending)
@@ -368,7 +370,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
           }
         }
       } catch {
-        // The values in the buffer were never pushed to the array.
+        // The values in the buffer were never pushed to the array. The slot of the element that threw
+        // holds no value.
         expo.destroyValues(start, pending)
         throw error
       }
@@ -377,6 +380,17 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       }
     }
     return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+  }
+
+  /// Keeps the ABI symbol of `createArray(count:_:)` with a closure that returns each value, which prebuilt
+  /// binaries that inlined `Array.encode` still call.
+  @usableFromInline
+  internal final func createArray(count: Int, _ element: (_ index: Int) throws -> JavaScriptValue) throws
+    -> JavaScriptValue
+  {
+    return try createArray(count: count) { (index: Int, slot: borrowing JavaScriptValue.Slot) in
+      try slot.emplace(encoding: { try element(index) })
+    }
   }
 
   // MARK: - Creating functions
