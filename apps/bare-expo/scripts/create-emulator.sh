@@ -4,7 +4,7 @@ API_LEVEL=$1
 emulator_name="bare-expo"
 ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-$ANDROID_HOME}
 
-if $ANDROID_SDK_ROOT/tools/android list avd | grep -q $emulator_name; then
+if $ANDROID_SDK_ROOT/emulator/emulator -list-avds | grep -qx $emulator_name; then
     echo " ☛  Found an existing an emulator named ${emulator_name}"
     exit 0;
 fi
