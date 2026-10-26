@@ -94,3 +94,78 @@ extension JSIBenchmarks {
     }
   }
 }
+
+extension JSIBenchmarks {
+  @Test
+  func `emplace a Double into a values buffer`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+      try benchmark("JavaScriptValuesBuffer.emplace(_:at:in:): Double", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          try buffer.emplace(Double(index), at: 0, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emplace an Int into a values buffer`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+      try benchmark("JavaScriptValuesBuffer.emplace(_:at:in:): Int", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          try buffer.emplace(index, at: 0, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emplace a String into a values buffer`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+      try benchmark("JavaScriptValuesBuffer.emplace(_:at:in:): String", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          try buffer.emplace("hello", at: 0, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emplace an optional Int into a values buffer`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+      try benchmark("JavaScriptValuesBuffer.emplace(_:at:in:): Int?", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          try buffer.emplace(index % 2 == 0 ? index : nil, at: 0, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emplace a value through the default slot encode`() async throws {
+    // `DefaultEncodedNumber` has no `encode(_:into:in:)`, so this measures the default implementation.
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+      try benchmark("JavaScriptValuesBuffer.emplace(_:at:in:): DefaultEncodedNumber", runtime: runtime) {
+        iterations in
+        for index in 0..<iterations {
+          try buffer.emplace(DefaultEncodedNumber(value: Double(index)), at: 0, in: runtime)
+        }
+      }
+    }
+  }
+}
+
+/// Encodes as a number through the default `encode(_:into:in:)`.
+private struct DefaultEncodedNumber: JavaScriptEncodable {
+  let value: Double
+
+  static func encode(_ value: DefaultEncodedNumber, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return .number(value.value)
+  }
+}
