@@ -11,7 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.facebook.react.runtime.ReactSurfaceImpl
 
-private class SurfaceHolder { var surface: ReactSurfaceImpl? = null }
+private class SurfaceHolder {
+  var surface: ReactSurfaceImpl? = null
+  var props: Bundle? = null
+}
 
 private fun Context.expoActivity(): AppCompatActivity? = when (this) {
   is AppCompatActivity -> this
@@ -29,17 +32,26 @@ fun ExpoScene(host: ExpoHost, name: String, modifier: Modifier = Modifier, initi
         val activity = requireNotNull(context.expoActivity()) { "ExpoScene requires an AppCompatActivity. Use an AppCompatActivity-derived host with ExpoActivityDelegate." }
         val delegate = checkNotNull(ExpoActivityDelegate.from(activity)) { "ExpoScene has no Activity delegate. Call expo.attach(this, host) in Activity.onCreate() before setContent()." }
         require(delegate.host === host) { "ExpoScene must use the host attached to its Activity's ExpoActivityDelegate." }
-        // React Native 0.88 exposes prop updates on the implementation, not ReactSurface.
-        val surface = host.reactHost.createSurface(activity, name, initialProps) as ReactSurfaceImpl
+        // Remove this implementation dependency when ReactSurface exposes prop updates.
+        val surface = checkNotNull(host.reactHost.createSurface(activity, name, initialProps) as? ReactSurfaceImpl) {
+          "ExpoScene cannot update props for this React Native surface. Use the supported React Native 0.88.0 runtime and rerun expo-embedding init."
+        }
         holder.surface = surface
+        holder.props = initialProps
         val view = requireNotNull(surface.view)
         surface.start()
         view
       },
-      update = { holder.surface?.updateInitProps(initialProps ?: Bundle.EMPTY) },
+      update = {
+        if (holder.props !== initialProps) {
+          holder.surface?.updateInitProps(initialProps ?: Bundle.EMPTY)
+          holder.props = initialProps
+        }
+      },
       onRelease = {
         holder.surface?.stop()
         holder.surface = null
+        holder.props = null
       },
     )
   }

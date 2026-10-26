@@ -20,7 +20,7 @@ export async function prepareAndroidWorkspace(root: string, frozen: boolean): Pr
   for (const directory of [root, join(root, 'expo')]) {
     if (
       (await exists(join(directory, 'package.json'))) &&
-      (await getPackageManager(directory)) !== 'npm'
+      (await getPackageManager(directory, root)) !== 'npm'
     )
       throw new Error(
         'Android embedding currently requires an npm workspace. Migrate the host and expo/ package manifests to npm before running init.'

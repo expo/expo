@@ -90,7 +90,7 @@ Attach once after `super.onCreate()` and before `setContent()`. Use one delegate
 
 ## 3. JavaScript and building
 
-Edit `expo/App.tsx`. The generated entry registers `Main`. Register additional names with `AppRegistry.registerComponent('Details', () => Details)` and render `ExpoScene(expo.host, "Details", ...)` with explicit layout bounds. All scenes in an Activity must use the same host. Recomposition updates `initialProps` without remounting the surface. Drive props from Compose state; mutating a Bundle alone does not trigger recomposition. Changing the host or scene name remounts the surface.
+Edit `expo/App.tsx`. The generated entry registers `Main`. Register additional names with `AppRegistry.registerComponent('Details', () => Details)` and render `ExpoScene(expo.host, "Details", ...)` with explicit layout bounds. All scenes in an Activity must use the same host. Recomposition updates `initialProps` without remounting the surface. Treat the Bundle as immutable: reuse it while props are unchanged, and supply a new Bundle from Compose state when props change. The initial render and recompositions with the same Bundle do not resend props. Changing the host or scene name remounts the surface.
 
 Sync Gradle and Run in Android Studio, or run `./gradlew :app:assembleDebug`. Debug and Release embed JavaScript and assets; Metro is optional. Node must be available on the Gradle daemon's PATH, including when started by Android Studio.
 
