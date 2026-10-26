@@ -8,7 +8,7 @@ internal final class HostObjectContext: HostCallbackContext, Sendable {
   // Stored as `Unmanaged` rather than `weak`: the JSI host object owns the context (freed from the
   // `deallocate` callback when the JS object is collected) and lives in the runtime's heap, so a
   // getter or setter can only run while the runtime is alive and executing JS. Skips a weak load
-  // plus a strong release on every property access; see ``UnownedThisHostFunctionContext``.
+  // plus a strong release on every property access; see ``HostFunctionContext``.
   let runtime: Unmanaged<JavaScriptRuntime>
   let get: Getter
   let set: Setter?
