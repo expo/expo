@@ -190,6 +190,18 @@ jest.mock('fs', () => ({
     error.code = 'ENOENT';
     throw error;
   }),
+  readlinkSync: jest.fn((path: string) => {
+    const entry = mockFs[path];
+    if (!entry) {
+      const error: NodeJS.ErrnoException = new Error(`Cannot read path '${path}'.`);
+      error.code = 'ENOENT';
+      throw error;
+    }
+    if (typeof entry === 'string' || typeof entry.link !== 'string') {
+      throw new Error(`Not a symlink: '${path}'.`);
+    }
+    return entry.link;
+  }),
   writeFileSync: jest.fn((path: string, data: string, options?: unknown) => {
     expect(options).toBe(require('node:v8').serialize ? undefined : 'utf8');
     mockFs[path] = data;
@@ -704,6 +716,35 @@ describe('FileMap', () => {
 
       expect(deepNormalize(await fileMap.read())).toEqual(cacheContent);
     });
+  });
+
+  test('defers symlink resolution for entries with null mtime', async () => {
+    const node = require('../crawlers/node').default;
+    const fsModule = require('node:fs');
+
+    node.mockImplementation(() => {
+      const changedFiles = createMap<FileMetadata>({
+        [p('fruits/Strawberry.js')]: [32, 42, 0, null, 0],
+        [p('fruits/LinkToStrawberry.js')]: [null, 0, 0, null, 1],
+      });
+      return Promise.resolve({ changedFiles, removedFiles: new Set() });
+    });
+
+    const { fileSystem } = await buildNewFileMap({
+      enableSymlinks: true,
+      useWatchman: false,
+    });
+
+    expect(fsModule.promises.readlink).not.toHaveBeenCalledWith(
+      expect.stringContaining('LinkToStrawberry')
+    );
+
+    expect(fileSystem.lookup(p('/project/fruits/LinkToStrawberry.js'))).toMatchObject({
+      exists: true,
+      realPath: p('/project/fruits/Strawberry.js'),
+    });
+
+    expect(fsModule.readlinkSync).toHaveBeenCalledWith(p('/project/fruits/LinkToStrawberry.js'));
   });
 
   test('handles a Haste module moving between builds', async () => {

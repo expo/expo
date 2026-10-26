@@ -15,7 +15,7 @@ import { isWatcherExcludedDirName } from '../../lib/isWatcherExcluded';
 import type { CrawlerOptions, CrawlResult, FileData } from '../../types';
 
 function find(options: CrawlerOptions): Promise<FileData> {
-  const { console, extensions, ignore, includeSymlinks, rootDir, roots } = options;
+  const { console, extensions, ignore, includeSymlinks, previousState, rootDir, roots } = options;
   const result: FileData = new Map();
   const pathUtils = new RootPathUtils(rootDir);
   const exts = new Set(extensions);
@@ -81,6 +81,15 @@ function find(options: CrawlerOptions): Promise<FileData> {
 
             const ext = path.extname(name).substr(1);
             if (!isSymbolicLink && !exts.has(ext)) {
+              continue;
+            }
+
+            const mtime = previousState.fileSystem.getMtimeByNormalPath(childNormal);
+            if (mtime == null || mtime === 0) {
+              // A file that's new, or never accessed since it was crawled, is
+              // recorded without an lstat - its mtime and size are populated
+              // when it's first accessed.
+              result.set(childNormal, [null, 0, 0, null, isSymbolicLink ? 1 : 0]);
               continue;
             }
 

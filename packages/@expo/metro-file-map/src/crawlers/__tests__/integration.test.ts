@@ -106,30 +106,46 @@ function oneOf(this: jest.MatcherContext, actual: unknown, ...expectOneOf: unkno
 }
 expect.extend({ oneOf });
 
-const CASES: [boolean, Map<string, unknown>][] = [
-  [
-    true,
-    new Map<string, unknown>([
-      ['foo.js', [expect.any(Number), 245, 0, null, 0]],
-      [join('directory', 'bar.js'), [expect.any(Number), 245, 0, null, 0]],
-      ['link-to-directory', [expect.any(Number), 9, 0, null, expect.oneOf(1, 'directory')]],
-      ['link-to-foo.js', [expect.any(Number), 6, 0, null, expect.oneOf(1, 'foo.js')]],
-    ]),
-  ],
-  [
-    false,
-    new Map<string, unknown>([
-      [join('directory', 'bar.js'), [expect.any(Number), 245, 0, null, 0]],
-      ['foo.js', [expect.any(Number), 245, 0, null, 0]],
-    ]),
-  ],
-];
+// The node crawler doesn't lstat files that aren't in the previous file
+// system, so their mtime and size are only populated when they're accessed.
+function getCases(skipsStat: boolean): [boolean, Map<string, unknown>][] {
+  const fileEntry = skipsStat ? [null, 0, 0, null, 0] : [expect.any(Number), 245, 0, null, 0];
+  return [
+    [
+      true,
+      new Map<string, unknown>([
+        ['foo.js', fileEntry],
+        [join('directory', 'bar.js'), fileEntry],
+        [
+          'link-to-directory',
+          skipsStat
+            ? [null, 0, 0, null, 1]
+            : [expect.any(Number), 9, 0, null, expect.oneOf(1, 'directory')],
+        ],
+        [
+          'link-to-foo.js',
+          skipsStat
+            ? [null, 0, 0, null, 1]
+            : [expect.any(Number), 6, 0, null, expect.oneOf(1, 'foo.js')],
+        ],
+      ]),
+    ],
+    [
+      false,
+      new Map<string, unknown>([
+        [join('directory', 'bar.js'), fileEntry],
+        ['foo.js', fileEntry],
+      ]),
+    ],
+  ];
+}
 
 describe.each(Object.keys(CRAWLERS))('Crawler integration tests (%s)', (crawlerName) => {
   const crawl = CRAWLERS[crawlerName];
   const maybeTest = crawl ? test : test.skip;
+  const skipsStat = crawlerName === 'node-recursive';
 
-  maybeTest.each(CASES)(
+  maybeTest.each(getCases(skipsStat))(
     'Finds the expected files (includeSymlinks: %s)',
     async (includeSymlinks, expectedChangedFiles) => {
       invariant(crawl, 'crawl should not be null within maybeTest');

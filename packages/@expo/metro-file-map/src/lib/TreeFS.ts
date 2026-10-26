@@ -6,6 +6,7 @@
  */
 
 import invariant from 'invariant';
+import fs from 'node:fs';
 import path from 'path';
 
 import H from '../constants';
@@ -22,11 +23,15 @@ import type {
   ProcessFileFunction,
 } from '../types';
 import { RootPathUtils } from './RootPathUtils';
+import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
 type DirectoryNode = Map<string, MixedNode>;
 type FileNode = FileMetadata;
 type MixedNode = FileNode | DirectoryNode;
+
+// Stands in for a missing parent of the root ('..') while walking a path.
+const EMPTY_DIRECTORY: ReadonlyMap<string, never> = new Map<string, never>();
 
 function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode {
   return node != null && !Array.isArray(node);
@@ -345,11 +350,16 @@ export default class TreeFS implements MutableFileSystem {
         }
         if (
           newMetadata[H.MTIME] != null &&
-          // TODO: Remove when mtime is null if not populated
           newMetadata[H.MTIME] !== 0 &&
           newMetadata[H.MTIME] === metadata[H.MTIME]
         ) {
           // Types and modified time match - not changed.
+          changedFiles.delete(canonicalPath);
+        } else if (
+          (newMetadata[H.MTIME] == null || newMetadata[H.MTIME] === 0) &&
+          (metadata[H.MTIME] == null || metadata[H.MTIME] === 0)
+        ) {
+          // If file is still untouched then mark it as unchanged
           changedFiles.delete(canonicalPath);
         } else if (
           newMetadata[H.SHA1] != null &&
@@ -371,6 +381,56 @@ export default class TreeFS implements MutableFileSystem {
     };
   }
 
+  /**
+   * The mtime of a file or symlink (not followed) at a normal path, or null.
+   *
+   * The crawler calls this for every file it finds, so it walks directories
+   * itself, with the same results as #lookupByNormalPath, and leaves only a
+   * symlink in a directory path to the full traversal. This also keeps V8
+   * from optimizing #lookupByNormalPath for the crawl's paths, which
+   * measurably slows the lookups that follow.
+   */
+  getMtimeByNormalPath(normalPath: Path): number | null | undefined {
+    let parentNode: ReadonlyMap<string, MixedNode> = this.#rootNode;
+    let fromIdx = 0;
+    while (normalPath.length > fromIdx) {
+      const nextSepIdx = normalPath.indexOf(path.sep, fromIdx);
+      const isLastSegment = nextSepIdx === -1;
+      const segmentName = isLastSegment
+        ? normalPath.slice(fromIdx)
+        : normalPath.slice(fromIdx, nextSepIdx);
+      fromIdx = isLastSegment ? normalPath.length : nextSepIdx + 1;
+      if (segmentName === '.') {
+        continue;
+      }
+      const node = parentNode.get(segmentName);
+      if (node == null) {
+        if (segmentName !== '..' || fromIdx === normalPath.length) {
+          return null;
+        }
+        // A missing parent of the root is traversed as an empty directory.
+        parentNode = EMPTY_DIRECTORY;
+      } else if (isLastSegment || (fromIdx === normalPath.length && isDirectory(node))) {
+        return isDirectory(node) ? null : node[H.MTIME];
+      } else if (isDirectory(node)) {
+        parentNode = node;
+      } else if (isRegularFile(node)) {
+        return null;
+      } else {
+        return this.#getMtimeByTraversal(normalPath);
+      }
+    }
+    // Only '.' segments remained, which the traversal accepts only at the root.
+    return parentNode === this.#rootNode ? null : this.#getMtimeByTraversal(normalPath);
+  }
+
+  #getMtimeByTraversal(normalPath: Path): number | null | undefined {
+    const result = this.#lookupByNormalPath(normalPath, {
+      followLeaf: false,
+    });
+    return result.exists && !isDirectory(result.node) ? result.node[H.MTIME] : null;
+  }
+
   getSha1(mixedPath: Path): string | null | undefined {
     const fileMetadata = this.#getFileData(mixedPath);
     return (fileMetadata && fileMetadata[H.SHA1]) ?? null;
@@ -387,6 +447,17 @@ export default class TreeFS implements MutableFileSystem {
       return null;
     }
     const { canonicalPath, node: fileMetadata } = result;
+
+    // Populate mtime and size on demand
+    if (fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0) {
+      fileMetadata[H.SHA1] = null;
+      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
+      try {
+        const stat = await fs.promises.lstat(absolutePath);
+        fileMetadata[H.MTIME] = stat.mtime.getTime();
+        fileMetadata[H.SIZE] = stat.size;
+      } catch {}
+    }
 
     // Empty strings
     const existing = fileMetadata[H.SHA1];
@@ -792,16 +863,28 @@ export default class TreeFS implements MutableFileSystem {
 
         // Symlink in a directory path. Targets are stored already lexically
         // resolved to a normal path, with POSIX separators so that the
-        // snapshot is portable between operating systems.
-        const storedSymlinkTarget = segmentNode[H.SYMLINK];
+        // snapshot is portable between operating systems. A symlink crawled
+        // without an lstat has no target yet (1), and is read now.
+        const storedSymlinkTarget =
+          segmentNode[H.SYMLINK] === 1
+            ? this.#readSymlinkTarget(segmentNode, currentPath)
+            : segmentNode[H.SYMLINK];
+        if (opts.observations) {
+          opts.observations.content.add(currentPath);
+        }
+        if (storedSymlinkTarget == null) {
+          return {
+            canonicalMissingPath: currentPath,
+            exists: false,
+            missingSegmentName: segmentName,
+            remainingPath: targetNormalPath.slice(fromIdx),
+          };
+        }
         invariant(
           typeof storedSymlinkTarget === 'string',
           'Expected symlink target to be populated.'
         );
         const normalSymlinkTarget = normalizePathSeparatorsToSystem(storedSymlinkTarget);
-        if (opts.observations) {
-          opts.observations.content.add(currentPath);
-        }
 
         const remainingTargetPath = isLastSegment ? '' : targetNormalPath.slice(fromIdx);
 
@@ -1312,6 +1395,24 @@ export default class TreeFS implements MutableFileSystem {
         );
       }
     }
+  }
+
+  // Reads a symlink whose target was not read when its node was populated,
+  // and stores the target in the same form as FileMap does when it reads a
+  // link eagerly. Returns null if the link can't be read.
+  #readSymlinkTarget(symlinkNode: FileMetadata, canonicalPathOfSymlink: Path): string | null {
+    let readlinkResult: string;
+    try {
+      readlinkResult = fs.readlinkSync(this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink));
+    } catch {
+      return null;
+    }
+    const storedTarget = normalizePathSeparatorsToPosix(
+      this.#pathUtils.resolveSymlinkToNormal(canonicalPathOfSymlink, readlinkResult)
+    );
+    symlinkNode[H.SYMLINK] = storedTarget;
+    symlinkNode[H.VISITED] = 1;
+    return storedTarget;
   }
 
   #getFileData(
