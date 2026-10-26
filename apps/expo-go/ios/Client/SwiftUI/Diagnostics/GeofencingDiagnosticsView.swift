@@ -183,8 +183,11 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
   @Published var error: String?
 
   private static let permissionDeniedMessage = "Location permissions are required in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
+  private static let locationUnavailableMessage = "Could not get the current location. Check that Location Services is on. On a simulator, choose a location in Features > Location, then open this screen again"
   private let locationManager = CLLocationManager()
   private let regionRadiuses = [30, 50, 75, 100, 150, 200]
+  // CLLocationManager.monitoredRegions is shared with the running project's expo-location regions.
+  private static let regionIdentifierPrefix = "expo-go-diagnostics:"
 
   var canToggleGeofencing: Bool {
     isGeofencing || !geofencingRegions.isEmpty
@@ -222,7 +225,7 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
   }
 
   func addRegion(at coordinate: CLLocationCoordinate2D) {
-    let identifier = "\(coordinate.latitude),\(coordinate.longitude)"
+    let identifier = "\(Self.regionIdentifierPrefix)\(coordinate.latitude),\(coordinate.longitude)"
     let region = GeofenceRegion(
       identifier: identifier,
       coordinate: coordinate,
@@ -265,7 +268,8 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
   }
 
   private func stopGeofencing() {
-    for monitoredRegion in locationManager.monitoredRegions {
+    for monitoredRegion in locationManager.monitoredRegions
+    where monitoredRegion.identifier.hasPrefix(Self.regionIdentifierPrefix) {
       locationManager.stopMonitoring(for: monitoredRegion)
     }
     geofencingRegions = []
@@ -298,6 +302,11 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
   }
 
   nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    Task { @MainActor in
+      if self.initialRegion == nil {
+        self.error = Self.locationUnavailableMessage
+      }
+    }
   }
 
   nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
