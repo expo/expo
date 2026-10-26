@@ -101,6 +101,20 @@ extension Optional: JavaScriptEncodable where Wrapped: JavaScriptEncodable {
     }
     return try Wrapped.encode(value, in: runtime)
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Wrapped?,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    guard let value else {
+      slot.emplaceNull()
+      return
+    }
+    try Wrapped.encode(value, into: slot, in: runtime)
+  }
 }
 
 // MARK: - Dictionary

@@ -217,7 +217,21 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   ) throws {
     // Inlinable, so the encode specializes in the caller's module. The runtime comes from the caller:
     // the buffer's runtime is `unowned(unsafe)`, and passing it to the encode retains and releases it.
-    emplace(try T.encode(value, in: runtime), at: index)
+    try T.encode(value, into: emptySlot(at: index), in: runtime)
+  }
+
+  /// Releases the value at `index` and returns its slot, which holds `undefined` until an encode writes
+  /// into it. `undefined` owns nothing, so the encode may construct its value over it, and the slot stays
+  /// valid when the encode throws.
+  @usableFromInline
+  internal func emptySlot(at index: Int) -> JavaScriptValue.Slot {
+    guard (0..<count).contains(index) else {
+      FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
+    }
+    let slot = bufferPointer.baseAddress! + index
+    expo.destroyValues(slot, 1)
+    expo.emplaceUndefined(slot)
+    return JavaScriptValue.Slot(slot)
   }
 
   /// Encodes `value` into the slot at `index`, which must hold a value that owns nothing, such as
