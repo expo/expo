@@ -200,26 +200,14 @@ void installWebGLConstructorsAndConstants(jsi::Runtime &runtime) {
     installConstants(runtime, constructor);
   };
 
+  // In the WebGL 2 IDL, WebGL2RenderingContext does not inherit from WebGLRenderingContext.
+  // three.js r163+ rejects a WebGL 2 context that is `instanceof WebGLRenderingContext`.
+  inheritFromJsObject(EXWebGLClass::WebGLRenderingContext);
+  inheritFromJsObject(EXWebGLClass::WebGL2RenderingContext);
   installConstantsOnConstructor(EXWebGLClass::WebGLRenderingContext);
 
-  // In the WebGL 2 IDL, WebGL2RenderingContext does not inherit from
-  // WebGLRenderingContext; both include the same mixin. Browsers return false
-  // for `gl2 instanceof WebGLRenderingContext`, and three.js r163+ rejects any
-  // context for which it is true. So both prototypes extend one hidden shared
-  // prototype that holds the constants and WebGL1 methods, installed once.
-  jsi::Object sharedRenderingContextBase(runtime);
-  sharedRenderingContextBase.setProperty(runtime, "prototype", jsi::Object(runtime));
-  jsClassExtend(
-    runtime,
-    sharedRenderingContextBase,
-    jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGLRenderingContext)));
-  jsClassExtend(
-    runtime,
-    sharedRenderingContextBase,
-    jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGL2RenderingContext)));
-
-  // Static constants on WebGL2RenderingContext fall through to
-  // WebGLRenderingContext. This does not affect `instanceof`.
+  // Static constants on WebGL2RenderingContext fall through to WebGLRenderingContext.
+  // This does not affect `instanceof`.
   auto webglRenderingContext =
     runtime.global()
       .getProperty(
@@ -272,23 +260,18 @@ void installWebGLInstanceMethods(jsi::Runtime &runtime) {
   }
   runtime.global().setProperty(runtime, "__EXGLPrototypeReady", true);
 
-  // configureLogging wraps only own properties of the immediate prototype.
-  // Copy the shared constants and methods onto WebGLRenderingContext.prototype.
-  // WebGL 2 does not get a copy, so instanceof stays false.
   auto webglPrototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGLRenderingContext);
+  installConstants(runtime, webglPrototype);
+  installWebGLMethods(runtime, webglPrototype);
+
+  // Copy instead of a second install, so the host functions are created only once.
+  auto webgl2Prototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGL2RenderingContext);
   jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
-  auto sharedPrototype = objectClass.getPropertyAsFunction(runtime, "getPrototypeOf")
-                           .callWithThis(runtime, objectClass, {jsi::Value(runtime, webglPrototype)})
-                           .asObject(runtime);
-  installConstants(runtime, sharedPrototype);
-  installWebGLMethods(runtime, sharedPrototype);
   objectClass.getPropertyAsFunction(runtime, "assign")
     .callWithThis(
       runtime,
       objectClass,
-      {jsi::Value(runtime, webglPrototype), jsi::Value(runtime, sharedPrototype)});
-
-  auto webgl2Prototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGL2RenderingContext);
+      {jsi::Value(runtime, webgl2Prototype), jsi::Value(runtime, webglPrototype)});
   installWebGL2Methods(runtime, webgl2Prototype);
 }
 
@@ -311,8 +294,8 @@ void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl) {
 #undef NATIVE_METHOD
 }
 
-// Installs only WebGL2-exclusive methods. WebGL1 methods reach WebGL2
-// instances via the hidden prototype shared with WebGLRenderingContext.
+// Installs only WebGL2-exclusive methods. WebGL1 methods are copied from
+// WebGLRenderingContext.prototype in `installWebGLInstanceMethods`.
 void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl) {
 #define NATIVE_METHOD(name) ;
 #define NATIVE_WEBGL2_METHOD(name) setFunctionOnObject(runtime, gl, #name, method::glNativeMethod_##name);

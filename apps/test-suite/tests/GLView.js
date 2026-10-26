@@ -114,6 +114,8 @@ export async function test(
         // Per the WebGL 2 IDL, WebGL2RenderingContext does not inherit from
         // WebGLRenderingContext. three.js r163+ relies on this.
         expect(context instanceof WebGLRenderingContext).toBe(false);
+        expect(typeof context.clear).toBe('function');
+        expect(context.LINEAR).toBe(WebGL2RenderingContext.LINEAR);
       });
 
       it('takes a snapshot', async () => {
