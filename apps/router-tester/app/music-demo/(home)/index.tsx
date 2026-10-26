@@ -51,7 +51,7 @@ export default function ListenNowScreen() {
   const width = useWindowDimensions().width - insets.left - insets.right;
   const isDark = useColorScheme() === 'dark';
   const albumSize = 170;
-
+  console.log(width);
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"

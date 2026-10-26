@@ -70,7 +70,11 @@ export default function Layout() {
             <NativeTabs.Trigger.Label hidden />
             <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled" prominent={prominent}>
+          <NativeTabs.Trigger
+            role="search"
+            name="dynamic"
+            labelVisibilityMode="unlabeled"
+            prominent={prominent}>
             <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
             <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
             <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>

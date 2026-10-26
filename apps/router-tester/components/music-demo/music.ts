@@ -310,3 +310,19 @@ export const SEARCH_CATEGORIES = [
   { id: 'sc11', name: 'K-Pop', color: '#FF2D55' },
   { id: 'sc12', name: 'Latin', color: '#FF9500' },
 ];
+
+// Placeholder text, not real song lyrics.
+export const LYRICS = `City lights are fading slow
+Echoes where the night winds go
+Hold the moment, let it stay
+Morning comes and takes the day
+
+Running down the empty street
+Neon humming to the beat
+Every window, every sign
+Glowing softly, out of time
+
+Hold the moment, let it stay
+Morning comes and takes the day
+Hold the moment, let it stay
+We will find another way`;

@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Color } from 'expo-router';
+import { Color, Link } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { ScrollView, View, Text, Pressable, useColorScheme } from 'react-native';
 
@@ -7,7 +7,7 @@ import { LIBRARY_SONGS as SONGS } from '../../../components/music-demo/music';
 
 const LIBRARY_SONGS = [...SONGS, ...SONGS].map((song, i) => ({
   ...song,
-  id: `${song.id}-${i}`,
+  key: `${song.id}-${i}`,
 }));
 
 const LIBRARY_SECTIONS = [
@@ -70,37 +70,38 @@ export default function LibraryScreen() {
       </Text>
       <View style={{ paddingHorizontal: 16, paddingBottom: 120 }}>
         {LIBRARY_SONGS.map((song, i) => (
-          <View
-            key={song.id}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 12,
-              paddingVertical: 8,
-              borderBottomWidth: i < LIBRARY_SONGS.length - 1 ? 0.5 : 0,
-              borderBottomColor: Color.ios.separator,
-            }}>
-            <Image
-              source={{ uri: song.artwork }}
-              style={{ width: 48, height: 48, borderRadius: 6 }}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16, color: isDark ? '#fff' : '#000' }} numberOfLines={1}>
-                {song.title}
+          <Link key={song.key} href={`/music-demo/library/${song.id}`} asChild>
+            <Pressable
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                paddingVertical: 8,
+                borderBottomWidth: i < LIBRARY_SONGS.length - 1 ? 0.5 : 0,
+                borderBottomColor: Color.ios.separator,
+              }}>
+              <Image
+                source={{ uri: song.artwork }}
+                style={{ width: 48, height: 48, borderRadius: 6 }}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 16, color: isDark ? '#fff' : '#000' }} numberOfLines={1}>
+                  {song.title}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: Color.ios.secondaryLabel,
+                  }}
+                  numberOfLines={1}>
+                  {song.artist} — {song.album}
+                </Text>
+              </View>
+              <Text style={{ fontSize: 14, color: Color.ios.tertiaryLabel }}>
+                {formatDuration(song.duration)}
               </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: Color.ios.secondaryLabel,
-                }}
-                numberOfLines={1}>
-                {song.artist} — {song.album}
-              </Text>
-            </View>
-            <Text style={{ fontSize: 14, color: Color.ios.tertiaryLabel }}>
-              {formatDuration(song.duration)}
-            </Text>
-          </View>
+            </Pressable>
+          </Link>
         ))}
       </View>
     </ScrollView>

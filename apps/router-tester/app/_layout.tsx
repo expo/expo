@@ -4,7 +4,7 @@ import {
   unstable_PerformanceObserver,
   type RouterPerformanceMark,
 } from 'expo-router';
-import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
+import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 
 unstable_enablePerformanceIntegration();
 new unstable_PerformanceObserver((list) => {
@@ -19,10 +19,10 @@ export default function Layout() {
   return (
     <ThemeProvider
       value={{
-        ...DefaultTheme,
+        ...DarkTheme,
         colors: {
-          ...DefaultTheme.colors,
-          background: '#fff',
+          ...DarkTheme.colors,
+          card: '#1e1f25',
         },
       }}>
       <Stack screenOptions={{ headerShown: false }} />
