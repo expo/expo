@@ -3,11 +3,7 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
  */
-
-'use strict';
 
 import type {
   DependencyExtractor,
@@ -15,29 +11,32 @@ import type {
   V8Serializable,
   WorkerMessage,
 } from '../../types';
-import { extract } from './dependencyExtractor';
+import * as defaultDependencyExtractor from './dependencyExtractor';
 
 export default class DependencyExtractorWorker implements MetadataWorker {
-  readonly #dependencyExtractor: DependencyExtractor | undefined | null;
+  readonly #dependencyExtractor: DependencyExtractor['extract'] | undefined | null;
 
-  constructor({ dependencyExtractor }: Readonly<{ dependencyExtractor: string | null }>) {
+  constructor({
+    dependencyExtractor,
+  }: Readonly<{ dependencyExtractor: string | undefined | null }>) {
     if (dependencyExtractor != null) {
       const mod = require(dependencyExtractor);
-      this.#dependencyExtractor = mod.__esModule === true && 'default' in mod ? mod.default : mod;
+      let extract = mod?.extract; // CJS export or ESM named export
+      if (extract == null && mod?.__esModule === true) {
+        extract = mod.default?.extract;
+      }
+      this.#dependencyExtractor = extract;
     }
   }
 
-  async processFile(
-    data: WorkerMessage,
-    utils: { readonly getContent: () => Promise<Buffer> }
-  ): Promise<V8Serializable> {
-    const content = (await utils.getContent()).toString();
+  processFile(data: WorkerMessage, utils: Readonly<{ getContent: () => Buffer }>): V8Serializable {
+    const content = utils.getContent().toString();
     const { filePath } = data;
 
     const dependencies =
       this.#dependencyExtractor != null
-        ? this.#dependencyExtractor.extract(content, filePath, extract)
-        : extract(content);
+        ? this.#dependencyExtractor(content, filePath, defaultDependencyExtractor.extract)
+        : defaultDependencyExtractor.extract(content);
 
     // Return as array (PerFileData type)
     return Array.from(dependencies);

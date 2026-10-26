@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import EventEmitter from 'events';
-import * as path from 'path';
+import EventEmitter from 'node:events';
+import * as path from 'node:path';
 
-import isWatcherExcluded from '../lib/isWatcherExcluded';
 import type {
   WatcherBackend,
   WatcherBackendChangeEvent,
@@ -17,31 +16,40 @@ import type {
 } from '../types';
 import { posixPathMatchesPattern } from './common';
 
-// Distributive Omit that works correctly with union types
-type EachOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+// Distributive Omit, so that each member of a union keeps its own fields.
+type EachOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
 export type WatcherBackendChangeEventWithoutRoot = EachOmit<WatcherBackendChangeEvent, 'root'>;
 
-export interface Listeners {
-  onFileEvent(event: WatcherBackendChangeEvent): void;
-  onError(error: Error): void;
-}
+export type Listeners = Readonly<{
+  onFileEvent: (event: WatcherBackendChangeEvent) => void;
+  onError: (error: Error) => void;
+}>;
 
 export class AbstractWatcher implements WatcherBackend {
   readonly root: string;
-  readonly ignored: RegExp | undefined | null;
+  readonly ignored: RegExp | null | undefined;
   readonly included: WatcherIncludedFiles | null | undefined;
   readonly doIgnore: (path: string) => boolean;
 
   #emitter: EventEmitter = new EventEmitter();
+
+  /**
+   * Whether a watch reports every change made after `startWatching` resolves.
+   * If not, `Watcher` confirms each watch with a change of its own before
+   * relying on it.
+   */
+  static isLiveOnStart(): boolean {
+    return true;
+  }
 
   constructor(dir: string, opts: WatcherBackendOptions) {
     const { ignored, included } = opts;
     this.ignored = ignored;
     this.included = included;
     this.doIgnore = ignored
-      ? (filePath: string) =>
-          isWatcherExcluded(filePath) || posixPathMatchesPattern(ignored, filePath)
-      : isWatcherExcluded;
+      ? (filePath: string) => posixPathMatchesPattern(ignored, filePath)
+      : () => false;
 
     this.root = path.resolve(dir);
   }
@@ -79,7 +87,7 @@ export class AbstractWatcher implements WatcherBackend {
     this.#emitter.emit('error', error);
   }
 
-  getPauseReason(): string | undefined | null {
+  getPauseReason(): string | null | undefined {
     return null;
   }
 }

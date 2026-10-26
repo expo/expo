@@ -35,12 +35,11 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "2g": "^1.0.1",
     "debug": "^4.3.4",
     "fb-watchman": "^2.0.2",
     "invariant": "^2.2.4",
     "jest-worker": "^29.7.0",
-    "walker": "^1.0.8"
+    "nullthrows": "^1.1.1"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",

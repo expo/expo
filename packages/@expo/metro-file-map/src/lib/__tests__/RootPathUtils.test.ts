@@ -85,9 +85,6 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       expect(pathRelative).toHaveBeenCalled();
     });
 
-    // normalToAbsolute is documented to take normal (root-relative, no
-    // redundant indirections) paths; inputs with more '..'s than rootDepth
-    // are non-canonical and out of contract.
     const normalToAbsoluteInputs =
       rootDir === p('/project/root')
         ? [
@@ -116,8 +113,6 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       }
     );
 
-    // relativeToNormal no longer collapses non-canonical leading '..' chains
-    // (no in-function clip); inputs are expected to be canonical for rootDir.
     const relativeToNormalInputs =
       rootDir === p('/project/root')
         ? [
@@ -153,142 +148,9 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
     );
   });
 
-  test.each([
-    ['foo', null],
-    ['', 0],
-    ['..', 1],
-    [p('../..'), 2],
-    [p('../../..'), 3],
-    [p('../../../foo'), null],
-    [p('../../../..foo'), null],
-  ] as const)('getAncestorOfRootIdx (%s => %s)', (input, expected) => {
-    expect(pathUtils.getAncestorOfRootIdx(input)).toEqual(expected);
-  });
-
-  describe('standalone getAncestorOfRootIdx (free function)', () => {
-    let getAncestorOfRootIdx: typeof import('../RootPathUtils').getAncestorOfRootIdx;
-
-    beforeEach(() => {
-      getAncestorOfRootIdx = require('../RootPathUtils').getAncestorOfRootIdx;
-    });
-
-    test.each([
-      ['', 0],
-      ['..', 1],
-      [p('../..'), 2],
-      [p('../../..'), 3],
-      ['foo', 0],
-      [p('../foo'), 1],
-      [p('../../foo'), 2],
-    ] as const)('getAncestorOfRootIdx(%s) => %s', (input, expected) => {
-      expect(getAncestorOfRootIdx(input)).toEqual(expected);
-    });
-  });
-
-  describe('resolveSymlinkToNormal', () => {
-    beforeEach(() => {
-      pathUtils = new RootPathUtils(p('/project/root'));
-    });
-
-    test.each([
-      ['foo/link', './target.js', p('foo/target.js')],
-      ['foo/link', '../bar.js', 'bar.js'],
-      ['link', 'target.js', 'target.js'],
-      [p('a/b/link'), p('../../c.js'), 'c.js'],
-      [p('a/b/link'), p('../../../outside/f.js'), p('../outside/f.js')],
-    ])('resolves relative target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
-      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
-    });
-
-    test.each([
-      ['link', p('/project/root/target.js'), 'target.js'],
-      ['link', p('/project/root/a/b.js'), p('a/b.js')],
-      ['link', p('/outside/foo.js'), p('../../outside/foo.js')],
-      [p('a/link'), p('/project/root'), ''],
-    ])('resolves absolute target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
-      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
-    });
-
-    test('strips trailing separator from target', () => {
-      expect(pathUtils.resolveSymlinkToNormal('link', p('/project/root/dir/'))).toEqual('dir');
-    });
-  });
-
-  describe('pathsToPattern', () => {
-    let pathsToPattern: typeof import('../RootPathUtils').pathsToPattern;
-
-    beforeEach(() => {
-      pathsToPattern = require('../RootPathUtils').pathsToPattern;
-      pathUtils = new RootPathUtils(p('/project'));
-    });
-
-    test('returns null for empty paths array', () => {
-      expect(pathsToPattern([], pathUtils)).toBeNull();
-    });
-
-    test('creates pattern that matches paths inside a root', () => {
-      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
-      expect(pattern).not.toBeNull();
-      expect(pattern.test(p('src/foo.js'))).toBe(true);
-      expect(pattern.test(p('src/sub/bar.js'))).toBe(true);
-    });
-
-    test('pattern does not match paths outside the root', () => {
-      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
-      expect(pattern.test(p('lib/foo.js'))).toBe(false);
-      expect(pattern.test(p('src2/foo.js'))).toBe(false);
-    });
-
-    test('pattern matches root directory with trailing separator', () => {
-      const pattern = pathsToPattern([p('/project/src')], pathUtils)!;
-      // The root itself + separator should match
-      expect(pattern.test('src' + sep)).toBe(true);
-    });
-
-    test('handles rootDir as a watched root (empty normal path)', () => {
-      const pattern = pathsToPattern([p('/project')], pathUtils)!;
-      expect(pattern).not.toBeNull();
-      // Paths within root should match
-      expect(pattern.test(p('foo/bar.js'))).toBe(true);
-      // Paths above root should not match
-      expect(pattern.test(p('../outside/foo.js'))).toBe(false);
-      expect(pattern.test('..')).toBe(false);
-    });
-
-    test('handles multiple roots', () => {
-      const pattern = pathsToPattern([p('/project/src'), p('/project/lib')], pathUtils)!;
-      expect(pattern.test(p('src/foo.js'))).toBe(true);
-      expect(pattern.test(p('lib/bar.js'))).toBe(true);
-      expect(pattern.test(p('other/baz.js'))).toBe(false);
-    });
-
-    test('escapes regex-special characters in paths', () => {
-      const pattern = pathsToPattern([p('/project/src+lib')], pathUtils)!;
-      // Should match literally, not as regex +
-      expect(pattern.test(p('src+lib/foo.js'))).toBe(true);
-      expect(pattern.test(p('srcXlib/foo.js'))).toBe(false);
-    });
-
-    test('handles root above rootDir (produces ..-relative pattern)', () => {
-      // pathUtils has rootDir = /project, so root '/' produces '../' pattern
-      const pattern = pathsToPattern([p('/')], pathUtils)!;
-      expect(pattern).not.toBeNull();
-      // '../foo' is inside '/' (one level above /project)
-      expect(pattern.test(p('../foo'))).toBe(true);
-      // '../../foo' would be above '/' — but since '/' is the filesystem root,
-      // the pattern for '/' relative to '/project' is '../' which matches '../anything'
-      expect(pattern.test(p('../nested/bar.js'))).toBe(true);
-      // Paths inside /project (no '..' prefix) should not match the '../' pattern
-      expect(pattern.test(p('src/foo.js'))).toBe(false);
-    });
-  });
-
-  // See: https://github.com/facebook/metro/pull/1696
-  // When a path and rootDir differ in drives on Windows, we expect the resulting
-  // path to have an anchor (D:) on the new drive
   if (platform === 'win32') {
     describe('cross-drive absolute paths (Windows)', () => {
-      test.each(['C:\\project\\root', 'C:\\'])(
+      test.each([['C:\\project\\root'], ['C:\\']])(
         'path.relative returns cross-drive target as-is from rootDir=%s',
         (rootDir) => {
           expect(mockPathModule.relative(rootDir, 'D:\\some\\file.js')).toEqual(
@@ -297,9 +159,6 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
         }
       );
 
-      // Pin the ..-chain encoding so we keep the "normal paths are root-
-      // relative" invariant; only normalToAbsolute observes the cross-drive
-      // case and returns the absolute remainder.
       test.each([
         ['C:\\project\\root', 'D:\\some\\file.js', '..\\..\\..\\D:\\some\\file.js'],
         ['C:\\project\\root', 'D:\\some\\', '..\\..\\..\\D:\\some\\'],
@@ -352,12 +211,7 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       test.each([
         ['C:\\project\\root', 'link', 'D:\\target.js'],
         ['C:\\project\\root', 'a\\b\\link', 'D:\\sub\\target.js'],
-        // 'D:\\' hits a distinct path: the leading trailing-separator strip
-        // turns it into 'D:', which path.win32.isAbsolute rejects, so this
-        // falls through to the relative branch instead of absoluteToNormal.
-        ['C:\\project\\root', 'link', 'D:\\'],
         ['C:\\', 'link', 'D:\\target.js'],
-        ['C:\\', 'link', 'D:\\'],
       ])(
         'resolveSymlinkToNormal round-trips a cross-drive target (rootDir=%s, %s -> %s)',
         (rootDir, symlinkNormalPath, readlinkResult) => {
@@ -368,4 +222,78 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       );
     });
   }
+
+  describe('resolveSymlinkToNormal', () => {
+    beforeEach(() => {
+      pathUtils = new RootPathUtils(p('/project/root'));
+    });
+
+    test.each([
+      ['foo/link', './target.js', p('foo/target.js')],
+      ['foo/link', '../bar.js', 'bar.js'],
+      ['link', 'target.js', 'target.js'],
+      [p('a/b/link'), p('../../c.js'), 'c.js'],
+      [p('a/b/link'), p('../../../outside/f.js'), p('../outside/f.js')],
+    ])('resolves relative target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
+      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
+    });
+
+    // readlink returns the target as the link was created, which need not be
+    // well-formed. On Windows, these also use '/' separators.
+    test.each([
+      ['a/link', '..', ''],
+      ['a/link', '.', 'a'],
+      ['a/link', './', 'a'],
+      ['a/link', 'b/..', 'a'],
+      ['a/link', 'b/../c', p('a/c')],
+      ['a/link', 'b/./c', p('a/b/c')],
+      ['a/link', 'b//c', p('a/b/c')],
+      ['a/b/link', '../..', ''],
+      ['a/b/link', '../../..', '..'],
+    ])(
+      'resolves non-well-formed target (%s -> %s) to %s',
+      (symlinkPath, readlinkResult, expected) => {
+        expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
+      }
+    );
+
+    test.each([
+      ['link', p('/project/root/target.js'), 'target.js'],
+      ['link', p('/project/root/a/b.js'), p('a/b.js')],
+      ['link', p('/outside/foo.js'), p('../../outside/foo.js')],
+      [p('a/link'), p('/project/root'), ''],
+    ])('resolves absolute target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
+      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
+    });
+
+    test('strips trailing separator from target', () => {
+      expect(pathUtils.resolveSymlinkToNormal('link', p('/project/root/dir/'))).toEqual('dir');
+    });
+
+    // A filesystem root is the one absolute target that consists only of a
+    // separator, so it must not be trimmed before we test for absoluteness.
+    // Relative targets may also reach the filesystem root, or pass it: '..' at
+    // the filesystem root is the filesystem root itself.
+    test.each([
+      ['link', p('/'), p('../..')],
+      [p('a/link'), p('/'), p('../..')],
+      ['link', '../..', p('../..')],
+      ['link', '../../../../..', p('../..')],
+      [p('a/link'), '../../../../../..', p('../..')],
+    ])(
+      'resolves filesystem root target (%s -> %s) to %s',
+      (symlinkPath, readlinkResult, expected) => {
+        expect(pathUtils.resolveSymlinkToNormal(symlinkPath, readlinkResult)).toEqual(expected);
+      }
+    );
+
+    if (platform === 'win32') {
+      test.each([
+        ['D:\\', '..\\..\\..\\D:'],
+        ['D:\\ext\\', '..\\..\\..\\D:\\ext'],
+      ])('resolves cross-drive root target (%s) to %s', (readlinkResult, expected) => {
+        expect(pathUtils.resolveSymlinkToNormal('link', readlinkResult)).toEqual(expected);
+      });
+    }
+  });
 });

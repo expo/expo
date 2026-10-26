@@ -5,14 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import debugModule from 'debug';
 import { Worker as JestWorker } from 'jest-worker';
-import { sep } from 'path';
+import { sep } from 'node:path';
 
 import H from '../constants';
 import type {
   FileMapPluginWorker,
   FileMetadata,
   PerfLogger,
+  V8Serializable,
   WorkerMessage,
   WorkerMetadata,
   WorkerSetupArgs,
@@ -20,23 +22,23 @@ import type {
 import { Worker } from '../worker';
 import { RootPathUtils } from './RootPathUtils';
 
-const debug = require('debug')('Metro:FileMap');
+const debug = debugModule('Metro:FileMap');
 
-interface ProcessFileRequest {
+type ProcessFileRequest = Readonly<{
   /**
    * Populate metadata[H.SHA1] with the SHA1 of the file's contents.
    */
-  readonly computeSha1: boolean;
+  computeSha1: boolean;
   /**
    * Only if processing has already required reading the file's contents, return
    * the contents as a Buffer - null otherwise. Not supported for batches.
    */
-  readonly maybeReturnContent: boolean;
-}
+  maybeReturnContent: boolean;
+}>;
 
 interface AsyncWorker {
-  processFile(message: WorkerMessage): Promise<WorkerMetadata>;
-  end(): Promise<void>;
+  readonly processFile: (message: WorkerMessage) => Promise<WorkerMetadata>;
+  readonly end: () => Promise<void>;
 }
 
 interface MaybeCodedError extends Error {
@@ -58,8 +60,8 @@ export class FileProcessor {
     opts: Readonly<{
       maxFilesPerWorker?: number | null;
       maxWorkers: number;
-      pluginWorkers?: readonly FileMapPluginWorker[] | null;
-      perfLogger?: PerfLogger | null;
+      pluginWorkers: readonly FileMapPluginWorker[] | undefined | null;
+      perfLogger: PerfLogger | undefined | null;
       rootDir: string;
     }>
   ) {
@@ -74,7 +76,7 @@ export class FileProcessor {
   }
 
   async processBatch(
-    files: readonly [relativePath: string, FileMetadata][],
+    files: readonly [string /*relativePath*/, FileMetadata][],
     req: ProcessFileRequest
   ): Promise<{
     errors: {
@@ -121,21 +123,44 @@ export class FileProcessor {
     return { errors };
   }
 
-  async processRegularFile(
+  processRegularFile(
     normalPath: string,
     fileMetadata: FileMetadata,
     req: ProcessFileRequest
-  ): Promise<{ content: Buffer | undefined | null } | null> {
+  ): { content: Buffer | undefined | null } | undefined | null {
     const workerInput = this.#getWorkerInput(normalPath, fileMetadata, req);
     return workerInput
       ? {
           content: processWorkerReply(
-            await this.#inBandWorker.processFile(workerInput),
+            this.#inBandWorker.processFile(workerInput),
             workerInput.pluginsToRun,
             fileMetadata
           ),
         }
       : null;
+  }
+
+  /**
+   * Synchronously run one plugin's worker on a regular file and store the
+   * result as that plugin's data. This is how a lazy plugin's files are
+   * processed, so its filter does not apply - the plugin asked for this
+   * file.
+   */
+  processFileForPlugin(
+    absolutePath: string,
+    fileMetadata: FileMetadata,
+    pluginIdx: number
+  ): V8Serializable {
+    const reply = this.#inBandWorker.processFile({
+      computeSha1: false,
+      filePath: absolutePath,
+      maybeReturnContent: false,
+      pluginsToRun: [pluginIdx],
+    });
+    // `undefined` is reserved to mean that no worker has run.
+    const pluginData = reply.pluginData?.[0] ?? null;
+    fileMetadata[H.PLUGINDATA + pluginIdx] = pluginData;
+    return pluginData;
   }
 
   #getWorkerInput(
@@ -159,7 +184,7 @@ export class FileProcessor {
     // Indices of plugins with a passing filter
     const pluginsToRun =
       this.#pluginWorkers?.reduce((prev, plugin, idx) => {
-        if (plugin.filter({ isNodeModules, normalPath })) {
+        if (plugin.lazy !== true && plugin.filter({ isNodeModules, normalPath })) {
           prev.push(idx);
         }
         return prev;
@@ -167,23 +192,6 @@ export class FileProcessor {
 
     if (!computeSha1 && pluginsToRun.length === 0) {
       // Nothing to process
-      return null;
-    }
-
-    // Use a cheaper worker configuration for node_modules files, because
-    // they may never be Haste modules or packages.
-    //
-    // Note that we'd only expect node_modules files to reach this point if
-    // retainAllFiles is true, or they're touched during watch mode.
-    if (isNodeModules) {
-      if (computeSha1) {
-        return {
-          computeSha1: true,
-          filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
-          maybeReturnContent,
-          pluginsToRun,
-        };
-      }
       return null;
     }
 
@@ -244,7 +252,8 @@ function processWorkerReply(
   const pluginData = metadata.pluginData;
   if (pluginData) {
     for (const [i, pluginIdx] of pluginsRun.entries()) {
-      fileMetadata[H.PLUGINDATA + pluginIdx] = pluginData[i];
+      // `undefined` is reserved to mean that no worker has run.
+      fileMetadata[H.PLUGINDATA + pluginIdx] = pluginData[i] ?? null;
     }
   }
 

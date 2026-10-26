@@ -36,7 +36,7 @@ export default function rootRelativeCacheKeys(buildParameters: BuildParameters):
         case 'retainAllFiles':
           return buildParameters[key] ?? null;
         case 'ignorePattern':
-          return buildParameters[key]?.toString() ?? null;
+          return buildParameters[key].toString();
         default:
           key satisfies never;
           throw new Error('Unrecognised key in build parameters: ' + key);
