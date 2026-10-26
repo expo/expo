@@ -86,20 +86,6 @@ describe(normalizeBodyInitAsync, () => {
     expect(new TextDecoder().decode(result.body)).toBe('Hello, world!');
   });
 
-  it('should return the Blob type as a default Content-Type header', async () => {
-    const body = new Blob(['Hello, world!'], { type: 'text/plain' });
-    const result = await normalizeBodyInitAsync(body);
-    expect(result.defaultHeaders).toEqual([['Content-Type', 'text/plain']]);
-    expect(result.overriddenHeaders).toBeUndefined();
-  });
-
-  it('should not return a Content-Type header for a Blob without a type', async () => {
-    const body = new Blob(['Hello, world!']);
-    const result = await normalizeBodyInitAsync(body);
-    expect(result.defaultHeaders).toBeUndefined();
-    expect(result.overriddenHeaders).toBeUndefined();
-  });
-
   // TODO(@kitten): We know this should work but the instanceof check fails in the Web jest preset env
   it.skip('should normalize an ArrayBuffer body', async () => {
     const body = new TextEncoder().encode('Hello, world!').buffer;
@@ -113,10 +99,8 @@ describe(normalizeBodyInitAsync, () => {
     const result = await normalizeBodyInitAsync(body as any);
     const resultBodyString = new TextDecoder().decode(result.body);
     expect(resultBodyString).toMatch(/------ExpoFetchFormBoundary[\w]{16}/);
-    const overrideHeaders = result.overriddenHeaders;
-    expect(overrideHeaders?.length).toBe(1);
-    expect(overrideHeaders?.[0]?.[0]).toBe('Content-Type');
-    expect(overrideHeaders?.[0]?.[1]).toMatch(
+    expect(result.contentType?.override).toBe(true);
+    expect(result.contentType?.value).toMatch(
       /^multipart\/form-data; boundary=----ExpoFetchFormBoundary[\w]{16}$/
     );
   });

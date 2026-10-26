@@ -46,12 +46,17 @@ function isBlob(obj: any): obj is Blob {
 }
 
 /**
+ * The Content-Type that a body needs.
+ * When `override` is false, a Content-Type that the caller sets wins.
+ */
+export type BodyContentType = { value: string; override: boolean };
+
+/**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
 export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
   body: Uint8Array | null;
-  overriddenHeaders?: NativeHeadersType;
-  defaultHeaders?: NativeHeadersType;
+  contentType?: BodyContentType;
 }> {
   if (body == null) {
     return { body: null };
@@ -71,11 +76,12 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
   }
 
   if (body instanceof Blob || isBlob(body)) {
-    const result = new Uint8Array(await blobToArrayBufferAsync(body));
-    // Like the Fetch standard, the Blob type is only used when the caller did not set a Content-Type
-    return body.type
-      ? { body: result, defaultHeaders: [['Content-Type', body.type]] }
-      : { body: result };
+    // An empty type still sets the header.
+    // Without a Content-Type, URLSession sends `application/x-www-form-urlencoded`.
+    return {
+      body: new Uint8Array(await blobToArrayBufferAsync(body)),
+      contentType: { value: body.type, override: false },
+    };
   }
 
   if (body instanceof URLSearchParams) {
@@ -93,7 +99,7 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
 
     return {
       body: result,
-      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
+      contentType: { value: `multipart/form-data; boundary=${boundary}`, override: true },
     };
   }
 
@@ -138,6 +144,26 @@ export function overrideHeaders(
     result.push([key, value]);
   }
   return result;
+}
+
+/**
+ * Set the Content-Type header from the body.
+ * Keep the caller header unless the body must override it.
+ */
+export function applyBodyContentType(
+  headers: NativeHeadersType,
+  contentType: BodyContentType | undefined
+): NativeHeadersType {
+  if (contentType == null) {
+    return headers;
+  }
+  const hasCallerContentType = headers.some(
+    ([key, value]) => key.toLowerCase() === 'content-type' && value != null
+  );
+  if (hasCallerContentType && !contentType.override) {
+    return headers;
+  }
+  return overrideHeaders(headers, [['Content-Type', contentType.value]]);
 }
 
 /** Normalizes known HTTP methods to uppercase */
