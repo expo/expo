@@ -59,12 +59,28 @@ class AudioStream: SharedObject {
       )
     }
 
+    // The buffer event carries interleaved samples, so a planar (non-interleaved) input needs the
+    // converter too, even when rate, channels and sample format already match.
     let needsConversion = hardwareFormat.sampleRate != targetSampleRate
       || hardwareFormat.channelCount != targetChannels
       || hardwareFormat.commonFormat != commonFormat
+      || hardwareFormat.isInterleaved != targetFormat.isInterleaved
 
     if needsConversion {
       guard let conv = AVAudioConverter(from: hardwareFormat, to: targetFormat) else {
+        // Streaming the hardware format instead is only safe when the bytes still mean what the
+        // app asked for: same sample format, and a layout the single-plane copy in emitBuffer
+        // handles. The rate and channel count are reported in every buffer event.
+        let passThroughIsSafe = hardwareFormat.commonFormat == commonFormat
+          && (hardwareFormat.isInterleaved || hardwareFormat.channelCount == 1)
+        guard passThroughIsSafe else {
+          throw AudioStreamException(
+            "The audio input (\(Int(hardwareFormat.sampleRate)) Hz, \(hardwareFormat.channelCount) ch, "
+            + "\(hardwareFormat.isInterleaved ? "interleaved" : "non-interleaved") \(hardwareFormat.commonFormat == .pcmFormatInt16 ? "int16" : "float32")) "
+            + "cannot be converted to the requested format (\(Int(targetSampleRate)) Hz, \(Int(targetChannels)) ch, \(encoding.rawValue)). "
+            + "Request the input's sample format, or a sample rate of 48000, 44100, or 16000 with 1 channel."
+          )
+        }
         sampleRate = hardwareFormat.sampleRate
         channels = Int(hardwareFormat.channelCount)
         setupTapWithoutConversion(engine: engine, inputNode: inputNode, format: hardwareFormat)
