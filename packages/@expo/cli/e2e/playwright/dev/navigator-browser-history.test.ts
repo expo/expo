@@ -1,4 +1,7 @@
+import { getMetroServerRoot } from '@expo/config/paths';
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -321,27 +324,122 @@ test.describe(`${inputDir} with server output`, () => {
   async function probeServerOutputAsync(pathname: string) {
     const url = new URL(pathname, expoStart.url).href;
     try {
-      const response = await fetch(url, { headers: { accept: 'text/html' } });
+      const response = await fetch(url, {
+        headers: { accept: 'text/html' },
+        signal: AbortSignal.timeout(60_000),
+      });
       const body = await response.text();
-      return [
+      const unknownModuleId = body.match(/Requiring unknown module "?(\d+)/)?.[1];
+      const summary = [
         `${url} -> ${response.status}`,
         ...(response.status === 200 ? [] : [body.slice(0, 1500)]),
+        ...(unknownModuleId ? [`unknown module id: ${unknownModuleId}`] : []),
       ].join('\n');
+      return { summary, body };
     } catch (error) {
-      return `${url} -> fetch failed: ${error}`;
+      return { summary: `${url} -> fetch failed: ${error}`, body: '' };
     }
   }
 
-  test.beforeAll(async () => {
+  // TEMP(diagnostic): the full HTML is tens of KB, so the CI log gets only the rendered root.
+  function sliceRoot(html: string) {
+    const start = html.indexOf('<div id="root"');
+    if (start === -1) {
+      return html;
+    }
+    const end = html.indexOf('</body>', start);
+    return html.slice(start, end === -1 ? undefined : end);
+  }
+
+  // TEMP(diagnostic): name the modules around the id in "Requiring unknown module" errors, and
+  // the module ids of the `anchored` routes. The dev server bundles SSR code directly, not
+  // over HTTP, so this requests a bundle with the same options. Development module ids are
+  // assigned per Metro server, not per bundle.
+  async function describeSsrBundleModulesAsync(html: string): Promise<string[]> {
+    const clientBundleSrc = html.match(/<script[^>]*\ssrc="([^"]+\.bundle\?[^"]+)"/)?.[1];
+    if (!clientBundleSrc) {
+      return ['<no client bundle script in the HTML>'];
+    }
+    const url = new URL(clientBundleSrc.replace(/&amp;/g, '&'), expoStart.url);
+    const renderModulePath = fs.realpathSync(
+      require.resolve('@expo/router-server/node/render.js', { paths: [projectRoot] })
+    );
+    url.pathname =
+      '/' +
+      path
+        .relative(getMetroServerRoot(projectRoot), renderModulePath)
+        .split(path.sep)
+        .join('/')
+        .replace(/\.js$/, '.bundle');
+    url.searchParams.delete('lazy');
+    url.searchParams.set('resolver.environment', 'node');
+    url.searchParams.set('transform.environment', 'node');
+    url.searchParams.set('transform.engine', 'hermes');
+    url.searchParams.set('unstable_transformProfile', 'hermes-stable');
+
+    let bundle: string;
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(180_000) });
+      bundle = await response.text();
+      if (response.status !== 200) {
+        return [`${url.href} -> ${response.status}`, bundle.slice(0, 1500)];
+      }
+    } catch (error) {
+      return [`${url.href} -> fetch failed: ${error}`];
+    }
+
+    const modules = new Map<number, { dependencies: number[]; name: string }>();
+    for (const [, id, dependencies = '', name = ''] of bundle.matchAll(
+      /\},(\d+),\[([\d,]*)\],"([^"]+)"\);/g
+    )) {
+      modules.set(Number(id), {
+        dependencies: dependencies ? dependencies.split(',').map(Number) : [],
+        name,
+      });
+    }
+    const lines = [`${url.href} -> ${bundle.length} chars, ${modules.size} modules`];
+    for (let id = 850; id <= 860; id++) {
+      lines.push(`${id}: ${modules.get(id)?.name ?? '<not in bundle>'}`);
+    }
+    for (const [id, { dependencies, name }] of modules) {
+      if (!name.includes('ctx=')) {
+        continue;
+      }
+      lines.push(`require.context ${id}: ${name}`);
+      for (const dependency of dependencies) {
+        const dependencyName = modules.get(dependency)?.name ?? '<not in bundle>';
+        if (/anchored|not in bundle/.test(dependencyName)) {
+          lines.push(`  ${dependencyName} -> ${dependency}`);
+        }
+      }
+    }
+    return lines.slice(0, 60);
+  }
+
+  test.beforeAll(async ({}, testInfo) => {
     await expoStart.startAsync();
 
     // TEMP(diagnostic): find out if the dev SSR error happens before any browser loads lazy bundles.
+    const cold = await probeServerOutputAsync('/anchored/details');
     const probes = [
-      await probeServerOutputAsync('/anchored/details'),
-      await probeServerOutputAsync('/anchored/details'),
-      await probeServerOutputAsync('/'),
+      cold.summary,
+      (await probeServerOutputAsync('/anchored/details')).summary,
+      (await probeServerOutputAsync('/')).summary,
     ];
-    console.log(['--- direct SSR probe ---', ...probes, '--- end direct SSR probe ---'].join('\n'));
+    console.log(
+      [
+        '--- direct SSR probe ---',
+        ...probes,
+        '--- end direct SSR probe ---',
+        '--- SSR HTML cold /anchored/details ---',
+        sliceRoot(cold.body),
+        '--- end SSR HTML ---',
+      ].join('\n')
+    );
+    // TEMP(diagnostic): the test-results folder is uploaded as a CI artifact.
+    const resultsDir = path.join(__dirname, '../../../test-results');
+    fs.mkdirSync(resultsDir, { recursive: true });
+    fs.writeFileSync(path.join(resultsDir, `diag-ssr-cold-retry${testInfo.retry}.html`), cold.body);
   });
 
   test.afterAll(async () => {
@@ -350,9 +448,12 @@ test.describe(`${inputDir} with server output`, () => {
 
   // TEMP(diagnostic): print browser output and the LogBox overlay text when the test fails on Windows CI.
   let browserOutput: string[] = [];
+  // TEMP(diagnostic): the document the browser received from `page.reload()`.
+  let reloadDocument = '';
 
   test.beforeEach(async ({ page }) => {
     browserOutput = [];
+    reloadDocument = '';
     page.on('console', (message) => {
       browserOutput.push(`[console.${message.type()}] ${message.text()}`);
     });
@@ -374,6 +475,7 @@ test.describe(`${inputDir} with server output`, () => {
           .innerText({ timeout: 5_000 })
           .catch((error) => `<unreadable: ${error}>`)
       : '<no #error-overlay>';
+    const warm = await probeServerOutputAsync('/anchored/details');
     const serverLines = serverOutput.split(/\r?\n/);
     const report = [
       `--- browser output (${browserOutput.length} entries) ---`,
@@ -381,7 +483,16 @@ test.describe(`${inputDir} with server output`, () => {
       '--- #error-overlay text ---',
       overlayText,
       '--- warm SSR probe ---',
-      await probeServerOutputAsync('/anchored/details'),
+      warm.summary,
+      '--- SSR HTML warm /anchored/details ---',
+      sliceRoot(warm.body),
+      '--- end SSR HTML ---',
+      '--- reload document /anchored/details ---',
+      sliceRoot(reloadDocument),
+      '--- end reload document ---',
+      '--- SSR bundle modules ---',
+      ...(await describeSsrBundleModulesAsync(warm.body || reloadDocument)),
+      '--- end SSR bundle modules ---',
       `--- server log (last 300 of ${serverLines.length} lines) ---`,
       ...serverLines.slice(-300),
       '--- server log lines with "unknown module", "Error" or "855" ---',
@@ -390,6 +501,15 @@ test.describe(`${inputDir} with server output`, () => {
     ].join('\n');
     console.log(report);
     await testInfo.attach('browser-diagnostics', { body: report, contentType: 'text/plain' });
+    // TEMP(diagnostic): an attachment `body` does not reach `test-results/` with the list reporter, but a file does.
+    for (const [name, body] of [
+      ['diag-ssr-warm.html', warm.body],
+      ['diag-reload-document.html', reloadDocument],
+    ] as const) {
+      const filePath = testInfo.outputPath(name);
+      fs.writeFileSync(filePath, body);
+      await testInfo.attach(name, { path: filePath, contentType: 'text/html' });
+    }
   });
 
   test('keeps the anchor below the screen after a reload', async ({ page }) => {
@@ -403,7 +523,14 @@ test.describe(`${inputDir} with server output`, () => {
       '/anchored/details'
     );
 
+    // TEMP(diagnostic): keep the reload document to print it when the test fails.
+    const reloadResponse = page.waitForResponse(
+      (response) =>
+        response.request().resourceType() === 'document' &&
+        new URL(response.url()).pathname === '/anchored/details'
+    );
     await page.reload();
+    reloadDocument = await (await reloadResponse).text().catch((error) => `<unreadable: ${error}>`);
     await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
       '/anchored/details'
     );
