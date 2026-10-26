@@ -697,4 +697,95 @@ struct JavaScriptObjectTests {
       _ = try JavaScriptObject.decode(value, in: runtime)
     }
   }
+
+  // MARK: - Setting properties through a slot
+
+  @Test
+  func `setProperty encodes primitives straight into the property`() throws {
+    let object = runtime.createObject()
+    let name = JavaScriptPropNameID(runtime, string: "count")
+    try object.setProperty(name, encoding: 42, in: runtime)
+    try object.setProperty("label", encoding: "café", in: runtime)
+    try object.setProperty("enabled", encoding: true, in: runtime)
+    try object.setProperty("missing", encoding: Int?.none, in: runtime)
+    #expect(object.getProperty("count").getInt() == 42)
+    #expect(object.getProperty("label").getString() == "café")
+    #expect(object.getProperty("enabled").getBool() == true)
+    #expect(object.getProperty("missing").isNull() == true)
+  }
+
+  @Test
+  func `setProperty encodes a type without a slot override`() throws {
+    let object = runtime.createObject()
+    try object.setProperty("values", encoding: ["a": 1], in: runtime)
+    #expect(object.getProperty("values").getObject().getProperty("a").getInt() == 1)
+  }
+
+  @Test
+  func `setProperty leaves the property unset when the encode throws`() throws {
+    let object = runtime.createObject()
+    #expect(throws: UnsafeIntegerException.self) {
+      try object.setProperty("big", encoding: Int.max, in: runtime)
+    }
+    #expect(object.hasProperty("big") == false)
+  }
+
+  @Test
+  func `slot takes an array without a clone`() throws {
+    let object = runtime.createObject()
+    try object.setProperty("pair", encoding: ArrayEncodedPair(first: 3, second: 4), in: runtime)
+    let pair = object.getProperty("pair").getArray()
+    #expect(pair.length == 2)
+    #expect(try pair.getValue(at: 1).getInt() == 4)
+  }
+
+  @Test
+  func `slot takes an object without a clone`() throws {
+    let array = try [ObjectEncodedPoint].encode([ObjectEncodedPoint(x: 1), ObjectEncodedPoint(x: 2)], in: runtime)
+      .getArray()
+    #expect(array.length == 2)
+    #expect(try array.getValue(at: 1).getObject().getProperty("x").getInt() == 2)
+  }
+}
+
+/// Encodes as an array, moving it into the slot with `emplace(_:)`.
+private struct ArrayEncodedPair: JavaScriptEncodable {
+  let first: Int
+  let second: Int
+
+  static func encode(_ value: ArrayEncodedPair, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    return try [Int].encode([value.first, value.second], in: runtime)
+  }
+
+  static func encode(
+    _ value: ArrayEncodedPair,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let array = runtime.createArray(length: 2)
+    try array.set(value: value.first, at: 0)
+    try array.set(value: value.second, at: 1)
+    slot.emplace(array)
+  }
+}
+
+/// Encodes as an object, moving it into the slot with `emplace(_:)`.
+private struct ObjectEncodedPoint: JavaScriptEncodable {
+  let x: Int
+
+  static func encode(_ value: ObjectEncodedPoint, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    let object = runtime.createObject()
+    try object.setProperty("x", encoding: value.x, in: runtime)
+    return object.takeValue()
+  }
+
+  static func encode(
+    _ value: ObjectEncodedPoint,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let object = runtime.createObject()
+    try object.setProperty("x", encoding: value.x, in: runtime)
+    slot.emplace(object)
+  }
 }

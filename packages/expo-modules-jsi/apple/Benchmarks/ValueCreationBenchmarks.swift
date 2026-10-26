@@ -169,3 +169,46 @@ private struct DefaultEncodedNumber: JavaScriptEncodable {
     return .number(value.value)
   }
 }
+
+// MARK: - Objects built property by property
+
+/// Builds an object with four number and four string properties, like a record's `encode`, once with
+/// values encoded into `JavaScriptValue`s and once with values encoded into each property's engine value.
+extension JSIBenchmarks {
+  @Test
+  func `set eight properties from encoded values`() async throws {
+    try await benchmarkCase { runtime in
+      let names = (0..<8).map { JavaScriptPropNameID(runtime, string: "p\($0)") }
+      try benchmark("JavaScriptObject.setProperty(_:value:): 4 numbers, 4 strings", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          let object = runtime.createObject()
+          for property in 0..<4 {
+            object.setProperty(names[property], value: try Double.encode(Double(index + property), in: runtime))
+          }
+          for property in 4..<8 {
+            object.setProperty(names[property], value: try String.encode("value", in: runtime))
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  func `set eight properties through slots`() async throws {
+    try await benchmarkCase { runtime in
+      let names = (0..<8).map { JavaScriptPropNameID(runtime, string: "p\($0)") }
+      try benchmark("JavaScriptObject.setProperty(_:encoding:in:): 4 numbers, 4 strings", runtime: runtime) {
+        iterations in
+        for index in 0..<iterations {
+          let object = runtime.createObject()
+          for property in 0..<4 {
+            try object.setProperty(names[property], encoding: Double(index + property), in: runtime)
+          }
+          for property in 4..<8 {
+            try object.setProperty(names[property], encoding: "value", in: runtime)
+          }
+        }
+      }
+    }
+  }
+}

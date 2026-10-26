@@ -46,6 +46,16 @@ extension JavaScriptValue {
       expo.emplaceValue(pointer, &value.pointee)
     }
 
+    /// Moves the object into the slot, without a clone.
+    public func emplace(_ object: consuming JavaScriptObject) {
+      expo.emplaceMovedObject(pointer, &object.pointee)
+    }
+
+    /// Moves the array into the slot, without a clone.
+    public func emplace(_ array: consuming JavaScriptArray) {
+      expo.emplaceMovedArray(pointer, &array.pointee)
+    }
+
     /// Writes `undefined` into the slot.
     public func emplaceUndefined() {
       expo.emplaceUndefined(pointer)
