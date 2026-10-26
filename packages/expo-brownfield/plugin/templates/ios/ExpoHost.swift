@@ -48,13 +48,6 @@ public final class ExpoHost: ObservableObject {
     )
   }
 
-  func reset() {
-    // RCTHost's C++ declarations hide the public reactHost property from Swift.
-    factory?.rootViewFactory.setValue(nil, forKey: "reactHost")
-    factory = nil
-    delegate = nil
-  }
-
   private func getFactory() throws -> ExpoReactNativeFactory {
     if let factory {
       return factory

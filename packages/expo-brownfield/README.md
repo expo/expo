@@ -52,6 +52,8 @@ For projects that don't use CNG please follow the manual steps at [How to add Ex
 
 The generated framework exposes `ExpoHost` and `ExpoScene`. A host loads one JavaScript bundle and shares its React runtime across scenes. Each mounted scene has its own React component state. JavaScript globals and native modules are shared.
 
+Set `ios.embeddedBundle: true` in the `expo-brownfield` plugin options and run prebuild before using the default embedded host. This opts the framework into bundling JavaScript and assets in both Debug and Release. Existing integrations keep their previous bundle phase when this option is omitted.
+
 Register each component in your JavaScript entry file:
 
 ```tsx
@@ -90,7 +92,7 @@ struct MyApp: App {
 
 `ExpoScene` is a SwiftUI `View`. Give it a frame when placing it in a scroll view or another container that does not provide a bounded size. Props must contain values that can be represented in JavaScript: strings, numbers, booleans, arrays, dictionaries, or `NSNull`. Updating props preserves the mounted component's state. Changing the scene name or host remounts it. Removing a scene unmounts its React root while the app retains the host.
 
-`ExpoHost()` starts lazily and loads `main.jsbundle` from the generated framework in both Debug and Release. The framework build embeds JavaScript and assets by default, including Debug simulator builds. Rebuild the framework to update this embedded content. No running Metro server is required to open it.
+`ExpoHost()` starts lazily and loads `main.jsbundle` from the generated framework in both Debug and Release. With `ios.embeddedBundle: true`, the framework build embeds JavaScript and assets, including Debug simulator builds. Rebuild the framework to update this embedded content. No running Metro server is required to open it.
 
 For live JavaScript development, select Metro when creating the host in a Debug build:
 
@@ -100,9 +102,9 @@ For live JavaScript development, select Metro when creating the host in a Debug 
 
 Run `npx expo start` in the Expo project. This mode does not silently fall back to the embedded bundle. Runtime bundle switching and full `expo-dev-client` support are not included; use `expo-dev-menu` with the isolated integration.
 
-To keep the previous build behavior, set `ios.embeddedBundle: false` in the `expo-brownfield` plugin options and run prebuild again. Debug builds may then require Metro; do not use the default embedded host without supplying an embedded bundle.
+The default `ios.embeddedBundle: false` keeps the previous build behavior. Debug builds may then require Metro; do not use the default embedded host without supplying an embedded bundle.
 
-Existing `ReactNativeView` and `ReactNativeViewController` integrations can share the new host by calling `ReactNativeHostManager.shared.initialize(host: expo)` before creating their first view. The existing `initialize(turboModuleClasses:)` entry point keeps its previous bundle selection. Supply custom TurboModule classes to `ExpoHost` when using the new entry point.
+Existing `ReactNativeView` and `ReactNativeViewController` integrations can share the new host by calling `ReactNativeHostManager.shared.initialize(host: expo)` before creating their first view. The existing `initialize(turboModuleClasses:)` entry point keeps its previous bundle selection. Supply custom TurboModule classes to `ExpoHost` when using the new entry point. Repeating initialization with the same host is safe; mixing the two initialization modes or supplying a different host fails with an actionable error. `cleanupPreviousInstance()` only cleans up the legacy runtime. It leaves an app-owned host and its mounted scenes intact.
 
 The app remains responsible for navigation and lifecycle forwarding. `ExpoScene` does not subscribe to the legacy global `popToNative` notification, which cannot identify which of several scenes should dismiss. Use native navigation around the scene. Keep existing app-delegate forwarding when your app already has a delegate.
 

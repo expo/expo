@@ -4,7 +4,7 @@ export interface PluginConfig {
   buildReactNativeFromSource: boolean;
   multipleFrameworks: boolean;
   hostProvidedFrameworks: string[];
-  /** Embed JavaScript and assets in Debug and Release frameworks. Defaults to true. */
+  /** Embed JavaScript and assets in Debug and Release frameworks. Defaults to false. */
   embeddedBundle: boolean;
 }
 

@@ -15,7 +15,7 @@ export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginC
     targetName,
     buildReactNativeFromSource: props?.buildReactNativeFromSource ?? false,
     multipleFrameworks: props?.multipleFrameworks ?? false,
-    embeddedBundle: props?.embeddedBundle ?? true,
+    embeddedBundle: props?.embeddedBundle ?? false,
     hostProvidedFrameworks: validateHostProvidedFrameworks(props?.hostProvidedFrameworks),
   };
 };

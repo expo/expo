@@ -2,8 +2,14 @@ import { IOSConfig } from 'expo/config-plugins';
 import path from 'node:path';
 
 import { configureBuildPhases, createFramework } from '../ios/utils/project';
+import { getPluginConfig } from '../ios/utils/props';
 
 describe('Brownfield build phases', () => {
+  it('should preserve legacy bundling unless embedded bundling is explicitly enabled', () => {
+    const config = { name: 'Example', slug: 'example' };
+    expect(getPluginConfig({}, config).embeddedBundle).toBe(false);
+    expect(getPluginConfig({ embeddedBundle: true }, config).embeddedBundle).toBe(true);
+  });
   it('should embed a bundle without changing the application bundle phase', () => {
     const project = IOSConfig.XcodeUtils.getPbxproj(
       path.resolve(__dirname, '../../../../../templates/expo-template-bare-minimum')
@@ -11,7 +17,7 @@ describe('Brownfield build phases', () => {
     const phasesBefore = JSON.stringify(project.hash.project.objects.PBXShellScriptBuildPhase);
     const target = createFramework(project, 'FeatureKit', 'com.example.feature');
 
-    configureBuildPhases(project, target, 'FeatureKit', 'HelloWorld');
+    configureBuildPhases(project, target, 'FeatureKit', 'HelloWorld', [], true);
 
     const phases = project.hash.project.objects.PBXShellScriptBuildPhase;
     const bundlePhase = target.pbxNativeTarget.buildPhases

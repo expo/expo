@@ -42,7 +42,7 @@ export const configureBuildPhases = (
   targetName: string,
   projectName: string,
   files: string[] = [],
-  embeddedBundle: boolean = true
+  embeddedBundle: boolean = false
 ) => {
   if (embeddedBundle) {
     project.addBuildPhase(
