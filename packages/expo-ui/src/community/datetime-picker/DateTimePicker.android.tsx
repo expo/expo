@@ -48,6 +48,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
     testID,
     style,
     accentColor,
+    themeVariant,
     presentation = 'dialog',
     positiveButton,
     negativeButton,
@@ -102,13 +103,13 @@ export function DateTimePicker(props: DateTimePickerProps) {
   if (presentation === 'dialog') {
     if (mode === 'time') {
       return (
-        <Host style={style}>
+        <Host colorScheme={themeVariant} style={style}>
           <AndroidTimePickerDialog {...dialogProps} is24Hour={is24Hour} />
         </Host>
       );
     }
     return (
-      <Host style={style}>
+      <Host colorScheme={themeVariant} style={style}>
         <AndroidDatePickerDialog
           {...dialogProps}
           variant={displayToAndroidVariant(display)}
@@ -119,7 +120,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
   }
 
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} colorScheme={themeVariant} style={style}>
       <AndroidPicker
         initialDate={initialDate}
         displayedComponents={modeToDisplayedComponents(mode)}
