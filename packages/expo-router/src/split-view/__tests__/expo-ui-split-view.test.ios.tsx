@@ -1,6 +1,7 @@
 import { act, screen, waitFor } from '@testing-library/react-native';
 import { createRef, type ReactNode } from 'react';
 import { Text, type ViewProps } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { SplitHostCommands } from 'react-native-screens/experimental';
 
 import { SplitView, type SplitViewProps } from '..';
@@ -8,6 +9,7 @@ import Stack from '../../layouts/StackClient';
 import { renderRouter } from '../../testing-library';
 
 const mockNavigationSplitView = jest.fn();
+const mockRNHostView = jest.fn();
 
 jest.mock('@expo/ui/swift-ui', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -17,7 +19,10 @@ jest.mock('@expo/ui/swift-ui', () => {
     };
   return {
     Host: slot('Host'),
-    RNHostView: slot('RNHostView'),
+    RNHostView: ({ children }: { children?: ReactNode }) => {
+      mockRNHostView(children);
+      return <View testID="RNHostView">{children}</View>;
+    },
     NavigationSplitView: Object.assign(
       ({ children, ...props }: { children?: ReactNode }) => {
         mockNavigationSplitView(props);
@@ -109,6 +114,9 @@ it('renders expo-ui columns and a stack detail navigator', async () => {
     $type: 'navigationTitle',
     title: 'Mailboxes',
   });
+  expect(mockRNHostView).toHaveBeenLastCalledWith(
+    expect.not.objectContaining({ type: SafeAreaProvider })
+  );
 });
 
 it('show secondary reveals the detail column', async () => {

@@ -157,9 +157,7 @@ export function ExpoUISplitView({
             </NavigationSplitView.Content>
           )}
           <NavigationSplitView.Detail>
-            <RNHostView>
-              <SafeAreaProvider>{main}</SafeAreaProvider>
-            </RNHostView>
+            <RNHostView>{main}</RNHostView>
           </NavigationSplitView.Detail>
         </NavigationSplitView>
       </Host>

@@ -101,7 +101,9 @@ The demo resembles Apple Mail with mailbox, message-list, and message-detail col
 - `expo-router` lint: passed.
 - Formatting: applied; final check is part of the handoff checks.
 - EAS iPad Pro 13-inch (M5) runtime verification: passed. The split view rendered three columns, route selection updated the detail Stack, and `Stack.Toolbar` rendered the requested Mail-style controls.
+- A second EAS pass verified the detail Stack is hosted without a duplicate safe-area inset. The Google Photos header now starts directly below the status area; the prior nested `SafeAreaProvider` produced the visible gap.
 - Runtime media: [initial detail](./media/ipad-mail-detail.png), [message list](./media/ipad-mail-list.png), [detail toolbar](./media/ipad-mail-toolbar.png), and [three-column view](./media/ipad-mail-three-column.png).
+- Header inset comparison: [before](./media/ipad-mail-toolbar-before-inset-fix.png) and [after](./media/ipad-mail-toolbar.png).
 
 ## Runtime prerequisites
 
