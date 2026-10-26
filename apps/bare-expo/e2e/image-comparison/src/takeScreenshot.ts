@@ -1,12 +1,9 @@
 // taking screenshots with Maestro is not reliable (for example, taking one screenshot would work, but taking two in a row would time out)
 // hence this module
 
-import { exec } from 'node:child_process';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
-import { promisify } from 'node:util';
-
-const execAsync = promisify(exec);
 
 export interface ScreenshotOptions {
   platform: 'ios' | 'android';
@@ -37,7 +34,7 @@ export async function takeScreenshot({
 
 async function takeIOSScreenshot(outputPath: string): Promise<void> {
   try {
-    await execAsync(`xcrun simctl io booted screenshot "${outputPath}"`);
+    await spawnAsync('xcrun', ['simctl', 'io', 'booted', 'screenshot', outputPath]);
 
     console.log(`iOS screenshot saved to: ${outputPath}`);
   } catch (error) {
@@ -53,13 +50,13 @@ async function takeAndroidScreenshot(outputPath: string): Promise<void> {
 
     // Take a screenshot using adb
     const tempPath = `/sdcard/screenshot_temp.png`;
-    await execAsync(`adb shell screencap -p ${tempPath}`);
+    await spawnAsync('adb', ['shell', 'screencap', '-p', tempPath]);
 
     // Pull the screenshot to the desired location
-    await execAsync(`adb pull ${tempPath} "${outputPath}"`);
+    await spawnAsync('adb', ['pull', tempPath, outputPath]);
 
     // Clean up the temporary file on device
-    await execAsync(`adb shell rm ${tempPath}`).catch(() => {
+    await spawnAsync('adb', ['shell', 'rm', tempPath]).catch(() => {
       // Ignore cleanup errors
     });
 
