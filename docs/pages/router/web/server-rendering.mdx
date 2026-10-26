@@ -230,15 +230,15 @@ To send each page once it is complete, set `streaming` to `false` in the `expo-r
 }
 ```
 
-The server then waits for all Suspense boundaries to resolve before it sends the first byte, so the slowest boundary sets the time to first byte. The response contains the final content of each boundary that resolves. A boundary that fails, or that does not resolve within 10 seconds after the shell is rendered, is sent with its fallback, and the browser renders it. Use this option when:
+The server then waits for all Suspense boundaries to resolve before it sends the first byte, so the slowest boundary sets the time to first byte. The response contains the final content of each boundary that resolves. If a boundary fails or does not resolve within 10 seconds after the shell is ready, the server sends its fallback. The browser then renders the boundary. Use this option when:
 
-- A component sets [response headers](/router/web/api-routes/#response-headers) with `setResponseHeaders()` from data that it loads while it renders. When the page is streamed, the server sends the headers before this data loads.
+- A component sets [response headers](/router/web/api-routes/#response-headers) with `setResponseHeaders()` from data that it loads while it renders. When the server streams the page, it sends the headers before this data loads.
 - Crawlers and link previews must get the complete content of the page, without running JavaScript.
 
 This option has the following limitations:
 
-- The headers that a boundary sets with `setResponseHeaders()` are lost if the boundary does not resolve within 10 seconds.
-- The server renders the `<head>` and the font resources with the shell. A font that a boundary loads with `useFonts` after the shell is rendered is not preloaded in the page.
+- If a boundary does not resolve within 10 seconds, the response does not include the headers that it sets with `setResponseHeaders()`.
+- The server renders the `<head>` and the font resources with the shell. The page has no `@font-face` rule or preload link for a font that a boundary loads with `useFonts` after the shell is ready.
 
 Static rendering always waits for all Suspense boundaries, so this option has no effect with `web.output: "static"`.
 
