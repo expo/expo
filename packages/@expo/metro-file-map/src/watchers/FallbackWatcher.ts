@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { isWatcherExcludedDirName } from '../lib/isWatcherExcluded';
 import type { ChangeEventMetadata } from '../types';
 import { AbstractWatcher } from './AbstractWatcher';
 import type { WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
@@ -322,7 +323,11 @@ export default class FallbackWatcher extends AbstractWatcher {
           return;
         }
 
-        if (this.doIgnore(relativePath) || !common.isIncluded('d', this.included, relativePath)) {
+        if (
+          isWatcherExcludedDirName(path.basename(fullPath)) ||
+          this.doIgnore(relativePath) ||
+          !common.isIncluded('d', this.included, relativePath)
+        ) {
           return;
         }
         await recReaddir(
@@ -498,6 +503,12 @@ async function recReaddir(
         return;
       }
       if (ignored != null && common.posixPathMatchesPattern(ignored, entry)) {
+        return;
+      }
+      // NOTE(@robhogan): Excluded directories (`.git`, `.hg`, `.cxx`) are neither watched nor
+      // listed. `doIgnore` drops events for their contents, but watching them at all costs a
+      // handle per directory, and `.cxx` churn can error the watcher
+      if (entry !== root && isWatcherExcludedDirName(path.basename(entry))) {
         return;
       }
       // Report the directory before listing it. A consumer that starts watching

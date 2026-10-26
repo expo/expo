@@ -128,6 +128,47 @@ describe('FallbackWatcher', () => {
     });
   });
 
+  // `.git`, `.hg` and `.cxx` directories are excluded whatever the `ignored`
+  // pattern, so they must not cost a watch handle per directory beneath them.
+  describe('excluded directories', () => {
+    const excludedDirs = [
+      join('.git', 'objects', 'ab'),
+      join('.git', 'refs', 'heads'),
+      join('.hg', 'store'),
+      join('android', 'app', '.cxx', 'Debug', 'x86'),
+    ];
+    const isExcludedCall = (call: string) => /[/\\]\.(?:git|hg|cxx)(?:[/\\]|$)/.test(call);
+
+    test('are neither watched nor listed during the initial crawl', async () => {
+      for (const dir of [...excludedDirs, 'src']) {
+        await mkdir(join(watchRoot, dir), { recursive: true });
+      }
+
+      await watcher?.startWatching();
+
+      expect(calls.filter(isExcludedCall)).toEqual([]);
+      for (const dir of ['', 'android', join('android', 'app'), 'src']) {
+        expectWatchedBeforeListed(join(watchRoot, dir));
+      }
+    });
+
+    test('are neither watched nor listed when created while watching', async () => {
+      await watcher?.startWatching();
+      calls = [];
+
+      await mkdir(join(watchRoot, '.git', 'objects'), { recursive: true });
+      await mkdir(join(watchRoot, '.cxx', 'Debug'), { recursive: true });
+      await mkdir(join(watchRoot, 'src'));
+      listeners.get(watchRoot)!('rename', '.git');
+      listeners.get(watchRoot)!('rename', '.cxx');
+      listeners.get(watchRoot)!('rename', 'src');
+
+      await waitFor(() => indexOfCall('readdir', join(watchRoot, 'src')) >= 0);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(calls.filter(isExcludedCall)).toEqual([]);
+    });
+  });
+
   // A watch we cannot establish - one directory over the inotify limit, say -
   // must not cost us the files under it, which would silently truncate the
   // file map.

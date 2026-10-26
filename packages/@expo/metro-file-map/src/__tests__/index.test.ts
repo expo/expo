@@ -509,25 +509,18 @@ describe('FileMap', () => {
     expect([...fileSystem.matchFiles({ filter: /Kiwi/ })]).toEqual([]);
   });
 
-  test('ignores vcs directories without ignore pattern', async () => {
-    mockFs[p('/project/fruits/.git/fruit-history.js')] = `
-      // test
-    `;
-    const { fileSystem } = await buildNewFileMap();
-    expect([...fileSystem.matchFiles({ filter: /\.git/ })]).toEqual([]);
-  });
-
-  test('ignores vcs directories with ignore pattern regex', async () => {
-    mockFs[p('/project/fruits/Kiwi.js')] = `
-      // Kiwi!
-    `;
-    mockFs[p('/project/fruits/.git/fruit-history.js')] = `
-      // test
-    `;
-    const { fileSystem } = await buildNewFileMap({ ignorePattern: /Kiwi/ });
-    expect([...fileSystem.matchFiles({ filter: /Kiwi/ })]).toEqual([]);
-    expect([...fileSystem.matchFiles({ filter: /\.git/ })]).toEqual([]);
-  });
+  // The crawlers and watchers exclude VCS directories themselves (see
+  // `isWatcherExcluded`), so they are not added to the ignore pattern.
+  test.each([[undefined], [/Kiwi/]])(
+    'does not add vcs directories to the ignore pattern (%s)',
+    async (ignorePattern) => {
+      const watchman = require('../crawlers/watchman').default;
+      await buildNewFileMap({ ignorePattern });
+      const { ignore } = watchman.mock.calls[0][0] as CrawlerOptions;
+      expect(ignore(p('/project/fruits/.git/fruit-history.js'))).toBe(false);
+      expect(ignore(p('/project/fruits/Kiwi.js'))).toBe(ignorePattern != null);
+    }
+  );
 
   test('throw on ignore pattern except for regex', async () => {
     mockFs[p('/project/fruits/Kiwi.js')] = `

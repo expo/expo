@@ -42,7 +42,7 @@ export type BuildParameters = Readonly<{
   computeSha1: boolean;
   enableSymlinks: boolean;
   extensions: readonly string[];
-  ignorePattern: RegExp;
+  ignorePattern: RegExp | null;
   plugins: readonly InputFileMapPlugin[];
   retainAllFiles: boolean;
   rootDir: string;

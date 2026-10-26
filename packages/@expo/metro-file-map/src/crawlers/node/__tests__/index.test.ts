@@ -1,0 +1,288 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import { vol } from 'memfs';
+
+import H from '../../../constants';
+import TreeFS from '../../../lib/TreeFS';
+import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
+import nodeCrawl from '../index';
+
+jest.mock('node:fs', () => require('memfs').fs);
+
+// memfs is POSIX-only; pin to POSIX path semantics
+jest.mock('node:path', () => jest.requireActual<typeof import('path')>('path').posix);
+
+const rootDir = '/project';
+const processFile = () => null;
+
+function makeTreeFS(files?: FileData): TreeFS {
+  return new TreeFS({ rootDir, files, processFile });
+}
+
+const emptyFS = makeTreeFS();
+
+function crawl(overrides: Partial<CrawlerOptions> = {}) {
+  return nodeCrawl({
+    abortSignal: null,
+    computeSha1: false,
+    console,
+    extensions: ['js'],
+    ignore: () => false,
+    includeSymlinks: false,
+    onStatus: jest.fn(),
+    previousState: {
+      fileSystem: emptyFS,
+      clocks: new Map(),
+    },
+    rootDir,
+    roots: ['/project/fruits'],
+    ...overrides,
+  });
+}
+
+function sorted(iter: IterableIterator<string>): string[] {
+  return Array.from(iter).sort();
+}
+
+describe('node crawler', () => {
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  test('discovers files by extension', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/banana.ts': 'b',
+      '/project/fruits/cherry.json': 'c',
+    });
+
+    const { changedFiles, removedFiles } = await crawl({
+      extensions: ['js', 'json'],
+    });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/cherry.json']);
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('recurses into subdirectories', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical/mango.js': 'b',
+      '/project/fruits/tropical/deep/papaya.js': 'c',
+    });
+
+    const { changedFiles } = await crawl();
+
+    expect(sorted(changedFiles.keys())).toEqual([
+      'fruits/apple.js',
+      'fruits/tropical/deep/papaya.js',
+      'fruits/tropical/mango.js',
+    ]);
+  });
+
+  test('applies ignore filter', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/pear.js': 'b',
+      '/project/fruits/tomato.js': 'c',
+    });
+
+    const { changedFiles } = await crawl({
+      ignore: (p: string) => /pear/.test(p),
+    });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tomato.js']);
+  });
+
+  test('crawls multiple roots', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/vegetables/carrot.js': 'b',
+    });
+
+    const { changedFiles } = await crawl({
+      roots: ['/project/fruits', '/project/vegetables'],
+    });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'vegetables/carrot.js']);
+  });
+
+  test('reports only changed files', async () => {
+    vol.fromJSON({
+      '/project/fruits/strawberry.js': 'changed',
+      '/project/fruits/tomato.js': 'same',
+    });
+
+    // Get the mtime that memfs assigned to each file
+    const tomatoStat = vol.statSync('/project/fruits/tomato.js');
+    const strawberryStat = vol.statSync('/project/fruits/strawberry.js');
+
+    const previousFiles: FileData = new Map([
+      // strawberry has a different mtime → will be reported as changed
+      [
+        'fruits/strawberry.js',
+        [strawberryStat.mtime.getTime() - 1000, 0, 1, null, 0] as FileMetadata,
+      ],
+      // tomato has matching mtime → unchanged, excluded from changedFiles
+      [
+        'fruits/tomato.js',
+        [tomatoStat.mtime.getTime(), tomatoStat.size, 1, null, 0] as FileMetadata,
+      ],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    expect(Array.from(changedFiles.keys())).toEqual(['fruits/strawberry.js']);
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('reports removed files', async () => {
+    vol.fromJSON({
+      '/project/fruits/strawberry.js': 'a',
+      '/project/fruits/tomato.js': 'b',
+    });
+
+    const previousFiles: FileData = new Map([
+      ['fruits/previouslyExisted.js', [0, 0, 1, null, 0] as FileMetadata],
+      ['fruits/strawberry.js', [0, 0, 1, null, 0] as FileMetadata],
+      ['fruits/tomato.js', [0, 0, 1, null, 0] as FileMetadata],
+    ]);
+
+    const { removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    expect(removedFiles).toEqual(new Set(['fruits/previouslyExisted.js']));
+  });
+
+  test('completes with empty roots', async () => {
+    const { changedFiles, removedFiles } = await crawl({ roots: [] });
+
+    expect(changedFiles).toEqual(new Map());
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('skips symlinks when includeSymlinks is false', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/target.js': 'target',
+    });
+    vol.symlinkSync('/project/fruits/target.js', '/project/fruits/link.js');
+
+    const { changedFiles } = await crawl({ includeSymlinks: false });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/target.js']);
+  });
+
+  test('includes symlinks when includeSymlinks is true', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/target.js': 'target',
+    });
+    vol.symlinkSync('/project/fruits/target.js', '/project/fruits/link.js');
+
+    const { changedFiles } = await crawl({ includeSymlinks: true });
+
+    const paths = sorted(changedFiles.keys());
+    expect(paths).toContain('fruits/apple.js');
+    expect(paths).toContain('fruits/link.js');
+    expect(paths).toContain('fruits/target.js');
+
+    // Symlink should be marked in metadata
+    expect(changedFiles.get('fruits/link.js')![H.SYMLINK]).toBe(1);
+    // Regular file should not
+    expect(changedFiles.get('fruits/apple.js')![H.SYMLINK]).toBe(0);
+  });
+
+  describe('excluded directories', () => {
+    test('skips .git, .hg and .cxx directories without consulting ignore', async () => {
+      const ignore = jest.fn((_p: string) => false);
+
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+        '/project/fruits/.git/HEAD': 'ref',
+        '/project/fruits/.git/objects/abc.js': 'binary',
+        '/project/fruits/.hg/store/data.js': 'binary',
+        '/project/fruits/android/app/.cxx/Debug/x86/build.js': 'generated',
+      });
+
+      const { changedFiles } = await crawl({ ignore });
+
+      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+      // The early-skip happens before any `ignore()` call for the excluded
+      // directory entries, so the matcher is never asked about those paths.
+      const seenPaths = ignore.mock.calls.map((args) => args[0]);
+      expect(seenPaths.some((p) => /\.(?:git|hg|cxx)/.test(p))).toBe(false);
+    });
+
+    test('does not skip files merely named .git or .hg', async () => {
+      // A *file* named `.git` (e.g. a git submodule pointer file) matches the
+      // basename equality but `entry.isDirectory()` is false, so it falls
+      // through to the regular ignore/extension pipeline.
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+        '/project/fruits/.git': 'gitdir: ../.git/modules/fruits',
+      });
+      const ignore = jest.fn((_p: string) => false);
+
+      const { changedFiles } = await crawl({ extensions: ['js'], ignore });
+
+      // The `.git` file has no matching extension, so it isn't included; but
+      // the directory traversal didn't bail out either.
+      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+      expect(ignore).toHaveBeenCalledWith('/project/fruits/.git');
+    });
+  });
+
+  describe('abort signal', () => {
+    test('aborts on pre-aborted signal', async () => {
+      const err = new Error('aborted for test');
+      await expect(
+        crawl({
+          abortSignal: AbortSignal.abort(err),
+        })
+      ).rejects.toThrow(err);
+    });
+
+    test('aborts when signalled after start', async () => {
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+      });
+
+      const err = new Error('aborted for test');
+      const abortController = new AbortController();
+
+      const fakePerfLogger: PerfLogger = {
+        point() {
+          abortController.abort(err);
+        },
+        annotate() {
+          abortController.abort(err);
+        },
+        subSpan() {
+          return fakePerfLogger;
+        },
+      };
+
+      await expect(
+        crawl({
+          perfLogger: fakePerfLogger,
+          abortSignal: abortController.signal,
+        })
+      ).rejects.toThrow(err);
+    });
+  });
+});

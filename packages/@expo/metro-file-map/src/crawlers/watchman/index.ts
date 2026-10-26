@@ -12,6 +12,7 @@ import * as path from 'node:path';
 import { performance } from 'node:perf_hooks';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
+import isWatcherExcluded from '../../lib/isWatcherExcluded';
 import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from '../../lib/normalizePathSeparatorsToSystem';
 import type {
@@ -285,7 +286,7 @@ export default async function watchmanCrawl({
         }
         // Whether watchman can return exists: false in a fresh instance
         // response is unknown, but there's nothing we need to do in that case.
-      } else if (!ignore(filePath)) {
+      } else if (!isWatcherExcluded(fileData.name) && !ignore(filePath)) {
         const { mtime_ms, size } = fileData;
         invariant(mtime_ms != null && size != null, 'missing file data in watchman response');
         const mtime = typeof mtime_ms === 'number' ? mtime_ms : mtime_ms.toNumber();

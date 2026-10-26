@@ -69,7 +69,7 @@ type WatcherOptions = {
   extensions: readonly string[];
   healthCheckFilePrefix: string;
   ignoreForCrawl: (filePath: string) => boolean;
-  ignorePatternForWatch: RegExp;
+  ignorePatternForWatch: RegExp | null;
   previousState: CrawlerOptions['previousState'];
   perfLogger: PerfLogger | null | undefined;
   roots: readonly string[];

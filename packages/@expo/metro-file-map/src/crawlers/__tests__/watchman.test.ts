@@ -183,6 +183,36 @@ describe('watchman watch', () => {
     expect(client.end).toHaveBeenCalled();
   });
 
+  test('skips files in .git, .hg and .cxx directories without consulting ignore', async () => {
+    mockResponse.query[ROOT_MOCK].files.push(
+      ...['fruits/.git/hooks/pre-commit.js', 'fruits/.cxx/Debug/x86/gen.js', '.hg/store.json'].map(
+        (name) => ({ exists: true, mtime_ms: { toNumber: () => 34 }, name, size: 44 })
+      )
+    );
+    const ignore = jest.fn((_filePath: string) => false);
+
+    const { changedFiles } = await watchmanCrawl({
+      previousState: {
+        clocks: new Map(),
+        fileSystem: getFS(new Map()),
+      },
+      extensions: ['js', 'json'],
+      ignore,
+      rootDir: ROOT_MOCK,
+      roots: ROOTS,
+    });
+
+    expect([...changedFiles.keys()].sort()).toEqual(
+      [
+        MELON_RELATIVE,
+        path.join(FRUITS_RELATIVE, 'pear.js'),
+        STRAWBERRY_RELATIVE,
+        TOMATO_RELATIVE,
+      ].sort()
+    );
+    expect(ignore.mock.calls.some(([filePath]) => /\.(?:git|hg|cxx)/.test(filePath))).toBe(false);
+  });
+
   test('updates file map and removedFiles when the clock is given', async () => {
     mockResponse = {
       query: {

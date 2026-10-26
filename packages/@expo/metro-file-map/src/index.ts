@@ -176,7 +176,6 @@ const CACHE_BREAKER = '13';
 const CHANGE_INTERVAL = 30;
 
 const NODE_MODULES = path.sep + 'node_modules' + path.sep;
-const VCS_DIRECTORIES = /[/\\]\.(git|hg)[/\\]/.source;
 const WATCHMAN_REQUIRED_CAPABILITIES = [
   'field-content.sha1hex',
   'relative_root',
@@ -306,20 +305,11 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.point('constructor_start');
     }
 
-    // Add VCS_DIRECTORIES to provided ignorePattern
-    let ignorePattern: RegExp;
-    if (options.ignorePattern) {
-      const inputIgnorePattern = options.ignorePattern;
-      if (inputIgnorePattern instanceof RegExp) {
-        ignorePattern = new RegExp(
-          inputIgnorePattern.source.concat('|' + VCS_DIRECTORIES),
-          inputIgnorePattern.flags
-        );
-      } else {
-        throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
-      }
-    } else {
-      ignorePattern = new RegExp(VCS_DIRECTORIES);
+    // NOTE(@robhogan): VCS directories are excluded by the crawlers and watchers directly (see
+    // `isWatcherExcluded`), rather than by appending them to `ignorePattern`
+    const ignorePattern: RegExp | null = options.ignorePattern ?? null;
+    if (ignorePattern != null && !(ignorePattern instanceof RegExp)) {
+      throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
     }
 
     this.#console = options.console || globalThis.console;
@@ -721,7 +711,7 @@ export default class FileMap extends EventEmitter {
       healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
       // TODO: Refactor out the two different ignore strategies here.
       ignoreForCrawl: (filePath) => {
-        const ignoreMatched = ignorePattern.test(filePath);
+        const ignoreMatched = ignorePattern?.test(filePath) === true;
         return ignoreMatched || (!retainAllFiles && filePath.includes(NODE_MODULES));
       },
       ignorePatternForWatch: ignorePattern,
@@ -1016,7 +1006,7 @@ export default class FileMap extends EventEmitter {
 
       // Ignore files (including symlinks) whose path matches ignorePattern
       // (we don't ignore node_modules in watch mode)
-      if (this.#options.ignorePattern.test(absoluteFilePath)) {
+      if (this.#options.ignorePattern?.test(absoluteFilePath) === true) {
         return;
       }
 

@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import * as path from 'node:path';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
+import { isWatcherExcludedDirName } from '../../lib/isWatcherExcluded';
 import type { CrawlerOptions, CrawlResult, FileData } from '../../types';
 
 function find(options: CrawlerOptions): Promise<FileData> {
@@ -45,8 +46,15 @@ function find(options: CrawlerOptions): Promise<FileData> {
         } else {
           for (const entry of entries) {
             const name = entry.name.toString();
-            const file = dirPrefix + name;
 
+            // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+            // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
+            const isDirectory = entry.isDirectory();
+            if (isDirectory && isWatcherExcludedDirName(name)) {
+              continue;
+            }
+
+            const file = dirPrefix + name;
             const isSymbolicLink = entry.isSymbolicLink();
             if (ignore(file) || (!includeSymlinks && isSymbolicLink)) {
               continue;
@@ -62,7 +70,7 @@ function find(options: CrawlerOptions): Promise<FileData> {
                 ? name
                 : dirNormal + path.sep + name;
 
-            if (entry.isDirectory()) {
+            if (isDirectory) {
               search(file, file + path.sep, childNormal, isWithinRoot || childNormal === '');
               continue;
             }

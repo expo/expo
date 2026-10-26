@@ -8,6 +8,7 @@
 import EventEmitter from 'node:events';
 import * as path from 'node:path';
 
+import isWatcherExcluded from '../lib/isWatcherExcluded';
 import type {
   WatcherBackend,
   WatcherBackendChangeEvent,
@@ -48,8 +49,9 @@ export class AbstractWatcher implements WatcherBackend {
     this.ignored = ignored;
     this.included = included;
     this.doIgnore = ignored
-      ? (filePath: string) => posixPathMatchesPattern(ignored, filePath)
-      : () => false;
+      ? (filePath: string) =>
+          isWatcherExcluded(filePath) || posixPathMatchesPattern(ignored, filePath)
+      : isWatcherExcluded;
 
     this.root = path.resolve(dir);
   }
