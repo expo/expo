@@ -272,8 +272,9 @@ void installWebGLInstanceMethods(jsi::Runtime &runtime) {
   }
   runtime.global().setProperty(runtime, "__EXGLPrototypeReady", true);
 
-  // Constants and WebGL1 methods go on the hidden prototype shared by both
-  // contexts; only the WebGL2-exclusive methods go on the WebGL2 prototype.
+  // configureLogging wraps only own properties of the immediate prototype.
+  // Copy the shared constants and methods onto WebGLRenderingContext.prototype.
+  // WebGL 2 does not get a copy, so instanceof stays false.
   auto webglPrototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGLRenderingContext);
   jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
   auto sharedPrototype = objectClass.getPropertyAsFunction(runtime, "getPrototypeOf")
@@ -281,6 +282,11 @@ void installWebGLInstanceMethods(jsi::Runtime &runtime) {
                            .asObject(runtime);
   installConstants(runtime, sharedPrototype);
   installWebGLMethods(runtime, sharedPrototype);
+  objectClass.getPropertyAsFunction(runtime, "assign")
+    .callWithThis(
+      runtime,
+      objectClass,
+      {jsi::Value(runtime, webglPrototype), jsi::Value(runtime, sharedPrototype)});
 
   auto webgl2Prototype = getRenderingContextPrototype(runtime, EXWebGLClass::WebGL2RenderingContext);
   installWebGL2Methods(runtime, webgl2Prototype);
