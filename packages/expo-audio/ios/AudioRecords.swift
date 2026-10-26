@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 struct AudioMode: Record {
-  @Field var playsInSilentMode: Bool = false
+  @Field var playsInSilentMode: Bool = true
   @Field var interruptionMode: InterruptionMode = .mixWithOthers
   @Field var allowsRecording: Bool = false
   @Field var shouldPlayInBackground: Bool = false
