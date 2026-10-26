@@ -38,10 +38,8 @@ final class BlurEffectView: UIVisualEffectView {
     animator?.stopAnimation(true)
   }
 
-  // The effect is applied from `layoutSubviews` and not from `draw(_:)`. UIKit does not call `draw(_:)`
-  // for a view that is 0×0, and with the default `contentMode` it does not call it again once the view
-  // gets a size. A view hosted by SwiftUI, for example inside `MaskedView`, starts at 0×0 and only
-  // gets its size on a later layout pass, so the effect was never applied.
+  // Apply the effect after layout, not in `draw(_:)`. UIKit skips `draw(_:)` while the view is 0×0 and does not
+  // call it again when the view gets a size, which happens when SwiftUI hosts the view, for example in `MaskedView`.
   override func layoutSubviews() {
     super.layoutSubviews()
 
