@@ -51,6 +51,23 @@ appId: dev.expo.payments
 - tapOn:
     id: gradient-hosted
 - assertVisible: 'gradient: row 1, inner 0'
+# The row's press cancels the JavaScript touch, so `onTouchEnd` doesn't run.
+- scrollUntilVisible:
+    element:
+      id: touch-handlers-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: touch-handlers-hosted
+- assertVisible: 'touch-handlers: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: text-link-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: text-link-hosted
+- assertVisible: 'text-link: row 1, inner 0'
 - scrollUntilVisible:
     element:
       id: hit-slop-hosted

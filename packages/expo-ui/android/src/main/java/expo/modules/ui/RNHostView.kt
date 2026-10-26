@@ -317,6 +317,10 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           if (event.changes.any { it.isConsumed }) {
             wrapper.onComposeClaimedGesture()
           }
+          // Also covers gestures whose down never reached the wrapper.
+          if (event.changes.all { !it.pressed }) {
+            wrapper.clearGestureLeftToCompose()
+          }
         }
       }
     }
@@ -506,12 +510,16 @@ private class TouchDispatchingRootViewGroup(
     composeOwnerView?.let { keepLastForTouchTargeting(it, hostedViewsContainer) }
   }
 
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    clearGestureLeftToCompose()
+  }
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
       // Like a native view that doesn't handle touches, plain hosted content lets the Compose
       // parent handle the gesture. Only a host that dispatches to JavaScript must own its gestures.
-      gestureLeftToCompose?.recycle()
-      gestureLeftToCompose = null
+      clearGestureLeftToCompose()
       if (!dispatchesTouchesToJS && !hasNativeTouchTarget(ev.x, ev.y)) {
         gestureLeftToCompose = MotionEvent.obtain(ev)
         return false
@@ -600,20 +608,27 @@ private class TouchDispatchingRootViewGroup(
   private fun hasNativeTouchTarget(x: Float, y: Float): Boolean {
     // React Native's own hit test, so `hitSlop`, transforms, `zIndex`, `pointerEvents` and children
     // drawn outside their parent pick the same target that JavaScript gets.
-    val path = TouchTargetHelper.findTargetPathAndCoordinatesForTouch(x, y, this, FloatArray(2))
+    // `targetPoint` ends up relative to the deepest view under the point.
+    val targetPoint = FloatArray(2)
+    val path = TouchTargetHelper.findTargetPathAndCoordinatesForTouch(x, y, this, targetPoint)
+    val targetView = path.firstNotNullOfOrNull { it.getView() }
     return path.any { target ->
       val view = target.getView()
-      view != null && view !== this && handlesTouchesNatively(view)
+      view != null && view !== this &&
+        handlesTouchesNatively(view, if (view === targetView) targetPoint else null)
     }
   }
 
-  private fun handlesTouchesNatively(view: View): Boolean {
+  private fun handlesTouchesNatively(view: View, localPoint: FloatArray?): Boolean {
     return when {
       // React Native makes a `Pressable` clickable. `accessible` alone only makes a view focusable.
       view is ReactViewGroup || view is ReactImageView -> view.isClickable || view.isLongClickable
       // A `Text` with `onPress` is focusable on Android, and a nested one is a link span.
       view is ReactTextView ->
-        view.isClickable || view.isLongClickable || view.isFocusable || hasLinkSpan(view)
+        view.isClickable ||
+          view.isLongClickable ||
+          view.isFocusable ||
+          hasLinkSpanAt(view, localPoint)
       // `PreparedLayoutTextView` is internal, so it's matched as React Native's other text view type.
       view is ReactCompoundView && view !is ReactCompoundViewGroup ->
         view.isClickable || view.isLongClickable || view.isFocusable
@@ -632,9 +647,18 @@ private class TouchDispatchingRootViewGroup(
     }
   }
 
-  private fun hasLinkSpan(view: ReactTextView): Boolean {
+  // Only a link under the point counts, so the rest of the text still lets the parent handle it.
+  private fun hasLinkSpanAt(view: ReactTextView, localPoint: FloatArray?): Boolean {
+    if (localPoint == null) return false
     val text = view.text as? Spanned ?: return false
-    return text.getSpans(0, text.length, ClickableSpan::class.java).isNotEmpty()
+    val layout = view.layout ?: return false
+    val lineX = localPoint[0] - view.totalPaddingLeft + view.scrollX
+    val lineY = (localPoint[1] - view.totalPaddingTop + view.scrollY).toInt()
+    if (lineY < 0 || lineY > layout.height) return false
+    val line = layout.getLineForVertical(lineY)
+    if (lineX < layout.getLineLeft(line) || lineX > layout.getLineRight(line)) return false
+    val offset = layout.getOffsetForHorizontal(line, lineX)
+    return text.getSpans(offset, offset, ClickableSpan::class.java).isNotEmpty()
   }
 
   /**
@@ -647,6 +671,11 @@ private class TouchDispatchingRootViewGroup(
     gestureLeftToCompose = null
     notifyAncestorRootViews { it.onChildStartedNativeGesture(null, down) }
     down.recycle()
+  }
+
+  fun clearGestureLeftToCompose() {
+    gestureLeftToCompose?.recycle()
+    gestureLeftToCompose = null
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {

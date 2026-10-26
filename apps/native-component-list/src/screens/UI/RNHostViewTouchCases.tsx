@@ -37,6 +37,23 @@ export const TOUCH_CASES: TouchCase[] = [
     render: () => <LinearGradient colors={['#4a90e2', '#9013fe']} style={styles.square} />,
   },
   {
+    name: 'touch-handlers',
+    // When the parent takes the press, JavaScript gets `onTouchCancel` instead of `onTouchEnd`.
+    render: (onInnerPress) => <View onTouchEnd={onInnerPress} style={styles.square} />,
+  },
+  {
+    name: 'text-link',
+    // The center of this text is outside the link.
+    render: (onInnerPress) => (
+      <Text style={styles.linkText}>
+        Text around a{' '}
+        <Text onPress={onInnerPress} style={styles.link}>
+          link
+        </Text>
+      </Text>
+    ),
+  },
+  {
     name: 'hit-slop',
     // The center of this area is outside the small `Pressable`, inside its `hitSlop`.
     render: (onInnerPress) => (
@@ -161,6 +178,12 @@ export const styles = StyleSheet.create({
     padding: 12,
     alignSelf: 'flex-start',
     backgroundColor: '#eee',
+  },
+  linkText: {
+    width: 160,
+  },
+  link: {
+    color: '#4a90e2',
   },
   square: {
     width: 48,
