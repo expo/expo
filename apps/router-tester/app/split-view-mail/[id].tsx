@@ -7,7 +7,7 @@ export default function Message() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
-      <Stack.Screen options={{ title: photoMessage ? 'Google Photos' : 'Google' }} />
+      <Stack.Title>{photoMessage ? 'Google Photos' : 'Google'}</Stack.Title>
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon="arrow.up.left.and.arrow.down.right" />
       </Stack.Toolbar>

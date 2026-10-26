@@ -1,5 +1,5 @@
 import type { ViewModifier } from '@expo/ui/swift-ui/modifiers';
-import { useImperativeHandle, useState, type ReactNode } from 'react';
+import { Children, isValidElement, useImperativeHandle, useState, type ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type {
   SplitBehavior,
@@ -9,6 +9,13 @@ import type {
 
 import { requireExpoUISwiftUI } from '../optional-libraries/expo-ui-swift-ui';
 import { IsWithinNativeNavigator } from '../standard-navigation';
+import { isChildOfType } from '../utils/children';
+import { StackToolbarButton } from '../layouts/stack-utils/toolbar/StackToolbarButton';
+import { convertStackHeaderSharedPropsToRNSharedHeaderItem } from '../layouts/stack-utils/toolbar/shared';
+import {
+  ExpoUISplitViewToolbarProvider,
+  useExpoUISplitViewToolbarState,
+} from './ExpoUISplitViewToolbar';
 import type { SplitViewHeaderOptions } from './elements';
 import type { ExpoUISplitViewHostProps, SplitViewImplementationProps } from './split-view';
 
@@ -63,6 +70,16 @@ function columnWidth(min?: number, preferred?: number, max?: number) {
 let hasWarnedAboutInspector = false;
 
 export function ExpoUISplitView({
+  ...props
+}: SplitViewImplementationProps & ExpoUISplitViewHostProps) {
+  return (
+    <ExpoUISplitViewToolbarProvider>
+      <ExpoUISplitViewContent {...props} />
+    </ExpoUISplitViewToolbarProvider>
+  );
+}
+
+function ExpoUISplitViewContent({
   ref,
   columns,
   inspectors,
@@ -73,9 +90,15 @@ export function ExpoUISplitView({
   columnMetrics = {},
 }: SplitViewImplementationProps & ExpoUISplitViewHostProps) {
   const {
-    expoUI: { Host, NavigationSplitView, RNHostView },
-    modifiers: { navigationSplitViewColumnWidth, navigationSplitViewStyle },
+    expoUI: { Host, NavigationSplitView, RNHostView, Toolbar, ToolbarItem },
+    modifiers: {
+      navigationBarTitleDisplayMode,
+      navigationSplitViewColumnWidth,
+      navigationSplitViewStyle,
+      navigationTitle,
+    },
   } = requireExpoUISwiftUI(EXPO_UI_ERROR_MESSAGE);
+  const toolbar = useExpoUISplitViewToolbarState();
 
   if (process.env.NODE_ENV !== 'production' && !hasWarnedAboutInspector && inspectors.length) {
     hasWarnedAboutInspector = true;
@@ -157,12 +180,50 @@ export function ExpoUISplitView({
             </NavigationSplitView.Content>
           )}
           <NavigationSplitView.Detail>
-            <RNHostView>{main}</RNHostView>
+            <Toolbar
+              modifiers={[
+                ...(typeof toolbar?.title?.children === 'string'
+                  ? [navigationTitle(toolbar.title.children)]
+                  : []),
+                navigationBarTitleDisplayMode(toolbar?.title?.large ? 'large' : 'inline'),
+              ]}>
+              <RNHostView>{main}</RNHostView>
+              <Toolbar.Content>
+                {renderToolbarButtons(toolbar?.left?.children, 'topBarLeading', ToolbarItem)}
+                {renderToolbarButtons(toolbar?.right?.children, 'topBarTrailing', ToolbarItem)}
+              </Toolbar.Content>
+            </Toolbar>
           </NavigationSplitView.Detail>
         </NavigationSplitView>
       </Host>
     </IsWithinNativeNavigator>
   );
+}
+
+function renderToolbarButtons(
+  children: ReactNode,
+  placement: 'topBarLeading' | 'topBarTrailing',
+  ToolbarItem: ReturnType<typeof requireExpoUISwiftUI>['expoUI']['ToolbarItem']
+) {
+  const {
+    expoUI: { Button },
+  } = requireExpoUISwiftUI(EXPO_UI_ERROR_MESSAGE);
+  return Children.toArray(children).map((child, index) => {
+    if (!isValidElement(child) || !isChildOfType(child, StackToolbarButton) || child.props.hidden) {
+      return null;
+    }
+    const item = convertStackHeaderSharedPropsToRNSharedHeaderItem(child.props);
+    const systemImage = item.icon?.type === 'sfSymbol' ? item.icon.name : undefined;
+    return (
+      <ToolbarItem key={child.key ?? index} placement={placement}>
+        <Button
+          label={item.label || item.accessibilityLabel}
+          onPress={child.props.onPress}
+          systemImage={systemImage}
+        />
+      </ToolbarItem>
+    );
+  });
 }
 
 function Column({

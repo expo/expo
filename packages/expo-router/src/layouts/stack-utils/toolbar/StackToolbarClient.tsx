@@ -1,11 +1,13 @@
 'use client';
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, type ReactNode } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { RouterToolbarHost } from '../../../toolbar/native';
+import { useIsFocused } from '../../../useIsFocused';
+import { useExpoUISplitViewToolbar } from '../../../split-view/ExpoUISplitViewToolbar';
 import { StackToolbarButton } from './StackToolbarButton';
 import { StackToolbarMenu, StackToolbarMenuAction } from './StackToolbarMenu';
 import { StackToolbarSearchBarSlot } from './StackToolbarSearchBarSlot';
@@ -186,6 +188,9 @@ const StackToolbarHeader = ({
   tintColor,
   backgroundColor,
 }: StackToolbarProps) => {
+  const splitViewToolbar = useExpoUISplitViewToolbar();
+  const isFocused = useIsFocused();
+  const id = useId();
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
       `Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`
@@ -208,7 +213,18 @@ const StackToolbarHeader = ({
       ),
     [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
   );
-  useCompositionOption(options);
+  const props = useMemo(
+    () => ({ children, placement, asChild, disableImePadding, tintColor, backgroundColor }),
+    [asChild, backgroundColor, children, disableImePadding, placement, tintColor]
+  );
+  useEffect(() => {
+    if (!splitViewToolbar || !isFocused) {
+      return;
+    }
+    splitViewToolbar.setToolbar(id, placement, props);
+    return () => splitViewToolbar.setToolbar(id, placement);
+  }, [id, isFocused, placement, props, splitViewToolbar]);
+  useCompositionOption(splitViewToolbar ? {} : options);
 
   return null;
 };

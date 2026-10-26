@@ -1,4 +1,4 @@
-import React, { isValidElement, use, type ReactElement, type ReactNode } from 'react';
+import React, { cloneElement, isValidElement, use, type ReactElement, type ReactNode } from 'react';
 import type { SplitHostProps } from 'react-native-screens/experimental';
 
 import Stack from '../layouts/StackClient';
@@ -68,7 +68,7 @@ function SplitViewNavigator(props: SplitViewProps) {
 
   const columns: SplitViewColumnProps[] = [];
   const inspectors: SplitViewInspectorProps[] = [];
-  const screens: ReactElement[] = [];
+  const screens: ReactElement<React.ComponentProps<typeof Stack.Screen>>[] = [];
   let hasUnknownChildren = false;
   for (const child of React.Children.toArray(children)) {
     if (!isValidElement(child)) {
@@ -78,15 +78,40 @@ function SplitViewNavigator(props: SplitViewProps) {
     } else if (child.type === SplitViewInspector) {
       inspectors.push(child.props as SplitViewInspectorProps);
     } else if (child.type === Stack.Screen) {
-      screens.push(child);
+      // The runtime type check above identifies the element as `Stack.Screen`.
+      screens.push(child as ReactElement<React.ComponentProps<typeof Stack.Screen>>);
     } else {
       hasUnknownChildren = true;
     }
   }
 
+  const stackScreens =
+    implementation === 'expo-ui'
+      ? screens.map((screen) => {
+          const options = screen.props.options;
+          return cloneElement(screen, {
+            options:
+              typeof options === 'function'
+                ? (args: Parameters<typeof options>[0]) => ({
+                    ...options(args),
+                    headerShown: false,
+                  })
+                : { ...options, headerShown: false },
+          });
+        })
+      : screens;
+  const expoUIScreenOptions: React.ComponentProps<typeof Stack>['screenOptions'] =
+    implementation === 'expo-ui'
+      ? typeof screenOptions === 'function'
+        ? (args) => ({
+            ...screenOptions(args),
+            headerShown: false,
+          })
+        : { ...screenOptions, headerShown: false }
+      : screenOptions;
   const main = (
-    <Stack activityEnabled={activityEnabled} screenOptions={screenOptions}>
-      {screens}
+    <Stack activityEnabled={activityEnabled} screenOptions={expoUIScreenOptions}>
+      {stackScreens}
     </Stack>
   );
 

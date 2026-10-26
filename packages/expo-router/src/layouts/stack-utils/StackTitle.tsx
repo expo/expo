@@ -1,9 +1,11 @@
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, type ReactNode } from 'react';
 import { type ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../utils/style';
+import { useIsFocused } from '../../useIsFocused';
+import { useExpoUISplitViewToolbar } from '../../split-view/ExpoUISplitViewToolbar';
 import { areAllChildrenPrimitiveValues, convertChildrenToString } from './toolbar/shared';
 
 export type StackTitleProps = {
@@ -107,6 +109,13 @@ export type StackTitleProps = {
  * the last one rendered in the component tree takes precedence.
  */
 export function StackTitle({ children, asChild, style, largeStyle, large }: StackTitleProps) {
+  const splitViewToolbar = useExpoUISplitViewToolbar();
+  const isFocused = useIsFocused();
+  const id = useId();
+  const props = useMemo(
+    () => ({ children, asChild, style, largeStyle, large }),
+    [asChild, children, large, largeStyle, style]
+  );
   const options = useMemo(
     () =>
       appendStackTitlePropsToOptions(
@@ -119,7 +128,14 @@ export function StackTitle({ children, asChild, style, largeStyle, large }: Stac
       ),
     [children, asChild, style, largeStyle, large]
   );
-  useCompositionOption(options);
+  useEffect(() => {
+    if (!splitViewToolbar || !isFocused) {
+      return;
+    }
+    splitViewToolbar.setTitle(id, props);
+    return () => splitViewToolbar.setTitle(id);
+  }, [id, isFocused, props, splitViewToolbar]);
+  useCompositionOption(splitViewToolbar ? {} : options);
   return null;
 }
 

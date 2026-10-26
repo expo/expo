@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function EmptyMessage() {
   return (
     <View style={styles.container}>
+      <Stack.Title>Mail</Stack.Title>
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button icon="square.and.pencil" />
         <Stack.Toolbar.Button icon="magnifyingglass" />

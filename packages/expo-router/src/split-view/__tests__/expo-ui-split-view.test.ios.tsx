@@ -10,6 +10,7 @@ import { renderRouter } from '../../testing-library';
 
 const mockNavigationSplitView = jest.fn();
 const mockRNHostView = jest.fn();
+const mockSwiftUIButton = jest.fn();
 
 jest.mock('@expo/ui/swift-ui', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -34,8 +35,30 @@ jest.mock('@expo/ui/swift-ui', () => {
         Detail: slot('Detail'),
       }
     ),
-    Toolbar: ({ children, modifiers }: { children?: ReactNode; modifiers?: unknown[] }) => (
-      <View testID="Toolbar" {...({ modifiers } as ViewProps)}>
+    Button: (props: { label?: string; systemImage?: string; onPress?: () => void }) => {
+      mockSwiftUIButton(props);
+      return <View testID="SwiftUIButton" {...props} />;
+    },
+    Toolbar: Object.assign(
+      ({ children, modifiers }: { children?: ReactNode; modifiers?: unknown[] }) => (
+        <View testID="Toolbar" {...({ modifiers } as ViewProps)}>
+          {children}
+        </View>
+      ),
+      {
+        Content: ({ children }: { children?: ReactNode }) => (
+          <View testID="ToolbarContent">{children}</View>
+        ),
+      }
+    ),
+    ToolbarItem: ({
+      children,
+      placement,
+    }: {
+      children?: ReactNode;
+      placement?: string;
+    }) => (
+      <View testID="ToolbarItem" {...({ placement } as ViewProps)}>
         {children}
       </View>
     ),
@@ -110,7 +133,7 @@ it('renders expo-ui columns and a stack detail navigator', async () => {
   expect(screen.getByTestId('NavigationSplitView')).toBeVisible();
   expect(screen.getByTestId('Sidebar')).toHaveTextContent('Sidebar');
   expect(screen.getByTestId('Detail')).toHaveTextContent('Message');
-  expect(screen.getByTestId('Toolbar').props.modifiers).toContainEqual({
+  expect(screen.getAllByTestId('Toolbar')[0]?.props.modifiers).toContainEqual({
     $type: 'navigationTitle',
     title: 'Mailboxes',
   });
@@ -183,7 +206,7 @@ it('maps accepted column width bounds without a preferred width', async () => {
   });
 });
 
-it('passes page-level Stack.Toolbar items to the detail stack screen options', async () => {
+it('renders page-level Stack.Title and Stack.Toolbar in the expo-ui detail toolbar', async () => {
   await renderRouter(
     {
       _layout: () => (
@@ -195,8 +218,13 @@ it('passes page-level Stack.Toolbar items to the detail stack screen options', a
       ),
       index: () => (
         <>
+          <Stack.Title>Inbox</Stack.Title>
           <Stack.Toolbar placement="right">
-            <Stack.Toolbar.Button icon="magnifyingglass" />
+            <Stack.Toolbar.Button
+              accessibilityLabel="Search mail"
+              icon="magnifyingglass"
+              onPress={() => {}}
+            />
           </Stack.Toolbar>
           <Text>Message</Text>
         </>
@@ -205,11 +233,27 @@ it('passes page-level Stack.Toolbar items to the detail stack screen options', a
     { initialUrl: '/' }
   );
 
-  await waitFor(() =>
-    expect(
-      MockedScreenStackItem.mock.calls.find(
-        ([props]) => props.headerConfig?.headerRightBarButtonItems?.length === 1
-      )
-    ).toBeDefined()
-  );
+  await waitFor(() => {
+    const detailToolbar = screen.getAllByTestId('Toolbar')[1];
+    expect(detailToolbar?.props.modifiers).toContainEqual({
+      $type: 'navigationTitle',
+      title: 'Inbox',
+    });
+    expect(screen.getByTestId('ToolbarItem').props.placement).toBe('topBarTrailing');
+    expect(mockSwiftUIButton).toHaveBeenCalledWith(
+      expect.objectContaining({
+        label: 'Search mail',
+        systemImage: 'magnifyingglass',
+      })
+    );
+  });
+
+  expect(
+    MockedScreenStackItem.mock.calls.find(
+      ([props]) => props.headerConfig?.headerRightBarButtonItems?.length === 1
+    )
+  ).toBeUndefined();
+  expect(
+    MockedScreenStackItem.mock.calls.every(([props]) => props.headerConfig?.hidden === true)
+  ).toBe(true);
 });
