@@ -8,7 +8,8 @@ import Testing
 @Suite("TestAppContext")
 @JavaScriptActor
 struct TestAppContextTests {
-  @Test func `promise reactions run after the synchronous code`() async throws {
+  @Test
+  func `promise reactions run after the synchronous code`() async throws {
     let appContext = TestAppContext()
     let result = try await appContext.runtime.evalAsync(
       """
@@ -23,7 +24,8 @@ struct TestAppContextTests {
     #expect(try result.asString() == "sync,then")
   }
 
-  @Test func `awaits in a loop do not grow the native stack`() async throws {
+  @Test
+  func `awaits in a loop do not grow the native stack`() async throws {
     let appContext = TestAppContext()
     let result = try await appContext.runtime.evalAsync(
       """
