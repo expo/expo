@@ -102,7 +102,7 @@ export function BottomSheet({
     return sheet;
   }
   return (
-    <Host style={{ position: 'absolute' }} pointerEvents="none">
+    <Host presentsInWindow style={{ position: 'absolute' }} pointerEvents="none">
       {sheet}
     </Host>
   );

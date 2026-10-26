@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.toArgb
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.ui.colors.MaterialColorsOptions
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.isSystemInDarkTheme
@@ -144,10 +146,29 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      Events("onLayoutContent")
+      HostViewDefinition()
+    }
 
-      OnViewDidUpdateProps { view ->
-        view.onViewDidUpdateProps()
+    View(PresentationHostView::class) {
+      HostViewDefinition()
+
+      // React Native mounts the children in the presentation root.
+      GroupView<PresentationHostView> {
+        AddChildView { parent, child: View, index ->
+          parent.childContainer.addView(child, index)
+        }
+        GetChildCount { parent ->
+          parent.childContainer.childCount
+        }
+        GetChildViewAt { parent, index ->
+          parent.childContainer.getChildAt(index)
+        }
+        RemoveChildView { parent, child: View ->
+          parent.childContainer.removeView(child)
+        }
+        RemoveChildViewAt { parent, index ->
+          parent.childContainer.removeViewAt(index)
+        }
       }
     }
 
@@ -873,5 +894,15 @@ class ExpoUIModule : Module() {
     }
 
     //endregion Expo UI views
+  }
+}
+
+// The parts of a Host view definition that `HostView` and `PresentationHostView` share.
+@Suppress("FunctionName")
+private fun <T : HostView> ViewDefinitionBuilder<T>.HostViewDefinition() {
+  Events("onLayoutContent")
+
+  OnViewDidUpdateProps { view ->
+    view.onViewDidUpdateProps()
   }
 }
