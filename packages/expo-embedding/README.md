@@ -34,7 +34,7 @@ Run commands from the directory containing the `.xcodeproj` or a subdirectory. A
 
 `init` creates `expo/package.json`, `index.js`, `App.tsx`, `react-native.config.js`, a small native example module, and Metro config. It registers the starter as `Main`, uses the supported SDK versions for a new manifest, installs the app's declared dependencies, and adds generated paths to `.gitignore`. It preserves an existing Expo app and Metro config. An occupied `expo/` directory without a manifest is rejected without overwriting its files. Inline Swift modules in `expo/Native/` are discovered by Expo autolinking. The example can be renamed or removed. Follow Expo’s inline-module convention: the Swift filename matches its module class name.
 
-Setup remembers the project and target; use `--project App.xcodeproj --target App` to select among multiple candidates. `install` runs Expo's installer inside `expo/`, then refreshes native setup after installation succeeds.
+Setup remembers the project and target; use `--project App.xcodeproj --target App` to select among projects in the integration root. Nested or external project paths are rejected before setup changes files. Run from the directory containing the Xcode project. `install` runs Expo's installer inside `expo/`, then refreshes native setup after installation succeeds.
 
 Wire the host into your existing SwiftUI app entry point (keep its actual struct name):
 

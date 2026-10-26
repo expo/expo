@@ -1,7 +1,7 @@
 import { minimatch } from 'minimatch';
 import { readdir, rm, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { exists, readJSON, readText, writeGenerated } from './files';
 import { frameworkTargets } from './framework-targets';
@@ -31,6 +31,11 @@ async function glob(root: string, patterns: string[]): Promise<string[]> {
   return paths.sort();
 }
 export async function validateSourceProject(options: SourceProjectOptions) {
+  if (resolve(dirname(options.project)) !== resolve(options.root)) {
+    throw new Error(
+      `The Xcode project must be in the integration root (${options.root}). Run init from the directory containing ${options.project}; nested or external --project paths are not supported.`
+    );
+  }
   const host = await Project.open(join(options.project, 'project.pbxproj'));
   const configPath = join(options.root, 'expo-embedding.json');
   const settings = (await exists(configPath)) ? await readJSON(configPath) : {};
@@ -318,7 +323,8 @@ export async function configureSourceProject(
 export NODE_BINARY=${shellQuote(node)}
 export PROJECT_ROOT="$EXPO_APP_ROOT/expo"
 if [ -z "\${ENTRY_FILE:-}" ]; then
-  export ENTRY_FILE="$("$NODE_BINARY" ${shellQuote(join(expoRoot, 'scripts/resolveAppEntry.js'))} "$PROJECT_ROOT" ios absolute)"
+  ENTRY_FILE="$("$NODE_BINARY" -e ${shellQuote(`require(${JSON.stringify(join(expoRoot, 'scripts/resolveAppEntry.js'))})`)} "$PROJECT_ROOT" ios absolute)"
+  export ENTRY_FILE
 fi
 export CLI_PATH=${shellQuote(join(expoRoot, 'bin/cli'))}
 export BUNDLE_COMMAND=export:embed
@@ -341,12 +347,14 @@ export REACT_NATIVE_PATH=${shellQuote(rn)}
     values['EXPO_RUNTIME_CONFIGURATION[sdk=iphone*]'] = configurations[config.name];
     for (const key of ['FRAMEWORK_SEARCH_PATHS', 'HEADER_SEARCH_PATHS']) {
       const conditional = `${key}[sdk=iphone*]`;
-      const retained = array(values[conditional]).filter(
+      const retained = array(values[conditional] ?? values[key]).filter(
         (path) => !path.includes('$(EXPO_APP_ROOT)/.expo-source/')
       );
       values[conditional] = [...new Set([...retained, ...common[key]])];
     }
-    const flags = array(values['OTHER_LDFLAGS[sdk=iphone*]']).flatMap(splitFlags);
+    const flags = array(values['OTHER_LDFLAGS[sdk=iphone*]'] ?? values.OTHER_LDFLAGS).flatMap(
+      splitFlags
+    );
     const retainedFlags: string[] = [];
     while (flags.length) {
       const flag = flags.shift()!;
