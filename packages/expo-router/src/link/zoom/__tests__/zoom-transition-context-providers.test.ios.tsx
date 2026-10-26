@@ -374,24 +374,22 @@ describe(ZoomTransitionTargetContextProvider, () => {
     const afterFirstAdd = onContextValueChange.mock.calls[1]![0];
     expect(afterFirstAdd.hasEnabler).toBe(true);
 
+    // hasEnabler stays true, so the context value does not change and the consumer does not re-render
     await act(() => {
       afterFirstAdd.addEnabler();
     });
-    const afterSecondAdd = onContextValueChange.mock.calls[2]![0];
-    expect(afterSecondAdd.hasEnabler).toBe(true);
+    expect(onContextValueChange).toHaveBeenCalledTimes(2);
 
-    // Remove one - still has enabler
     await act(() => {
-      afterSecondAdd.removeEnabler();
+      afterFirstAdd.removeEnabler();
     });
-    const afterFirstRemove = onContextValueChange.mock.calls[3]![0];
-    expect(afterFirstRemove.hasEnabler).toBe(true);
+    expect(onContextValueChange).toHaveBeenCalledTimes(2);
 
     // Remove second - no more enablers
     await act(() => {
-      afterFirstRemove.removeEnabler();
+      afterFirstAdd.removeEnabler();
     });
-    const afterSecondRemove = onContextValueChange.mock.calls[4]![0];
+    const afterSecondRemove = onContextValueChange.mock.calls[2]![0];
     expect(afterSecondRemove.hasEnabler).toBe(false);
   });
 

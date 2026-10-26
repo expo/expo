@@ -1,12 +1,14 @@
 'use client';
 
-import { useCallback, useId, useMemo, useRef, useState } from 'react';
+import { use, useCallback, useId, useMemo, useRef, useState } from 'react';
 
+import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../navigationParams';
+import { isModalPresentation } from '../../utils/stackPresentation';
 import { shouldLinkExternally } from '../../utils/url';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
@@ -83,16 +85,48 @@ export function ZoomTransitionTargetContextProvider({
   // https://linear.app/expo/issue/ENG-19580/remove-hasenabler-logic-from-zoomtransitiontargetcontext
   // This is a temporary solution to detect if zoom transition was enabled for the screen
   // In theory we could do all the checks here and only mount the enabler when all conditions are met
-  // However this would require using use(DescriptorsContext) here,
-  // which would cause unnecessary re-renders of the entire screen whenever descriptors change
   const [numberOfEnablers, setNumberOfEnablers] = useState(0);
   const addEnabler = useCallback(() => setNumberOfEnablers((prev) => prev + 1), []);
   const removeEnabler = useCallback(() => setNumberOfEnablers((prev) => prev - 1), []);
   const hasEnabler = numberOfEnablers > 0;
   const isPreview = useIsPreview();
+  const target = isPreview ? null : getZoomTransitionTarget(route);
+  // Only this route's values go into the memoized context value. So an options change on any
+  // route re-renders this provider, but not the screen that reads the context.
+  const routeOptions = target ? use(DescriptorsContext)[target.routeKey]?.options : undefined;
+  const gestureEnabled = routeOptions?.gestureEnabled;
+  const isModal = isModalPresentation(routeOptions);
+  const identifier = target?.identifier;
+  const value = useMemo(
+    () => ({
+      identifier: identifier ?? null,
+      dismissalBoundsRect,
+      setDismissalBoundsRect,
+      addEnabler,
+      removeEnabler,
+      hasEnabler,
+      gestureEnabled,
+      isModal,
+    }),
+    [
+      identifier,
+      dismissalBoundsRect,
+      addEnabler,
+      removeEnabler,
+      hasEnabler,
+      gestureEnabled,
+      isModal,
+    ]
+  );
+  if (target) {
+    return <ZoomTransitionTargetContext value={value}>{children}</ZoomTransitionTargetContext>;
+  }
+  return children;
+}
+
+function getZoomTransitionTarget(route: unknown): { identifier: string; routeKey: string } | null {
   if (
     isZoomTransitionEnabled() &&
-    !isPreview &&
     route &&
     typeof route === 'object' &&
     'params' in route &&
@@ -108,20 +142,8 @@ export function ZoomTransitionTargetContextProvider({
       internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
     const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-      return (
-        <ZoomTransitionTargetContext
-          value={{
-            identifier: zoomTransitionId,
-            dismissalBoundsRect,
-            setDismissalBoundsRect,
-            addEnabler,
-            removeEnabler,
-            hasEnabler,
-          }}>
-          {children}
-        </ZoomTransitionTargetContext>
-      );
+      return { identifier: zoomTransitionId, routeKey: route.key };
     }
   }
-  return children;
+  return null;
 }

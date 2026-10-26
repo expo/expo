@@ -8,6 +8,7 @@ import Stack from '../../../layouts/Stack';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
+import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDismissal';
 import { ZoomTransitionTargetContext } from '../zoom-transition-context';
 
 jest.mock('../../preview/native', () => {
@@ -259,5 +260,42 @@ describe('hasEnabler tracking', () => {
     );
     expect(onHasEnabler).not.toHaveBeenCalledWith(true);
     consoleWarnSpy.mockRestore();
+  });
+});
+
+describe('usePreventZoomTransitionDismissal next to inline Stack.Screen options', () => {
+  it('renders the screen when it is pushed without a zoom transition', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: function Index() {
+        usePreventZoomTransitionDismissal({ unstable_dismissalBoundsRect: { maxX: 44 } });
+        return (
+          <>
+            <Stack.Screen options={{ title: 'Index' }} />
+            <View testID="index-page" />
+          </>
+        );
+      },
+    });
+
+    expect(screen.getByTestId('index-page')).toBeVisible();
+  });
+
+  it('renders the screen when it is pushed with a zoom transition', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: IndexWithZoomLink,
+      dest: function Dest() {
+        usePreventZoomTransitionDismissal({ unstable_dismissalBoundsRect: { maxX: 44 } });
+        return (
+          <>
+            <Stack.Screen options={{ title: 'Dest' }} />
+            <View testID="dest-page" />
+          </>
+        );
+      },
+    });
+
+    await navigateViaZoomLink();
   });
 });

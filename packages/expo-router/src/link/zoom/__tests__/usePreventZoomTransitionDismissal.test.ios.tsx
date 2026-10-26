@@ -1,11 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-} from '../../../fork/native-stack/descriptors-context';
-import { DescriptorsContext } from '../../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../../navigationParams';
 import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDismissal.ios';
 import {
@@ -32,15 +27,6 @@ jest.mock('../../../useNavigation', () => ({
   })),
 }));
 
-function makeDescriptors(
-  routeKey: string,
-  options: Record<string, unknown> = {}
-): NativeStackDescriptorMap {
-  return {
-    [routeKey]: { options } as NativeStackDescriptor,
-  };
-}
-
 function makeTargetContext(
   overrides: Partial<ZoomTransitionTargetContextValueType> = {}
 ): ZoomTransitionTargetContextValueType {
@@ -56,19 +42,15 @@ function makeTargetContext(
 }
 
 function renderPreventDismissal({
-  descriptors = makeDescriptors('route-1'),
   targetContext = makeTargetContext(),
   options,
 }: {
-  descriptors?: NativeStackDescriptorMap;
   targetContext?: ZoomTransitionTargetContextValueType;
   options?: Parameters<typeof usePreventZoomTransitionDismissal>[0];
 } = {}) {
   return renderHook(() => usePreventZoomTransitionDismissal(options), {
     wrapper: ({ children }: { children: ReactNode }) => (
-      <DescriptorsContext value={descriptors}>
-        <ZoomTransitionTargetContext value={targetContext}>{children}</ZoomTransitionTargetContext>
-      </DescriptorsContext>
+      <ZoomTransitionTargetContext value={targetContext}>{children}</ZoomTransitionTargetContext>
     ),
   });
 }
@@ -90,8 +72,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   it('warns when used on a modal screen', async () => {
     const setDismissalBoundsRect = jest.fn();
     await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1', { presentation: 'modal' }),
-      targetContext: makeTargetContext({ setDismissalBoundsRect }),
+      targetContext: makeTargetContext({ isModal: true, setDismissalBoundsRect }),
     });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -101,9 +82,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   });
 
   it('does not warn on non-modal screen', async () => {
-    await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1'),
-    });
+    await renderPreventDismissal();
 
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
@@ -208,8 +187,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   it('calls setDismissalBoundsRect with { maxX: 0, maxY: 0 } when gestureEnabled is false without explicit rect', async () => {
     const setDismissalBoundsRect = jest.fn();
     await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1', { gestureEnabled: false }),
-      targetContext: makeTargetContext({ setDismissalBoundsRect }),
+      targetContext: makeTargetContext({ gestureEnabled: false, setDismissalBoundsRect }),
     });
 
     expect(setDismissalBoundsRect).toHaveBeenCalledWith({ maxX: 0, maxY: 0 });

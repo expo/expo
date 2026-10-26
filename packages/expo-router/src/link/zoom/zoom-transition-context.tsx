@@ -45,6 +45,8 @@ export interface ZoomTransitionTargetContextValueType {
   addEnabler: () => void;
   removeEnabler: () => void;
   hasEnabler: boolean;
+  gestureEnabled?: boolean;
+  isModal?: boolean;
 }
 
 export const ZoomTransitionTargetContext = createContext<ZoomTransitionTargetContextValueType>({
