@@ -3,7 +3,6 @@
 #if !os(macOS) && !os(tvOS)
 
 import ExpoModulesCore
-import React
 import UIKit
 import SwiftUI
 
@@ -14,11 +13,13 @@ class DevMenuFABWindow: UIWindow {
   var fabFrame: CGRect = .zero
   private var currentAnimator: UIViewPropertyAnimator?
   private var targetVisibility: Bool?
+  private var appWindowFrameObservation: NSKeyValueObservation?
 
   init(manager: DevMenuManager, windowScene: UIWindowScene) {
     self.manager = manager
     super.init(windowScene: windowScene)
     setupWindow()
+    observeAppWindowRotation(in: windowScene)
   }
 
   @available(*, unavailable)
@@ -45,13 +46,21 @@ class DevMenuFABWindow: UIWindow {
     hostingController.view.backgroundColor = .clear
     self.hostingController = hostingController
     rootViewController = hostingController
+  }
 
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleAppWindowFrameChange(_:)),
-      name: .RCTWindowFrameDidChange,
-      object: nil
-    )
+  // A per-screen orientation change rotates only the app window.
+  // UIKit does not ask this window again, so it would keep the scene in the old orientation.
+  private func observeAppWindowRotation(in windowScene: UIWindowScene) {
+    guard let appWindow = windowScene.windows.first(where: { $0.windowLevel == .normal }) else {
+      return
+    }
+    appWindowFrameObservation = appWindow.observe(\.frame, options: [.old, .new]) { [weak self] _, change in
+      guard let old = change.oldValue, let new = change.newValue,
+        (old.width > old.height) != (new.width > new.height) else {
+        return
+      }
+      self?.hostingController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+    }
   }
 
   private var edgeTranslation: CGAffineTransform {
@@ -114,12 +123,6 @@ class DevMenuFABWindow: UIWindow {
     }
 
     return nil
-  }
-
-  @objc private func handleAppWindowFrameChange(_ notification: Notification) {
-    // Per-screen orientation changes can rotate the app window without rotating this overlay.
-    // Refresh it too, so the scene does not keep reporting the overlay's previous orientation.
-    hostingController?.setNeedsUpdateOfSupportedInterfaceOrientations()
   }
 }
 
