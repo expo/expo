@@ -40,8 +40,8 @@ export async function installDependencies(
   frozen: boolean,
   installRoot = join(root, 'expo')
 ) {
-  const manager = await getPackageManager(installRoot);
-  const args = await getInstallArguments(installRoot, manager, frozen);
+  const manager = await getPackageManager(installRoot, root);
+  const args = await getInstallArguments(installRoot, manager, frozen, root);
   const backup = await detachSharedNodeModules(join(root, 'expo'), frozen);
   if (backup)
     process.stdout.write(

@@ -51,10 +51,10 @@ export async function prepareIos(
   return nativeOptions;
 }
 
-async function prepareRuntime(
+export async function prepareRuntime(
   root: string,
   node: string,
-  nativePlan: Awaited<ReturnType<typeof discoverNativeModules>>
+  nativePlan: Pick<Awaited<ReturnType<typeof discoverNativeModules>>, 'reactNativeRoot'>
 ): Promise<void> {
   const rn = nativePlan.reactNativeRoot;
   const reactNative = (await readJSON(join(rn, 'package.json'))).version;
@@ -68,18 +68,34 @@ async function prepareRuntime(
   const cache = join(homedir(), 'Library/Caches/ReactNative');
   for (const configuration of ['Debug', 'Release']) {
     const flavor = configuration.toLowerCase();
+    const downloads = join(root, '.expo-source/downloads', flavor);
     const output = join(root, '.expo-source/runtime', configuration);
     const stamp = join(output, '.versions.json');
     if (await exists(stamp)) {
       const previous = await readJSON(stamp);
       if (previous.reactNative === reactNative && previous.hermes === hermes) continue;
     }
-    const archives = [
+    const archiveNames = [
       ['reactnative-core', reactNative],
       ['reactnative-dependencies', reactNative],
       ['hermes-ios', hermes],
-    ].map(([name, version]) => join(cache, `${name}-${version}-${flavor}.tar.gz`));
-    if (!(await Promise.all(archives.map(exists))).every(Boolean)) {
+    ];
+    const findArchives = () =>
+      Promise.all(
+        archiveNames.map(async ([name, version]) => {
+          const cached = join(cache, `${name}-${version}-${flavor}.tar.gz`);
+          if (process.env.RCT_SKIP_CACHES !== '1' && (await exists(cached))) return cached;
+          const artifact = name === 'hermes-ios' ? 'hermes-ios' : 'react-native-artifacts';
+          const downloaded = join(
+            downloads,
+            '.downloads',
+            `${artifact}-${version}-${name}-${flavor}.tar.gz`
+          );
+          return (await exists(downloaded)) ? downloaded : undefined;
+        })
+      );
+    let archives = await findArchives();
+    if (!archives.every(Boolean)) {
       await runCommand(
         node,
         [
@@ -89,17 +105,18 @@ async function prepareRuntime(
           '--flavor',
           flavor,
           '--output',
-          join(root, '.expo-source/downloads', flavor),
+          downloads,
         ],
         { cwd: root }
       );
+      archives = await findArchives();
     }
+    if (!archives.every((archive): archive is string => Boolean(archive)))
+      throw new Error(
+        `Runtime archives are missing after downloading ${flavor} artifacts into ${downloads}. Check the artifact downloader output and rerun init.`
+      );
     await mkdir(output, { recursive: true });
     for (const archive of archives) {
-      if (!(await exists(archive)))
-        throw new Error(
-          `Runtime archive is missing: ${archive}. Check the artifact downloader output and rerun init.`
-        );
       await runCommand('tar', ['-xzf', archive, '-C', output], { cwd: root });
     }
     await writeFile(stamp, JSON.stringify({ reactNative, hermes }));
