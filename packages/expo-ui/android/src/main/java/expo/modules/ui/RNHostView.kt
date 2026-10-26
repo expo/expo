@@ -614,8 +614,8 @@ private class TouchDispatchingRootViewGroup(
     val targetView = path.firstNotNullOfOrNull { it.getView() }
     return path.any { target ->
       val view = target.getView()
-      view != null && view !== this &&
-        handlesTouchesNatively(view, if (view === targetView) targetPoint else null)
+      val localPoint = targetPoint.takeIf { view === targetView }
+      view != null && view !== this && handlesTouchesNatively(view, localPoint)
     }
   }
 
@@ -649,14 +649,20 @@ private class TouchDispatchingRootViewGroup(
 
   // Only a link under the point counts, so the rest of the text still lets the parent handle it.
   private fun hasLinkSpanAt(view: ReactTextView, localPoint: FloatArray?): Boolean {
-    if (localPoint == null) return false
+    if (localPoint == null) {
+      return false
+    }
     val text = view.text as? Spanned ?: return false
     val layout = view.layout ?: return false
     val lineX = localPoint[0] - view.totalPaddingLeft + view.scrollX
     val lineY = (localPoint[1] - view.totalPaddingTop + view.scrollY).toInt()
-    if (lineY < 0 || lineY > layout.height) return false
+    if (lineY < 0 || lineY > layout.height) {
+      return false
+    }
     val line = layout.getLineForVertical(lineY)
-    if (lineX < layout.getLineLeft(line) || lineX > layout.getLineRight(line)) return false
+    if (lineX < layout.getLineLeft(line) || lineX > layout.getLineRight(line)) {
+      return false
+    }
     val offset = layout.getOffsetForHorizontal(line, lineX)
     return text.getSpans(offset, offset, ClickableSpan::class.java).isNotEmpty()
   }
