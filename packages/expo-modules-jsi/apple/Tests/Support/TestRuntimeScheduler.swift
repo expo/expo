@@ -176,14 +176,12 @@ extension TestRuntime {
   func run(_ body: @escaping @Sendable @JavaScriptActor (JavaScriptRuntime) async throws -> Void) async throws {
     let runtime = self.runtime
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-      scheduler.schedule {
-        Task.immediate_polyfill { @JavaScriptActor in
-          do {
-            try await body(runtime)
-            continuation.resume()
-          } catch {
-            continuation.resume(throwing: error)
-          }
+      runtime.schedule { () async in
+        do {
+          try await body(runtime)
+          continuation.resume()
+        } catch {
+          continuation.resume(throwing: error)
         }
       }
     }
