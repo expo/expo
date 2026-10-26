@@ -1,3 +1,4 @@
+import JsonFile from '@expo/json-file';
 import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
@@ -5,6 +6,7 @@ import type {
 import { loadModule } from '@expo/require-utils';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
+import semver from 'semver';
 
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
@@ -46,6 +48,26 @@ export async function maybeCreateMCPServerAsync({
   const mcpTunnelPackagePath = resolveFrom.silent(path.dirname(mcpPackagePath), '@expo/mcp-tunnel');
   if (!mcpTunnelPackagePath) {
     Log.error('Unable to resolve the `@expo/mcp-tunnel` package');
+    return null;
+  }
+
+  // The 0.2.x tunnel uses a Zod 3-only converter that drops Zod 4 schema constraints.
+  const mcpTunnelManifestPath = resolveFrom.silent(
+    path.dirname(mcpPackagePath),
+    '@expo/mcp-tunnel/package.json'
+  );
+  let mcpTunnelVersion: unknown;
+  try {
+    if (mcpTunnelManifestPath) {
+      mcpTunnelVersion = JsonFile.read(mcpTunnelManifestPath).version;
+    }
+  } catch {
+    // An unreadable manifest cannot establish schema compatibility.
+  }
+  if (typeof mcpTunnelVersion !== 'string' || !semver.satisfies(mcpTunnelVersion, '>=0.3.1')) {
+    Log.error(
+      'The MCP integration requires @expo/mcp-tunnel >=0.3.1 for Zod 4 schemas. Upgrade `expo-mcp` in your project to use a compatible tunnel.'
+    );
     return null;
   }
 
