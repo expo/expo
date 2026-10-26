@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo/fetch` replacing an explicit `Content-Type` header with the type of a `Blob` body. ([#51475](https://github.com/expo/expo/pull/51475) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 57.0.31 — 2026-10-21

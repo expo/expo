@@ -8,6 +8,7 @@ export declare function convertReadableStreamToUint8ArrayAsync(stream: ReadableS
  */
 export declare function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
     body: Uint8Array | null;
+    defaultHeaders?: NativeHeadersType;
     overriddenHeaders?: NativeHeadersType;
 }>;
 /**

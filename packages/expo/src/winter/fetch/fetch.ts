@@ -62,8 +62,14 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
-  const { body: requestBody, overriddenHeaders } = await normalizeBodyInitAsync(body);
-  if (overriddenHeaders) {
+  const {
+    body: requestBody,
+    defaultHeaders,
+    overriddenHeaders,
+  } = await normalizeBodyInitAsync(body);
+  if (defaultHeaders) {
+    headers = overrideHeaders(defaultHeaders, headers);
+  } else if (overriddenHeaders) {
     headers = overrideHeaders(headers, overriddenHeaders);
   }
 
