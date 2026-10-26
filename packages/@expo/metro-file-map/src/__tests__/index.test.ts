@@ -1455,6 +1455,19 @@ describe('FileMap', () => {
     }
   });
 
+  test('crawls with node, not Watchman, when useWatchman is omitted', async () => {
+    const watchman = require('../crawlers/watchman').default;
+    const node = require('../crawlers/node').default;
+    node.mockImplementation(() =>
+      Promise.resolve({ changedFiles: new Map(), removedFiles: new Set() })
+    );
+
+    await buildNewFileMap({ useWatchman: undefined });
+
+    expect(watchman).not.toHaveBeenCalled();
+    expect(node).toHaveBeenCalled();
+  });
+
   describe('file system changes processing', () => {
     function waitForItToChange(fileMap: FileMapT): Promise<ChangeEvent> {
       return new Promise((resolve) => {

@@ -367,7 +367,8 @@ export default class FileMap extends EventEmitter {
       healthCheck: options.healthCheck,
       perfLoggerFactory: options.perfLoggerFactory,
       resetCache: options.resetCache,
-      useWatchman: options.useWatchman == null ? true : options.useWatchman,
+      // NOTE(@robhogan): Watchman is opt-in, where upstream defaults `useWatchman` to `true`
+      useWatchman: options.useWatchman ?? false,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
     };
