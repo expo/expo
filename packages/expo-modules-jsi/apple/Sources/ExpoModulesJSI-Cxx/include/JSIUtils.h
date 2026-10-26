@@ -216,30 +216,6 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
   return object.isHostObject<jsi::HostObject>(runtime);
 }
 
-jsi::Runtime* createHermesRuntime();
-
-/**
- Runs the runtime's microtasks until the queue is empty, like React Native's microtask checkpoint
- after each task. Returns `false` and stores a `CppError` when a microtask throws or the queue does
- not empty within the retries bound. A call during a checkpoint of the same runtime does nothing.
- */
-bool drainMicrotasks(jsi::IRuntime &runtime);
-
-// Queues `callback` in the runtime's microtask queue, next to `drainMicrotasks` that runs it.
-inline void queueMicrotask(jsi::IRuntime &runtime, const jsi::Function &callback) {
-  runtime.queueMicrotask(callback);
-}
-
-/**
- Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
- Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
- the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must
- not be called on a runtime owned elsewhere (e.g. the React Native-provided one).
- */
-inline void destroyRuntime(jsi::Runtime &runtime) {
-  delete &runtime;
-}
-
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
   return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
