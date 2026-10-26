@@ -1,6 +1,6 @@
 'use client';
 import { useId } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { RouterToolbarItem } from '../../../../toolbar/native';
 import type { RouterToolbarItemProps } from '../../../../toolbar/native.types';
@@ -22,6 +22,15 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
         value: props.badge.value === '' ? undefined : String(props.badge.value),
       } as RouterToolbarItemProps['badgeConfiguration'])
     : undefined;
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    props.badge &&
+    Number.parseInt(String(Platform.Version), 10) < 27
+  ) {
+    console.warn(
+      'Stack.Toolbar.Badge on Stack.Toolbar.Button in placement="bottom" is not displayed on iOS versions earlier than 27. UIKit does not draw the badge on a bottom toolbar item there, so the badge is ignored. Run the app on iOS 27 or later to see the badge.'
+    );
+  }
   if (process.env.NODE_ENV !== 'production' && props.source) {
     console.warn(
       'Stack.Toolbar.Button in placement="bottom" on iOS does not support image icons via the `icon` prop or <Stack.Toolbar.Icon src={...} />; the image will not render. Use the `icon` prop with a string SF Symbol name (e.g. "star.fill"), the `image` prop for a custom image, or <Stack.Toolbar.Icon xcasset="..." /> for an Xcode asset catalog image.'
