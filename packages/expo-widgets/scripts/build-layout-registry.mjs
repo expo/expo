@@ -19,7 +19,7 @@ const registryEntryPath = path.join(__dirname, '../bundle/layout-registry-entry.
 const registryMetroConfigPath = path.join(__dirname, '../layout-registry.metro.config.js');
 
 async function main() {
-  const projectRoot = path.resolve(possibleProjectRoot);
+  const projectRoot = fs.realpathSync(path.resolve(possibleProjectRoot));
   const outputPath = path.resolve(projectRoot, registryOutput ?? defaultOutputPath);
   const defaultConfigPath =
     platform === 'android'
