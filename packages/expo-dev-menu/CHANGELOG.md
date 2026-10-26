@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the floating tools button leaving the app stuck in landscape after returning to a portrait-only screen. ([#50344](https://github.com/expo/expo/pull/50344) by [@evrimfeyyaz](https://github.com/evrimfeyyaz))
+
 ### 💡 Others
 
 ## 57.0.20 — 2026-10-12
