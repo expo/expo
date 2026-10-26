@@ -387,6 +387,17 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     setProperty(name, value: runtime.createFunction(name, function))
   }
 
+  /// Sets a property to a host function created from a ``JavaScriptRuntime/HostFunctionClosure``, which
+  /// writes its result into the engine's result slot.
+  @_disfavoredOverload
+  @JavaScriptActor
+  public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.HostFunctionClosure) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    setProperty(name, value: runtime.createFunction(name, function))
+  }
+
   /// Sets a property named after it to an asynchronous host function created from the given closure.
   /// Equivalent to `setProperty(name, runtime.createAsyncFunction(name) { … })`. Returning an
   /// ``JavaScriptRuntime/AsyncFunctionBody`` from the closure selects this overload over the

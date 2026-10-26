@@ -936,6 +936,89 @@ struct JavaScriptRuntimeTests {
     #expect(result[2].getInt() == 2)
   }
 
+  // MARK: - Host functions with a result slot
+
+  @Test
+  func `host function writes its result into the slot`() throws {
+    let fn = runtime.createFunction("add") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+      let b = try Int.decode(arguments.unownedValue(at: 1), in: runtime)
+      try Int.encode(a + b, into: result, in: runtime)
+    }
+    runtime.global().setProperty("add", value: fn.asValue())
+
+    #expect(try runtime.eval("add(3, 38)").getInt() == 41)
+  }
+
+  @Test
+  func `host function result slot holds strings, objects and the default path`() throws {
+    let object = runtime.createObject()
+    object.setProperty("greet") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let name = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+      try String.encode("hello \(name)", into: result, in: runtime)
+    }
+    object.setProperty("pair") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      try [String: Int].encode(["a": 1], into: result, in: runtime)
+    }
+    runtime.global().setProperty("host", value: object.asValue())
+
+    let result = try runtime.eval("[host.greet('café'), host.pair().a]").getArray()
+
+    #expect(result[0].getString() == "hello café")
+    #expect(result[1].getInt() == 1)
+  }
+
+  @Test
+  func `host function that writes nothing returns undefined`() throws {
+    let fn = runtime.createFunction("nothing") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+    }
+    runtime.global().setProperty("nothing", value: fn.asValue())
+
+    #expect(try runtime.eval("nothing()").isUndefined() == true)
+  }
+
+  @Test
+  func `throwing host function with a result slot propagates error to JavaScript`() throws {
+    let fn = runtime.createFunction("unsafe") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      try Int.encode(Int.max, into: result, in: runtime)
+    }
+    runtime.global().setProperty("unsafe", value: fn.asValue())
+
+    let result = try runtime.eval("try { unsafe(); 'no error' } catch (e) { e.message }")
+
+    #expect(result.getString().contains("Int64 or UInt64"))
+  }
+
   // MARK: - Async functions
 
   @Test
