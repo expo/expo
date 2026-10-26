@@ -84,17 +84,19 @@ Set `humanReview` when the change needs a decision that only the docs maintainer
 Ask only for one of these reasons:
 
 - A content change under `docs/pages/`: a new section or example, a change to how a page
-  describes behavior, or a change to the structure of a guide.
+  describes behavior, or a change to the structure of a page.
 - A new page, a removed page, a renamed page, or a change to `docs/constants/navigation.js`.
 - A user-visible change in a package (a new or changed public export, prop, config option or
   CLI flag) that has no documentation in this PR, or whose JSDoc is the only documentation.
   The API reference pages are generated from that JSDoc.
-- A change to a guide or a reference page whose accuracy you could not check against the code,
+- A JSDoc change on a public API that adds or rewrites what the API does. The API reference
+  pages are generated from it, so treat it like a content change under `docs/pages/`.
+- A change to a page whose accuracy you could not check against the code,
   for example a statement about an external service or a vendor API.
 
-Do not ask for a review of a typo fix, a small wording change, a change to a code comment, or
-a JSDoc edit that matches the implementation. State the reason in one sentence. A finding and
-a `humanReview` are separate: you can set one without the other.
+Do not ask for a review of a typo fix, a small wording change, or a change to a code comment
+that is not JSDoc on a public API. State the reason in one sentence. A finding and a
+`humanReview` are separate: you can set one without the other.
 
 <!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
      per-package directory name, a root file the text does not mean, a submodule
