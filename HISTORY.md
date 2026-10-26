@@ -1,6 +1,10 @@
+## 2026-10-26 08:45 — Keep two Mail columns visible
+**Asked:** Use a three-column Mail layout where the system control only hides or shows the sidebar, leaving at least the message list and detail visible.
+**Did / why:** Set the demo to prefer all three columns and supplied bounded sidebar and message-list widths so the iPad can preserve the content/detail pair when the sidebar collapses. Verified both the three-column and sidebar-hidden two-column states on EAS Simulator and stored screenshots in `apps/router-tester/artifacts/eng-28595/media/`.
+
 ## 2026-10-26 08:32 — Remove the detail header gap
 **Asked:** Fix the Mail reproduction because the Google Photos navigation header appeared too low with an empty gap above it.
-**Did / why:** Removed the nested `SafeAreaProvider` around the detail Stack because SwiftUI already applies the split-view safe area at that hosting boundary. The duplicate provider inset the native Stack a second time. Added a regression test and replaced the EAS iPad toolbar screenshot after verifying the header sits directly below the status area.
+**Did / why:** Removed the nested `SafeAreaProvider` around the detail Stack to eliminate one redundant inset boundary. EAS verification later showed that this did not remove the full gap: SwiftUI still reserves its own navigation-bar region above the nested UIKit Stack header, which remains an open limitation of the no-native-code adapter.
 
 ## 2026-10-26 08:20 — Spike Expo Router split view on expo-ui
 **Asked:** Scope ENG-28595 by replacing the React Native Screens split-view renderer with an adapter-selectable `@expo/ui` `NavigationSplitView`, making the detail navigator a Stack, and reproducing the Apple Mail toolbar in router-tester on EAS Simulator.

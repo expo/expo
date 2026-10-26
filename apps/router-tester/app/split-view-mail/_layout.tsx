@@ -11,7 +11,18 @@ const messages = [
 
 export default function Layout() {
   return (
-    <SplitView implementation="expo-ui" preferredSplitBehavior="tile">
+    <SplitView
+      columnMetrics={{
+        minimumPrimaryColumnWidth: 220,
+        preferredPrimaryColumnWidth: 240,
+        maximumPrimaryColumnWidth: 280,
+        minimumSupplementaryColumnWidth: 280,
+        preferredSupplementaryColumnWidth: 320,
+        maximumSupplementaryColumnWidth: 360,
+      }}
+      implementation="expo-ui"
+      preferredDisplayMode="twoBesideSecondary"
+      preferredSplitBehavior="tile">
       <SplitView.Column title="Mailboxes" headerLargeTitle={false}>
         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.sidebar}>
           {mailboxes.map((mailbox) => (
