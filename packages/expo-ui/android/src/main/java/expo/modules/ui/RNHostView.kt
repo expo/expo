@@ -45,6 +45,8 @@ import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PointerEvents
+import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.ReactCompoundViewGroup
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.ThemedReactContext
@@ -644,10 +646,11 @@ private class TouchDispatchingRootViewGroup(
       val text = view.text as? Spanned
       return text != null && text.getSpans(0, text.length, ClickableSpan::class.java).isNotEmpty()
     }
+    // `PreparedLayoutTextView` is internal, so it's matched as React Native's other text view type.
     val isPlainReactNativeView =
       view is ReactViewGroup ||
         view is ReactImageView ||
-        view.javaClass.simpleName == "PreparedLayoutTextView"
+        (view is ReactCompoundView && view !is ReactCompoundViewGroup)
     return !isPlainReactNativeView
   }
 
