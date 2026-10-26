@@ -320,6 +320,37 @@ test.describe(`${inputDir} with server output`, () => {
     await expoStart.stopAsync();
   });
 
+  // TEMP(diagnostic): print browser output and the LogBox overlay text when the test fails on Windows CI.
+  let browserOutput: string[] = [];
+
+  test.beforeEach(async ({ page }) => {
+    browserOutput = [];
+    page.on('console', (message) => {
+      browserOutput.push(`[console.${message.type()}] ${message.text()}`);
+    });
+    page.on('pageerror', (error) => {
+      browserOutput.push(`[pageerror] ${error.message}\n${error.stack ?? ''}`);
+    });
+  });
+
+  test.afterEach(async ({ page }, testInfo) => {
+    if (testInfo.status === testInfo.expectedStatus) {
+      return;
+    }
+    const overlay = page.locator('#error-overlay');
+    const overlayText = (await overlay.count())
+      ? await overlay.innerText({ timeout: 5_000 }).catch((error) => `<unreadable: ${error}>`)
+      : '<no #error-overlay>';
+    const report = [
+      `--- browser output (${browserOutput.length} entries) ---`,
+      ...browserOutput,
+      '--- #error-overlay text ---',
+      overlayText,
+    ].join('\n');
+    console.log(report);
+    await testInfo.attach('browser-diagnostics', { body: report, contentType: 'text/plain' });
+  });
+
   test('keeps the anchor below the screen after a reload', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 
