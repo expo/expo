@@ -23,6 +23,14 @@ import type {
 
 const debug = debugModule('Metro:FileMapCache');
 
+declare global {
+  namespace NodeJS {
+    export interface Process {
+      isBun?: boolean;
+    }
+  }
+}
+
 type AutoSaveOptions = Readonly<{
   debounceMs: number;
 }>;
@@ -33,9 +41,18 @@ type DiskCacheConfig = Readonly<{
   cacheDirectory?: string | null | undefined;
 }>;
 
-const DEFAULT_PREFIX = 'metro-file-map';
+let DEFAULT_PREFIX = 'metro-file-map';
+if (process.isBun) {
+  // NOTE(@kitten): The v8 serialize/deserialize format isn't 100% compatible between
+  // Node and Bun and therefore we should fork the cache file
+  DEFAULT_PREFIX += '-bun';
+}
+
 const DEFAULT_DIRECTORY = tmpdir();
 const DEFAULT_AUTO_SAVE_DEBOUNCE_MS = 5000;
+
+// NOTE(@kitten): We're incompatible with Metro, so need our own naming
+const FIXED_PREFIX = 'expo';
 
 export class DiskCacheManager implements CacheManager {
   readonly #autoSaveOpts: AutoSaveOptions | null | undefined;
@@ -71,7 +88,7 @@ export class DiskCacheManager implements CacheManager {
 
     return path.join(
       cacheDirectory ?? DEFAULT_DIRECTORY,
-      `${cacheFilePrefix ?? DEFAULT_PREFIX}-${rootDirHash}-${relativeConfigHash}`
+      `${cacheFilePrefix ?? DEFAULT_PREFIX}-${FIXED_PREFIX}-${rootDirHash}-${relativeConfigHash}`
     );
   }
 

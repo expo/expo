@@ -64,6 +64,34 @@ describe('cacheManager', () => {
     );
   });
 
+  test.each([
+    ['file-prefix', /^file-prefix-expo-[0-9a-f]+-[0-9a-f]+$/],
+    [null, /^metro-file-map-expo-[0-9a-f]+-[0-9a-f]+$/],
+  ])('names the cache file with an expo infix (prefix: %s)', (cacheFilePrefix, expected) => {
+    expect(
+      path.basename(DiskCacheManager.getCacheFilePath(buildParameters, cacheFilePrefix, '/'))
+    ).toMatch(expected);
+  });
+
+  test.each([
+    ['file-prefix', /^file-prefix-expo-[0-9a-f]+-[0-9a-f]+$/],
+    [null, /^metro-file-map-bun-expo-[0-9a-f]+-[0-9a-f]+$/],
+  ])('names the cache file for Bun (prefix: %s)', (cacheFilePrefix, expected) => {
+    const originalIsBun = process.isBun;
+    process.isBun = true;
+    try {
+      jest.isolateModules(() => {
+        const { DiskCacheManager: BunDiskCacheManager } =
+          require('../DiskCacheManager') as typeof import('../DiskCacheManager');
+        expect(
+          path.basename(BunDiskCacheManager.getCacheFilePath(buildParameters, cacheFilePrefix, '/'))
+        ).toMatch(expected);
+      });
+    } finally {
+      process.isBun = originalIsBun;
+    }
+  });
+
   test('creates different cache file paths for different roots', () => {
     const cacheManager1 = new DiskCacheManager(
       {
