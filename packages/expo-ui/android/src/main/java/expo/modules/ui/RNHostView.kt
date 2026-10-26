@@ -524,6 +524,8 @@ private class TouchDispatchingRootViewGroup(
         gestureLeftToCompose = MotionEvent.obtain(ev)
         return false
       }
+      // React Native content owns this gesture through JS, so the `Host` must not claim it.
+      findAncestorHostView()?.reactNativeContentKeptDown = true
     }
     if (
       ev.actionMasked == MotionEvent.ACTION_CANCEL &&
@@ -682,6 +684,17 @@ private class TouchDispatchingRootViewGroup(
   fun clearGestureLeftToCompose() {
     gestureLeftToCompose?.recycle()
     gestureLeftToCompose = null
+  }
+
+  private fun findAncestorHostView(): HostView? {
+    var current: ViewParent? = parent
+    while (current != null) {
+      if (current is HostView) {
+        return current
+      }
+      current = current.parent
+    }
+    return null
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {

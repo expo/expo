@@ -5,6 +5,7 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -28,6 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.ComposeView
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.facebook.react.uimanager.events.NativeGestureUtil
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -53,6 +58,7 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
 import expo.modules.ui.colors.withOverrides
+import kotlin.math.hypot
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -136,15 +142,78 @@ internal class HostView(context: Context, appContext: AppContext) :
   internal var isDispatchingCancelFromParent = false
     private set
 
+  // Set while a gesture is dispatched: Compose consumed its down, or hosted React Native content kept it.
+  private var composeConsumedDown = false
+  internal var reactNativeContentKeptDown = false
+
+  private var ownsNativeGesture = false
+  private var blocksParentIntercept = false
+  private var downX = 0f
+  private var downY = 0f
+  private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
-      return super.dispatchTouchEvent(ev)
+    when (ev.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        composeConsumedDown = false
+        reactNativeContentKeptDown = false
+      }
+      MotionEvent.ACTION_MOVE -> {
+        // Past the touch slop, let a scrolling parent take the gesture as it would from a native control.
+        if (blocksParentIntercept && hypot(ev.rawX - downX, ev.rawY - downY) > touchSlop) {
+          stopBlockingParentIntercept()
+        }
+      }
     }
-    isDispatchingCancelFromParent = true
-    try {
-      return super.dispatchTouchEvent(ev)
-    } finally {
-      isDispatchingCancelFromParent = false
+
+    val handled = if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      super.dispatchTouchEvent(ev)
+    } else {
+      isDispatchingCancelFromParent = true
+      try {
+        super.dispatchTouchEvent(ev)
+      } finally {
+        isDispatchingCancelFromParent = false
+      }
+    }
+
+    when (ev.actionMasked) {
+      MotionEvent.ACTION_DOWN -> if (composeConsumedDown && !reactNativeContentKeptDown) {
+        // A Compose control took the press: cancel the JS touch and keep the JS responder from stealing it.
+        ownsNativeGesture = true
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev)
+        downX = ev.rawX
+        downY = ev.rawY
+        blocksParentIntercept = true
+        parent?.requestDisallowInterceptTouchEvent(true)
+      }
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+        stopBlockingParentIntercept()
+        if (ownsNativeGesture) {
+          ownsNativeGesture = false
+          NativeGestureUtil.notifyNativeGestureEnded(this, ev)
+        }
+      }
+    }
+    return handled
+  }
+
+  private fun stopBlockingParentIntercept() {
+    if (blocksParentIntercept) {
+      blocksParentIntercept = false
+      parent?.requestDisallowInterceptTouchEvent(false)
+    }
+  }
+
+  // Records whether Compose consumed the down, after every handler has seen it.
+  private val composeDownObserver = Modifier.pointerInput(Unit) {
+    awaitPointerEventScope {
+      while (true) {
+        val event = awaitPointerEvent(PointerEventPass.Final)
+        if (event.changes.any { it.changedToDownIgnoreConsumed() && it.isConsumed }) {
+          composeConsumedDown = true
+        }
+      }
     }
   }
 
@@ -218,7 +287,8 @@ internal class HostView(context: Context, appContext: AppContext) :
             Modifier
           }
         )
-        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
+        .onSizeChanged { size -> dispatchOnLayoutContent(size, density) }
+        .then(composeDownObserver),
       content = content
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
