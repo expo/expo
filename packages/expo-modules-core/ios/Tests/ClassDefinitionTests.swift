@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -150,7 +151,7 @@ struct ClassDefinitionTests {
     }
 
     init() {
-      appContext = AppContext.create()
+      appContext = TestAppContext()
       appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self, name: "TestModule")
     }
 
@@ -253,15 +254,7 @@ struct ClassDefinitionTests {
     @Test
     func `initializes the shared object from static async function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      try runtime
-        .eval(
-          "expo.modules.TestModule.Counter.createAsync(\(initialValue)).then((result) => { globalThis.result = result; })"
-        )
-
-      try await waitUntil(timeout: 4.0) {
-        safeBoolEval("globalThis.result != null")
-      }
-      let object = try runtime.eval("object = globalThis.result")
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createAsync(\(initialValue))")
 
       #expect(object.kind == .object)
       #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
@@ -270,43 +263,10 @@ struct ClassDefinitionTests {
     @Test
     func `initializes the shared object from static concurrent function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      try runtime
-        .eval(
-          "expo.modules.TestModule.Counter.createConcurrently(\(initialValue)).then((result) => { globalThis.result = result; })"
-        )
-
-      try await waitUntil(timeout: 4.0) {
-        safeBoolEval("globalThis.result != null")
-      }
-      let object = try runtime.eval("object = globalThis.result")
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createConcurrently(\(initialValue))")
 
       #expect(object.kind == .object)
       #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
-    }
-
-    private func safeBoolEval(_ js: String) -> Bool {
-      var result = false
-      do {
-        try EXUtilities.catchException {
-          guard let jsResult = try? self.runtime.eval(js) else {
-            return
-          }
-          result = jsResult.getBool()
-        }
-      } catch {
-        return false
-      }
-      return result
-    }
-
-    private func waitUntil(timeout: TimeInterval, condition: @escaping () -> Bool) async throws {
-      let start = Date()
-      while !condition() {
-        if Date().timeIntervalSince(start) > timeout {
-          throw TestError.timeout
-        }
-        try await Task.sleep(nanoseconds: 50_000_000) // 50ms
-      }
     }
   }
 
@@ -384,10 +344,6 @@ struct ClassDefinitionTests {
       #expect(result.getString() == "success")
     }
   }
-}
-
-private enum TestError: Error {
-  case timeout
 }
 
 /**

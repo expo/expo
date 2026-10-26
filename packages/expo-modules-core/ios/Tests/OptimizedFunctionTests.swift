@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -11,7 +12,7 @@ struct OptimizedFunctionTests {
   let appContext: AppContext
 
   init() {
-    self.appContext = AppContext.create()
+    self.appContext = TestAppContext()
 
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
