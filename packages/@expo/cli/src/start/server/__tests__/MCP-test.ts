@@ -20,8 +20,12 @@ jest.mock('@expo/require-utils', () => ({
   loadModule: jest.fn(),
 }));
 jest.mock('resolve-from');
+jest.mock('node:fs', () => jest.requireActual('memfs').fs);
 jest.mock('../../../log');
-jest.mock('../../../api/user/UserSettings');
+jest.mock('../../../api/user/UserSettings', () => ({
+  getAccessToken: jest.fn(() => null),
+  getSession: jest.fn(() => null),
+}));
 jest.mock('../../../utils/exit');
 
 describe(maybeCreateMCPServerAsync, () => {
