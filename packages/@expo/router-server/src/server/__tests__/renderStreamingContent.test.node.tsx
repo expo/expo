@@ -125,6 +125,9 @@ describe.each(['server', 'static'] as const)('%s output with loader data', (outp
       const globals: Record<string, unknown> = {};
       runInNewContext(bootstrap!.textContent, globals);
       expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ '/en/index': loaderData });
+      expect(consoleWarn).toHaveBeenCalledWith(
+        "Route '/[locale]/index' with param 'locale' was specified both in the path and as a param, removing from path"
+      );
     } finally {
       consoleWarn.mockRestore();
     }

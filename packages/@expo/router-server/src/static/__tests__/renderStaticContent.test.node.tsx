@@ -98,6 +98,9 @@ it('omits the query separator when only a route parameter is in the query', asyn
     expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({
       '/en/index': { message: 'LOADER DATA RENDERED' },
     });
+    expect(consoleWarn).toHaveBeenCalledWith(
+      "Route '/[locale]/index' with param 'locale' was specified both in the path and as a param, removing from path"
+    );
   } finally {
     consoleWarn.mockRestore();
   }
