@@ -175,15 +175,8 @@ extension TestRuntime {
   /// off the JavaScript thread, so work that touches the runtime after them goes through `execute`.
   func run(_ body: @escaping @Sendable @JavaScriptActor (JavaScriptRuntime) async throws -> Void) async throws {
     let runtime = self.runtime
-    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-      runtime.schedule { () async in
-        do {
-          try await body(runtime)
-          continuation.resume()
-        } catch {
-          continuation.resume(throwing: error)
-        }
-      }
+    try await runtime.execute { () async throws in
+      try await body(runtime)
     }
   }
 }
