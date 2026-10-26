@@ -18,6 +18,20 @@ appId: dev.expo.payments
     point: 90%,50%
 - assertVisible: 'inside: button 1, pressable 1'
 
+# A press on Compose content that isn't a control still presses the Pressable.
+- scrollUntilVisible:
+    element:
+      id: expo-ui-text
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: expo-ui-text
+- assertVisible: 'text: pressable 1'
+- scrollUntilVisible:
+    element:
+      id: inside-button
+    direction: UP
+
 # A drag that starts on the control scrolls the screen and presses nothing.
 - swipe:
     from:

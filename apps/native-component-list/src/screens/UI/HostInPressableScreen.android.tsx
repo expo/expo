@@ -1,4 +1,4 @@
-import { Button, Host, Switch, TextInput } from '@expo/ui';
+import { Button, Host, Switch, Text as ExpoUIText, TextInput } from '@expo/ui';
 import { useState } from 'react';
 import {
   Pressable,
@@ -24,6 +24,7 @@ export default function HostInPressableScreen() {
   const [isExpoUISwitchOn, setIsExpoUISwitchOn] = useState(false);
   const [isReactNativeSwitchOn, setIsReactNativeSwitchOn] = useState(false);
   const [focusCount, countFocus] = useCounter();
+  const [textPressable, pressTextPressable] = useCounter();
 
   return (
     // A scroll that starts on a control still scrolls the screen.
@@ -70,6 +71,14 @@ export default function HostInPressableScreen() {
         </Host>
       </Pressable>
       <Text testID="focus-counts">{`focused: ${focusCount}`}</Text>
+
+      <Text style={styles.title}>6. Text inside a Pressable</Text>
+      <Pressable onPress={pressTextPressable} style={styles.card}>
+        <Host matchContents testID="expo-ui-text">
+          <ExpoUIText>Not a control</ExpoUIText>
+        </Host>
+      </Pressable>
+      <Text testID="text-counts">{`text: pressable ${textPressable}`}</Text>
     </ScrollView>
   );
 }
