@@ -987,6 +987,42 @@ it('completes production constant folding and DCE in native code', async () => {
 });
 
 it.each([
+  ['minify is off', false],
+  ['minify is on', true],
+])(
+  'drops a production __DEV__ require when %s and the source has a comment',
+  async (_label, minify) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `// A normal source comment.
+if (__DEV__) {
+  require("./dev-only");
+}
+console.log("production entry");
+`,
+      options: options({ dev: false, minify }),
+      isDefaultExpoTransformer: true,
+      config: {
+        ...fullConfig(),
+        minifierConfig: { output: { comments: true } },
+      },
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.dependencies).toEqual([]);
+    expect(result.result.code).toContain('production entry');
+    expect(result.result.code).not.toContain('dev-only');
+    if (minify) {
+      expect(result.result.code).not.toContain('A normal source comment');
+    } else {
+      expect(result.result.code).toContain('// A normal source comment.');
+    }
+  }
+);
+
+it.each([
   ['nested arithmetic', `const value = 1 + 2 * 3; module.exports = value;`],
   [
     'logical and conditional selection',
@@ -1486,6 +1522,22 @@ it('collects optional weak and context dependencies', async () => {
     ['./routes', null, true],
   ]);
   expect(result.result.code).toContain(`require(_dependencyMap[1], "./routes")`);
+});
+
+it('keeps an ignored dynamic import uncollected after minified comment stripping', async () => {
+  const source = `module.exports = import(/* webpackIgnore: true */ 'one');`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: false, minify: true }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.dependencies).toEqual([]);
+  expect(result.result.code).not.toContain('webpackIgnore');
 });
 
 it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 'one')`])(
