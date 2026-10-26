@@ -243,11 +243,12 @@ class AudioStream(
   }
 
   private fun startCaptureLoop(recorder: AudioRecord, config: ResolvedAudioConfig) {
+    val captureSession = session
     captureJob = coroutineScope.launch {
       val readSizeBytes = config.readSize
 
       while (isActive && isStreaming) {
-        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
+        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate, captureSession)
       }
     }
   }
@@ -256,7 +257,8 @@ class AudioStream(
     recorder: AudioRecord,
     readSizeBytes: Int,
     channels: Int,
-    sampleRate: Int
+    sampleRate: Int,
+    captureSession: Int
   ) {
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
@@ -273,7 +275,7 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
+      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate, captureSession)
     }
   }
 
@@ -287,9 +289,8 @@ class AudioStream(
     }
   }
 
-  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int) {
+  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int, bufferSession: Int) {
     val timestamp = (System.nanoTime() - startTimeNanos) / 1_000_000_000.0
-    val bufferSession = session
 
     appContext?.mainQueue?.launch {
       if (!isStreaming || bufferSession != session) {
