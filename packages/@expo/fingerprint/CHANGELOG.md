@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.21.6
+
+### Patch Changes
+
+- Include the ES modules that an ES module config or config plugin imports in the fingerprint on Node.js 22.15 and later. Older Node versions still omit them, so the fingerprint of such a project differs between Node versions. On Node.js 22.15 and later, it changes once on upgrade. ([#51504](https://github.com/expo/expo/pull/51504) by [@YevheniiKotyrlo](https://github.com/YevheniiKotyrlo))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+
 ## 0.21.5
 
 ### Patch Changes

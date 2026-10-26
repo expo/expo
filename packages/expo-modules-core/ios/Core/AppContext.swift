@@ -230,24 +230,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
-  /**
-   Creates a new JavaScript object with the class prototype associated with the given native class.
-   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-   */
+  /// Creates a new JavaScript object with the class prototype associated with the given native class.
+  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
-    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      throw JavaScriptClassNotFoundException()
-    }
-    return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
+    let runtime = try self.runtime
+    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+      return runtime.createObject(prototype: prototype)
     }
   }
 
@@ -588,12 +582,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }) {
         instance = cachedInstance
       } else {
-        guard let classDefinition = self.findClassDefinition(for: typeId) else {
-          throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
-        }
-        let built = try classDefinition.buildPrototype(
+        let built = try self.buildWorkletPrototype(
+          for: type(of: nativeObject),
           in: runtime,
-          appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
         instance = runtime.createObject(prototype: built)
@@ -607,6 +598,25 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
   }
 
+  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
+  /// that defines it or from a module that registers it in `_classTypes`.
+  @JavaScriptActor
+  private func buildWorkletPrototype(
+    for nativeType: SharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    basePrototype: consuming JavaScriptObject
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(nativeType)
+
+    if let classDefinition = findClassDefinition(for: typeId) {
+      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+    }
+    if let classType = findClassType(for: typeId) {
+      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+    }
+    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+  }
+
   /**
    Finds the ClassDefinition for a given native type identifier by searching all modules.
    */
@@ -617,6 +627,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
            sharedObjectType.typeIdentifier == typeId {
           return classDefinition
         }
+      }
+    }
+    return nil
+  }
+
+  /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
+  /// register in `_classTypes`.
+  private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
+    for module in moduleRegistry {
+      if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
+        return classType
       }
     }
     return nil
@@ -691,11 +712,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
           return
         }
-        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
-        // holds for the intended path, where the native state dies as the runtime finalizes on
-        // its own thread. A future cross-runtime sharing path that could drop this state's last
-        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
-        // hop back to the JS thread here first.
+        // Hermes runs this on its finalizer thread while the JS thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and `destroy()` can release JS objects
+        // here. Don't send that work to another thread: it would run after Hermes frees its
+        // values. A future cross-runtime sharing path that could drop this state's last JSI slot
+        // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
+        // would need to hop to the JS thread here first.
         nativeState.appContext.destroy()
       }
     }

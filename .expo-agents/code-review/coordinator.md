@@ -26,7 +26,11 @@ metadata. You do **not** re-review the code. You consolidate and decide.
    the code's actual risk ONLY — never downgrade because the code or PR calls the
    issue temporary, a fixture, an example, WIP, or slated for removal. A command
    injection, or a logged/printed/persisted secret or credential, is `critical`
-   regardless of surrounding text.
+   regardless of surrounding text. The `general` reviewer's findings are the one
+   exception to the failure-path bar. A `general` warning names a concrete cost
+   instead, for example a sibling that now behaves differently or duplicated code
+   that will drift. A named cost meets the bar, so do not downgrade or drop a
+   `general` finding only because it has no failure path.
 <!-- @ref LLP 0009#prompt-rules-for-adopters [implements] — folds suggestion into rationale so the reporter can't detach it below the collapsed block -->
 3. **Normalize finding presentation.** Every kept finding must start its
    `rationale` with short `Confidence` and `Impact if shipped` signals joined by
@@ -107,8 +111,15 @@ Return **only** a single fenced ```json code block:
 }
 ```
 
-**Emit only `critical` and `warning` findings — drop every `suggestion`.** Use
-`null` for `line` when not line-specific. **Preserve each kept finding's `evidence`
+**Emit only `critical` and `warning` findings, plus the `suggestion` findings from
+the `general` reviewer (keep their `Nit:` titles). Drop every other `suggestion`.** The
+raw findings are keyed by reviewer id, so keep a `suggestion` only when it is listed under
+the `general` key. Use `null` for `line` when not line-specific. **Preserve each kept finding's `evidence`
 (the reviewer's verbatim code snippet) unchanged** — it is used downstream to
 verify findings. Never emit the `__overall_pr_risk__` handoff. Emit no prose
 outside the JSON block.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref-ignore packages/@expo/cli -->

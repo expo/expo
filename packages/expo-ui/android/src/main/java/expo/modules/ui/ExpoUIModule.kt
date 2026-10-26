@@ -487,6 +487,12 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<CompositionLocalProviderProps>("CompositionLocalProviderView") {
+      Content { props ->
+        CompositionLocalProviderContent(props)
+      }
+    }
+
     ExpoUIView<LayoutProps>("BoxView") {
       Content { props ->
         BoxContent(props)
@@ -530,6 +536,12 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DockedSearchBarContent(props) { onQueryChange(it) }
+      }
+    }
+
+    ExpoUIView<TopAppBarProps>("TopAppBarView") {
+      Content { props ->
+        TopAppBarContent(props)
       }
     }
 

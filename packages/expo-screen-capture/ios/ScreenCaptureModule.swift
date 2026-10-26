@@ -193,17 +193,16 @@ public final class ScreenCaptureModule: Module {
   private func showPrivacyOverlay() {
     // Don't add a new blur view if one already exists
     guard self.blurEffectView == nil,
-      let keyWindow = keyWindow,
-      let rootView = keyWindow.subviews.first else {
+      let keyWindow = keyWindow else {
       return
     }
 
     let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
-    blurEffectView.frame = rootView.bounds
+    blurEffectView.frame = keyWindow.bounds
     blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     blurEffectView.alpha = 0
 
-    rootView.addSubview(blurEffectView)
+    keyWindow.addSubview(blurEffectView)
     self.blurEffectView = blurEffectView
 
     blurEffectView.setupBlur()

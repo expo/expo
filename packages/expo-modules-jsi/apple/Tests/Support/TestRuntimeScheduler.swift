@@ -14,9 +14,16 @@ final class TestRuntimeScheduler: @unchecked Sendable {
   private let state: State
   private let thread: Thread
 
+  /// What the runtime gets as its opaque scheduler pointer. A retained `State` that is never released,
+  /// like the handle React Native's host passes: the runtime may dispatch to it after this scheduler is
+  /// gone, for example when a callback is released on another thread at the end of a test. `State`
+  /// drops work that arrives after `stop()`.
+  let opaquePointer: UnsafeMutableRawPointer
+
   init() {
     let state = State()
     self.state = state
+    self.opaquePointer = Unmanaged.passRetained(state).toOpaque()
     self.thread = Thread {
       state.run()
     }
@@ -29,12 +36,13 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     state.stop()
   }
 
-  var opaquePointer: UnsafeMutableRawPointer {
-    return Unmanaged.passUnretained(self).toOpaque()
-  }
-
   func schedule(_ operation: @escaping @convention(block) () -> Void) {
     state.schedule(operation)
+  }
+
+  /// Blocks the calling thread until at least `count` operations wait in the queue.
+  func waitUntilQueued(_ count: Int) {
+    state.waitUntilQueued(count)
   }
 
   func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
@@ -56,11 +64,27 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     }
   }
 
+  /// Makes the scheduler drain the runtime's microtask queue after each operation. Call on the
+  /// scheduler's thread.
+  fileprivate func drainMicrotasksAfterEachOperation(of runtime: JavaScriptRuntime) {
+    state.afterEachOperation = { [weak runtime] in
+      guard let runtime else {
+        return
+      }
+      JavaScriptActor.assumeIsolated {
+        // React Native reports these errors to its JavaScript error handler, which tests don't have.
+        try? runtime.drainMicrotasks()
+      }
+    }
+  }
+
   /// Creates a runtime on the scheduler's thread and wraps it in a non-owning runtime whose scheduled
   /// work dispatches back to that thread.
   func makeRuntime() async -> TestRuntime {
     let owningRuntime = await run {
-      JavaScriptRuntime()
+      let owningRuntime = JavaScriptRuntime()
+      self.drainMicrotasksAfterEachOperation(of: owningRuntime)
+      return owningRuntime
     }
     let runtime = await run {
       owningRuntime.withUnsafePointee { runtimePointer in
@@ -74,16 +98,32 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     return TestRuntime(scheduler: self, owningRuntime: owningRuntime, runtime: runtime)
   }
 
-  private final class State: @unchecked Sendable {
+  fileprivate final class State: @unchecked Sendable {
     private let condition = NSCondition()
     private let ready = DispatchSemaphore(value: 0)
     private var operations: [@convention(block) () -> Void] = []
     private var isStopped = false
 
+    /// Runs on the scheduler's thread after each operation, like the microtask checkpoint that React
+    /// Native's runtime scheduler performs after each task. Set and read only on that thread.
+    var afterEachOperation: (() -> Void)?
+
     func schedule(_ operation: @escaping @convention(block) () -> Void) {
       condition.lock()
+      guard !isStopped else {
+        condition.unlock()
+        return
+      }
       operations.append(operation)
-      condition.signal()
+      condition.broadcast()
+      condition.unlock()
+    }
+
+    func waitUntilQueued(_ count: Int) {
+      condition.lock()
+      while operations.count < count && !isStopped {
+        condition.wait()
+      }
       condition.unlock()
     }
 
@@ -114,6 +154,7 @@ final class TestRuntimeScheduler: @unchecked Sendable {
         condition.unlock()
 
         operation()
+        afterEachOperation?()
       }
     }
   }
@@ -125,6 +166,19 @@ struct TestRuntime: Sendable {
   let scheduler: TestRuntimeScheduler
   let owningRuntime: JavaScriptRuntime
   let runtime: JavaScriptRuntime
+}
+
+extension TestRuntime {
+  /// Starts an async test body on the runtime's JavaScript thread, as a task of the scheduler. The
+  /// scheduler drains the microtask queue after each task, like React Native does, so promise reactions
+  /// run once the body suspends. `JavaScriptPromise.await()` and the APIs built on it resume the body
+  /// off the JavaScript thread, so work that touches the runtime after them goes through `execute`.
+  func run(_ body: @escaping @Sendable @JavaScriptActor (JavaScriptRuntime) async throws -> Void) async throws {
+    let runtime = self.runtime
+    try await runtime.execute { () async throws in
+      try await body(runtime)
+    }
+  }
 }
 
 /// Carries a non-`Sendable`, possibly non-copyable value out of a ``TestRuntimeScheduler/runIsolated(_:)``
@@ -146,6 +200,77 @@ let scheduleOnTestRuntime:
     guard let schedulerPointer else {
       return
     }
-    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
-    scheduler.schedule(callback)
+    let state = Unmanaged<TestRuntimeScheduler.State>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    state.schedule(callback)
   }
+
+/// A host dispatch function that drops every task without running it, like React Native's host after
+/// the React instance destroyed its scheduler.
+let dropOnTestRuntime:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, _ in }
+
+/// A runtime on a ``TestRuntimeScheduler``'s thread that a test releases at a chosen point, to check
+/// what happens to work that was queued while the runtime was alive and runs after it is gone.
+final class ReleasableTestRuntime: @unchecked Sendable {
+  let scheduler = TestRuntimeScheduler()
+  private var owningRuntime: JavaScriptRuntime?
+  private(set) var runtime: JavaScriptRuntime?
+
+  /// - `dispatch`: the host dispatch function the runtime gets. Pass ``dropOnTestRuntime`` to check what
+  ///   happens when the host drops tasks.
+  init(
+    dispatch: @convention(c) (UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void) -> Void =
+      scheduleOnTestRuntime
+  ) async {
+    let runtimes = await scheduler.run { [scheduler] in
+      let owningRuntime = JavaScriptRuntime()
+      scheduler.drainMicrotasksAfterEachOperation(of: owningRuntime)
+      let runtime = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(dispatch, to: UnsafeRawPointer.self)
+        )
+      }
+      return UncheckedSendable(value: (owningRuntime, runtime))
+    }
+    self.owningRuntime = runtimes.value.0
+    self.runtime = runtimes.value.1
+  }
+
+  /// Holds the JavaScript thread, calls `enqueue` on another thread and waits until it queued its work,
+  /// then releases the runtime on the JavaScript thread, so the queued work runs after the runtime is
+  /// gone. Returns once that work ran.
+  func releaseRuntime(afterQueueing enqueue: @escaping @Sendable () -> Void) async {
+    let isHolding = DispatchSemaphore(value: 0)
+    let release = DispatchSemaphore(value: 0)
+    scheduler.schedule {
+      isHolding.signal()
+      release.wait()
+      self.runtime = nil
+    }
+    // The waits block, so they run on a thread of their own rather than in this async context.
+    await withCheckedContinuation { (finished: CheckedContinuation<Void, Never>) in
+      Thread.detachNewThread { [scheduler] in
+        isHolding.wait()
+        Thread.detachNewThread(enqueue)
+        scheduler.waitUntilQueued(1)
+        release.signal()
+        // Queued behind the work that `enqueue` queued, so it resumes the test after that work ran.
+        scheduler.schedule {
+          finished.resume()
+        }
+      }
+    }
+  }
+
+  /// Releases the owning runtime on the JavaScript thread. Call at the end of the test.
+  func tearDown() async {
+    await scheduler.run {
+      self.runtime = nil
+      self.owningRuntime = nil
+    }
+  }
+}

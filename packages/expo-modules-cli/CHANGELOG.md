@@ -1,5 +1,17 @@
 # expo-modules-cli
 
+## 0.3.2
+
+### Patch Changes
+
+- `generate-types` now keeps the doc comments written in the generated file. Each comment stays above the declaration or member with the same TypeScript name. The command warns when it drops a comment because its declaration is gone, and prints the text of that comment. It also warns when a declaration with a comment changed. ([#51782](https://github.com/expo/expo/pull/51782) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.3.1
+
+### Patch Changes
+
+- Parse command-line arguments with `arg`, the parser that `@expo/cli` uses, instead of `commander`. `expo` already installs `arg`, so the CLI no longer adds its own parser to the project. The short flag for `--version` is now `-v`, as in `npx expo`, and the `help` command is replaced by `--help`. ([#51771](https://github.com/expo/expo/pull/51771) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.3.0
 
 ### Minor Changes

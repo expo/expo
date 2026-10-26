@@ -156,6 +156,28 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     let property = pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
+    return try withUnowned(property, in: jsiRuntime, body)
+  }
+
+  /// Calls `body` with the property of the object with the given prop name id, or `undefined` if there
+  /// is no such property, lent as a `JavaScriptUnownedValue` instead of wrapped in a new `JavaScriptValue`.
+  /// The value is valid only for the duration of the closure and must not be stored or escaped.
+  public func withUnownedProperty<R>(
+    _ propName: JavaScriptPropNameID,
+    _ body: (borrowing JavaScriptUnownedValue) throws -> R
+  ) rethrows -> R {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let property = pointee.getProperty(jsiRuntime, propName.pointee)
+    return try withUnowned(property, in: jsiRuntime, body)
+  }
+
+  private func withUnowned<R>(
+    _ property: borrowing facebook.jsi.Value,
+    in jsiRuntime: facebook.jsi.IRuntime,
+    _ body: (borrowing JavaScriptUnownedValue) throws -> R
+  ) rethrows -> R {
     // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
     return try withUnsafeBytes(of: property) { bytes in
       guard let baseAddress = bytes.baseAddress else {
@@ -288,6 +310,14 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     )
   }
 
+  /// Sets the property of the object with the given prop name id to the value.
+  public func setProperty(_ propName: JavaScriptPropNameID, value: borrowing JavaScriptValue) {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    expo.setProperty(jsiRuntime, pointee, propName.pointee, value.toJSIValue(in: jsiRuntime))
+  }
+
   public func setProperty<T: JavaScriptRepresentable & ~Copyable>(_ name: String, value: consuming T) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -381,6 +411,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
   #endif
 
+  /// Defines a property with the given descriptor object, like `Reflect.defineProperty` in JavaScript. The
+  /// object stays unchanged when it doesn't accept the property, for example when it's frozen.
   public func defineProperty(_ name: String, descriptor: consuming JavaScriptObject) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -397,6 +429,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
+  /// Defines a property with the given descriptor, like `Reflect.defineProperty` in JavaScript. The object
+  /// stays unchanged when it doesn't accept the property, for example when it's frozen.
   public func defineProperty(_ name: String, descriptor: consuming PropertyDescriptor = .init()) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -435,6 +469,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
+  /// Defines a property that holds the given value, like `Reflect.defineProperty` in JavaScript. The object
+  /// stays unchanged when it doesn't accept the property, for example when it's frozen.
   public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
     _ name: String,
     value: borrowing T,
@@ -484,8 +520,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Moves the object into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
-  @usableFromInline
-  internal consuming func takeValue() -> JavaScriptValue {
+  public consuming func takeValue() -> JavaScriptValue {
     return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
   }
 
@@ -560,12 +595,20 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
-  /// Unsets the native state of this object.
+  /// Unsets the native state of this object. Does nothing when the engine doesn't allow it, for example when
+  /// the object is frozen; use `tryUnsetNativeState()` to find out.
   public func unsetNativeState() {
+    tryUnsetNativeState()
+  }
+
+  /// Unsets the native state of this object. Returns `false` when the engine doesn't allow it, for example
+  /// when the object is frozen; the native state then stays attached.
+  @discardableResult
+  public func tryUnsetNativeState() -> Bool {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    expo.unsetNativeState(jsiRuntime, pointee)
+    return expo.unsetNativeState(jsiRuntime, pointee)
   }
 
   // MARK: - Memory pressure
@@ -574,7 +617,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    pointee.setExternalMemoryPressure(jsiRuntime, size)
+    expo.setExternalMemoryPressure(jsiRuntime, pointee, size)
   }
 
   // MARK: - Equality
@@ -770,11 +813,11 @@ extension JavaScriptObject {
   }
 }
 
-// MARK: - Object.defineProperty
+// MARK: - Reflect.defineProperty
 
-/// Holds the runtime's `Object.defineProperty` and the property names of a descriptor, created once per
+/// Holds the runtime's `Reflect.defineProperty` and the property names of a descriptor, created once per
 /// runtime instead of on every `defineProperty` call.
-private final class DefinePropertyFunction {
+internal final class DefinePropertyFunction {
   let function: JavaScriptFunction
   let configurableKey: JavaScriptPropNameID
   let enumerableKey: JavaScriptPropNameID
@@ -790,15 +833,13 @@ private final class DefinePropertyFunction {
   }
 }
 
-private let definePropertyFunctionKey = JavaScriptRuntime.Cache.Key<DefinePropertyFunction>()
-
-/// Returns the runtime's `Object.defineProperty`, cached in the runtime. Property definitions run on the
+/// Returns the runtime's `Reflect.defineProperty`, cached in the runtime. Property definitions run on the
 /// JavaScript thread like every other JSI call, which is where the runtime's cache is isolated.
 private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
   return JavaScriptActor.assumeIsolated {
-    runtime.cached(definePropertyFunctionKey) {
+    runtime.cached(JavaScriptRuntime.CacheKeys.reflectDefineProperty) {
       do {
-        let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
+        let function = try runtime.global().getPropertyAsObject("Reflect").getPropertyAsFunction("defineProperty")
         return DefinePropertyFunction(function, in: runtime)
       } catch {
         FatalError.definePropertyUnavailable(error)

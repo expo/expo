@@ -83,6 +83,16 @@ test('raw validation rejects a missing SPM runtime dependency', () => {
   );
 });
 
+test('staging removes stale prebuilds when the package stops publishing them', () => {
+  const root = fixture();
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  assert.equal(stageIosPrebuilds(root), true);
+  fs.writeFileSync(path.join(root, 'spm.config.json'), JSON.stringify({ products: [] }));
+  assert.equal(stageIosPrebuilds(root), false);
+  assert.equal(fs.existsSync(path.join(root, 'prebuilds')), false);
+});
+
 test('staging fails when tar cannot be created', () => {
   const root = fixture();
   framework(root, 'ExpoOne', 'debug');
@@ -177,11 +187,79 @@ test('products without headersXCFramework neither stage nor require a headers ta
 
 const customBuild = { script: 'build.sh', output: 'Products/ExpoOne.xcframework' };
 
+const ABI_FILE = 'arm64-apple-ios-simulator.abi.json';
+
+function rawAbiFile(root, product) {
+  return path.join(
+    root,
+    '.expo-prebuild/output/release/xcframeworks',
+    `${product}.xcframework`,
+    'ios-arm64_x86_64-simulator',
+    `${product}.framework`,
+    'Modules',
+    `${product}.swiftmodule`,
+    ABI_FILE
+  );
+}
+
+function writeRawAbiFile(root, product) {
+  const file = rawAbiFile(root, product);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `{"abi":"${product}"}`);
+}
+
+function abiFixture() {
+  const root = fixture([
+    { name: 'ExpoOne', headersXCFramework: true, customBuild, publishAbiDescriptor: true },
+  ]);
+  framework(root, 'ExpoOneHeaders', 'headers');
+  return root;
+}
+
+test('stages the release simulator ABI file for a product with publishAbiDescriptor', () => {
+  const root = abiFixture();
+  writeRawAbiFile(root, 'ExpoOne');
+  assert.equal(stageIosPrebuilds(root), true);
+  assert.equal(
+    fs.readFileSync(path.join(root, 'prebuilds/abi/ExpoOne', ABI_FILE), 'utf8'),
+    '{"abi":"ExpoOne"}'
+  );
+  assert.equal(fs.existsSync(path.join(root, 'prebuilds/output/release')), false);
+});
+
+test('a customBuild product without publishAbiDescriptor neither stages nor requires an ABI file', () => {
+  const root = fixture([{ name: 'ExpoOne', headersXCFramework: true, customBuild }]);
+  framework(root, 'ExpoOneHeaders', 'headers');
+  assert.equal(validateRawIosPrebuilds(root), true);
+  assert.equal(stageIosPrebuilds(root), true);
+  assert.equal(fs.existsSync(path.join(root, 'prebuilds/abi')), false);
+});
+
+test('throws when a product with publishAbiDescriptor has no release ABI file', () => {
+  const root = abiFixture();
+  assert.throws(() => validateRawIosPrebuilds(root), {
+    message: `ExpoOne release ABI file is missing: ${rawAbiFile(root, 'ExpoOne')}\n${REBUILD_HINT}`,
+  });
+  assert.throws(() => stageIosPrebuilds(root), /arm64-apple-ios-simulator\.abi\.json/);
+});
+
+test('published validation rejects a missing staged ABI file', () => {
+  const root = abiFixture();
+  writeRawAbiFile(root, 'ExpoOne');
+  stageIosPrebuilds(root);
+  const staged = path.join(root, 'prebuilds/abi/ExpoOne', ABI_FILE);
+  fs.rmSync(staged);
+  assert.throws(() => validatePublishedIosPrebuilds(root), {
+    message: `ExpoOne ABI file is missing: ${staged}`,
+  });
+});
+
 test('a customBuild product stages only its headers tarball, never its built binaries', () => {
   const root = fixture([{ name: 'ExpoOne', headersXCFramework: true, customBuild }]);
   framework(root, 'ExpoOne', 'debug');
   framework(root, 'ExpoOne', 'release');
   framework(root, 'ExpoOneHeaders', 'headers');
+  writeRawAbiFile(root, 'ExpoOne');
   assert.equal(validateRawIosPrebuilds(root), true);
   assert.equal(stageIosPrebuilds(root), true);
   assert.deepEqual(fs.readdirSync(path.join(root, 'prebuilds/output')), ['headers']);
@@ -213,6 +291,7 @@ test('a customBuild product skips its SPM dependencies unless another product sh
     { name: 'ExpoTwo', spmPackages: [{ productName: 'SharedDependency' }] },
   ]);
   framework(root, 'ExpoOneHeaders', 'headers');
+  writeRawAbiFile(root, 'ExpoOne');
   framework(root, 'ExpoTwo', 'debug');
   framework(root, 'ExpoTwo', 'release');
   framework(root, 'SharedDependency', 'debug');
@@ -251,6 +330,7 @@ test('pnpm pack includes staging tarballs and excludes raw outputs', () => {
     {
       name: 'ExpoOne',
       headersXCFramework: true,
+      publishAbiDescriptor: true,
       spmPackages: [{ productName: 'DynamicDependency' }],
     },
   ]);
@@ -259,6 +339,7 @@ test('pnpm pack includes staging tarballs and excludes raw outputs', () => {
   framework(root, 'ExpoOneHeaders', 'headers');
   framework(root, 'DynamicDependency', 'debug');
   framework(root, 'DynamicDependency', 'release');
+  writeRawAbiFile(root, 'ExpoOne');
   fs.writeFileSync(path.join(root, '.npmignore'), '/.*/\n/*.tgz\n');
   stageIosPrebuilds(root);
   const packed = spawnSync('pnpm', ['pack'], {
@@ -278,6 +359,10 @@ test('pnpm pack includes staging tarballs and excludes raw outputs', () => {
   assert.match(
     listing.stdout,
     /package\/prebuilds\/output\/headers\/xcframeworks\/ExpoOneHeaders\.tar\.gz/
+  );
+  assert.match(
+    listing.stdout,
+    /package\/prebuilds\/abi\/ExpoOne\/arm64-apple-ios-simulator\.abi\.json/
   );
   assert.doesNotMatch(listing.stdout, /\.expo-prebuild/);
 });

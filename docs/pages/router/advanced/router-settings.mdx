@@ -31,6 +31,8 @@ export default function Layout() {
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
 
+> **info** Tabs, native tabs, drawer, and top tabs go back to the `anchor` only when `backBehavior` is `initialRoute`. If the layout sets `anchor` with a different `backBehavior`, the navigator logs a warning.
+
 When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
 
 ```tsx other.tsx

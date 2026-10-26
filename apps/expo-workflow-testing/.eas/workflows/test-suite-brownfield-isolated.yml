@@ -37,7 +37,7 @@ concurrency:
 
 defaults:
   tools:
-    node: 22.14.0
+    node: 22.23.4
     pnpm: '12.2.1'
 
 jobs:
@@ -160,7 +160,7 @@ jobs:
         run: ruby $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
       - uses: eas/start_ios_simulator
         with:
-          device_identifier: iPhone 17 Pro
+          device_identifier: iPhone 18 Pro
       - name: Run Release e2e tests
         run: $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       # Disabled until we can make this more stable

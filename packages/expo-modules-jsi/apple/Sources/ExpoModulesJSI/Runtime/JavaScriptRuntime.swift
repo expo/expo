@@ -3,7 +3,6 @@
 internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
-import os
 
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
@@ -37,26 +36,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// - are non-copyable. As value types, we would have to "borrow" them from React Native in an unsafe manner.
   internal let pointee: facebook.jsi.IRuntime
   internal let runtimePointee: facebook.jsi.Runtime
-  internal let scheduler: expo.RuntimeScheduler
 
   /// Strong handle that values hold instead of a `weak` reference to the runtime. See
   /// ``JavaScriptRuntimeHandle`` for why.
   internal let handle: JavaScriptRuntimeHandle
+
+  internal let scheduler: Scheduler
 
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
   /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
   /// freed here, matching the immortal (no-op) release semantics of the imported reference type.
   private let ownsRuntime: Bool
-
-  /// Thread ID of the JavaScript thread, captured at construction time. Used by `isOnJavaScriptThread()`
-  /// for a fast integer comparison instead of `Thread.current.name == "..."`.
-  /// Assumes runtime initializers always run on the JS thread.
-  private let jsThreadID: UInt64 = {
-    var id: UInt64 = 0
-    pthread_threadid_np(nil, &id)
-    return id
-  }()
 
   /// Actor for running runtime work.
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
@@ -68,7 +59,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -76,12 +67,17 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   /// Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
   /// no React scheduler is wired up.
+  ///
+  /// The runtime has the config of React Native's bridgeless runtime, so promise reactions go to the
+  /// microtask queue. Without React Native's event loop, call ``drainMicrotasks()`` after each task.
+  /// Nothing else drains the queue: on a runtime without a host that does, ``evalAsync(label:_:)`` and
+  /// ``JavaScriptPromise/await()`` never complete.
   public init() {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = true
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -95,7 +91,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create()
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -112,6 +108,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///   `react::RuntimeScheduler` weakly (see `EXReactSchedulerDispatch.h` in
   ///   `ExpoModulesCore`), so dispatching after the React instance tore the
   ///   scheduler down safely drops the task.
+  ///
+  ///   `dispatch` can be called with this handle after the runtime is deallocated: promises and
+  ///   callbacks that outlive the runtime still schedule their release through it. So the handle must
+  ///   stay valid for as long as the process runs, and the host must drop tasks it can no longer run,
+  ///   as the React Native factory's handle does.
   /// - `dispatch`: raw pointer to a C function with signature
   ///   `void (*)(void *scheduler, int priority, void (^callback)())`.
   public init(
@@ -124,13 +125,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler.create(scheduler, fn)
+    self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
+    scheduler.markRuntimeGone()
     handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
@@ -157,6 +159,26 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
   }
 
+  /// Provides scoped access to raw pointers to the underlying `facebook.jsi.Runtime`, the
+  /// `facebook.jsi.Object` of `object` and the `facebook.jsi.Value` of `value`, for C++ code that takes
+  /// all three. The pointers are valid only for the duration of the closure and must not be stored or
+  /// escaped. Unlike nesting the generic `withUnsafePointee(_:)` of each, this function isn't generic,
+  /// so a caller in another module doesn't run unspecialized generic code. It's a helper for
+  /// `expo-modules-core`, so it isn't part of the public API.
+  @_spi(Internal)
+  public final func withUnsafePointees(
+    object: borrowing JavaScriptObject,
+    value: borrowing JavaScriptValue,
+    _ body: (_ runtime: UnsafeMutableRawPointer, _ object: UnsafeRawPointer, _ value: UnsafeRawPointer) throws -> Void
+  ) rethrows {
+    let runtimePointer = Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque()
+    try object.withUnsafePointee { objectPointer in
+      try value.withUnsafePointee { valuePointer in
+        try body(runtimePointer, objectPointer, valuePointer)
+      }
+    }
+  }
+
   /// Returns the runtime `global` object.
   public func global() -> JavaScriptObject {
     return JavaScriptObject(self, pointee.global())
@@ -170,13 +192,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Creates a new JavaScript object, using the provided object as the prototype.
-  /// Calls `Object.create(prototype)` under the hood.
+  /// Same as `Object.create(prototype)` in JS.
   public func createObject(prototype: borrowing JavaScriptObject) -> JavaScriptObject {
-    return try! global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("create")
-      .call(argument: prototype.asValue())
-      .getObject()
+    return JavaScriptObject(self, expo.createObjectWithPrototype(pointee, prototype.pointee))
   }
 
   /// Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
@@ -187,11 +205,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
   /// then throws an `Error` whose message names the property and explains how to make it
   /// writable. `getPropertyNames` and `dealloc` default to no-ops.
+  ///
+  /// `dealloc` runs when the engine collects the host object. It can run on any thread, also while
+  /// JavaScript runs, so it must not use the runtime.
   public func createHostObject(
     get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
     set: (@JavaScriptActor (_ propertyName: String, _ value: borrowing JavaScriptValue) throws -> Void)? = nil,
     getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
-    dealloc: @escaping @JavaScriptActor () -> Void = {}
+    dealloc: @escaping @Sendable () -> Void = {}
   ) -> JavaScriptObject {
     func getter(
       context: UnsafeMutableRawPointer,
@@ -261,9 +282,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     func deallocate(context: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
-      JavaScriptActor.assumeIsolated {
-        context.dealloc()
-      }
+      context.dealloc()
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc))
@@ -281,10 +300,22 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Creating array buffers
 
-  /// Creates a new array buffer of the given size with zero-initialized memory.
-  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
+  /// Creates a new array buffer of the given size and reports its memory to the garbage collector. By
+  /// default, its memory is zero-initialized.
+  ///
+  /// When `initializeToZero` is `false`, the memory is left uninitialized, so write every byte before the
+  /// buffer is visible to JavaScript. Otherwise JavaScript can read bytes that earlier allocations left in
+  /// that memory, which can hold data from elsewhere in the app.
+  public func createArrayBuffer(size: Int, initializeToZero: Bool = true) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, true)
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /// Keeps the ABI symbol of `createArrayBuffer(size:)`, which prebuilt binaries that inlined `Data.encode`
+  /// still call.
+  @usableFromInline
+  internal func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    return createArrayBuffer(size: size, initializeToZero: true)
   }
 
   /// Creates a new array buffer that wraps the given native data pointer.
@@ -304,6 +335,48 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Creates a new Array instance.
   public func createArray(length: Int = 0) -> JavaScriptArray {
     return JavaScriptArray(self, facebook.jsi.Array(pointee, length))
+  }
+
+  /// Creates an array of `count` values, where `element` returns the value at each index. The values
+  /// are pushed to the array in chunks, with one engine call per chunk on React Native 0.86 and later.
+  @usableFromInline
+  internal final func createArray(count: Int, _ element: (_ index: Int) throws -> JavaScriptValue) throws
+    -> JavaScriptValue
+  {
+    guard count > 0 else {
+      return createArray(length: 0).takeValue()
+    }
+    var array = expo.createArrayForPushing(pointee, count)
+    // `withUnsafeTemporaryAllocation` keeps a buffer of up to 1 KiB on the stack and allocates a larger
+    // one on the heap.
+    let chunkCapacity = 1024 / MemoryLayout<facebook.jsi.Value>.stride
+    try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: min(count, chunkCapacity)) { chunk in
+      let start = chunk.baseAddress!
+      var pushed = 0
+      var pending = 0
+      do {
+        for index in 0..<count {
+          // A local `var` takes the returned value in place. Passing the call result straight to a
+          // `consuming` parameter moves it once more, and each move of a `jsi::Value` calls into the engine.
+          var value = try element(index)
+          expo.emplaceValue(start + pending, &value.pointee)
+          pending += 1
+          if pending == chunk.count {
+            expo.pushValues(pointee, array, pushed, start, pending)
+            pushed += pending
+            pending = 0
+          }
+        }
+      } catch {
+        // The values in the buffer were never pushed to the array.
+        expo.destroyValues(start, pending)
+        throw error
+      }
+      if pending > 0 {
+        expo.pushValues(pointee, array, pushed, start, pending)
+      }
+    }
+    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
   }
 
   // MARK: - Creating functions
@@ -346,7 +419,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         """
       ).getFunction()
     }
-    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+    let klassValue = try withCached(CacheKeys.classFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
       return try factory.call(arguments: name)
     }
     let klassObject = klassValue.getObject()
@@ -504,10 +577,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Runtime execution
 
+  // These forward to ``Scheduler``. When the runtime is gone by the time the work runs, `schedule` and
+  // `runOrSchedule` drop it and `execute` throws ``JavaScriptCallback/RuntimeLostError``. `execute` also
+  // throws it when the host drops the task without running it.
+
   /// Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
   /// Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
   public var supportsAsyncScheduling: Bool {
-    return scheduler.supportsAsyncScheduling()
+    return scheduler.supportsAsyncScheduling
   }
 
   /// Schedules a closure to be executed with granted synchronized access to the runtime.
@@ -515,21 +592,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void
   ) {
-    let cxxPriority = expo.RuntimeScheduler.Priority(rawValue: priority.rawValue) ?? .NormalPriority
-    scheduler.scheduleTask(cxxPriority) {
-      JavaScriptActor.assumeIsolated(closure)
-    }
+    scheduler.schedule(priority: priority, closure)
   }
 
   public func schedule(
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> Void
   ) {
-    schedule(priority: priority) {
-      Task.immediate_polyfill {
-        try await closure()
-      }
-    }
+    scheduler.schedule(priority: priority, closure)
   }
 
   /// Synchronously executes a closure on the JavaScript runtime thread, blocking the current thread until completion.
@@ -539,26 +609,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(@_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R) throws
     -> sending R
   {
-    if isOnJavaScriptThread() {
-      return try JavaScriptActor.assumeIsolated(closure)
-    }
-
-    var result: Result<R, any Error>!
-    let waiter = ThreadWaiter()
-
-    scheduler.scheduleTask(.ImmediatePriority) {
-      do {
-        result = .success(try JavaScriptActor.assumeIsolated(closure))
-      } catch {
-        result = .failure(error)
-      }
-      waiter.wake()
-    }
-
-    waiter.wait(until: {
-      result != nil
-    })
-    return try result.get()
+    return try scheduler.execute(closure)
   }
 
   /// Synchronously executes an async closure on the JavaScript runtime thread, blocking the current thread until completion.
@@ -568,30 +619,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) throws -> sending R {
-    let result = NonisolatedUnsafeVar<Result<R, any Error>>()
-    let runInline = isOnJavaScriptThread()
-    let waiter = ThreadWaiter()
-
-    func body() {
-      Task.immediate_polyfill(priority: .high) {
-        do {
-          result.value = .success(try await closure())
-        } catch {
-          result.value = .failure(error)
-        }
-        waiter.wake()
-      }
-    }
-    if runInline {
-      body()
-    } else {
-      scheduler.scheduleTask(.ImmediatePriority, body)
-    }
-
-    waiter.wait(until: {
-      result.value != nil
-    })
-    return try result.value.get()
+    return try scheduler.execute(closure)
   }
 
   /// Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
@@ -599,18 +627,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
   ) async throws -> sending R {
-    if isOnJavaScriptThread() {
-      return try JavaScriptActor.assumeIsolated(closure)
-    }
-    return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
-        do {
-          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
-        } catch {
-          continuation.resume(throwing: error)
-        }
-      }
-    }
+    return try await scheduler.execute(closure)
   }
 
   /// Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
@@ -618,20 +635,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func execute<R: Sendable>(
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () async throws -> R
   ) async throws -> sending R {
-    if isOnJavaScriptThread() {
-      return try await Task.immediate_polyfill(priority: .high, operation: closure).value
-    }
-    return try await withUnsafeThrowingContinuation { continuation in
-      scheduler.scheduleTask(.ImmediatePriority) {
-        Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
-          do {
-            continuation.resume(returning: try await closure())
-          } catch {
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-    }
+    return try await scheduler.execute(closure)
   }
 
   /// Asynchronously executes an async closure that produces a `JavaScriptValue` on the JavaScript
@@ -657,19 +661,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     priority: SchedulerPriority = .normal,
     @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> Void
   ) {
-    if isOnJavaScriptThread() {
-      JavaScriptActor.assumeIsolated(closure)
-    } else {
-      schedule(priority: priority, closure)
-    }
+    scheduler.runOrSchedule(priority: priority, closure)
   }
 
   /// Checks whether the function is called on the JavaScript thread.
   @inline(__always)
   public final func isOnJavaScriptThread() -> Bool {
-    var current: UInt64 = 0
-    pthread_threadid_np(nil, &current)
-    return current == jsThreadID
+    return scheduler.isOnJavaScriptThread()
   }
 
   /// Whether the calling thread may use the runtime: its JavaScript thread, or any thread when the
@@ -728,6 +726,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Evaluates given JavaScript source code in an async context. If the evaluated source returns a Promise, it awaits until the promise is resolved/rejected.
+  ///
+  /// Awaiting a promise needs a host that drains the microtask queue, like React Native. On a runtime
+  /// created with ``init()`` that nothing drains, a returned promise never settles and this never returns.
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
@@ -738,6 +739,39 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       let value = try self.eval(label: label, source)
       return value.is("Promise") ? try await value.getPromise().await() : value
     }
+  }
+
+  // MARK: - Microtasks
+
+  /// Runs the queued microtasks, such as promise reactions, until the queue is empty.
+  ///
+  /// Call this only for a runtime created with ``init()``. Its host must call this after each top-level
+  /// task, or promise reactions never run. React Native does this itself after each task it runs on the
+  /// JavaScript thread; calling it on a runtime that React Native hosts would bypass React Native's
+  /// error handling. Like React Native's checkpoint, a call from a microtask does nothing, so the
+  /// remaining microtasks run after the current one.
+  ///
+  /// - Throws: A ``JavaScriptError`` with the first value thrown by a microtask, after the rest of the
+  ///   queue ran.
+  @JavaScriptActor
+  public func drainMicrotasks() throws {
+    do {
+      _ = try capturingCppErrors {
+        expo.drainMicrotasks(pointee)
+      }
+    } catch let error as expo.CppError {
+      throw JavaScriptError(self, error.jsError)
+    } catch {
+      throw JavaScriptError(self, message: String(describing: error))
+    }
+  }
+
+  /// Queues a function in the microtask queue, for tests of ``drainMicrotasks()``: the standalone
+  /// runtime has no `queueMicrotask` global.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func queueMicrotask(_ callback: borrowing JavaScriptFunction) {
+    expo.queueMicrotask(pointee, callback.pointee)
   }
 
   // MARK: - Garbage collection
@@ -845,8 +879,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   // MARK: - Long-lived objects
 
   /// Registry of JSI objects (such as in-flight promises) that must outlive the native call that
-  /// created them. Cleared when the runtime is torn down so their JSI state is released on the
-  /// JavaScript thread while the runtime is still valid.
+  /// created them. Cleared when the runtime is torn down so their JSI state is released while the
+  /// runtime is still valid.
   @JavaScriptActor
   public let longLivedObjects = LongLivedObjectCollection()
 
@@ -854,8 +888,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// when the runtime is torn down. The object is pinned by storing it as a property on `global`, so
   /// it stays reachable within the JavaScript heap for the runtime's whole life (no Swift-side strong
   /// reference) and its native state drops only when the runtime's object graph is destroyed. That
-  /// fires the deallocator on the JavaScript thread while the runtime is still valid, the point at
-  /// which any surviving long-lived objects can safely release their JSI state.
+  /// fires the deallocator while the runtime is destroyed and its values are still valid, the point
+  /// at which any surviving long-lived objects can safely release their JSI state.
   private func installLongLivedObjectsTeardown() {
     // Runtime initializers run on the JavaScript thread but aren't actor-isolated, so reach the
     // isolated object/native-state/`clear()` APIs through the actor.
@@ -865,19 +899,20 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
-      nativeState.setDeallocator { [weak self] nativeState in
-        // Fires as the teardown object is released on the JavaScript thread with the runtime still
-        // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
-        // a future cross-runtime path that could drop this state from another thread would have to
-        // hop back to the JavaScript thread first.
+      nativeState.setDeallocator { [handle] nativeState in
+        // Hermes runs this on its finalizer thread while the JavaScript thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and releasing JSI state here is safe. Release
+        // it here and not in work sent to another thread, which would run after Hermes frees its
+        // values. A path that could drop this state while the runtime still runs JavaScript would
+        // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
           // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
-          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't retain the
-          // wrapper; the owning wrapper clears both in `deinit`.
-          self?.propNameIdsRegistry.removeAll()
-          self?.cache.clear()
+          // the freed runtime when it deallocates. Reached through the handle so the teardown object doesn't
+          // retain the wrapper; the owning wrapper clears both in `deinit`.
+          handle.runtime?.propNameIdsRegistry.removeAll()
+          handle.runtime?.cache.clear()
         }
       }
       let object = createObject()
@@ -1021,9 +1056,6 @@ private func createFunctionClosure(
   return expo.HostFunctionClosure(context, call, deallocate)
 }
 
-/// Key of the class factory in each runtime's cache.
-private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
-
 // MARK: - Errors
 
 extension JavaScriptRuntime {
@@ -1035,73 +1067,6 @@ extension JavaScriptRuntime {
 
     public var description: String {
       return "'\(identifier)' is not a valid JavaScript identifier"
-    }
-  }
-}
-
-/// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
-private final class ThreadWaiter: @unchecked Sendable {
-  private enum Sleep {
-    case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
-    case semaphore(DispatchSemaphore)
-  }
-
-  private static let spinNanoseconds: UInt64 = 20_000
-
-  private let isWoken = OSAllocatedUnfairLock(initialState: false)
-  private let sleep: Sleep
-
-  init() {
-    // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
-    // it during the wait, in the same mode: the work the caller waits for may be delivered through
-    // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
-    // threads, such as dispatch workers, have nothing to run, so they wait on a semaphore.
-    let runLoop: CFRunLoop = CFRunLoopGetCurrent()
-    guard let mode = CFRunLoopCopyCurrentMode(runLoop) else {
-      sleep = .semaphore(DispatchSemaphore(value: 0))
-      return
-    }
-    var context = CFRunLoopSourceContext()
-    context.perform = { _ in }
-    let source: CFRunLoopSource = CFRunLoopSourceCreate(nil, 0, &context)
-    CFRunLoopAddSource(runLoop, source, mode)
-    sleep = .runLoop(runLoop, source, mode)
-  }
-
-  func wake() {
-    isWoken.withLock { isWoken in
-      isWoken = true
-    }
-    switch sleep {
-    case .runLoop(let runLoop, let source, _):
-      CFRunLoopSourceSignal(source)
-      CFRunLoopWakeUp(runLoop)
-    case .semaphore(let semaphore):
-      // Makes a system call only when the caller already sleeps in `wait`.
-      semaphore.signal()
-    }
-  }
-
-  func wait(until isFinished: () -> Bool) {
-    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
-    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
-      // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
-      // thread wakes up. After the deadline, the thread sleeps below.
-    }
-    switch sleep {
-    case .runLoop(_, let source, let mode):
-      defer {
-        // Also removes the source from the run loop. A later `wake()` does nothing.
-        CFRunLoopSourceInvalidate(source)
-      }
-      // The timeout is a backstop for a missed wake-up.
-      while !isFinished() {
-        CFRunLoopRunInMode(mode, 0.1, true)
-      }
-    case .semaphore(let semaphore):
-      if !isFinished() {
-        semaphore.wait()
-      }
     }
   }
 }

@@ -177,6 +177,8 @@ jobs:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
+    # GitHub-hosted: on Blacksmith's Windows 2025 runners the CLI e2e setup fails with
+    # `ENOENT: no such file or directory, mkdir '\\?'`.
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -312,6 +314,8 @@ jobs:
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
+    # GitHub-hosted: on Blacksmith's Windows 2025 runners the CLI e2e setup fails with
+    # `ENOENT: no such file or directory, mkdir '\\?'`.
     runs-on: windows-2022
     strategy:
       fail-fast: false

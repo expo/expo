@@ -19,7 +19,7 @@ public final class JavaScriptPropNameID: JavaScriptType {
   }
 
   /// Creates a PropNameID from the string.
-  public init(_ runtime: JavaScriptRuntime, string: String) {
+  public init(_ runtime: borrowing JavaScriptRuntime, string: String) {
     self.runtimeHandle = runtime.handle
     self.pointee = string.toJSIPropNameID(in: runtime.pointee)
   }

@@ -91,6 +91,24 @@ struct JavaScriptObjectTests {
   }
 
   @Test
+  func `defineProperty leaves a frozen object unchanged`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    object.defineProperty("value", value: 1, options: [.enumerable])
+    object.defineProperty("descriptor", descriptor: .init(value: JavaScriptValue(runtime, 2)))
+    object.defineProperty("object", descriptor: runtime.createObject())
+    #expect(object.getPropertyNames().isEmpty)
+    #expect(object.hasProperty("descriptor") == false)
+  }
+
+  @Test
+  func `defineProperty keeps a non-configurable property`() {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1)
+    object.defineProperty("test", value: 2)
+    #expect(object.getProperty("test").getInt() == 1)
+  }
+
+  @Test
   func `getPropertyAsFunction finds a non-ASCII name`() throws {
     let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
     let function = try object.getPropertyAsFunction("zażółć")
@@ -280,6 +298,16 @@ struct JavaScriptObjectTests {
     }
 
     @Test
+    func `set property by PropNameID with JavaScriptValue`() {
+      let object = JavaScriptObject(runtime)
+      let propName = JavaScriptPropNameID(runtime, string: "café")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "hello"))
+      #expect(object.getProperty("café").getString() == "hello")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "again"))
+      #expect(object.getProperty(propName).getString() == "again")
+    }
+
+    @Test
     func `set property with string`() {
       let object = JavaScriptObject(runtime)
       object.setProperty("name", value: "Alice")
@@ -309,16 +337,18 @@ struct JavaScriptObjectTests {
     @Test
     @JavaScriptActor
     func `set property with async function closure`() async throws {
-      let object = JavaScriptObject(runtime)
-      object.setProperty("addAsync") { this, arguments in
-        let sum = arguments[0].getInt() + arguments[1].getInt()
-        return {
-          return JavaScriptValue(self.runtime, sum)
+      try await TestRuntimeScheduler().makeRuntime().run { runtime in
+        let object = JavaScriptObject(runtime)
+        object.setProperty("addAsync") { this, arguments in
+          let sum = arguments[0].getInt() + arguments[1].getInt()
+          return {
+            return JavaScriptValue(runtime, sum)
+          }
         }
+        let fn = try object.getPropertyAsFunction("addAsync")
+        let result = try await fn.call(arguments: 20, 22).getPromise().await()
+        #expect(result.getInt() == 42)
       }
-      let fn = try object.getPropertyAsFunction("addAsync")
-      let result = try await fn.call(arguments: 20, 22).getPromise().await()
-      #expect(result.getInt() == 42)
     }
 
     @Test
@@ -629,6 +659,14 @@ struct JavaScriptObjectTests {
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)
     }
+  }
+
+  // MARK: - Memory pressure
+
+  @Test
+  func `set external memory pressure ignores an amount that the runtime rejects`() {
+    let object = runtime.createObject()
+    object.setExternalMemoryPressure(Int(UInt32.max) + 1)
   }
 
   // MARK: - JavaScriptCodable

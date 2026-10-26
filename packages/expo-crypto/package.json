@@ -53,8 +53,7 @@
   "dependencies": {},
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
-    "expo": "workspace:*",
-    "expo-modules-cli": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

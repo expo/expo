@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @Suite
@@ -310,5 +311,55 @@ struct JavaScriptFunctionTests {
 
     #expect(try array.getValue(at: 0).getBool() == true)
     #expect(array[1].getBool() == true)
+  }
+
+  @Test
+  func `call function with emplaced arguments`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval(
+      "(count, name, date, options) => `${count}|${name}|${date instanceof Date}|${options.verbose}`"
+    ).getFunction()
+    let options = try runtime.eval("({ verbose: true })").getObject()
+    let result = try fn.call(argumentCount: 4, returning: String.self) { arguments, runtime in
+      try arguments.emplace(2.5, at: 0, in: runtime)
+      try arguments.emplace("photo.jpg", at: 1, in: runtime)
+      try arguments.emplace(Date(), at: 2, in: runtime)
+      arguments.emplace(options.asValue(), at: 3)
+    }
+    #expect(result == "2.5|photo.jpg|true|true")
+  }
+
+  @Test
+  func `call function passes undefined for arguments that are not emplaced`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return `${arguments.length}|${arguments[1]}`; })").getFunction()
+    let result = try fn.call(argumentCount: 2, returning: String.self) { arguments, runtime in
+      try arguments.emplace(1, at: 0, in: runtime)
+    }
+    #expect(result == "2|undefined")
+  }
+
+  @Test
+  func `call function rethrows an error from emplacing arguments without calling the function`() throws {
+    struct EmplaceError: Error {}
+    let runtime = JavaScriptRuntime()
+    try runtime.eval("globalThis.called = false")
+    let fn = try runtime.eval("(function() { globalThis.called = true; })").getFunction()
+    #expect(throws: EmplaceError.self) {
+      _ = try fn.call(argumentCount: 2) { arguments, runtime in
+        try arguments.emplace("emplaced before the error", at: 0, in: runtime)
+        throw EmplaceError()
+      }
+    }
+    #expect(try runtime.eval("globalThis.called").asBool() == false)
+  }
+
+  @Test
+  func `call function throws when the result does not decode as the requested type`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return 'text'; })").getFunction()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try fn.call(argumentCount: 0, returning: Int.self) { _, _ in }
+    }
   }
 }

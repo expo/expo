@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
@@ -46,6 +47,12 @@ class LocationForegroundService : Service() {
       stopOnTaskRemovedOption = options.stopOnTaskRemoved
     } catch (t: Throwable) {
       stopSelf()
+      Log.e(
+        "ExpoLocation",
+        "The location foreground service could not enter the foreground, so the background session did not start " +
+          "and background location updates stay throttled.",
+        t
+      )
       completePromotion(SessionState.Stopping, ServicePromotionResult.Failed(t))
     }
 

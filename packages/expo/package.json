@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.13",
+  "version": "58.0.19",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -18,6 +18,7 @@
   },
   "bin": {
     "expo": "bin/cli",
+    "expo-modules": "bin/modules",
     "expo-modules-autolinking": "bin/autolinking",
     "fingerprint": "bin/fingerprint"
   },
@@ -193,6 +194,7 @@
     "./scripts/*": "./scripts/*.js",
     "./bin/*": "./bin/*",
     "./package.json": "./package.json",
+    "./tsconfig.base": "./tsconfig.base.json",
     "./*.json": "./*.json",
     "./*": {
       "types": "./*.d.ts",
@@ -242,6 +244,7 @@
     "expo-font": "workspace:~",
     "expo-keep-awake": "workspace:~",
     "expo-modules-autolinking": "workspace:~",
+    "expo-modules-cli": "workspace:~",
     "expo-modules-core": "workspace:~",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",

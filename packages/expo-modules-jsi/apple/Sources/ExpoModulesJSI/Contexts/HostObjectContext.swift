@@ -3,7 +3,7 @@ internal final class HostObjectContext: HostCallbackContext, Sendable {
   typealias Getter = @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue
   typealias Setter = @JavaScriptActor (_ propertyName: String, _ value: borrowing JavaScriptValue) throws -> Void
   typealias PropertyNamesGetter = @JavaScriptActor () -> [String]
-  typealias Deallocator = @JavaScriptActor () -> Void
+  typealias Deallocator = @Sendable () -> Void
 
   // Stored as `Unmanaged` rather than `weak`: the JSI host object owns the context (freed from the
   // `deallocate` callback when the JS object is collected) and lives in the runtime's heap, so a

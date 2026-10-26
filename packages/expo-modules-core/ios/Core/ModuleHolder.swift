@@ -57,15 +57,8 @@ public final class ModuleHolder {
     post(event: .moduleCreate)
   }
 
-  /// Combines the user-authored definition with the entries synthesized by the
-  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
-  /// `_synthesizedDefinition()` method returning an `[AnyDefinition]` array of the
-  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
-  /// members. Those entries are prepended to the user's definitions and the
-  /// whole list is fed back through `ModuleDefinition.init` so the merged
-  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
-  /// hand-written definition. Modules that don't use the macro fall through
-  /// the empty-synthesized fast path and return the user's definition unchanged.
+  /// Merges the entries from `_synthesizedDefinition()` into the user-authored definition. Only module
+  /// binaries built with earlier `@ExpoModule` macros return any, so other modules take the fast path.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
@@ -136,6 +129,11 @@ public final class ModuleHolder {
     do {
       log.info("Creating JS object for module '\(name)'")
       let object = try definition.build(appContext: appContext)
+
+      // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
+      for classType in type(of: module)._classTypes {
+        object.setProperty(classType._jsName, value: try JavaScriptBindings.buildSharedObjectClass(classType, appContext: appContext))
+      }
 
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
       // (the direct-JSI path). A no-op for modules that don't use the macro.

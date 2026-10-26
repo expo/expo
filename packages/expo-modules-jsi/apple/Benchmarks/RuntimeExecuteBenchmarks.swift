@@ -162,6 +162,11 @@ private func withRunLoopThreadRuntime(_ body: (JavaScriptRuntime) async throws -
   await jsThread.run {
     let owningRuntime = JavaScriptRuntime()
     runtimes.owningRuntime = owningRuntime
+    jsThread.afterEachBlock = { [weak owningRuntime] in
+      JavaScriptActor.assumeIsolated {
+        try? owningRuntime?.drainMicrotasks()
+      }
+    }
     runtimes.runtime = owningRuntime.withUnsafePointee { runtimePointer in
       JavaScriptRuntime(
         unsafePointer: runtimePointer,
@@ -227,6 +232,10 @@ private final class RuntimesBox: @unchecked Sendable {
 private final class RunLoopThread: @unchecked Sendable {
   private var runLoop: CFRunLoop?
 
+  /// Runs on this thread after each scheduled block, like the microtask checkpoint that React Native's
+  /// runtime scheduler performs after each task. Set and read only on this thread.
+  var afterEachBlock: (() -> Void)?
+
   init() {
     let ready = DispatchSemaphore(value: 0)
     let thread = Thread { [self] in
@@ -248,7 +257,10 @@ private final class RunLoopThread: @unchecked Sendable {
   }
 
   func schedule(_ block: @escaping @convention(block) () -> Void) {
-    CFRunLoopPerformBlock(runLoop, CFRunLoopMode.commonModes.rawValue, block)
+    CFRunLoopPerformBlock(runLoop, CFRunLoopMode.commonModes.rawValue) { [self] in
+      block()
+      afterEachBlock?()
+    }
     CFRunLoopWakeUp(runLoop)
   }
 

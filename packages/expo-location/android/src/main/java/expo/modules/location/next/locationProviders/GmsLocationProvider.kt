@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -20,6 +19,7 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
+import expo.modules.core.logging.Logger
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
@@ -43,23 +43,24 @@ fun LocationPriority.toGmsPriority(): Int {
   }
 }
 
-private suspend fun <T> Task<T>.awaitOrNull(): T? {
-  return suspendCancellableCoroutine { continuation ->
-    this.addOnSuccessListener { continuation.resume(it) }
-    this.addOnFailureListener { e ->
-      Log.w("ExpoLocation", "GMS location task failed", e)
-      continuation.resume(null)
-    }
-    this.addOnCanceledListener { continuation.resume(null) }
-  }
-}
-
 class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient,
   val settingsClient: SettingsClient,
+  private val jsLogger: Logger?,
   val isServiceAvailable: () -> Boolean
 ) : LocationProvider {
   override val name = "GMS"
+
+  private suspend fun <T> Task<T>.awaitOrNull(): T? {
+    return suspendCancellableCoroutine { continuation ->
+      this.addOnSuccessListener { continuation.resume(it) }
+      this.addOnFailureListener { e ->
+        jsLogger?.warn("[expo-location] GMS location task failed", e)
+        continuation.resume(null)
+      }
+      this.addOnCanceledListener { continuation.resume(null) }
+    }
+  }
 
   @SuppressLint("MissingPermission")
   private suspend fun getCachedOrCurrentLocation(options: GetCurrentPositionOptions): Location? {
@@ -126,7 +127,8 @@ class GmsLocationProvider(
       return ProviderResult.Available(enableServicesResult)
     } catch (e: CancellationException) {
       throw e
-    } catch (_: Throwable) {
+    } catch (e: Throwable) {
+      jsLogger?.warn("[expo-location] Could not check the location settings", e)
       return ProviderResult.Unavailable
     }
   }

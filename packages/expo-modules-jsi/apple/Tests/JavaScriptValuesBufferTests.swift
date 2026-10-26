@@ -77,4 +77,17 @@ struct JavaScriptValuesBufferTests {
     let stillAlive = weak.lock() != nil
     #expect(stillAlive == false)
   }
+
+  @Test
+  func `emplace releases the value it replaces`() throws {
+    let object = runtime.createObject()
+    let weak = object.createWeak()
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+    try buffer.emplace(object, at: 0, in: runtime)
+    try buffer.emplace(42, at: 0, in: runtime)
+    runtime.collectGarbage { weak.lock() == nil }
+    let stillAlive = weak.lock() != nil
+    #expect(stillAlive == false)
+    #expect(try buffer[0].asInt() == 42)
+  }
 }

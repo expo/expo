@@ -63,7 +63,7 @@ Create the session with `"type": "appium"`. When the session is ready, `remoteCo
 | `webPreviewToken` | Optional. The token that the browser preview URL needs                              |
 | `previewApiUrl`   | Optional. The preview API URL. When it is set, `webPreviewUrl` is an expo.dev page. |
 
-When `webPreviewToken` is present, `webPreviewUrl` does not open without it. When `previewApiUrl` is set, add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`. Otherwise, add it as a query parameter: `<webPreviewUrl>?token=<webPreviewToken>`. EAS CLI adds the token for you.
+`webPreviewUrl` is the address of the public preview, not the private link. When `webPreviewToken` is present, `webPreviewUrl` does not open without it. When `previewApiUrl` is set, add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`. Otherwise, add it as a query parameter: `<webPreviewUrl>?token=<webPreviewToken>`. A URL with the token is a public link: anyone who has it can view the simulator, and on iOS, control it. For a session started with `--public-link`, EAS CLI adds the token for you. See [Open the browser preview](/preview/simulators/reference/rest-api/#open-the-browser-preview).
 
 See [Expo Simulators REST API](/preview/simulators/reference/rest-api/).
 

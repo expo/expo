@@ -34,8 +34,6 @@ beforeEach(() => {
 
 test.each([
   ['StackRouter', StackRouter],
-  ['TabRouter', TabRouter],
-  ['DrawerRouter', DrawerRouter],
   ['typeless custom router', MockRouter],
 ])('%s receives the shared sparse fresh state', async (_name, createRouter) => {
   let state: NavigationState | undefined;
@@ -58,6 +56,62 @@ test.each([
     stale: false,
     routeKeySeq: 0,
     key: 'navigator-2',
+    index: 0,
+    routeNames: ['first', 'second'],
+    routes: [{ key: 'first-1', name: 'first' }],
+  });
+});
+
+test('TabRouter receives the shared sparse fresh state with its route history', async () => {
+  let state: NavigationState | undefined;
+
+  const TestNavigator = (props: any): any => {
+    state = useNavigationBuilder(TabRouter, props).state;
+    return null;
+  };
+
+  await render(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="first" component={React.Fragment} />
+        <Screen name="second" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(state).toEqual({
+    stale: false,
+    routeKeySeq: 0,
+    key: 'navigator-2',
+    history: [{ type: 'route', key: 'first-1' }],
+    index: 0,
+    routeNames: ['first', 'second'],
+    routes: [{ key: 'first-1', name: 'first' }],
+  });
+});
+
+test('DrawerRouter receives the shared sparse fresh state with its route history', async () => {
+  let state: NavigationState | undefined;
+
+  const TestNavigator = (props: any): any => {
+    state = useNavigationBuilder(DrawerRouter, props).state;
+    return null;
+  };
+
+  await render(
+    <BaseNavigationContainer>
+      <TestNavigator>
+        <Screen name="first" component={React.Fragment} />
+        <Screen name="second" component={React.Fragment} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(state).toEqual({
+    stale: false,
+    routeKeySeq: 0,
+    key: 'navigator-2',
+    history: [{ type: 'route', key: 'first-1' }],
     index: 0,
     routeNames: ['first', 'second'],
     routes: [{ key: 'first-1', name: 'first' }],

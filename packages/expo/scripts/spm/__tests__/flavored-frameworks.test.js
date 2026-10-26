@@ -7,12 +7,18 @@ const path = require('path');
 
 const {
   FLAVORS,
+  assertHeadersMatchSources,
   byteOrder,
+  hasPrecompiledArtifact,
+  headersXCFrameworkDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
+const { thrownBy } = require('./helpers');
 
 // GNU tar reads the `C:` in a Windows path as a remote hostname and fails to connect.
 const itNotWindows = process.platform === 'win32' ? it.skip : it;
@@ -54,6 +60,52 @@ function declaration(frameworkName, debug, release, overrides = {}) {
     ...overrides,
   };
 }
+
+describe('hasPrecompiledArtifact', () => {
+  const savedEnvPath = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+  let moduleRoot;
+  const lookup = () =>
+    hasPrecompiledArtifact({
+      packageName: '@expo-spm-test/no-monorepo-build',
+      moduleRoot,
+      frameworkName: 'ExpoProbe',
+    });
+  const xcframeworksDir = (flavor) =>
+    path.join(moduleRoot, 'prebuilds', 'output', flavor, 'xcframeworks');
+
+  beforeEach(() => {
+    delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    moduleRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'has-artifact-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(moduleRoot, { recursive: true, force: true });
+    if (savedEnvPath === undefined) {
+      delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    } else {
+      process.env.EXPO_PRECOMPILED_MODULES_PATH = savedEnvPath;
+    }
+  });
+
+  it('is false when no flavor of the framework exists', () => {
+    expect(lookup()).toBe(false);
+  });
+
+  it('is true for an xcframework of either flavor', () => {
+    fs.mkdirSync(path.join(xcframeworksDir('release'), 'ExpoProbe.xcframework'), {
+      recursive: true,
+    });
+    expect(lookup()).toBe(true);
+  });
+
+  // The pair is not validated or extracted: nothing is linked from it.
+  it('is true for a tarball, leaving it unextracted', () => {
+    fs.mkdirSync(xcframeworksDir('debug'), { recursive: true });
+    fs.writeFileSync(path.join(xcframeworksDir('debug'), 'ExpoProbe.tar.gz'), 'not a tarball');
+    expect(lookup()).toBe(true);
+    expect(fs.readdirSync(xcframeworksDir('debug'))).toEqual(['ExpoProbe.tar.gz']);
+  });
+});
 
 describe('byteOrder', () => {
   // The compile-interface merge and the declaration order both run through it,
@@ -326,6 +378,59 @@ describe('artifact preparation', () => {
     ).toThrow('is not part of an .xcframework');
   });
 
+  it('returns a headers xcframework directory where it lies', () => {
+    const headers = path.join(root, 'expo-modules-core', 'output', 'headers', 'xcframeworks');
+    const xcframework = makeXcframework(headers, 'ExpoModulesCoreHeaders', '.');
+
+    expect(
+      resolveHeadersXCFrameworkWithSource({
+        packageName: 'expo-modules-core',
+        moduleRoot: path.join(root, 'module'),
+        productName: 'ExpoModulesCore',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toEqual({
+      xcframework,
+      source: { kind: 'env', dir: path.join(root, 'expo-modules-core', 'output') },
+    });
+  });
+
+  itNotWindows('expands a bundled headers tarball into the cache', () => {
+    const source = path.join(root, 'source');
+    makeXcframework(source, 'ExpoModulesCoreHeaders', 'headers');
+    const moduleRoot = path.join(root, 'module');
+    packTarball(
+      path.join(source, 'headers'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoModulesCoreHeaders.tar.gz'
+      ),
+      ['ExpoModulesCoreHeaders.xcframework']
+    );
+
+    const result = resolveHeadersXCFrameworkWithSource({
+      packageName: 'expo-spm-headers-fixture',
+      moduleRoot,
+      productName: 'ExpoModulesCore',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(result).toEqual({
+      xcframework: path.join(
+        root,
+        'cache',
+        'expo-modules-core-headers',
+        'headers',
+        'ExpoModulesCoreHeaders.xcframework'
+      ),
+      source: { kind: 'bundled', dir: path.join(moduleRoot, 'prebuilds', 'output') },
+    });
+    expect(fs.existsSync(path.join(result.xcframework, 'Info.plist'))).toBe(true);
+  });
+
   it('produces byte-identical compile interfaces regardless of declaration order', () => {
     const aDebug = makeXcframework(root, 'ExpoA', 'a-debug', 'a');
     const aRelease = makeXcframework(root, 'ExpoA', 'a-release', 'a');
@@ -346,5 +451,212 @@ describe('artifact preparation', () => {
       fs.readFileSync(path.join(destination, 'ExpoB.framework', 'Headers', 'ExpoB.h'), 'utf8'),
     ];
     expect(second).toEqual(first);
+  });
+});
+
+describe('resolveHeadersXCFramework', () => {
+  let root;
+  let oldOverride;
+  let moduleRoot;
+
+  /** `<output>/headers/xcframeworks/ExpoPairHeaders.xcframework`, the layout the prebuild writes. */
+  const headersIn = (output) =>
+    makeXcframework(path.join(output, 'headers'), 'ExpoPairHeaders', 'xcframeworks');
+  const resolve = () =>
+    resolveHeadersXCFramework({
+      packageName: 'test-package',
+      moduleRoot,
+      productName: 'ExpoPair',
+      cacheDir: path.join(root, 'cache'),
+    });
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-headers-'));
+    moduleRoot = path.join(root, 'module');
+    oldOverride = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = path.join(root, 'override');
+  });
+
+  afterEach(() => {
+    if (oldOverride == null) {
+      delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    } else {
+      process.env.EXPO_PRECOMPILED_MODULES_PATH = oldOverride;
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  it('returns null when no lookup base has the headers', () => {
+    expect(resolve()).toBeNull();
+  });
+
+  it('names the directories it searches, in lookup order', () => {
+    expect(headersXCFrameworkDirs('test-package', moduleRoot)).toEqual([
+      path.join(root, 'override', 'test-package', 'output', 'headers', 'xcframeworks'),
+      path.resolve(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'precompile',
+        '.build',
+        'test-package',
+        'output',
+        'headers',
+        'xcframeworks'
+      ),
+      path.join(moduleRoot, 'prebuilds', 'output', 'headers', 'xcframeworks'),
+    ]);
+  });
+
+  it('finds the headers the installed package ships under prebuilds/output', () => {
+    const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    expect(resolve()).toBe(shipped);
+  });
+
+  it('prefers EXPO_PRECOMPILED_MODULES_PATH over the installed package', () => {
+    headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    const override = headersIn(path.join(root, 'override', 'test-package', 'output'));
+    expect(resolve()).toBe(override);
+  });
+
+  itNotWindows('expands a bundled tarball into the cache', () => {
+    const source = path.join(root, 'source');
+    headersIn(source);
+    packTarball(
+      path.join(source, 'headers', 'xcframeworks'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoPairHeaders.tar.gz'
+      ),
+      ['ExpoPairHeaders.xcframework']
+    );
+
+    const resolved = resolve();
+    expect(resolved).toBe(
+      path.join(root, 'cache', 'expo-pair-headers', 'headers', 'ExpoPairHeaders.xcframework')
+    );
+    expect(fs.existsSync(path.join(resolved, 'Info.plist'))).toBe(true);
+  });
+
+  const rebuildHint =
+    'Reinstall test-package, or from the Expo repository root run `node tools/bin/expotools.js prebuild test-package`. Then run `node node_modules/react-native/scripts/setup-apple-spm.js update` from your app directory again.';
+
+  it('rejects an expanded XCFramework with no Info.plist', () => {
+    const shipped = headersIn(path.join(moduleRoot, 'prebuilds', 'output'));
+    fs.rmSync(path.join(shipped, 'Info.plist'));
+    expect(resolve).toThrow(`${shipped} has no Info.plist`);
+    expect(resolve).toThrow('its build or its extraction did not finish');
+    expect(resolve).toThrow(rebuildHint);
+  });
+
+  itNotWindows('rejects a tarball whose XCFramework has no Info.plist', () => {
+    const source = path.join(root, 'source');
+    fs.rmSync(path.join(headersIn(source), 'Info.plist'));
+    const tarball = packTarball(
+      path.join(source, 'headers', 'xcframeworks'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoPairHeaders.tar.gz'
+      ),
+      ['ExpoPairHeaders.xcframework']
+    );
+
+    expect(resolve).toThrow(`${tarball} holds ExpoPairHeaders.xcframework with no Info.plist`);
+    expect(resolve).toThrow('its build or its extraction did not finish');
+    expect(resolve).toThrow(rebuildHint);
+  });
+});
+
+describe('assertHeadersMatchSources', () => {
+  let root;
+  let headers;
+
+  const writeJson = (file, value) => {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(value));
+  };
+  const stampHeaders = (version) =>
+    writeJson(path.join(headers, 'expo-package.json'), { name: 'test-package', version });
+  const installed = (name, version) => {
+    const dir = path.join(root, name);
+    writeJson(path.join(dir, 'package.json'), { name: 'test-package', version });
+    return dir;
+  };
+  const check = (sourceRoots) =>
+    assertHeadersMatchSources(headers, {
+      packageName: 'test-package',
+      productName: 'ExpoPair',
+      sourceRoots,
+    });
+
+  beforeEach(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-headers-version-'));
+    headers = path.join(root, 'ExpoPairHeaders.xcframework');
+    fs.mkdirSync(headers);
+  });
+
+  afterEach(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  // Headers published before the stamp existed carry none.
+  it('accepts headers without a version stamp', () => {
+    expect(() => check([installed('module', '1.0.0')])).not.toThrow();
+  });
+
+  it('accepts headers of the same version as every source', () => {
+    stampHeaders('1.0.0');
+    expect(() => check([installed('module', '1.0.0'), installed('built', '1.0.0')])).not.toThrow();
+  });
+
+  it('rejects headers of another version, naming both versions, both paths, why and how', () => {
+    stampHeaders('2.0.0');
+    const moduleRoot = installed('module', '1.0.0');
+    const { message } = thrownBy(() => check([moduleRoot]));
+    for (const part of [headers, '2.0.0', moduleRoot, '1.0.0']) {
+      expect(message).toContain(part);
+    }
+    expect(message).toContain('"Build ExpoPair" phase builds the framework from the installed');
+    expect(message).toContain('et prebuild test-package');
+    expect(message).toContain('EXPO_PRECOMPILED_MODULES_PATH');
+  });
+
+  it('rejects headers that differ from any one source', () => {
+    stampHeaders('1.0.0');
+    const built = installed('built', '1.1.0');
+    expect(() => check([installed('module', '1.0.0'), built])).toThrow(built);
+  });
+
+  it('names a stamp it cannot parse instead of surfacing the JSON error', () => {
+    const stampPath = path.join(headers, 'expo-package.json');
+    fs.writeFileSync(stampPath, '{ not json');
+    const { message } = thrownBy(() => check([installed('module', '1.0.0')]));
+    expect(message).toContain(`[expo-spm-plugin] ${stampPath}`);
+    expect(message).toContain('et prebuild test-package');
+    expect(message).not.toMatch(/SyntaxError|Unexpected token/);
+  });
+
+  it('names a stamp without a version', () => {
+    const stampPath = path.join(headers, 'expo-package.json');
+    writeJson(stampPath, { name: 'test-package' });
+    expect(() => check([installed('module', '1.0.0')])).toThrow(`[expo-spm-plugin] ${stampPath}`);
+  });
+
+  it('names an installed package.json without a version', () => {
+    stampHeaders('1.0.0');
+    const moduleRoot = installed('module', undefined);
+    const { message } = thrownBy(() => check([moduleRoot]));
+    expect(message).toContain(`[expo-spm-plugin] ${path.join(moduleRoot, 'package.json')}`);
+    expect(message).not.toContain('undefined');
   });
 });

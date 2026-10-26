@@ -22,7 +22,7 @@ To reach Metro on your computer without local egress, start Metro with a public 
 
 ## How local egress works
 
-Local egress is an experimental feature for Android and iOS sessions. On Android, it requires EAS CLI 24.9.0 or later. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
+Local egress is an experimental feature for Android and iOS sessions. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
 
 When you start a session with `--egress local`, these steps occur:
 
@@ -86,7 +86,7 @@ On iOS, a session can record the HTTP and HTTPS requests that apps on the device
   ]}
 />
 
-While the session runs, the browser preview lists each request under **Network requests** in its **Tools** panel.
+While the session runs, the browser preview lists each request under **Network requests** in its **Tools** panel. To download the recording from the command line with EAS CLI, also pass `--public-link`. See [Download the recording](#download-the-recording).
 
 > **warning** Network capture decrypts HTTPS. It does not redact the bodies and query values that you keep, so they can contain credentials in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret. Apps that pin certificates fail to connect while capture is active.
 
@@ -123,11 +123,13 @@ The recording exists only while capture is on. EAS does not save it as a session
 
 To download it in the browser, open the **Tools** panel in the browser preview. Under **Network requests**, select the download icon, whose tooltip reads **Download session as HAR**.
 
-To download it from the command line, get the session's preview API URL:
+To download it from the command line, you need the preview API URL and the preview token. If you started the session with `--public-link`, get them from EAS CLI:
 
 <Terminal cmd={['$ eas simulator:get --json']} />
 
-Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
+Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. For a session with private links, EAS CLI leaves `previewApiUrl` out of the output. Get `previewApiUrl` and `webPreviewToken` from the [REST API](/preview/simulators/reference/rest-api/#get-a-session) instead. See [Browser preview links](/preview/simulators/reference/cli/#browser-preview-links).
+
+Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
 
 <Terminal
   cmd={[
@@ -147,7 +149,7 @@ Capture sends the app's traffic through a proxy on the session's machine and dec
 
 <Collapsible summary="Does local egress work on Android?">
 
-Yes, with EAS CLI 24.9.0 or later. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. Earlier EAS CLI versions fail with `--egress local is only supported with --platform ios`.
+Yes. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. If EAS CLI fails with `--egress local is only supported with --platform ios`, update EAS CLI.
 
 </Collapsible>
 

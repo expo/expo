@@ -202,7 +202,8 @@ build_slice() {
   # Use env -i to clear inherited Xcode environment variables from the parent build.
   # Without this, the nested xcodebuild inherits SDKROOT, PLATFORM_NAME, etc.
   # which causes SDK/platform mismatches. PODS_ROOT and RN_ROOT are forwarded
-  # explicitly because Package.swift reads them to resolve header search paths.
+  # explicitly because Package.swift reads them to resolve header search paths,
+  # and EXPO_CUSTOM_BUILD_ROOT because it reads the generated module map from there.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
   #
   # SYMROOT/OBJROOT are pinned explicitly because Xcode emits
@@ -240,6 +241,7 @@ build_slice() {
   # default toolchain.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
+    EXPO_CUSTOM_BUILD_ROOT="$BUILD_ROOT" \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
@@ -450,8 +452,9 @@ fi
 # never finds a command, silently dumps the environment, and exits 0. The
 # parent `set -eo pipefail` doesn't catch that, the modulemap never gets
 # written, and xcodebuild later fails with `no such module 'jsi'`.
-PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
-GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
+PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" EXPO_CUSTOM_BUILD_ROOT="$BUILD_ROOT" \
+  "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+GENERATED_MODULE_MAP="${BUILD_ROOT}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then

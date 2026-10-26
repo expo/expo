@@ -48,6 +48,8 @@ module Expo
         return
       end
 
+      Expo::PrecompiledModules.record_spm_dependency_pods
+
       global_flags = @options.fetch(:flags, {})
       tests_only = @options.fetch(:testsOnly, false)
       include_tests = @options.fetch(:includeTests, false)

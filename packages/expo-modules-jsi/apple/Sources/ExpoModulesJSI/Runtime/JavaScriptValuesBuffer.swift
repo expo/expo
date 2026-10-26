@@ -1,3 +1,4 @@
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// A buffer that stores instances of `facebook.jsi.Value` with the ability to convert them to `JavaScriptValue` on element access
@@ -16,10 +17,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // Safe to use unowned: the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
   //
-  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
-  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
-  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
-  // native-side cost of a no-op host function call. `unowned(unsafe)` is a plain pointer store/load.
+  // `unowned(unsafe)` rather than `unowned`: a plain pointer store and load, with no reference
+  // counting on every buffer construction and destruction.
   internal unowned(unsafe) let runtime: JavaScriptRuntime
 
   // The start of the storage, type-erased because `facebook.jsi.Value` is not a public type.
@@ -142,14 +141,10 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
 
   // MARK: - Allocation
 
-  /// Allocates new values buffer with the given capacity. The buffer is in uninitialized state.
-  /// You must initialize all elements using `set(value:atIndex)` method.
+  /// Allocates new values buffer with the given capacity. Each value is `undefined` until you replace
+  /// it with ``emplace(_:at:)`` or ``emplace(_:at:in:)``.
   public static func allocate(in runtime: JavaScriptRuntime, capacity: Int) -> JavaScriptValuesBuffer {
-    return JavaScriptValuesBuffer(
-      runtime,
-      buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity),
-      ownsMemory: true
-    )
+    return allocateUndefined(in: runtime, count: capacity)
   }
 
   /// Allocates an owning buffer of `count` undefined values, which ``emplace(_:at:)`` then replaces.
@@ -166,14 +161,76 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }
 
-  /// Moves `value` into the buffer at `index`, without a clone. The slot must hold a value that owns
-  /// nothing, such as the `undefined` that ``allocateUndefined(in:count:)`` puts there.
-  @usableFromInline
-  internal func emplace(_ value: consuming JavaScriptValue, at index: Int) {
+  /// Calls `body` with a buffer of `count` values that lives on the stack. Each value is `undefined`
+  /// until `emplaceValues` replaces it, and all values are destroyed when `body` returns.
+  @inline(__always)
+  internal static func withEmplacedValues<R: ~Copyable>(
+    count: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing emplaceValues:
+      @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    _ body: (consuming JavaScriptValuesBuffer) throws -> R
+  ) throws -> R {
+    // The slots hold `undefined` first, so they stay valid to destroy when an encode throws. This part
+    // is nonisolated: an isolated closure passed to the standard library checks the current executor
+    // on every call.
+    return try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: count) { storage in
+      let start = storage.baseAddress
+      if let start {
+        for index in 0..<count {
+          expo.emplaceUndefined(start + index)
+        }
+      }
+      defer {
+        if let start {
+          expo.destroyValues(start, count)
+        }
+      }
+      let buffer = JavaScriptValuesBuffer(runtime, start: start, count: count)
+      try JavaScriptActor.assumeIsolated {
+        try emplaceValues(buffer, runtime)
+      }
+      return try body(buffer)
+    }
+  }
+
+  /// Moves `value` into the buffer at `index`, without a clone, and releases the value it replaces.
+  public func emplace(_ value: consuming JavaScriptValue, at index: Int) {
     guard (0..<count).contains(index) else {
       FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
     }
-    JavaScriptValue.write(value, to: bufferPointer.baseAddress! + index)
+    let slot = bufferPointer.baseAddress! + index
+    // `write` constructs the new value in place, so the old one is destroyed first. Values that own
+    // nothing, such as the `undefined` in a fresh slot, skip the destroy.
+    expo.destroyValues(slot, 1)
+    JavaScriptValue.write(value, to: slot)
+  }
+
+  /// Encodes `value` in `runtime`, moves it into the buffer at `index`, and releases the value it
+  /// replaces.
+  @inlinable
+  @JavaScriptActor
+  public func emplace<T: JavaScriptEncodable & ~Copyable>(
+    _ value: consuming T,
+    at index: Int,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    // Inlinable, so the encode specializes in the caller's module. The runtime comes from the caller:
+    // the buffer's runtime is `unowned(unsafe)`, and passing it to the encode retains and releases it.
+    emplace(try T.encode(value, in: runtime), at: index)
+  }
+
+  /// Encodes `value` into the slot at `index`, which must hold a value that owns nothing, such as
+  /// `undefined`.
+  @usableFromInline
+  @JavaScriptActor
+  internal func encode<A: JavaScriptEncodable>(_ value: consuming A, at index: Int, in runtime: JavaScriptRuntime)
+    throws
+  {
+    // Not inlinable: here the encoded `JavaScriptValue` has a known layout, while a caller in another
+    // module handles it through its type metadata. It's called in a parameter pack loop, where a
+    // generic call doesn't specialize anyway.
+    emplace(try A.encode(value, in: runtime), at: index)
   }
 
   /// Allocates new values buffer with the given JS representables.

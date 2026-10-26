@@ -52,6 +52,15 @@ struct JavaScriptCodableDateTests {
     #expect(decoded.timeIntervalSince1970 == 5.0)
   }
 
+  @Test
+  func `decode ignores a getTime override on the Date`() throws {
+    // Decode calls `Date.prototype.getTime` directly, so it reads the time value even when JS code
+    // replaces `getTime` on the object.
+    let value = try runtime.eval("(() => { const date = new Date(5000); date.getTime = () => 0; return date })()")
+    let decoded = try Date.decode(value, in: runtime)
+    #expect(decoded.timeIntervalSince1970 == 5.0)
+  }
+
   // MARK: - Encode
 
   @Test

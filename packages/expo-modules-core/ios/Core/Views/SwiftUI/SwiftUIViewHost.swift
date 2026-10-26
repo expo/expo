@@ -8,6 +8,8 @@ extension ExpoSwiftUI {
    */
   struct UIViewHost: UIViewRepresentable, AnyChild {
     let view: UIView
+    // Fabric can mount a recycled view again; a new identity per mount gives it a new container.
+    private let mountToken = MountToken()
 
     // MARK: - UIViewRepresentable implementations
 
@@ -64,7 +66,13 @@ extension ExpoSwiftUI {
     var uiView: UIView? {
       view
     }
+
+    var childIdentity: ExpoSwiftUI.ChildIdentity {
+      .object(ObjectIdentifier(mountToken))
+    }
   }
+
+  private final class MountToken {}
 
   #if !os(macOS)
   /**

@@ -71,14 +71,14 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       if let jsObject = sharedObject.getJavaScriptObject() {
         return jsObject.asValue()
       }
-      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
+      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, isSharedRef: sharedObject.sharedRefType != nil)) else {
         // Throwing is not possible here due to swift-objC interop.
         log.warn("Unable to create a JS object for \(description)")
         return JavaScriptValue.undefined()
       }
 
       // Add newly created objects to the registry.
-      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true)
 
       return jsObject.asValue()
     }
@@ -86,15 +86,8 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 }
 
-private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptFunction {
-  let isSharedRef = nativeType is AnySharedRef.Type
+private func newBaseSharedObject(_ appContext: AppContext, isSharedRef: Bool) throws -> JavaScriptObject? {
   return try JavaScriptActor.assumeIsolated {
-    return try isSharedRef ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+    return try appContext.runtime.createBaseSharedObject(isSharedRef: isSharedRef)
   }
-}
-
-private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
-  let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
-  let prototype = try jsClass.asObject().getPropertyAsObject("prototype")
-  return try appContext.runtime.createObject(prototype: prototype)
 }

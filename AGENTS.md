@@ -92,7 +92,7 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - Write the title and the body in Simplified Technical English: short sentences, one fact in each sentence, active voice, and one word for one thing. You do not need the ASD-STE100 specification.
 - `Why` states the problem, then the root cause.
 - `How` answers how you built the feature or fixed the bug, and why. Describe each solution, its performance impact, and why you believe this is the right fix. Then say what the diff changes.
-- `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft.
+- `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft. CI does not run the iOS and e2e jobs on drafts; they run after the pull request is marked ready for review.
 - `Screenshots` has a `Before` and `After` pair for each platform the change affects: Android, iOS, or web. Each image is full width. Take the before image first. Do not substitute an iOS Simulator shot for a platform you did not run. If nothing visible changes, write `No UI change.`
 - A fix that the report limits to some devices must stay limited to those devices. If every device must get the change, say why in `How`.
 - Delete the template's HTML comments when you fill the body.

@@ -30,13 +30,20 @@ function runAutolinking(appRoot, args) {
 }
 
 /**
- * `resolve --platform apple --json`: {modules, extraDependencies}, both always arrays
- * (older CLIs return the bare array).
+ * `resolve --platform apple --json`: {modules, extraDependencies, buildFromSource}, all
+ * always arrays (older CLIs return the bare array). `buildFromSource` is the app's
+ * autolinking option, read from the same output CocoaPods reads it from.
  */
 function resolveExpoModules(appRoot) {
   const parsed = runAutolinking(appRoot, ['resolve', '--platform', 'apple', '--json']);
-  if (Array.isArray(parsed)) return { modules: parsed, extraDependencies: [] };
-  return { modules: parsed.modules ?? [], extraDependencies: parsed.extraDependencies ?? [] };
+  if (Array.isArray(parsed)) {
+    return { modules: parsed, extraDependencies: [], buildFromSource: [] };
+  }
+  return {
+    modules: parsed.modules ?? [],
+    extraDependencies: parsed.extraDependencies ?? [],
+    buildFromSource: parsed.configuration?.buildFromSource ?? [],
+  };
 }
 
 /** `prebuilt-metadata --json`: the same pod → package → product document `pod install` reads. */

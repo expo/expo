@@ -102,7 +102,7 @@ std::vector<jsi::PropNameID> jsiArrayToPropNameIdsVector(jsi::Runtime &runtime, 
   return vector;
 }
 
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor) {
+static jsi::Object createDescriptorObject(jsi::Runtime &runtime, const PropertyDescriptor& descriptor) {
   jsi::Object jsDescriptor(runtime);
 
   // These three flags are all `false` by default, so set the property only when `true`.
@@ -146,20 +146,32 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
     jsDescriptor.setProperty(runtime, valuePropName, descriptor.value);
   }
 
-  defineProperty(runtime, object, name, std::move(jsDescriptor));
+  return jsDescriptor;
 }
 
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, jsi::Object descriptor) {
+static void callDefineProperty(jsi::Runtime &runtime, jsi::Object *object, jsi::Value key, jsi::Object descriptor) {
   jsi::Object global = runtime.global();
   jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
   jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
 
-  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
+  // This call is basically the same as `Object.defineProperty(object, key, descriptor)` in JS
   definePropertyFunction.callWithThis(runtime, objectClass, {
     jsi::Value(runtime, *object),
-    jsi::String::createFromUtf8(runtime, name),
+    std::move(key),
     std::move(descriptor),
   });
+}
+
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor) {
+  callDefineProperty(runtime, object, jsi::String::createFromUtf8(runtime, name), createDescriptorObject(runtime, descriptor));
+}
+
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const jsi::Symbol &key, const PropertyDescriptor& descriptor) {
+  callDefineProperty(runtime, object, jsi::Value(runtime, key), createDescriptorObject(runtime, descriptor));
+}
+
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, jsi::Object descriptor) {
+  callDefineProperty(runtime, object, jsi::String::createFromUtf8(runtime, name), std::move(descriptor));
 }
 
 } // namespace expo::common

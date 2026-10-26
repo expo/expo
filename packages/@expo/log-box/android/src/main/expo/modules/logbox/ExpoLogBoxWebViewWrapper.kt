@@ -25,6 +25,16 @@ class ExpoLogBoxWebViewWrapper(
   /** URL the running bundle was loaded from, when it was served over HTTP. */
   private val bundleUrl: String? = null
 ) {
+  private val injectedObject: String = Gson().toJson(
+    mapOf(
+      "EXPO_DOM_HOST_OS" to "android",
+      "initialProps" to mapOf(
+        "names" to actions.getNames(),
+        "props" to props
+      )
+    )
+  )
+
   val webView: WebView = WebView(context).apply {
     setBackgroundColor(Color.BLACK)
     settings.javaScriptEnabled = true
@@ -39,6 +49,10 @@ class ExpoLogBoxWebViewWrapper(
         fun postMessage(rawMessage: String) {
           processMessageFromWebView(rawMessage)
         }
+
+        // Read synchronously by the DOM Component HTML before the bundle runs
+        @JavascriptInterface
+        fun injectedObjectJson(): String = injectedObject
       },
       "ReactNativeWebView"
     )
@@ -67,20 +81,10 @@ class ExpoLogBoxWebViewWrapper(
   }
 
   private fun initializeLogBoxDomEnvironment() {
-    val initialProps = mapOf(
-      "names" to actions.getNames(),
-      "props" to props
-    )
-
-    val gson = Gson()
-    val jsonObject = gson.toJson(initialProps)
-
     val devServerOrigin = getDevServerOrigin()
     val script = """
             var process=globalThis.process||{};process.env=process.env||{};
             process.env.EXPO_DEV_SERVER_ORIGIN='$devServerOrigin';
-            window.$$${"EXPO_DOM_HOST_OS"} = 'android';
-            window.$$${"EXPO_INITIAL_PROPS"} = $jsonObject;
     """.trimIndent()
 
     webView.post {

@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'CompositionLocalProvider component',
+    route: 'ui/composition-local-provider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CompositionLocalProviderScreen'));
+    },
+  },
+  {
     name: 'Card component',
     route: 'ui/card',
     options: {},
@@ -443,11 +451,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TopAppBar component',
+    route: 'ui/top-app-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TopAppBarScreen'));
+    },
+  },
+  {
     name: 'Extending Expo UI',
     route: 'ui/extending',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'RNHostView in a clickable',
+    route: 'ui/rnhostview-in-clickable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewInClickableScreen'));
     },
   },
   {

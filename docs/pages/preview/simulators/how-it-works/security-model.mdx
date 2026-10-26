@@ -1,7 +1,7 @@
 ---
 title: Expo Simulators security model
 sidebar_title: Security model
-description: Learn who can create, view, and control an Expo Simulators session, which secrets a session uses, and which URLs grant access without an Expo login.
+description: Learn who can create, view, and control an Expo Simulators session, which secrets a session uses, and which URLs grant access with or without an Expo login.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -15,15 +15,16 @@ This page explains the model. For the exact values and limits, see [Expo Simulat
 
 ## Trust boundaries
 
-| Boundary                 | What controls access                                  | Who has access                                          |
-| ------------------------ | ----------------------------------------------------- | ------------------------------------------------------- |
-| Create and stop sessions | Expo account role                                     | The Developer role or higher                            |
-| Read a session           | Expo account role                                     | Any role that can view the project, including View Only |
-| Control the device       | Controller token in the connection details            | Anyone who has the token while the session runs         |
-| Use the browser preview  | Preview URL and, when the preview is gated, its token | Anyone who has the URL                                  |
-| Download an artifact     | Random download URL                                   | Anyone who has the URL                                  |
-| Reach your Metro server  | Public tunnel URL                                     | Anyone who has the URL while the tunnel runs            |
-| Reach your local network | `--egress-allow` list                                 | Only the destinations that you list                     |
+| Boundary                 | What controls access                        | Who has access                                          |
+| ------------------------ | ------------------------------------------- | ------------------------------------------------------- |
+| Create and stop sessions | Expo account role                           | The Developer role or higher                            |
+| Read a session           | Expo account role                           | Any role that can view the project, including View Only |
+| Control the device       | Controller token in the connection details  | Anyone who has the token while the session runs         |
+| Open a private preview   | Expo account role                           | Any role that can view the project, including View Only |
+| Open a public preview    | Preview URL that contains the preview token | Anyone who has the URL                                  |
+| Download an artifact     | Random download URL                         | Anyone who has the URL                                  |
+| Reach your Metro server  | Public tunnel URL                           | Anyone who has the URL while the tunnel runs            |
+| Reach your local network | `--egress-allow` list                       | Only the destinations that you list                     |
 
 ## Account permissions
 
@@ -44,9 +45,18 @@ EAS CLI writes the URL and token to **.env.eas-simulator**. Keep the file out of
 
 ## The browser preview
 
-The browser preview has its own URL. When the preview is gated, the URL contains a session token. The preview page does not require an Expo login. The page moves the token out of the address bar after it opens.
+A browser preview link can be private or public:
 
-Because the preview does not require a login, share the preview URL only with people who should control the device.
+| Link    | Format                                                                                           | Who can open it                                                    |
+| ------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Private | `https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview` | A person who signs in to an Expo account that can view the project |
+| Public  | A preview URL that contains the preview token                                                    | Anyone who has the URL, without an Expo login                      |
+
+New sessions use private links by default. EAS CLI prints the private link, and the **Share** button in the preview copies it. To use public links, pass `--public-link` to `eas simulator:start`, or set `publicPreview` to `true` when you create a session with the REST API. EAS saves this setting with the session.
+
+A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
+
+When a public link opens, the page moves the token out of the address bar. Share a public link only with people who should control the device.
 
 ## Artifact download URLs
 
@@ -82,7 +92,7 @@ Stop the session. After the session stops, the remote device and its controller 
 
 <Collapsible summary="Is the app I install private?">
 
-Yes, within the session. The app installs only on the remote device for the session. Anyone who has the controller token or the browser preview URL can use the app while the session runs. Anyone who has the download URL of an artifact, such as a screenshot, can download it. See [Expo Simulators security, permissions, and data retention](/preview/simulators/reference/security-and-data/) for retention.
+Yes, within the session. The app installs only on the remote device for the session. Anyone who has the controller token, the preview token, or a public preview link can use the app while the session runs. A private preview link also requires access to the project. Anyone who has the download URL of an artifact, such as a screenshot, can download it. See [Expo Simulators security, permissions, and data retention](/preview/simulators/reference/security-and-data/) for retention.
 
 </Collapsible>
 
