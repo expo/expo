@@ -74,6 +74,7 @@ exceptions:
   - '.*CLAUDE\.md.*'
   - '.*Claude Code.*'
   - '.*Clerk.*'
+  - '.*CMake.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
