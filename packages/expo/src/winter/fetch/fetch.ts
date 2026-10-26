@@ -70,8 +70,7 @@ export async function fetch(
   if (defaultHeaders) {
     // Caller headers win over the body defaults.
     headers = overrideHeaders(defaultHeaders, headers);
-  }
-  if (overriddenHeaders) {
+  } else if (overriddenHeaders) {
     headers = overrideHeaders(headers, overriddenHeaders);
   }
 
