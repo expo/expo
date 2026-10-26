@@ -301,6 +301,8 @@ test.describe(inputDir, () => {
 // can start before the layout `anchor` loads.
 // https://github.com/expo/expo/issues/50641
 test.describe(`${inputDir} with server output`, () => {
+  // TEMP(diagnostic): keep the server output to print it when the test fails on Windows CI.
+  let serverOutput = '';
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -310,10 +312,36 @@ test.describe(`${inputDir} with server output`, () => {
       E2E_ROUTER_ASYNC: 'development',
       CI: '0',
     },
+    onOutput: (chunk) => {
+      serverOutput += chunk;
+    },
   });
+
+  // TEMP(diagnostic): request server output HTML without a browser.
+  async function probeServerOutputAsync(pathname: string) {
+    const url = new URL(pathname, expoStart.url).href;
+    try {
+      const response = await fetch(url, { headers: { accept: 'text/html' } });
+      const body = await response.text();
+      return [
+        `${url} -> ${response.status}`,
+        ...(response.status === 200 ? [] : [body.slice(0, 1500)]),
+      ].join('\n');
+    } catch (error) {
+      return `${url} -> fetch failed: ${error}`;
+    }
+  }
 
   test.beforeAll(async () => {
     await expoStart.startAsync();
+
+    // TEMP(diagnostic): find out if the dev SSR error happens before any browser loads lazy bundles.
+    const probes = [
+      await probeServerOutputAsync('/anchored/details'),
+      await probeServerOutputAsync('/anchored/details'),
+      await probeServerOutputAsync('/'),
+    ];
+    console.log(['--- direct SSR probe ---', ...probes, '--- end direct SSR probe ---'].join('\n'));
   });
 
   test.afterAll(async () => {
@@ -346,11 +374,19 @@ test.describe(`${inputDir} with server output`, () => {
           .innerText({ timeout: 5_000 })
           .catch((error) => `<unreadable: ${error}>`)
       : '<no #error-overlay>';
+    const serverLines = serverOutput.split(/\r?\n/);
     const report = [
       `--- browser output (${browserOutput.length} entries) ---`,
       ...browserOutput,
       '--- #error-overlay text ---',
       overlayText,
+      '--- warm SSR probe ---',
+      await probeServerOutputAsync('/anchored/details'),
+      `--- server log (last 300 of ${serverLines.length} lines) ---`,
+      ...serverLines.slice(-300),
+      '--- server log lines with "unknown module", "Error" or "855" ---',
+      ...serverLines.filter((line) => /unknown module|Error|855/.test(line)),
+      '--- end server log ---',
     ].join('\n');
     console.log(report);
     await testInfo.attach('browser-diagnostics', { body: report, contentType: 'text/plain' });
@@ -360,6 +396,8 @@ test.describe(`${inputDir} with server output`, () => {
     const pageErrors = pageCollectErrors(page);
 
     await page.goto(`${expoStart.url}`);
+    // TEMP(diagnostic): a click before hydration does a full page load, which aborts the lazy layout fetches.
+    await page.waitForLoadState('networkidle');
     await page.locator('[data-testid="go-anchored-details"]').click();
     await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
       '/anchored/details'
