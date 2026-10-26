@@ -11,11 +11,21 @@ import { captureViewShotInProcess, cropViewByTestID } from './viewCropper';
 
 const PORT = process.env.PORT || 7123;
 const e2eDir = path.resolve(path.join(__dirname, '..', '..'));
+const allowedHosts = [`localhost:${PORT}`, `127.0.0.1:${PORT}`];
 
 Bun.serve({
   port: PORT,
   hostname: '127.0.0.1', // Only bind to localhost for security
   async fetch(req) {
+    if (!allowedHosts.includes(req.headers.get('host')?.toLowerCase() ?? '')) {
+      return Response.json(
+        {
+          success: false,
+          message: `The image comparison server rejected the request because its Host header is not ${allowedHosts.join(' or ')}. Send the request to http://localhost:${PORT}.`,
+        },
+        { status: 403 }
+      );
+    }
     const url = new URL(req.url);
 
     if (req.method === 'POST' && url.pathname === '/process') {
