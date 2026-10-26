@@ -207,6 +207,38 @@ describe('node crawler', () => {
     expect(changedFiles.get('fruits/apple.js')![H.SYMLINK]).toBe(0);
   });
 
+  test('applies ignore filter to normal paths for directories', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical/mango.js': 'b',
+      '/project/fruits/tropical/deep/papaya.js': 'c',
+      '/project/fruits/other/pear.js': 'd',
+    });
+
+    // Pattern anchored with ^ only matches normal paths (not absolute paths)
+    const { changedFiles } = await crawl({
+      ignore: (p: string) => /^fruits\/tropical$/.test(p),
+    });
+
+    // The entire 'fruits/tropical' subtree is excluded
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/other/pear.js']);
+  });
+
+  test('ignore on normal paths does not affect files', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical.js': 'b',
+    });
+
+    // Pattern matches the normal path of a file, but the normal-path ignore
+    // check only applies to directories — files are unaffected
+    const { changedFiles } = await crawl({
+      ignore: (p: string) => /^fruits\/tropical\.js$/.test(p),
+    });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tropical.js']);
+  });
+
   describe('excluded directories', () => {
     test('skips .git, .hg and .cxx directories without consulting ignore', async () => {
       const ignore = jest.fn((_p: string) => false);

@@ -71,7 +71,11 @@ function find(options: CrawlerOptions): Promise<FileData> {
                 : dirNormal + path.sep + name;
 
             if (isDirectory) {
-              search(file, file + path.sep, childNormal, isWithinRoot || childNormal === '');
+              // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively
+              // based on their normal paths, so we can exclude using `^...`
+              if (!ignore(childNormal)) {
+                search(file, file + path.sep, childNormal, isWithinRoot || childNormal === '');
+              }
               continue;
             }
 
