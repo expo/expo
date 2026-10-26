@@ -2949,8 +2949,8 @@ importers:
         specifier: ^1.30.1
         version: 1.32.0
       noxcturnal:
-        specifier: ^0.1.8
-        version: 0.1.8
+        specifier: ^0.1.10
+        version: 0.1.10
       picomatch:
         specifier: ^4.0.4
         version: 4.0.7
@@ -8986,54 +8986,54 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.8':
-    resolution: {integrity: sha512-IaKvOx7pb7nr+OQ4rm6VKO4z4a7BfqBrvxcDYfvtOHRq9yVylrph0crkWJRgxskGlaBrLMrNiWYHvFqrd0hRSA==}
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.10':
+    resolution: {integrity: sha512-uEtfOxu11GlTdNN0nGT+NVBH4rnfqZFF/1dNHqWC9/xebuJuoEtlr/mP24S92iPz1gWQBqgGaR1Y05X5gXoIcg==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.8':
-    resolution: {integrity: sha512-Fb6Ak5vvDvrroakL+wqN+YWB4QdrPSkqaZEE2vM2xEacFozsCckzx3cDzSeA1uFOK52LPEzY5n9ylkGDjw5WcQ==}
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.10':
+    resolution: {integrity: sha512-UnPVxPtTN/bGbX6nINEhklPKbRA9lon2Ze/CS5lsRRIq2tj66q0WBHvS8bs6dRjLYIUMZM338eJtC/Z06F3yRw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.8':
-    resolution: {integrity: sha512-P0zDdjt1Y3bhi790BJBLV84CRTFedHouV11VQMu8kiCgc+Y+fxVnmob2D6DBvyk8INdTnfxz4cXUMA7DgG9Qxg==}
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.10':
+    resolution: {integrity: sha512-XDwj4McgMNu3G9Z5PbwqEy7OmfJJeoZv3SCZM48Gslt8JywKfPsUOJVJDlE5hQq0ahy6G+8RaPYMKD04XiwIEg==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.8':
-    resolution: {integrity: sha512-Pd6DMObIX0Brh4Sj/kon9F0766Fw7DKjVLrjptITcmeE44jKJAWNihPC3dTbgkgb/9Q2inp0VGLFRW19+073bQ==}
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.10':
+    resolution: {integrity: sha512-tvRUHVYvWXn//T7LX8ntuTw5PFsoDw+mFQRfQjmtfv/XCJC2OkK24QRQFAdH6Ieoiww2oWXxBIDeKiqsi9O0Zw==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.8':
-    resolution: {integrity: sha512-gPAYMhvQmN1BOK5fPII9f3TGtUaR71fCFsKNFoYsiTMs8MidFkkkSvSpawDNubgFMBqYaO38mKtKAW1AuXCnMw==}
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.10':
+    resolution: {integrity: sha512-edKSyBYJTFRAATqhWdA5YqVzSiLls/J2xDuBbduODS8XNPL3YlIwNdMt+Gdh2BKpsDkyhM0j/vCTJ1X3wmEu6w==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.8':
-    resolution: {integrity: sha512-dhQuKKN75YTCgjjh/txGBP6Lc2L9/HMqyeBEMLWkyFlq1u2OC0j8HeGQtzKjP5cnLiibrn0JgcuLJqDSklxuMg==}
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.10':
+    resolution: {integrity: sha512-AV9GrWZPi3aGG8dQt52hSiv+CYUKiuYA/P/GidZMvCTLfMNLtpuMKcrNl9mp9BvN14cyd0FO2EzsEq6/ej5HBg==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.8':
-    resolution: {integrity: sha512-ltg2UV1I/hdux6rPSF0RTlh2V2F7NXuqp3AdbwAGexEqxbXFdy2tw2hwmsUrCbIgwrXsjlijpgsOl5JEXRc84w==}
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.10':
+    resolution: {integrity: sha512-MVI2dodYesyduLrbvWH8H4wDITLLXYnNiD3mrcC/YC/NfCojQema9cM+dTE8QZwEXCvA2zzUJ36qWP7BD/PD2Q==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.8':
-    resolution: {integrity: sha512-A39bKv270jJnC5NN6mAy46E2d3LPywjrbmNJhgckPQNldV9acTYUKZcySCYeLgP/2yAVUh3UFSjo84pFX2npVw==}
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.10':
+    resolution: {integrity: sha512-PMTRkg8GjskbP9B2adzUrs4prNZGjATx8qjxTWDXdfzEwYGP6vDBMkKaN/aqBkPGQUcx/MaHDfGQ+Nb7zFaD6g==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -14001,8 +14001,8 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
-  noxcturnal@0.1.8:
-    resolution: {integrity: sha512-oeyzgpWW2rnWFEdmXpRRBMLqwEfAhoypOBwaU5/BS3iizvmg8Hld+kxONLxifyHi2NJ1v6de2skIifN5mNzIVw==}
+  noxcturnal@0.1.10:
+    resolution: {integrity: sha512-dwCYOyaWrVQm19QETIGyaQMemV116cIUhdPPEa63SXnrDbnPJ0/GKFriHuM1J+biHlXFR0g2YLvM3YMd8uZiSg==}
     engines: {node: '>=18'}
 
   npm-bundled@2.0.1:
@@ -18128,28 +18128,28 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.8':
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.8':
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.8':
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.8':
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.8':
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.8':
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.8':
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.10':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.8':
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.10':
     optional: true
 
   '@octokit/auth-token@3.0.4': {}
@@ -23554,19 +23554,19 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
-  noxcturnal@0.1.8:
+  noxcturnal@0.1.10:
     dependencies:
       '@babel/code-frame': 7.29.7
       '@oxc-project/types': 0.154.0
     optionalDependencies:
-      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.8
-      '@noxcturnal/noxcturnal-darwin-x64': 0.1.8
-      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.8
-      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.8
-      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.8
-      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.8
-      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.8
-      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.8
+      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.10
+      '@noxcturnal/noxcturnal-darwin-x64': 0.1.10
+      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.10
+      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.10
+      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.10
+      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.10
+      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.10
+      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.10
 
   npm-bundled@2.0.1:
     dependencies:
