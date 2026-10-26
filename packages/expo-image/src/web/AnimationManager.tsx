@@ -153,8 +153,9 @@ export default function AnimationManager({
 
   React.useEffect(() => {
     setNodes((n) => {
-      // The initial state can already hold this node. It stays `mounted` until `onReady`.
-      if (!newNode || n.includes(newNode)) {
+      // The initial state can already hold this node, or a copy of it with another status (made by
+      // its callbacks, e.g. `onReady` before this effect): it stays as it is.
+      if (!newNode || n.some((node) => node.persistedElement === newNode.persistedElement)) {
         return n;
       }
       const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
