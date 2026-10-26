@@ -549,7 +549,7 @@ export default function InboxScreen() {
 }
 ```
 
-> **info** In the bottom toolbar, a badge on `Stack.Toolbar.Button` is displayed on Android and on iOS 27 and later. See [Known limitations](#known-limitations).
+> **info** In the bottom toolbar, `Stack.Toolbar.Button` shows its badge on Android and on iOS 27 and later. See [Known limitations](#known-limitations).
 
 ## Embedding custom views
 
@@ -780,11 +780,11 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 </Collapsible>
 
-<Collapsible summary="Badge in the bottom toolbar needs iOS 27">
+<Collapsible summary="Badges in the bottom toolbar">
 
-On iOS, UIKit draws a badge on a bottom toolbar item only on iOS 27 and later. On iOS 26 and earlier, `Stack.Toolbar.Badge` on a `Stack.Toolbar.Button` in `placement="bottom"` does not show.
+**Android:** `Stack.Toolbar.Button` and a root `Stack.Toolbar.Menu` show a badge in the bottom toolbar. A nested `Stack.Toolbar.Menu` does not.
 
-`Stack.Toolbar.Menu` does not support `Stack.Toolbar.Badge` in the bottom toolbar.
+**iOS:** UIKit draws a badge on a bottom toolbar item only on iOS 27 and later. On iOS 26 and earlier, `Stack.Toolbar.Badge` on a `Stack.Toolbar.Button` in `placement="bottom"` does not show. `Stack.Toolbar.Menu` does not show a badge in the bottom toolbar on any iOS version.
 
 </Collapsible>
 

@@ -14,13 +14,11 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
   const id = useId();
   const renderingMode =
     props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
-  // The cast is needed because `badge.style.fontWeight` is typed as `string`. The value comes from
-  // `convertTextStyleToRNTextStyle`, which already returns a weight that `BasicTextStyle` accepts.
-  const badgeConfiguration = props.badge
-    ? ({
+  const badgeConfiguration: RouterToolbarItemProps['badgeConfiguration'] = props.badge
+    ? {
         ...props.badge.style,
         value: props.badge.value === '' ? undefined : String(props.badge.value),
-      } as RouterToolbarItemProps['badgeConfiguration'])
+      }
     : undefined;
   if (process.env.NODE_ENV !== 'production' && props.source) {
     console.warn(
