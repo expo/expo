@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -127,7 +128,7 @@ private struct MacroSharedObjectTests {
   }
 
   init() {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
   }
 
   private func register(_ module: AnyModule) {
