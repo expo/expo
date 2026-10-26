@@ -438,7 +438,7 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
-class ReactNativeViewController: UIViewController {
+class ReactViewController: UIViewController {
   var reactNativeFactory: RCTReactNativeFactory?
   var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
 
@@ -447,7 +447,7 @@ class ReactNativeViewController: UIViewController {
     reactNativeFactoryDelegate = ReactNativeDelegate()
     reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
     reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
-    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "main")
 
   }
 }
