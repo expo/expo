@@ -126,6 +126,16 @@ describe('startAsync', () => {
       })
     );
   });
+
+  it(`listens on 127.0.0.1 with --localhost`, async () => {
+    const devServer = await getStartedDevServer({ location: { hostType: 'localhost' } });
+
+    expect(instantiateMetroAsync).toHaveBeenLastCalledWith(
+      devServer,
+      expect.objectContaining({ host: '127.0.0.1' }),
+      expect.anything()
+    );
+  });
 });
 
 describe('API Route output warning', () => {
