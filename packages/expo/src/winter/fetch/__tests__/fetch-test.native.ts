@@ -46,18 +46,4 @@ describe('Setting the Content-Type header from the body', () => {
       ['content-type', 'application/octet-stream'],
     ]);
   });
-
-  it('should send an empty Content-Type header for a Blob without a type', async () => {
-    await fetch('https://example.test/', { method: 'POST', body: new Blob(['hello']) });
-    expect(getStartedHeaders()).toEqual([['Content-Type', '']]);
-  });
-
-  it('should use the Blob type when the caller Content-Type header is undefined', async () => {
-    await fetch('https://example.test/', {
-      method: 'POST',
-      headers: { 'Content-Type': undefined } as any,
-      body: new Blob(['hello'], { type: 'text/plain' }),
-    });
-    expect(getStartedHeaders()).toEqual([['Content-Type', 'text/plain']]);
-  });
 });

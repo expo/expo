@@ -77,10 +77,10 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
 
   if (body instanceof Blob || isBlob(body)) {
     // An empty type still sets the header.
-    // Without a Content-Type, URLSession sends `application/x-www-form-urlencoded`.
+    // Without a Content-Type, URLSession sends `application/x-www-form-urlencoded` for a POST body.
     return {
       body: new Uint8Array(await blobToArrayBufferAsync(body)),
-      contentType: { value: body.type, override: false },
+      contentType: { value: body.type ?? '', override: false },
     };
   }
 
@@ -158,7 +158,7 @@ export function applyBodyContentType(
     return headers;
   }
   const hasCallerContentType = headers.some(
-    ([key, value]) => key.toLowerCase() === 'content-type' && value != null
+    ([key, value]) => key.toLocaleLowerCase() === 'content-type' && value != null
   );
   if (hasCallerContentType && !contentType.override) {
     return headers;
