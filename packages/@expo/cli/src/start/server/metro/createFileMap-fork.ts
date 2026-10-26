@@ -1,10 +1,11 @@
 // Copyright © 2024 650 Industries.
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 //
-// Forks https://github.com/facebook/metro/blob/01b4ad6/packages/metro/src/node-haste/DependencyGraph/createFileMap.js
+// Forks https://github.com/react/metro/blob/v0.87.2/packages/metro/src/node-haste/DependencyGraph/createFileMap.js
 // and redirects to `@expo/metro-file-map`
 
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
+import type { InputFileMapPlugin } from '@expo/metro-file-map';
 import type MetroServer from '@expo/metro/metro/Server';
 import ciInfo from 'ci-info';
 import path from 'node:path';
@@ -28,12 +29,14 @@ interface CreateFileMapOptions {
  * interpretation as Metro's original `createFileMap`.
  */
 export default function createFileMap(config: ExpoMetroConfig, options?: CreateFileMapOptions) {
-  const watch = options?.watch == null ? !ciInfo.isCI : options.watch;
+  const watch = options?.watch ?? !ciInfo.isCI;
 
   const { enabled: autoSaveEnabled, ...autoSaveOpts } = config.watcher.unstable_autoSaveCache ?? {};
   const autoSave = watch && autoSaveEnabled ? autoSaveOpts : false;
 
-  const plugins = [...(config.unstable_fileMapPlugins ?? [])];
+  // NOTE(@robhogan): `@expo/metro-file-map` implements the Metro 0.87.2 plugin API, which
+  // `@expo/metro` types only from 58.1.0. Drop this cast once on `@expo/metro@58.1.0`.
+  const plugins = [...(config.unstable_fileMapPlugins ?? [])] as InputFileMapPlugin[];
   let dependencyPlugin: DependencyPlugin | null = null;
 
   if (config.resolver.dependencyExtractor != null && options?.extractDependencies !== false) {
@@ -46,7 +49,7 @@ export default function createFileMap(config: ExpoMetroConfig, options?: CreateF
 
   const hasteMap = new HastePlugin({
     platforms: new Set([...config.resolver.platforms, FileMap.H.NATIVE_PLATFORM]),
-    hasteImplModulePath: config.resolver.hasteImplModulePath ?? null,
+    hasteImplModulePath: config.resolver.hasteImplModulePath,
     enableHastePackages: config.resolver.enableGlobalPackages,
     rootDir: config.projectRoot,
     failValidationOnConflicts: options?.throwOnModuleCollision ?? true,
