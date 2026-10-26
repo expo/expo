@@ -136,16 +136,19 @@ struct JavaScriptCodableContainersTests {
   }
 
   @Test
-  func `releases the encoded strings when a later element throws`() throws {
-    // The strings before the failing element sit in the chunk, not yet pushed to the array.
+  func `releases the encoded elements when a later element throws`() throws {
+    // With chunks of 64 values, element 80 sits in the chunk, not yet pushed to the array, when
+    // element 90 throws. Only the chunk's cleanup can release it.
+    let recorder = WeakObjectRecorder()
     let values = (0..<100).map { index in
-      FailingEncodable(string: "value \(index)", fails: index == 90)
+      FailingEncodable(fails: index == 90, recorder: index == 80 ? recorder : nil)
     }
     #expect(throws: FailingEncodable.Failure.self) {
       _ = try [FailingEncodable].encode(values, in: runtime)
     }
-    // The runtime still works after the failed encode.
-    #expect(try [String].encode(["a"], in: runtime).getArray().getValue(at: 0).getString() == "a")
+    runtime.collectGarbage { recorder.object?.lock() == nil }
+    let stillAlive = recorder.object?.lock() != nil
+    #expect(stillAlive == false)
   }
 
   @Test
@@ -223,17 +226,24 @@ struct JavaScriptCodableContainersTests {
   }
 }
 
-/// Encodes as a string through the default `encode(_:into:in:)`, or throws.
+/// Encodes as a new JavaScript object through the default `encode(_:into:in:)`, or throws. With a
+/// recorder, it keeps a weak reference to the object it creates.
 private struct FailingEncodable: JavaScriptEncodable {
   struct Failure: Error {}
 
-  let string: String
   let fails: Bool
+  let recorder: WeakObjectRecorder?
 
   static func encode(_ value: FailingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     if value.fails {
       throw Failure()
     }
-    return JavaScriptValue(runtime, value.string)
+    let object = runtime.createObject()
+    value.recorder?.object = object.createWeak()
+    return object.takeValue()
   }
+}
+
+private final class WeakObjectRecorder {
+  var object: JavaScriptWeakObject?
 }
