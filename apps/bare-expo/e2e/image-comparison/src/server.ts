@@ -19,6 +19,17 @@ Bun.serve({
     const url = new URL(req.url);
 
     if (req.method === 'POST' && url.pathname === '/process') {
+      // Browsers can send text/plain cross-origin without a CORS preflight, but not application/json.
+      if (!req.headers.get('content-type')?.startsWith('application/json')) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message:
+              'The image comparison server rejected the request because its Content-Type is not application/json. Send the request body as JSON with the Content-Type: application/json header.',
+          }),
+          { status: 415, headers: jsonHeaders }
+        );
+      }
       try {
         const bodyJson = await req.json();
         const parsedBody = schema.parse(bodyJson);
@@ -147,19 +158,11 @@ Bun.serve({
       }
     }
 
-    return new Response('Not Found', {
-      status: 404,
-      headers: corsHeaders,
-    });
+    return new Response('Not Found', { status: 404 });
   },
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+const jsonHeaders = { 'Content-Type': 'application/json' };
 
 console.log(`🚀 Image Comparison Server running on http://localhost:${PORT}`);
 console.log('Available endpoints:');
