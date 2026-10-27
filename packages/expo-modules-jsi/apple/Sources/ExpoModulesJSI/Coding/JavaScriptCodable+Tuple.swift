@@ -58,7 +58,7 @@ extension JavaScriptValue {
       let array = try tupleArray(value, count: count, type: (repeat each Element).self, in: runtime)
       return (repeat try decodeTupleElement(of: array, at: &index, in: runtime, each elements))
     }
-    precondition(labels.count == count, "Expected one label per tuple element")
+    assert(labels.count == count, "Expected one label per tuple element")
     let object = try tupleObject(value, type: (repeat each Element).self, in: runtime)
     return (repeat try decodeTupleElement(of: object, labels: labels, at: &index, in: runtime, each elements))
   }
@@ -90,7 +90,7 @@ extension JavaScriptValue {
       writer.finish(into: slot, in: runtime)
       return
     }
-    precondition(labels.count == count, "Expected one label per tuple element")
+    assert(labels.count == count, "Expected one label per tuple element")
     let object = runtime.createObject()
     var index = 0
     for (element, encode) in repeat (each value, each elements) {
@@ -115,7 +115,7 @@ extension JavaScriptValue {
       let array = try tupleArray(value, count: count, type: (repeat each Element).self, in: runtime)
       return (repeat try decodeTupleElement(each types, of: array, at: &index, in: runtime))
     }
-    precondition(labels.count == count, "Expected one label per tuple element")
+    assert(labels.count == count, "Expected one label per tuple element")
     let object = try tupleObject(value, type: (repeat each Element).self, in: runtime)
     return (repeat try decodeTupleElement(each types, of: object, labels: labels, at: &index, in: runtime))
   }
@@ -144,7 +144,7 @@ extension JavaScriptValue {
       writer.finish(into: slot, in: runtime)
       return
     }
-    precondition(labels.count == count, "Expected one label per tuple element")
+    assert(labels.count == count, "Expected one label per tuple element")
     let object = runtime.createObject()
     var index = 0
     for element in repeat each value {
