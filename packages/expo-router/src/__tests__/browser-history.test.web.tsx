@@ -1,5 +1,4 @@
 /** @jest-environment jsdom */
-import React from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
