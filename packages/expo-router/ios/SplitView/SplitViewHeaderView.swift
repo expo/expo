@@ -42,7 +42,13 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
     }
     navigationItem.title = headerTitle
     // `.automatic` would follow the previous item, which is another column when the split view is collapsed.
-    navigationItem.largeTitleDisplayMode = largeTitle == true ? .always : .never
+    let largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode = largeTitle == true ? .always : .never
+    if navigationItem.largeTitleDisplayMode != largeTitleDisplayMode {
+      navigationItem.largeTitleDisplayMode = largeTitleDisplayMode
+      // A visible bar does not grow by itself when its item starts to show a large title.
+      // The column view is the view of its controller, so the controller is its next responder.
+      (superview?.next as? UIViewController)?.navigationController?.navigationBar.sizeToFit()
+    }
     // Keeps the back button next to the left items when the split view is collapsed.
     navigationItem.leftItemsSupplementBackButton = true
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems, side: .left)
