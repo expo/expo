@@ -1,8 +1,8 @@
 diff --git a/dist/build/index.js b/dist/build/index.js
-index 50e93200c32163a4c54a369a1732da1489e4af93..bade198a659f24e9ffe7ffe27005195e010fe481 100644
+index 7e3d6e4b35df5fba81c14209772e3164e54894d5..030804fbc96ce3416815b7af854c4c5564650c6a 100644
 --- a/dist/build/index.js
 +++ b/dist/build/index.js
-@@ -975,7 +975,7 @@ async function build(dir, experimentalAnalyze = false, reactProductionProfiling
+@@ -964,7 +964,7 @@ async function build(dir, analyze = false, reactProductionProfiling = false, deb
                              (0, _trace1.traceMemoryUsage)('Finished server compilation', nextBuildSpan);
                              buildTraceContext = res.buildTraceContext;
                              durationInSeconds += res.duration;
@@ -11,7 +11,7 @@ index 50e93200c32163a4c54a369a1732da1489e4af93..bade198a659f24e9ffe7ffe27005195e
                                  const buildTraceWorker = new _worker.Worker(require.resolve('./collect-build-traces'), {
                                      debuggerPortOffset: -1,
                                      isolatedMemory: false,
-@@ -1624,7 +1624,7 @@ async function build(dir, experimentalAnalyze = false, reactProductionProfiling
+@@ -1658,7 +1658,7 @@ async function build(dir, analyze = false, reactProductionProfiling = false, deb
              await writeFunctionsConfigManifest(distDir, functionsConfigManifest);
              // #endregion
              // #region NFT
@@ -21,10 +21,10 @@ index 50e93200c32163a4c54a369a1732da1489e4af93..bade198a659f24e9ffe7ffe27005195e
                      const { collectBuildTraces } = require('./collect-build-traces');
                      return collectBuildTraces({
 diff --git a/dist/esm/build/index.js b/dist/esm/build/index.js
-index 3df517560d53d83157ed067cc1a8af590ea6d786..02519f7b17e654f85209b9231677f394b7236907 100644
+index f02deb169904e55a737f07726df4c0560affa0f8..cec62426e6086385044d84da412e66d3844485be 100644
 --- a/dist/esm/build/index.js
 +++ b/dist/esm/build/index.js
-@@ -907,7 +907,7 @@ export default async function build(dir, experimentalAnalyze = false, reactProdu
+@@ -896,7 +896,7 @@ export default async function build(dir, analyze = false, reactProductionProfili
                              traceMemoryUsage('Finished server compilation', nextBuildSpan);
                              buildTraceContext = res.buildTraceContext;
                              durationInSeconds += res.duration;
@@ -33,7 +33,7 @@ index 3df517560d53d83157ed067cc1a8af590ea6d786..02519f7b17e654f85209b9231677f394
                                  const buildTraceWorker = new Worker(require.resolve('./collect-build-traces'), {
                                      debuggerPortOffset: -1,
                                      isolatedMemory: false,
-@@ -1556,7 +1556,7 @@ export default async function build(dir, experimentalAnalyze = false, reactProdu
+@@ -1590,7 +1590,7 @@ export default async function build(dir, analyze = false, reactProductionProfili
              await writeFunctionsConfigManifest(distDir, functionsConfigManifest);
              // #endregion
              // #region NFT
