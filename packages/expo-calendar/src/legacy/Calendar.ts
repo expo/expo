@@ -575,7 +575,7 @@ export type RecurrenceRule = {
  */
 export type DaysOfTheWeek = {
   /**
-   * The weekday as a [`DayOfTheWeek`](#dayoftheweek) value: `Sunday` is `1` and `Saturday` is `7`.
+   * `Sunday` is `1` and `Saturday` is `7`.
    */
   dayOfTheWeek: DayOfTheWeek;
   /**
