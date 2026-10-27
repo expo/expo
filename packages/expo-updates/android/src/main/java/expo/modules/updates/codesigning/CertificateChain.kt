@@ -48,8 +48,8 @@ class CertificateChain(private val certificateStrings: List<String>) {
         CertificateFactory.getInstance("X.509")
           .generateCertificate(certificateString.byteInputStream()) as X509Certificate
         ).apply {
-          checkValidity()
-        }
+        checkValidity()
+      }
     }
 
     private fun X509Certificate.isCodeSigningCertificate(): Boolean {
