@@ -1,17 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- [iOS] Fix the content of `RNHostView` snapping to its final size during an animated SwiftUI resize, for example a frame whose width animates or an `ArrangementView` fold. The hosted tree now follows the animation frame by frame. ([#52402](https://github.com/expo/expo/pull/52402) by [@dileepapeiris](https://github.com/dileepapeiris))
-
-### 💡 Others
-
 ## 58.0.23
 
 ### Patch Changes
