@@ -3,22 +3,18 @@
 internal import ExpoModulesJSI_Cxx
 internal import jsi
 
-// Conversions for tuples and for the containers that hold them. A tuple can't conform to a protocol,
-// so it can't be `JavaScriptDecodable` or `JavaScriptEncodable` itself, and neither can an array,
-// optional or dictionary of tuples. The macros convert these types through the methods below instead.
-// Each method takes a closure that converts one element, so the conversions nest: the macros pass
-// `T.decode` / `T.encode` for an element type that conforms, and another of these methods for one
-// that holds a tuple.
-//
-// A tuple whose elements all conform has shorter overloads that take the element types instead of
-// closures, so the code the macros generate for it stays small.
-//
-// The encode methods write into a `JavaScriptValue.Slot`, like `JavaScriptEncodable.encode(_:into:in:)`, so
-// a number, a boolean or a string in a tuple or a container never becomes a `JavaScriptValue`.
+// Conversions for tuples. A tuple can't conform to a protocol, so it can't be `JavaScriptDecodable` or
+// `JavaScriptEncodable` itself. The macros convert a tuple through the methods below instead, which take a
+// closure per element, so the conversions nest: the macros pass `T.decode` / `T.encode` for an element type
+// that conforms, and another conversion for one that holds a tuple. A tuple whose elements all conform has
+// shorter overloads that take the element types instead, so the code the macros generate for it stays small.
+// The arrays, optionals and dictionaries that hold tuples convert through the closure-based container
+// methods in `JavaScriptCodable+Containers.swift`.
 //
 // An unlabeled tuple maps to a JavaScript array with one value per element, and a labeled tuple to an
-// object with one property per label. The containers convert like their `JavaScriptCodable`
-// conformances do.
+// object with one property per label. The encode methods write into a `JavaScriptValue.Slot`, like
+// `JavaScriptEncodable.encode(_:into:in:)`, so a number, a boolean or a string in a tuple never becomes a
+// `JavaScriptValue`.
 
 extension JavaScriptValue {
   /// Converts a borrowed JavaScript value to a native value. Takes the runtime as a parameter so that
@@ -37,8 +33,6 @@ extension JavaScriptValue {
     _ runtime: borrowing JavaScriptRuntime
   ) throws -> Void
 
-  // MARK: - Tuples
-
   /// Decodes a tuple, converting each element with the matching closure in `elements`. Without
   /// `labels`, the value must be an array with one value per tuple element. With `labels`, the value
   /// must be an object, and each element is read from the property named by the matching label.
@@ -52,15 +46,23 @@ extension JavaScriptValue {
     in runtime: borrowing JavaScriptRuntime,
     _ elements: repeat ElementDecoder<each Element>
   ) throws -> (repeat each Element) {
-    let count = tupleElementCount(repeat (each Element).self)
-    var index = 0
-    guard let labels else {
-      let array = try tupleArray(value, count: count, type: (repeat each Element).self, in: runtime)
-      return (repeat try decodeTupleElement(of: array, at: &index, in: runtime, each elements))
-    }
-    assert(labels.count == count, "Expected one label per tuple element")
-    let object = try tupleObject(value, type: (repeat each Element).self, in: runtime)
-    return (repeat try decodeTupleElement(of: object, labels: labels, at: &index, in: runtime, each elements))
+    var reader = try TupleReader(value, labels: labels, of: repeat (each Element).self, in: runtime)
+    defer { reader.release() }
+    return (repeat try reader.next(each elements, in: runtime))
+  }
+
+  /// Decodes a tuple whose elements all conform to `JavaScriptDecodable`, like
+  /// ``decodeTuple(_:labels:in:_:)`` with each element decoded through its type's `decode`.
+  @JavaScriptActor
+  public static func decodeTuple<each Element: JavaScriptDecodable>(
+    _ value: borrowing JavaScriptUnownedValue,
+    labels: [String]? = nil,
+    as types: repeat (each Element).Type,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> (repeat each Element) {
+    var reader = try TupleReader(value, labels: labels, of: repeat each types, in: runtime)
+    defer { reader.release() }
+    return (repeat try reader.next(each types, in: runtime))
   }
 
   /// Encodes a tuple into `slot`, converting each element with the matching closure in `elements`.
@@ -76,48 +78,16 @@ extension JavaScriptValue {
     in runtime: borrowing JavaScriptRuntime,
     _ elements: repeat ElementEncoder<each Element>
   ) throws {
-    let count = tupleElementCount(repeat (each Element).self)
-    guard let labels else {
-      var writer = TupleArrayWriter(count: count)
-      do {
-        for (element, encode) in repeat (each value, each elements) {
-          try writer.append(element, in: runtime, encode)
-        }
-      } catch {
-        writer.discard()
-        throw error
+    var writer = TupleWriter(labels: labels, of: repeat (each Element).self)
+    do {
+      for (element, encode) in repeat (each value, each elements) {
+        try writer.append(element, encode, in: runtime)
       }
-      writer.finish(into: slot, in: runtime)
-      return
+    } catch {
+      writer.discard()
+      throw error
     }
-    assert(labels.count == count, "Expected one label per tuple element")
-    let object = runtime.createObject()
-    var index = 0
-    for (element, encode) in repeat (each value, each elements) {
-      try setTupleProperty(of: object, named: labels[index], to: element, encode)
-      index += 1
-    }
-    slot.emplace(object)
-  }
-
-  /// Decodes a tuple whose elements all conform to `JavaScriptDecodable`, like
-  /// ``decodeTuple(_:labels:in:_:)`` with each element decoded through its type's `decode`.
-  @JavaScriptActor
-  public static func decodeTuple<each Element: JavaScriptDecodable>(
-    _ value: borrowing JavaScriptUnownedValue,
-    labels: [String]? = nil,
-    as types: repeat (each Element).Type,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> (repeat each Element) {
-    let count = tupleElementCount(repeat each types)
-    var index = 0
-    guard let labels else {
-      let array = try tupleArray(value, count: count, type: (repeat each Element).self, in: runtime)
-      return (repeat try decodeTupleElement(each types, of: array, at: &index, in: runtime))
-    }
-    assert(labels.count == count, "Expected one label per tuple element")
-    let object = try tupleObject(value, type: (repeat each Element).self, in: runtime)
-    return (repeat try decodeTupleElement(each types, of: object, labels: labels, at: &index, in: runtime))
+    writer.finish(into: slot, in: runtime)
   }
 
   /// Encodes a tuple whose elements all conform to `JavaScriptEncodable` into `slot`, like
@@ -130,293 +100,130 @@ extension JavaScriptValue {
     into slot: borrowing JavaScriptValue.Slot,
     in runtime: borrowing JavaScriptRuntime
   ) throws {
-    let count = tupleElementCount(repeat (each Element).self)
-    guard let labels else {
-      var writer = TupleArrayWriter(count: count)
-      do {
-        for element in repeat each value {
-          try writer.append(element, in: runtime)
-        }
-      } catch {
-        writer.discard()
-        throw error
-      }
-      writer.finish(into: slot, in: runtime)
-      return
-    }
-    assert(labels.count == count, "Expected one label per tuple element")
-    let object = runtime.createObject()
-    var index = 0
-    for element in repeat each value {
-      try object.setProperty(labels[index], encoding: element)
-      index += 1
-    }
-    slot.emplace(object)
-  }
-
-  // MARK: - Containers
-
-  /// Decodes an array, converting each element with `element`. Like `Array.decode`, a value that isn't
-  /// an array decodes as a single-element array.
-  @JavaScriptActor
-  public static func decodeArray<Element>(
-    _ value: borrowing JavaScriptUnownedValue,
-    in runtime: borrowing JavaScriptRuntime,
-    element: ElementDecoder<Element>
-  ) throws -> [Element] {
-    guard value.isArray() else {
-      return [try element(value, runtime)]
-    }
-    var index = 0
-    return try value.getArray(in: runtime).mapUnowned { value in
-      defer { index += 1 }
-      do {
-        return try element(value, runtime)
-      } catch let error as TypeError {
-        throw error.prependingPath("[\(index)]")
-      }
-    }
-  }
-
-  /// Encodes an array into `slot`, converting each element with `element`.
-  @JavaScriptActor
-  public static func encodeArray<Element>(
-    _ value: [Element],
-    into slot: borrowing JavaScriptValue.Slot,
-    in runtime: borrowing JavaScriptRuntime,
-    element: ElementEncoder<Element>
-  ) throws {
-    try runtime.createArray(count: value.count, into: slot) {
-      (index: Int, elementSlot: borrowing JavaScriptValue.Slot) in
-      try element(value[index], elementSlot, runtime)
-    }
-  }
-
-  /// Decodes an optional, mapping `undefined` and `null` to `nil` and converting any other value with
-  /// `wrapped`.
-  @JavaScriptActor
-  public static func decodeOptional<Wrapped>(
-    _ value: borrowing JavaScriptUnownedValue,
-    in runtime: borrowing JavaScriptRuntime,
-    wrapped: ElementDecoder<Wrapped>
-  ) throws -> Wrapped? {
-    if value.isUndefined() || value.isNull() {
-      return nil
-    }
-    return try wrapped(value, runtime)
-  }
-
-  /// Encodes an optional into `slot`, as `null` when it's `nil` and with `wrapped` otherwise.
-  @JavaScriptActor
-  public static func encodeOptional<Wrapped>(
-    _ value: Wrapped?,
-    into slot: borrowing JavaScriptValue.Slot,
-    in runtime: borrowing JavaScriptRuntime,
-    wrapped: ElementEncoder<Wrapped>
-  ) throws {
-    guard let value else {
-      slot.emplaceNull()
-      return
-    }
-    try wrapped(value, slot, runtime)
-  }
-
-  /// Decodes an object into a `String`-keyed dictionary, converting each property with `value`. Like
-  /// `Dictionary.decode`, a property whose value is `undefined` is left out.
-  @JavaScriptActor
-  public static func decodeDictionary<Value>(
-    _ value: borrowing JavaScriptUnownedValue,
-    in runtime: borrowing JavaScriptRuntime,
-    value decodeValue: ElementDecoder<Value>
-  ) throws -> [String: Value] {
-    let object = try value.asObject(in: runtime)
-    let keys = object.getPropertyNames()
-    var result = [String: Value](minimumCapacity: keys.count)
-    for key in keys {
-      let decoded: Value? = try object.withUnownedProperty(key) { property in
-        do {
-          return property.isUndefined() ? nil : try decodeValue(property, runtime)
-        } catch let error as TypeError {
-          throw error.prependingPath(".\(key)")
-        }
-      }
-      if let decoded {
-        result[key] = decoded
-      }
-    }
-    return result
-  }
-
-  /// Encodes a `String`-keyed dictionary into `slot` as an object, converting each value with `value`.
-  @JavaScriptActor
-  public static func encodeDictionary<Value>(
-    _ value: [String: Value],
-    into slot: borrowing JavaScriptValue.Slot,
-    in runtime: borrowing JavaScriptRuntime,
-    value encodeValue: ElementEncoder<Value>
-  ) throws {
-    let object = runtime.createObject()
-    for (key, element) in value {
-      try object.setProperty(key) { propertySlot, runtime in
-        try encodeValue(element, propertySlot, runtime)
-      }
-    }
-    slot.emplace(object)
-  }
-
-  // MARK: - Helpers
-
-  /// Decodes the array element at `index` with `decode`, then advances `index`. A `TypeError` from the
-  /// element gets the index added to the front of its path.
-  @JavaScriptActor
-  private static func decodeTupleElement<Element>(
-    of array: borrowing JavaScriptArray,
-    at index: inout Int,
-    in runtime: borrowing JavaScriptRuntime,
-    _ decode: ElementDecoder<Element>
-  ) throws -> Element {
-    defer { index += 1 }
+    var writer = TupleWriter(labels: labels, of: repeat (each Element).self)
     do {
-      // The length was checked by `tupleArray`, so the element is lent without a range check or a copy.
-      return try array.withUnownedElementUnchecked(at: index) { value in
-        return try decode(value, runtime)
+      for element in repeat each value {
+        try writer.append(element, in: runtime)
       }
-    } catch let error as TypeError {
-      throw error.prependingPath("[\(index)]")
+    } catch {
+      writer.discard()
+      throw error
     }
-  }
-
-  /// Decodes the property named `labels[index]` with `decode`, then advances `index`. A `TypeError`
-  /// from the element gets the label added to the front of its path.
-  @JavaScriptActor
-  private static func decodeTupleElement<Element>(
-    of object: borrowing JavaScriptObject,
-    labels: [String],
-    at index: inout Int,
-    in runtime: borrowing JavaScriptRuntime,
-    _ decode: ElementDecoder<Element>
-  ) throws -> Element {
-    defer { index += 1 }
-    let label = labels[index]
-    do {
-      return try object.withUnownedProperty(label) { property in
-        return try decode(property, runtime)
-      }
-    } catch let error as TypeError {
-      throw error.prependingPath(".\(label)")
-    }
-  }
-
-  /// The array a tuple of `count` elements decodes from. Throws `TypeError`, naming the tuple `type`,
-  /// when the value isn't an array or its length differs.
-  @JavaScriptActor
-  private static func tupleArray(
-    _ value: borrowing JavaScriptUnownedValue,
-    count: Int,
-    type: any ~Copyable.Type,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> JavaScriptArray {
-    guard value.isArray() else {
-      throw TypeError(type: type)
-    }
-    let array = value.getArray(in: runtime)
-    guard array.length == count else {
-      throw TypeError(
-        type: type,
-        reason: "Expected an array of \(count) elements for '\(type)', but got \(array.length) elements"
-      )
-    }
-    return array
-  }
-
-  /// The object a labeled tuple decodes from. Throws `TypeError`, naming the tuple `type`, when the value
-  /// isn't an object.
-  @JavaScriptActor
-  private static func tupleObject(
-    _ value: borrowing JavaScriptUnownedValue,
-    type: any ~Copyable.Type,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> JavaScriptObject {
-    guard value.isObject() else {
-      throw TypeError(type: type)
-    }
-    return value.getObject(in: runtime)
-  }
-
-  /// Sets the property `name` of a labeled tuple's object to `element`, encoded with `encode`. Generic
-  /// over one element, so the closure doesn't capture an element of a parameter pack.
-  @JavaScriptActor
-  private static func setTupleProperty<Element>(
-    of object: borrowing JavaScriptObject,
-    named name: String,
-    to element: Element,
-    _ encode: ElementEncoder<Element>
-  ) throws {
-    try object.setProperty(name) { slot, runtime in
-      try encode(element, slot, runtime)
-    }
-  }
-
-  /// Decodes the array element at `index` as `Element`, then advances `index`. See
-  /// ``decodeTupleElement(of:at:in:_:)``.
-  @JavaScriptActor
-  private static func decodeTupleElement<Element: JavaScriptDecodable>(
-    _ type: Element.Type,
-    of array: borrowing JavaScriptArray,
-    at index: inout Int,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> Element {
-    return try decodeTupleElement(of: array, at: &index, in: runtime) { value, runtime in
-      return try Element.decode(value, in: runtime)
-    }
-  }
-
-  /// Decodes the property named `labels[index]` as `Element`, then advances `index`. See
-  /// ``decodeTupleElement(of:labels:at:in:_:)``.
-  @JavaScriptActor
-  private static func decodeTupleElement<Element: JavaScriptDecodable>(
-    _ type: Element.Type,
-    of object: borrowing JavaScriptObject,
-    labels: [String],
-    at index: inout Int,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> Element {
-    return try decodeTupleElement(of: object, labels: labels, at: &index, in: runtime) { value, runtime in
-      return try Element.decode(value, in: runtime)
-    }
-  }
-
-  /// The number of elements in a tuple, given the metatype of each element.
-  private static func tupleElementCount<each Element>(_ types: repeat (each Element).Type) -> Int {
-    var count = 0
-    for _ in repeat each types {
-      count += 1
-    }
-    return count
+    writer.finish(into: slot, in: runtime)
   }
 }
 
-/// Collects the elements of an unlabeled tuple, encoded in order straight into a buffer of engine values,
-/// and then moves them into a new array with one engine call, so no element becomes a `JavaScriptValue`.
-/// The caller calls either `finish(into:in:)` or, when an encode throws, `discard()`.
-private struct TupleArrayWriter {
-  private let start: UnsafeMutablePointer<facebook.jsi.Value>
+/// The elements of a tuple, read in order from the array or the object that the tuple decodes from: by
+/// index from an array, or by label from an object. They are held as engine values, so each one is lent to
+/// its decode without a `JavaScriptValue`. The caller calls `release()` when it's done.
+private struct TupleReader {
+  private let elements: UnsafeMutablePointer<facebook.jsi.Value>
   private let count: Int
+  private let labels: [String]?
+  private let jsiRuntime: facebook.jsi.IRuntime
+  private var index = 0
+
+  /// Reads the elements of a tuple of the given element types from `value`. Throws `TypeError`, naming the
+  /// tuple type, when the value isn't an array of the tuple's length (or an object, with `labels`).
+  @JavaScriptActor
+  init<each Element>(
+    _ value: borrowing JavaScriptUnownedValue,
+    labels: [String]?,
+    of types: repeat (each Element).Type,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let type = (repeat each Element).self
+    let count = tupleElementCount(repeat each types)
+    let jsiRuntime = runtime.pointee
+    if let labels {
+      assert(labels.count == count, "Expected one label per tuple element")
+      guard value.isObject() else {
+        throw JavaScriptValue.TypeError(type: type)
+      }
+      let object = value.getObject(in: runtime)
+      elements = .allocate(capacity: count)
+      for (index, label) in labels.enumerated() {
+        (elements + index).initialize(to: object.pointee.getProperty(jsiRuntime, label.toJSIPropNameID(in: jsiRuntime)))
+      }
+    } else {
+      guard value.isArray() else {
+        throw JavaScriptValue.TypeError(type: type)
+      }
+      let array = value.getArray(in: runtime)
+      let length = array.length
+      guard length == count else {
+        throw JavaScriptValue.TypeError(
+          type: type,
+          reason: "Expected an array of \(count) elements for '\(type)', but got \(length) elements"
+        )
+      }
+      elements = .allocate(capacity: count)
+      for index in 0..<count {
+        (elements + index).initialize(to: array.pointee.getValueAtIndex(jsiRuntime, index))
+      }
+    }
+    self.count = count
+    self.labels = labels
+    self.jsiRuntime = jsiRuntime
+  }
+
+  /// Decodes the next element with `decode`. A `TypeError` from the element gets the element's index or
+  /// label added to the front of its path.
+  @JavaScriptActor
+  mutating func next<Element>(
+    _ decode: JavaScriptValue.ElementDecoder<Element>,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Element {
+    defer { index += 1 }
+    do {
+      return try decode(JavaScriptUnownedValue(jsiRuntime, elements + index), runtime)
+    } catch let error as JavaScriptValue.TypeError {
+      throw error.prependingPath(labels.map { ".\($0[index])" } ?? "[\(index)]")
+    }
+  }
+
+  /// Decodes the next element with its type's `decode`.
+  @JavaScriptActor
+  mutating func next<Element: JavaScriptDecodable>(
+    _ type: Element.Type,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> Element {
+    return try next({ value, runtime in return try Element.decode(value, in: runtime) }, in: runtime)
+  }
+
+  /// Releases the elements.
+  func release() {
+    expo.destroyValues(elements, count)
+    elements.deallocate()
+  }
+}
+
+/// Collects the elements of a tuple, encoded in order straight into a buffer of engine values, and then
+/// moves them into a new array with one engine call, or sets them as the properties of a new object, named
+/// by `labels`. So no element becomes a `JavaScriptValue`. The caller calls either `finish(into:in:)` or,
+/// when an encode throws, `discard()`.
+private struct TupleWriter {
+  private let elements: UnsafeMutablePointer<facebook.jsi.Value>
+  private let count: Int
+  private let labels: [String]?
   private var written = 0
 
-  init(count: Int) {
-    self.start = .allocate(capacity: count)
+  init<each Element>(labels: [String]?, of types: repeat (each Element).Type) {
+    let count = tupleElementCount(repeat each types)
+    assert(labels == nil || labels?.count == count, "Expected one label per tuple element")
+    self.elements = .allocate(capacity: count)
     self.count = count
+    self.labels = labels
   }
 
   /// Encodes `element` with `encode` into the next slot.
   @JavaScriptActor
   mutating func append<Element>(
     _ element: Element,
-    in runtime: borrowing JavaScriptRuntime,
-    _ encode: JavaScriptValue.ElementEncoder<Element>
+    _ encode: JavaScriptValue.ElementEncoder<Element>,
+    in runtime: borrowing JavaScriptRuntime
   ) throws {
-    try encode(element, JavaScriptValue.Slot(start + written), runtime)
+    try encode(element, JavaScriptValue.Slot(elements + written), runtime)
     written += 1
   }
 
@@ -424,21 +231,41 @@ private struct TupleArrayWriter {
   @JavaScriptActor
   mutating func append<Element: JavaScriptEncodable>(_ element: Element, in runtime: borrowing JavaScriptRuntime) throws
   {
-    try Element.encode(element, into: JavaScriptValue.Slot(start + written), in: runtime)
+    try Element.encode(element, into: JavaScriptValue.Slot(elements + written), in: runtime)
     written += 1
   }
 
-  /// Moves the encoded elements into a new array, and the array into `slot`.
+  /// Moves the encoded elements into a new array, or sets them as the properties of a new object, and moves
+  /// that into `slot`.
   func finish(into slot: borrowing JavaScriptValue.Slot, in runtime: borrowing JavaScriptRuntime) {
-    var array = expo.createArrayForPushing(runtime.pointee, count)
-    expo.pushValues(runtime.pointee, array, 0, start, count)
-    expo.emplaceMovedArray(slot.pointer, &array)
-    start.deallocate()
+    let jsiRuntime = runtime.pointee
+    if let labels {
+      let object = runtime.createObject()
+      for (index, label) in labels.enumerated() {
+        expo.setProperty(jsiRuntime, object.pointee, label.toJSIPropNameID(in: jsiRuntime), elements[index])
+      }
+      expo.destroyValues(elements, count)
+      slot.emplace(object)
+    } else {
+      var array = expo.createArrayForPushing(jsiRuntime, count)
+      expo.pushValues(jsiRuntime, array, 0, elements, count)
+      expo.emplaceMovedArray(slot.pointer, &array)
+    }
+    elements.deallocate()
   }
 
   /// Releases the elements encoded so far. The slot of the element that threw holds no value.
   func discard() {
-    expo.destroyValues(start, written)
-    start.deallocate()
+    expo.destroyValues(elements, written)
+    elements.deallocate()
   }
+}
+
+/// The number of elements in a tuple, given the metatype of each element.
+private func tupleElementCount<each Element>(_ types: repeat (each Element).Type) -> Int {
+  var count = 0
+  for _ in repeat each types {
+    count += 1
+  }
+  return count
 }

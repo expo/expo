@@ -204,3 +204,119 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
     slot.emplace(object)
   }
 }
+
+// MARK: - Containers that hold tuples
+
+// An array, optional or dictionary whose element holds a tuple can't conform, since the tuple can't. The
+// macros convert it through these methods, which convert each element with a closure, like the tuple
+// methods in `JavaScriptCodable+Tuple.swift`, and otherwise behave like the conformances above.
+
+extension JavaScriptValue {
+  /// Decodes an array, converting each element with `element`. Like `Array.decode`, a value that isn't
+  /// an array decodes as a single-element array.
+  @JavaScriptActor
+  public static func decodeArray<Element>(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime,
+    element: ElementDecoder<Element>
+  ) throws -> [Element] {
+    guard value.isArray() else {
+      return [try element(value, runtime)]
+    }
+    var index = 0
+    return try value.getArray(in: runtime).mapUnowned { value in
+      defer { index += 1 }
+      do {
+        return try element(value, runtime)
+      } catch let error as TypeError {
+        throw error.prependingPath("[\(index)]")
+      }
+    }
+  }
+
+  /// Encodes an array into `slot`, converting each element with `element`.
+  @JavaScriptActor
+  public static func encodeArray<Element>(
+    _ value: [Element],
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime,
+    element: ElementEncoder<Element>
+  ) throws {
+    try runtime.createArray(count: value.count, into: slot) {
+      (index: Int, elementSlot: borrowing JavaScriptValue.Slot) in
+      try element(value[index], elementSlot, runtime)
+    }
+  }
+
+  /// Decodes an optional, mapping `undefined` and `null` to `nil` and converting any other value with
+  /// `wrapped`.
+  @JavaScriptActor
+  public static func decodeOptional<Wrapped>(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime,
+    wrapped: ElementDecoder<Wrapped>
+  ) throws -> Wrapped? {
+    if value.isUndefined() || value.isNull() {
+      return nil
+    }
+    return try wrapped(value, runtime)
+  }
+
+  /// Encodes an optional into `slot`, as `null` when it's `nil` and with `wrapped` otherwise.
+  @JavaScriptActor
+  public static func encodeOptional<Wrapped>(
+    _ value: Wrapped?,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime,
+    wrapped: ElementEncoder<Wrapped>
+  ) throws {
+    guard let value else {
+      slot.emplaceNull()
+      return
+    }
+    try wrapped(value, slot, runtime)
+  }
+
+  /// Decodes an object into a `String`-keyed dictionary, converting each property with `value`. Like
+  /// `Dictionary.decode`, a property whose value is `undefined` is left out.
+  @JavaScriptActor
+  public static func decodeDictionary<Value>(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime,
+    value decodeValue: ElementDecoder<Value>
+  ) throws -> [String: Value] {
+    let object = try value.asObject(in: runtime)
+    let keys = object.getPropertyNames()
+    var result = [String: Value](minimumCapacity: keys.count)
+    for key in keys {
+      let decoded: Value? = try object.withUnownedProperty(key) { property in
+        do {
+          return property.isUndefined() ? nil : try decodeValue(property, runtime)
+        } catch let error as TypeError {
+          throw error.prependingPath(".\(key)")
+        }
+      }
+      if let decoded {
+        result[key] = decoded
+      }
+    }
+    return result
+  }
+
+  /// Encodes a `String`-keyed dictionary into `slot` as an object, converting each value with `value`.
+  @JavaScriptActor
+  public static func encodeDictionary<Value>(
+    _ value: [String: Value],
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime,
+    value encodeValue: ElementEncoder<Value>
+  ) throws {
+    let object = runtime.createObject()
+    for (key, element) in value {
+      try object.setProperty(key) { propertySlot, runtime in
+        try encodeValue(element, propertySlot, runtime)
+      }
+    }
+    slot.emplace(object)
+  }
+}
