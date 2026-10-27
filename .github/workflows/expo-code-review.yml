@@ -2,55 +2,69 @@
 name: AI code review
 
 # SECURITY: `pull_request_target`, so a PR from a fork gets the secrets it needs and the
-# workflow itself always comes from the base branch, never from the PR. That trigger is
-# dangerous only for a job that checks out and runs the PR's code, and this one never
-# does: it checks out the base branch, runs the engine published to npm, and reads the
-# PR head only as data (see the checkout step and `ecr ci` below).
+# workflow itself never comes from the PR. That trigger is dangerous only for a job that
+# checks out and runs the PR's code, and this one never does: it checks out the default
+# branch, runs the engine published to npm, and reads the PR head only as data (see the
+# checkout step and `ecr ci` below). Only PRs into `main` and the `sdk-*` release
+# branches run it, because a PR author picks the base branch.
 # @ref LLP 0009#workflow-security-posture [implements] — pull_request_target with a base-only checkout
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+    branches: [main, 'sdk-*']
 
-# Comment-only: read the repo, write PR comments (issue comments API).
+# The job posts with EXPO_BOT_GITHUB_TOKEN, never with GITHUB_TOKEN, so GITHUB_TOKEN only
+# needs to read the repository for the checkout.
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 concurrency:
-  group: ai-code-review-${{ github.event.pull_request.number }}
+  # A label event for any other label (such as `contributor: external`, or the
+  # `ready for human` label the reviewer adds itself) gets its own group, so it never
+  # cancels a running review.
+  group: "ai-code-review-${{ github.event.pull_request.number }}-${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && !startsWith(github.event.label.name, 'ai-review') && github.run_id || 'review' }}"
   cancel-in-progress: true
 
 jobs:
   review:
     runs-on: ubuntu-latest
-    # Two ways in, and `ai-review:skip` always wins:
+    # Three ways in, and `ai-review:skip` always wins. A PR is from a fork when its head
+    # repository is not this one, which also covers a fork that was deleted.
     #
-    # 1. OPT-IN by label, for every PR. This repo takes far too many PRs to spin a runner
-    #    for each one, so the `ai-review` label is required here, not just inside `ecr ci`.
-    #    Because the workflow triggers on `labeled`, adding the label to an open PR starts
-    #    the review immediately. Uses the array form of contains() for an EXACT label
-    #    match, so `ai-review:skip` and `ai-review:security` are not confused with
-    #    `ai-review`. This must stay in agreement with config.jsonc `review.trigger:
-    #    "label"`, which is the real policy: `ecr ci` re-checks it and honors
-    #    `ai-review:skip` regardless.
+    # 1. OPT-IN by label, for a PR from this repository. This repo takes far too many PRs
+    #    to spin a runner for each one, so the `ai-review` label is required here, not
+    #    just inside `ecr ci`. Because the workflow triggers on `labeled`, adding the
+    #    label to an open PR starts the review immediately, and every later push reviews
+    #    again. Uses the array form of contains() for an EXACT label match, so
+    #    `ai-review:skip` and `ai-review:security` are not confused with `ai-review`.
+    #    This must stay in agreement with config.jsonc `review.trigger: "label"`, which
+    #    is the real policy: `ecr ci` re-checks it and honors `ai-review:skip`
+    #    regardless. A label event starts a run only for an `ai-review*` label.
     #
-    # 2. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
+    # 2. ONE review per label, for a PR from a fork. Only the `labeled` event for
+    #    `ai-review` itself starts it, so a later push by the author never runs with the
+    #    secrets on content no maintainer has seen. To review new commits, remove and add
+    #    the label again, or comment `/review`.
+    #
+    # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
     #    for this path (the same override a `/review` command uses), because the label
     #    trigger in config.jsonc would otherwise skip an unlabeled PR.
-    #
-    # A label event starts a run only for an `ai-review*` label. Other labels, such as
-    # the `ready for human` label the reviewer itself adds, change nothing to review.
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — spin-up avoidance only; real policy is config.jsonc review.trigger
     if: >-
       ${{ !contains(github.event.pull_request.labels.*.name, 'ai-review:skip')
+      && ((github.event.pull_request.head.repo.full_name == github.repository
+      && contains(github.event.pull_request.labels.*.name, 'ai-review')
       && ((github.event.action != 'labeled' && github.event.action != 'unlabeled')
-      || startsWith(github.event.label.name, 'ai-review'))
-      && (contains(github.event.pull_request.labels.*.name, 'ai-review')
-      || (github.event.pull_request.head.repo.fork
+      || startsWith(github.event.label.name, 'ai-review')))
+      || (github.event.pull_request.head.repo.full_name != github.repository
+      && github.event.action == 'labeled'
+      && github.event.label.name == 'ai-review')
+      || (github.event.pull_request.head.repo.full_name != github.repository
+      && vars.AI_REVIEW_FORK_PRS == 'true'
       && !github.event.pull_request.draft
-      && vars.AI_REVIEW_FORK_PRS == 'true')) }}
+      && github.event.action != 'labeled'
+      && github.event.action != 'unlabeled')) }}
     # Backstop so a stalled review fails fast instead of hanging. This is the ONE cap
     # with no soft landing (GitHub hard-kills the job and nothing is posted), so keep
     # margin over the worst-case internal chain: the passes budget
@@ -61,10 +75,11 @@ jobs:
     # A reviewer failure must never fail the PR's checks.
     continue-on-error: true
     steps:
-      # SECURITY: check out the PR's trusted base branch tip, never the PR head or
-      # merge ref. Everything security-sensitive on this runner (`ecr verify-config`'s
-      # sweep, and any ambient files) therefore comes from a branch only maintainers
-      # can land on. `ecr ci` additionally enforces this itself: it materializes the
+      # SECURITY: check out the default branch tip, never the PR head or merge ref,
+      # and never the PR's base branch either: a PR author picks that one, and its
+      # scripts, actions and config files run below with the secrets. Everything
+      # security-sensitive on this runner (`ecr verify-config`'s sweep, the launcher,
+      # the model-env action, and any ambient files) therefore comes from `main`. `ecr ci` additionally enforces this itself: it materializes the
       # PR's immutable base commit via the GitHub API for configuration and the head
       # commit (scrubbed of runtime config) for source reads, so this checkout is
       # defense in depth, not the only line. persist-credentials off — the CLI's own
@@ -73,15 +88,13 @@ jobs:
       # @ref LLP 0009#workflow-security-posture [implements] — trusted base branch, never PR head/merge ref
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # base.REF, not base.SHA. The security property is "never the PR head
-          # or the merge ref", and the base branch tip satisfies it — only
-          # maintainers land there. base.sha additionally FROZE the tree at
-          # whenever the PR was last synchronized, which broke this job outright:
-          # a PR based before .github/actions/prepare-model-env existed checked
-          # out a tree without it, so `uses: ./…` could not resolve and the run
-          # died before reviewing anything. base.sha does not advance on its own,
-          # so every such PR stayed broken until someone pushed to it.
-          ref: ${{ github.event.pull_request.base.ref }}
+          # A branch tip, not base.sha: base.sha FROZE the tree at whenever the
+          # PR was last synchronized, which broke this job outright. A PR based
+          # before .github/actions/prepare-model-env existed checked out a tree
+          # without it, so `uses: ./…` could not resolve and the run died before
+          # reviewing anything. A PR into an `sdk-*` branch still gets its review
+          # config from its own base commit, which `ecr ci` reads by itself.
+          ref: ${{ github.event.repository.default_branch }}
           # Shallow is enough — the reviewer gets the diff from the API (`gh`).
           fetch-depth: 1
           persist-credentials: false
@@ -176,7 +189,7 @@ jobs:
           # Search-only credential used for fixed, site-scoped documentation discovery.
           # Not passed for a PR from a fork, which reviews with the keyless documentation
           # providers only.
-          BRAVE_SEARCH_API_KEY: ${{ !github.event.pull_request.head.repo.fork && secrets.BRAVE_SEARCH_API_KEY || '' }}
+          BRAVE_SEARCH_API_KEY: ${{ github.event.pull_request.head.repo.full_name == github.repository && secrets.BRAVE_SEARCH_API_KEY || '' }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
 
