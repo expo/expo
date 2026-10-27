@@ -61,12 +61,20 @@ public final class FileSystemModule: Module {
   }
 
   #if os(iOS)
+  private func canPreviewItem(_ item: FileSystemPreviewItem) -> Bool {
+    #if targetEnvironment(macCatalyst)
+    return QLPreviewController.canPreviewItem(item)
+    #else
+    return QLPreviewController.canPreview(item)
+    #endif
+  }
+
   private func canPreview(file: FileSystemFile) throws -> Bool {
     return try file.withCorrectTypeAndScopedAccess(permission: .read) {
       guard file.exists else {
         return false
       }
-      return QLPreviewController.canPreview(FileSystemPreviewItem(url: file.url, title: nil))
+      return canPreviewItem(FileSystemPreviewItem(url: file.url, title: nil))
     }
   }
 
@@ -98,7 +106,7 @@ public final class FileSystemModule: Module {
         throw FilePreviewFileNotFoundException(file.url)
       }
       let item = FileSystemPreviewItem(url: file.url, title: options?.title)
-      guard QLPreviewController.canPreview(item) else {
+      guard canPreviewItem(item) else {
         throw FilePreviewUnsupportedException(file.url)
       }
       items.append(item)
