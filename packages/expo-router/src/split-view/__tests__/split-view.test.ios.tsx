@@ -9,6 +9,7 @@ import Stack from '../../layouts/StackClient';
 import { SafeAreaView, Split } from '../../optional-libraries/react-native-screens';
 import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
+import { SplitViewColumnHeader } from '../header';
 import { SplitViewNativeHeader } from '../native';
 import { SplitView } from '../split-view';
 
@@ -377,6 +378,29 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
   });
 });
 
+it('renders the SplitView.Column header as the last child of its Split.Column', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ title: 'Mailboxes' }}>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+          <SplitView.Stack />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The first Split.Column is the sidebar column.
+  const columnProps = jest.mocked(Split.Column).mock.calls[0]![0];
+  expect(
+    Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
+});
+
 it('calls onPress of the pressed native toolbar item', async () => {
   const onEditPress = jest.fn();
   const onSearchPress = jest.fn();
@@ -431,6 +455,27 @@ it('renders the SplitView.Stack header in the content column', async () => {
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].title).toBe('Message');
 });
 
+it('renders the SplitView.Stack header as the last child of the content column', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Stack header={{ title: 'Message' }} />
+        </SplitView>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The first Split.Column is the sidebar column. The second is the content column.
+  const contentColumnProps = jest.mocked(Split.Column).mock.calls[1]![0];
+  expect(
+    Children.toArray(contentColumnProps.children).map((child) => isValidElement(child) && child.type)
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
+});
+
 it('renders the SplitView.Inspector header in the inspector', async () => {
   await renderRouter(
     {
@@ -452,6 +497,29 @@ it('renders the SplitView.Inspector header in the inspector', async () => {
     within(screen.getByTestId('Split.Inspector')).getByTestId('SplitViewNativeHeader')
   ).toBeVisible();
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].title).toBe('Details');
+});
+
+it('renders the SplitView.Inspector header as the last child of the inspector', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Stack />
+          <SplitView.Inspector header={{ title: 'Details' }}>
+            <Text>Inspector</Text>
+          </SplitView.Inspector>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const inspectorProps = jest.mocked(Split.Inspector).mock.lastCall![0];
+  expect(
+    Children.toArray(inspectorProps.children).map((child) => isValidElement(child) && child.type)
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
 });
 
 it('renders no native header for a SplitView.Column without header', async () => {

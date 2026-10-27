@@ -112,6 +112,7 @@ function SplitViewNavigator({
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columns}
         <Split.Column>
+          {/* TODO(@ubax): Replace Slot with NativeStack (ENG-28658) */}
           {getSplitColumnChildren(
             { children: <Slot activityEnabled={activityEnabled} />, header: stackHeader },
             disableHorizontalSafeAreaInsets
