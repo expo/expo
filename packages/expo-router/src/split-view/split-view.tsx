@@ -130,6 +130,7 @@ function SplitViewNavigator({
         }}>
         {columns}
         <Split.Column>
+          {/* TODO(@ubax): Replace Slot with NativeStack (ENG-28658) */}
           {getSplitColumnChildren(
             { children: <Slot activityEnabled={activityEnabled} />, header: stackHeader },
             applyHorizontalInsets

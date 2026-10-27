@@ -84,22 +84,20 @@ export function getSplitColumnChildren(
 ) {
   const childrenArray = Children.toArray(children);
   const nativeChildren = childrenArray.filter(isSplitColumnNativeChild);
-  if (header) {
-    nativeChildren.unshift(<SplitViewColumnHeader key="header" header={header} />);
-  }
   const otherChildren = childrenArray.filter((child) => !isSplitColumnNativeChild(child));
-  if (otherChildren.length === 0) {
-    return nativeChildren;
-  }
   // The SafeAreaView is always rendered, so that the content is not remounted when the insets change.
   // The provider is inside the SafeAreaView, so `useSafeAreaInsets` does not report the applied horizontal insets again.
-  return [
-    ...nativeChildren,
+  const content = otherChildren.length > 0 && (
     <SafeAreaView
       key="safe-area-view"
       edges={{ left: horizontalSafeAreaInsets, right: horizontalSafeAreaInsets }}>
       <SafeAreaProvider>{otherChildren}</SafeAreaProvider>
-    </SafeAreaView>,
+    </SafeAreaView>
+  );
+  return [
+    ...nativeChildren,
+    content,
+    header && <SplitViewColumnHeader key="header" header={header} />,
   ];
 }
 
@@ -109,8 +107,8 @@ export function getSplitColumnChildren(
 export function SplitViewInspector({ children, header }: SplitViewColumnProps) {
   return (
     <Split.Inspector>
-      {header && <SplitViewColumnHeader header={header} />}
       {children}
+      {header && <SplitViewColumnHeader header={header} />}
     </Split.Inspector>
   );
 }
