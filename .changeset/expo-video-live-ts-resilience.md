@@ -2,4 +2,4 @@
 'expo-video': patch
 ---
 
-[Android] Improve MPEG-TS live stream compatibility with TsExtractor flags
+[Android] Allow non-IDR keyframes in MPEG-TS extractor to improve stream compatibility
