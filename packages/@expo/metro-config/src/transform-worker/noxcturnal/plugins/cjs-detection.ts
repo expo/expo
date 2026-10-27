@@ -18,8 +18,7 @@ export function createCjsDetectionPlugin(
         },
         (path, state: { hasCjsExports: boolean }) => {
           const left = path.getChild('left');
-          // Preserve the existing exclusion of parenthesized assignment targets.
-          if (left == null || path.node.start !== left.node.start) return;
+          if (left == null) return;
           const pattern = String(left.node.memberPath ?? '');
           const isModuleExports =
             (pattern === 'module.exports' || pattern.startsWith('module.exports.')) &&
