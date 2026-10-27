@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Smartphone02Icon } from '@expo/styleguide-icons/custom/Smartphone02Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { Users01Icon } from '@expo/styleguide-icons/outline/Users01Icon';
 import { Fragment } from 'react';
@@ -11,7 +11,7 @@ const PLACE_ICONS = {
   'GitHub Actions': [GithubIcon],
   'GitHub or TestFlight': [GithubIcon, AppleIcon],
   'EAS Workflows': [Dataflow03Icon],
-  'Expo Simulators': [Cloud01Icon],
+  'Expo Simulators': [Smartphone02Icon],
   'Your team': [Users01Icon],
 };
 
