@@ -704,10 +704,10 @@ struct JavaScriptObjectTests {
   func `setProperty encodes primitives straight into the property`() throws {
     let object = runtime.createObject()
     let name = JavaScriptPropNameID(runtime, string: "count")
-    try object.setProperty(name, encoding: 42, in: runtime)
-    try object.setProperty("label", encoding: "café", in: runtime)
-    try object.setProperty("enabled", encoding: true, in: runtime)
-    try object.setProperty("missing", encoding: Int?.none, in: runtime)
+    try object.setProperty(name, encoding: 42)
+    try object.setProperty("label", encoding: "café")
+    try object.setProperty("enabled", encoding: true)
+    try object.setProperty("missing", encoding: Int?.none)
     #expect(object.getProperty("count").getInt() == 42)
     #expect(object.getProperty("label").getString() == "café")
     #expect(object.getProperty("enabled").getBool() == true)
@@ -717,7 +717,7 @@ struct JavaScriptObjectTests {
   @Test
   func `setProperty encodes a type without a slot override`() throws {
     let object = runtime.createObject()
-    try object.setProperty("values", encoding: ["a": 1], in: runtime)
+    try object.setProperty("values", encoding: ["a": 1])
     #expect(object.getProperty("values").getObject().getProperty("a").getInt() == 1)
   }
 
@@ -725,7 +725,7 @@ struct JavaScriptObjectTests {
   func `setProperty leaves the property unset when the encode throws`() throws {
     let object = runtime.createObject()
     #expect(throws: UnsafeIntegerException.self) {
-      try object.setProperty("big", encoding: Int.max, in: runtime)
+      try object.setProperty("big", encoding: Int.max)
     }
     #expect(object.hasProperty("big") == false)
   }
@@ -733,7 +733,7 @@ struct JavaScriptObjectTests {
   @Test
   func `slot takes an array without a clone`() throws {
     let object = runtime.createObject()
-    try object.setProperty("pair", encoding: ArrayEncodedPair(first: 3, second: 4), in: runtime)
+    try object.setProperty("pair", encoding: ArrayEncodedPair(first: 3, second: 4))
     let pair = object.getProperty("pair").getArray()
     #expect(pair.length == 2)
     #expect(try pair.getValue(at: 1).getInt() == 4)
@@ -775,7 +775,7 @@ private struct ObjectEncodedPoint: JavaScriptEncodable {
 
   static func encode(_ value: ObjectEncodedPoint, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     let object = runtime.createObject()
-    try object.setProperty("x", encoding: value.x, in: runtime)
+    try object.setProperty("x", encoding: value.x)
     return object.takeValue()
   }
 
@@ -785,7 +785,7 @@ private struct ObjectEncodedPoint: JavaScriptEncodable {
     in runtime: borrowing JavaScriptRuntime
   ) throws {
     let object = runtime.createObject()
-    try object.setProperty("x", encoding: value.x, in: runtime)
+    try object.setProperty("x", encoding: value.x)
     slot.emplace(object)
   }
 }

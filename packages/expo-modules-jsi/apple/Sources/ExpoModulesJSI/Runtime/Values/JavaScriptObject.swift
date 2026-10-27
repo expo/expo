@@ -318,50 +318,49 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setProperty(jsiRuntime, pointee, propName.pointee, value.toJSIValue(in: jsiRuntime))
   }
 
-  /// Encodes `value` with ``JavaScriptEncodable/encode(_:into:in:)`` straight into the engine value that the
-  /// property is set to. A number, a boolean or a string then never becomes a ``JavaScriptValue``, whose
-  /// moves and destroys call into the engine.
+  /// Encodes `value` with ``JavaScriptEncodable/encode(_:into:in:)``, in the runtime of the object, straight
+  /// into the engine value that the property is set to. A number, a boolean or a string then never becomes a
+  /// ``JavaScriptValue``, whose moves and destroys call into the engine.
   @inlinable
   @JavaScriptActor
   public func setProperty<T: JavaScriptEncodable & ~Copyable>(
     _ propName: JavaScriptPropNameID,
-    encoding value: consuming T,
-    in runtime: borrowing JavaScriptRuntime
+    encoding value: consuming T
   ) throws {
     // Inlinable, so the encode specializes in the caller's module. The closure can't consume a captured
     // value, so the value moves out of an optional, as in the default `encode(_:into:in:)`.
     var pending: T? = .some(value)
-    try setProperty(propName) { slot in
+    try setProperty(propName) { slot, runtime in
       try T.encode(pending.take()!, into: slot, in: runtime)
     }
   }
 
-  /// Same as the `JavaScriptPropNameID` overload of `setProperty(_:encoding:in:)`, for a property named by a
+  /// Same as the `JavaScriptPropNameID` overload of `setProperty(_:encoding:)`, for a property named by a
   /// string.
   @inlinable
   @JavaScriptActor
   public func setProperty<T: JavaScriptEncodable & ~Copyable>(
     _ name: String,
-    encoding value: consuming T,
-    in runtime: borrowing JavaScriptRuntime
+    encoding value: consuming T
   ) throws {
     var pending: T? = .some(value)
-    try setProperty(name) { slot in
+    try setProperty(name) { slot, runtime in
       try T.encode(pending.take()!, into: slot, in: runtime)
     }
   }
 
-  /// Sets the property to the value that `encode` writes into the slot. The slot is a temporary engine
-  /// value that holds `undefined` until then, and it's destroyed after the property is set.
+  /// Sets the property to the value that `encode` writes into the slot, in the runtime of the object. The
+  /// slot is a temporary engine value that holds `undefined` until then, and it's destroyed after the
+  /// property is set. Not inlinable, so the runtime is read from the handle here rather than in the caller.
   @usableFromInline
   internal func setProperty(
     _ propName: borrowing JavaScriptPropNameID,
-    encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot) throws -> Void
+    encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
   ) rethrows {
-    guard let jsiRuntime else {
+    guard let jsiRuntime, let runtime = runtimeHandle.unretainedRuntime else {
       FatalError.runtimeLost()
     }
-    try withEncodedValue(encode) { value in
+    try withEncodedValue(encode, in: runtime) { value in
       expo.setProperty(jsiRuntime, pointee, propName.pointee, value)
     }
   }
@@ -369,12 +368,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   @usableFromInline
   internal func setProperty(
     _ name: String,
-    encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot) throws -> Void
+    encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
   ) rethrows {
-    guard let jsiRuntime else {
+    guard let jsiRuntime, let runtime = runtimeHandle.unretainedRuntime else {
       FatalError.runtimeLost()
     }
-    try withEncodedValue(encode) { value in
+    try withEncodedValue(encode, in: runtime) { value in
       expo.setProperty(jsiRuntime, pointee, name.toJSIPropNameID(in: jsiRuntime), value)
     }
   }
@@ -920,14 +919,15 @@ private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefineProp
   }
 }
 
-/// Calls `encode` with a slot in a temporary engine value, then `body` with the value it wrote. A value
-/// that `encode` doesn't write stays `undefined`. The value is destroyed when `body` returns, which calls
-/// into the engine only for a value with an engine handle.
+/// Calls `encode` with a slot in a temporary engine value and the runtime, then `body` with the value it
+/// wrote. A value that `encode` doesn't write stays `undefined`. The value is destroyed when `body`
+/// returns, which calls into the engine only for a value with an engine handle.
 ///
 /// Nonisolated, like `JavaScriptValuesBuffer.withEmplacedValues`: an isolated closure passed to the
 /// standard library checks the current executor on every call, so only `encode` runs isolated.
 private func withEncodedValue(
-  _ encode: @JavaScriptActor (borrowing JavaScriptValue.Slot) throws -> Void,
+  _ encode: @JavaScriptActor (borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void,
+  in runtime: Unmanaged<JavaScriptRuntime>,
   _ body: (borrowing facebook.jsi.Value) -> Void
 ) rethrows {
   try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: 1) { buffer in
@@ -937,8 +937,12 @@ private func withEncodedValue(
     defer {
       expo.destroyValues(slot, 1)
     }
-    try JavaScriptActor.assumeIsolated {
-      try encode(JavaScriptValue.Slot(slot))
+    // The runtime can't be deallocated during a call on its JavaScript thread, so it's borrowed without
+    // a retain.
+    try runtime._withUnsafeGuaranteedRef { runtime in
+      try JavaScriptActor.assumeIsolated {
+        try encode(JavaScriptValue.Slot(slot), runtime)
+      }
     }
     body(slot.pointee)
   }

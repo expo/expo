@@ -197,15 +197,15 @@ extension JSIBenchmarks {
   func `set eight properties through slots`() async throws {
     try await benchmarkCase { runtime in
       let names = (0..<8).map { JavaScriptPropNameID(runtime, string: "p\($0)") }
-      try benchmark("JavaScriptObject.setProperty(_:encoding:in:): 4 numbers, 4 strings", runtime: runtime) {
+      try benchmark("JavaScriptObject.setProperty(_:encoding:): 4 numbers, 4 strings", runtime: runtime) {
         iterations in
         for index in 0..<iterations {
           let object = runtime.createObject()
           for property in 0..<4 {
-            try object.setProperty(names[property], encoding: Double(index + property), in: runtime)
+            try object.setProperty(names[property], encoding: Double(index + property))
           }
           for property in 4..<8 {
-            try object.setProperty(names[property], encoding: "value", in: runtime)
+            try object.setProperty(names[property], encoding: "value")
           }
         }
       }
