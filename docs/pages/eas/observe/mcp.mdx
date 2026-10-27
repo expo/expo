@@ -1,0 +1,94 @@
+---
+title: Querying with the Expo MCP Server
+sidebar_title: MCP
+description: Query EAS Observe metrics, events, and sessions from an AI agent through the Expo MCP Server.
+---
+
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+The [EAS Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` commands](/eas/observe/eas-cli/) show metrics, events, and sessions. AI agents can query the same data through the [Expo Model Context Protocol (MCP) Server](/mcp/). Connect the server once, and your agent can compare releases, find slow sessions, and read user-defined events for your app. The agent uses the Expo account you sign in with, so it does not need an access token or the EAS CLI.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="The Expo MCP Server connected to your AI-assisted tool">
+    Follow [Installation and setup](/mcp/#installation-and-setup) and sign in with an Expo account
+    that has access to the project.
+  </Requirement>
+</Prerequisites>
+
+## Tools
+
+Each tool is read-only and maps to one `eas observe` command:
+
+| Tool                      | What it returns                                                                                                  | EAS CLI equivalent            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `observe_versions`        | App versions with build numbers, EAS Build and EAS Update IDs, event counts, and unique user counts              | `eas observe:versions`        |
+| `observe_metrics_summary` | Aggregated statistics per app version and platform: event count, min, max, median, average, p80, p90, and p99    | `eas observe:metrics-summary` |
+| `observe_metrics`         | Individual metric samples, ordered by time or value, with device, network, and session details                   | `eas observe:metrics`         |
+| `observe_routes`          | Navigation metrics grouped by route name: counts, medians, and p90 for cold render, warm render, and interactive | `eas observe:routes`          |
+| `observe_event_names`     | User-defined event names with counts and first and last seen times                                               | `eas observe:events`          |
+| `observe_events`          | Individual user-defined events with properties, severity, and session IDs                                        | `eas observe:events <name>`   |
+| `observe_session`         | The full metric and log timeline for one session                                                                 | `eas observe:session`         |
+
+Timing values are in seconds. `observe_metrics_summary` and `observe_routes` keep Android and iOS results separate, so one platform cannot hide a regression on the other.
+
+### Shared inputs
+
+Every tool except `observe_session` accepts these inputs. The agent fills them in from your prompt:
+
+- `appId` or `appFullName`: the project to query. When the agent runs inside the project directory, it reads the project ID from the app config. Otherwise, name the project, such as `@owner/my-app`.
+- `platform`: one of `ANDROID`, `IOS`, `IPADOS`, `MACOS`, or `TVOS`. Without it, `observe_versions`, `observe_metrics_summary`, and `observe_routes` return separate Android and iOS results, and the other tools return results from all platforms.
+- `days`, or `start` and `end`: the time range. Defaults to the last 60 days.
+
+`observe_session` takes the project and a session ID. Session IDs come from `observe_metrics` and `observe_events` results.
+
+`observe_metrics_summary` and `observe_metrics` accept the same nine metric names as the EAS CLI. See [Metric names](/eas/observe/eas-cli/#metric-names).
+
+Tools that can return large results paginate them. Each response includes a cursor, and the agent passes it back as `nextCursor` to continue. Routes paginate per platform, and session timelines paginate metrics and logs separately.
+
+## Example prompts
+
+The tools work best in sequence: find the release, compare it, then drill into samples, routes, and one session.
+
+- "Did startup get slower in the latest iOS release?" The agent lists versions with `observe_versions`, then compares them with `observe_metrics_summary`.
+- "Find the five slowest cold launches this week and tell me what those devices have in common." The agent calls `observe_metrics` sorted by slowest and reads the device details on each sample.
+- "Which routes have the worst time to interactive on Android?" The agent calls `observe_routes` for the Android platform.
+- "Show me the timeline for the session behind that slow launch." The agent takes the session ID from the earlier sample and calls `observe_session`.
+- "How many users completed onboarding since the last update?" The agent discovers the event name with `observe_event_names` and counts matches with `observe_events`.
+
+## Plans and usage
+
+Plan limits are the same as in the dashboard and the EAS CLI. When your account's plan does not include the requested data, the tool returns an error with an upgrade message. See [Pricing](https://expo.dev/pricing) for what each plan includes.
+
+Each tool call counts toward your account's Expo MCP Server usage. The server returns the results to the MCP client you connect. See [Data privacy](/mcp/#data-privacy) for how Expo MCP Server handles project data.
+
+## Next steps
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Install the server, authenticate, and see the complete list of tools."
+  href="/mcp/"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Querying with EAS CLI"
+  description="Run the same queries from the terminal with the eas observe commands."
+  href="/eas/observe/eas-cli/"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Metrics reference"
+  description="What each startup and navigation metric measures."
+  href="/eas/observe/reference/metrics/"
+  Icon={ActivityIcon}
+/>
