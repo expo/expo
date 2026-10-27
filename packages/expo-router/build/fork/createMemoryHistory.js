@@ -169,6 +169,9 @@ function createMemoryHistory() {
         // Here we normalize it so that only external changes (e.g. user pressing back/forward) trigger the listener
         listen(listener) {
             const onPopState = () => {
+                // Fix createMemoryHistory.index variable's value
+                // as it may go out of sync when navigating in the browser.
+                index = this.index;
                 if (pending.length) {
                     // This was triggered by `history.go(n)`, we shouldn't call the listener
                     return;

@@ -161,7 +161,11 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
             // Otherwise, we'll handle it like a regular deep link
             const record = history.get(index);
             if (record?.path === path && record?.state) {
-                navigation.resetRoot(record.state);
+                // START FORK
+                // Records can hold an old root key. Use the current key, or the reset is dropped.
+                // navigation.resetRoot(record.state);
+                navigation.resetRoot({ ...record.state, key: navigation.getRootState()?.key });
+                // END FORK
                 return;
             }
             const state = getStateFromPathRef.current(path, configRef.current);
