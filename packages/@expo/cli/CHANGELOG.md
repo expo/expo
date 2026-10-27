@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Upgrade Zod to v4 and require MCP tunnel 0.3.1 or newer when enabling the MCP integration. Older integrations now report an upgrade instruction.
+
 ### 💡 Others
 
 ## 57.0.32 — 2026-10-21

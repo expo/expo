@@ -2010,15 +2010,15 @@ importers:
         specifier: ^8.12.1
         version: 8.19.0
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.6.6
+        version: 4.6.7
     devDependencies:
       '@expo/fingerprint':
         specifier: workspace:*
         version: link:../fingerprint
       '@expo/mcp-tunnel':
-        specifier: ~0.2.3
-        version: 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))
+        specifier: ~0.3.1
+        version: 0.3.1(@modelcontextprotocol/sdk@1.27.1(zod@4.6.7))
       '@expo/ngrok':
         specifier: ^4.1.3
         version: 4.1.3
@@ -7634,8 +7634,8 @@ packages:
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
     hasBin: true
 
-  '@expo/mcp-tunnel@0.2.4':
-    resolution: {integrity: sha512-hxFzqdUNKCt+8pbGV3oGcd/aBNA1mmhwh3DSeXoHReypxzsiLYLITJs1OctglaPecfMA9qFb+6z/RIkRSf5S4g==}
+  '@expo/mcp-tunnel@0.3.1':
+    resolution: {integrity: sha512-WDey01SbZ7XvRKZYmb0+lUk8Z1kBLhdn9jPakbFxRHueDi+/fOwXNERhTh/MOnFehKbR/TduWBw6nBkziYCHHQ==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.26.0
 
@@ -16031,6 +16031,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xcode@4.0.0:
     resolution: {integrity: sha512-dDaoWzc9EP2fp9FS9PVZUkyvFxY4y1TOV9pcKaKLk++Ei/qb97XDFEVP7GnW7Osii/TzVABJ0jq2F+9/lq0TVA==}
     engines: {node: '>=14.17.0'}
@@ -16142,6 +16154,9 @@ packages:
 
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
+
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
   zx@8.8.5:
     resolution: {integrity: sha512-SNgDF5L0gfN7FwVOdEFguY3orU5AkfFZm9B5YSHog/UDHv+lvmd82ZAsOenOkQixigwH2+yyH198AwNdKhj+RA==}
@@ -17374,12 +17389,11 @@ snapshots:
 
   '@expo/material-symbols@0.1.1': {}
 
-  '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))':
+  '@expo/mcp-tunnel@0.3.1(@modelcontextprotocol/sdk@1.27.1(zod@4.6.7))':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
-      ws: 8.19.0
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
+      '@modelcontextprotocol/sdk': 1.27.1(zod@4.6.7)
+      ws: 8.22.0
+      zod: 4.6.7
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -18238,7 +18252,7 @@ snapshots:
       lottie-web: 5.13.0
       react: 19.2.3
 
-  '@modelcontextprotocol/sdk@1.27.1(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.27.1(zod@4.6.7)':
     dependencies:
       '@hono/node-server': 1.19.12(hono@4.12.9)
       ajv: 8.18.0
@@ -18255,8 +18269,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
+      zod: 4.6.7
+      zod-to-json-schema: 3.25.2(zod@4.6.7)
     transitivePeerDependencies:
       - supports-color
 
@@ -27195,6 +27209,8 @@ snapshots:
 
   ws@8.19.0: {}
 
+  ws@8.22.0: {}
+
   xcode@4.0.0:
     dependencies:
       simple-plist: 1.3.1
@@ -27277,6 +27293,10 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
+  zod-to-json-schema@3.25.2(zod@4.6.7):
+    dependencies:
+      zod: 4.6.7
+
   zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
       zod: 4.3.6
@@ -27284,6 +27304,8 @@ snapshots:
   zod@3.25.76: {}
 
   zod@4.3.6: {}
+
+  zod@4.6.7: {}
 
   zx@8.8.5: {}
 

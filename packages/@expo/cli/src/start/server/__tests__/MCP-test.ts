@@ -1,7 +1,9 @@
 import { loadModule } from '@expo/require-utils';
+import { vol } from 'memfs';
 // @ts-expect-error
 import resolveFrom from 'resolve-from';
 
+import { getAccessToken, getSession } from '../../../api/user/UserSettings';
 import { Log } from '../../../log';
 import * as ExitHooks from '../../../utils/exit';
 import { maybeCreateMCPServerAsync } from '../MCP';
@@ -19,7 +21,12 @@ jest.mock('@expo/require-utils', () => ({
   loadModule: jest.fn(),
 }));
 jest.mock('resolve-from');
+jest.mock('node:fs', () => jest.requireActual('memfs').fs);
 jest.mock('../../../log');
+jest.mock('../../../api/user/UserSettings', () => ({
+  getAccessToken: jest.fn(() => null),
+  getSession: jest.fn(() => null),
+}));
 jest.mock('../../../utils/exit');
 
 describe(maybeCreateMCPServerAsync, () => {
@@ -32,13 +39,21 @@ describe(maybeCreateMCPServerAsync, () => {
   const mcpTunnelPackagePath =
     '/app/node_modules/expo-mcp/node_modules/@expo/mcp-tunnel/dist/index.js';
 
+  const mcpTunnelPackageJsonPath =
+    '/app/node_modules/expo-mcp/node_modules/@expo/mcp-tunnel/package.json';
+
   const originalEnv = process.env;
   beforeEach(() => {
+    vol.reset();
+    vol.fromJSON({ [mcpTunnelPackageJsonPath]: JSON.stringify({ version: '0.3.1' }) });
     delete process.env.EXPO_STAGING;
     delete process.env.EXPO_UNSTABLE_MCP_SERVER;
     mockResolveFromSilent.mockImplementation((fromDir, moduleName) => {
       if (moduleName === 'expo-mcp') {
         return mcpPackagePath;
+      }
+      if (moduleName === '@expo/mcp-tunnel/package.json') {
+        return mcpTunnelPackageJsonPath;
       }
       if (moduleName === '@expo/mcp-tunnel') {
         return mcpTunnelPackagePath;
@@ -98,6 +113,65 @@ describe(maybeCreateMCPServerAsync, () => {
       'Missing the `expo-mcp` package in the project. To enable the MCP integration, add the `expo-mcp` package to your project.'
     );
     expect(server).toBeNull();
+  });
+
+  it.each(['0.2.4', 'not-a-version', undefined])(
+    'should reject an incompatible MCP tunnel version (%s) before loading it',
+    async (version) => {
+      process.env.EXPO_UNSTABLE_MCP_SERVER = '1';
+      vol.fromJSON({ [mcpTunnelPackageJsonPath]: JSON.stringify({ version }) });
+
+      const server = await maybeCreateMCPServerAsync({
+        projectRoot: '/app',
+        devServerUrl: 'http://localhost:8081',
+      });
+
+      expect(server).toBeNull();
+      expect(Log.error).toHaveBeenCalledWith(expect.stringContaining('@expo/mcp-tunnel >=0.3.1'));
+      expect(mockLoadModule).not.toHaveBeenCalled();
+      expect(mockTunnelMcpServerProxy).not.toHaveBeenCalled();
+      expect(getAccessToken).not.toHaveBeenCalled();
+      expect(getSession).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([null, '{invalid json'])(
+    'should reject an unreadable MCP tunnel manifest (%s)',
+    async (manifest) => {
+      process.env.EXPO_UNSTABLE_MCP_SERVER = '1';
+      vol.reset();
+      if (manifest !== null) {
+        vol.fromJSON({ [mcpTunnelPackageJsonPath]: manifest });
+      }
+
+      const server = await maybeCreateMCPServerAsync({
+        projectRoot: '/app',
+        devServerUrl: 'http://localhost:8081',
+      });
+
+      expect(server).toBeNull();
+      expect(Log.error).toHaveBeenCalledWith(expect.stringContaining('Upgrade `expo-mcp`'));
+      expect(mockLoadModule).not.toHaveBeenCalled();
+      expect(getAccessToken).not.toHaveBeenCalled();
+    }
+  );
+
+  it('should reject an unresolved MCP tunnel manifest', async () => {
+    process.env.EXPO_UNSTABLE_MCP_SERVER = '1';
+    mockResolveFromSilent.mockImplementation((fromDir, moduleName) => {
+      if (moduleName === 'expo-mcp') return mcpPackagePath;
+      if (moduleName === '@expo/mcp-tunnel') return mcpTunnelPackagePath;
+      return undefined;
+    });
+
+    const server = await maybeCreateMCPServerAsync({
+      projectRoot: '/app',
+      devServerUrl: 'http://localhost:8081',
+    });
+
+    expect(server).toBeNull();
+    expect(Log.error).toHaveBeenCalledWith(expect.stringContaining('Upgrade `expo-mcp`'));
+    expect(mockLoadModule).not.toHaveBeenCalled();
   });
 
   it('should use production MCP server by default', async () => {
