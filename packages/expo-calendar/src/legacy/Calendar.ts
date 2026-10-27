@@ -455,9 +455,7 @@ export type AlarmLocation = {
 };
 
 /**
- * Weekday for [`DaysOfTheWeek.dayOfTheWeek`](#daysoftheweek). The values follow Apple's
- * `EKWeekday`: `Sunday` is `1` and `Saturday` is `7`. Use the enum members instead of bare numbers.
- * A recurrence rule read back from an event uses the same values.
+ * Days of the week numbered from `Sunday` (`1`) to `Saturday` (`7`).
  * @platform ios
  */
 export enum DayOfTheWeek {
