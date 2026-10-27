@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+### Patch Changes
+
+- Publish `expo-ai` to npm. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 0.1.1
 
 ### Patch Changes

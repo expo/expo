@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- [Android] Fix a crash when dragging `Slider` or `VerticalSlider` in release builds. Their `onValueChange` and `onValueChangeFinished` events are now declared with `Event<T>()` in the view definition, as `ToggleButton` and `TextField` already do. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [Android] Fix the Jetpack Compose `Text` dropping nested `Text` spans and strings that are inside a React fragment. Move the fragment flattening helper to a shared util used by both the SwiftUI and Jetpack Compose `Text`. ([#52227](https://github.com/expo/expo/pull/52227) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Add an `actions` prop to `ContentUnavailableView`, which shows controls below the description. ([#52190](https://github.com/expo/expo/pull/52190) by [@drewvolz](https://github.com/drewvolz))
+- [iOS] Add `smallCaps` and `leading` options to the `font` modifier, which apply SwiftUI's `Font.smallCaps()` and `Font.leading(_:)`. ([#52189](https://github.com/expo/expo/pull/52189) by [@drewvolz](https://github.com/drewvolz))
+- [Android] Fix an `@expo/ui` control inside a `Pressable` losing taps to the `Pressable`. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [iOS] Apply the `underline` and `strikethrough` modifiers to a nested `Text`. Before, a nested `Text` dropped them, and a debug build showed a "not supported for nested Text" warning. ([#52112](https://github.com/expo/expo/pull/52112) by [@drewvolz](https://github.com/drewvolz))
+- [iOS] Fix the SwiftUI `Text` dropping nested `Text` spans and strings that are inside a React fragment. `Text` now flattens fragment children before it concatenates them. ([#52225](https://github.com/expo/expo/pull/52225) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fix `MenuView` triggers that fill their parent, so text in them wraps and they resize on rotation. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [Android] Fix a tap on plain React Native content in `RNHostView` not reaching a parent Compose `clickable`. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [iOS] Add the `sectionIndexLabel` modifier, which sets the label a list's section index shows for a `Section` on iOS 26 and later. ([#52186](https://github.com/expo/expo/pull/52186) by [@drewvolz](https://github.com/drewvolz))
+- [Android] Fix the universal `BottomSheet` and the community `BottomSheet` / `BottomSheetModal` not opening inside a `FlatList` (or another view with `removeClippedSubviews`). ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.23
 
 ### Patch Changes

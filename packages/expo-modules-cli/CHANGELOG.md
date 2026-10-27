@@ -1,5 +1,11 @@
 # expo-modules-cli
 
+## 0.3.3
+
+### Patch Changes
+
+- Read the `scan-exports` schema of `expo-modules-macros` 0.23.1, which `expo-modules-core` depends on. ([#52200](https://github.com/expo/expo/pull/52200) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.3.2
 
 ### Patch Changes

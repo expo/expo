@@ -1,5 +1,15 @@
 # expo-app
 
+## 1.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#52278](https://github.com/expo/expo/pull/52278), [`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817))
+  - expo-dev-menu@58.0.12
+  - expo@58.0.20
+  - expo-web-browser@58.0.7
+  - expo-router@58.0.27
+
 ## 1.0.13
 
 ### Patch Changes

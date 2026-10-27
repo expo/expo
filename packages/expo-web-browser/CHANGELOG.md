@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Present `POPOVER` as a form sheet on iPadOS 27 and later, where the browser stayed blank. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.6
 
 ### Patch Changes

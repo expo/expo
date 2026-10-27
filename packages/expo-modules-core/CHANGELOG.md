@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.27
+
+### Patch Changes
+
+- [Android] Fix a crash when a function returns the same `ArrayBuffer` to JavaScript many times. Each return held a new JNI global reference until garbage collection, which overflowed the global reference table. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [Android] Avoid Kotlin reflection when sorting task service providers. ([`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817) by [@matthew-gizmo](https://github.com/matthew-gizmo))
+- [iOS] Reduce the overhead of emitting events by reaching the JSI runtime, the emitter object and the payload in one call. ([#52178](https://github.com/expo/expo/pull/52178) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduce the overhead of emitting events with a `JavaScriptEncodable` payload, including from `@Event` properties, by specializing `emit(event:payload:)` for the payload type in the caller's module. ([#52179](https://github.com/expo/expo/pull/52179) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Build the JavaScript classes of `@SharedObject` classes registered with `@ExpoModule(classes:)` from their type, without a `ClassDefinition`. ([#52137](https://github.com/expo/expo/pull/52137) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.24.0. A sync closure argument of a `@JS` function now encodes its arguments with code specialized for their types. ([#52232](https://github.com/expo/expo/pull/52232) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.23.1. `@JS` now supports a `lazy var`, which is read-only from JavaScript and stores its value on the JavaScript object at the first read. `@SharedObject` now supports subclasses of `SharedRef<T>`. Macros in a generic type no longer fail to build when a generic parameter of the type has the same name as one in the generated code. ([#52200](https://github.com/expo/expo/pull/52200) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `MenuView` triggers that fill their parent, so text in them wraps and they resize on rotation. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- Updated dependencies. ([#52232](https://github.com/expo/expo/pull/52232), [#52164](https://github.com/expo/expo/pull/52164), [#52178](https://github.com/expo/expo/pull/52178))
+  - expo-modules-jsi@58.0.20
+
 ## 58.0.26
 
 ### Patch Changes

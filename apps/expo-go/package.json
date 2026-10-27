@@ -1,6 +1,6 @@
 {
   "name": "@expo/home",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "description": "The Expo Go app",
   "license": "MIT",

@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- [Android] Avoid Kotlin reflection while initializing Expo packages and the React activity delegate. ([`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817) by [@matthew-gizmo](https://github.com/matthew-gizmo))
+- Fix `expo/fetch` replacing an explicit `Content-Type` header with the type of a `Blob` body. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- Updated dependencies. ([#52278](https://github.com/expo/expo/pull/52278), [`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817), [#52178](https://github.com/expo/expo/pull/52178), [#52179](https://github.com/expo/expo/pull/52179), [#52137](https://github.com/expo/expo/pull/52137), [#52232](https://github.com/expo/expo/pull/52232), [#52200](https://github.com/expo/expo/pull/52200))
+  - expo-modules-core@58.0.27
+  - expo-file-system@58.0.12
+  - @expo/fingerprint@0.21.7
+  - expo-modules-cli@0.3.3
+  - @expo/metro-config@58.0.18
+  - @expo/cli@58.1.16
+  - babel-preset-expo@58.0.21
+
 ## 58.0.19
 
 ### Patch Changes
