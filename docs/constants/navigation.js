@@ -21,6 +21,7 @@ const homeDirectories = [
   'review',
   'monitoring',
   'agents',
+  'agentic-workflows',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
@@ -93,6 +94,12 @@ export const home = [
       }
     ),
     makePage('llms.mdx'),
+  ]),
+  makeSection('Agentic workflows', [
+    makePage('agentic-workflows/introduction.mdx'),
+    makePage('agentic-workflows/agentic-ci.mdx'),
+    makePage('agentic-workflows/issue-to-pr.mdx'),
+    makePage('agentic-workflows/bug-triage.mdx'),
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
@@ -496,12 +503,6 @@ export const eas = [
       makePage('eas/workflows/examples/deploy-to-production.mdx'),
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
-  ]),
-  makeSection('Agentic workflows', [
-    makePage('eas/agentic-workflows/introduction.mdx'),
-    makePage('eas/agentic-workflows/agentic-ci.mdx'),
-    makePage('eas/agentic-workflows/issue-to-pr.mdx'),
-    makePage('eas/agentic-workflows/bug-triage.mdx'),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),

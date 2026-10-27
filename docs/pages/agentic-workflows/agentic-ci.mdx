@@ -30,7 +30,7 @@ When a person opens a PR to `main`, the Agentic CI workflow does these steps:
 3. A coding agent reads the PR, tests the change in the app, and writes a verdict.
 4. The workflow posts the verdict on the PR. The comment links to the session recording, the screenshots, and a browser preview of the build.
 
-Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, even when no script covers it. To learn how the parts work together, see [Introduction to agentic workflows](/eas/agentic-workflows/introduction/).
+Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, even when no script covers it. To learn how the parts work together, see [Introduction to agentic workflows](/agentic-workflows/introduction/).
 
 The following screenshot shows an Agentic CI comment with a `PASS` verdict:
 
@@ -45,7 +45,7 @@ The following screenshot shows an Agentic CI comment with a `PASS` verdict:
   description="Paste this into Claude, Cursor, Codex, or another agent.">
 
 ```text wrap
-Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/eas/agentic-workflows/agentic-ci.md as the source for each step and each file.
+Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/agentic-ci.md as the source for each step and each file.
 
 1. Check each setup step on that page. Do each step that is not done.
 2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name.
@@ -392,7 +392,7 @@ When the verdict is not `PASS`, the `result` job fails, and the workflow run sho
 <BoxLink
   title="Build a feature from an issue with an AI agent"
   description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
-  href="/eas/agentic-workflows/issue-to-pr/"
+  href="/agentic-workflows/issue-to-pr/"
   Icon={Star06Icon}
 />
 

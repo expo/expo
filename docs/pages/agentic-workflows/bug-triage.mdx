@@ -20,7 +20,7 @@ import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-ca
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/eas/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/eas/agentic-workflows/agentic-ci/) tests the fix.
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/agentic-workflows/agentic-ci/) tests the fix.
 
 ## How Bug triage works
 
@@ -40,9 +40,9 @@ The agent tests a build of the default branch, not the build that the tester use
   description="Paste this into Claude, Cursor, Codex, or another agent.">
 
 ```text wrap
-Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/eas/agentic-workflows/bug-triage.md as the source for each step and each file.
+Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/bug-triage.md as the source for each step and each file.
 
-1. Check each setup step on that page. Check that the Agentic CI workflow from https://docs.expo.dev/eas/agentic-workflows/agentic-ci.md and the Issue to PR workflow from https://docs.expo.dev/eas/agentic-workflows/issue-to-pr.md are in the project. Do each step that is not done.
+1. Check each setup step on that page. Check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md and the Issue to PR workflow from https://docs.expo.dev/agentic-workflows/issue-to-pr.md are in the project. Do each step that is not done.
 2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name.
 3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
 4. Run `eas workflow:validate .eas/workflows/bug-triage.yml`.
@@ -57,8 +57,8 @@ Do these steps one time for your project.
 
 <AgenticWorkflowsSetup githubCli>
   <Requirement title="The Agentic CI and Issue to PR workflows">
-    Bug triage needs [Agentic CI](/eas/agentic-workflows/agentic-ci/) and [Issue to
-    PR](/eas/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix.
+    Bug triage needs [Agentic CI](/agentic-workflows/agentic-ci/) and [Issue to
+    PR](/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix.
     Add them first.
   </Requirement>
 </AgenticWorkflowsSetup>
@@ -582,13 +582,13 @@ For `NOT-REPLICATED`, add the missing steps to the issue. Then run the workflow 
 <BoxLink
   title="Build a feature from an issue with an AI agent"
   description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
-  href="/eas/agentic-workflows/issue-to-pr/"
+  href="/agentic-workflows/issue-to-pr/"
   Icon={Star06Icon}
 />
 
 <BoxLink
   title="Test pull requests with an AI agent"
   description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
-  href="/eas/agentic-workflows/agentic-ci/"
+  href="/agentic-workflows/agentic-ci/"
   Icon={Star06Icon}
 />
