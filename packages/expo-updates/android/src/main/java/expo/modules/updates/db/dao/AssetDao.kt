@@ -82,7 +82,20 @@ abstract class AssetDao {
     for (asset in assets) {
       // A row with this key may have appeared since the caller classified the asset as new.
       // Adopt it: replacing it would cascade-delete every update that references it.
-      if (addExistingAssetToUpdate(update, asset, asset.isLaunchAsset)) {
+      val existingAsset = loadAssetWithKey(asset.key)
+      if (existingAsset != null) {
+        // The caller has just written this file, so its location wins over the row's, which may
+        // point to a file that is gone (e.g. an embedded resource of a previous binary).
+        if (asset.relativePath != null && asset.relativePath != existingAsset.relativePath) {
+          existingAsset.relativePath = asset.relativePath
+          existingAsset.hash = asset.hash ?: existingAsset.hash
+          existingAsset.downloadTime = asset.downloadTime ?: existingAsset.downloadTime
+          updateAsset(existingAsset)
+        }
+        insertUpdateAssetInternal(UpdateAssetEntity(update.id, existingAsset.id))
+        if (asset.isLaunchAsset) {
+          setUpdateLaunchAssetInternal(existingAsset.id, update.id)
+        }
         continue
       }
       val assetId = insertAssetInternal(asset)
