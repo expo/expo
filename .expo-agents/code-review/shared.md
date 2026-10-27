@@ -137,7 +137,7 @@ Bias toward restraint. A high-signal review reports roughly one finding, not a
 firehose. When in doubt, stay silent.
 
 **For now, report only `critical` and `warning` findings. Do not emit
-`suggestion`-level items at all.**
+`suggestion`-level items at all, and never use the `design` or `nit` severities.**
 
 The `general` reviewer is the one exception to these rules. Its role prompt sets a
 different bar for what it reports, how many findings it reports, and which severities it
