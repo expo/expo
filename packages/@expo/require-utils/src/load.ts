@@ -228,9 +228,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
     throw error;
   } finally {
     if (mapPath) {
-      // Node 24.22 and later only record the map's path during _compile and read the file on the
-      // first lookup, so look it up now, before the file is removed. Earlier versions parse it
-      // eagerly during _compile, so this costs nothing extra there.
+      // Node 24.22 and later lazily parse the source-map, at which point it'll be removed. Looking it up now, forces this to be done in time
       try {
         nodeModule.findSourceMap?.(compileFilename);
       } catch {

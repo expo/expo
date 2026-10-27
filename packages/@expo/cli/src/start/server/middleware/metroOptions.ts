@@ -400,10 +400,6 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (hosted) {
     queryParams.append('transform.hosted', '1');
   }
-  // A loader bundle is a different graph from the same entry's full bundle, so its URL must say so.
-  // The URL is the filename that server stack frames carry, and any frame Node leaves unmapped is
-  // symbolicated by Metro rebuilding the bundle from it. Without this, Metro maps the frame
-  // against the full bundle and points it at the wrong module.
   if (isLoaderBundle) {
     queryParams.append('transform.isLoaderBundle', 'true');
   }
