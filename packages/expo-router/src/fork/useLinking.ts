@@ -228,7 +228,11 @@ export function useLinking(
       const record = history.get(index);
 
       if (record?.path === path && record?.state) {
-        navigation.resetRoot(record.state);
+        // START FORK
+        // Records can hold an old root key. Use the current key, or the reset is dropped.
+        // navigation.resetRoot(record.state);
+        navigation.resetRoot({ ...record.state, key: navigation.getRootState()?.key });
+        // END FORK
         return;
       }
 
