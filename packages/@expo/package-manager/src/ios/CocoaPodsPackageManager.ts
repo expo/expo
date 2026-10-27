@@ -294,10 +294,8 @@ export class CocoaPodsPackageManager {
     // Store the package we should update to prevent a loop.
     updatedPackages.push(updatePackage);
 
-    // If a single package is broken, we'll try to update it.
+    // CocoaPods only names one package per error, so update every package it has asked for so far.
     // You can manually test this by changing a version number in your `Podfile.lock`.
-
-    // Attempt `pod update <package> <--no-repo-update>` and then try again.
     return await this.runInstallTypeCommandAsync(
       ['update', ...updatedPackages, shouldUpdateRepo ? '' : '--no-repo-update'].filter(Boolean),
       {
