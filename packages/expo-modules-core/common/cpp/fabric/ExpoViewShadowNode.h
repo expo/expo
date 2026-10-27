@@ -95,6 +95,18 @@ public:
     return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
   }
 
+  // Set by `MenuView`'s `RNHostView`, whose `Host` is sized by Yoga instead of its content.
+  static bool boundedByHost(const react::Props::Shared &props) {
+    auto const *viewProps = dynamic_cast<const ExpoViewProps *>(props.get());
+
+    if (viewProps == nullptr) {
+      return false;
+    }
+
+    auto const it = viewProps->propsMap.find("expoInternalBoundedByHost");
+    return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
+  }
+
   // Yoga calls this method for RNHostView when it has matchContents set
   react::Size measureContent(
     const react::LayoutContext &layoutContext,
@@ -111,7 +123,14 @@ public:
       return {};
     }
 
-    return content->measure(layoutContext, hostedContentConstraints(*content));
+    auto constraints = hostedContentConstraints(*content);
+
+    if (boundedByHost(this->getProps())) {
+      // Like any Yoga child, the content can't be bigger than the space the `Host` offers.
+      constrainToMaximumSize(constraints, layoutConstraints.maximumSize);
+    }
+
+    return content->measure(layoutContext, constraints);
   }
 
   // We override this so RNHostView can lay out it's children
@@ -130,11 +149,14 @@ public:
     }
 
     // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
+    auto constraints = hostedContentConstraints(*content);
+
+    if (boundedByHost(this->getProps())) {
+      constrainToMaximumSize(constraints, this->getLayoutMetrics().frame.size);
+    }
+
     auto const clonedContent = content->clone({});
-    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
-      layoutContext,
-      hostedContentConstraints(*content)
-    );
+    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(layoutContext, constraints);
 
     this->replaceChild(*content, clonedContent, 0);
 
@@ -145,6 +167,13 @@ public:
   }
 
 private:
+  static void constrainToMaximumSize(react::LayoutConstraints &constraints, react::Size maximumSize) {
+    constraints.maximumSize.width = std::min(constraints.maximumSize.width, maximumSize.width);
+    constraints.maximumSize.height = std::min(constraints.maximumSize.height, maximumSize.height);
+    constraints.minimumSize.width = std::min(constraints.minimumSize.width, constraints.maximumSize.width);
+    constraints.minimumSize.height = std::min(constraints.minimumSize.height, constraints.maximumSize.height);
+  }
+
   // Owning on purpose: `layout()` calls `replaceChild()`, which overwrites this node's only strong
   // reference to the content — `RNHostView` is a leaf Yoga node, so Yoga keeps no second one, and
   // `YogaLayoutableShadowNode::replaceChild()` reads `oldChild` right after.
