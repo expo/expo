@@ -249,7 +249,9 @@ class AudioStream(
             if (!isActive || audioRecord !== recorder) {
               return@launch
             }
-            appContext?.jsLogger?.warn("AudioStream: AudioRecord.read() failed with $bytesRead, stopping the stream")
+            appContext?.jsLogger?.warn(
+              "AudioStream: AudioRecord.read() failed with error code: ${describeReadError(bytesRead)}, stopping the stream"
+            )
             try {
               stop()
             } catch (e: Exception) {
@@ -286,6 +288,16 @@ class AudioStream(
       emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
     }
     return bytesRead
+  }
+
+  private fun describeReadError(code: Int): String {
+    val name = when (code) {
+      AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
+      AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
+      AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
+      else -> return code.toString()
+    }
+    return "$code ($name)"
   }
 
   private fun emitStatus() {
