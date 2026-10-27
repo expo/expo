@@ -34,7 +34,7 @@ internal struct ObservabilityManager {
   private static let serializer = DispatchSerializer()
 
   /// Log names that `errorSampleRate` applies to.
-  internal nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
+  private nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
 
   internal static func dispatch() async {
     await serializer.run {

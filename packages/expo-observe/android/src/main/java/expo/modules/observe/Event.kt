@@ -135,11 +135,7 @@ data class LogEvent(
         name = log.name,
         body = log.body,
         severity = log.severity,
-        attributes = if (log.name in ERROR_LOG_NAMES) {
-          JsonObject(attributes.orEmpty() + ("expo.error.in_sample_rate" to JsonPrimitive(inSampleRate)))
-        } else {
-          attributes
-        },
+        attributes = JsonObject(attributes.orEmpty() + ("expo.in_sample_rate" to JsonPrimitive(inSampleRate))),
         droppedAttributesCount = log.droppedAttributesCount
       )
     }
