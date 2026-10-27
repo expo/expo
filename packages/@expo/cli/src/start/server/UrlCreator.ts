@@ -145,7 +145,10 @@ export class UrlCreator {
     return {
       port: parsed.port,
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol:
+        options.scheme === 'exp' && parsed.protocol === 'https:'
+          ? 'exps'
+          : (options.scheme ?? 'http'),
     };
   }
 
