@@ -212,6 +212,7 @@ private class LocationDiagnosticsViewModel: NSObject, ObservableObject, CLLocati
   @Published var userLocation: CLLocationCoordinate2D?
   @Published var error: String?
 
+  private static let permissionDeniedMessage = "Location access is required to be set to 'Always' in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
   private let locationManager = CLLocationManager()
   private let storageKey = "expo-home-location-diagnostics-locations"
 
@@ -236,7 +237,7 @@ private class LocationDiagnosticsViewModel: NSObject, ObservableObject, CLLocati
     }
 
     if locationManager.authorizationStatus == .denied || locationManager.authorizationStatus == .restricted {
-      error = "Location access is required to be set to 'Always' in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
+      error = Self.permissionDeniedMessage
       return
     }
 
@@ -315,9 +316,14 @@ private class LocationDiagnosticsViewModel: NSObject, ObservableObject, CLLocati
 
   nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     Task { @MainActor in
-      if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+      switch manager.authorizationStatus {
+      case .authorizedWhenInUse, .authorizedAlways:
         self.error = nil
         manager.requestLocation()
+      case .denied, .restricted:
+        self.error = Self.permissionDeniedMessage
+      default:
+        break
       }
     }
   }

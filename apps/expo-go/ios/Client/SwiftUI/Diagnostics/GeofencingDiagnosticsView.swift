@@ -182,6 +182,7 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
   @Published var userLocation: CLLocationCoordinate2D?
   @Published var error: String?
 
+  private static let permissionDeniedMessage = "Location permissions are required in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
   private let locationManager = CLLocationManager()
   private let regionRadiuses = [30, 50, 75, 100, 150, 200]
 
@@ -210,7 +211,7 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
     }
 
     if locationManager.authorizationStatus == .denied || locationManager.authorizationStatus == .restricted {
-      error = "Location permissions are required in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
+      error = Self.permissionDeniedMessage
       return
     }
 
@@ -301,9 +302,14 @@ private class GeofencingDiagnosticsViewModel: NSObject, ObservableObject, CLLoca
 
   nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     Task { @MainActor in
-      if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
+      switch manager.authorizationStatus {
+      case .authorizedWhenInUse, .authorizedAlways:
         self.error = nil
         manager.requestLocation()
+      case .denied, .restricted:
+        self.error = Self.permissionDeniedMessage
+      default:
+        break
       }
     }
   }
