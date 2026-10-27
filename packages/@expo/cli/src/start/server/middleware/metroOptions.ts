@@ -343,6 +343,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -398,6 +399,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (hosted) {
     queryParams.append('transform.hosted', '1');
+  }
+  if (isLoaderBundle) {
+    queryParams.append('transform.isLoaderBundle', 'true');
   }
 
   if (environment) {
