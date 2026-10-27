@@ -100,11 +100,9 @@ public extension EventEmitter {
     }
   }
 
-  /**
-   Schedules an event with the given name and payload to be emitted to the associated JavaScript object,
-   converting the payload with `encode`. The `@Event` macro uses it for payload types that can't conform
-   to `JavaScriptEncodable`, such as tuples.
-   */
+  /// Schedules an event with the given name and payload to be emitted to the associated JavaScript object,
+  /// converting the payload with `encode`. The `@Event` macro uses it for payload types that can't conform
+  /// to `JavaScriptEncodable`, such as tuples.
   @inlinable
   func emit<P>(
     event: String,
