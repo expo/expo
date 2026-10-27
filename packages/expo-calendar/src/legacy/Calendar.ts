@@ -516,16 +516,18 @@ export type RecurrenceRule = {
    */
   occurrence?: number;
   /**
-   * The days of the week the event should recur on. An array of [`DaysOfTheWeek`](#daysoftheweek) object.
+   * The days of the week the event should recur on.
    * This field is only valid for `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY`, and
    * `Calendar.Frequency.YEARLY`.
    * @example
    * ```ts
-   * // Every Monday and Wednesday
-   * daysOfTheWeek: [
-   *   { dayOfTheWeek: Calendar.DayOfTheWeek.Monday },
-   *   { dayOfTheWeek: Calendar.DayOfTheWeek.Wednesday },
-   * ]
+   * const recurrenceRule = {
+   *   frequency: Calendar.Frequency.WEEKLY,
+   *   daysOfTheWeek: [
+   *     { dayOfTheWeek: Calendar.DayOfTheWeek.Monday },
+   *     { dayOfTheWeek: Calendar.DayOfTheWeek.Wednesday },
+   *   ],
+   * };
    * ```
    * @platform ios
    */
