@@ -244,13 +244,17 @@ class AudioStream(
       while (isActive && isStreaming) {
         val bytesRead = readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
         if (bytesRead < 0) {
-          // ERROR_DEAD_OBJECT, ERROR_INVALID_OPERATION, ERROR_BAD_VALUE or ERROR: the recorder cannot
-          // deliver audio any more, so reading again only spins. Stop the stream and tell JS.
-          appContext?.jsLogger?.warn("AudioStream: AudioRecord.read() failed with $bytesRead, stopping the stream")
-          try {
-            stop()
-          } catch (e: Exception) {
-            appContext?.jsLogger?.warn("AudioStream: failed to stop after a read error", e)
+          synchronized(stateLock) {
+            // A loop whose recorder was already replaced or released by `stop()` just leaves.
+            if (!isActive || audioRecord !== recorder) {
+              return@launch
+            }
+            appContext?.jsLogger?.warn("AudioStream: AudioRecord.read() failed with $bytesRead, stopping the stream")
+            try {
+              stop()
+            } catch (e: Exception) {
+              appContext?.jsLogger?.warn("AudioStream: failed to stop after a read error", e)
+            }
           }
           return@launch
         }
