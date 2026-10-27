@@ -38,7 +38,7 @@ jobs:
       - name: Require write access
         if: github.event_name == 'issue_comment'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           ACTOR: ${{ github.event.comment.user.login }}
         run: |
           # `|| echo none` on purpose: a non-collaborator gets a 404, and under
@@ -62,13 +62,13 @@ jobs:
         # Comments still post if sync fails; cron/dispatch should surface a miss.
         continue-on-error: ${{ github.event_name == 'issue_comment' }}
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
         run: bash .github/scripts/sync-expo-bot-manpage.sh
 
       - name: Post command list
         if: github.event_name == 'issue_comment'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           NUMBER: ${{ github.event.issue.number }}
           REPO: ${{ github.repository }}
         run: |

@@ -13,8 +13,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
     branches: [main, 'sdk-*']
 
-# The job posts with EXPO_BOT_GITHUB_TOKEN, never with GITHUB_TOKEN, so GITHUB_TOKEN only
-# needs to read the repository for the checkout.
+# The job posts with EXPO_BOT_REVIEW_TOKEN, never with GITHUB_TOKEN, so GITHUB_TOKEN only
+# needs to read the repository for the checkout. EXPO_BOT_REVIEW_TOKEN is a fine-grained
+# expo-bot token for expo/expo only: Contents read, Pull requests and Issues read and
+# write. It cannot push code or change workflows.
 permissions:
   contents: read
 
@@ -153,7 +155,7 @@ jobs:
       - name: Explain that the review did not start
         if: always() && steps.model-env.outcome == 'failure'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           PR: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -178,7 +180,7 @@ jobs:
         continue-on-error: true
         env:
           FORCE: ${{ !contains(github.event.pull_request.labels.*.name, 'ai-review') && '--force' || '' }}
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           # Layer-1 auth lock: the CLI refuses to run when the tokenEnv it would
           # honor (root config.jsonc, or routing.jsonc defaults.auth) differs from
           # this — it catches what the guard step above can't. Keep it in sync
