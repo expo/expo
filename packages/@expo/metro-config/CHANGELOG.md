@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix invalid CSS transformer output when (unstable) graph optimization is enabled ([#52126](https://github.com/expo/expo/pull/52126) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.13 — 2026-10-06
