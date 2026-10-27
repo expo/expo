@@ -83,25 +83,22 @@ export function getSplitColumnChildren(
 ) {
   const childrenArray = Children.toArray(children);
   const nativeChildren = childrenArray.filter(isSplitColumnNativeChild);
-  if (header) {
-    nativeChildren.unshift(<SplitViewColumnHeader key="header" header={header} />);
-  }
   const otherChildren = childrenArray.filter((child) => !isSplitColumnNativeChild(child));
-  if (otherChildren.length === 0) {
-    return nativeChildren;
-  }
-  const safeAreaProvider = (
+  let content: ReactNode = otherChildren.length > 0 && (
     <SafeAreaProvider key="safe-area-provider">{otherChildren}</SafeAreaProvider>
   );
-  if (disableHorizontalSafeAreaInsets) {
-    return [...nativeChildren, safeAreaProvider];
+  if (content && !disableHorizontalSafeAreaInsets) {
+    // The provider is inside the SafeAreaView, so `useSafeAreaInsets` does not report the applied horizontal insets again.
+    content = (
+      <SafeAreaView key="safe-area-view" edges={{ left: true, right: true }}>
+        {content}
+      </SafeAreaView>
+    );
   }
-  // The provider is inside the SafeAreaView, so `useSafeAreaInsets` does not report the applied horizontal insets again.
   return [
     ...nativeChildren,
-    <SafeAreaView key="safe-area-view" edges={{ left: true, right: true }}>
-      {safeAreaProvider}
-    </SafeAreaView>,
+    content,
+    header && <SplitViewColumnHeader key="header" header={header} />,
   ];
 }
 
@@ -111,8 +108,8 @@ export function getSplitColumnChildren(
 export function SplitViewInspector({ children, header }: SplitViewColumnProps) {
   return (
     <Split.Inspector>
-      {header && <SplitViewColumnHeader header={header} />}
       {children}
+      {header && <SplitViewColumnHeader header={header} />}
     </Split.Inspector>
   );
 }
