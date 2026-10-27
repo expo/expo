@@ -69,7 +69,7 @@ Which versions of my app has EAS Observe seen in the last 7 days?
 
 The agent replies with the app versions and their event counts. When the agent does not run inside the project directory, name the project in the prompt, such as `@owner/my-app`.
 
-[Errors](/eas/observe/errors/) are not available through the server yet. Use the EAS CLI for them.
+The server has no tool that lists [errors](/eas/observe/errors/) yet. Use the EAS CLI to find them. A session timeline from the server still includes the errors from that session.
 
 ## Option 2: EAS CLI
 
@@ -84,7 +84,7 @@ An agent that can run terminal commands, such as Claude Code, Codex, or Cursor, 
   }}
 />
 
-Then install the `eas-observe` skill. It teaches the agent the commands and their flags, what each metric means, and how to tell a slow launch caused by code from one caused by device or network conditions:
+Then install the `eas-observe` skill. It teaches the agent the commands, their flags, and what each metric means. It also shows the agent how to tell a slow launch caused by code from one caused by device or network conditions:
 
 <RelatedSkills
   names={['eas-observe']}
@@ -105,7 +105,7 @@ The Claude Code and Codex plugins from [Option 1](#option-1-expo-mcp-server) inc
   }}
 />
 
-With the skill installed, the agent runs the commands with `--json --non-interactive`, so the output is machine-readable and never waits for a prompt.
+With `--json`, each command returns machine-readable output and fails instead of waiting for a prompt. The skill describes the JSON output of the commands.
 
 ## Example prompts
 
@@ -125,7 +125,7 @@ cause looks like code or conditions, and show me one session that explains it.
 ```
 
 ```text Compare two releases
-Compare cold launch, warm launch, and TTI between build 142 and build 143 on
+Compare cold launch, warm launch, and TTI between versions 2.3.0 and 2.4.0 on
 Android over the last 3 days. Flag any metric where p90 got worse by more than
 10%.
 ```
