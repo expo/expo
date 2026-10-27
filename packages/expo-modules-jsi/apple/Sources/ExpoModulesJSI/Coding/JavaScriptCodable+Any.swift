@@ -466,7 +466,7 @@ private func castFailureReason(for type: Any.Type) -> String {
 extension JavaScriptValue.TypeError {
   /// Returns the error with `component` (such as `.key` or `[2]`) added to the front of its path, as
   /// the error passes up through each container on the way out.
-  fileprivate func prependingPath(_ component: String) -> Self {
+  internal func prependingPath(_ component: String) -> Self {
     var error = self
     error.path = component + path
     return error
