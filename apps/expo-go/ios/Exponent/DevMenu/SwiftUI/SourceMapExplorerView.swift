@@ -544,6 +544,7 @@ struct CodeTextEditor: UIViewRepresentable {
   func updateUIView(_ textView: UITextView, context: Context) {
     let wasEditable = textView.isEditable
     let coordinator = context.coordinator
+    coordinator.parent = self
     textView.isEditable = isEditable
     textView.backgroundColor = UIColor(theme.background)
 
