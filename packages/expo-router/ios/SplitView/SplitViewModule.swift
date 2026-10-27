@@ -9,7 +9,7 @@ public class SplitViewModule: Module {
         view.headerTitle = title
       }
       Prop("largeTitle") { (view: SplitViewHeaderView, largeTitle: Bool?) in
-        view.largeTitle = largeTitle
+        view.largeTitle = largeTitle ?? false
       }
       Prop("leftToolbarItems") { (view: SplitViewHeaderView, items: [SplitViewToolbarItemRecord]?) in
         view.leftToolbarItems = items ?? []
