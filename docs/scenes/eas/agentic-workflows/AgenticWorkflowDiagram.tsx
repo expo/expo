@@ -120,12 +120,12 @@ function StageDiagram({ stages }: { stages: Stage[] }) {
               <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-default bg-default text-[10px] font-semibold text-default">
                 {index + 1}
               </span>
-              <span className="mb-1 flex items-center justify-center gap-1 text-center text-[10px] font-semibold tracking-wide text-tertiary uppercase">
+              <span className="mb-1 block text-center text-[10px] font-semibold tracking-wide text-tertiary uppercase">
                 {PLACE_ICONS[stage.place].map((Icon, iconIndex) => (
                   <Icon
                     key={iconIndex}
                     aria-hidden="true"
-                    className="icon-xs shrink-0 text-icon-secondary"
+                    className="-mt-0.5 mr-1 inline icon-xs text-icon-secondary"
                   />
                 ))}
                 {stage.place}
