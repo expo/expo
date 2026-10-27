@@ -238,6 +238,29 @@ describe('side-effecty imports', () => {
       expect.objectContaining({ absolutePath: '/app/b.js' }),
     ]);
   });
+  it(`preserves side-effecty import that follows an import with specifiers`, async () => {
+    const [[, , graph], artifacts] = await serializeShakingAsync({
+      'index.js': `
+  import { a } from "./a"
+  import "./side-effect"
+  console.log(a);
+              `,
+      'a.js': `
+  export const a = 'a';
+  `,
+      'side-effect.js': `
+  globalThis.SIDE_EFFECT = true;
+  `,
+    });
+
+    expectImports(graph, '/app/index.js').toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ absolutePath: '/app/a.js' }),
+        expect.objectContaining({ absolutePath: '/app/side-effect.js' }),
+      ])
+    );
+    expect(artifacts[0].source).toMatch('SIDE_EFFECT');
+  });
   it(`preserves empty non-side-effecty import with no specifiers`, async () => {
     const [[, , graph]] = await serializeShakingAsync({
       // This type of import is not side-effecty.
