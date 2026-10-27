@@ -39,7 +39,8 @@ const platform = process.platform;
 
 beforeEach(() => {
   mockPlatform('darwin');
-  vol.fromJSON(rnFixture, '/app');
+  jest.spyOn(process, 'cwd').mockReturnValue('/app');
+  vol.fromJSON({ ...rnFixture, 'package.json': '{}' }, '/app');
   jest.mocked(spawnAsync).mockImplementation(
     (_command, args) =>
       Promise.resolve({
@@ -60,6 +61,7 @@ beforeEach(() => {
 
 afterEach(() => {
   mockPlatform(platform);
+  jest.mocked(process.cwd).mockRestore();
   vol.reset();
 });
 
@@ -72,7 +74,7 @@ const output = () =>
 it('documents itself without touching the project', async () => {
   await expoCompileIos(['--help']);
 
-  expect(output()).toContain('  Usage\n    $ npx expo compile:ios <dir>');
+  expect(output()).toContain('  Usage\n    $ npx expo compile:ios\n');
   expect(output()).toContain('--output-type <app|ipa>');
   expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
@@ -80,7 +82,7 @@ it('documents itself without touching the project', async () => {
 });
 
 it('builds the app for the simulator', async () => {
-  await expoCompileIos(['/app', '--dev']);
+  await expoCompileIos(['--dev']);
 
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
   expect(spawnAsync).toHaveBeenCalledWith(
@@ -118,7 +120,7 @@ it('builds the app for the simulator', async () => {
 });
 
 it('refuses production before loading env files', async () => {
-  await expect(expoCompileIos(['/app'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -132,7 +134,7 @@ it('refuses production before loading env files', async () => {
 it('only runs on macOS', async () => {
   mockPlatform('win32');
 
-  await expect(expoCompileIos(['/app', '--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
   expect(spawnAsync).not.toHaveBeenCalled();
@@ -148,7 +150,7 @@ it('reports a failed build', async () => {
           : Promise.resolve({ stdout: '' })) as any
     );
 
-  await expect(expoCompileIos(['/app', '--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({

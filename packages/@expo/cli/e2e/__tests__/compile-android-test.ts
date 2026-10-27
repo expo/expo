@@ -26,8 +26,8 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/compile/android/index.js',
     '@expo/cli/build/src/compile/args.js',
     '@expo/cli/build/src/log.js',
-    '@expo/cli/build/src/utils/args.js',
     '@expo/cli/build/src/utils/errors.js',
+    '@expo/cli/build/src/utils/findUp.js',
   ]);
 });
 
@@ -39,10 +39,9 @@ it('runs `npx expo compile:android --help`', async () => {
         Build the Android app binary locally
 
       Usage
-        $ npx expo compile:android <dir>
+        $ npx expo compile:android
 
       Options
-        <dir>                    Directory of the Expo project. Default: Current working directory
         --dev                    Build in development mode
         --prod                   Build in production mode (default)
         --device <device>        Device name or ID to build the app for

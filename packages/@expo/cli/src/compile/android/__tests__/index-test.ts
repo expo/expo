@@ -35,9 +35,11 @@ jest.mock('../compileAndroidAsync.js', () => jest.requireActual('../compileAndro
 const apkPath = '/app/android/app/build/outputs/apk/debug/app-debug.apk';
 
 beforeEach(() => {
+  jest.spyOn(process, 'cwd').mockReturnValue('/app');
   vol.fromJSON(
     {
       ...rnFixture,
+      'package.json': '{}',
       'android/app/build/outputs/apk/debug/output-metadata.json': JSON.stringify({
         elements: [{ type: 'SINGLE', outputFile: 'app-debug.apk' }],
       }),
@@ -47,6 +49,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.mocked(process.cwd).mockRestore();
   vol.reset();
 });
 
@@ -59,7 +62,7 @@ const output = () =>
 it('documents itself without touching the project', async () => {
   await expoCompileAndroid(['--help']);
 
-  expect(output()).toContain('  Usage\n    $ npx expo compile:android <dir>');
+  expect(output()).toContain('  Usage\n    $ npx expo compile:android\n');
   expect(output()).toContain('--output-type <apk|aab>');
   expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
@@ -67,7 +70,7 @@ it('documents itself without touching the project', async () => {
 });
 
 it('builds the app for every architecture', async () => {
-  await expoCompileAndroid(['/app', '--dev']);
+  await expoCompileAndroid(['--dev']);
 
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
   expect(spawnAsync).toHaveBeenCalledWith(
@@ -87,8 +90,17 @@ it('builds the app for every architecture', async () => {
   });
 });
 
+it('builds from a child directory of the project', async () => {
+  jest.mocked(process.cwd).mockReturnValue('/app/android');
+
+  await expoCompileAndroid(['--dev']);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
+  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${apkPath}`));
+});
+
 it('copies the app to the output directory', async () => {
-  await expoCompileAndroid(['/app', '--dev', '--output-dir', 'build']);
+  await expoCompileAndroid(['--dev', '--output-dir', 'build']);
 
   expect(removeAsync).toHaveBeenCalledWith('/app/build/app-debug.apk');
   expect(copyAsync).toHaveBeenCalledWith(apkPath, '/app/build/app-debug.apk');
@@ -96,7 +108,7 @@ it('copies the app to the output directory', async () => {
 });
 
 it('refuses production before loading env files', async () => {
-  await expect(expoCompileAndroid(['/app'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileAndroid([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -110,7 +122,7 @@ it('refuses production before loading env files', async () => {
 it('reports a failed build', async () => {
   jest.mocked(spawnAsync).mockRejectedValueOnce(Object.assign(new Error(), { status: 1 }));
 
-  await expect(expoCompileAndroid(['/app', '--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileAndroid(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
