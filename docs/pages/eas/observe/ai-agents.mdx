@@ -16,7 +16,7 @@ The [EAS Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` comm
 
 There are two ways to give an agent access to your data:
 
-- **[Expo MCP Server](#option-1-expo-mcp-server)**: the agent calls the Expo Model Context Protocol (MCP) Server directly. It works in Claude, Claude Code, Codex, Cursor, and VS Code, and needs no terminal.
+- **[Expo MCP Server](#option-1-expo-mcp-server)**: the agent calls the Expo Model Context Protocol (MCP) Server directly. It works in Claude, Claude Code, Codex, Cursor, and VS Code. The agent does not need terminal access.
 - **[EAS CLI](#option-2-eas-cli)**: the agent runs `eas observe` commands in your terminal. It covers everything the CLI covers, including errors, and the `eas-observe` skill teaches the agent how to use it.
 
 You can set up both. An agent with both reads metrics through the server and falls back to the CLI for errors and scripts.
@@ -25,7 +25,7 @@ Either way, your app must already send data. Follow [Get started](/eas/observe/g
 
 ## Option 1: Expo MCP Server
 
-The Expo MCP Server exposes read-only tools for app versions, metric summaries, metric samples, routes, user-defined events, and session timelines. The agent signs in with your Expo account, so it needs no access token. See [Tools](/mcp/#tools) for the current list.
+The Expo MCP Server exposes read-only tools for app versions, metric summaries, metric samples, routes, user-defined events, and session timelines. The agent signs in with your Expo account, so it needs no access token. Each tool call counts toward your account's Expo MCP Server usage. Plan limits are the same as in the dashboard and the EAS CLI. See [Tools](/mcp/#tools) for the current list.
 
 <Tabs>
 
