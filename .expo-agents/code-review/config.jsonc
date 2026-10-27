@@ -113,7 +113,18 @@
   // `ai-review:<agent>` narrows a run to one agent (e.g. `ai-review:security`).
   // `skipLabel` is write-gated (only maintainers can add labels), so a PR author
   // cannot opt their own PR out — or in.
-  "review": { "trigger": "label", "label": "ai-review", "skipLabel": "ai-review:skip" },
+  //
+  // `readyForHumanLabel` is added when the decision is "Ready for human review", with
+  // or without comments, and every pass finished. The reviewer removes it when a later
+  // review is not ready or new commits arrive, but only when it added the label
+  // itself, and it never adds it back after a person removed it. It is advisory:
+  // never use it as a merge gate.
+  "review": {
+    "trigger": "label",
+    "label": "ai-review",
+    "skipLabel": "ai-review:skip",
+    "readyForHumanLabel": "ready for human",
+  },
 
   // A maintainer comment containing this marker skips the CI review.
   "breakGlass": { "marker": "/skip-review" },
