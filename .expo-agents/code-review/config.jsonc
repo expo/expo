@@ -207,9 +207,9 @@
 
   // Inline PR comments (ROOT-ONLY). Each finding anchored to a line in the PR
   // diff is posted as an inline review comment on that line (full rationale and
-  // suggestion there); the main comment lists it short — title, links, one-line
-  // rationale — with a link to the thread. The main comment stays the single
-  // source of truth: /dismiss, embedded state, and reply handling are unchanged.
+  // suggestion there); the main comment does not list it again, and shows only
+  // its id, linked to the thread, and its location. The main comment stays the
+  // single source of truth for /dismiss, embedded state, and reply handling.
   // Threads update in place across re-reviews; a retired thread with human
   // replies is stubbed, never deleted. Replying in a thread counts as author
   // feedback for that finding (clearing still needs the unquoted `id:` token).
