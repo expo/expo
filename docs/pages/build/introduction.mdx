@@ -20,6 +20,8 @@ EAS Build makes building your apps for distribution simple and easy to automate 
 
 EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
 
+<SimulatorsLaunchCallout />
+
 ## Quick start
 
 > **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
@@ -29,8 +31,6 @@ To build your app, run the following command:
 <Terminal cmd={['$ eas build --platform all']} />
 
 This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
-
-<SimulatorsLaunchCallout />
 
 ### Expo Skills for AI agents
 
