@@ -27,6 +27,7 @@ const HomeIndex = () => {
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
+          <CaseLink href="/split-view-mail" text="Split View Mail" />
           <CaseLink href="/toolbar" text="Toolbar" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>
