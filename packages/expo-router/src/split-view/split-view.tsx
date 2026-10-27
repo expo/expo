@@ -7,7 +7,9 @@ import {
   getSplitColumnChildren,
   SplitViewColumn,
   SplitViewInspector,
+  SplitViewStack,
   type SplitViewColumnProps,
+  type SplitViewStackProps,
 } from './elements';
 
 /**
@@ -26,6 +28,8 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    */
   disableHorizontalSafeAreaInsets?: boolean;
 }
+
+let didWarnMissingStack = false;
 
 function SplitViewNavigator({
   children,
@@ -53,12 +57,19 @@ function SplitViewNavigator({
     (child): child is ReactElement<SplitViewColumnProps> =>
       isValidElement(child) && child.type === SplitViewInspector
   );
+  const stackChildren = allChildrenArray.filter(
+    (child): child is ReactElement<SplitViewStackProps> =>
+      isValidElement(child) && child.type === SplitViewStack
+  );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
 
-  if (allChildrenArray.length !== columnChildren.length + inspectorChildren.length) {
+  if (
+    allChildrenArray.length !==
+    columnChildren.length + inspectorChildren.length + stackChildren.length
+  ) {
     console.warn(
-      'Only SplitView.Column and SplitView.Inspector components are allowed as direct children of SplitView.'
+      'Only SplitView.Column, SplitView.Stack and SplitView.Inspector components are allowed as direct children of SplitView.'
     );
   }
 
@@ -66,22 +77,34 @@ function SplitViewNavigator({
     throw new Error('There can only be two SplitView.Column in the SplitView.');
   }
 
+  if (stackChildren.length > 1) {
+    throw new Error('There can only be one SplitView.Stack in the SplitView.');
+  }
+
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
     return <Slot activityEnabled={activityEnabled} />;
   }
 
+  if (process.env.NODE_ENV !== 'production' && stackChildren.length === 0 && !didWarnMissingStack) {
+    didWarnMissingStack = true;
+    console.warn(
+      'SplitView.Stack is missing. Add <SplitView.Stack /> to SplitView to configure the content column.'
+    );
+  }
+
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
     <Split.Column key={child.key}>
-      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+      {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Column>
   ));
   const inspectors = inspectorChildren.map((child) => (
     <Split.Inspector key={child.key}>
-      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+      {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Inspector>
   ));
+  const stackHeader = stackChildren[0]?.props.header;
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
@@ -90,7 +113,7 @@ function SplitViewNavigator({
         {columns}
         <Split.Column>
           {getSplitColumnChildren(
-            <Slot activityEnabled={activityEnabled} />,
+            { children: <Slot activityEnabled={activityEnabled} />, header: stackHeader },
             disableHorizontalSafeAreaInsets
           )}
         </Split.Column>
@@ -102,5 +125,6 @@ function SplitViewNavigator({
 
 export const SplitView = Object.assign(SplitViewNavigator, {
   Column: SplitViewColumn,
+  Stack: SplitViewStack,
   Inspector: SplitViewInspector,
 });
