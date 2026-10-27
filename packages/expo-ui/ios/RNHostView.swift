@@ -286,3 +286,8 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
     }
   }
 }
+
+// The size last sent to Yoga for an `RNHostView`, shared by every copy of its reporter.
+private final class ReportedSize {
+  var value: CGSize?
+}
