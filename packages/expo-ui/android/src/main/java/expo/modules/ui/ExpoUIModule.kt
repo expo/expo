@@ -359,18 +359,20 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView<SliderProps>("SliderView") {
-      Events("onValueChange", "onValueChangeFinished")
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
 
       Content { props ->
-        SliderContent(props)
+        SliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
       }
     }
 
     ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
-      Events("onValueChange", "onValueChangeFinished")
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
 
       Content { props ->
-        VerticalSliderContent(props)
+        VerticalSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
       }
     }
 
