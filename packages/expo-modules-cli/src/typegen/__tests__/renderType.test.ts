@@ -45,7 +45,9 @@ describe(renderType, () => {
   it('renders an array of tuples without extra parentheses', () => {
     const { ctx } = makeContext();
     const tuple: TypeNode = { kind: 'tuple', typeof: 'object', elements: [Int, Int] };
-    expect(renderType({ kind: 'array', typeof: 'object', element: tuple }, ctx)).toBe('[number, number][]');
+    expect(renderType({ kind: 'array', typeof: 'object', element: tuple }, ctx)).toBe(
+      '[number, number][]'
+    );
   });
 
   it('maps primitives to their JS typeof', () => {
