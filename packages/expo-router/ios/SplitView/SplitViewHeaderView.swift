@@ -12,7 +12,7 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 // when this view is mounted as its direct child.
 class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
   var headerTitle: String?
-  var largeTitle: Bool?
+  var largeTitle = false
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   let onToolbarItemPress = EventDispatcher()
@@ -42,7 +42,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
     }
     navigationItem.title = headerTitle
     // `.automatic` would follow the previous item, which is another column when the split view is collapsed.
-    let largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode = largeTitle == true ? .always : .never
+    let largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode = largeTitle ? .always : .never
     if navigationItem.largeTitleDisplayMode != largeTitleDisplayMode {
       navigationItem.largeTitleDisplayMode = largeTitleDisplayMode
       // A visible bar does not grow by itself when its item starts to show a large title.
