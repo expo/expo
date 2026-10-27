@@ -13,6 +13,11 @@ const WARNING_EVENT = 'updates.warning';
 // "ErrorRecovery: exception encountered: ..." on Android.
 const ERROR_RECOVERY_CODE = 'JSRuntimeError';
 const ERROR_RECOVERY_MESSAGE_PREFIX = 'ErrorRecovery';
+// When error recovery cannot recover, it logs this message just before the app crashes:
+// "ErrorRecovery: could not recover ..." on iOS and "UpdatesErrorRecovery: could not recover ..." on
+// Android. Observe already reports the crash, and the error that started error recovery is
+// reported as `updates.error_recovery`, so this entry adds no error of its own.
+const ERROR_RECOVERY_CRASH_MESSAGE = 'ErrorRecovery: could not recover from error, crashing';
 
 // expo-updates keeps log entries for one day and reads back at most one day.
 const MAX_LOOKBACK_MS = 86_400_000;
@@ -99,6 +104,10 @@ function isErrorRecoveryEntry(entry: UpdatesLogEntry): boolean {
   );
 }
 
+function isErrorRecoveryCrashEntry(entry: UpdatesLogEntry): boolean {
+  return entry.message.includes(ERROR_RECOVERY_CRASH_MESSAGE);
+}
+
 function passesFilters(entry: UpdatesLogEntry): boolean {
   if (settings.ignoredCodes.includes(entry.code)) {
     return false;
@@ -124,6 +133,9 @@ function passesFilters(entry: UpdatesLogEntry): boolean {
 function reportEntry(entry: UpdatesLogEntry): void {
   const isError = entry.level === 'error' || entry.level === 'fatal';
   if (!isError && !(entry.level === 'warn' && settings.reportWarnings)) {
+    return;
+  }
+  if (isErrorRecoveryCrashEntry(entry)) {
     return;
   }
   const isErrorRecovery = isErrorRecoveryEntry(entry);

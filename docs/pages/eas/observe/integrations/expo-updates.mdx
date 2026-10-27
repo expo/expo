@@ -42,6 +42,7 @@ The integration reports the entries as follows:
 
 - An `error` or `fatal` entry becomes an Observe error named `updates.error`. The error message is the entry's code followed by the log message, for example `UpdateFailedToLoad: ...`.
 - A JS error that error recovery handled becomes an Observe error named `updates.error_recovery`. The message includes the original JS error.
+- When error recovery cannot recover and crashes the app, the entry it logs before the crash is not reported. Observe reports the crash itself.
 - A `warn` entry becomes an `updates.warning` event with `warn` severity, but only when `reportWarnings` is `true`.
 - Entries with a lower level are not reported.
 

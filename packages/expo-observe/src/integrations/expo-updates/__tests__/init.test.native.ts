@@ -115,6 +115,22 @@ describe('initExpoUpdatesIntegration', () => {
     ]);
   });
 
+  it('does not report the entry that error recovery logs before it crashes the app', async () => {
+    await runIntegration([
+      entry({
+        message: 'ErrorRecovery fatal exception: Fatal error: boom',
+        code: 'JSRuntimeError',
+      }),
+      entry({ message: 'ErrorRecovery: could not recover from error, crashing' }),
+      entry({
+        message: 'UpdatesErrorRecovery: could not recover from error, crashing: boom',
+        code: 'Unknown',
+      }),
+    ]);
+
+    expect(reportedErrorTypes()).toEqual(['updates.error_recovery']);
+  });
+
   it('reports a JSRuntimeError entry without the error recovery prefix as an error', async () => {
     await runIntegration([entry({ message: 'Other runtime error', code: 'JSRuntimeError' })]);
 
