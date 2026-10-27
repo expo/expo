@@ -8,10 +8,9 @@ export function getHelp(includeOptions = true): string {
     ...(includeOptions
       ? [
           chalk`  {bold Usage}`,
-          chalk`    {dim $} npx expo compile:android {dim <dir>}`,
+          chalk`    {dim $} npx expo compile:android`,
           '',
           chalk`  {bold Options}`,
-          chalk`    <dir>                    Directory of the Expo project. {dim Default: Current working directory}`,
           '    --dev                    Build in development mode',
           '    --prod                   Build in production mode (default)',
           '    --device <device>        Device name or ID to build the app for',

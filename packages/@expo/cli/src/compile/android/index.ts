@@ -1,20 +1,20 @@
 import type { Command } from '../../index';
 import * as Log from '../../log';
-import { getProjectRoot } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
+import { findUpProjectRootOrAssert } from '../../utils/findUp';
 import { parseCompileArgs } from '../args';
 import { getHelp } from './help';
 
 export const expoCompileAndroid: Command = async (argv) => {
   try {
-    const { values, positionals } = parseCompileArgs(argv);
+    const { values } = parseCompileArgs(argv);
 
     if (values.help) {
       Log.log(getHelp());
       return;
     }
 
-    const projectRoot = getProjectRoot({ _: positionals });
+    const projectRoot = findUpProjectRootOrAssert(process.cwd());
     const { resolveMode } = await import('../resolveMode.js');
     const mode = resolveMode({
       dev: values.dev,

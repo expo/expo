@@ -12,7 +12,7 @@ import * as Log from '../log';
  *
  * @returns valid project directory.
  */
-export function getProjectRoot(args: { _: string[] }) {
+export function getProjectRoot(args: arg.Result<arg.Spec>) {
   const projectRoot = resolve(args._[0] || '.');
 
   if (!existsSync(projectRoot)) {

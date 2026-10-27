@@ -3,21 +3,9 @@ import { parseArgs } from 'node:util';
 import { CommandError } from '../utils/errors';
 
 export function parseCompileArgs(argv: string[] = []) {
-  const args = parseArgsOrThrow(argv);
-  if (args.positionals.length > 1) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `Expected one project directory but got ${args.positionals.length} (${args.positionals.join(', ')}). Quote the path if it contains spaces.`
-    );
-  }
-  return args;
-}
-
-function parseArgsOrThrow(argv: string[]) {
   try {
     return parseArgs({
       args: argv,
-      allowPositionals: true,
       options: {
         help: { type: 'boolean', short: 'h' },
         dev: { type: 'boolean' },
