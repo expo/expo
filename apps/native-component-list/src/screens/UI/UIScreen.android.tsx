@@ -467,6 +467,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Host in a Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
     name: 'RNHostView in a clickable',
     route: 'ui/rnhostview-in-clickable',
     options: {},

@@ -517,6 +517,8 @@ private class TouchDispatchingRootViewGroup(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      // This view handles the JS side of its gestures, so the `Host` must not cancel them.
+      findAncestorHostView()?.reactNativeContentHit = true
       // Like a native view that doesn't handle touches, plain hosted content lets the Compose
       // parent handle the gesture. Only a host that dispatches to JavaScript must own its gestures.
       clearGestureLeftToCompose()
@@ -590,14 +592,7 @@ private class TouchDispatchingRootViewGroup(
    * reporting it as a native one would cancel the press it belongs to.
    */
   private fun isCancelFromReactNative(): Boolean {
-    var current: ViewParent? = parent
-    while (current != null) {
-      if (current is HostView) {
-        return current.isDispatchingCancelFromParent
-      }
-      current = current.parent
-    }
-    return false
+    return findAncestorHostView()?.isDispatchingCancelFromParent ?: false
   }
 
   /**
@@ -682,6 +677,17 @@ private class TouchDispatchingRootViewGroup(
   fun clearGestureLeftToCompose() {
     gestureLeftToCompose?.recycle()
     gestureLeftToCompose = null
+  }
+
+  private fun findAncestorHostView(): HostView? {
+    var current: ViewParent? = parent
+    while (current != null) {
+      if (current is HostView) {
+        return current
+      }
+      current = current.parent
+    }
+    return null
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
