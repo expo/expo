@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Fix hydration mismatch errors caused by inconsistent client and server loader keys. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.17
 
 ### Patch Changes

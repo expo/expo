@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Drop modules imported only inside `if (__DEV__)` from production bundles when the Noxcturnal transformer runs with minification disabled. Minified Noxcturnal output also removes comments. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- Update to `noxcturnal@^0.1.10` ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.17
 
 ### Patch Changes

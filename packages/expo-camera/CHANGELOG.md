@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Fix Android release builds with R8 when the barcode scanner or the document scanner is disabled. R8 stopped with `Missing class com.google.mlkit...` errors because the app does not include the disabled ML Kit libraries. This happened with `barcodeScannerEnabled: false` in the config plugin, or with `expo.camera.document-scanner-enabled=false` in `gradle.properties`. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+- [Android] Fix barcode scanning in release builds with R8 enabled. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.12
 
 ### Patch Changes

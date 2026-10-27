@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Fix Mac Catalyst builds failing with `Type 'QLPreviewController' has no member 'canPreview'`. ([#52278](https://github.com/expo/expo/pull/52278) by [@github-actions](https://github.com/apps/github-actions))
+
 ## 58.0.11
 
 ### Patch Changes

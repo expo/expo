@@ -1,5 +1,15 @@
 # minimal-tester
 
+## 1.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817), [#52278](https://github.com/expo/expo/pull/52278))
+  - expo@58.0.20
+  - expo-camera@58.0.13
+  - expo-dev-client@58.0.16
+  - expo-updates@58.0.18
+
 ## 1.0.13
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # observe-tester
 
+## 1.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([`571588f`](https://github.com/expo/expo/commit/571588f363d0598e9196bb9560635bc1cf8fe817), [#52278](https://github.com/expo/expo/pull/52278), [#52227](https://github.com/expo/expo/pull/52227), [#52190](https://github.com/expo/expo/pull/52190), [#52189](https://github.com/expo/expo/pull/52189), [#52112](https://github.com/expo/expo/pull/52112), [#52225](https://github.com/expo/expo/pull/52225), [#52186](https://github.com/expo/expo/pull/52186))
+  - expo@58.0.20
+  - @expo/ui@58.0.24
+  - expo-web-browser@58.0.7
+  - expo-dev-client@58.0.16
+  - expo-router@58.0.27
+  - expo-updates@58.0.18
+
 ## 1.0.13
 
 ### Patch Changes

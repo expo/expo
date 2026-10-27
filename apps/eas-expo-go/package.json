@@ -1,6 +1,6 @@
 {
   "name": "eas-expo-go",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "private": true,
   "main": "index.js",
   "license": "MIT",
