@@ -4,6 +4,7 @@ description: Learn how to use the native toolbar in Stack navigation with Expo R
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -550,6 +551,36 @@ export default function InboxScreen() {
 ```
 
 > **info** Badges only work in header placements (`left` or `right`), not in the bottom toolbar.
+
+## Choosing button background colors on Android
+
+On Android, header buttons have no container by default. Set `buttonContainerColor` on a header `Stack.Toolbar` to draw each button and menu button on a round Material icon button container in that color:
+
+```tsx src/app/map.tsx
+import { Stack } from 'expo-router';
+import { Alert } from 'react-native';
+import layersIcon from '@/assets/layers.png';
+
+export default function MapScreen() {
+  return (
+    <>
+      <Stack.Screen options={{ headerTransparent: true }} />
+      <Stack.Toolbar placement="right" buttonContainerColor="#000000b3" tintColor="white">
+        <Stack.Toolbar.Button icon={layersIcon} onPress={() => Alert.alert('Layers')} />
+      </Stack.Toolbar>
+      {/* Content */}
+    </>
+  );
+}
+```
+
+<ContentSpotlight
+  alt="A screenshot of a header toolbar with each button on a dark round container over a background image."
+  src="/static/images/expo-router/stack-toolbar-button-container-color.webp"
+  className="max-w-[540px]"
+/>
+
+> **info** `buttonContainerColor` is available on Android only, and only in header placements (`left` or `right`). It does not change the back button. On iOS 26 and later, header buttons already have a Liquid Glass background.
 
 ## Embedding custom views
 

@@ -78,6 +78,13 @@ export interface StackToolbarProps {
    * @platform android
    */
   backgroundColor?: ColorValue;
+  /**
+   * Color of the round container behind each header button and menu button.
+   * Use it to keep buttons visible over content, like a photo or a map.
+   *
+   * @platform android
+   */
+  buttonContainerColor?: ColorValue;
 }
 
 /**
@@ -185,6 +192,7 @@ const StackToolbarHeader = ({
   disableImePadding,
   tintColor,
   backgroundColor,
+  buttonContainerColor,
 }: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
@@ -204,9 +212,18 @@ const StackToolbarHeader = ({
           disableImePadding,
           tintColor,
           backgroundColor,
+          buttonContainerColor,
         } satisfies Record<keyof StackToolbarProps, unknown>
       ),
-    [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
+    [
+      children,
+      placement,
+      asChild,
+      disableImePadding,
+      tintColor,
+      backgroundColor,
+      buttonContainerColor,
+    ]
   );
   useCompositionOption(options);
 
@@ -227,6 +244,7 @@ export function appendStackToolbarPropsToOptions(
   const colors: ToolbarColors = {
     tintColor: props.tintColor,
     backgroundColor: props.backgroundColor,
+    buttonContainerColor: props.buttonContainerColor,
   };
 
   if (asChild) {
