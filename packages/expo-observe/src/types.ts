@@ -169,10 +169,10 @@ export interface ObserveIntegrationsConfig {
   'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
   /**
    * Enables the `expo-updates` integration, which reports the errors that `expo-updates` logs to
-   * Observe as errors named `expo-updates.<code>`, for example `expo-updates.UpdateFailedToLoad`.
-   * A JS error that `expo-updates` error recovery handled is reported as
-   * `expo-updates.error_recovery`.
-   * To also report warnings as events named `expo-updates.warning`, set `reportWarnings`.
+   * Observe as errors named `updates.error`. The message starts with the log entry's code, for
+   * example `UpdateFailedToLoad: ...`. A JS error that `expo-updates` error recovery handled is
+   * reported as `updates.error_recovery`.
+   * To also report warnings as events named `updates.warning`, set `reportWarnings`.
    *
    * The integration reads the `expo-updates` log when `configure` is called, and reports the
    * entries written since the last report, up to one day back. So errors from an earlier launch,
@@ -252,7 +252,7 @@ export type ObserveExpoUpdatesLogEntry = {
 export type ObserveExpoUpdatesIntegrationConfig = {
   /**
    * Whether the integration also reports `expo-updates` warnings to Observe, as events named
-   * `expo-updates.warning`.
+   * `updates.warning`.
    *
    * @default false
    */

@@ -4,9 +4,9 @@ import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { loadUpdates, type LoadedUpdates, type UpdatesLogEntry } from './updates';
 
-const WARNING_EVENT = 'expo-updates.warning';
-const ERROR_TYPE_PREFIX = 'expo-updates.';
-const ERROR_RECOVERY_TYPE = 'expo-updates.error_recovery';
+const ERROR_TYPE = 'updates.error';
+const ERROR_RECOVERY_TYPE = 'updates.error_recovery';
+const WARNING_EVENT = 'updates.warning';
 
 // expo-updates logs a JS error that error recovery handles with this code, and with a message that
 // starts with this prefix: "ErrorRecovery fatal exception: ..." on iOS and
@@ -135,12 +135,15 @@ function reportEntry(entry: UpdatesLogEntry): void {
     return;
   }
   if (isError) {
-    const type = isErrorRecovery ? ERROR_RECOVERY_TYPE : `${ERROR_TYPE_PREFIX}${entry.code}`;
-    reportCaughtError(new ExpoUpdatesLogError(type, entry.message), 'integration');
+    // The code leads the message, so each code gets its own error group and shows in the list.
+    const error = isErrorRecovery
+      ? new ExpoUpdatesLogError(ERROR_RECOVERY_TYPE, entry.message)
+      : new ExpoUpdatesLogError(ERROR_TYPE, `${entry.code}: ${entry.message}`);
+    reportCaughtError(error, 'integration');
     return;
   }
   AppMetrics.logEvent(WARNING_EVENT, {
-    displayName: 'expo-updates warning',
+    displayName: 'Updates warning',
     body: entry.message,
     severity: 'warn',
     // `eas observe:events` and `observe:session` show `attributes` but not `body`, so the
@@ -239,9 +242,10 @@ async function readAndReport(
 
 /**
  * Reports the expo-updates log entries written since the last report: errors as Observe errors
- * named `expo-updates.<code>` (or `expo-updates.error_recovery` for a JS error that expo-updates
- * error recovery handled), and, when `reportWarnings` is set, warnings as `expo-updates.warning`
- * events. Returns when the entries are read and reported.
+ * named `updates.error`, with the entry's code at the start of the message (or
+ * `updates.error_recovery` for a JS error that expo-updates error recovery handled), and, when
+ * `reportWarnings` is set, warnings as `updates.warning` events. Returns when the entries are read
+ * and reported.
  */
 export function initExpoUpdatesIntegration(
   config: NonNullable<ObserveIntegrationsConfig['expo-updates']>,

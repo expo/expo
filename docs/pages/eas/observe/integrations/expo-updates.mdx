@@ -40,9 +40,9 @@ When `Observe.configure()` runs, the integration reads the `expo-updates` log en
 
 The integration reports the entries as follows:
 
-- An `error` or `fatal` entry becomes an Observe error named `expo-updates.<code>`, for example `expo-updates.UpdateFailedToLoad`. The error message is the log message.
-- A JS error that error recovery handled becomes an Observe error named `expo-updates.error_recovery`. The message includes the original JS error.
-- A `warn` entry becomes an `expo-updates.warning` event with `warn` severity, but only when `reportWarnings` is `true`.
+- An `error` or `fatal` entry becomes an Observe error named `updates.error`. The error message is the entry's code followed by the log message, for example `UpdateFailedToLoad: ...`.
+- A JS error that error recovery handled becomes an Observe error named `updates.error_recovery`. The message includes the original JS error.
+- A `warn` entry becomes an `updates.warning` event with `warn` severity, but only when `reportWarnings` is `true`.
 - Entries with a lower level are not reported.
 
 A reported error gets the current session and time. The time of the log entry is not kept on the error. Warning events keep it in the `logTimestamp` attribute.
@@ -78,7 +78,7 @@ Observe.configure({
 });
 ```
 
-- `reportWarnings`: Whether the integration also reports warnings as `expo-updates.warning` events. The default is `false`.
+- `reportWarnings`: Whether the integration also reports warnings as `updates.warning` events. The default is `false`.
 - `ignoredCodes`: Log entry codes that the integration does not report. The default is an empty list.
 - `shouldReport`: A function that gets each log entry and returns `false` to skip it. It runs after `ignoredCodes`. If the function throws, the entry is reported.
 
@@ -88,7 +88,7 @@ Some errors are common and expected, for example a failed update check when the 
 
 ## View errors and events
 
-In the dashboard: open your project and navigate to **Observe**. Errors from the integration have names that start with `expo-updates.`, and warnings are `expo-updates.warning` events.
+In the dashboard: open your project and navigate to **Observe**. Errors from the integration are named `updates.error` and `updates.error_recovery`, and warnings are `updates.warning` events.
 
 From the CLI:
 
@@ -98,7 +98,7 @@ From the CLI:
     '$ eas observe:errors',
     '',
     '# Show expo-updates warning events',
-    '$ eas observe:events expo-updates.warning',
+    '$ eas observe:events updates.warning',
   ]}
 />
 

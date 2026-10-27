@@ -53,6 +53,10 @@ function reportedErrorTypes(): string[] {
   return mockAppMetrics.reportError.mock.calls.map(([report]) => report.type);
 }
 
+function reportedErrorMessages(): string[] {
+  return mockAppMetrics.reportError.mock.calls.map(([report]) => report.message);
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockReadLogEntriesAsync.mockReset();
@@ -75,7 +79,7 @@ afterEach(() => {
 });
 
 describe('initExpoUpdatesIntegration', () => {
-  it('reports error and fatal entries as integration errors named after their code', async () => {
+  it('reports error and fatal entries as integration errors with the code in the message', async () => {
     await runIntegration([
       entry({ message: 'Load failed', code: 'UpdateFailedToLoad', level: 'error' }),
       entry({ message: 'Init failed', code: 'InitializationError', level: 'fatal' }),
@@ -83,14 +87,15 @@ describe('initExpoUpdatesIntegration', () => {
 
     expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
       source: 'integration',
-      type: 'expo-updates.UpdateFailedToLoad',
-      message: 'Load failed',
+      type: 'updates.error',
+      message: 'UpdateFailedToLoad: Load failed',
       stacktrace: undefined,
       isFatal: false,
     });
-    expect(reportedErrorTypes()).toEqual([
-      'expo-updates.UpdateFailedToLoad',
-      'expo-updates.InitializationError',
+    expect(reportedErrorTypes()).toEqual(['updates.error', 'updates.error']);
+    expect(reportedErrorMessages()).toEqual([
+      'UpdateFailedToLoad: Load failed',
+      'InitializationError: Init failed',
     ]);
   });
 
@@ -103,16 +108,18 @@ describe('initExpoUpdatesIntegration', () => {
       entry({ message: 'ErrorRecovery: exception encountered: boom', code: 'JSRuntimeError' }),
     ]);
 
-    expect(reportedErrorTypes()).toEqual([
-      'expo-updates.error_recovery',
-      'expo-updates.error_recovery',
+    expect(reportedErrorTypes()).toEqual(['updates.error_recovery', 'updates.error_recovery']);
+    expect(reportedErrorMessages()).toEqual([
+      'ErrorRecovery fatal exception: Fatal error: TypeError',
+      'ErrorRecovery: exception encountered: boom',
     ]);
   });
 
-  it('reports a JSRuntimeError entry without the error recovery prefix with its code', async () => {
+  it('reports a JSRuntimeError entry without the error recovery prefix as an error', async () => {
     await runIntegration([entry({ message: 'Other runtime error', code: 'JSRuntimeError' })]);
 
-    expect(reportedErrorTypes()).toEqual(['expo-updates.JSRuntimeError']);
+    expect(reportedErrorTypes()).toEqual(['updates.error']);
+    expect(reportedErrorMessages()).toEqual(['JSRuntimeError: Other runtime error']);
   });
 
   it('ignores warnings by default and entries below the warning level', async () => {
@@ -141,8 +148,8 @@ describe('initExpoUpdatesIntegration', () => {
       { reportWarnings: true }
     );
 
-    expect(mockAppMetrics.logEvent).toHaveBeenCalledWith('expo-updates.warning', {
-      displayName: 'expo-updates warning',
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledWith('updates.warning', {
+      displayName: 'Updates warning',
       body: 'Asset download failed',
       severity: 'warn',
       attributes: {
@@ -191,10 +198,10 @@ describe('initExpoUpdatesIntegration', () => {
     jest.resetModules();
     await runIntegration([...entries, entry({ timestamp: NOW + 1000, message: 'third' })]);
 
-    expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
-      'first',
-      'second',
-      'third',
+    expect(reportedErrorMessages()).toEqual([
+      'UpdateFailedToLoad: first',
+      'UpdateFailedToLoad: second',
+      'UpdateFailedToLoad: third',
     ]);
   });
 
@@ -209,9 +216,9 @@ describe('initExpoUpdatesIntegration', () => {
       entry({ timestamp: NOW - 1000, message: 'second' }),
     ]);
 
-    expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
-      'first',
-      'second',
+    expect(reportedErrorMessages()).toEqual([
+      'UpdateFailedToLoad: first',
+      'UpdateFailedToLoad: second',
     ]);
   });
 
@@ -221,9 +228,9 @@ describe('initExpoUpdatesIntegration', () => {
       entry({ timestamp: NOW - 9000, message: 'older' }),
     ]);
 
-    expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
-      'older',
-      'newer',
+    expect(reportedErrorMessages()).toEqual([
+      'UpdateFailedToLoad: older',
+      'UpdateFailedToLoad: newer',
     ]);
     expect(JSON.parse(storedCursor!)).toEqual({
       timestamp: NOW - 1000,
@@ -296,7 +303,7 @@ describe('initExpoUpdatesIntegration', () => {
         { ignoredCodes: ['Unknown'] }
       );
 
-      expect(reportedErrorTypes()).toEqual(['expo-updates.UpdateFailedToLoad']);
+      expect(reportedErrorMessages()).toEqual(['UpdateFailedToLoad: load failed']);
       expect(JSON.parse(storedCursor!).timestamp).toBe(NOW - 1000);
     });
 
@@ -311,9 +318,7 @@ describe('initExpoUpdatesIntegration', () => {
       );
 
       expect(shouldReport).toHaveBeenCalledTimes(2);
-      expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
-        'load failed',
-      ]);
+      expect(reportedErrorMessages()).toEqual(['UpdateFailedToLoad: load failed']);
     });
 
     it('applies the filters to warnings', async () => {
@@ -331,7 +336,7 @@ describe('initExpoUpdatesIntegration', () => {
         { ignoredCodes: ['JSRuntimeError'], shouldReport: () => false }
       );
 
-      expect(reportedErrorTypes()).toEqual(['expo-updates.error_recovery']);
+      expect(reportedErrorTypes()).toEqual(['updates.error_recovery']);
     });
 
     it('reports the entry and warns once when shouldReport throws', async () => {
