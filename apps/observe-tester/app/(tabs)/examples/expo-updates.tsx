@@ -46,10 +46,10 @@ export default function ExpoUpdatesExample() {
       style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.content}>
       <Text style={[styles.description, { color: theme.text.secondary }]}>
-        The expo-updates integration reports the errors in the expo-updates log as `expo-updates.*`
-        errors, and its warnings as `expo-updates.warning` events. It reads the log when the app
-        starts, so the entries from these buttons are reported on the next launch. A crash that
-        error recovery handled is reported as `expo-updates.error_recovery`.
+        The expo-updates integration reports the errors in the expo-updates log as `updates.error`
+        errors, and its warnings as `updates.warning` events. It reads the log when the app starts,
+        so the entries from these buttons are reported on the next launch. A crash that error
+        recovery handled is reported as `updates.error_recovery`.
       </Text>
       <Button
         title="Check for update"
