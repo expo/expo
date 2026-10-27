@@ -1,33 +1,21 @@
 ---
 title: Analyze EAS Observe data with AI
 sidebar_title: AI agents
-description: Use an AI agent to query and interpret EAS Observe metrics, events, and sessions through the Expo MCP Server, Expo Skills, and the EAS CLI.
+description: Query and interpret EAS Observe metrics, events, and sessions from an AI agent through the Expo MCP Server, Expo Skills, and the EAS CLI.
 ---
 
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
-import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
-import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Everything the [EAS Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` commands](/eas/observe/eas-cli/) show is also available to an AI agent. Describe what you want to know in plain language, and the agent fetches the data, compares releases, and explains what it finds.
+The [EAS Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` commands](/eas/observe/eas-cli/) show metrics, events, and sessions. AI agents can query the same data through the [Expo Model Context Protocol (MCP) Server](/mcp/). Connect the server once, and your agent can compare releases, find slow sessions, and read user-defined events for your app. The agent uses the Expo account you sign in with, so it does not need an access token or the EAS CLI.
 
-Three pieces give an agent access to your EAS Observe data. They work together, and you can use any one of them on its own:
-
-- **Expo MCP Server** provides read-only tools that fetch metrics, routes, events, and session timelines from EAS. It works in any MCP client, including Claude on the web and mobile, where no terminal is available.
-- **Expo Skills** teach the agent how EAS Observe works: which metrics exist, what their target values are, how to query them, and how to read the device and network params on a slow launch.
-- **EAS CLI** gives an agent with terminal access the same data as tables or JSON. It is also the only way for an agent to query [errors](/eas/observe/errors/), which the Expo MCP Server does not expose yet.
-
-| Approach        | Where it runs                                                      | What it provides                              |
-| --------------- | ------------------------------------------------------------------ | --------------------------------------------- |
-| Expo MCP Server | Claude, Claude Code, Codex, Cursor, VS Code, and other MCP clients | Live metrics, routes, events, and sessions    |
-| Expo Skills     | Claude Code, Codex, Cursor, and other agents that read skills      | Setup, query, and interpretation knowledge    |
-| EAS CLI         | Agents with terminal access                                        | Live data as tables or JSON, including errors |
+Two optional pieces make the agent more useful. [Expo Skills](#teach-the-agent-with-expo-skills) teach it what each metric means and how to diagnose a slow launch. The [EAS CLI](#run-the-eas-cli-from-an-agent) lets an agent with terminal access query errors, which the Expo MCP Server does not expose yet.
 
 ## Prerequisites
 
@@ -36,21 +24,111 @@ Three pieces give an agent access to your EAS Observe data. They work together, 
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build. The agent can only analyze data your app has already sent.
   </Requirement>
-  <Requirement title="An Expo account with access to the project">
-    The agent reads data on your behalf, so it needs the same access you have.
-  </Requirement>
-  <Requirement title="An AI agent">
-    Claude, Claude Code, Codex, Cursor, VS Code, or any other tool with remote MCP server support.
+  <Requirement title="The Expo MCP Server connected to your AI-assisted tool">
+    Follow [Installation and setup](/mcp/#installation-and-setup) and sign in with an Expo account
+    that has access to the project. For Claude Code and Codex, the [Expo
+    plugin](#teach-the-agent-with-expo-skills) registers the server and installs Expo Skills in one
+    step.
   </Requirement>
 </Prerequisites>
 
-## Set up your agent
+To verify the setup, open the agent in your project directory and ask:
 
-<Step label="1">
+```text Example prompt
+Which versions of my app has EAS Observe seen in the last 7 days?
+```
 
-### Install Expo Skills and the Expo MCP Server
+The agent calls `observe_versions` and replies with the app versions, build numbers, and event counts from your project.
 
-Claude Code and Codex have an official Expo plugin that installs Expo Skills and registers the Expo MCP Server in one step. Other agents install the two separately.
+## Tools
+
+Each tool is read-only and maps to one `eas observe` command:
+
+| Tool                      | What it returns                                                                                                  | EAS CLI equivalent            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `observe_versions`        | App versions with build numbers, EAS Build and EAS Update IDs, event counts, and unique user counts              | `eas observe:versions`        |
+| `observe_metrics_summary` | Aggregated statistics per app version and platform: event count, min, max, median, average, p80, p90, and p99    | `eas observe:metrics-summary` |
+| `observe_metrics`         | Individual metric samples, ordered by time or value, with device, network, and session details                   | `eas observe:metrics`         |
+| `observe_routes`          | Navigation metrics grouped by route name: counts, medians, and p90 for cold render, warm render, and interactive | `eas observe:routes`          |
+| `observe_event_names`     | User-defined event names with counts and first and last seen times                                               | `eas observe:events`          |
+| `observe_events`          | Individual user-defined events with properties, severity, and session IDs                                        | `eas observe:events <name>`   |
+| `observe_session`         | The full metric and log timeline for one session                                                                 | `eas observe:session`         |
+
+Timing values are in seconds. `observe_metrics_summary` and `observe_routes` keep Android and iOS results separate, so one platform cannot hide a regression on the other.
+
+[Errors](/eas/observe/errors/) grouped by fingerprint, and the lookup of one event by ID, are not available as tools. An agent with terminal access can run `eas observe:errors` and `eas observe:event` instead. See [Run the EAS CLI from an agent](#run-the-eas-cli-from-an-agent).
+
+### Shared inputs
+
+Every tool except `observe_session` accepts these inputs. The agent fills them in from your prompt:
+
+- `appId` or `appFullName`: the project to query. When the agent runs inside the project directory, it reads the project ID from the app config. Otherwise, name the project, such as `@owner/my-app`.
+- `platform`: one of `ANDROID`, `IOS`, `IPADOS`, `MACOS`, or `TVOS`. Without it, `observe_versions`, `observe_metrics_summary`, and `observe_routes` return separate Android and iOS results, and the other tools return results from all platforms.
+- `days`, or `start` and `end`: the time range. Defaults to the last 60 days.
+
+`observe_session` takes the project and a session ID. Session IDs come from `observe_metrics` and `observe_events` results.
+
+`observe_metrics_summary` and `observe_metrics` accept the same nine metric names as the EAS CLI. See [Metric names](/eas/observe/eas-cli/#metric-names).
+
+Tools that can return large results paginate them. Each response includes a cursor, and the agent passes it back as `nextCursor` to continue. Routes paginate per platform, and session timelines paginate metrics and logs separately.
+
+## Example prompts
+
+The tools work best in sequence: find the release, compare it, then drill into samples, routes, and one session.
+
+- "Did startup get slower in the latest iOS release?" The agent lists versions with `observe_versions`, then compares them with `observe_metrics_summary`.
+- "Find the five slowest cold launches this week and tell me what those devices have in common." The agent calls `observe_metrics` sorted by slowest and reads the device details on each sample.
+- "Which routes have the worst time to interactive on Android?" The agent calls `observe_routes` for the Android platform.
+- "Show me the timeline for the session behind that slow launch." The agent takes the session ID from the earlier sample and calls `observe_session`.
+- "How many users completed onboarding since the last update?" The agent discovers the event name with `observe_event_names` and counts matches with `observe_events`.
+- "How long do over-the-air updates take to download in the field?" The agent calls `observe_metrics_summary` for the `update_download` metric.
+
+## Workflows
+
+### Investigate a slow launch
+
+A slow launch is rarely explained by one number. The agent chains several tools and reads the context on each sample:
+
+1. It calls `observe_metrics_summary` to confirm which version and platform regressed.
+2. It calls `observe_metrics` for the slowest time to interactive (TTI) samples in that version. Each sample carries [automatic params](/eas/observe/reference/metrics/#time-to-interactive-tti) that describe frame rate, device state, and network state during the launch.
+3. It reads the params to classify the slowness. Many slow frames point to main-thread contention. A frozen frame points to a hard block, such as synchronous I/O. A high TTI with few slow frames points to a long but smooth launch sequence.
+4. It checks whether the slow samples share a condition, such as low power mode, a cellular connection, or a slow first request.
+5. It calls `observe_session` for one of the samples to see what else happened during that launch.
+
+```text Example prompt
+TTI on iOS got slower in 2.4.0. Find the slowest samples, tell me whether the
+cause looks like code or conditions, and show me one session that explains it.
+```
+
+The `eas-observe` skill teaches the agent these diagnostic patterns. See [Teach the agent with Expo Skills](#teach-the-agent-with-expo-skills).
+
+### Compare two releases
+
+Ask the agent to compare any two app versions, native builds, or EAS updates. It calls `observe_metrics_summary` for both and reports the change per metric. Pass a short time range so the comparison reflects the current rollout:
+
+```text Example prompt
+Compare cold launch, warm launch, and TTI between build 142 and build 143 on
+Android over the last 3 days. Flag any metric where p90 got worse by more than
+10%.
+```
+
+### Start from the dashboard
+
+The **Handoff to AI** button in the dashboard header copies the current page state as a structured prompt, including the filters you have applied. Paste it into an agent that has the Expo MCP Server, and the agent can call the tools to answer follow-up questions. See [Handoff to AI](/eas/observe/dashboard/#handoff-to-ai).
+
+## Teach the agent with Expo Skills
+
+The Expo MCP Server gives the agent the data. [Expo Skills](/skills/) give it the knowledge to interpret the data: which metrics exist, what their target values are, which `eas observe` flags to use, and how to read the frame rate, device, and network params on a slow TTI sample. The `eas-observe` skill covers EAS Observe:
+
+<RelatedSkills
+  names={['eas-observe']}
+  descriptions={{
+    'eas-observe':
+      'Set up expo-observe, query metrics with the EAS CLI, and interpret startup and navigation performance data.',
+  }}
+/>
+
+For Claude Code and Codex, the Expo plugin installs the skill and registers the Expo MCP Server in one step:
 
 <Tabs>
 
@@ -64,23 +142,13 @@ Then run `/mcp` inside your Claude Code session to sign in to your Expo account.
 
 <Tab label="Codex">
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
-
-Then sign in to your Expo account:
-
-<Terminal cmd={['$ codex mcp login expo']} />
+<Terminal cmd={['$ codex plugin add expo@openai-curated', '', '$ codex mcp login expo']} />
 
 </Tab>
 
-<Tab label="Claude">
+</Tabs>
 
-Add the [Expo connector](https://claude.ai/directory/expo) to your Claude account. No local installation is required, and the connector works on the web, desktop, and mobile apps. Claude does not read Expo Skills, so it relies on the Expo MCP Server alone.
-
-</Tab>
-
-<Tab label="Cursor and other agents">
-
-Install Expo Skills with the [skills CLI](https://skills.sh/docs/cli):
+For Cursor and other agents, install Expo Skills with the [skills CLI](https://skills.sh/docs/cli):
 
 <Terminal
   cmd={{
@@ -91,31 +159,11 @@ Install Expo Skills with the [skills CLI](https://skills.sh/docs/cli):
   }}
 />
 
-Then add the Expo MCP Server to your agent. See [Expo MCP Server](/mcp/#installation-and-setup) for the settings each tool needs.
+Claude on the web, desktop, and mobile apps does not read skills. There, the agent relies on the Expo MCP Server and the [Metrics reference](/eas/observe/reference/metrics/), which it can fetch with the `read_documentation` tool.
 
-</Tab>
+## Run the EAS CLI from an agent
 
-</Tabs>
-
-The `eas-observe` skill is the one that covers EAS Observe:
-
-<RelatedSkills
-  names={['eas-observe']}
-  descriptions={{
-    'eas-observe':
-      'Set up expo-observe, query metrics with the EAS CLI, and interpret startup and navigation performance data.',
-  }}
-/>
-
-</Step>
-
-<Step label="2">
-
-### Give the agent the EAS CLI
-
-This step applies to agents that can run terminal commands, such as Claude Code, Codex, and Cursor. Skip it for Claude on the web and mobile.
-
-Install the EAS CLI and log in. The agent then runs the `eas observe` commands with `--json --non-interactive`, so the output is machine-readable and never waits for a prompt.
+An agent that can run terminal commands, such as Claude Code, Codex, or Cursor, can also use the [`eas observe` commands](/eas/observe/eas-cli/). Install the EAS CLI and log in, and the agent runs the commands with `--json --non-interactive`, so the output is machine-readable and never waits for a prompt.
 
 <Terminal
   cmd={{
@@ -126,134 +174,48 @@ Install the EAS CLI and log in. The agent then runs the `eas observe` commands w
   }}
 />
 
-</Step>
+Use the EAS CLI from an agent when:
 
-<Step label="3">
-
-### Verify the setup
-
-Open the agent in your project directory and ask:
-
-```text Example prompt
-Which versions of my app has EAS Observe seen in the last 7 days?
-```
-
-The agent either calls the `observe_versions` tool on the Expo MCP Server or runs `eas observe:versions --days 7`. Either way, it replies with the app versions, build numbers, and event counts from your project.
-
-</Step>
-
-## Point the agent at a project
-
-Every Expo MCP Server tool for EAS Observe accepts a project ID or the full project name, such as `@owner/my-app`. When the agent runs inside your project directory, it reads the project ID from **app.json** under `extra.eas.projectId`. When it runs elsewhere, such as Claude on the web, name the project in your prompt.
-
-The EAS CLI reads the project ID from the app config in the current directory. Outside the project directory, the agent passes `--project-id`.
-
-## Example prompts
-
-After setup, describe what you want to know. The agent picks the tool or command for you:
-
-| Example prompt                                                         | What the agent does                                                         |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| How does startup performance in 2.4.0 compare with 2.3.0 on iOS?       | Fetches metric summaries per version and compares median and p90 values     |
-| Show me the 10 slowest time to interactive samples from the last week. | Fetches individual samples sorted slowest first, with their session IDs     |
-| What happened during session `<session-id>`?                           | Fetches the session timeline, with every metric, event, and error           |
-| Which screens take longest to become interactive?                      | Fetches navigation metrics per route and ranks them                         |
-| Which custom events is the app logging, and how often?                 | Lists event names with their counts                                         |
-| How long do over-the-air updates take to download in the field?        | Fetches the `update_download` metric summary                                |
-| Which errors are most common in the latest release?                    | Runs `eas observe:errors` in the terminal, since the MCP has no errors tool |
-
-## Workflows
-
-### Investigate a slow launch
-
-A slow launch is rarely explained by one number. The agent chains several queries and reads the context on each sample:
-
-1. It fetches the metric summary to confirm which version and platform regressed.
-2. It fetches the slowest time to interactive (TTI) samples for that version. Each sample carries [automatic params](/eas/observe/reference/metrics/#time-to-interactive-tti) that describe frame rate, device state, and network state during the launch.
-3. It reads the params to classify the slowness. Many slow frames point to main-thread contention. A frozen frame points to a hard block, such as synchronous I/O. A high TTI with few slow frames points to a long but smooth launch sequence.
-4. It checks whether the slow samples share a condition, such as low power mode, a cellular connection, or a slow first request.
-5. It fetches one session timeline to see what else happened during that launch.
-
-```text Example prompt
-TTI on iOS got slower in 2.4.0. Find the slowest samples, tell me whether the
-cause looks like code or conditions, and show me one session that explains it.
-```
-
-The `eas-observe` skill teaches the agent these diagnostic patterns, so install it even when the agent reads data through the Expo MCP Server.
-
-### Compare two releases
-
-Ask the agent to compare any two app versions, native builds, or EAS updates. It fetches summaries for both and reports the change per metric. Pass a short time range so the comparison reflects the current rollout:
-
-```text Example prompt
-Compare cold launch, warm launch, and TTI between build 142 and build 143 on
-Android over the last 3 days. Flag any metric where p90 got worse by more than
-10%.
-```
-
-### Analyze errors from the terminal
-
-The Expo MCP Server does not expose error groups yet, so error analysis needs an agent with terminal access and the EAS CLI. The agent runs `eas observe:errors` for the grouped list, then `eas observe:errors --fingerprint <fingerprint>` for the stack traces of one group:
+- You want to analyze errors. The agent runs `eas observe:errors` for the grouped list, then `eas observe:errors --fingerprint <fingerprint>` for the stack traces of one group. See [`eas observe:errors`](/eas/observe/eas-cli/#eas-observeerrors) for the available filters.
+- You want the agent to write a script, such as a CI check that fails when a metric regresses. See [Common workflows](/eas/observe/eas-cli/#common-workflows).
 
 ```text Example prompt
 List the fatal errors from the last 7 days, then show me the stack trace of the
 most common one and suggest where in the code it comes from.
 ```
 
-See [`eas observe:errors`](/eas/observe/eas-cli/#eas-observeerrors) for the available filters.
+## Plans and usage
 
-### Start from the dashboard
+Plan limits are the same as in the dashboard and the EAS CLI. When your account's plan does not include the requested data, the tool returns an error with an upgrade message. See [Pricing](https://expo.dev/pricing) for what each plan includes.
 
-The **Handoff to AI** button in the dashboard header copies the current page state as a structured prompt, including the filters you have applied. Paste it into an agent that has the Expo MCP Server, and the agent can fetch more data to answer follow-up questions. See [Handoff to AI](/eas/observe/dashboard/#handoff-to-ai).
-
-## What the agent can access
-
-Each Expo MCP Server tool maps to an EAS CLI command. All the tools are read-only. Timing values are in seconds, and results are paginated the same way as the CLI.
-
-| Data                                    | Expo MCP Server tool      | EAS CLI command               |
-| --------------------------------------- | ------------------------- | ----------------------------- |
-| App versions, build numbers, update IDs | `observe_versions`        | `eas observe:versions`        |
-| Aggregated statistics per app version   | `observe_metrics_summary` | `eas observe:metrics-summary` |
-| Individual metric samples               | `observe_metrics`         | `eas observe:metrics`         |
-| Navigation metrics grouped by route     | `observe_routes`          | `eas observe:routes`          |
-| User-defined event names and counts     | `observe_event_names`     | `eas observe:events`          |
-| Individual user-defined events          | `observe_events`          | `eas observe:events <name>`   |
-| The full timeline of one session        | `observe_session`         | `eas observe:session`         |
-| Errors grouped by fingerprint           | Not available             | `eas observe:errors`          |
-| One metric, event, or error by ID       | Not available             | `eas observe:event`           |
-
-The same plan limits apply as in the dashboard and CLI. When your plan does not include the data a tool asks for, the tool returns an upgrade message instead of data. See [Pricing](https://expo.dev/pricing) for what each plan includes.
-
-## Data privacy
-
-The Expo MCP Server returns your EAS Observe data to the agent you connect. From there, the agent and its model provider apply their own retention and training policies. EAS Observe data contains no personally identifiable information, but review those policies before connecting an agent to a project under regulatory requirements. See [Data privacy](/mcp/#data-privacy) for the full data flow.
+Each tool call counts toward your account's Expo MCP Server usage. The server returns the results to the MCP client you connect, and the client and its model provider apply their own retention and training policies. See [Data privacy](/mcp/#data-privacy) for how Expo MCP Server handles project data.
 
 ## Next steps
 
 <BoxLink
-  title="Querying with EAS CLI"
-  description="The full list of eas observe commands, flags, and metric names the agent runs."
-  href="/eas/observe/eas-cli"
-  Icon={TerminalBrowserIcon}
-/>
-
-<BoxLink
   title="Expo MCP Server"
-  description="Install options for every supported agent, and the full list of MCP tools."
-  href="/mcp"
+  description="Install the server, authenticate, and see the complete list of tools."
+  href="/mcp/"
   Icon={Star06Icon}
 />
 
 <BoxLink
   title="Expo Skills"
-  description="Browse every Expo skill and the install options for other agents."
-  href="/skills"
+  description="Browse every Expo skill and the install options for each agent."
+  href="/skills/"
   Icon={Star06Icon}
 />
 
 <BoxLink
+  title="Querying with EAS CLI"
+  description="Run the same queries from the terminal with the eas observe commands."
+  href="/eas/observe/eas-cli/"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
   title="Metrics reference"
-  description="What each metric measures, its target value, and the params attached to every TTI sample."
-  href="/eas/observe/reference/metrics"
-  Icon={Speedometer04Icon}
+  description="What each startup and navigation metric measures."
+  href="/eas/observe/reference/metrics/"
+  Icon={ActivityIcon}
 />
