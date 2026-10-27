@@ -287,6 +287,37 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
   }
 }
 
+// Sets Yoga node size from every size SwiftUI lays the hosted content out at. SwiftUI drives
+// `animatableData` of an `Animatable` modifier through each interpolated size of an animated
+// resize, not only its destination, so the hosted React Native tree follows the animation.
+private struct AnimatedSizeReporter: ViewModifier, Animatable {
+  var size: CGSize
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  let lastReported: ReportedSize
+
+  var animatableData: CGSize.AnimatableData {
+    get { size.animatableData }
+    set {
+      size.animatableData = newValue
+      report(size)
+    }
+  }
+
+  func body(content: Content) -> some View {
+    content
+  }
+
+  // SwiftUI sets `animatableData` once per frame while animating and once per change otherwise,
+  // repeating a value it already set; Yoga only needs to hear each size once.
+  private func report(_ size: CGSize) {
+    if lastReported.value == size {
+      return
+    }
+    lastReported.value = size
+    shadowNodeProxy.setViewSize?(size)
+  }
+}
+
 // The size last sent to Yoga for an `RNHostView`, shared by every copy of its reporter.
 private final class ReportedSize {
   var value: CGSize?
