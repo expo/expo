@@ -1,9 +1,6 @@
-import type { SFSymbol } from 'sf-symbols-typescript';
+import type { SplitViewToolbarItem } from './elements';
 
-export interface SplitViewNativeToolbarItem {
-  title: string;
-  icon?: SFSymbol;
-}
+type SplitViewNativeToolbarItem = Omit<SplitViewToolbarItem, 'onPress'>;
 
 // TODO(@ubax): Expose more header options, e.g. subtitle (ENG-28657)
 export interface SplitViewNativeHeaderProps {
