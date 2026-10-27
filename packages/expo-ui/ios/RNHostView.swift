@@ -90,9 +90,21 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
-      Children()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
+      // Not `ReportSizeToYogaNodeModifier`: `onGeometryChange` reports an animated resize once,
+      // with its destination size, so the hosted content snapped to its final layout while the
+      // frame was still animating (expo/expo#52396). The animatable reporter is driven through
+      // every interpolated size instead.
+      GeometryReader { geometry in
+        Children()
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .modifier(
+            AnimatedSizeReporter(
+              size: geometry.size,
+              shadowNodeProxy: props.shadowNodeProxy,
+              lastReported: lastReportedSize
+            )
+          )
+      }
     }
   }
 
