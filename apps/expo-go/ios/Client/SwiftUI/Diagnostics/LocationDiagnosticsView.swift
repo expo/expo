@@ -213,6 +213,7 @@ private class LocationDiagnosticsViewModel: NSObject, ObservableObject, CLLocati
   @Published var error: String?
 
   private static let permissionDeniedMessage = "Location access is required to be set to 'Always' in order to use this feature. You can manually enable them at any time in the 'Location Services' section of the Settings app."
+  private static let locationUnavailableMessage = "Could not get the current location. Check that Location Services is on. On a simulator, choose a location in Features > Location, then open this screen again"
   private let locationManager = CLLocationManager()
   private let storageKey = "expo-home-location-diagnostics-locations"
 
@@ -311,6 +312,9 @@ private class LocationDiagnosticsViewModel: NSObject, ObservableObject, CLLocati
   nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     Task { @MainActor in
       print("Location error: \(error)")
+      if self.initialRegion == nil {
+        self.error = Self.locationUnavailableMessage
+      }
     }
   }
 

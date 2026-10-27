@@ -40,6 +40,10 @@ struct DeviceLoginSheet: View {
         }
       }
     }
+    .interactiveDismissDisabled(viewModel.phase == .completing)
+    .onDisappear {
+      viewModel.cancel()
+    }
     .sheet(item: $browserURL) { url in
       SafariView(url: url)
         .ignoresSafeArea()
