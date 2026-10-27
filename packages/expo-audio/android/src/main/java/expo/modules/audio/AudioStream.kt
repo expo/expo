@@ -52,6 +52,7 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+  @Volatile
   var isStreaming: Boolean = false
     private set
 
@@ -59,6 +60,11 @@ class AudioStream(
 
   private var fileWriter: AudioStreamFileWriter? = null
   private val fileWriterLock = Any()
+
+  // Guards `isStreaming`, `audioRecord` and `captureJob`. JS calls `stop()` on the JS thread,
+  // `start()` runs on a coroutine and the capture loop calls `stop()` from Dispatchers.IO.
+  // Taken before `fileWriterLock`, never after it.
+  private val stateLock = Any()
 
   @RequiresPermission(Manifest.permission.RECORD_AUDIO)
   fun start() {
