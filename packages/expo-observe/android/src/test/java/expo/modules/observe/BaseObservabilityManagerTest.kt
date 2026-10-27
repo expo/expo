@@ -313,7 +313,7 @@ class BaseObservabilityManagerTest {
   }
 
   @Test
-  fun `when only errors are in-sample, exception logs are marked as not in the sampleRate sample`() = runTest {
+  fun `when only errors are in-sample, logs are marked as not in the sampleRate sample`() = runTest {
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
     stubLogDispatch(logs = listOf(log(1, "js.exception"), log(2, "native.exception")))
 
@@ -322,7 +322,7 @@ class BaseObservabilityManagerTest {
     coVerify(exactly = 1) {
       eventDispatcher.dispatchLogs(
         match { events ->
-          events.single().logs.map { it.attributes?.get("expo.error.in_sample_rate") } ==
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
             listOf(JsonPrimitive(false), JsonPrimitive(false))
         }
       )
@@ -330,7 +330,7 @@ class BaseObservabilityManagerTest {
   }
 
   @Test
-  fun `when in-sample for sampleRate, only exception logs are marked as in the sampleRate sample`() = runTest {
+  fun `when in-sample for sampleRate, all logs are marked as in the sampleRate sample`() = runTest {
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
     stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
 
@@ -339,8 +339,8 @@ class BaseObservabilityManagerTest {
     coVerify(exactly = 1) {
       eventDispatcher.dispatchLogs(
         match { events ->
-          events.single().logs.map { it.attributes?.get("expo.error.in_sample_rate") } ==
-            listOf(null, JsonPrimitive(true), JsonPrimitive(true))
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(true), JsonPrimitive(true), JsonPrimitive(true))
         }
       )
     }

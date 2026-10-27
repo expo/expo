@@ -284,10 +284,8 @@ extension Event.Log {
     var attributes: [OTAttribute] = [
       OTAttribute(key: "session.id", rawValue: sessionId),
       OTAttribute(key: "event.name", rawValue: name),
+      OTAttribute(key: "expo.in_sample_rate", value: .bool(inSampleRate)),
     ]
-    if ObservabilityManager.errorLogNames.contains(name) {
-      attributes.append(OTAttribute(key: "expo.error.in_sample_rate", value: .bool(inSampleRate)))
-    }
 
     var encodeTimeDrops = 0
     if let userDict = self.attributes?.value as? [String: Any] {

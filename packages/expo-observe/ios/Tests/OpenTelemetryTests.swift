@@ -174,25 +174,18 @@ struct OpenTelemetryTests {
   }
 
   @Test(arguments: [true, false])
-  func `toOTLogRecord marks exception logs with whether the installation is in the sampleRate sample`(
+  func `toOTLogRecord marks all logs with whether the installation is in the sampleRate sample`(
     inSampleRate: Bool
   ) {
-    for name in ["js.exception", "native.exception"] {
+    for name in ["auth.login_failed", "js.exception", "native.exception"] {
       let otLog = makeLog(name: name).toOTLogRecord(inSampleRate: inSampleRate)
-      let attribute = otLog.attributes.first { $0.key == "expo.error.in_sample_rate" }
+      let attribute = otLog.attributes.first { $0.key == "expo.in_sample_rate" }
       guard case .bool(let value) = attribute?.value else {
-        Issue.record("Expected a bool `expo.error.in_sample_rate` attribute on \(name)")
+        Issue.record("Expected a bool `expo.in_sample_rate` attribute on \(name)")
         continue
       }
       #expect(value == inSampleRate)
     }
-  }
-
-  @Test
-  func `toOTLogRecord does not mark other logs with the sampleRate sample`() {
-    let otLog = makeLog(name: "auth.login_failed").toOTLogRecord(inSampleRate: true)
-
-    #expect(!otLog.attributes.contains { $0.key == "expo.error.in_sample_rate" })
   }
 
   private func makeLog(name: String) -> Event.Log {
