@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import chalk from 'chalk';
 
 import type { Command } from '../index';

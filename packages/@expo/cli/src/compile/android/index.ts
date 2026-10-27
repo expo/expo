@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import type { Command } from '../../index';
 import * as Log from '../../log';
 import { getProjectRoot } from '../../utils/args';
