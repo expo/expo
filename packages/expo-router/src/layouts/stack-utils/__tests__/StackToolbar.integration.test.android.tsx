@@ -216,6 +216,48 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(MockedScreenStackHeaderRightView).toHaveBeenCalled();
     });
 
+    it('draws right toolbar buttons on a container in buttonContainerColor', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right" buttonContainerColor="#000000b3">
+                <Stack.Toolbar.Button icon={{ uri: 'search-icon' }} />
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('IconButton').props.colors).toEqual({
+        containerColor: '#000000b3',
+        disabledContainerColor: '#000000b3',
+      });
+    });
+
+    it('draws left toolbar menu buttons on a container in buttonContainerColor', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="left" buttonContainerColor="#000000b3">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('IconButton').props.colors).toEqual({
+        containerColor: '#000000b3',
+        disabledContainerColor: '#000000b3',
+      });
+    });
+
     it.each(['left', 'right'] as const)(
       'asChild mode for %s placement renders children directly',
       async (placement) => {
