@@ -592,14 +592,7 @@ private class TouchDispatchingRootViewGroup(
    * reporting it as a native one would cancel the press it belongs to.
    */
   private fun isCancelFromReactNative(): Boolean {
-    var current: ViewParent? = parent
-    while (current != null) {
-      if (current is HostView) {
-        return current.isDispatchingCancelFromParent
-      }
-      current = current.parent
-    }
-    return false
+    return findAncestorHostView()?.isDispatchingCancelFromParent ?: false
   }
 
   /**
