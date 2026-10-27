@@ -48,45 +48,28 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     self = .bool(value)
   }
 
-  /// Converts a Foundation value from JavaScript through JSON, with NaN as `.null` and infinity as the max double.
+  /// Converts a Foundation value from JavaScript. NaN and infinity become `.null`, as in `JSON.stringify`.
   init(foundationValue value: Any?) throws {
-    // Wrapped in an array, because JSONSerialization only accepts an array or a dictionary at the top.
-    var wrapped: [Any] = [value ?? NSNull()]
-    // Checked rather than caught: JSONSerialization raises an Objective-C exception for an invalid
-    // object, which Swift cannot catch.
-    if !JSONSerialization.isValidJSONObject(wrapped) {
-      wrapped = [Self.replacingNonFiniteNumbers(in: value ?? NSNull())]
-      guard JSONSerialization.isValidJSONObject(wrapped) else {
-        throw AppIntentUnsupportedValueException(String(describing: type(of: value ?? NSNull())))
-      }
-    }
-    let data = try JSONSerialization.data(withJSONObject: wrapped)
-    guard case .array(let values) = try JSONDecoder().decode(AppIntentValue.self, from: data),
-      let decoded = values.first
-    else {
-      throw AppIntentUnsupportedValueException(String(describing: type(of: value ?? NSNull())))
-    }
-    self = decoded
+    self = try Self.converting(foundationValue: value).jsonSafe()
   }
 
-  private static func replacingNonFiniteNumbers(in value: Any) -> Any {
+  private static func converting(foundationValue value: Any?) throws -> AppIntentValue {
     switch value {
-    case let number as NSNumber where CFGetTypeID(number) != CFBooleanGetTypeID() && !number.doubleValue.isFinite:
-      let double = number.doubleValue
-      log.warn(
-        "expo-app-intents replaced a non-finite number (\(double)) that came from JavaScript, because JSON cannot "
-          + "represent NaN or infinity. Return a finite number, or a string if the exact value matters."
-      )
-      if double.isNaN {
-        return NSNull()
+    case nil, is NSNull:
+      return .null
+    case let number as NSNumber:
+      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+        return .bool(number.boolValue)
       }
-      return double > 0 ? Double.greatestFiniteMagnitude : -Double.greatestFiniteMagnitude
+      return Int(exactly: number.doubleValue).map(AppIntentValue.int) ?? .double(number.doubleValue)
+    case let string as String:
+      return .string(string)
     case let array as [Any]:
-      return array.map(replacingNonFiniteNumbers(in:))
+      return .array(try array.map(converting(foundationValue:)))
     case let object as [String: Any]:
-      return object.mapValues(replacingNonFiniteNumbers(in:))
-    default:
-      return value
+      return .object(try object.mapValues(converting(foundationValue:)))
+    case let value?:
+      throw AppIntentUnsupportedValueException(String(describing: type(of: value)))
     }
   }
 
@@ -95,9 +78,8 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     switch self {
     case .double(let value) where !value.isFinite:
       log.warn(
-        "expo-app-intents replaced a non-finite number (\(value)) in App Intent params with null, "
-          + "because JSON cannot represent NaN or infinity and the invocation would otherwise be "
-          + "dropped. Pass a finite number, or a string if the exact value matters."
+        "expo-app-intents replaced a non-finite number (\(value)) with null, because JSON cannot represent "
+          + "NaN or infinity. Use a finite number, or a string if the exact value matters."
       )
       return .null
     case .array(let values):

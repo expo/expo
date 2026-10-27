@@ -82,7 +82,7 @@ struct AppIntentValueTests {
   }
 
   @Test
-  func `numbers from JavaScript keep booleans and become integers when integral and stay finite`() throws {
+  func `numbers from JavaScript keep booleans and integers, and non-finite numbers become null`() throws {
     #expect(try AppIntentValue(foundationValue: kCFBooleanTrue) == .bool(true))
     // JavaScript has no integer type, so 250 arrives as the double 250.0. Decoding persisted params
     // turns it into an integer too, so both paths give Swift the same value.
@@ -91,7 +91,7 @@ struct AppIntentValueTests {
     #expect(try AppIntentValue(foundationValue: NSNumber(value: Double.nan)) == .null)
     #expect(
       try AppIntentValue(foundationValue: [NSNumber(value: Double.infinity), NSNumber(value: -Double.infinity)])
-        == .array([.double(.greatestFiniteMagnitude), .double(-.greatestFiniteMagnitude)])
+        == .array([.null, .null])
     )
   }
 }
