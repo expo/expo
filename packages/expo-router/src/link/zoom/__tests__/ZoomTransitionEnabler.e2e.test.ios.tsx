@@ -264,7 +264,7 @@ describe('hasEnabler tracking', () => {
 });
 
 describe('usePreventZoomTransitionDismissal next to inline Stack.Screen options', () => {
-  it('renders the screen when it is pushed without a zoom transition', async () => {
+  it('renders the initial screen without a zoom transition', async () => {
     await renderRouter({
       _layout: () => <Stack />,
       index: function Index() {

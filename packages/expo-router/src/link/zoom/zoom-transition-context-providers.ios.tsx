@@ -3,16 +3,12 @@
 import { use, useCallback, useId, useMemo, useRef, useState } from 'react';
 
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
-import {
-  getInternalExpoRouterParams,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-} from '../../navigationParams';
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { shouldLinkExternally } from '../../utils/url';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import {
+  getZoomTransitionTarget,
   ZoomTransitionSourceContext,
   ZoomTransitionTargetContext,
   type ZoomTransitionSourceContextValueType,
@@ -90,7 +86,7 @@ export function ZoomTransitionTargetContextProvider({
   const removeEnabler = useCallback(() => setNumberOfEnablers((prev) => prev - 1), []);
   const hasEnabler = numberOfEnablers > 0;
   const isPreview = useIsPreview();
-  const target = isPreview ? null : getZoomTransitionTarget(route);
+  const target = isZoomTransitionEnabled() && !isPreview ? getZoomTransitionTarget(route) : null;
   // Only this route's values go into the memoized context value. So an options change on any
   // route re-renders this provider, but not the screen that reads the context.
   const routeOptions = target ? use(DescriptorsContext)[target.routeKey]?.options : undefined;
@@ -122,28 +118,4 @@ export function ZoomTransitionTargetContextProvider({
     return <ZoomTransitionTargetContext value={value}>{children}</ZoomTransitionTargetContext>;
   }
   return children;
-}
-
-function getZoomTransitionTarget(route: unknown): { identifier: string; routeKey: string } | null {
-  if (
-    isZoomTransitionEnabled() &&
-    route &&
-    typeof route === 'object' &&
-    'params' in route &&
-    typeof route.params === 'object' &&
-    'key' in route &&
-    typeof route.key === 'string'
-  ) {
-    const params = route.params ?? {};
-    const internalParams = getInternalExpoRouterParams(params);
-    const zoomTransitionId =
-      internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
-    const zoomTransitionScreenId =
-      internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
-    const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
-    if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-      return { identifier: zoomTransitionId, routeKey: route.key };
-    }
-  }
-  return null;
 }
