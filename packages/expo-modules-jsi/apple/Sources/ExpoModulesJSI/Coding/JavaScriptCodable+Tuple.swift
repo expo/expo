@@ -38,7 +38,7 @@ extension JavaScriptValue {
   /// must be an object, and each element is read from the property named by the matching label.
   ///
   /// The result is unlabeled, and converts implicitly to a labeled tuple type. Throws `TypeError` when
-  /// the value has the wrong shape, with the index or label of a failing element in its path.
+  /// the value has the wrong shape.
   @JavaScriptActor
   public static func decodeTuple<each Element>(
     _ value: borrowing JavaScriptUnownedValue,
@@ -119,7 +119,6 @@ extension JavaScriptValue {
 private struct TupleReader {
   private let elements: UnsafeMutablePointer<facebook.jsi.Value>
   private let count: Int
-  private let labels: [String]?
   private let jsiRuntime: facebook.jsi.IRuntime
   private var index = 0
 
@@ -163,23 +162,17 @@ private struct TupleReader {
       }
     }
     self.count = count
-    self.labels = labels
     self.jsiRuntime = jsiRuntime
   }
 
-  /// Decodes the next element with `decode`. A `TypeError` from the element gets the element's index or
-  /// label added to the front of its path.
+  /// Decodes the next element with `decode`.
   @JavaScriptActor
   mutating func next<Element>(
     _ decode: JavaScriptValue.ElementDecoder<Element>,
     in runtime: borrowing JavaScriptRuntime
   ) throws -> Element {
     defer { index += 1 }
-    do {
-      return try decode(JavaScriptUnownedValue(jsiRuntime, elements + index), runtime)
-    } catch let error as JavaScriptValue.TypeError {
-      throw error.prependingPath(labels.map { ".\($0[index])" } ?? "[\(index)]")
-    }
+    return try decode(JavaScriptUnownedValue(jsiRuntime, elements + index), runtime)
   }
 
   /// Decodes the next element with its type's `decode`.

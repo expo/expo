@@ -223,14 +223,8 @@ extension JavaScriptValue {
     guard value.isArray() else {
       return [try element(value, runtime)]
     }
-    var index = 0
     return try value.getArray(in: runtime).mapUnowned { value in
-      defer { index += 1 }
-      do {
-        return try element(value, runtime)
-      } catch let error as TypeError {
-        throw error.prependingPath("[\(index)]")
-      }
+      return try element(value, runtime)
     }
   }
 
@@ -290,11 +284,7 @@ extension JavaScriptValue {
     var result = [String: Value](minimumCapacity: keys.count)
     for key in keys {
       let decoded: Value? = try object.withUnownedProperty(key) { property in
-        do {
-          return property.isUndefined() ? nil : try decodeValue(property, runtime)
-        } catch let error as TypeError {
-          throw error.prependingPath(".\(key)")
-        }
+        return property.isUndefined() ? nil : try decodeValue(property, runtime)
       }
       if let decoded {
         result[key] = decoded

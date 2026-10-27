@@ -69,7 +69,7 @@ struct JavaScriptCodableTupleTests {
   }
 
   @Test
-  func `names the failing element index in the error path`() throws {
+  func `throws the error of a failing element`() throws {
     let error = #expect(throws: JavaScriptValue.TypeError.self) {
       try withValue("[1, 2]") { value in
         _ = try JavaScriptValue.decodeTuple(
@@ -80,7 +80,7 @@ struct JavaScriptCodableTupleTests {
         )
       }
     }
-    #expect(error?.description.hasSuffix("(path: [1])") == true)
+    #expect(error?.description == "TypeError: Value cannot be represented as String")
   }
 
   @Test
@@ -159,8 +159,8 @@ struct JavaScriptCodableTupleTests {
   }
 
   @Test
-  func `names the failing label in the error path`() throws {
-    let error = #expect(throws: JavaScriptValue.TypeError.self) {
+  func `throws the error of a missing labeled element`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
       try withValue("({ x: 1 })") { value in
         _ = try JavaScriptValue.decodeTuple(
           value,
@@ -171,7 +171,6 @@ struct JavaScriptCodableTupleTests {
         )
       }
     }
-    #expect(error?.description.hasSuffix("(path: y)") == true)
   }
 
   @Test
@@ -229,8 +228,8 @@ struct JavaScriptCodableTupleTests {
   }
 
   @Test
-  func `names the full path of a failing nested element`() throws {
-    let error = #expect(throws: JavaScriptValue.TypeError.self) {
+  func `throws the error of a failing nested element`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
       try withValue("({ a: [[1, 'x']] })") { value in
         _ = try JavaScriptValue.decodeDictionary(value, in: runtime) { value, runtime in
           return try JavaScriptValue.decodeArray(value, in: runtime) { value, runtime in
@@ -244,7 +243,6 @@ struct JavaScriptCodableTupleTests {
         }
       }
     }
-    #expect(error?.description.hasSuffix("(path: a[0][1])") == true)
   }
 
   @Test
