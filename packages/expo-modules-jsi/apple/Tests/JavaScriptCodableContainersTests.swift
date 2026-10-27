@@ -123,8 +123,8 @@ struct JavaScriptCodableContainersTests {
     let dictionaries = try [[String: Int]].encode([["a": 1], ["b": 2]], in: runtime).getArray()
     #expect(try [[String: Int]].decode(dictionaries.asValue(), in: runtime) == [["a": 1], ["b": 2]])
     let object = runtime.createObject()
-    try object.setProperty("tags", encoding: ["x", "y"], in: runtime)
-    try object.setProperty("counts", encoding: ["x": 1], in: runtime)
+    try object.setProperty("tags", encoding: ["x", "y"])
+    try object.setProperty("counts", encoding: ["x": 1])
     #expect(try [String].decode(object.getProperty("tags"), in: runtime) == ["x", "y"])
     #expect(try [String: Int].decode(object.getProperty("counts"), in: runtime) == ["x": 1])
   }

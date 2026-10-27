@@ -185,7 +185,7 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
   {
     let object = runtime.createObject()
     for (key, element) in value {
-      try object.setProperty(key, encoding: element, in: runtime)
+      try object.setProperty(key, encoding: element)
     }
     return object.takeValue()
   }
@@ -199,7 +199,7 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
   ) throws {
     let object = runtime.createObject()
     for (key, element) in value {
-      try object.setProperty(key, encoding: element, in: runtime)
+      try object.setProperty(key, encoding: element)
     }
     slot.emplace(object)
   }
