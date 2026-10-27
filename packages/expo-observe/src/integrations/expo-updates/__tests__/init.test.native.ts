@@ -351,9 +351,7 @@ describe('initExpoUpdatesIntegration', () => {
 
       emitLiveEntry(entry({ timestamp: NOW + 1000, message: 'live error' }));
 
-      expect(mockAppMetrics.reportError.mock.calls.map(([report]) => report.message)).toEqual([
-        'live error',
-      ]);
+      expect(reportedErrorMessages()).toEqual(['UpdateFailedToLoad: live error']);
     });
 
     it('reports an entry once when it arrives live and in the read', async () => {
