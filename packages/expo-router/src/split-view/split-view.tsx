@@ -20,9 +20,19 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    * @default false
    */
   activityEnabled?: boolean;
+  /**
+   * Disables the left and right safe area insets that SplitView applies to the content of each column and inspector.
+   * @default false
+   */
+  disableHorizontalSafeAreaInsets?: boolean;
 }
 
-function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }: SplitViewProps) {
+function SplitViewNavigator({
+  children,
+  activityEnabled,
+  disableHorizontalSafeAreaInsets,
+  ...splitViewHostProps
+}: SplitViewProps) {
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
   }
@@ -40,7 +50,8 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
       isValidElement(child) && child.type === SplitViewColumn
   );
   const inspectorChildren = allChildrenArray.filter(
-    (child) => isValidElement(child) && child.type === SplitViewInspector
+    (child): child is ReactElement<SplitViewColumnProps> =>
+      isValidElement(child) && child.type === SplitViewInspector
   );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
@@ -62,7 +73,14 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
 
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
-    <Split.Column key={child.key}>{getSplitColumnChildren(child.props.children)}</Split.Column>
+    <Split.Column key={child.key}>
+      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+    </Split.Column>
+  ));
+  const inspectors = inspectorChildren.map((child) => (
+    <Split.Inspector key={child.key}>
+      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+    </Split.Inspector>
   ));
 
   // The key is needed, because number of columns cannot be changed dynamically
@@ -71,9 +89,12 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columns}
         <Split.Column>
-          <Slot activityEnabled={activityEnabled} />
+          {getSplitColumnChildren(
+            <Slot activityEnabled={activityEnabled} />,
+            disableHorizontalSafeAreaInsets
+          )}
         </Split.Column>
-        {inspectorChildren}
+        {inspectors}
       </Split.Host>
     </IsWithinNativeNavigator>
   );
