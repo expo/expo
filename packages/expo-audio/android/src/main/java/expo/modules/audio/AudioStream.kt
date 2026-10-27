@@ -67,7 +67,7 @@ class AudioStream(
   private val stateLock = Any()
 
   @RequiresPermission(Manifest.permission.RECORD_AUDIO)
-  fun start() {
+  fun start() = synchronized(stateLock) {
     if (isStreaming) {
       return
     }
@@ -95,16 +95,18 @@ class AudioStream(
   }
 
   fun stop() {
-    if (!isStreaming) {
-      return
+    synchronized(stateLock) {
+      if (!isStreaming) {
+        return
+      }
+      isStreaming = false
+      captureJob?.cancel()
+      captureJob = null
+      audioRecord?.stop()
+      audioRecord?.release()
+      audioRecord = null
+      emitStatus()
     }
-    isStreaming = false
-    captureJob?.cancel()
-    captureJob = null
-    audioRecord?.stop()
-    audioRecord?.release()
-    audioRecord = null
-    emitStatus()
 
     // Auto-finalize any in-progress file recording.
     // isStreaming = false causes the capture loop to exit; the lock guarantees any
