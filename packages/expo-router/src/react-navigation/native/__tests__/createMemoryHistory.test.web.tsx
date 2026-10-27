@@ -176,3 +176,40 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
   const newItem = history.get(1)!;
   expect(stubWindow.history.state).toEqual({ id: newItem.id });
 });
+
+test('replaces the current entry after browser back', () => {
+  jest.useFakeTimers();
+
+  const history = createMemoryHistory();
+  const unsubscribe = history.listen(() => {});
+
+  const state: NavigationState = {
+    key: 'stack-123',
+    index: 0,
+    routeNames: ['One'],
+    routes: [{ name: 'One', key: 'One-23', params: undefined }],
+    type: 'stack',
+    stale: false,
+  };
+
+  history.replace({ path: '/route-one', state });
+  history.push({ path: '/route-two', state });
+  history.push({ path: '/route-three', state });
+
+  // Browser back to /route-two
+  stubWindow.history.back();
+  jest.runAllTimers();
+  expect(history.index).toBe(1);
+
+  history.replace({ path: '/route-two?param=1', state });
+  expect(history.get(1)!.path).toBe('/route-two?param=1');
+  expect(history.get(2)!.path).toBe('/route-three');
+
+  // Browser back to /route-one
+  stubWindow.history.back();
+  jest.runAllTimers();
+  expect(history.index).toBe(0);
+  expect(history.get(0)!.path).toBe('/route-one');
+
+  unsubscribe();
+});
