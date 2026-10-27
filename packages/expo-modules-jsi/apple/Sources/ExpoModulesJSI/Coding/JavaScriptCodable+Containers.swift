@@ -56,6 +56,21 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
       try Element.encode(value[index], into: slot, in: runtime)
     }
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: [Element],
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    // The array is moved into the slot, so an array nested in another array, or set as a property,
+    // never becomes a `JavaScriptValue`.
+    try runtime.createArray(count: value.count, into: slot) {
+      (index: Int, elementSlot: borrowing JavaScriptValue.Slot) in
+      try Element.encode(value[index], into: elementSlot, in: runtime)
+    }
+  }
 }
 
 // MARK: - Optional
@@ -170,8 +185,22 @@ extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScript
   {
     let object = runtime.createObject()
     for (key, element) in value {
-      object.setProperty(key, value: try Value.encode(element, in: runtime))
+      try object.setProperty(key, encoding: element)
     }
     return object.takeValue()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: [String: Value],
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let object = runtime.createObject()
+    for (key, element) in value {
+      try object.setProperty(key, encoding: element)
+    }
+    slot.emplace(object)
   }
 }
