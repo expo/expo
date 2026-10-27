@@ -1,4 +1,4 @@
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import frontmatter from 'front-matter';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
