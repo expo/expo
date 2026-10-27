@@ -7,6 +7,7 @@ description: Learn how EAS Workflows starts a coding agent that tests your app o
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 import { AgenticWorkflowDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
 
@@ -24,7 +25,7 @@ The following diagram shows one run of an agentic workflow. The highlighted step
 
 ## Why the agent needs a simulator
 
-A coding agent can read and change code, but it cannot see if the app works. To see the app, the agent needs a device that runs it.
+A coding agent can read and change code, but it cannot see if the app functions as expected. To see the app, the agent needs a device that runs it.
 
 With Expo Simulators, your workflows can use Android Emulators and iOS Simulators on EAS cloud infrastructure. Any job worker can start a session. Then the agent can control the device with a controller, such as [agent-device](/agents/agent-device/), and check the app's behavior.
 
@@ -36,6 +37,14 @@ The agent does not merge or ship a change. It returns evidence:
 - The screenshots that the agent saved.
 - The screen recording of the session, on the session page on the EAS dashboard.
 - A link that opens the build in a browser preview.
+
+For example, Agentic CI posts this evidence in a comment on the pull request:
+
+<ContentSpotlight
+  alt="Agentic CI comment on a GitHub pull request with a PASS verdict and links to the session recording, the agent report, and a browser preview"
+  src="/static/images/eas-workflows/agentic-ci-comment.webp"
+  darkSrc="/static/images/eas-workflows/agentic-ci-comment-dark.webp"
+/>
 
 ## Agentic workflow guides
 

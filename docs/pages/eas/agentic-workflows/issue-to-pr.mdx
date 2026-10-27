@@ -9,6 +9,7 @@ import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -54,11 +55,14 @@ Add the Issue to PR workflow to my Expo project. Use https://docs.expo.dev/eas/a
 
 Do these steps one time for your project.
 
-<AgenticWorkflowsSetup githubCli />
+<AgenticWorkflowsSetup githubCli>
+  <Requirement title="The Agentic CI workflow">
+    Issue to PR needs [Agentic CI](/eas/agentic-workflows/agentic-ci/), because Agentic CI tests
+    each PR that the agent opens. Add Agentic CI first.
+  </Requirement>
+</AgenticWorkflowsSetup>
 
 <GitHubTokenStep />
-
-Issue to PR also needs [Agentic CI](/eas/agentic-workflows/agentic-ci/), because Agentic CI tests each PR that the agent opens. Add Agentic CI first.
 
 <WhatTheAgentCanDo />
 
@@ -114,7 +118,11 @@ switch (command) {
         {
           title: issue.title,
           body: issue.body,
-          comments: comments.map(comment => comment.body),
+          comments: comments
+            .filter(comment =>
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.author_association)
+            )
+            .map(comment => comment.body),
         },
         null,
         2
@@ -195,6 +203,11 @@ cd "$WORK_DIR"
 env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
   timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md change || true
 
+if [ -n "$(git status --porcelain -- .eas .github)" ]; then
+  echo "The agent changed files in .eas or .github. The job does not open a pull request." >&2
+  exit 1
+fi
+
 if [ -z "$(git status --porcelain)" ]; then
   {
     printf '## Issue to PR\n\nThe agent did not change any file.\n\n'
@@ -225,10 +238,11 @@ node "$GITHUB_HELPER" comment "$ISSUE_NUMBER" /tmp/comment.md
 The script does these tasks in this order:
 
 1. It clones the default branch, and removes the GitHub token from the remote URL of the clone.
-2. It reads the issue and its comments, and writes the prompt for the agent.
+2. It reads the issue and the comments from the owners, members, and collaborators of the repository. Then it writes the prompt for the agent.
 3. It removes the Expo and GitHub tokens from the environment, and runs the agent in the `change` mode.
-4. If the agent changed no file, it adds a comment with the reason to the issue, and stops.
-5. It commits the change, pushes the branch, and opens a PR. Then it adds a comment with the PR link to the issue.
+4. If the agent changed a file in **.eas** or **.github**, it stops and does not open a PR.
+5. If the agent changed no file, it adds a comment with the reason to the issue, and stops.
+6. It commits the change, pushes the branch, and opens a PR. Then it adds a comment with the PR link to the issue.
 
 </Step>
 
@@ -312,12 +326,14 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npx --yes eas-cli@latest workflow:run .eas/workflows/issue-to-pr.yml -F issue_number=${{ github.event.issue.number }} --non-interactive
+      - run: npx --yes eas-cli@latest workflow:run .eas/workflows/issue-to-pr.yml --ref ${{ github.sha }} -F issue_number=${{ github.event.issue.number }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 ```
 
 The Action installs the dependencies with `npm ci`, because EAS CLI reads the app config. If your project uses another package manager, change this command.
+
+With `--ref`, EAS runs the workflow from the last commit of your default branch on GitHub. EAS CLI does not upload the project.
 
 </Step>
 
@@ -374,7 +390,7 @@ When the agent finishes, the issue gets an **Issue to PR** comment with a link t
 
 Then Agentic CI tests the PR, and posts an **Agentic CI** comment with the verdict. To try the feature yourself, select **Try this build in your browser** in that comment.
 
-If the agent changes no file, the issue gets a comment with the reason. The log of the agent is in the Issue to PR workflow run. The Claude Code runner saves it in the artifacts, and the other runners print it to the job log.
+If the agent changes no file, the issue gets a comment with the reason. If the agent changes a file in **.eas** or **.github**, the job fails. The issue gets no comment. The log of the agent is in the Issue to PR workflow run. The Claude Code runner saves it in the artifacts, and the other runners print it to the job log.
 
 To ask for another version, change the text of the issue. Then remove the label and add it again:
 

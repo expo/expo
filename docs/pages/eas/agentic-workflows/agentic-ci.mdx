@@ -32,6 +32,14 @@ When a person opens a PR to `main`, the Agentic CI workflow does these steps:
 
 Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, even when no script covers it. To learn how the parts work together, see [Introduction to agentic workflows](/eas/agentic-workflows/introduction/).
 
+The following screenshot shows an Agentic CI comment with a `PASS` verdict:
+
+<ContentSpotlight
+  alt="Agentic CI comment on a GitHub pull request with a PASS verdict and links to the session recording, the agent report, and a browser preview"
+  src="/static/images/eas-workflows/agentic-ci-comment.webp"
+  darkSrc="/static/images/eas-workflows/agentic-ci-comment-dark.webp"
+/>
+
 <AgentPrompt
   title="Add Agentic CI with an AI agent"
   description="Paste this into Claude, Cursor, Codex, or another agent.">
@@ -139,7 +147,7 @@ jobs:
             --max-duration-minutes 30 --json > /tmp/session.json
           trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
-          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR \
+          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
             timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
 
           set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"
@@ -252,7 +260,7 @@ jobs:
             --max-duration-minutes 30 --json > /tmp/session.json
           trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
-          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR \
+          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
             timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
 
           set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"

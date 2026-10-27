@@ -8,6 +8,7 @@ import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -27,8 +28,8 @@ The highlighted steps run on EAS Workflows and Expo Simulators:
 
 <BugTriageDiagram />
 
-1. For TestFlight feedback, the workflow creates a GitHub issue with the comment of the tester, the device, and links to the screenshots.
-2. It starts an Expo Simulators session with a build of the default branch.
+1. Each bug report starts as a GitHub issue. For TestFlight feedback, the workflow creates the issue with the comment of the tester, the device, and links to the screenshots.
+2. The workflow starts an Expo Simulators session with a build of the default branch.
 3. A coding agent follows the steps in the report and writes a verdict: `REPLICATED` or `NOT-REPLICATED`.
 4. The workflow posts the verdict on the issue. For a `REPLICATED` bug, a person reads the report and adds the `agent` label, which starts Issue to PR.
 
@@ -54,11 +55,15 @@ Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/eas/ag
 
 Do these steps one time for your project.
 
-<AgenticWorkflowsSetup githubCli />
+<AgenticWorkflowsSetup githubCli>
+  <Requirement title="The Agentic CI and Issue to PR workflows">
+    Bug triage needs [Agentic CI](/eas/agentic-workflows/agentic-ci/) and [Issue to
+    PR](/eas/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix.
+    Add them first.
+  </Requirement>
+</AgenticWorkflowsSetup>
 
 <GitHubTokenStep />
-
-Bug triage also needs [Agentic CI](/eas/agentic-workflows/agentic-ci/) and [Issue to PR](/eas/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix. Add them first.
 
 <WhatTheAgentCanDo />
 
@@ -114,7 +119,11 @@ switch (command) {
         {
           title: issue.title,
           body: issue.body,
-          comments: comments.map(comment => comment.body),
+          comments: comments
+            .filter(comment =>
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.author_association)
+            )
+            .map(comment => comment.body),
         },
         null,
         2
@@ -222,10 +231,11 @@ node .eas/agents/github.mjs comment "$ISSUE_NUMBER" /tmp/comment.md
 
 The script does these tasks in this order:
 
-1. It reads the issue and its comments, and writes the prompt for the agent.
+1. It reads the issue and the comments from the owners, members, and collaborators of the repository. Then it writes the prompt for the agent.
 2. It starts a session with the build, and runs the agent in the `device` mode.
 3. It posts the verdict and a report on the issue.
-4. For a `REPLICATED` verdict, the comment asks a person to read the report and add the `agent` label. Then it stops the session.
+4. For a `REPLICATED` verdict, the comment asks a person to read the report and add the `agent` label.
+5. It stops the session.
 
 </Step>
 
@@ -526,13 +536,31 @@ If your default branch has a different name, change `--ref`.
 
 This path is iOS only. You need a membership in the Apple Developer Program and an app with a build in TestFlight.
 
-1. Connect your App Store Connect app to the EAS project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
-2. Make sure that EAS has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
-3. Create the `testflight` label:
+<Step label="1">
 
-   <Terminal cmd={['$ gh label create testflight']} />
+Connect your App Store Connect app to the EAS project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
 
-4. In the TestFlight app, take a screenshot of the bug, write a comment, and send the feedback.
+</Step>
+
+<Step label="2">
+
+Make sure that EAS has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
+
+</Step>
+
+<Step label="3">
+
+Create the `testflight` label:
+
+<Terminal cmd={['$ gh label create testflight']} />
+
+</Step>
+
+<Step label="4">
+
+In the TestFlight app, take a screenshot of the bug, write a comment, and send the feedback.
+
+</Step>
 
 App Store Connect starts the **bug-triage.yml** workflow. The `intake` job creates the issue, and then the `reproduce` job runs. Each TestFlight report creates a new issue. The workflow does not look for duplicates.
 

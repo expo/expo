@@ -1,8 +1,22 @@
 import { mergeClasses } from '@expo/styleguide';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { Users01Icon } from '@expo/styleguide-icons/outline/Users01Icon';
 import { Fragment } from 'react';
 
+const PLACE_ICONS = {
+  GitHub: [GithubIcon],
+  'GitHub Actions': [GithubIcon],
+  'GitHub or TestFlight': [GithubIcon, AppleIcon],
+  'EAS Workflows': [Dataflow03Icon],
+  'Expo Simulators': [Cloud01Icon],
+  'Your team': [Users01Icon],
+};
+
 type Stage = {
-  place: string;
+  place: keyof typeof PLACE_ICONS;
   text: string;
   onExpo?: boolean;
 };
@@ -106,7 +120,14 @@ function StageDiagram({ stages }: { stages: Stage[] }) {
               <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full border border-default bg-default text-[10px] font-semibold text-default">
                 {index + 1}
               </span>
-              <span className="mb-1 block text-center text-[10px] font-semibold tracking-wide text-tertiary uppercase">
+              <span className="mb-1 flex items-center justify-center gap-1 text-center text-[10px] font-semibold tracking-wide text-tertiary uppercase">
+                {PLACE_ICONS[stage.place].map((Icon, iconIndex) => (
+                  <Icon
+                    key={iconIndex}
+                    aria-hidden="true"
+                    className="icon-xs shrink-0 text-icon-secondary"
+                  />
+                ))}
                 {stage.place}
               </span>
               <p className="text-center text-xs leading-snug text-default">{stage.text}</p>
