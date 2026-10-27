@@ -1,11 +1,11 @@
 import ExpoModulesCore
 import UIKit
 
-// Matches `RNSNavigationItemCustomizerProtocol` of react-native-screens by its Objective-C name,
+// Matches `RNSNavigationItemCustomizing` of react-native-screens by its Objective-C name,
 // so this compiles with versions that do not declare it.
-@objc(RNSNavigationItemCustomizerProtocol)
+@objc(RNSNavigationItemCustomizing)
 protocol NavigationItemCustomizer: NSObjectProtocol {
-  func customizeNavigationItem(_ navigationItem: UINavigationItem)
+  func configureNavigationItem(_ navigationItem: UINavigationItem)
 }
 
 // Writes the header of a react-native-screens split column. The column passes its navigation item
@@ -19,7 +19,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
 
   private weak var navigationItem: UINavigationItem?
 
-  func customizeNavigationItem(_ navigationItem: UINavigationItem) {
+  func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
     apply()
   }
