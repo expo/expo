@@ -38,6 +38,7 @@ struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
   @StateObject private var touchHandler = RNHostTouchHandler()
+  @State private var lastReportedSize = ReportedSize()
 
   var body: some View {
     hostedContent
