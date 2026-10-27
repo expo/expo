@@ -1,10 +1,16 @@
-import React, { use, useState, type ReactNode } from 'react';
+import React, { isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
 
 import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Slot } from '../views/Navigator';
-import { getSplitColumnChildren, SplitViewColumn, SplitViewInspector } from './elements';
+import {
+  getSplitColumnChildren,
+  SplitViewColumn,
+  SplitViewInspector,
+  SplitViewStack,
+  type SplitViewStackProps,
+} from './elements';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -26,6 +32,8 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    */
   horizontalSafeAreaInsets?: 'expanded' | 'always' | 'never';
 }
+
+let didWarnMissingStack = false;
 
 function SplitViewNavigator({
   children,
@@ -54,12 +62,19 @@ function SplitViewNavigator({
   const inspectorChildren = allChildrenArray.filter((child) =>
     isChildOfType(child, SplitViewInspector)
   );
+  const stackChildren = allChildrenArray.filter(
+    (child): child is ReactElement<SplitViewStackProps> =>
+      isValidElement(child) && child.type === SplitViewStack
+  );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
 
-  if (allChildrenArray.length !== columnChildren.length + inspectorChildren.length) {
+  if (
+    allChildrenArray.length !==
+    columnChildren.length + inspectorChildren.length + stackChildren.length
+  ) {
     console.warn(
-      'Only SplitView.Column and SplitView.Inspector components are allowed as direct children of SplitView.'
+      'Only SplitView.Column, SplitView.Stack and SplitView.Inspector components are allowed as direct children of SplitView.'
     );
   }
 
@@ -67,9 +82,20 @@ function SplitViewNavigator({
     throw new Error('There can only be two SplitView.Column in the SplitView.');
   }
 
+  if (stackChildren.length > 1) {
+    throw new Error('There can only be one SplitView.Stack in the SplitView.');
+  }
+
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
     return <Slot activityEnabled={activityEnabled} />;
+  }
+
+  if (process.env.NODE_ENV !== 'production' && stackChildren.length === 0 && !didWarnMissingStack) {
+    didWarnMissingStack = true;
+    console.warn(
+      'SplitView.Stack is missing. Add <SplitView.Stack /> to SplitView to configure the content column.'
+    );
   }
 
   const applyHorizontalInsets =
@@ -79,14 +105,15 @@ function SplitViewNavigator({
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
     <Split.Column key={child.key}>
-      {getSplitColumnChildren(child.props.children, applyHorizontalInsets)}
+      {getSplitColumnChildren(child.props, applyHorizontalInsets)}
     </Split.Column>
   ));
   const inspectors = inspectorChildren.map((child) => (
     <Split.Inspector key={child.key}>
-      {getSplitColumnChildren(child.props.children, applyHorizontalInsets)}
+      {getSplitColumnChildren(child.props, applyHorizontalInsets)}
     </Split.Inspector>
   ));
+  const stackHeader = stackChildren[0]?.props.header;
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
@@ -105,7 +132,7 @@ function SplitViewNavigator({
         {columns}
         <Split.Column>
           {getSplitColumnChildren(
-            <Slot activityEnabled={activityEnabled} />,
+            { children: <Slot activityEnabled={activityEnabled} />, header: stackHeader },
             applyHorizontalInsets
           )}
         </Split.Column>
@@ -117,5 +144,6 @@ function SplitViewNavigator({
 
 export const SplitView = Object.assign(SplitViewNavigator, {
   Column: SplitViewColumn,
+  Stack: SplitViewStack,
   Inspector: SplitViewInspector,
 });
