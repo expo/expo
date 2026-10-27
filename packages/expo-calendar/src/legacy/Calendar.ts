@@ -519,7 +519,8 @@ export type RecurrenceRule = {
   occurrence?: number;
   /**
    * The days of the week the event should recur on. An array of [`DaysOfTheWeek`](#daysoftheweek) object.
-   * This field is only valid for `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY` and `Calendar.Frequency.YEARLY`.
+   * This field is only valid for `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY`, and
+   * `Calendar.Frequency.YEARLY`.
    * @example
    * ```ts
    * // Every Monday and Wednesday

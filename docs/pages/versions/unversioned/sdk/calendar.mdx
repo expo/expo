@@ -154,10 +154,10 @@ const styles = StyleSheet.create({
 ### Weekly recurring event
 
 Weekday values in `daysOfTheWeek` follow Apple's `EKWeekday`: `Sunday` is `1` and `Saturday` is `7`. Use the
-[`DayOfTheWeek`](#dayoftheweek) enum so the numbering never has to be remembered. The rule you read back
+[`DayOfTheWeek`](#dayoftheweek) enum instead of bare numbers. The rule you read back
 from the event uses the same values.
 
-```jsx
+```ts
 import * as Calendar from 'expo-calendar';
 
 async function createStandup() {
