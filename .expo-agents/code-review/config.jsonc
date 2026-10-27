@@ -11,7 +11,9 @@
   // Add or remove files to change the roster — no list needed here.
   // shared.md (prepended to every agent + coordinator) and coordinator.md are
   // reserved filenames. Per-agent overrides go in each file's YAML frontmatter,
-  // e.g. `---\nmodel: anthropic/claude-opus-5-5\n---`.
+  // e.g. `---\nmodel: anthropic/claude-opus-5-5\n---`. `paths: ["packages/ios/**"]`
+  // there limits an agent to changes that touch those globs, and `mention: [octocat]`
+  // names the people the review mentions when that agent asks for a human review.
 
   // @ref LLP 0009#config-and-prompt-templates [implements] — suggestions off by default, not a schema limit
   "policy": {
@@ -213,7 +215,9 @@
   // Threads update in place across re-reviews; a retired thread with human
   // replies is stubbed, never deleted. Replying in a thread counts as author
   // feedback for that finding (clearing still needs the unquoted `id:` token).
-  // Requires cli-version >= 0.14.2. maxComments caps create-notification fan-out.
+  // A run's new inline comments go out in one COMMENT review, so each run puts one
+  // review entry and one notification on the PR. maxComments caps inline comments
+  // per PR.
   "inline": {
     "enabled": true,
     "maxComments": 20
