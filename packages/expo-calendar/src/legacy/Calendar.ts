@@ -454,8 +454,10 @@ export type AlarmLocation = {
   };
 };
 
-// @docsMissing
 /**
+ * Weekday used in [`DaysOfTheWeek`](#daysoftheweek). The values follow Apple's `EKWeekday`:
+ * `Sunday` is `1` and `Saturday` is `7`. Use the enum members instead of bare numbers.
+ * A recurrence rule read back from an event uses the same values.
  * @platform ios
  */
 export enum DayOfTheWeek {
@@ -517,6 +519,15 @@ export type RecurrenceRule = {
   occurrence?: number;
   /**
    * The days of the week the event should recur on. An array of [`DaysOfTheWeek`](#daysoftheweek) object.
+   * This field is only valid for `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY` and `Calendar.Frequency.YEARLY`.
+   * @example
+   * ```ts
+   * // Every Monday and Wednesday
+   * daysOfTheWeek: [
+   *   { dayOfTheWeek: Calendar.DayOfTheWeek.Monday },
+   *   { dayOfTheWeek: Calendar.DayOfTheWeek.Wednesday },
+   * ]
+   * ```
    * @platform ios
    */
   daysOfTheWeek?: DaysOfTheWeek[];
@@ -563,7 +574,7 @@ export type RecurrenceRule = {
  */
 export type DaysOfTheWeek = {
   /**
-   * Sunday to Saturday - `DayOfTheWeek` enum.
+   * The weekday as a [`DayOfTheWeek`](#dayoftheweek) value: `Sunday` is `1` and `Saturday` is `7`.
    */
   dayOfTheWeek: DayOfTheWeek;
   /**

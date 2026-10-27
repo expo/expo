@@ -151,6 +151,42 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Weekly recurring event
+
+Weekday values in `daysOfTheWeek` follow Apple's `EKWeekday`: `Sunday` is `1` and `Saturday` is `7`. Use the
+[`DayOfTheWeek`](#dayoftheweek) enum so the numbering never has to be remembered. The rule you read back
+from the event uses the same values.
+
+```jsx
+import * as Calendar from 'expo-calendar';
+
+async function createStandup() {
+  const { status } = await Calendar.requestCalendarPermissions();
+  if (status !== 'granted') {
+    return;
+  }
+  const calendar = Calendar.getDefaultCalendarSync();
+  const event = await calendar.createEvent({
+    title: 'Standup',
+    startDate: new Date('2026-11-02T09:00:00'),
+    endDate: new Date('2026-11-02T09:15:00'),
+    recurrenceRule: {
+      frequency: Calendar.Frequency.WEEKLY,
+      interval: 1,
+      daysOfTheWeek: [
+        { dayOfTheWeek: Calendar.DayOfTheWeek.Monday, weekNumber: 0 },
+        { dayOfTheWeek: Calendar.DayOfTheWeek.Wednesday, weekNumber: 0 },
+      ],
+    },
+  });
+  console.log(event.recurrenceRule?.daysOfTheWeek);
+  // [{ dayOfTheWeek: 2, weekNumber: 0 }, { dayOfTheWeek: 4, weekNumber: 0 }]
+}
+```
+
+> `daysOfTheWeek` and `getDefaultCalendarSync` are iOS only. With the legacy API, pass the same `recurrenceRule` to
+> `createEventAsync` and read it back with `getEventAsync`.
+
 ## API
 
 ```js
