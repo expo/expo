@@ -60,9 +60,13 @@ jobs:
     #    regardless. A label event starts a run only for an `ai-review*` label.
     #
     # 2. ONE review per label, for a PR from a fork. Only the `labeled` event for
-    #    `ai-review` itself starts it, so a later push by the author never runs with the
-    #    secrets on content no maintainer has seen. To review new commits, remove and add
-    #    the label again, or comment `/review`.
+    #    `ai-review` itself starts it, so a push after that review does not start a new
+    #    run. To review new commits, remove and add the label again, or comment `/review`.
+    #    The review is of the PR's head when `ecr ci` starts, a few minutes after the
+    #    label, not of the commit the maintainer labeled: a push in between is reviewed
+    #    instead. The `/review` path has the same gap. Pinning the review to
+    #    `github.event.pull_request.head.sha` needs an engine change and must land
+    #    before AI_REVIEW_FORK_PRS is turned on.
     #
     # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
