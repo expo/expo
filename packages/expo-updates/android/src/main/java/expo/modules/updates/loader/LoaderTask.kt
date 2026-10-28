@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.util.Date
 
 /**
@@ -198,9 +199,9 @@ class LoaderTask(
         isRunning = false
         callback.onFinishedAllLoading()
       } else {
+        logger.error("Failed to launch embedded or launchable update", e, UpdatesErrorCode.UpdateFailedToLoad)
         launchRemoteUpdate()
       }
-      logger.error("Failed to launch embedded or launchable update", e, UpdatesErrorCode.UpdateFailedToLoad)
     }
   }
 
@@ -245,9 +246,6 @@ class LoaderTask(
     }
     if (!timeoutFinished) {
       stopTimer()
-    }
-    if (e != null) {
-      logger.error("Unexpected error encountered while loading this app", e, UpdatesErrorCode.Unknown)
     }
   }
 
@@ -416,20 +414,10 @@ class LoaderTask(
           )
         }
       } catch (e: Exception) {
-        callback.onRemoteUpdateFinished(
-          RemoteUpdateStatus.ERROR,
-          null,
-          e
-        )
-        logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
-        throw e
+        throw IOException("Loaded new update but it failed to launch", e)
       }
     } catch (e: Exception) {
-      // If we haven't already reported an error from the launcher, report the loader error
-      if (e.message?.contains("Loaded new update but it failed to launch") != true) {
-        callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
-        logger.error("Failed to download remote update", e, UpdatesErrorCode.UpdateFailedToLoad)
-      }
+      callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
       throw e
     } finally {
       progressJob.cancel()

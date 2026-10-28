@@ -348,8 +348,13 @@ open class AppLoader: NSObject {
   }
 
   public func handleAssetDownload(withError error: UpdatesError, asset: UpdateAsset) {
-    // TODO: retry. for now log an error
-    logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
+    let assetKey = asset.key ?? asset.filename
+    logger.warn(
+      message: "Failed to download asset \(assetKey): \(error.localizedDescription)",
+      code: UpdatesErrorCode.assetsFailedToLoad,
+      updateId: updateResponseContainingManifest?.manifestUpdateResponsePart?.updateManifest.loggingId(),
+      assetId: assetKey
+    )
     arrayLock.lock()
     assetsToLoad.remove(asset)
     erroredAssets.append(asset)
