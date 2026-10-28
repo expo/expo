@@ -1,4 +1,4 @@
 import type { TopicSubscriptionModule } from './TopicSubscriptionModule.types';
-declare const _default: TopicSubscriptionModule;
-export default _default;
+declare const topicSubscriptionModule: TopicSubscriptionModule;
+export default topicSubscriptionModule;
 //# sourceMappingURL=TopicSubscriptionModule.android.d.ts.map

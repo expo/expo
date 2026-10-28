@@ -1,1 +1,1 @@
-{"version":3,"file":"TopicSubscriptionModule.android.d.ts","sourceRoot":"","sources":["../src/TopicSubscriptionModule.android.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,uBAAuB,EAAE,MAAM,iCAAiC,CAAC;;AAE/E,wBAA2F"}
+{"version":3,"file":"TopicSubscriptionModule.android.d.ts","sourceRoot":"","sources":["../src/TopicSubscriptionModule.android.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,uBAAuB,EAAE,MAAM,iCAAiC,CAAC;AAE/E,QAAA,MAAM,uBAAuB,EAAE,uBAC4D,CAAC;AAE5F,eAAe,uBAAuB,CAAC"}
