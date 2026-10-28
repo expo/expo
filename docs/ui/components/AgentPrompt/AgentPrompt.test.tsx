@@ -50,7 +50,7 @@ function developmentBuildsPrompt() {
       <AgentPromptOption id="build-locally" label="Build locally">
         {fence(LOCAL_PROMPT)}
       </AgentPromptOption>
-      <AgentPromptOption id="build-with-eas" label="Build with EAS">
+      <AgentPromptOption id="build-with-expo-services" label="Build in the cloud with Expo Build">
         {fence(EAS_PROMPT)}
       </AgentPromptOption>
     </AgentPrompt>
@@ -214,7 +214,10 @@ describe('AgentPrompt with options', () => {
   it('copies the option named in the URL', async () => {
     const writeText = setupClipboard();
 
-    renderAt(`${DEVELOPMENT_BUILDS_PAGE}?buildenv=build-with-eas`, developmentBuildsPrompt());
+    renderAt(
+      `${DEVELOPMENT_BUILDS_PAGE}?buildenv=build-with-expo-services`,
+      developmentBuildsPrompt()
+    );
 
     expect(await copiedTextAsync(writeText)).toBe(EAS_PROMPT);
   });
@@ -232,7 +235,7 @@ describe('AgentPrompt with options', () => {
 
     renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
 
-    for (const label of ['Build locally', 'Build with EAS']) {
+    for (const label of ['Build locally', 'Build in the cloud with Expo Build']) {
       expect(
         screen.getByRole('heading', { level: 3, name: label, hidden: true })
       ).toBeInTheDocument();
