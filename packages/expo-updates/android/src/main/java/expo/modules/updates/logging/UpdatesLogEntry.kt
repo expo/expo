@@ -18,29 +18,7 @@ data class UpdatesLogEntry(
   val assetId: String?,
   val stacktrace: List<String>?
 ) {
-  fun asString(): String {
-    return JSONObject(
-      mapOf(
-        "timestamp" to timestamp,
-        "message" to message,
-        "code" to code,
-        "level" to level
-      )
-    ).apply {
-      if (duration != null) {
-        put("duration", duration)
-      }
-      if (updateId != null) {
-        put("updateId", updateId)
-      }
-      if (assetId != null) {
-        put("assetId", assetId)
-      }
-      if (!stacktrace.isNullOrEmpty()) {
-        put("stacktrace", JSONArray(stacktrace))
-      }
-    }.toString()
-  }
+  fun asString(): String = JSONObject(asMap()).toString()
 
   /**
    * The entry as a map with the same keys as the JSON string.

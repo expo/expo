@@ -11,21 +11,17 @@ public protocol UpdatesLogEntryListener: AnyObject {
 }
 
 /// Delivers expo-updates log entries to listeners in the same process, so other modules can report
-/// them without reading the log file. It does not depend on whether updates are enabled. Listeners
-/// are held weakly.
+/// them without reading the log file. It does not depend on whether updates are enabled. The
+/// registry keeps each listener alive until `remove` is called with it.
 public final class UpdatesLogEntryListenerRegistry: @unchecked Sendable {
   public static let shared = UpdatesLogEntryListenerRegistry()
 
-  private struct WeakListener {
-    weak var listener: UpdatesLogEntryListener?
-  }
-
   private let lock = NSLock()
-  private var listeners: [ObjectIdentifier: WeakListener] = [:]
+  private var listeners: [ObjectIdentifier: UpdatesLogEntryListener] = [:]
 
   public func add(_ listener: UpdatesLogEntryListener) {
     lock.withLock {
-      listeners[ObjectIdentifier(listener)] = WeakListener(listener: listener)
+      listeners[ObjectIdentifier(listener)] = listener
     }
   }
 
@@ -37,10 +33,7 @@ public final class UpdatesLogEntryListenerRegistry: @unchecked Sendable {
 
   /// Delivers the entry to each listener outside the lock, so a listener can add or remove listeners.
   public func notify(_ entry: [String: Any]) {
-    let currentListeners = lock.withLock {
-      listeners = listeners.filter { $0.value.listener != nil }
-      return listeners.values.compactMap { $0.listener }
-    }
+    let currentListeners = lock.withLock { Array(listeners.values) }
     for listener in currentListeners {
       listener.updatesLogEntryWasLogged(entry)
     }
