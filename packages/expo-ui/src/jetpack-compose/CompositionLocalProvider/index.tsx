@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
+import type { ColorValue } from 'react-native';
 
 /**
  * Composition local values that `CompositionLocalProvider` can provide.
@@ -11,6 +12,13 @@ export type CompositionLocalValues = {
    * Set it to `0` to let these components be smaller than Material's default of 48dp.
    */
   minimumInteractiveComponentSize?: number;
+  /**
+   * The color that text fields paint over their content after autofill fills them. Maps to
+   * `LocalAutofillHighlightBrush` as a solid color. Set it to `transparent` to remove the
+   * highlight, for example in a field whose own colors already show that it was filled.
+   * @default Compose's semi-transparent yellow (`#4DFFEB3B`)
+   */
+  autofillHighlightColor?: ColorValue;
 };
 
 export type CompositionLocalProviderProps = {
