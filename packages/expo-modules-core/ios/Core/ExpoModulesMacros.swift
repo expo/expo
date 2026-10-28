@@ -126,7 +126,7 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
   member,
   names:
     named(_jsName), named(_classTypes), named(appContext), named(init),
-    named(_decorateModule))
+    named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule)
 public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
@@ -161,7 +161,8 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 @attached(
   member,
   names:
-    named(_jsName), named(_decorateSharedObject), named(_constructSharedObject))
+    named(_jsName), named(_decorateSharedObject), named(_constructSharedObject),
+    named(_assertTypesConformance))
 @attached(memberAttribute)
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")

@@ -55,6 +55,10 @@ export function renderType(node: TypeNode, ctx: RenderContext): string {
       return `Record<${renderType(node.key, ctx)}, ${renderType(node.value, ctx)}>`;
     case 'promise':
       return `Promise<${renderType(node.value, ctx)}>`;
+    case 'tuple':
+      return `[${node.elements.map((element) => renderType(element, ctx)).join(', ')}]`;
+    case 'object':
+      return `{ ${node.properties.map((property) => `${property.name}: ${renderType(property.type, ctx)}`).join('; ')} }`;
     case 'function': {
       // Closure parameters carry types only, so they get positional names.
       const parameters = node.parameters
