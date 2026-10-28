@@ -75,16 +75,21 @@ struct UpdatesLogEntryListenerTests {
   }
 
   @Test
-  func `the registry does not keep a listener alive`() {
-    weak var released: RecordingListener?
+  func `the registry keeps a listener alive until it is removed`() {
+    weak var weakListener: RecordingListener?
     do {
       let listener = RecordingListener()
-      released = listener
+      weakListener = listener
       UpdatesLogEntryListenerRegistry.shared.add(listener)
     }
 
-    #expect(released == nil)
     logger.warn(message: "Warning \(marker)", code: .none)
+    #expect(weakListener?.entries(containing: marker).count == 1)
+
+    if let listener = weakListener {
+      UpdatesLogEntryListenerRegistry.shared.remove(listener)
+    }
+    #expect(weakListener == nil)
   }
 
   @Test

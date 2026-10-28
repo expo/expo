@@ -17,7 +17,8 @@ fun interface UpdatesLogEntryListener {
 
 /**
  * Delivers expo-updates log entries to listeners in the same process, so other modules can report
- * them without reading the log file. It does not depend on whether updates are enabled.
+ * them without reading the log file. It does not depend on whether updates are enabled. The
+ * registry keeps each listener alive until [remove] is called with it.
  */
 object UpdatesLogEntryListenerRegistry {
   private const val TAG = "UpdatesLogEntryListener"
