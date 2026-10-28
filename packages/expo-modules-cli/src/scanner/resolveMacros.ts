@@ -9,7 +9,7 @@ export type MacrosPackage = typeof Macros;
  * built and tested against (the one `expo-modules-core` in this repository depends on); a test
  * keeps the two in sync.
  */
-export const SCAN_EXPORTS_SCHEMA_VERSION = 9;
+export const SCAN_EXPORTS_SCHEMA_VERSION = 10;
 
 /**
  * The packages to walk from the scanned package to the macros, each resolved from the one before.
