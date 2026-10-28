@@ -1,22 +1,28 @@
 ---
-title: Expo Updates integration
-sidebar_title: Expo Updates
-description: Report expo-updates errors and warnings, and JS crashes that expo-updates error recovery handled, in EAS Observe.
+title: expo-updates library integration
+sidebar_title: Updates
+description: Learn how to report expo-updates errors and warnings, and JS crashes handled by the library's error recovery, in EAS Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-[`expo-updates`](/versions/latest/sdk/updates/) writes its errors and warnings to a log on the device. Without this integration, you must add code to read and send that log, and ship a new build or update, before you can see a problem in production. The `expo-updates` integration for EAS Observe reports the log errors as Observe errors, and optionally the log warnings as events. It also reports the JS crashes that [error recovery](/eas-update/error-recovery/) handled, which happen soon after launch or before the first render.
+[`expo-updates`](/versions/latest/sdk/updates/) library writes its errors and warnings to a log on the device. Without this integration, you must add code to read and send that log, and ship a new build or update, before you can see a problem in production. The `expo-updates` integration for EAS Observe reports the log errors as Observe errors, and optionally the log warnings as events. It also reports the JS crashes that [error recovery](/eas-update/error-recovery/) handled, which happen soon after launch or before the first render.
 
 ## Prerequisites
 
 <Prerequisites>
+  <Requirement title="Expo SDK 58 or later">
+    The integration is available in `expo-observe` version 58.0.17 and later. On Android, use
+    `expo-updates` version 58.0.19 or later. With an earlier version, the integration reports a JS
+    error that error recovery handled as `updates.error` with the `Unknown` code, not as
+    `updates.error_recovery`.
+  </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
-  <Requirement title="Expo Updates installed in the app">
+  <Requirement title="expo-updates installed in the app">
     The integration reads the log of [`expo-updates`](/versions/latest/sdk/updates/). If
     `expo-updates` is not installed, the integration prints a warning and does nothing.
   </Requirement>
@@ -36,19 +42,19 @@ Observe.configure({
 
 ## How it works
 
-When `Observe.configure()` runs, the integration reads the `expo-updates` log entries that were written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the log is read at the next launch, the integration also reports errors from an earlier launch, such as a crash that error recovery handled before the app could start again.
+When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again.
 
 The integration reports the entries as follows:
 
 - An `error` or `fatal` entry becomes an Observe error named `updates.error`. The error message is the entry's code followed by the log message, for example `UpdateFailedToLoad: ...`.
-- A JS error that error recovery handled becomes an Observe error named `updates.error_recovery`. The message includes the original JS error.
-- When error recovery cannot recover and crashes the app, the entry it logs before the crash is not reported. Observe reports the crash itself.
+- A JS error that error recovery handled becomes an Observe error named `updates.error_recovery`. The message includes the original JS error. The same error can also appear as an unhandled JavaScript error.
+- When error recovery cannot recover, it logs an entry and then crashes the app. The integration does not report that entry, because Observe reports the crash itself.
 - A `warn` entry becomes an `updates.warning` event with `warn` severity, but only when `reportWarnings` is `true`.
-- Entries with a lower level are not reported.
+- The integration does not report entries with a lower level.
 
-A reported error gets the current session and time. The time of the log entry is not kept on the error. Warning events keep it in the `logTimestamp` attribute.
+A reported error gets the current session and time, not the time of the log entry. Warning events keep the log entry time in the `logTimestamp` attribute.
 
-To limit the number of reports, the integration reports each distinct message at most once every 15 minutes. It reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period.
+To limit the number of reports, the integration reports each distinct message at most once every 15 minutes. It reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period. The limits reset when the app restarts.
 
 **Warning event attributes:**
 
@@ -81,11 +87,11 @@ Observe.configure({
 
 - `reportWarnings`: Whether the integration also reports warnings as `updates.warning` events. The default is `false`.
 - `ignoredCodes`: Log entry codes that the integration does not report. The default is an empty list.
-- `shouldReport`: A function that gets each log entry and returns `false` to skip it. It runs after `ignoredCodes`. If the function throws, the entry is reported.
+- `shouldReport`: A function that gets each log entry and returns `false` to skip it. It runs after `ignoredCodes`. If the function throws, the integration reports the entry.
 
-Errors that error recovery handled are always reported. `ignoredCodes` and `shouldReport` do not apply to them.
+`ignoredCodes` and `shouldReport` do not apply to JS errors that error recovery handled.
 
-Some errors are common and expected, for example a failed update check when the device is offline. `expo-updates` logs network errors with general codes, such as `Unknown` on iOS and `None` on Android, which it also uses for other errors. To skip only the network errors, use `shouldReport` and check the message.
+Some errors are common and expected, for example a failed update check when the device is offline. `expo-updates` logs network errors with codes that it also uses for other errors, such as `UpdateFailedToLoad` on Android and `Unknown` on iOS. On iOS, the message includes the network error, so a `shouldReport` function can check the message to skip only the network errors. On Android, the message does not include the network error.
 
 ## View errors and events
 

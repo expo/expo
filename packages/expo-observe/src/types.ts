@@ -168,19 +168,20 @@ export interface ObserveIntegrationsConfig {
    */
   'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
   /**
-   * Enables the `expo-updates` integration, which reports the errors that `expo-updates` logs to
+   * Enables the `expo-updates` integration, which reports the errors in the `expo-updates` log to
    * Observe as errors named `updates.error`. The message starts with the log entry's code, for
-   * example `UpdateFailedToLoad: ...`. A JS error that `expo-updates` error recovery handled is
-   * reported as `updates.error_recovery`.
+   * example `UpdateFailedToLoad: ...`. The integration reports a JS error that `expo-updates` error
+   * recovery handled as `updates.error_recovery`.
    * To also report warnings as events named `updates.warning`, set `reportWarnings`.
    *
-   * The integration reads the `expo-updates` log when `configure` is called, and reports the
-   * entries written since the last report, up to one day back. So errors from an earlier launch,
-   * such as a crash that error recovery handled, are reported on the next launch. A reported error
-   * gets the current session and time. The time of the log entry is not kept.
+   * The integration reads the `expo-updates` log when `configure` runs, and reports the entries
+   * written since the last report, up to one day back. So it reports errors from an earlier launch,
+   * such as a crash that error recovery handled, on the next launch. A reported error gets the
+   * current session and time, not the time of the log entry.
    *
    * The integration reports each distinct message at most once every 15 minutes. It reports at most
-   * 20 distinct errors and 20 distinct warnings in any 15-minute period.
+   * 20 distinct errors and 20 distinct warnings in any 15-minute period. The limits reset when the
+   * app restarts.
    *
    * Requires `expo-updates` to be installed.
    *
@@ -258,17 +259,17 @@ export type ObserveExpoUpdatesIntegrationConfig = {
    */
   reportWarnings?: boolean;
   /**
-   * Log entry codes that the integration does not report. For example, a network error during an
-   * update check is logged with the `Unknown` code on iOS. Errors that error recovery handled are
-   * always reported.
+   * Log entry codes that the integration does not report. For example, `expo-updates` logs a
+   * network error during an update check with the `Unknown` code on iOS. This option does not
+   * apply to JS errors that error recovery handled.
    *
    * @default []
    */
   ignoredCodes?: ObserveExpoUpdatesLogEntryCode[];
   /**
    * A function that decides whether the integration reports a log entry. Return `false` to skip
-   * the entry, for example by its message. It runs after `ignoredCodes`, and errors that error
-   * recovery handled are always reported. If the function throws, the entry is reported.
+   * the entry, for example by its message. It runs after `ignoredCodes`, and it does not run for JS
+   * errors that error recovery handled. If the function throws, the integration reports the entry.
    */
   shouldReport?: (entry: ObserveExpoUpdatesLogEntry) => boolean;
 };
