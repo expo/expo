@@ -88,7 +88,7 @@ Prints the list of available options and exits.
 
 Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node package manager.
 
-**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
+**If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [Expo Services](/eas/)**, you also have to configure your project for any additional required steps manually.
 
 All the additional steps for each package manager are listed below.
 
@@ -98,7 +98,7 @@ All the additional steps for each package manager are listed below.
 
 npm is installed as part of Node.js installation. See [Node.js documentation](https://nodejs.org/en/download/package-manager) for installation instructions.
 
-#### EAS installation
+#### Expo Build installation
 
 Supported by default if the project directory contains **package-lock.json**.
 
@@ -108,7 +108,7 @@ Supported by default if the project directory contains **package-lock.json**.
 
 Yarn 1 (Classic) is usually installed as a global dependency of npm. See [Yarn 1 documentation](https://classic.yarnpkg.com/en/docs/getting-started) for installation instructions.
 
-#### EAS installation
+#### Expo Build installation
 
 Supported by default if the project directory contains **yarn.lock**.
 
@@ -126,9 +126,9 @@ By default, a project created with `create-expo-app` and Yarn 2+ uses [`nodeLink
 nodeLinker: node-modules
 ```
 
-#### EAS installation
+#### Expo Build installation
 
-Yarn Modern on EAS requires enabling [Corepack](https://github.com/nodejs/corepack) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
+Yarn Modern on Expo Build requires enabling [Corepack](https://github.com/nodejs/corepack) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
 
 ```json eas.json
 {
@@ -148,7 +148,7 @@ Then, pin the Yarn version in your project's **package.json** using the [`packag
 }
 ```
 
-After adding both of the above configurations, Corepack automatically downloads and uses the pinned Yarn version when EAS installs dependencies.
+After adding both of the above configurations, Corepack automatically downloads and uses the pinned Yarn version when Expo Build installs dependencies.
 
 ### pnpm
 
@@ -164,10 +164,10 @@ nodeLinker: hoisted
 
 > **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `nodeLinker` setting if you prefer to use isolated dependencies.
 
-#### EAS installation
+#### Expo Build installation
 
 Supported by default if the project directory contains **pnpm-lock.yaml**.
 
 ### Bun
 
-See [Bun](/guides/using-bun/) guide for details on creating a new Expo project with `bun`, migration from another package manager, and usage with EAS.
+See [Bun](/guides/using-bun/) guide for details on creating a new Expo project with `bun`, migration from another package manager, and usage with Expo Build.

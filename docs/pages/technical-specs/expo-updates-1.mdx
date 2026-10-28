@@ -27,7 +27,7 @@ Conforming servers and client libraries MUST follow the HTTP spec as described i
 
 Expo Updates is a protocol for assembling and delivering updates and directives to clients.
 
-The primary audiences of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
+The primary audiences of this spec are Expo Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
 ## Client
 
@@ -175,7 +175,7 @@ type Asset = {
     A conforming client SHOULD prefix a file extension with a `.` if a file extension is not empty and missing the `.` prefix.
   - `url`: Location at which the file may be fetched.
 - `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MAY send back anything it wishes to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
-- `extra`: For storage of optional "extra" information such as third-party configuration. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID may be included:
+- `extra`: For storage of optional "extra" information such as third-party configuration. For example, if the update is hosted on Expo Services, the Expo Services project ID may be included:
 
   ```json
   "extra": {
@@ -218,9 +218,9 @@ type Directive = {
 
 - `type`: The type of directive.
 - `parameters`: MAY contain any extra information specific to the `type`.
-- `extra`: For storage of optional "extra" information such as third-party information. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID may be included.
+- `extra`: For storage of optional "extra" information such as third-party information. For example, if the update is hosted on Expo Services, the Expo Services project ID may be included.
 
-A conformant client library and server MAY specify and implement directive types specific to the needs of the application. For example, Expo Application Services makes use of one type thus far, `rollBackToEmbedded`, which directs the expo-updates library to use the update embedded in the host application instead of any other downloaded updates.
+A conformant client library and server MAY specify and implement directive types specific to the needs of the application. For example, Expo Services makes use of one type thus far, `rollBackToEmbedded`, which directs the expo-updates library to use the update embedded in the host application instead of any other downloaded updates.
 
 ## Asset request
 

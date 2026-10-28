@@ -294,7 +294,7 @@ Use the `debugOptimized` variant for faster development with performance close t
 When using this variant, keep the following in mind:
 
 - Optimizes C++ libraries as in release builds, improving runtime performance
-- In EAS Build, use a matching Gradle command like [`:app:assembleDebugOptimized` in **eas.json**](/build-reference/apk/#configuring-a-profile-to-build-apks)
+- In Expo Build, use a matching Gradle command like [`:app:assembleDebugOptimized` in **eas.json**](/build-reference/apk/#configuring-a-profile-to-build-apks)
 - **Limitation**: C++ debugging is disabled and C++ crashes may have less readable stack traces
 
 ##### `release` variant
@@ -303,7 +303,7 @@ You can compile the Android app for production by running:
 
 <Terminal cmd={['$ npx expo run:android --variant release']} />
 
-This build is not automatically code-signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
+This build is not automatically code-signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [Expo Build](/build/introduction).
 
 ##### Debugging native Android project
 
@@ -327,7 +327,7 @@ You can compile an iOS app for production by running:
 
 <Terminal cmd={['$ npx expo run:ios --configuration Release']} />
 
-This build is not automatically code signed for submission to the Apple App Store. `npx expo run:ios` should mostly be used to test bugs that only show up in production builds. Native code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using [EAS Build](/build/introduction).
+This build is not automatically code signed for submission to the Apple App Store. `npx expo run:ios` should mostly be used to test bugs that only show up in production builds. Native code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using [Expo Build](/build/introduction).
 
 When you compile your app onto a Simulator, the Simulator's native error logs will be piped to the Expo CLI process in the terminal. This is useful for quickly seeing bugs that may cause a fatal error. For example, missing permission messages. Error piping is not available for physical iOS devices.
 
