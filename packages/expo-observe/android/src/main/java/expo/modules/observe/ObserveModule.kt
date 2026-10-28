@@ -97,8 +97,12 @@ class ObserveModule : Module() {
         lastIntegrations
       }
 
-      Function("setExpoUpdatesLogListenerEnabled") { enabled: Boolean ->
-        updatesLogForwarder.setEnabled(enabled)
+      OnStartObserving(EXPO_UPDATES_LOG_ENTRY_EVENT) {
+        updatesLogForwarder.setEnabled(true)
+      }
+
+      OnStopObserving(EXPO_UPDATES_LOG_ENTRY_EVENT) {
+        updatesLogForwarder.setEnabled(false)
       }
 
       OnDestroy {

@@ -75,8 +75,12 @@ public final class ObserveModule: Module {
       return self.lastIntegrations
     }
 
-    Function("setExpoUpdatesLogListenerEnabled") { (enabled: Bool) in
-      self.updatesLogForwarder.setEnabled(enabled)
+    OnStartObserving(expoUpdatesLogEntryEvent) {
+      self.updatesLogForwarder.setEnabled(true)
+    }
+
+    OnStopObserving(expoUpdatesLogEntryEvent) {
+      self.updatesLogForwarder.setEnabled(false)
     }
 
     OnDestroy {

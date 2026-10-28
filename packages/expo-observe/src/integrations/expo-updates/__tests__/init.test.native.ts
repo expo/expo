@@ -81,7 +81,6 @@ beforeEach(() => {
     setExpoUpdatesLogCursor: jest.fn(async (cursor: string) => {
       storedCursor = cursor;
     }),
-    setExpoUpdatesLogListenerEnabled: jest.fn(),
     addListener: jest.fn(
       (_event: 'expoUpdatesLogEntry', listener: (e: UpdatesLogEntry) => void) => {
         liveListeners.push(listener);
@@ -333,17 +332,15 @@ describe('initExpoUpdatesIntegration', () => {
   );
 
   describe('live entries', () => {
-    it('turns on the native listener before it reads the log', async () => {
+    it('subscribes to live entries before it reads the log', async () => {
       await runIntegration([]);
 
       expect(cursorStore.addListener).toHaveBeenCalledWith(
         'expoUpdatesLogEntry',
         expect.any(Function)
       );
-      expect(cursorStore.setExpoUpdatesLogListenerEnabled).toHaveBeenCalledWith(true);
-      const enabledOrder = jest.mocked(cursorStore.setExpoUpdatesLogListenerEnabled).mock
-        .invocationCallOrder[0];
-      expect(enabledOrder).toBeLessThan(mockReadLogEntriesAsync.mock.invocationCallOrder[0]!);
+      const subscribeOrder = jest.mocked(cursorStore.addListener).mock.invocationCallOrder[0];
+      expect(subscribeOrder).toBeLessThan(mockReadLogEntriesAsync.mock.invocationCallOrder[0]!);
     });
 
     it('reports an entry logged after the read', async () => {
@@ -422,14 +419,13 @@ describe('initExpoUpdatesIntegration', () => {
       expect(cursorStore.addListener).toHaveBeenCalledTimes(1);
     });
 
-    it('stops live reports and turns off the native listener when disabled', async () => {
+    it('stops live reports and removes its subscription when disabled', async () => {
       await runIntegration([]);
 
       loadInit().disableExpoUpdatesIntegration();
       emitLiveEntry(entry({ timestamp: NOW + 1000, message: 'after disable' }));
 
       expect(mockAppMetrics.reportError).not.toHaveBeenCalled();
-      expect(cursorStore.setExpoUpdatesLogListenerEnabled).toHaveBeenLastCalledWith(false);
       expect(liveListeners).toHaveLength(0);
     });
 

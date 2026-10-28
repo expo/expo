@@ -42,7 +42,6 @@ const MAX_HANDLED_KEYS = 1000;
 export interface ExpoUpdatesNativeModule {
   getExpoUpdatesLogCursor(): Promise<string | null>;
   setExpoUpdatesLogCursor(cursor: string): Promise<void>;
-  setExpoUpdatesLogListenerEnabled(enabled: boolean): void;
   addListener(
     eventName: 'expoUpdatesLogEntry',
     listener: (entry: UpdatesLogEntry) => void
@@ -72,7 +71,6 @@ let settings: Settings = { reportWarnings: false, ignoredCodes: [], shouldReport
 let hasWarnedAboutShouldReport = false;
 let readInProgress: Promise<void> | null = null;
 
-let nativeModule: ExpoUpdatesNativeModule | null = null;
 let liveSubscription: { remove(): void } | null = null;
 let cursor: LogCursor | null = null;
 let cursorWrite: Promise<void> = Promise.resolve();
@@ -297,10 +295,10 @@ function subscribeToLiveEntries(native: ExpoUpdatesNativeModule): void {
   if (liveSubscription) {
     return;
   }
+  // The first listener turns on the native forwarder, through `OnStartObserving`.
   liveSubscription = native.addListener('expoUpdatesLogEntry', (entry) => {
     handleEntries(native, [entry]);
   });
-  native.setExpoUpdatesLogListenerEnabled(true);
 }
 
 /**
@@ -331,7 +329,6 @@ export function initExpoUpdatesIntegration(
   };
   hasWarnedAboutShouldReport = false;
   isEnabled = true;
-  nativeModule = native;
 
   // Subscribe before the read, so no entry falls between the two. `handleEntries` reports an entry
   // that arrives from both once.
@@ -355,9 +352,6 @@ export function initExpoUpdatesIntegration(
  */
 export function disableExpoUpdatesIntegration(): void {
   isEnabled = false;
-  if (liveSubscription) {
-    liveSubscription.remove();
-    liveSubscription = null;
-    nativeModule?.setExpoUpdatesLogListenerEnabled(false);
-  }
+  liveSubscription?.remove();
+  liveSubscription = null;
 }
