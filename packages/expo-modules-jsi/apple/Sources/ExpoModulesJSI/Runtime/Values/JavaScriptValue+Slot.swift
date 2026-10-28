@@ -4,6 +4,24 @@ internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 extension JavaScriptValue {
+  /// Creates the value that `encode` writes into a slot, for an API that takes a `JavaScriptValue`, such as
+  /// an event payload. `encode` must write exactly one value unless it throws (see ``Slot``).
+  @JavaScriptActor
+  public static func encoding(
+    in runtime: borrowing JavaScriptRuntime,
+    _ encode: (borrowing Slot) throws -> Void
+  ) rethrows -> JavaScriptValue {
+    let pointer = UnsafeMutablePointer<facebook.jsi.Value>.allocate(capacity: 1)
+    defer {
+      pointer.deallocate()
+    }
+    // The slot holds `undefined`, which owns nothing, until the encode writes over it, so it stays valid
+    // when the encode throws.
+    expo.emplaceUndefined(pointer)
+    try encode(Slot(pointer))
+    return JavaScriptValue(runtime, pointer.move())
+  }
+
   /// Memory for one engine value that a `JavaScriptEncodable` type encodes into with
   /// ``JavaScriptEncodable/encode(_:into:in:)``, for example an argument of a JavaScript function call or an
   /// element of a new array.

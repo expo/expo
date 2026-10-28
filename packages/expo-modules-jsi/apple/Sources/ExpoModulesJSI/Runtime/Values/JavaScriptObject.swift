@@ -349,11 +349,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
-  /// Sets the property to the value that `encode` writes into the slot, in the runtime of the object. The
+  /// Sets the property to the value that `encode` writes into the slot, in the runtime of the object, for a
+  /// value that has no `JavaScriptEncodable` conformance to pass to `setProperty(_:encoding:)`, such as a
+  /// tuple. `encode` must write exactly one value unless it throws (see ``JavaScriptValue/Slot``). The
   /// slot is a temporary engine value that holds `undefined` until then, and it's destroyed after the
   /// property is set. Not inlinable, so the runtime is read from the handle here rather than in the caller.
-  @usableFromInline
-  internal func setProperty(
+  public func setProperty(
     _ propName: borrowing JavaScriptPropNameID,
     encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
   ) rethrows {
@@ -365,8 +366,9 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
-  @usableFromInline
-  internal func setProperty(
+  /// Same as the `JavaScriptPropNameID` overload of `setProperty(_:encodingWith:)`, for a property named by a
+  /// string.
+  public func setProperty(
     _ name: String,
     encodingWith encode: @JavaScriptActor (borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
   ) rethrows {
