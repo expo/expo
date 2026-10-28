@@ -361,7 +361,7 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
             }}>
             <Text>Sidebar</Text>
           </SplitView.Column>
-          <SplitView.Stack />
+          <SplitView.Content />
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -386,7 +386,7 @@ it('renders the SplitView.Column header as the last child of its Split.Column', 
           <SplitView.Column header={{ title: 'Mailboxes' }}>
             <Text>Sidebar</Text>
           </SplitView.Column>
-          <SplitView.Stack />
+          <SplitView.Content />
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -418,7 +418,7 @@ it('calls onPress of the pressed native toolbar item', async () => {
               ],
             }}
           />
-          <SplitView.Stack />
+          <SplitView.Content />
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -434,13 +434,13 @@ it('calls onPress of the pressed native toolbar item', async () => {
   expect(onEditPress).not.toHaveBeenCalled();
 });
 
-it('renders the SplitView.Stack header in the content column', async () => {
+it('renders the SplitView.Content header in the content column', async () => {
   await renderRouter(
     {
       _layout: () => (
         <SplitView>
           <SplitView.Column />
-          <SplitView.Stack header={{ title: 'Message' }} />
+          <SplitView.Content header={{ title: 'Message' }} />
         </SplitView>
       ),
       index: () => <Text testID="index">Index</Text>,
@@ -455,13 +455,13 @@ it('renders the SplitView.Stack header in the content column', async () => {
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].title).toBe('Message');
 });
 
-it('renders the SplitView.Stack header as the last child of the content column', async () => {
+it('renders the SplitView.Content header as the last child of the content column', async () => {
   await renderRouter(
     {
       _layout: () => (
         <SplitView>
           <SplitView.Column />
-          <SplitView.Stack header={{ title: 'Message' }} />
+          <SplitView.Content header={{ title: 'Message' }} />
         </SplitView>
       ),
       index: () => <Text testID="index">Index</Text>,
@@ -472,7 +472,9 @@ it('renders the SplitView.Stack header as the last child of the content column',
   // The first Split.Column is the sidebar column. The second is the content column.
   const contentColumnProps = jest.mocked(Split.Column).mock.calls[1]![0];
   expect(
-    Children.toArray(contentColumnProps.children).map((child) => isValidElement(child) && child.type)
+    Children.toArray(contentColumnProps.children).map(
+      (child) => isValidElement(child) && child.type
+    )
   ).toEqual([SafeAreaView, SplitViewColumnHeader]);
 });
 
@@ -482,7 +484,7 @@ it('renders the SplitView.Inspector header in the inspector', async () => {
       _layout: () => (
         <SplitView>
           <SplitView.Column />
-          <SplitView.Stack />
+          <SplitView.Content />
           <SplitView.Inspector header={{ title: 'Details' }}>
             <Text>Inspector</Text>
           </SplitView.Inspector>
@@ -505,7 +507,7 @@ it('renders the SplitView.Inspector header as the last child of the inspector', 
       _layout: () => (
         <SplitView>
           <SplitView.Column />
-          <SplitView.Stack />
+          <SplitView.Content />
           <SplitView.Inspector header={{ title: 'Details' }}>
             <Text>Inspector</Text>
           </SplitView.Inspector>
@@ -530,7 +532,7 @@ it('renders no native header for a SplitView.Column without header', async () =>
           <SplitView.Column>
             <Text>Sidebar</Text>
           </SplitView.Column>
-          <SplitView.Stack />
+          <SplitView.Content />
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -542,18 +544,18 @@ it('renders no native header for a SplitView.Column without header', async () =>
   expect(SplitViewNativeHeader).not.toHaveBeenCalled();
 });
 
-it('rejects two SplitView.Stack in a SplitView', async () => {
+it('rejects two SplitView.Content in a SplitView', async () => {
   await expect(
     async () =>
       await renderRouter({
         _layout: () => (
           <SplitView>
             <SplitView.Column />
-            <SplitView.Stack />
-            <SplitView.Stack />
+            <SplitView.Content />
+            <SplitView.Content />
           </SplitView>
         ),
         index: () => <Text>Index</Text>,
       })
-  ).rejects.toThrow('There can only be one SplitView.Stack in the SplitView.');
+  ).rejects.toThrow('There can only be one SplitView.Content in the SplitView.');
 });
