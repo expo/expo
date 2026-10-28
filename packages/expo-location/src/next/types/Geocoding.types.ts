@@ -14,6 +14,7 @@ import type { Coordinates } from './Position.types';
  *   isoCountryCode: 'US',
  * }
  * ```
+ * @platform android
  * @platform ios
  */
 export type Address = {
@@ -23,7 +24,8 @@ export type Address = {
    */
   coordinates: Coordinates;
   /**
-   * The name of the place, for example, `1 Infinite Loop`.
+   * The name of the place, for example, `1 Infinite Loop`. Each platform reads this from its own
+   * field, so it can be a building, a street, a postcode or an administrative area.
    */
   name: string | null;
   /**
@@ -33,6 +35,9 @@ export type Address = {
   formattedAddress: string | null;
   /**
    * The city name of the address, for example, `Cupertino`.
+   *
+   * This is `null` when the backend has no city for the place. That can happen even for a town you
+   * would name, in which case the city is often still part of `formattedAddress`.
    */
   city: string | null;
   /**
@@ -47,6 +52,7 @@ export type Address = {
 
 /**
  * Options for [`geocode`](#geocodeaddressoptions).
+ * @platform android
  * @platform ios
  */
 export type GeocodeOptions = {
@@ -59,6 +65,7 @@ export type GeocodeOptions = {
 
 /**
  * Options for [`reverseGeocode`](#reversegeocodecoordinatesoptions).
+ * @platform android
  * @platform ios
  */
 export type ReverseGeocodeOptions = {

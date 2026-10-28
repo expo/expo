@@ -9,9 +9,9 @@ afterEach(() => {
   unmockAllProperties();
 });
 
-describe.each(['android', 'web'])('geocoding on %s', (platform) => {
+describe('geocoding on web', () => {
   beforeEach(() => {
-    mockProperty(Platform, 'OS', platform);
+    mockProperty(Platform, 'OS', 'web');
   });
 
   it('rejects geocode as unavailable', async () => {
