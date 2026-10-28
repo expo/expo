@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `npx expo start --localhost` refusing connections on `127.0.0.1`. ([#52324](https://github.com/expo/expo/pull/52324) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix server stack traces in development pointing at the wrong source file on Node 24.22 and later. Server bundle source maps are now read before their temporary files are removed, and loader bundles are marked in their bundle URL so Metro symbolicates them against the right bundle. ([#52102](https://github.com/expo/expo/pull/52102) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 
