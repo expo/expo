@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [Android] Remove the stored parent `Context` from the legacy location foreground service. `LocationTaskService` extends `Service`, which is already a `Context`, so it now reads `packageManager`, `packageName` and `resources` from itself. This drops a `lateinit` field and the public `setParentContext` setter. ([#51989](https://github.com/expo/expo/pull/51989) by [@HubertBer](https://github.com/HubertBer))
+
 ## 57.0.22 — 2026-10-21
 
 ### 🐛 Bug fixes

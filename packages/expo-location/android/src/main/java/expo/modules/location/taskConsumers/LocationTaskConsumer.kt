@@ -239,7 +239,6 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
           override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mService = (service as? ServiceBinder)?.service
             mService?.let {
-              it.setParentContext(context)
               try {
                 it.startForeground(serviceOptions)
               } catch (e: RuntimeException) {
