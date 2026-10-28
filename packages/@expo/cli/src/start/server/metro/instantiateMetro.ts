@@ -295,6 +295,14 @@ export async function loadMetroConfigAsync(
   if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
   }
+  const workletsBundleModeEnabled = config.serializer?.polyfillModuleNames?.some((modulePath) =>
+    modulePath.includes('react-native-worklets')
+  );
+  if (!reduceLogs && workletsBundleModeEnabled) {
+    Log.warn(
+      `Experimental react-native-worklets Bundle Mode is enabled.\nBundle mode is currently unstable, not recommended for production use, and may cause unexpected behavior.`
+    );
+  }
 
   if (!reduceLogs && serverActionsEnabled) {
     Log.warn(

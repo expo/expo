@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Warn when Worklets Bundle Mode is detected in the Metro configuration. ([#52450](https://github.com/expo/expo/pull/52450) by [@kitten](https://github.com/kitten))
+
 ## 57.0.32 — 2026-10-21
 
 _This version does not introduce any user-facing changes._
