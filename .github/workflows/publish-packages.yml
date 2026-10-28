@@ -117,6 +117,7 @@ jobs:
           commit-message: Version packages (${{ github.ref_name }})
           pr-title: Version packages (${{ github.ref_name }})
           pr-base-branch: ${{ github.ref_name }}
+          push-with-git-cli: true
 
   stable-publish:
     name: Publish stable packages
