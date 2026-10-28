@@ -31,6 +31,7 @@ function optionalRequire<T>(requirer: () => T): T | undefined {
 // we need to trigger code execution of these modules here (not in `getTestModules`
 // which is called in one of the components).
 const LocationTestScreen = optionalRequire(() => require('./tests/Location'));
+const LocationNextTestScreen = optionalRequire(() => require('./tests/LocationNext'));
 const TaskManagerTestScreen = optionalRequire(() => require('./tests/TaskManager'));
 
 export type Module = { name: string; route?: string; test: Function };
@@ -144,6 +145,7 @@ export function getTestModules() {
   if (!isDeviceFarm()) {
     // Popup to request device's location which uses Google's location service
     modules.push(LocationTestScreen);
+    modules.push(LocationNextTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Has uncontrolled view controllers
