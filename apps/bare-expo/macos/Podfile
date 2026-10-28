@@ -3,7 +3,8 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 # File.realdirpath can return a path with NUL bytes for paths behind relative (pnpm) symlinks,
 # which crashes `pod install` (https://bugs.ruby-lang.org/issues/22479). File.realpath does not
-# have this bug. Remove this when the Ruby version in CI has the fix.
+# have this bug.
+# TODO(@nishan): Remove this when CI uses Ruby 3.4.13 or later.
 class ::Pathname
   alias_method :__expo_realdirpath, :realdirpath
   def realdirpath(*args)
