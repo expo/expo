@@ -719,7 +719,7 @@ export const learn = [
     { expanded: true }
   ),
   makeSection(
-    'EAS tutorial',
+    'Expo Services tutorial',
     [
       makePage('tutorial/eas/introduction.mdx'),
       makePage('tutorial/eas/configure-development-build.mdx'),

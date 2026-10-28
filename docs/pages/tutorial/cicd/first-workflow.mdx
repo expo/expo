@@ -1,7 +1,7 @@
 ---
-title: 'Run your first EAS Workflows job'
-sidebar_title: First EAS Workflows job
-description: Learn basics of EAS Workflows by creating workflow files, jobs, triggers, and chain jobs together for an Expo app.
+title: 'Run your first Expo Workflows job'
+sidebar_title: First Expo Workflows job
+description: Learn basics of Expo Workflows by creating workflow files, jobs, triggers, and chain jobs together for an Expo app.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -10,14 +10,14 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we create our first EAS Workflows job.
+In this chapter, we create our first Expo Workflows job.
 
 ## Learning outcomes
 
-- Create and run a custom workflow that prints a message to the EAS dashboard
+- Create and run a custom workflow that prints a message to the Expo dashboard
 - Set up an automatic trigger so every push to `main` runs the workflow
 - Chain multiple jobs together so one job's output feeds the next
-- Read workflow logs and job graphs in the EAS dashboard
+- Read workflow logs and job graphs in the Expo dashboard
 
 ## How workflow files work
 
@@ -25,24 +25,24 @@ Workflow files are YAML files stored in our project's **.eas/workflows/** direct
 
 <JobTypes />
 
-A workflow file contains one or more jobs and an optional trigger. When it runs, EAS reads the file, provisions the environment, and executes the jobs in that environment.
+A workflow file contains one or more jobs and an optional trigger. When it runs, Expo Workflows reads the file, provisions the environment, and executes the jobs in that environment.
 
-## Types of jobs in EAS Workflows
+## Types of jobs in Expo Workflows
 
-EAS Workflows has two types of jobs:
+Expo Workflows has two types of jobs:
 
-- **Pre-packaged job:** This job uses the `type` field. It tells EAS which operation to run, like `build`, `submit`, or `update`. EAS then runs the pre-configured steps for that operation.
+- **Pre-packaged job:** This job uses the `type` field. It tells Expo Workflows which operation to run, like `build`, `submit`, or `update`. Expo Workflows then runs the pre-configured steps for that operation.
 - **Custom job:** This type of job uses `steps` instead of the `type` field. We write our own commands using `run` for each step. A custom job allows us to control what happens when a workflow runs and when to run a specific command.
 
 ## Create our first workflow
 
-Let's create our first workflow using a custom job and run it on EAS.
+Let's create our first workflow using a custom job and run it on Expo Workflows.
 
 <Step label="1">
 
 ### Create the workflow directory
 
-Create the **.eas/workflows/** directory at the root of our Expo project. EAS looks for workflow files only in this location.
+Create the **.eas/workflows/** directory at the root of our Expo project. Expo Workflows looks for workflow files only in this location.
 
 <Terminal cmd={['$ mkdir -p .eas/workflows']} />
 
@@ -65,7 +65,7 @@ jobs:
 
 The above workflow uses the following syntax:
 
-- `name` is the workflow's name as shown on the EAS dashboard.
+- `name` is the workflow's name as shown on the Expo dashboard.
 - `jobs` contains one or more jobs to run. Each job has a unique ID (in this case, `greet`).
 - `steps` is a sequence of tasks the job executes in order. A job with `steps` but no `type` field is a custom job.
 - `run` is the shell command to execute in a step. Here, it runs `echo` to print a message. Any shell command works.
@@ -76,11 +76,11 @@ The above workflow uses the following syntax:
 
 ### Manually run the workflow
 
-To run the workflow on the EAS dashboard, run the following command from a terminal window:
+To run the workflow on the Expo dashboard, run the following command from a terminal window:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
 
-The `eas workflow:run` command uploads the workflow file to EAS. It then runs any job defined inside the file and the EAS CLI prints a URL to the EAS dashboard where we can watch the job.
+The `eas workflow:run` command uploads the workflow file to Expo Workflows. It then runs any job defined inside the file and the EAS CLI prints a URL to the Expo dashboard where we can watch the job.
 
 </Step>
 
@@ -91,12 +91,12 @@ The `eas workflow:run` command uploads the workflow file to EAS. It then runs an
 Open the URL from the previous step in a browser window. On the workflow page, we can see the `greet` job and its status. Once the job completes, expand the step output to see the logged message: `Hello, Workflows`.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing expanded job logs for a Hello World workflow run."
+  alt="Expo Workflows dashboard showing expanded job logs for a Hello World workflow run."
   src="/static/images/tutorial/cicd/eas-workflows-job-logs-dashboard.png"
   className="max-w-160"
 />
 
-The EAS dashboard is where we view and debug any workflow job. The **Workflow graph** shows what triggered our job and the job's unique ID.
+The Expo dashboard is where we view and debug any workflow job. The **Workflow graph** shows what triggered our job and the job's unique ID.
 
 Switch to the **Workflow file** tab. This is the workflow file we wrote in Step 2, preserved with the run.
 
@@ -110,7 +110,7 @@ Running `eas workflow:run` from the terminal works for a one-off, but most teams
 
 > **info** **Note:** A trigger is a rule that tells a CI/CD pipeline when to start. It defines the event (such as a code push or a pull request) that causes the pipeline to run automatically instead of requiring manual execution.
 
-We define a trigger with the `on` key in the workflow file. EAS watches for the matching GitHub event and runs the workflow automatically.
+We define a trigger with the `on` key in the workflow file. Expo Workflows watches for the matching GitHub event and runs the workflow automatically.
 
 <Step label="1">
 
@@ -162,17 +162,17 @@ Commit the workflow file and push it to the `main` branch:
 
 ### Verify the automatic trigger
 
-> **info** **Tip:** This step depends on our local Expo project being pushed to GitHub and the GitHub repository being connected to EAS. To confirm: run `git remote -v` to verify the local repo points to a GitHub URL and open the project's [GitHub settings on EAS](https://expo.dev/accounts/[account]/projects/[projectName]/github) to check that a repository is connected.
+> **info** **Tip:** This step depends on our local Expo project being pushed to GitHub and the GitHub repository being connected to Expo Services. To confirm: run `git remote -v` to verify the local repo points to a GitHub URL and open the project's [GitHub settings in the Expo dashboard](https://expo.dev/accounts/[account]/projects/[projectName]/github) to check that a repository is connected.
 
-Let's open our project's [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the EAS dashboard to see the new job.
+Let's open our project's [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the Expo dashboard to see the new job.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing a workflow run automatically triggered by a push to the GitHub repository's main branch."
+  alt="Expo Workflows dashboard showing a workflow run automatically triggered by a push to the GitHub repository's main branch."
   src="/static/images/tutorial/cicd/eas-workflows-github-triggered-run.png"
   className="max-w-160"
 />
 
-In the EAS dashboard, notice that the **Workflow graph** tab shows the commit message and branch reference for this push. In the status under the workflow header, the **Trigger** and **Triggered by** reflect the same information.
+In the Expo dashboard, notice that the **Workflow graph** tab shows the commit message and branch reference for this push. In the status under the workflow header, the **Trigger** and **Triggered by** reflect the same information.
 
 </Step>
 
@@ -192,7 +192,7 @@ So far, we have implemented a single job in our workflow file. A workflow file c
 
 ### Update hello.yml
 
-Let's update the **hello.yml** file to add a custom job and a pre-packaged job. This pre-packaged job is called [`doc`](/eas/workflows/pre-packaged-jobs/#doc) and it renders Markdown on the EAS dashboard:
+Let's update the **hello.yml** file to add a custom job and a pre-packaged job. This pre-packaged job is called [`doc`](/eas/workflows/pre-packaged-jobs/#doc) and it renders Markdown on the Expo dashboard:
 
 ```yaml .eas/workflows/hello.yml
 name: Hello
@@ -220,9 +220,9 @@ jobs:
 The above workflow file does the following:
 
 - Defines a `greet` job, which is a custom job. It uses the [`set-output`](/eas/workflows/syntax/#set-output) shell function to set a value called `greeting`. The `outputs` field at the job level exposes the step output so other jobs can reference it.
-- Defines a `show_info` job which uses `needs: [greet]` to wait for the `greet` job to complete and access its output. Then, it uses the pre-packaged `doc` job type to render a Markdown document in the EAS dashboard. The Markdown content includes the value of `greeting` set in the previous job.
+- Defines a `show_info` job which uses `needs: [greet]` to wait for the `greet` job to complete and access its output. Then, it uses the pre-packaged `doc` job type to render a Markdown document in the Expo dashboard. The Markdown content includes the value of `greeting` set in the previous job.
 
-> **info** **Tip:** In EAS Workflows, jobs run in parallel by default. The `needs` field is what makes a job wait: it lists the job IDs that must complete successfully before the job using `needs` can start. If a job in the `needs` list fails, the dependent job is skipped.
+> **info** **Tip:** In Expo Workflows, jobs run in parallel by default. The `needs` field is what makes a job wait: it lists the job IDs that must complete successfully before the job using `needs` can start. If a job in the `needs` list fails, the dependent job is skipped.
 
 </Step>
 
@@ -234,10 +234,10 @@ Run the following command from a terminal window to see the chained jobs in acti
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
 
-Open the EAS dashboard link from the EAS CLI. Under **Logs**, notice that the `greet` job runs first. Once it completes, the `show_info` job runs and renders the Markdown content using the output from the previous job.
+Open the Expo dashboard link from the EAS CLI. Under **Logs**, notice that the `greet` job runs first. Once it completes, the `show_info` job runs and renders the Markdown content using the output from the previous job.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing two chained jobs running sequentially after the first job completes."
+  alt="Expo Workflows dashboard showing two chained jobs running sequentially after the first job completes."
   src="/static/images/tutorial/cicd/eas-workflows-chained-jobs.png"
   className="max-w-160"
 />

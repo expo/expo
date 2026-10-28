@@ -59,7 +59,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       onAllCompleted?: () => void;
     }
   > = {
-    'EAS tutorial': {
+    'Expo Services tutorial': {
       name: 'EAS_TUTORIAL',
       resetHref: '/tutorial/eas/introduction/',
       onAllCompleted: reportEasTutorialCompleted,
@@ -260,7 +260,7 @@ function getIconElement(iconName?: string) {
       return HandWaveIcon;
     case 'Build with AI tutorial':
       return Star06Icon;
-    case 'EAS tutorial':
+    case 'Expo Services tutorial':
       return PlanEnterpriseIcon;
     case 'CI/CD tutorial':
       return Dataflow03Icon;

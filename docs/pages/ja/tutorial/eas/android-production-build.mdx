@@ -19,7 +19,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 <VideoBoxLink
   videoId="nxlt8uwqhpE"
   title="視聴：Android 向けの本番ビルドを作成してリリースする"
-  description="EAS で Android の本番ビルドを作成し、Google Play ストアに提出して、リリースプロセスを自動化します。"
+  description="Expo Build で Android の本番ビルドを作成し、Google Play ストアに提出して、リリースプロセスを自動化します。"
 />
 
 ---
@@ -49,11 +49,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## 本番ビルドを作成する
 
-デフォルトの `production` プロファイルで Android の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。EAS の設定では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
+デフォルトの `production` プロファイルで Android の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。**eas.json** では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-このコマンドでビルドがキューに入ります。EAS ダッシュボードの **Version** 列に、自動的にインクリメントされたバージョンコードが括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
+このコマンドでビルドがキューに入ります。Expo ダッシュボードの **Version** 列に、自動的にインクリメントされたバージョンコードが括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
 
 </Step>
 
@@ -121,9 +121,9 @@ Google Play Console でアプリを作成すると、そのアプリのダッシ
 
 ## アプリのバイナリをアップロードする
 
-EAS が本番ビルドを作成し終えたら、次のようにします。
+Expo Build が本番ビルドを作成し終えたら、次のようにします。
 
-- EAS ダッシュボードを開き、**Download** をクリックして **.aab** ファイルを取得します。
+- Expo ダッシュボードを開き、**Download** をクリックして **.aab** ファイルを取得します。
 
 <ContentSpotlight
   alt="Downloading the aab file"
@@ -208,14 +208,14 @@ EAS が本番ビルドを作成し終えたら、次のようにします。
 
 > **info** **ヒント**: このセクションの手順に進む前に、[Google サービスアカウントキーの作成、または既存アカウントからのダウンロード](https://expo.fyi/creating-google-service-account) のガイドを参照してください。
 
-これ以降は、[EAS Submit](/submit/android/) を使ってリリースを自動化し、手作業を避けられます。そのためには、プロジェクトの認証情報にサービスアカウントキーを追加する必要があります。
+これ以降は、[Expo Submit](/submit/android/) を使ってリリースを自動化し、手作業を避けられます。そのためには、プロジェクトの認証情報にサービスアカウントキーを追加する必要があります。
 
-Google サービスアカウントのガイドの手順を終えたら、ダウンロードした JSON キーを EAS ダッシュボードにアップロードします。
+Google サービスアカウントのガイドの手順を終えたら、ダウンロードした JSON キーを Expo ダッシュボードにアップロードします。
 
-- プロジェクトの EAS ダッシュボードで **Credentials** をクリックし、**Android** の下にあるアプリの **Application identifier** をクリックします。
+- プロジェクトの Expo ダッシュボードで **Credentials** をクリックし、**Android** の下にあるアプリの **Application identifier** をクリックします。
 
 <ContentSpotlight
-  alt="Adding a new Google Service Account key to EAS dashboard"
+  alt="Adding a new Google Service Account key to Expo dashboard"
   src="/static/images/tutorial/eas/credentials-01.png"
   className="max-w-[640px]"
 />
@@ -223,7 +223,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 - **Service Credentials** の下で **Add a Google Service Account Key** をクリックします。
 
 <ContentSpotlight
-  alt="Add a Google Service Account Key button under Service Credentials in EAS dashboard"
+  alt="Add a Google Service Account Key button under Service Credentials in Expo dashboard"
   src="/static/images/tutorial/eas/credentials-02.png"
   className="max-w-[640px]"
 />
@@ -231,7 +231,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 - **Change Google Service Account Key** で **Upload new key** が選択されていることを確認し、ダウンロードした JSON キーをアップロードします。これでプロジェクトの認証情報にキーが追加されます。
 
 <ContentSpotlight
-  alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+  alt="Uploading the Google Service Account key to Expo dashboard under Service Credentials"
   src="/static/images/tutorial/eas/credentials-03.png"
   className="max-w-[640px]"
 />
@@ -271,7 +271,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 - このコマンドは Google Play Console に新しい内部リリースバージョンを自動的に作成します。
 
 <ContentSpotlight
-  alt="Automatic internal release version created in Google Play Console by EAS Submit"
+  alt="Automatic internal release version created in Google Play Console by Expo Submit"
   src="/static/images/tutorial/eas/play-store-18.png"
   className="max-w-[800px]"
 />
@@ -301,7 +301,7 @@ Google サービスアカウントのガイドの手順を終えたら、ダウ�
 }
 ```
 
-- 内部テストリリースで使ったのと同じ EAS Build を再利用できます。`eas submit` コマンドを実行して Play ストアにリリースします。
+- 内部テストリリースで使ったのと同じ Expo Build を再利用できます。`eas submit` コマンドを実行して Play ストアにリリースします。
 
 <Terminal cmd={['$ eas submit --platform android']} />
 

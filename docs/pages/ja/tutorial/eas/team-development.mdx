@@ -1,7 +1,7 @@
 ---
 title: チームにプレビューを共有する
 sidebar_title: プレビューを共有する
-description: EAS Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。
+description: Expo Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。
 hasVideoLink: true
 ---
 
@@ -14,12 +14,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 OTA（Over-The-Air）アップデートは通常、アプリストアのリリースとリリースの間で、小さなバグ修正や小さな変更を配信するために使います。JavaScript コード、スタイル、画像といった、サンプルアプリのネイティブでない部分を更新できます。
 
-この章では、[EAS Update](/eas-update/introduction/) を使ってチームに変更を共有します。これにより [自分とチームで素早くプレビューを共有](/review/overview/) できるようになります。
+この章では、[Expo Update](/eas-update/introduction/) を使ってチームに変更を共有します。これにより [自分とチームで素早くプレビューを共有](/review/overview/) できるようになります。
 
 <VideoBoxLink
   videoId="vPKh-tNm-yI"
   title="視聴：チームにプレビューを共有する方法"
-  description="アプリストアのリリースの合間に、アプリのプレビュー版をチームへ共有できるよう EAS Update を設定します。"
+  description="アプリストアのリリースの合間に、アプリのプレビュー版をチームへ共有できるよう Expo Update を設定します。"
 />
 
 ---
@@ -43,9 +43,9 @@ OTA（Over-The-Air）アップデートは通常、アプリストアのリリ�
 
 <Step label="2">
 
-## EAS Update を設定する
+## Expo Update を設定する
 
-EAS Update でプロジェクトを初期化するには、次のコマンドを実行します。
+Expo Update でプロジェクトを初期化するには、次のコマンドを実行します。
 
 <Terminal cmd={['$ eas update:configure']} />
 
@@ -91,7 +91,7 @@ EAS Update でプロジェクトを初期化するには、次のコマンドを
 
 <Collapsible summary="channel とは？">
 
-[チャンネル](/eas-update/how-it-works/#conceptual-overview) は、ビルドをグループ化するために使います。Android と iOS のビルドが両方ともアプリストアにあるなら、どちらにも production チャンネルを与えられます。あとから EAS Update に production チャンネルを対象にするよう指示すれば、production チャンネルを持つすべてのビルドにアップデートが届きます。
+[チャンネル](/eas-update/how-it-works/#conceptual-overview) は、ビルドをグループ化するために使います。Android と iOS のビルドが両方ともアプリストアにあるなら、どちらにも production チャンネルを与えられます。あとから Expo Update に production チャンネルを対象にするよう指示すれば、production チャンネルを持つすべてのビルドにアップデートが届きます。
 
 </Collapsible>
 
@@ -135,19 +135,19 @@ EAS Update でプロジェクトを初期化するには、次のコマンドを
 
 上のコマンドでは `development` チャンネルを使いました。すべてのアップデートは [チャンネル名](/eas-update/how-it-works/#publishing-an-update) に紐づきます。git のコミットが必ず git ブランチに紐づくのと似ています。
 
-つまり、ビルドプロファイルで `development` チャンネルを使い、そのチャンネルにアップデートを公開します。これにより、`development` チャンネルを持つビルドにアップデートを届けるよう EAS に指示します。EAS Update のチャンネルを作ると、EAS は同じ名前のブランチにそのチャンネルを自動的にマッピングします。
+つまり、ビルドプロファイルで `development` チャンネルを使い、そのチャンネルにアップデートを公開します。これにより、`development` チャンネルを持つビルドにアップデートを届けるよう Expo Update に指示します。Expo Update のチャンネルを作ると、Expo Update は同じ名前のブランチにそのチャンネルを自動的にマッピングします。
 
 アップデートを公開すると、CLI がその情報を出力します。
 
 <ContentSpotlight
-  alt="EAS Update published successfully with CLI output"
+  alt="Expo Update published successfully with CLI output"
   src="/static/images/tutorial/eas/team-development-update-cli.webp"
 />
 
-**EAS Dashboard** のリンクをクリックすると、**Over-the-air updates** > **Update groups** でアップデートを確認できます。
+**Expo dashboard** のリンクをクリックすると、**Over-the-air updates** > **Update groups** でアップデートを確認できます。
 
 <ContentSpotlight
-  alt="EAS dashboard shows the latest published update for the development build"
+  alt="Expo dashboard shows the latest published update for the development build"
   src="/static/images/tutorial/eas/team-development-update-group.webp"
   className="max-w-[800px]"
 />
@@ -190,7 +190,7 @@ preview や production のビルドを使っているチームメンバーには
   name="EAS_TUTORIAL"
   currentChapterSlug="/tutorial/eas/team-development"
   chapterTitle="第 10 章：チームにプレビューを共有する"
-  summary="EAS Update を設定してプラットフォームをまたいで OTA アップデートを管理・公開し、レビュー用にアップデートを取得する方法を確認しました。"
+  summary="Expo Update を設定してプラットフォームをまたいで OTA アップデートを管理・公開し、レビュー用にアップデートを取得する方法を確認しました。"
   nextChapterDescription="次の章では、GitHub リポジトリからビルドをトリガーする流れを学びます。"
   nextChapterTitle="GitHub リポジトリからビルドをトリガーする"
   nextChapterLink="/ja/tutorial/eas/using-github/"

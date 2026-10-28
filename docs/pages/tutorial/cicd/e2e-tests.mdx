@@ -1,7 +1,7 @@
 ---
-title: 'Run E2E tests with Maestro on EAS Workflows'
+title: 'Run E2E tests with Maestro on Expo Workflows'
 sidebar_title: E2E tests
-description: Learn how to automate end-to-end (E2E) tests with Maestro using Android and iOS development builds on EAS Workflows.
+description: Learn how to automate end-to-end (E2E) tests with Maestro using Android and iOS development builds on Expo Workflows.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -17,13 +17,13 @@ Broken navigation flows and crashing screens often slip past code review because
 - Run E2E tests against Android and iOS [development builds](/develop/development-builds/introduction/) in a workflow
 - Trigger E2E tests automatically on pull requests with `on.pull_request` or on demand with `on.pull_request_labeled`
 
-> **important** The Maestro job type in EAS Workflows is currently in [alpha](/more/release-statuses/#alpha).
+> **important** The Maestro job type in Expo Workflows is currently in [alpha](/more/release-statuses/#alpha).
 
 ## Why are E2E tests useful?
 
 The pipeline from previous chapters builds our project and delivers updates, with Slack notifications. However, a broken navigation flow or a crashing screen can still make it to production silently. E2E tests can help catch these issues before they reach production by simulating real user interactions and verifying that the app behaves as expected.
 
-[Maestro](https://maestro.mobile.dev/) runs automated flows against a built app on an Android Emulator or an iOS Simulator. It can tap buttons, type text, assert screen content, and navigate between screens. EAS Workflows runs these flows in the cloud after building an APK for Android or an iOS Simulator build.
+[Maestro](https://maestro.mobile.dev/) runs automated flows against a built app on an Android Emulator or an iOS Simulator. It can tap buttons, type text, assert screen content, and navigate between screens. Expo Workflows runs these flows in the cloud after building an APK for Android or an iOS Simulator build.
 
 ## Set up E2E tests
 
@@ -137,16 +137,16 @@ Use the `eas workflow:run` command to run the workflow manually:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
 
-On the EAS dashboard, notice that the Android and iOS builds start in parallel. Once each build completes, the corresponding Maestro test job runs the flow files against it.
+On the Expo dashboard, notice that the Android and iOS builds start in parallel. Once each build completes, the corresponding Maestro test job runs the flow files against it.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing a Maestro E2E test run with parallel Android and iOS test jobs on development builds."
+  alt="Expo Workflows dashboard showing a Maestro E2E test run with parallel Android and iOS test jobs on development builds."
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-run.png"
   className="max-w-160"
 />
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing successful Maestro E2E test jobs completed for Android and iOS development builds."
+  alt="Expo Workflows dashboard showing successful Maestro E2E test jobs completed for Android and iOS development builds."
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-success.webp"
   className="max-w-160"
 />
@@ -178,7 +178,7 @@ on:
 ```
 
 <ContentSpotlight
-  alt="EAS Workflows run triggered by a GitHub pull request label, executing Maestro E2E tests against Android and iOS development builds."
+  alt="Expo Workflows run triggered by a GitHub pull request label, executing Maestro E2E tests against Android and iOS development builds."
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-pull-request-label.png"
   className="max-w-160"
 />

@@ -1,7 +1,7 @@
 ---
 title: クラウドで開発ビルドを設定する
 sidebar_title: 開発ビルドを設定する
-description: EAS Build を使ってプロジェクトの開発ビルドを設定する方法を学びます。
+description: Expo Build を使ってプロジェクトの開発ビルドを設定する方法を学びます。
 hasVideoLink: true
 ---
 
@@ -13,12 +13,12 @@ import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、サンプルアプリ向けに EAS で開発ビルドをセットアップして設定します。
+この章では、サンプルアプリ向けに Expo Build で開発ビルドをセットアップして設定します。
 
 <VideoBoxLink
   videoId="uQCE9zl3dXU"
   title="視聴：開発ビルドを設定する方法"
-  description="expo-dev-client のインストール、eas.json でのビルドプロファイルの設定、そして EAS Build による最初の開発ビルド作成までを学びます。"
+  description="expo-dev-client のインストール、eas.json でのビルドプロファイルの設定、そして Expo Build による最初の開発ビルド作成までを学びます。"
 />
 
 ---
@@ -113,15 +113,15 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 このコマンドは、ログインを完了するために Expo アカウントのメールアドレスまたはユーザー名とパスワードを尋ねます。
 
-### プロジェクトを初期化して EAS にリンクする
+### プロジェクトを初期化して Expo Services にリンクする
 
-新しいプロジェクトではまず、初期化して EAS サーバーにリンクします。次のコマンドを実行しましょう。
+新しいプロジェクトではまず、初期化して Expo サーバーにリンクします。次のコマンドを実行しましょう。
 
 <Terminal cmd={['$ eas init']} />
 
 実行すると、このコマンドは次のことを行います。
 
-- どのアカウントをプロジェクトの所有者にするか（複数のアカウントがある場合）と、EAS プロジェクトを作成するかを尋ねます。
+- どのアカウントをプロジェクトの所有者にするか（複数のアカウントがある場合）と、Expo Services プロジェクトを作成するかを尋ねます。
 
 <Terminal
   cmd={[
@@ -134,20 +134,20 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   ]}
 />
 
-- EAS プロジェクトを作成し、EAS ダッシュボードで開けるリンクを表示します。
+- Expo Services プロジェクトを作成し、Expo ダッシュボードで開けるリンクを表示します。
 
 <ContentSpotlight
-  alt="New project in EAS dashboard"
+  alt="New project in Expo dashboard"
   src="/static/images/tutorial/eas/configure-development-build-new-project.webp"
 />
 
-- 一意の `projectId` を生成し、この EAS プロジェクトを開発マシン上のサンプルアプリにリンクします。
+- 一意の `projectId` を生成し、この Expo Services プロジェクトを開発マシン上のサンプルアプリにリンクします。
 - **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) に生成された一意の ID を、[`owner`](/versions/latest/config/app/#owner) にプロジェクトを所有するアカウント名を追加します。
-- プロジェクトにまだアイコンがない場合、**app.json** の `icon` を EAS ダッシュボードのプロジェクトアイコンとしてアップロードします。
+- プロジェクトにまだアイコンがない場合、**app.json** の `icon` を Expo ダッシュボードのプロジェクトアイコンとしてアップロードします。
 
 <Collapsible summary={<>app.json の <CODE>projectId</CODE> とは？</>}>
 
-`eas init` を実行すると、**app.json** の `extra.eas.projectId` にプロジェクトの一意な識別子が関連付けられます。このプロパティの値は、EAS サーバー上でプロジェクトを識別するために使われます。
+`eas init` を実行すると、**app.json** の `extra.eas.projectId` にプロジェクトの一意な識別子が関連付けられます。このプロパティの値は、Expo サーバー上でプロジェクトを識別するために使われます。
 
 ```json
 {
@@ -165,9 +165,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Step label="3">
 
-## EAS Build 向けにプロジェクトを設定する
+## Expo Build 向けにプロジェクトを設定する
 
-EAS Build 用にプロジェクトをセットアップするには、次のコマンドを実行します。
+Expo Build 用にプロジェクトをセットアップするには、次のコマンドを実行します。
 
 <Terminal cmd={['$ eas build:configure']} />
 
@@ -226,7 +226,7 @@ EAS Build 用にプロジェクトをセットアップするには、次のコ�
   name="EAS_TUTORIAL"
   currentChapterSlug="/tutorial/eas/configure-development-build"
   chapterTitle="第 1 章：クラウドで開発ビルドを設定する"
-  summary="EAS CLI を使ってプロジェクトを初期化・設定し、EAS サーバーにリンクして、開発ビルドの準備を整えました。"
+  summary="EAS CLI を使ってプロジェクトを初期化・設定し、Expo サーバーにリンクして、開発ビルドの準備を整えました。"
   nextChapterDescription="次の章では、Android 向けの開発ビルドを作成し、実機とエミュレーターにインストールして、開発サーバーにつないで実行してみましょう。"
   nextChapterTitle="Android 向けのクラウドビルドを作成して実行する"
   nextChapterLink="/ja/tutorial/eas/android-development-build/"
