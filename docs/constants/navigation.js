@@ -100,6 +100,7 @@ export const home = [
     makePage('agentic-workflows/agentic-ci.mdx'),
     makePage('agentic-workflows/issue-to-pr.mdx'),
     makePage('agentic-workflows/bug-triage.mdx'),
+    makePage('agentic-workflows/qa-swarm.mdx'),
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),

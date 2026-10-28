@@ -1,0 +1,584 @@
+---
+title: Test your app with a swarm of AI agents
+sidebar_title: QA Swarm
+description: Add an agentic workflow in which several coding agents test your app at the same time, each with one flow on its own cloud simulator, and return one report with evidence.
+---
+
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+import { QaSwarmDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
+import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+QA Swarm is an automated workflow in which several coding agents test your app at the same time. Each agent gets its own cloud simulator and one short test flow. So a full pass takes as long as the slowest flow, not as long as all the flows in a row. Each verdict comes with screenshots and an evidence site.
+
+## How QA Swarm works
+
+The highlighted steps run on EAS Workflows, Expo Simulators, and EAS Hosting:
+
+<QaSwarmDiagram />
+
+1. You start the workflow. You can give it the number of a pull request (PR) to report on.
+2. The workflow finds a build for each platform with the same native code, or it creates one. Then it adds the current JavaScript to the build.
+3. Each lane starts its own Expo Simulators session. A coding agent in the lane follows one flow and saves screenshots.
+4. Each lane deploys an evidence site with the verdict, the screenshots, and the session recording. The job of the lane fails when the verdict is not `PASS`.
+5. The workflow shows one report with the verdict of each lane. For a run with a PR number, it also posts the report on the PR.
+
+A flow is a short Markdown file. You write one flow for each part of the app that you want to test.
+
+<AgentPrompt
+  title="Add QA Swarm with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Add the QA Swarm workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/qa-swarm.md as the source for each step and each file.
+
+1. Check each setup step on that page. Do each step that is not done.
+2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of each lane file for the controller that I name: agent-device or Argent.
+3. Read my app and write two flows in .eas/qa-flows/ for its most important screens, in the same format as the example flows.
+4. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
+5. Run `eas workflow:validate .eas/workflows/qa-swarm.yml`.
+6. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
+```
+
+</AgentPrompt>
+
+## Set up your project
+
+Do these steps one time for your project.
+
+<AgenticWorkflowsSetup />
+
+<WhatTheAgentCanDo />
+
+## Add the QA Swarm workflow
+
+<Step label="1">
+
+### Add the flows
+
+Each lane runs one flow. Add a flow as a Markdown file in **.eas/qa-flows**. These two example flows work for most apps:
+
+```md .eas/qa-flows/launch.md|wrap
+Check that the app starts.
+
+1. The app opens on its first screen. Save a screenshot.
+2. Check that the screen shows content, and no error, warning, or empty screen.
+
+Out of scope for this lane: do not tap any element, and do not sign in.
+
+Pass condition: the first screen shows content and no error.
+```
+
+```md .eas/qa-flows/navigation.md|wrap
+Check that each main screen opens.
+
+1. The app opens on its first screen. Find the tab bar or the main menu.
+2. Open each tab or main screen one time. Save a screenshot of each one.
+3. Check that each screen shows content, and no error.
+
+Out of scope for this lane: do not change data. Do not add, edit, or delete items, and do not sign out.
+
+Pass condition: each main screen opens and shows content without an error.
+```
+
+Then write flows for the important parts of your app. Keep each flow short, and give it these parts:
+
+- **Steps:** what a user does, in order, with the text that the user sees on the screen.
+- **Out of scope:** what the agent must not touch. Lanes run at the same time, so a flow that changes shared data can break another flow.
+- **Pass condition:** the result that a `PASS` verdict needs.
+
+A file with the name **&lt;flow&gt;.android.md** or **&lt;flow&gt;.ios.md** replaces **&lt;flow&gt;.md** on that platform. Use it when a control works differently on Android and iOS.
+
+</Step>
+
+<Step label="2">
+
+### Add the lane prompt
+
+Each lane adds the platform, the app ID, the device details, and its flow to the end of this prompt. Use the version for the controller that you use. The controller is the tool that the agent uses to control the device: [agent-device](/agents/agent-device/) or [Argent](/agents/argent/).
+
+<Tabs>
+
+<Tab label="agent-device">
+
+```md .eas/agents/qa-lane.md|wrap
+You are one lane of a QA swarm. Other agents test other flows of this app at the same time, each on its own cloud simulator. The app is installed and open on a remote Android Emulator or iOS Simulator. The platform, the app ID, and the flow of this lane are at the end of this prompt.
+
+1. Read the flow. Do only the steps of the flow. Do not touch what the flow marks as out of scope.
+2. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
+
+   npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
+
+   Use these agent-device commands:
+   - `snapshot -i` lists the elements on the screen, with references such as `@e2`.
+   - `press @e2` taps an element.
+   - `fill @e4 "text"` types text into a field.
+   - `scroll down` scrolls the screen.
+   - `screenshot agent-output/evidence/<number>-<name>.png` saves a screenshot.
+   - `open <app ID> --platform <platform>` opens the app again.
+
+3. Save a screenshot after each step.
+4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then list each step, what you did, what you saw, and the names of the screenshots.
+
+Write FAIL when a step fails or when you are not sure. Do not change the files of the project.
+```
+
+</Tab>
+
+<Tab label="Argent">
+
+```md .eas/agents/qa-lane.md|wrap
+You are one lane of a QA swarm. Other agents test other flows of this app at the same time, each on its own cloud simulator. The app is installed and open on a remote Android Emulator or iOS Simulator. The platform, the app ID, the device ID, the screenshot scale, and the flow of this lane are at the end of this prompt.
+
+1. Read the flow. Do only the steps of the flow. Do not touch what the flow marks as out of scope.
+2. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
+
+   npx --yes -p @swmansion/argent@latest argent run <tool> --udid <device ID> <options>
+
+   Use these Argent tools:
+   - `describe` lists the elements on the screen. Each element has a frame in coordinates from 0 to 1.
+   - `gesture-tap --x <x> --y <y>` taps a point. Use the center of the frame of an element from `describe`. Never use pixels. Run `describe` again after each change on the screen.
+   - `keyboard --text "text"` types text into the field that has focus.
+   - `gesture-swipe --fromX 0.5 --fromY 0.7 --toX 0.5 --toY 0.3` scrolls the screen down.
+   - `screenshot --scale <scale> --out agent-output/evidence/<number>-<name>.png` saves a screenshot.
+   - `restart-app --bundleId <app ID>` opens the app again.
+
+3. Save a screenshot after each step.
+4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then list each step, what you did, what you saw, and the names of the screenshots.
+
+Write FAIL when a step fails or when you are not sure. Do not change the files of the project.
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+### Add the lane script
+
+Each lane runs this script. Use the version for the same controller as the prompt.
+
+<Tabs>
+
+<Tab label="agent-device">
+
+```sh .eas/agents/qa-lane.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${BUILD_ID:?No build. Check the build or repack job of this run.}"
+: "${PLATFORM:?No platform. Set PLATFORM to android or ios in the lane job.}"
+: "${FLOW:?No flow. Set FLOW to the name of a file in .eas/qa-flows.}"
+
+FLOW_FILE=".eas/qa-flows/$FLOW.$PLATFORM.md"
+[ -f "$FLOW_FILE" ] || FLOW_FILE=".eas/qa-flows/$FLOW.md"
+[ -f "$FLOW_FILE" ] || { echo "No flow file for $FLOW. Add .eas/qa-flows/$FLOW.md." >&2; exit 1; }
+case "$PLATFORM" in
+  android) APP_ID=$(node -p 'require("./app.json").expo.android.package') ;;
+  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier') ;;
+esac
+mkdir -p agent-output/evidence
+
+export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
+npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type agent-device \
+  --build-id "$BUILD_ID" --name "QA Swarm: $PLATFORM $FLOW" --tag qa-swarm \
+  --max-duration-minutes 30 --json > /tmp/session.json
+trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+
+{
+  cat .eas/agents/qa-lane.md
+  printf '\n## Platform\n\n%s\n\n## App ID\n\n%s\n\n## Flow\n\n' "$PLATFORM" "$APP_ID"
+  cat "$FLOW_FILE"
+} > agent-output/prompt.md
+
+env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+  timeout 15m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
+
+[ -s agent-output/evidence/verdict.md ] || echo 'FAIL: The agent did not write a verdict.' > agent-output/evidence/verdict.md
+VERDICT=$(head -n 1 agent-output/evidence/verdict.md)
+
+SITE_URL=$(npx --yes eas-simulator-evidence@0.2.4 run agent-output/evidence --stop \
+  --subject "QA Swarm: $PLATFORM $FLOW" --verdict-file agent-output/evidence/verdict.md \
+  --build-id "$BUILD_ID" --deploy-alias "qa-$PLATFORM-$FLOW-evidence" | tail -n 1)
+
+set-output verdict "$VERDICT"
+set-output site_url "$SITE_URL"
+
+case "$VERDICT" in
+  PASS:*) exit 0 ;;
+  *) exit 1 ;;
+esac
+```
+
+</Tab>
+
+<Tab label="Argent">
+
+```sh .eas/agents/qa-lane.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${BUILD_ID:?No build. Check the build or repack job of this run.}"
+: "${PLATFORM:?No platform. Set PLATFORM to android or ios in the lane job.}"
+: "${FLOW:?No flow. Set FLOW to the name of a file in .eas/qa-flows.}"
+
+FLOW_FILE=".eas/qa-flows/$FLOW.$PLATFORM.md"
+[ -f "$FLOW_FILE" ] || FLOW_FILE=".eas/qa-flows/$FLOW.md"
+[ -f "$FLOW_FILE" ] || { echo "No flow file for $FLOW. Add .eas/qa-flows/$FLOW.md." >&2; exit 1; }
+case "$PLATFORM" in
+  android) APP_ID=$(node -p 'require("./app.json").expo.android.package'); SCALE=0.9 ;;
+  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier'); SCALE=1 ;;
+esac
+mkdir -p agent-output/evidence
+
+export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
+npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type argent \
+  --build-id "$BUILD_ID" --name "QA Swarm: $PLATFORM $FLOW" --tag qa-swarm \
+  --max-duration-minutes 30 --json > /tmp/session.json
+trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+
+set -a
+. ./.env.eas-simulator
+set +a
+
+UDID=""
+for attempt in 1 2 3 4; do
+  UDID=$(npx --yes -p @swmansion/argent@latest argent run list-devices 2> /dev/null \
+    | grep -oE '"(udid|serial)" *: *"[^"]+"' | head -n 1 | sed -E 's/.*"([^"]+)"$/\1/' || true)
+  [ -n "$UDID" ] && break
+  sleep 15
+done
+: "${UDID:?Argent did not list a device. See the logs of this job.}"
+
+{
+  cat .eas/agents/qa-lane.md
+  printf '\n## Platform\n\n%s\n\n## App ID\n\n%s\n\n' "$PLATFORM" "$APP_ID"
+  printf '## Device ID\n\n%s\n\n## Screenshot scale\n\n%s\n\n## Flow\n\n' "$UDID" "$SCALE"
+  cat "$FLOW_FILE"
+} > agent-output/prompt.md
+
+env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+  timeout 15m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
+
+[ -s agent-output/evidence/verdict.md ] || echo 'FAIL: The agent did not write a verdict.' > agent-output/evidence/verdict.md
+VERDICT=$(head -n 1 agent-output/evidence/verdict.md)
+
+SITE_URL=$(npx --yes eas-simulator-evidence@0.2.4 run agent-output/evidence --stop \
+  --subject "QA Swarm: $PLATFORM $FLOW" --verdict-file agent-output/evidence/verdict.md \
+  --build-id "$BUILD_ID" --deploy-alias "qa-$PLATFORM-$FLOW-evidence" | tail -n 1)
+
+set-output verdict "$VERDICT"
+set-output site_url "$SITE_URL"
+
+case "$VERDICT" in
+  PASS:*) exit 0 ;;
+  *) exit 1 ;;
+esac
+```
+
+The Argent version reads the session details from **.env.eas-simulator**, so the agent can reach the device. Then it waits until Argent lists the device. An Android Emulator can take a few minutes to start. Android screenshots use a scale of 0.9, because a scale of 1 can fail on an Android Emulator.
+
+</Tab>
+
+</Tabs>
+
+The script does these tasks in this order:
+
+1. It finds the flow file for the platform, and the app ID from the app config.
+2. It starts a session with the build, and runs the agent in the `device` mode.
+3. It uses [eas-simulator-evidence](https://github.com/jacobhammerle/eas-simulator-evidence) to stop the session and build an evidence site. The site has the verdict, the screenshots, the action timeline, the performance charts, and the session recording. The tool deploys the site to [EAS Hosting](/eas/hosting/introduction/).
+4. It ends with the verdict. The job of the lane passes only for a `PASS` verdict.
+
+> **warning** An evidence site on EAS Hosting is public. Each person who has the link can see the screenshots and the recording. To keep the evidence private, remove `--deploy-alias` from the command, and upload the folder that the tool builds to a private host.
+
+</Step>
+
+<Step label="4">
+
+### Add the EAS workflow
+
+The workflow has one job for each lane, because EAS Workflows does not support matrix jobs. This example runs four lanes: the two example flows on Android and iOS.
+
+```yaml .eas/workflows/qa-swarm.yml
+name: QA Swarm
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: The number of a pull request to post the report on
+        type: string
+        default: ''
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build_android:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  get_build_ios:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: ios
+      profile: preview
+      simulator: true
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build_android:
+    type: build
+    needs: [get_build_android]
+    if: ${{ !needs.get_build_android.outputs.build_id }}
+    params:
+      platform: android
+      profile: preview
+
+  build_ios:
+    type: build
+    needs: [get_build_ios]
+    if: ${{ !needs.get_build_ios.outputs.build_id }}
+    params:
+      platform: ios
+      profile: preview
+
+  repack_android:
+    type: repack
+    needs: [get_build_android]
+    if: ${{ needs.get_build_android.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build_android.outputs.build_id }}
+      profile: preview
+
+  repack_ios:
+    type: repack
+    needs: [get_build_ios]
+    if: ${{ needs.get_build_ios.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build_ios.outputs.build_id }}
+      profile: preview
+
+  lane_android_launch:
+    needs: [get_build_android]
+    after: [build_android, repack_android]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build_android.outputs.build_id || after.repack_android.outputs.build_id }}
+      PLATFORM: android
+      FLOW: launch
+    outputs:
+      verdict: ${{ steps.lane.outputs.verdict }}
+      site_url: ${{ steps.lane.outputs.site_url }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: lane
+        run: bash .eas/agents/qa-lane.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: qa-android-launch-evidence
+          path: agent-output/evidence/**/*
+
+  lane_android_navigation:
+    needs: [get_build_android]
+    after: [build_android, repack_android]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build_android.outputs.build_id || after.repack_android.outputs.build_id }}
+      PLATFORM: android
+      FLOW: navigation
+    outputs:
+      verdict: ${{ steps.lane.outputs.verdict }}
+      site_url: ${{ steps.lane.outputs.site_url }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: lane
+        run: bash .eas/agents/qa-lane.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: qa-android-navigation-evidence
+          path: agent-output/evidence/**/*
+
+  lane_ios_launch:
+    needs: [get_build_ios]
+    after: [build_ios, repack_ios]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build_ios.outputs.build_id || after.repack_ios.outputs.build_id }}
+      PLATFORM: ios
+      FLOW: launch
+    outputs:
+      verdict: ${{ steps.lane.outputs.verdict }}
+      site_url: ${{ steps.lane.outputs.site_url }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: lane
+        run: bash .eas/agents/qa-lane.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: qa-ios-launch-evidence
+          path: agent-output/evidence/**/*
+
+  lane_ios_navigation:
+    needs: [get_build_ios]
+    after: [build_ios, repack_ios]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build_ios.outputs.build_id || after.repack_ios.outputs.build_id }}
+      PLATFORM: ios
+      FLOW: navigation
+    outputs:
+      verdict: ${{ steps.lane.outputs.verdict }}
+      site_url: ${{ steps.lane.outputs.site_url }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: lane
+        run: bash .eas/agents/qa-lane.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: qa-ios-navigation-evidence
+          path: agent-output/evidence/**/*
+
+  report:
+    type: doc
+    after: [lane_android_launch, lane_android_navigation, lane_ios_launch, lane_ios_navigation]
+    params:
+      md: |
+        # QA Swarm report
+
+        - **Android, launch:** ${{ after.lane_android_launch.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_android_launch.outputs.site_url }})
+        - **Android, navigation:** ${{ after.lane_android_navigation.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_android_navigation.outputs.site_url }})
+        - **iOS, launch:** ${{ after.lane_ios_launch.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_ios_launch.outputs.site_url }})
+        - **iOS, navigation:** ${{ after.lane_ios_navigation.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_ios_navigation.outputs.site_url }})
+```
+
+The jobs do these tasks:
+
+- `fingerprint`, `get_build_*`, `build_*`, and `repack_*` find or create a build for each platform. A repack adds the current JavaScript to a build that already exists.
+- Each `lane_*` job runs the lane script with its platform and its flow. All the lanes run at the same time.
+- `report` shows the verdict and the evidence site of each lane on the page of the workflow run.
+
+To add a lane, add a flow file, and copy a `lane_*` job with a new name and a new `FLOW`. Then add the new lane to the `after` list and the Markdown of `report`. If you test only one platform, remove the jobs of the other platform.
+
+</Step>
+
+<Step label="5">
+
+### Push the workflow
+
+<Terminal
+  cmd={[
+    '$ git add .eas/qa-flows .eas/agents/qa-lane.md .eas/agents/qa-lane.sh .eas/workflows/qa-swarm.yml',
+    '$ git commit -m "Add QA Swarm"',
+    '$ git push',
+  ]}
+/>
+
+</Step>
+
+## Run QA Swarm
+
+Start the workflow on your default branch:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/qa-swarm.yml --ref main']} />
+
+To test the code of a PR, run the workflow on the branch of the PR:
+
+<Terminal
+  cmd={['$ eas workflow:run .eas/workflows/qa-swarm.yml --ref <branch> -F pr_number=<number>']}
+/>
+
+Each run uses a build or a repack for each platform, one Expo Simulators session of up to 30 minutes for each lane, and model tokens of your agent for each lane.
+
+## Read the result
+
+When all the lanes finish, the page of the workflow run on expo.dev shows the **QA Swarm report**:
+
+- **Verdict of each lane:** `PASS` or `FAIL`, with one sentence from the agent.
+- **Evidence site of each lane:** the verdict, the report of the agent, the screenshots, the action timeline, the performance charts, and the session recording.
+
+The job of a lane fails when its verdict is not `PASS`, so the workflow run shows each failed lane. The screenshots and the log of the agent are also in the artifacts of each lane job.
+
+## Post the report on a pull request
+
+To post the report on a PR, add the `GITHUB_TOKEN` and `GITHUB_REPOSITORY` variables from [Add a GitHub token to EAS](/agentic-workflows/issue-to-pr/#add-a-github-token-to-eas) to the **preview** environment. Then add this job to **.eas/workflows/qa-swarm.yml**:
+
+```yaml .eas/workflows/qa-swarm.yml
+pr_comment:
+  after: [lane_android_launch, lane_android_navigation, lane_ios_launch, lane_ios_navigation]
+  if: ${{ inputs.pr_number }}
+  environment: preview
+  env:
+    PR_NUMBER: ${{ inputs.pr_number }}
+    REPORT: |
+      ## QA Swarm
+
+      - **Android, launch:** ${{ after.lane_android_launch.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_android_launch.outputs.site_url }})
+      - **Android, navigation:** ${{ after.lane_android_navigation.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_android_navigation.outputs.site_url }})
+      - **iOS, launch:** ${{ after.lane_ios_launch.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_ios_launch.outputs.site_url }})
+      - **iOS, navigation:** ${{ after.lane_ios_navigation.outputs.verdict || 'FAIL: The lane did not finish.' }} [Evidence site](${{ after.lane_ios_navigation.outputs.site_url }})
+  steps:
+    - run: |
+        node -e '
+          const { GITHUB_REPOSITORY, GITHUB_TOKEN, PR_NUMBER, REPORT } = process.env;
+          fetch(`https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments`, {
+            method: "POST",
+            headers: { accept: "application/vnd.github+json", authorization: `Bearer ${GITHUB_TOKEN}` },
+            body: JSON.stringify({ body: REPORT }),
+          }).then(response => {
+            if (!response.ok) {
+              console.error(`GitHub returned ${response.status}. Check GITHUB_TOKEN and GITHUB_REPOSITORY in the preview environment.`);
+              process.exit(1);
+            }
+          });
+        '
+```
+
+Put the job under `jobs`, at the same level as `report`.
+
+## Next steps
+
+<BoxLink
+  title="Test pull requests with an AI agent"
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
+  href="/agentic-workflows/agentic-ci/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Triage a bug report with an AI agent"
+  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator."
+  href="/agentic-workflows/bug-triage/"
+  Icon={Star06Icon}
+/>

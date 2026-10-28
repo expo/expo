@@ -2,6 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Smartphone02Icon } from '@expo/styleguide-icons/custom/Smartphone02Icon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { Users01Icon } from '@expo/styleguide-icons/outline/Users01Icon';
 import { Fragment } from 'react';
@@ -11,6 +12,7 @@ const PLACE_ICONS = {
   'GitHub Actions': [GithubIcon],
   'GitHub or TestFlight': [GithubIcon, AppleIcon],
   'EAS Workflows': [Dataflow03Icon],
+  'EAS Hosting': [Cloud01Icon],
   'Expo Simulators': [Smartphone02Icon],
   'Your team': [Users01Icon],
 };
@@ -87,12 +89,41 @@ const BUG_TRIAGE_STAGES: Stage[] = [
   },
 ];
 
+const QA_SWARM_STAGES: Stage[] = [
+  { place: 'Your team', text: 'A person starts the QA Swarm workflow' },
+  {
+    place: 'EAS Workflows',
+    text: 'A job finds or builds the app for each platform',
+    onExpo: true,
+  },
+  {
+    place: 'Expo Simulators',
+    text: 'Each lane starts its own cloud simulator at the same time',
+    onExpo: true,
+  },
+  {
+    place: 'Expo Simulators',
+    text: 'A coding agent in each lane runs one flow and saves screenshots',
+    onExpo: true,
+  },
+  {
+    place: 'EAS Hosting',
+    text: 'Each lane deploys an evidence site',
+    onExpo: true,
+  },
+  { place: 'Your team', text: 'A person reads the report with the verdict of each lane' },
+];
+
 export function AgenticWorkflowDiagram() {
   return <StageDiagram stages={AGENTIC_WORKFLOW_STAGES} />;
 }
 
 export function BugTriageDiagram() {
   return <StageDiagram stages={BUG_TRIAGE_STAGES} />;
+}
+
+export function QaSwarmDiagram() {
+  return <StageDiagram stages={QA_SWARM_STAGES} />;
 }
 
 export function IssueToPrDiagram() {

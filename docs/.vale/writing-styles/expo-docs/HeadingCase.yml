@@ -189,6 +189,7 @@ exceptions:
   - '.*PWA.*'
   - '.*package\.json.*'
   - '.*props.*'
+  - '.*QA Swarm.*'
   - '.*QR.*'
   - '.*RTL.*'
   - '.*React.*'

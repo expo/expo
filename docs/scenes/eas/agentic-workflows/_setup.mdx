@@ -203,7 +203,7 @@ This file runs your agent without a person. Use the version for your agent. The 
 set -euo pipefail
 
 case "$2" in
-  device) tools='Read,Glob,Grep,Write,Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *)' ;;
+  device) tools='Read,Glob,Grep,Write,Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *),Bash(npx --yes -p @swmansion/argent@latest argent *)' ;;
   change) tools='Read,Glob,Grep,Edit,Write,Bash(npx tsc --noEmit)' ;;
   *)
     echo "Unknown mode \"$2\". Use device or change." >&2
@@ -275,7 +275,7 @@ Cursor also reads permissions from **.cursor/cli.json**. Add this file to the ro
 set -euo pipefail
 
 case "$2" in
-  device) allow=(--allow 'Write(agent-output/**)' --allow 'Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *)') ;;
+  device) allow=(--allow 'Write(agent-output/**)' --allow 'Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *)' --allow 'Bash(npx --yes -p @swmansion/argent@latest argent *)') ;;
   change) allow=(--allow 'Edit(./**)' --allow 'Bash(npx tsc --noEmit)') ;;
   *)
     echo "Unknown mode \"$2\". Use device or change." >&2
