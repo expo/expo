@@ -10,9 +10,9 @@ import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
 import { QaSwarmDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+import DeviceControllerStep from '~/scenes/eas/agentic-workflows/_device-controller-step.mdx';
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
 import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
 
@@ -42,7 +42,7 @@ A flow is a short Markdown file. You write one flow for each part of the app tha
 Add the QA Swarm workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/qa-swarm.md as the source for each step and each file.
 
 1. Check each setup step on that page. Do each step that is not done.
-2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of each lane file for the controller that I name: agent-device or Argent.
+2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
 3. Read my app and write two flows in .eas/qa-flows/ for its most important screens, in the same format as the example flows.
 4. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
 5. Run `eas workflow:validate .eas/workflows/qa-swarm.yml`.
@@ -56,6 +56,8 @@ Add the QA Swarm workflow to my Expo project. Use https://docs.expo.dev/agentic-
 Do these steps one time for your project.
 
 <AgenticWorkflowsSetup />
+
+<DeviceControllerStep step="7" />
 
 <WhatTheAgentCanDo />
 
@@ -104,63 +106,18 @@ A file with the name **&lt;flow&gt;.android.md** or **&lt;flow&gt;.ios.md** repl
 
 ### Add the lane prompt
 
-Each lane adds the platform, the app ID, the device details, and its flow to the end of this prompt. Use the version for the controller that you use. The controller is the tool that the agent uses to control the device: [agent-device](/agents/agent-device/) or [Argent](/agents/argent/).
-
-<Tabs>
-
-<Tab label="agent-device">
+Each lane adds its flow and **agent-output/device.md** to the end of this prompt:
 
 ```md .eas/agents/qa-lane.md|wrap
-You are one lane of a QA swarm. Other agents test other flows of this app at the same time, each on its own cloud simulator. The app is installed and open on a remote Android Emulator or iOS Simulator. The platform, the app ID, and the flow of this lane are at the end of this prompt.
+You are one lane of a QA swarm. Other agents test other flows of this app at the same time, each on its own cloud simulator. The app is installed and open on a remote Android Emulator or iOS Simulator. The flow of this lane and the details of the device are at the end of this prompt.
 
 1. Read the flow. Do only the steps of the flow. Do not touch what the flow marks as out of scope.
-2. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
-
-   npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
-
-   Use these agent-device commands:
-   - `snapshot -i` lists the elements on the screen, with references such as `@e2`.
-   - `press @e2` taps an element.
-   - `fill @e4 "text"` types text into a field.
-   - `scroll down` scrolls the screen.
-   - `screenshot agent-output/evidence/<number>-<name>.png` saves a screenshot.
-   - `open <app ID> --platform <platform>` opens the app again.
-
+2. Run only the shell command in the Device section. The job denies each other shell command. If a command is denied, continue with the command of the Device section.
 3. Save a screenshot after each step.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then list each step, what you did, what you saw, and the names of the screenshots.
 
 Write FAIL when a step fails or when you are not sure. Do not change the files of the project.
 ```
-
-</Tab>
-
-<Tab label="Argent">
-
-```md .eas/agents/qa-lane.md|wrap
-You are one lane of a QA swarm. Other agents test other flows of this app at the same time, each on its own cloud simulator. The app is installed and open on a remote Android Emulator or iOS Simulator. The platform, the app ID, the device ID, the screenshot scale, and the flow of this lane are at the end of this prompt.
-
-1. Read the flow. Do only the steps of the flow. Do not touch what the flow marks as out of scope.
-2. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
-
-   npx --yes -p @swmansion/argent@latest argent run <tool> --udid <device ID> <options>
-
-   Use these Argent tools:
-   - `describe` lists the elements on the screen. Each element has a frame in coordinates from 0 to 1.
-   - `gesture-tap --x <x> --y <y>` taps a point. Use the center of the frame of an element from `describe`. Never use pixels. Run `describe` again after each change on the screen.
-   - `keyboard --text "text"` types text into the field that has focus.
-   - `gesture-swipe --fromX 0.5 --fromY 0.7 --toX 0.5 --toY 0.3` scrolls the screen down.
-   - `screenshot --scale <scale> --out agent-output/evidence/<number>-<name>.png` saves a screenshot.
-   - `restart-app --bundleId <app ID>` opens the app again.
-
-3. Save a screenshot after each step.
-4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then list each step, what you did, what you saw, and the names of the screenshots.
-
-Write FAIL when a step fails or when you are not sure. Do not change the files of the project.
-```
-
-</Tab>
-
-</Tabs>
 
 </Step>
 
@@ -168,11 +125,7 @@ Write FAIL when a step fails or when you are not sure. Do not change the files o
 
 ### Add the lane script
 
-Each lane runs this script. Use the version for the same controller as the prompt.
-
-<Tabs>
-
-<Tab label="agent-device">
+Each lane runs this script:
 
 ```sh .eas/agents/qa-lane.sh
 #!/usr/bin/env bash
@@ -185,22 +138,15 @@ set -euo pipefail
 FLOW_FILE=".eas/qa-flows/$FLOW.$PLATFORM.md"
 [ -f "$FLOW_FILE" ] || FLOW_FILE=".eas/qa-flows/$FLOW.md"
 [ -f "$FLOW_FILE" ] || { echo "No flow file for $FLOW. Add .eas/qa-flows/$FLOW.md." >&2; exit 1; }
-case "$PLATFORM" in
-  android) APP_ID=$(node -p 'require("./app.json").expo.android.package') ;;
-  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier') ;;
-esac
-mkdir -p agent-output/evidence
 
-export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type agent-device \
-  --build-id "$BUILD_ID" --name "QA Swarm: $PLATFORM $FLOW" --tag qa-swarm \
-  --max-duration-minutes 30 --json > /tmp/session.json
-trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+. .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "QA Swarm: $PLATFORM $FLOW" qa-swarm
 
 {
   cat .eas/agents/qa-lane.md
-  printf '\n## Platform\n\n%s\n\n## App ID\n\n%s\n\n## Flow\n\n' "$PLATFORM" "$APP_ID"
+  printf '\n## Flow\n\n'
   cat "$FLOW_FILE"
+  printf '\n'
+  cat agent-output/device.md
 } > agent-output/prompt.md
 
 env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
@@ -221,83 +167,11 @@ case "$VERDICT" in
   *) exit 1 ;;
 esac
 ```
-
-</Tab>
-
-<Tab label="Argent">
-
-```sh .eas/agents/qa-lane.sh
-#!/usr/bin/env bash
-set -euo pipefail
-
-: "${BUILD_ID:?No build. Check the build or repack job of this run.}"
-: "${PLATFORM:?No platform. Set PLATFORM to android or ios in the lane job.}"
-: "${FLOW:?No flow. Set FLOW to the name of a file in .eas/qa-flows.}"
-
-FLOW_FILE=".eas/qa-flows/$FLOW.$PLATFORM.md"
-[ -f "$FLOW_FILE" ] || FLOW_FILE=".eas/qa-flows/$FLOW.md"
-[ -f "$FLOW_FILE" ] || { echo "No flow file for $FLOW. Add .eas/qa-flows/$FLOW.md." >&2; exit 1; }
-case "$PLATFORM" in
-  android) APP_ID=$(node -p 'require("./app.json").expo.android.package'); SCALE=0.9 ;;
-  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier'); SCALE=1 ;;
-esac
-mkdir -p agent-output/evidence
-
-export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type argent \
-  --build-id "$BUILD_ID" --name "QA Swarm: $PLATFORM $FLOW" --tag qa-swarm \
-  --max-duration-minutes 30 --json > /tmp/session.json
-trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
-
-set -a
-. ./.env.eas-simulator
-set +a
-
-UDID=""
-for attempt in 1 2 3 4; do
-  UDID=$(npx --yes -p @swmansion/argent@latest argent run list-devices 2> /dev/null \
-    | grep -oE '"(udid|serial)" *: *"[^"]+"' | head -n 1 | sed -E 's/.*"([^"]+)"$/\1/' || true)
-  [ -n "$UDID" ] && break
-  sleep 15
-done
-: "${UDID:?Argent did not list a device. See the logs of this job.}"
-
-{
-  cat .eas/agents/qa-lane.md
-  printf '\n## Platform\n\n%s\n\n## App ID\n\n%s\n\n' "$PLATFORM" "$APP_ID"
-  printf '## Device ID\n\n%s\n\n## Screenshot scale\n\n%s\n\n## Flow\n\n' "$UDID" "$SCALE"
-  cat "$FLOW_FILE"
-} > agent-output/prompt.md
-
-env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
-  timeout 15m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
-
-[ -s agent-output/evidence/verdict.md ] || echo 'FAIL: The agent did not write a verdict.' > agent-output/evidence/verdict.md
-VERDICT=$(head -n 1 agent-output/evidence/verdict.md)
-
-SITE_URL=$(npx --yes eas-simulator-evidence@0.2.4 run agent-output/evidence --stop \
-  --subject "QA Swarm: $PLATFORM $FLOW" --verdict-file agent-output/evidence/verdict.md \
-  --build-id "$BUILD_ID" --deploy-alias "qa-$PLATFORM-$FLOW-evidence" | tail -n 1)
-
-set-output verdict "$VERDICT"
-set-output site_url "$SITE_URL"
-
-case "$VERDICT" in
-  PASS:*) exit 0 ;;
-  *) exit 1 ;;
-esac
-```
-
-The Argent version reads the session details from **.env.eas-simulator**, so the agent can reach the device. Then it waits until Argent lists the device. An Android Emulator can take a few minutes to start. Android screenshots use a scale of 0.9, because a scale of 1 can fail on an Android Emulator.
-
-</Tab>
-
-</Tabs>
 
 The script does these tasks in this order:
 
-1. It finds the flow file for the platform, and the app ID from the app config.
-2. It starts a session with the build, and runs the agent in the `device` mode.
+1. It finds the flow file for the platform.
+2. It starts a session with the build. Then it writes the prompt, and runs the agent in the `device` mode.
 3. It uses [eas-simulator-evidence](https://github.com/jacobhammerle/eas-simulator-evidence) to stop the session and build an evidence site. The site has the verdict, the screenshots, the action timeline, the performance charts, and the session recording. The tool deploys the site to [EAS Hosting](/eas/hosting/introduction/).
 4. It ends with the verdict. The job of the lane passes only for a `PASS` verdict.
 
@@ -499,7 +373,7 @@ To add a lane, add a flow file, and copy a `lane_*` job with a new name and a ne
 
 <Terminal
   cmd={[
-    '$ git add .eas/qa-flows .eas/agents/qa-lane.md .eas/agents/qa-lane.sh .eas/workflows/qa-swarm.yml',
+    '$ git add .eas/qa-flows .eas/agents/qa-lane.md .eas/agents/qa-lane.sh .eas/agents/start-session.sh .eas/workflows/qa-swarm.yml',
     '$ git commit -m "Add QA Swarm"',
     '$ git push',
   ]}

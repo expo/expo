@@ -14,6 +14,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
+import DeviceControllerStep from '~/scenes/eas/agentic-workflows/_device-controller-step.mdx';
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
 import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
 
@@ -48,7 +49,7 @@ The following screenshot shows an Agentic CI comment with a `PASS` verdict:
 Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/agentic-ci.md as the source for each step and each file.
 
 1. Check each setup step on that page. Do each step that is not done.
-2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name.
+2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
 3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
 4. Run `eas workflow:validate .eas/workflows/agentic-ci.yml`.
 5. Commit the files, but do not push them. Tell me which files you added.
@@ -61,6 +62,8 @@ Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/agenti
 Do these steps one time for your project.
 
 <AgenticWorkflowsSetup />
+
+<DeviceControllerStep step="7" />
 
 <WhatTheAgentCanDo />
 
@@ -134,18 +137,12 @@ jobs:
         name: Test the pull request on a remote Android Emulator
         run: |
           set -euo pipefail
-          mkdir -p agent-output/evidence
+          . .eas/agents/start-session.sh android "$BUILD_ID" "PR check" agentic-ci
           {
             cat .eas/agents/check-pr.md
-            printf '\n## Pull request\n\n%s\n\n%s\n' "$PR_TITLE" "$PR_BODY"
-            printf '\n## Platform\n\nandroid\n'
+            printf '\n## Pull request\n\n%s\n\n%s\n\n' "$PR_TITLE" "$PR_BODY"
+            cat agent-output/device.md
           } > agent-output/prompt.md
-
-          export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-          npx --yes eas-cli@latest simulator:start --platform android --type agent-device \
-            --build-id "$BUILD_ID" --name "PR check" --tag agentic-ci \
-            --max-duration-minutes 30 --json > /tmp/session.json
-          trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
           env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
             timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
@@ -247,18 +244,12 @@ jobs:
         name: Test the pull request on a remote iOS Simulator
         run: |
           set -euo pipefail
-          mkdir -p agent-output/evidence
+          . .eas/agents/start-session.sh ios "$BUILD_ID" "PR check" agentic-ci
           {
             cat .eas/agents/check-pr.md
-            printf '\n## Pull request\n\n%s\n\n%s\n' "$PR_TITLE" "$PR_BODY"
-            printf '\n## Platform\n\nios\n'
+            printf '\n## Pull request\n\n%s\n\n%s\n\n' "$PR_TITLE" "$PR_BODY"
+            cat agent-output/device.md
           } > agent-output/prompt.md
-
-          export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-          npx --yes eas-cli@latest simulator:start --platform ios --type agent-device \
-            --build-id "$BUILD_ID" --name "PR check" --tag agentic-ci \
-            --max-duration-minutes 30 --json > /tmp/session.json
-          trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
           env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
             timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
@@ -316,24 +307,13 @@ The jobs do these tasks:
 
 ### Add the prompt
 
-The `check` job adds the title and the description of the PR, and the platform, to the end of this prompt:
+The `check` job adds the title and the description of the PR, and **agent-output/device.md**, to the end of this prompt:
 
 ```md .eas/agents/check-pr.md|wrap
-You check a pull request in this project on a remote Android Emulator or iOS Simulator. The app of the pull request is installed and open on the device. The title and the description of the pull request, and the platform, are at the end of this prompt.
+You check a pull request in this project on a remote Android Emulator or iOS Simulator. The app of the pull request is installed and open on the device. The title and the description of the pull request, and the details of the device, are at the end of this prompt.
 
 1. Read the title and the description. Find two to four behaviors that the pull request changes. You can also read the source code of the project with your file tools.
-2. Test each behavior as a user does. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
-
-   npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
-
-   Use these agent-device commands:
-   - `snapshot -i` lists the elements on the screen, with references such as `@e2`.
-   - `press @e2` taps an element.
-   - `fill @e4 "text"` types text into a field.
-   - `scroll down` scrolls the screen.
-   - `screenshot agent-output/evidence/<name>.png` saves a screenshot.
-   - `open <app ID> --platform <platform>` opens the app again. The app ID is `android.package` or `ios.bundleIdentifier` in the app config.
-
+2. Test each behavior as a user does. Run only the shell command in the Device section. The job denies each other shell command. If a command is denied, continue with the command of the Device section.
 3. Save a screenshot before and after each important action.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then write one section for each behavior. Tell what you did, what you saw, and the names of the screenshots.
 
@@ -350,7 +330,7 @@ You can add facts about your app to the prompt. For example, add a test account 
 
 <Terminal
   cmd={[
-    '$ git add .eas/workflows/agentic-ci.yml .eas/agents/check-pr.md',
+    '$ git add .eas/workflows/agentic-ci.yml .eas/agents/check-pr.md .eas/agents/start-session.sh',
     '$ git commit -m "Add Agentic CI"',
     '$ git push',
   ]}

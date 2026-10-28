@@ -14,6 +14,7 @@ import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 import { BugTriageDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+import DeviceControllerStep from '~/scenes/eas/agentic-workflows/_device-controller-step.mdx';
 import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
 import GitHubTokenStep from '~/scenes/eas/agentic-workflows/_github-token-step.mdx';
 import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
@@ -43,7 +44,7 @@ The agent tests a build of the default branch, not the build that the tester use
 Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/bug-triage.md as the source for each step and each file.
 
 1. Check each setup step on that page. Check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md and the Issue to PR workflow from https://docs.expo.dev/agentic-workflows/issue-to-pr.md are in the project. Do each step that is not done.
-2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name.
+2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
 3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
 4. Run `eas workflow:validate .eas/workflows/bug-triage.yml`.
 5. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
@@ -64,6 +65,8 @@ Do these steps one time for your project.
 </AgenticWorkflowsSetup>
 
 <GitHubTokenStep />
+
+<DeviceControllerStep step="8" />
 
 <WhatTheAgentCanDo />
 
@@ -192,21 +195,16 @@ set -euo pipefail
 : "${ISSUE_NUMBER:?No issue number. Check the intake job, or pass -F issue_number=<number>.}"
 : "${PLATFORM:?No platform. Set PLATFORM to android or ios in the reproduce job.}"
 
-mkdir -p agent-output/evidence
 node .eas/agents/github.mjs issue "$ISSUE_NUMBER" > /tmp/issue.json
+. .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "Issue #$ISSUE_NUMBER triage" bug-triage
 
 {
   cat .eas/agents/reproduce.md
   printf '\n## Bug report\n\n'
   cat /tmp/issue.json
-  printf '\n## Platform\n\n%s\n' "$PLATFORM"
+  printf '\n'
+  cat agent-output/device.md
 } > agent-output/prompt.md
-
-export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
-npx --yes eas-cli@latest simulator:start --platform "$PLATFORM" --type agent-device \
-  --build-id "$BUILD_ID" --name "Issue #$ISSUE_NUMBER triage" --tag bug-triage \
-  --max-duration-minutes 30 --json > /tmp/session.json
-trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
 env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
   timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
@@ -231,8 +229,8 @@ node .eas/agents/github.mjs comment "$ISSUE_NUMBER" /tmp/comment.md
 
 The script does these tasks in this order:
 
-1. It reads the issue and the comments from the owners, members, and collaborators of the repository. Then it writes the prompt for the agent.
-2. It starts a session with the build, and runs the agent in the `device` mode.
+1. It reads the issue and the comments from the owners, members, and collaborators of the repository.
+2. It starts a session with the build. Then it writes the prompt for the agent, and runs the agent in the `device` mode.
 3. It posts the verdict and a report on the issue.
 4. For a `REPLICATED` verdict, the comment asks a person to read the report and add the `agent` label.
 5. It stops the session.
@@ -243,24 +241,13 @@ The script does these tasks in this order:
 
 ### Add the prompt
 
-The job script adds the issue, its comments, and the platform to the end of this prompt:
+The job script adds the issue, its comments, and **agent-output/device.md** to the end of this prompt:
 
 ```md .eas/agents/reproduce.md|wrap
-You try to reproduce a bug report in this project on a remote Android Emulator or iOS Simulator. The app is installed and open on the device. The bug report and the platform are at the end of this prompt.
+You try to reproduce a bug report in this project on a remote Android Emulator or iOS Simulator. The app is installed and open on the device. The bug report and the details of the device are at the end of this prompt.
 
 1. Read the report. Find the steps, the expected result, and the actual result. You can also read the source code of the project with your file tools.
-2. Follow the steps as a user does. Run only this shell command. The job denies each other shell command. If a command is denied, continue with this command:
-
-   npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
-
-   Use these agent-device commands:
-   - `snapshot -i` lists the elements on the screen, with references such as `@e2`.
-   - `press @e2` taps an element.
-   - `fill @e4 "text"` types text into a field.
-   - `scroll down` scrolls the screen.
-   - `screenshot agent-output/evidence/<name>.png` saves a screenshot.
-   - `open <app ID> --platform <platform>` opens the app again. The app ID is `android.package` or `ios.bundleIdentifier` in the app config.
-
+2. Follow the steps as a user does. Run only the shell command in the Device section. The job denies each other shell command. If a command is denied, continue with the command of the Device section.
 3. Save a screenshot after each step.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "REPLICATED: <one sentence>" or "NOT-REPLICATED: <one sentence>". Then list each step that you did and what you saw.
 
@@ -506,7 +493,7 @@ The jobs do these tasks:
 
 <Terminal
   cmd={[
-    '$ git add .eas/agents/github.mjs .eas/agents/reproduce.sh .eas/agents/reproduce.md .eas/agents/feedback-issue.mjs .eas/workflows/bug-triage.yml',
+    '$ git add .eas/agents/github.mjs .eas/agents/reproduce.sh .eas/agents/reproduce.md .eas/agents/feedback-issue.mjs .eas/agents/start-session.sh .eas/workflows/bug-triage.yml',
     '$ git commit -m "Add Bug triage"',
     '$ git push',
   ]}
