@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Rebuild precompiled iOS binaries against React Native 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.12
 
 ### Patch Changes

@@ -1,5 +1,64 @@
 # test-suite
 
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404), [#52392](https://github.com/expo/expo/pull/52392), [#52431](https://github.com/expo/expo/pull/52431), [#52428](https://github.com/expo/expo/pull/52428), [#52390](https://github.com/expo/expo/pull/52390), [#52435](https://github.com/expo/expo/pull/52435), [#52180](https://github.com/expo/expo/pull/52180), [#52323](https://github.com/expo/expo/pull/52323), [#51030](https://github.com/expo/expo/pull/51030), [#52051](https://github.com/expo/expo/pull/52051), [#51989](https://github.com/expo/expo/pull/51989), [#52182](https://github.com/expo/expo/pull/52182))
+  - expo@58.0.21
+  - expo-router@58.0.28
+  - expo-system-ui@58.0.7
+  - expo-modules-core@58.0.28
+  - @expo/ui@58.0.25
+  - expo-location@58.0.20
+  - expo-notifications@58.1.7
+  - expo-camera@58.0.14
+  - expo-contacts@58.0.10
+  - expo-file-system@58.0.13
+  - expo-font@58.0.11
+  - expo-image@58.0.18
+  - expo-image-manipulator@58.0.16
+  - expo-media-library@58.0.13
+  - expo-video@58.0.13
+  - expo-constants@58.0.14
+  - expo-app-metrics@58.0.14
+  - expo-application@58.1.2
+  - expo-asset@58.0.19
+  - expo-audio@58.0.10
+  - expo-auth-session@58.0.16
+  - expo-background-fetch@58.0.11
+  - expo-battery@58.0.3
+  - expo-blob@58.0.3
+  - expo-blur@58.0.5
+  - expo-brightness@58.0.2
+  - expo-calendar@58.0.6
+  - expo-cellular@58.0.3
+  - expo-checkbox@58.0.2
+  - expo-clipboard@58.0.4
+  - expo-crypto@58.0.7
+  - expo-device@58.0.5
+  - expo-eas-client@58.0.2
+  - expo-gl@58.0.3
+  - expo-glass-effect@58.0.5
+  - expo-haptics@58.0.7
+  - expo-image-picker@58.0.10
+  - expo-keep-awake@58.0.3
+  - expo-linear-gradient@58.0.3
+  - expo-linking@58.0.15
+  - expo-localization@58.0.5
+  - expo-navigation-bar@58.0.4
+  - expo-network@58.0.4
+  - expo-observe@58.0.16
+  - expo-screen-orientation@58.0.3
+  - expo-secure-store@58.0.2
+  - expo-sms@58.0.2
+  - expo-speech@58.0.3
+  - expo-sqlite@58.0.14
+  - expo-store-review@58.0.2
+  - expo-task-manager@58.0.12
+  - expo-web-browser@58.0.7
+  - @expo/html-elements@58.0.3
+
 ## 1.0.14
 
 ### Patch Changes

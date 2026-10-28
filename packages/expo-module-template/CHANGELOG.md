@@ -1,5 +1,11 @@
 # expo-module-template
 
+## 58.0.9
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.8
 
 ### Patch Changes

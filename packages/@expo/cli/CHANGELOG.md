@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.1.17
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Fix server stack traces in development pointing at the wrong source file on Node 24.22 and later. Server bundle source maps are now read before their temporary files are removed, and loader bundles are marked in their bundle URL so Metro symbolicates them against the right bundle. ([#52102](https://github.com/expo/expo/pull/52102) by [@brentvatne](https://github.com/brentvatne))
+- Fix `npx expo start --localhost` refusing connections on `127.0.0.1`. ([#52324](https://github.com/expo/expo/pull/52324) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404), [#52102](https://github.com/expo/expo/pull/52102), [#52126](https://github.com/expo/expo/pull/52126), [#52406](https://github.com/expo/expo/pull/52406))
+  - @expo/metro-config@58.0.19
+  - @expo/prebuild-config@58.0.17
+  - @expo/require-utils@58.0.5
+  - @expo/config@58.0.9
+  - @expo/config-plugins@58.0.11
+  - @expo/image-utils@0.12.6
+  - @expo/router-server@58.0.19
+  - @expo/inline-modules@0.2.8
+
 ## 58.1.16
 
 ### Patch Changes

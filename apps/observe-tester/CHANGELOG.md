@@ -1,5 +1,32 @@
 # observe-tester
 
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404), [#52323](https://github.com/expo/expo/pull/52323), [#51030](https://github.com/expo/expo/pull/51030))
+  - expo@58.0.21
+  - expo-router@58.0.28
+  - expo-system-ui@58.0.7
+  - expo-updates@58.0.19
+  - @expo/ui@58.0.25
+  - expo-font@58.0.11
+  - expo-image@58.0.18
+  - expo-constants@58.0.14
+  - expo-dev-client@58.0.17
+  - expo-app-metrics@58.0.14
+  - expo-build-properties@58.0.11
+  - expo-clipboard@58.0.4
+  - expo-eas-client@58.0.2
+  - expo-haptics@58.0.7
+  - expo-linking@58.0.15
+  - expo-observe@58.0.16
+  - expo-splash-screen@58.0.12
+  - expo-status-bar@58.0.4
+  - expo-symbols@58.0.4
+  - expo-web-browser@58.0.7
+  - @expo/html-elements@58.0.3
+
 ## 1.0.14
 
 ### Patch Changes

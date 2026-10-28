@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.25
+
+### Patch Changes
+
+- [Android] The community `DateTimePicker` with `presentation="inline"` no longer draws Material 3's container color, matching iOS. The view behind the picker now shows through. Previously, the inline picker always showed on a tinted surface. To keep that surface, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#52323](https://github.com/expo/expo/pull/52323) by [@IGx89](https://github.com/IGx89))
+- [Android] The community `DateTimePicker` now applies `themeVariant` to the inline picker and its dialogs. Previously, `themeVariant` worked only on iOS, and on Android the picker always followed the device color scheme. ([#52323](https://github.com/expo/expo/pull/52323) by [@IGx89](https://github.com/IGx89))
+- [Android] Fix a `ListItem` inside `FieldGroup.Section` being rendered inside a second Material `ListItem`, which drew an inset inner card, made the row taller than other rows and shrank its tap target. The `ListItem` is now styled as the section's row, and its ripple follows the row's rounded shape. ([#51030](https://github.com/expo/expo/pull/51030) by [@Cedric921](https://github.com/Cedric921))
+
 ## 58.0.24
 
 ### Patch Changes

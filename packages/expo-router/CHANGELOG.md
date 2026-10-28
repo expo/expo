@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.28
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.27
 
 No changes in this release.
