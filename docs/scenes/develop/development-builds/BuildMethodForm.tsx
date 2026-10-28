@@ -72,7 +72,7 @@ export function BuildMethodForm() {
       />
       <MethodSelectCard
         Icon={PlanEnterpriseIcon}
-        title="Build in the cloud with Expo Build"
+        title="Build with Expo Build"
         description="Compile in the cloud on Expo servers. No native build tools needed and you can also create iOS builds from any operating system."
         isSelected={method === 'build-with-expo-services'}
         onClick={() => {

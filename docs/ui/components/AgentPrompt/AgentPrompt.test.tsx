@@ -50,7 +50,7 @@ function developmentBuildsPrompt() {
       <AgentPromptOption id="build-locally" label="Build locally">
         {fence(LOCAL_PROMPT)}
       </AgentPromptOption>
-      <AgentPromptOption id="build-with-expo-services" label="Build in the cloud with Expo Build">
+      <AgentPromptOption id="build-with-expo-services" label="Build with Expo Build">
         {fence(EAS_PROMPT)}
       </AgentPromptOption>
     </AgentPrompt>
@@ -235,7 +235,7 @@ describe('AgentPrompt with options', () => {
 
     renderAt(DEVELOPMENT_BUILDS_PAGE, developmentBuildsPrompt());
 
-    for (const label of ['Build locally', 'Build in the cloud with Expo Build']) {
+    for (const label of ['Build locally', 'Build with Expo Build']) {
       expect(
         screen.getByRole('heading', { level: 3, name: label, hidden: true })
       ).toBeInTheDocument();
