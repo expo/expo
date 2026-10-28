@@ -72,7 +72,7 @@ Traditional development-time profiling tools show how your app performs on your 
 - **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
 - **User-defined events**: Log custom signals from your app with `Observe.logEvent` and analyze them alongside performance data
 - **Error reporting** (in preview): [Record JavaScript errors and native crashes](/eas/observe/errors/) and investigate their stack traces in the dashboard
-- **CLI, MCP, and dashboard access**: Query metrics from the terminal with `eas observe:` commands, from an AI agent through the [Expo Model Context Protocol (MCP) Server](/eas/observe/mcp/), or view them in the EAS dashboard
+- **CLI, MCP, and dashboard access**: Query metrics from the terminal with `eas observe:` commands, from an AI agent through the [Expo Model Context Protocol (MCP) Server](/eas/observe/ai-agents/), or view them in the EAS dashboard
 
 ## When to use EAS Observe
 
@@ -157,6 +157,13 @@ EAS Observe deletes all collected data after 90 days. See [Metrics reference: Da
   title="EAS Observe dashboard"
   description="View metrics, filter by platform or version, and investigate individual sessions."
   href="/eas/observe/dashboard"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Analyze data with AI"
+  description="Let an AI agent query and interpret your metrics through the Expo MCP Server, Expo Skills, or the EAS CLI."
+  href="/eas/observe/ai-agents"
   Icon={ActivityIcon}
 />
 
