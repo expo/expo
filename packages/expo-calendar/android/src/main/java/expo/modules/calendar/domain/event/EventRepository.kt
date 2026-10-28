@@ -50,7 +50,11 @@ class EventRepository(context: Context) {
       requireNotNull(cursor) { "Cursor shouldn't be null" }
       return@withContext cursor.use { cursor ->
         generateSequence {
-          if (cursor.moveToNext()) cursor.extractEvent(contentResolver) else null
+          if (cursor.moveToNext()) {
+            cursor.extractEvent(contentResolver)
+          } else {
+            null
+          }
         }.toList()
       }
     }

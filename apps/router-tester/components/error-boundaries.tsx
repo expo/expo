@@ -1,11 +1,13 @@
 import { Link, type ErrorBoundaryProps } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function createErrorBoundary(approach: string) {
   return function CustomErrorBoundary({ error, retry }: ErrorBoundaryProps) {
     return (
-      <View
+      <SafeAreaView
+        edges={['left', 'right']}
         style={{
           flex: 1,
           alignItems: 'center',
@@ -23,7 +25,7 @@ export function createErrorBoundary(approach: string) {
           <Text style={{ color: '#fff' }}>Retry</Text>
         </Pressable>
         <Link href="/error-boundaries">Back to error boundary examples</Link>
-      </View>
+      </SafeAreaView>
     );
   };
 }
@@ -36,7 +38,9 @@ export function ThrowingRoute() {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Throw error"
@@ -44,6 +48,6 @@ export function ThrowingRoute() {
         style={{ backgroundColor: '#b00020', padding: 12 }}>
         <Text style={{ color: '#fff' }}>Throw error</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -22,6 +22,7 @@ import expo.modules.kotlin.views.createComposeProps
 import expo.modules.ui.BackgroundParams
 import expo.modules.ui.CheckboxProps
 import expo.modules.ui.CircularProgressIndicatorProps
+import expo.modules.ui.CornerRadiusParams
 import expo.modules.ui.FillMaxHeightParams
 import expo.modules.ui.FillMaxSizeParams
 import expo.modules.ui.FillMaxWidthParams
@@ -66,6 +67,7 @@ import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckboxDefaults
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.EmittableCheckBox
 import androidx.glance.appwidget.EmittableCircularProgressIndicator
 import androidx.glance.appwidget.EmittableLinearProgressIndicator
@@ -103,7 +105,7 @@ import androidx.glance.unit.ColorProvider
 import androidx.glance.appwidget.lazy.EmittableLazyColumn
 import androidx.glance.appwidget.lazy.EmittableLazyListItem
 import androidx.glance.appwidget.lazy.ReservedItemIdRangeEnd
-import io.github.jakex7.peek.glance.determinateCircularProgressIndicatorEmittable
+import io.github.expo.peek.glance.determinateCircularProgressIndicatorEmittable
 import kotlin.math.roundToInt
 
 private val DefaultCheckedColor = ColorProvider(Color(0xff6750a4))
@@ -118,7 +120,7 @@ private class WidgetConverterContext(
   override val runtime: Runtime? = null
 }
 
-internal fun ReadableMap.toPeekRoot(context: Context, source: String, size: DpSize): Emittable {
+internal fun ReadableMap.toPeekRoot(context: Context, source: InteractionSource, size: DpSize): Emittable {
   val converterContext = WidgetConverterContext(context, size)
   return EmittableColumn().also { root ->
     root.children += toPeekNodes(converterContext, source)
@@ -134,7 +136,7 @@ private fun createErrorText(message: String): EmittableText {
   }
 }
 
-private fun ReadableMap.toPeekNodes(converterContext: WidgetConverterContext, source: String): List<Emittable> {
+private fun ReadableMap.toPeekNodes(converterContext: WidgetConverterContext, source: InteractionSource): List<Emittable> {
   return when (typeName()) {
     "BoxView" -> listOf(toPeekBox(converterContext, source))
     "CheckboxView" -> listOf(toPeekCheckBox(converterContext))
@@ -158,7 +160,7 @@ private fun ReadableMap.toPeekNodes(converterContext: WidgetConverterContext, so
   }
 }
 
-private fun ReadableMap.toPeekBox(converterContext: WidgetConverterContext, source: String): EmittableBox {
+private fun ReadableMap.toPeekBox(converterContext: WidgetConverterContext, source: InteractionSource): EmittableBox {
   val props = props<LayoutProps>(converterContext)
   return EmittableBox().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -167,7 +169,7 @@ private fun ReadableMap.toPeekBox(converterContext: WidgetConverterContext, sour
   }
 }
 
-private fun ReadableMap.toPeekRow(converterContext: WidgetConverterContext, source: String): EmittableRow {
+private fun ReadableMap.toPeekRow(converterContext: WidgetConverterContext, source: InteractionSource): EmittableRow {
   val props = props<LayoutProps>(converterContext)
   return EmittableRow().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -177,7 +179,7 @@ private fun ReadableMap.toPeekRow(converterContext: WidgetConverterContext, sour
   }
 }
 
-private fun ReadableMap.toPeekColumn(converterContext: WidgetConverterContext, source: String): EmittableColumn {
+private fun ReadableMap.toPeekColumn(converterContext: WidgetConverterContext, source: InteractionSource): EmittableColumn {
   val props = props<LayoutProps>(converterContext)
   return EmittableColumn().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -187,7 +189,7 @@ private fun ReadableMap.toPeekColumn(converterContext: WidgetConverterContext, s
   }
 }
 
-private fun ReadableMap.toPeekLazyColumn(converterContext: WidgetConverterContext, source: String): EmittableLazyColumn {
+private fun ReadableMap.toPeekLazyColumn(converterContext: WidgetConverterContext, source: InteractionSource): EmittableLazyColumn {
   val props = props<LayoutProps>(converterContext)
   val alignment = props.toPeekHorizontalAlignment()
   return EmittableLazyColumn().also { lazyColumn ->
@@ -290,7 +292,7 @@ private fun ImageContentScale.toGlanceContentScale(): ContentScale {
   }
 }
 
-private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: String): Emittable {
+private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: InteractionSource): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
   val action =
@@ -416,6 +418,7 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { GlanceModifier.fillMaxHeight() }
     "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
       ?.let { GlanceModifier.background(it) }
+    "cornerRadius" -> asRecord<CornerRadiusParams>(converterContext)?.let { GlanceModifier.cornerRadius(it.radius.dp) }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier

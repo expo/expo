@@ -160,7 +160,11 @@ class ResolvingShareIntentDataParser {
         payload.apply {
           contentUri = finalUrlString
           this.contentType = contentType
-          contentSize = if (size >= 0) size else null
+          contentSize = if (size >= 0) {
+            size
+          } else {
+            null
+          }
           contentMimeType = mimeType
           originalName = fileName
         }

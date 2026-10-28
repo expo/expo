@@ -1,6 +1,5 @@
 import { getConfig, type ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
-import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
@@ -35,8 +34,10 @@ function mockConfigFile(filePath: string, factory: () => any) {
   jest.doMock(filePath, factory, { virtual: true });
 }
 
-// NOTE(cedric): this is a workaround to also mock `node:fs`
+// Mock `node:fs` with memfs. Jest 30 treats `node:fs` and `fs` as the same module, so this also
+// applies to `fs`; read the test fixtures from the real filesystem explicitly.
 jest.mock('node:fs', () => require('memfs').fs);
+const realFs = jest.requireActual<typeof import('fs')>('fs');
 
 /** Make the next ExpoConfigLoader spawn return the given config and loaded modules. */
 function mockLoadedModules(config: unknown, loadedModules: unknown[]) {
@@ -141,11 +142,11 @@ describe(getEasBuildSourcesAsync, () => {
 describe('getExpoAutolinkingSourcesAsync', () => {
   beforeEach(() => {
     const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    const fixtureAndroid = fs.readFileSync(
+    const fixtureAndroid = realFs.readFileSync(
       path.join(__dirname, 'fixtures', 'ExpoAutolinkingAndroid.json'),
       'utf8'
     );
-    const fixtureIos = fs.readFileSync(
+    const fixtureIos = realFs.readFileSync(
       path.join(__dirname, 'fixtures', 'ExpoAutolinkingIos.json'),
       'utf8'
     );

@@ -17,18 +17,18 @@ type Navigation = Parameters<typeof useStandardActions>[0];
 
 // --- Unit: useStandardActions in isolation against a mock dispatch ---
 describe('useStandardActions (unit)', () => {
-  it('back() dispatches GO_BACK targeting the current navigator', () => {
+  it('back() dispatches GO_BACK targeting the current navigator', async () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
+    const { result } = await renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.back();
 
     expect(dispatch).toHaveBeenCalledWith({ type: 'GO_BACK', target: 'tab-key' });
   });
 
-  it('navigate(name) dispatches NAVIGATE with undefined params targeting the current navigator', () => {
+  it('navigate(name) dispatches NAVIGATE with undefined params targeting the current navigator', async () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
+    const { result } = await renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.navigate('home');
 
@@ -39,9 +39,9 @@ describe('useStandardActions (unit)', () => {
     });
   });
 
-  it('navigate(name, params) dispatches NAVIGATE with params targeting the current navigator', () => {
+  it('navigate(name, params) dispatches NAVIGATE with params targeting the current navigator', async () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
+    const { result } = await renderHook(() => useStandardActions({ dispatch }, 'tab-key'));
 
     result.current.navigate('home', { id: '1' });
 
@@ -52,37 +52,37 @@ describe('useStandardActions (unit)', () => {
     });
   });
 
-  it('returns a stable reference while navigation and target are unchanged', () => {
+  it('returns a stable reference while navigation and target are unchanged', async () => {
     const navigation: Navigation = { dispatch: jest.fn() };
-    const { result, rerender } = renderHook(() => useStandardActions(navigation, 'tab-key'));
+    const { result, rerender } = await renderHook(() => useStandardActions(navigation, 'tab-key'));
     const first = result.current;
 
-    rerender({});
+    await rerender({});
 
     expect(result.current).toBe(first);
   });
 
-  it('returns a new reference when navigation changes', () => {
-    const { result, rerender } = renderHook(
+  it('returns a new reference when navigation changes', async () => {
+    const { result, rerender } = await renderHook(
       ({ navigation }: { navigation: Navigation }) => useStandardActions(navigation, 'tab-key'),
       { initialProps: { navigation: { dispatch: jest.fn() } } }
     );
     const first = result.current;
 
-    rerender({ navigation: { dispatch: jest.fn() } });
+    await rerender({ navigation: { dispatch: jest.fn() } });
 
     expect(result.current).not.toBe(first);
   });
 
-  it('returns a new reference when the target changes', () => {
+  it('returns a new reference when the target changes', async () => {
     const navigation: Navigation = { dispatch: jest.fn() };
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ target }: { target: string }) => useStandardActions(navigation, target),
       { initialProps: { target: 'tab-key' } }
     );
     const first = result.current;
 
-    rerender({ target: 'other-key' });
+    await rerender({ target: 'other-key' });
 
     expect(result.current).not.toBe(first);
   });
@@ -109,8 +109,8 @@ describe('useStandardActions (integration)', () => {
     TabRouterOptions
   >(NavigatorContent, TabRouter);
 
-  it('navigate() switches the focused route in a real navigator', () => {
-    renderRouter({
+  it('navigate() switches the focused route in a real navigator', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -126,7 +126,7 @@ describe('useStandardActions (integration)', () => {
         Record<string, never>
       >;
 
-    act(() => lastArgs().actions.navigate('second'));
+    await act(() => lastArgs().actions.navigate('second'));
 
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });

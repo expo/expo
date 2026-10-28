@@ -1,10 +1,10 @@
-import { Fragment } from 'react';
+import { Fragment, act as reactAct, use } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/StackClient';
-import type { ParamListBase } from '../../react-navigation/core';
+import type { DescriptorRouteProp, ParamListBase } from '../../react-navigation/core';
 import { usePreventRemove } from '../../react-navigation/core/usePreventRemove';
 import {
   StackRouter,
@@ -18,6 +18,7 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import { screenOptionsFactory } from '../../useScreens';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
@@ -25,7 +26,12 @@ import {
 import { createStandardRouterNavigator, integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
-type TestOptions = { title?: string };
+type TestOptions = {
+  title?: string;
+  customOption?: number;
+  generatedOnly?: boolean;
+  processed?: boolean;
+};
 type TestEventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
 
 const contentSpy = jest.fn();
@@ -93,9 +99,11 @@ beforeEach(() => {
   processStateSpy.mockClear();
 });
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 describe('integrateWithRouter / createStandardRouterNavigator', () => {
-  it('keeps navigator state sparse by default', () => {
-    renderRouter({
+  it('keeps navigator state sparse by default', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -111,8 +119,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('applies processState before converting navigator state', () => {
-    renderRouter({
+  it('applies processState before converting navigator state', async () => {
+    await renderRouter({
       _layout: () => (
         <ProcessedTabs>
           <ProcessedTabs.Screen name="index" />
@@ -136,8 +144,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     ]);
   });
 
-  it('updates state when navigating imperatively', () => {
-    renderRouter({
+  it('updates state when navigating imperatively', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -148,13 +156,13 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => router.navigate('/second'));
+    await act(() => router.navigate('/second'));
 
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
-  it('switches the focused route via actions.navigate', () => {
-    renderRouter({
+  it('switches the focused route via actions.navigate', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -165,13 +173,13 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => lastArgs().actions.navigate('second'));
+    await act(() => lastArgs().actions.navigate('second'));
 
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
-  it('returns to the first tab via actions.back', () => {
-    renderRouter({
+  it('returns to the first tab via actions.back', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -182,16 +190,16 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => lastArgs().actions.navigate('second'));
+    await act(() => lastArgs().actions.navigate('second'));
     expect(lastArgs().state.index).toBe(1);
 
-    act(() => lastArgs().actions.back());
+    await act(() => lastArgs().actions.back());
 
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('exposes screen options and a render function on each descriptor', () => {
-    renderRouter({
+  it('exposes screen options and a render function on each descriptor', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" options={{ title: 'Home' }} />
@@ -205,8 +213,72 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(typeof lastArgs().descriptors[key]!.render).toBe('function');
   });
 
-  it('passes the standard navigator args (state, descriptors, actions, emitter) to NavigatorContent', () => {
-    renderRouter({
+  it('passes application-defined screen options through processScreens and descriptors', async () => {
+    const CustomOptionsTabs = createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screenProps) => {
+          const options = screenProps.options;
+          return {
+            ...screenProps,
+            options: (args) => ({
+              ...(typeof options === 'function' ? options(args) : options),
+              processed: true,
+            }),
+          };
+        }),
+    });
+
+    await renderRouter({
+      _layout: () => (
+        <CustomOptionsTabs>
+          <CustomOptionsTabs.Screen
+            name="index"
+            options={({ route }) => ({ customOption: route.name.length })}
+          />
+        </CustomOptionsTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    const key = lastArgs().state.routes[0]!.key;
+    expect(lastArgs().descriptors[key]!.options).toMatchObject({
+      customOption: 'index'.length,
+      processed: true,
+    });
+  });
+
+  it('merges generated route options before application-defined options', () => {
+    const options = screenOptionsFactory<TestOptions>(
+      {
+        type: 'route',
+        route: 'index',
+        contextKey: './index.tsx',
+        children: [],
+        dynamic: null,
+        generated: true,
+        loadRoute: () => ({
+          getNavOptions: () => ({ title: 'Generated', customOption: 1, generatedOnly: true }),
+        }),
+      },
+      () => ({ title: 'Application', customOption: 123 })
+    );
+    const route: DescriptorRouteProp<ParamListBase, string> = { key: 'index', name: 'index' };
+
+    expect(typeof options === 'function' ? options({ route, navigation: {} }) : options).toEqual({
+      title: 'Application',
+      customOption: 123,
+      generatedOnly: true,
+    });
+  });
+
+  it('passes the standard navigator args (state, descriptors, actions, emitter) to NavigatorContent', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -218,8 +290,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(Object.keys(lastArgs()).sort()).toEqual(['actions', 'descriptors', 'emitter', 'state']);
   });
 
-  it('passes extra navigator props through to NavigatorContent', () => {
-    renderRouter({
+  it('passes extra navigator props through to NavigatorContent', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs tintColor="rebeccapurple">
           <StandardTabs.Screen name="index" />
@@ -231,8 +303,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('exposes placeholder descriptors for undeclared filesystem routes', () => {
-    renderRouter({
+  it('exposes placeholder descriptors for undeclared filesystem routes', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -248,8 +320,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     ).toBe('filesystem');
   });
 
-  it('distinguishes declared and inferred routes via descriptor routeSource', () => {
-    renderRouter({
+  it('distinguishes declared and inferred routes via descriptor routeSource', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -268,8 +340,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
   });
 
-  it('keeps Protected screens whose guard is false registered but hidden', () => {
-    renderRouter({
+  it('keeps Protected screens whose guard is false registered but hidden', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
@@ -288,8 +360,8 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(screen.queryByTestId('second')).toBeNull();
   });
 
-  it('propagates route params into state and href', () => {
-    renderRouter(
+  it('propagates route params into state and href', async () => {
+    await renderRouter(
       {
         _layout: () => (
           <StandardTabs>
@@ -306,9 +378,9 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(idRoute.href).toBe('/42');
   });
 
-  it('runs screenListeners (function form) with route + navigation on focus change', () => {
+  it('runs screenListeners (function form) with route + navigation on focus change', async () => {
     const focused = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardTabs
           screenListeners={({ route, navigation }) => ({
@@ -322,14 +394,14 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => router.navigate('/second'));
+    await act(() => router.navigate('/second'));
 
     expect(focused).toHaveBeenCalledWith({ name: 'second', hasNavigate: 'function' });
   });
 
-  it('runs screenListeners (object form) on focus change', () => {
+  it('runs screenListeners (object form) on focus change', async () => {
     const focused = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardTabs screenListeners={{ focus: () => focused() }}>
           <StandardTabs.Screen name="index" />
@@ -340,12 +412,12 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => router.navigate('/second'));
+    await act(() => router.navigate('/second'));
 
     expect(focused).toHaveBeenCalled();
   });
 
-  it('passes props derived from state via createProps to NavigatorContent', () => {
+  it('passes props derived from state via createProps to NavigatorContent', async () => {
     const StandardWithProps = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -357,7 +429,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       createProps: ({ state }) => ({ focusedName: state.routes[state.index]!.name }),
     });
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardWithProps>
           <StandardWithProps.Screen name="index" />
@@ -370,12 +442,12 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
 
     expect(lastArgs().focusedName).toBe('index');
 
-    act(() => router.navigate('/second'));
+    await act(() => router.navigate('/second'));
 
     expect(lastArgs().focusedName).toBe('second');
   });
 
-  it('exposes whether a route key is preloaded via createProps', () => {
+  it('exposes whether a route key is preloaded via createProps', async () => {
     const StandardWithIsPreloaded = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -395,7 +467,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
       }),
     });
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardWithIsPreloaded>
           <StandardWithIsPreloaded.Screen name="index" />
@@ -410,18 +482,18 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect((lastArgs().isPreloaded as (key: string) => boolean)(activeKey)).toBe(false);
     expect((lastArgs().isPreloaded as (key: string) => boolean)('unknown')).toBe(false);
 
-    act(() => (lastArgs().preloadSecond as () => void)());
+    await act(() => (lastArgs().preloadSecond as () => void)());
 
     const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
     expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(true);
 
-    act(() => (lastArgs().focusSecond as () => void)());
+    await act(() => (lastArgs().focusSecond as () => void)());
 
     expect(lastArgs().state.routes[lastArgs().state.index]!.key).toBe(preloadedKey);
     expect((lastArgs().isPreloaded as (key: string) => boolean)(preloadedKey)).toBe(false);
   });
 
-  it('exposes whether a route key has removal prevented via createProps', () => {
+  it('exposes whether a route key has removal prevented via createProps', async () => {
     const StandardWithRemovalPrevention = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -440,7 +512,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
         focusSecond: () => dispatchSync(TabActions.jumpTo('second')),
       }),
     });
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardWithRemovalPrevention>
           <StandardWithRemovalPrevention.Screen name="index" />
@@ -455,17 +527,17 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(activeKey)).toBe(false);
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)('unknown')).toBe(false);
 
-    act(() => (lastArgs().preloadSecond as () => void)());
+    await act(() => (lastArgs().preloadSecond as () => void)());
 
     const preloadedKey = lastArgs().state.routes.find((route) => route.name === 'second')!.key;
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(false);
 
-    act(() => (lastArgs().focusSecond as () => void)());
+    await act(() => (lastArgs().focusSecond as () => void)());
 
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(preloadedKey)).toBe(true);
   });
 
-  it('exposes removal prevention propagated from a nested route via createProps', () => {
+  it('exposes removal prevention propagated from a nested route via createProps', async () => {
     const StandardWithRemovalPrevention = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -476,7 +548,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     >(NavigatorContent, TabRouter, {
       createProps: ({ isRemovalPrevented }) => ({ isRemovalPrevented }),
     });
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => (
           <StandardWithRemovalPrevention>
@@ -493,43 +565,72 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect((lastArgs().isRemovalPrevented as (key: string) => boolean)(parentKey)).toBe(true);
   });
 
-  // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
-  // break): a prop built from the raw dispatch must actually mutate the navigator state when called.
-  it('exposes a working dispatch via createProps to NavigatorContent', () => {
+  it('preserves dispatchSync and dispatch semantics through createProps callbacks', async () => {
+    let resolveSlowScreen!: () => void;
+    const slowScreenPromise = new Promise<void>((resolve) => {
+      resolveSlowScreen = resolve;
+    });
+    const FocusedNavigatorContent = (args: NavigatorArgs<TestOptions, TestEventMap>) => {
+      contentSpy(args);
+      const route = args.state.routes[args.state.index]!;
+      return args.descriptors[route.key]!.render();
+    };
     const StandardWithDispatch = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
       object,
       TabRouterOptions,
-      { goToSecond: () => void }
-    >(NavigatorContent, TabRouter, {
-      createProps: ({ dispatch }) => ({
-        goToSecond: () => dispatch(TabActions.jumpTo('second')),
+      { goToSlow: () => void; goToSecondSync: () => void }
+    >(FocusedNavigatorContent, TabRouter, {
+      createProps: ({ dispatch, dispatchSync }) => ({
+        goToSlow: () => dispatch(TabActions.jumpTo('slow')),
+        goToSecondSync: () => dispatchSync(TabActions.jumpTo('second')),
       }),
     });
 
-    renderRouter({
+    function SlowScreen() {
+      use(slowScreenPromise);
+      return <View testID="slow" />;
+    }
+
+    await renderRouter({
       _layout: () => (
         <StandardWithDispatch>
           <StandardWithDispatch.Screen name="index" />
           <StandardWithDispatch.Screen name="second" />
+          <StandardWithDispatch.Screen name="slow" />
         </StandardWithDispatch>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
+      slow: SlowScreen,
     });
 
     expect(lastArgs().state.index).toBe(0);
 
-    act(() => (lastArgs().goToSecond as () => void)());
+    await act(() => router.setTransitionMode('always'));
 
+    await act(() => {
+      // The shared content spy cannot retain navigator-specific injected prop types.
+      (lastArgs().goToSecondSync as () => void)();
+    });
     expect(lastArgs().state.index).toBe(1);
-    expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    const navigationAct = reactAct(() => {
+      (lastArgs().goToSlow as () => void)();
+    });
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    resolveSlowScreen();
+    await navigationAct;
+    expect(lastArgs().state.index).toBe(2);
+    expect(screen.getByTestId('slow')).toBeVisible();
   });
 
-  it('does not leak initialRouteName to NavigatorContent', () => {
-    renderRouter({
+  it('does not leak initialRouteName to NavigatorContent', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs
           // @ts-expect-error `initialRouteName` is only supported through `unstable_settings`.
@@ -547,7 +648,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
 });
 
 describe('processScreens', () => {
-  it('transforms declared screen options before they are rendered', () => {
+  it('transforms declared screen options before they are rendered', async () => {
     const Prefixed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -563,7 +664,7 @@ describe('processScreens', () => {
         })),
     });
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Prefixed>
           <Prefixed.Screen name="index" options={{ title: 'Home' }} />
@@ -581,7 +682,7 @@ describe('processScreens', () => {
     expect(args.descriptors.second!.options).toMatchObject({ title: 'processed-second' });
   });
 
-  it('receives only the declared screens', () => {
+  it('receives only the declared screens', async () => {
     const names: string[] = [];
     const Recording = createStandardRouterNavigator<
       TestOptions,
@@ -598,7 +699,7 @@ describe('processScreens', () => {
       },
     });
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Recording>
           <Recording.Screen name="index" />
@@ -612,7 +713,7 @@ describe('processScreens', () => {
     expect(lastArgs().descriptors.second).toBeDefined();
   });
 
-  it('rejects dropped screens', () => {
+  it('rejects dropped screens', async () => {
     const Filtered = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -623,21 +724,22 @@ describe('processScreens', () => {
       processScreens: (screens) => screens.filter((screen) => screen.name !== 'second'),
     });
 
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          <Filtered>
-            <Filtered.Screen name="index" options={{ title: 'Home' }} />
-            <Filtered.Screen name="second" options={{ title: 'Declared title' }} />
-          </Filtered>
-        ),
-        index: () => <View testID="index" />,
-        second: () => <View testID="second" />,
-      })
-    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => (
+            <Filtered>
+              <Filtered.Screen name="index" options={{ title: 'Home' }} />
+              <Filtered.Screen name="second" options={{ title: 'Declared title' }} />
+            </Filtered>
+          ),
+          index: () => <View testID="index" />,
+          second: () => <View testID="second" />,
+        })
+    ).rejects.toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
   });
 
-  it('rejects renamed screens', () => {
+  it('rejects renamed screens', async () => {
     const Renamed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -649,19 +751,20 @@ describe('processScreens', () => {
         screens.map((screen) => ({ ...screen, name: `renamed-${screen.name}` })),
     });
 
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          <Renamed>
-            <Renamed.Screen name="index" />
-          </Renamed>
-        ),
-        index: () => <View testID="index" />,
-      })
-    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => (
+            <Renamed>
+              <Renamed.Screen name="index" />
+            </Renamed>
+          ),
+          index: () => <View testID="index" />,
+        })
+    ).rejects.toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
   });
 
-  it('rejects screens renamed in place', () => {
+  it('rejects screens renamed in place', async () => {
     const Renamed = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -675,19 +778,20 @@ describe('processScreens', () => {
       },
     });
 
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          <Renamed>
-            <Renamed.Screen name="index" />
-          </Renamed>
-        ),
-        index: () => <View testID="index" />,
-      })
-    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => (
+            <Renamed>
+              <Renamed.Screen name="index" />
+            </Renamed>
+          ),
+          index: () => <View testID="index" />,
+        })
+    ).rejects.toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
   });
 
-  it('rejects duplicate screens returned by the processor', () => {
+  it('rejects duplicate screens returned by the processor', async () => {
     const Duplicated = createStandardRouterNavigator<
       TestOptions,
       TabNavigationState<ParamListBase>,
@@ -698,18 +802,19 @@ describe('processScreens', () => {
       processScreens: (screens) => [screens[0]!, { ...screens[0]! }],
     });
 
-    expect(() =>
-      renderRouter({
-        _layout: () => (
-          <Duplicated>
-            <Duplicated.Screen name="index" />
-            <Duplicated.Screen name="second" />
-          </Duplicated>
-        ),
-        index: () => <View testID="index" />,
-        second: () => <View testID="second" />,
-      })
-    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => (
+            <Duplicated>
+              <Duplicated.Screen name="index" />
+              <Duplicated.Screen name="second" />
+            </Duplicated>
+          ),
+          index: () => <View testID="index" />,
+          second: () => <View testID="second" />,
+        })
+    ).rejects.toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
   });
 });
 
@@ -734,19 +839,19 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
       second: () => <View testID="second" />,
     });
 
-  it('projects a preloaded route after the focused index without moving focus', () => {
-    renderStack();
+  it('projects a preloaded route after the focused index without moving focus', async () => {
+    await renderStack();
     expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
 
-    act(() => router.prefetch('/second'));
+    await act(() => router.prefetch('/second'));
 
     expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('covers the projected preloaded route with a descriptor exposing render + navigation', () => {
-    renderStack();
-    act(() => router.prefetch('/second'));
+  it('covers the projected preloaded route with a descriptor exposing render + navigation', async () => {
+    await renderStack();
+    await act(() => router.prefetch('/second'));
 
     const preloadedKey = lastArgs().state.routes[1]!.key;
     const descriptor = lastArgs().descriptors[preloadedKey]!;
@@ -757,12 +862,12 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
     expect(typeof withNavigation.navigation?.navigate).toBe('function');
   });
 
-  it('reuses the preloaded route on navigate instead of duplicating it', () => {
-    renderStack();
-    act(() => router.prefetch('/second'));
+  it('reuses the preloaded route on navigate instead of duplicating it', async () => {
+    await renderStack();
+    await act(() => router.prefetch('/second'));
     expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
     expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
     expect(lastArgs().state.index).toBe(1);
@@ -894,19 +999,19 @@ describe('custom-navigators guide example', () => {
       settings: () => <View testID="settings" />,
     });
 
-  it('renders the focused screen and a tab bar with each screen title', () => {
-    renderExample();
+  it('renders the focused screen and a tab bar with each screen title', async () => {
+    await renderExample();
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByText('Home')).toBeVisible();
     expect(screen.getByText('Settings')).toBeVisible();
   });
 
-  it('navigates to a screen when its tab is pressed', () => {
-    renderExample();
+  it('navigates to a screen when its tab is pressed', async () => {
+    await renderExample();
 
-    act(() => {
-      fireEvent.press(screen.getByText('Settings'));
+    await act(async () => {
+      await fireEvent.press(screen.getByText('Settings'));
     });
 
     expect(screen.getByTestId('settings')).toBeVisible();
@@ -976,16 +1081,16 @@ describe('custom-navigators guide example', () => {
     contentSpy.mockClear();
   });
 
-  it('exposes the focused route key via createProps', () => {
-    renderExample();
+  it('exposes the focused route key via createProps', async () => {
+    await renderExample();
     expect(lastProps().activeRouteKey).toBe(lastProps().state.routes[0]!.key);
   });
 
-  it('preloads a route via the createProps PRELOAD dispatch without moving focus', () => {
-    renderExample();
+  it('preloads a route via the createProps PRELOAD dispatch without moving focus', async () => {
+    await renderExample();
     expect(lastProps().materializedNames).toEqual([]);
 
-    act(() => lastProps().preload('settings'));
+    await act(() => lastProps().preload('settings'));
 
     // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
     expect(lastProps().materializedNames).toEqual(['settings']);

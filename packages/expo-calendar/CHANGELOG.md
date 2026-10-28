@@ -1,16 +1,38 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix the sign of alarm `relativeOffset` in the `next` API so that negative values fire before the event start, matching iOS and the legacy API.
+
+## 58.0.2 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.1 — 2026-09-15
 
 ### 🛠 Breaking changes
 
 - The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead. ([#50158](https://github.com/expo/expo/pull/50158) by [@Wenszel](https://github.com/Wenszel))
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 58.0.0 — 2026-09-10
 

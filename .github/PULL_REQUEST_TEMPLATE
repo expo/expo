@@ -1,19 +1,63 @@
 # Why
 
 <!--
-Please describe the motivation for this PR, and link to relevant GitHub issues, forums posts, or feature requests.
+State the problem in one or two short sentences.
+State the root cause in one or two short sentences.
+Write short sentences. Use active voice. Use one word for one thing.
+Delete this comment when you fill the section.
 -->
 
 # How
 
 <!--
 How did you build this feature or fix this bug and why?
+Describe each solution you considered, and state its performance impact.
+Say why you believe this is the right fix.
+Say what this diff changes.
+If the problem is limited to some devices, limit the change to those devices, or say why every device must get it.
+If this pull request is part of a stack, list the stack in order and say which one this is.
+Delete this comment when you fill the section.
 -->
 
 # Test Plan
 
 <!--
-Please describe how you tested this change and how a reviewer could reproduce your test, especially if this PR does not include automated tests! If possible, please also provide terminal output and/or screenshots demonstrating your test/reproduction.
+Say what you ran, on which device or simulator, and the result.
+If this pull request has no automated test, give the steps a reviewer can repeat.
+If you did not run a test, say that and mark the pull request as a draft.
+Delete this comment when you fill the section.
+-->
+
+# Screenshots
+
+<!--
+If this change affects what a person sees, copy the shape below out of this comment.
+Add one Before and After pair for each platform the change affects: Android, iOS, or web.
+An Android-only change needs Android screenshots. Do the same for an iOS-only or web-only change.
+Shared code needs a pair for every platform that runs it. That can be Android, iOS, and web.
+Do not use an iOS Simulator screenshot for a platform you did not run.
+Take the before screenshot first. Then make the change. Then take the after screenshot.
+Put each image under its heading. Name the device, simulator, or browser on the next line.
+Use a full-width image. Do not put the images in a table.
+If you cannot run an affected platform, name it and say why.
+If nothing visible changes, write "No UI change."
+Delete this comment when you fill the section.
+
+### Android
+
+#### Before
+
+![Before](https://github.com/user-attachments/assets/00000000-0000-4000-8000-000000000001)
+
+Android emulator, API 34.
+
+#### After
+
+![After](https://github.com/user-attachments/assets/00000000-0000-4000-8000-000000000002)
+
+Android emulator, API 34.
+
+Repeat the platform heading for iOS, for web, or for both when the change runs there.
 -->
 
 # Checklist
@@ -22,6 +66,6 @@ Please describe how you tested this change and how a reviewer could reproduce yo
 Please check the appropriate items below if they apply to your diff.
 -->
 
-- [ ] I added a `changelog.md` entry and rebuilt the package sources according to [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
+- [ ] I added a changeset and followed [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
 - [ ] This diff will work correctly for `npx expo prebuild` & EAS Build (eg: updated a module plugin).
 - [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)

@@ -16,13 +16,17 @@ import host.exp.exponent.network.LocalNetworkPermission
  * unprompted one did, and the Home banner offers the way to Settings.
  */
 @Composable
-fun rememberLocalNetworkGatedUriHandler(viewModel: HomeAppViewModel): UriHandler {
+fun rememberLocalNetworkGatedUriHandler(
+  viewModel: HomeAppViewModel,
+  onOpenError: (String) -> Unit
+): UriHandler {
   val context = LocalContext.current
   val platformHandler = LocalUriHandler.current
   val pendingUrl = remember { mutableStateOf<String?>(null) }
+  val open: (String) -> Unit = { uri -> openUriOrShowError(platformHandler, uri, onOpenError) }
   val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
     viewModel.refreshLocalNetworkPermission()
-    pendingUrl.value?.let(platformHandler::openUri)
+    pendingUrl.value?.let(open)
     pendingUrl.value = null
   }
 
@@ -37,7 +41,7 @@ fun rememberLocalNetworkGatedUriHandler(viewModel: HomeAppViewModel): UriHandler
           pendingUrl.value = uri
           launcher.launch(LocalNetworkPermission.PERMISSION)
         } else {
-          platformHandler.openUri(uri)
+          open(uri)
         }
       }
     }

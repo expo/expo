@@ -18,7 +18,9 @@ import type {
   StandardNavigatorContentProps,
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -50,7 +52,7 @@ export interface NativeTabsNavigatorCreateProps {
 /**
  * Creates the props required to integrate Expo Router's native tabs navigator.
  *
- * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * @param args The navigation state and dispatch functions provided to a `createProps`
  * factory.
  * @returns The native tabs navigator props.
  *
@@ -106,15 +108,17 @@ function NativeTabsContent({
   Omit<InternalNativeTabsProps, 'screenListeners'>
 > &
   NativeTabsNavigatorCreateProps) {
+  useReconcileTabHistory();
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
     );
   }
 
+  useNonStackAnchorWarning(rest.backBehavior);
   const { routes } = state;
 
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes,
     routeNames,
     focusedRouteKey: routes[state.index]?.key,
@@ -126,6 +130,7 @@ function NativeTabsContent({
         (route): NativeTabsViewTabItem => ({
           options: descriptors[route.key]!.options,
           name: route.name,
+          routeKey: route.key,
           contentRenderer: () => descriptors[route.key]!.render(),
         })
       ),
@@ -193,6 +198,10 @@ function NativeTabsContent({
     'focusedIndex' | 'provenance' | 'tabs' | 'onTabChange'
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleTabs.length === 0 || focusedIndex < 0) {
     return null;

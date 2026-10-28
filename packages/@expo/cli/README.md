@@ -129,7 +129,7 @@ There are three testing scripts:
 - When testing a function, pass the function to the `describe` block instead of a stringified function name:
   - `describe(foobar, () => {})` instead of `describe('foobar', () => {})`
 - Use virtual `fs` via `memfs` whenever possible.
-- We have a lot of global module [**mocks**](./e2e/setup.ts) already in place, consider them when writing tests.
+- We have a lot of global module [**mocks**](./jest.setup.ts) already in place, consider them when writing tests.
 - GitHub Copilot can make writing tests a little less tedious.
 
 ### E2E Testing Guidelines

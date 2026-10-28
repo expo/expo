@@ -7,6 +7,10 @@ import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
  *
  * The native layer persists each invocation until `removePendingInvocationAsync` removes it.
  * Delivery is at-least-once, so handlers must be idempotent for each `id`.
+ *
+ * A background task that `runBackgroundTask(name:params:timeout:)` runs from Swift receives an
+ * invocation as its `data` too. The native layer does not persist that invocation, delivers it at
+ * most once, and gives every run a new `id`.
  */
 export type AppIntentInvocation = {
   /**
@@ -15,7 +19,8 @@ export type AppIntentInvocation = {
   id: string;
   /**
    * Contains the invocation name passed to
-   * `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift.
+   * `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift, or the task name passed to
+   * `runBackgroundTask(name:params:timeout:)`.
    */
   name: string;
   /**
@@ -86,6 +91,33 @@ export type AppEntityIdentifierModifier = ModifierConfig & {
   /** Stable entity id from the matching App Intents entity catalog. */
   id: string;
 };
+
+/**
+ * A value that can be passed as an App Intent parameter: anything JSON can represent.
+ */
+export type AppIntentJSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | AppIntentJSONValue[]
+  | { [key: string]: AppIntentJSONValue };
+
+/**
+ * Selects the donations that `deleteDonationsAsync()` deletes. Pass one of these shapes:
+ *
+ * - `{ ids }` deletes the donations with the given IDs, as returned by `donateIntentAsync()`.
+ * - `{ intent }` deletes every donation of the intent type registered under that name. When
+ *   several names are registered for one intent type, this also deletes the donations made under
+ *   the other names.
+ * - `{ entity, id }` deletes every donation that refers to the given entity. The `entity` value
+ *   must be registered with `AppEntityIdentifierRegistry.shared.register(_:as:)` or
+ *   `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.
+ */
+export type AppIntentDonationFilter =
+  | { ids: string[] }
+  | { intent: string }
+  | { entity: string; id: string };
 
 export type ExpoAppIntentsModuleEvents = {
   onIntent: (invocation: AppIntentInvocation) => void;

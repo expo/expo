@@ -138,6 +138,19 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
     AsyncFunction("refreshShortcutsAsync") { () async throws in
       try await self.refreshShortcuts()
     }
+
+    AsyncFunction("donateIntentAsync") { (name: String, params: [String: Any]?) async throws -> String in
+      guard let appContext = self.appContext else {
+        throw Exceptions.AppContextLost()
+      }
+      // The registry converts `params` to the `DonationParams` record of the intent registered as
+      // `name`, since only that registration knows the record type.
+      return try await AppIntentDonationRegistry.shared.donate(name, params: params ?? [:], appContext: appContext)
+    }
+
+    AsyncFunction("deleteDonationsAsync") { (filter: AppIntentDonationFilterRecord) async throws -> [String] in
+      return try await AppIntentDonationRegistry.shared.deleteDonations(matching: filter.toFilter())
+    }
   }
 
   /// Installs the `appEntityIdentifier` factory. Both factories take the `AppContext` from the call

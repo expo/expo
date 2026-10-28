@@ -227,7 +227,11 @@ internal class RippleHostView(context: Context) : View(context) {
       }
       postDelayed(resetRippleRunnable, ResetRippleDelayDuration)
     } else {
-      val state = if (pressed) PressedState else RestingState
+      val state = if (pressed) {
+        PressedState
+      } else {
+        RestingState
+      }
       ripple?.state = state
     }
     lastRippleStateChangeTimeMillis = currentTime
@@ -276,7 +280,11 @@ private class UnprojectedRipple(private val bounded: Boolean) :
     // The color of the mask here doesn't matter - we just need a mask to draw the bounded
     // ripple
     // against
-    /* mask */ if (bounded) ColorDrawable(android.graphics.Color.WHITE) else null
+    /* mask */ if (bounded) {
+      ColorDrawable(android.graphics.Color.WHITE)
+    } else {
+      null
+    }
   ) {
   /**
    * Store the ripple color so we can compare it later, as there is no way to get the currently

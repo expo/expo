@@ -142,9 +142,8 @@ export function canDismiss(): boolean {
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
-    // TODO(ENG-22019): Detect typeless stacks, including anchor/initialRouteName states that start
-    // with multiple routes.
-    if (state.type === 'stack' && getHistoryLength(state) > 1) {
+    // Seeded states have no `type`; anchors are fully supported only in stacks.
+    if ((state.type ?? 'stack') === 'stack' && getHistoryLength(state) > 1) {
       return true;
     }
     if (state.index === undefined) return false;
@@ -256,11 +255,8 @@ export type ImperativeRouter = {
    */
   dismissTo: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Returns to the first screen of the closest stack — equivalent to a stack
-   * `popToTop` action.
-   *
-   * @see React Navigation's [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop)
-   * stack action for the underlying behavior.
+   * Returns to the first screen of the closest stack, dismissing all screens
+   * above it.
    */
   dismissAll: (options?: TransitionOptions) => void;
   /**

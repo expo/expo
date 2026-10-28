@@ -1,7 +1,10 @@
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import vm from 'node:vm';
 
-import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import {
+  serializeShakingAsync,
+  serializeToWithGraph,
+} from '../fork/__tests__/serializer-test-utils';
 import type { SerialAsset } from '../serializerAssets';
 
 jest.mock('../exportHermes', () => {
@@ -177,6 +180,41 @@ it('emits workers as standalone bundles when ordinary chunk splitting is disable
   expect(workerChunk).not.toBe(entryChunk);
 });
 
+describe('lazy development bundles', () => {
+  it.each([
+    ['is not part of the graph', ''],
+    ['is also imported synchronously', `require('./worker');`],
+  ])('points to the dev server worker bundle when the worker %s', async (_, entryImport) => {
+    const [, artifacts] = await serializeToWithGraph({
+      fs: {
+        'index.js': `
+          ${entryImport}
+          const worker = require.unstable_resolveWorker('./worker');
+          console.log(worker);
+        `,
+        'worker.js': `
+          console.log('worker module');
+        `,
+      },
+      options: {
+        platform: 'web',
+        dev: true,
+        lazy: true,
+        output: 'static',
+        splitChunks: false,
+        sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&lazy=true',
+      },
+    });
+    const serialAssets = artifacts as SerialAsset[];
+    const entryChunk = getChunkContaining(serialAssets, '/app/index.js');
+
+    expect(serialAssets).toEqual([entryChunk]);
+    expect(entryChunk.source).toMatch(
+      /"paths":\{"\/app\/worker\.js":"\/worker\.bundle\?[^"]*modulesOnly=false&runModule=true/
+    );
+  });
+});
+
 it(`supports worker bundle with nested async chunk`, async () => {
   // TODO: Add actual support for eliminating code from async imports.
   const [[, , graph], artifacts] = await serializeShakingAsync(
@@ -347,12 +385,41 @@ describe('sealed worker chunks', () => {
     expect(commonChunk?.metadata.modulePaths).toEqual(['/app/shared.js']);
   });
 
-  it('executes the emitted worker with an isolated module registry', async () => {
-    const [, artifacts] = await serializeShakingAsync(workerAsyncOverlapFiles, {
-      splitChunks: true,
-    });
-    const workerChunk = getChunkContaining(artifacts as SerialAsset[], '/app/worker.js');
+  it.each(['legacy', 'granular'] as const)(
+    'executes the emitted %s worker with an isolated module registry',
+    async (chunkingStrategy) => {
+      const [, artifacts] = await serializeShakingAsync(
+        {
+          ...workerAsyncOverlapFiles,
+          'index.js': `
+            import('./lib');
+            import('./other');
+            import('./third');
+          `,
+          'third.js': `
+            import { shared } from './shared';
+            console.log(shared);
+          `,
+        },
+        { splitChunks: true, chunkingStrategy }
+      );
+      const serialAssets = artifacts as SerialAsset[];
+      const workerChunk = getChunkContaining(serialAssets, '/app/worker.js');
+      const sharedChunk = serialAssets.find(
+        (artifact) =>
+          artifact !== workerChunk && artifact.metadata.modulePaths?.includes('/app/shared.js')
+      );
 
-    expect(runWorkerChunkInIsolatedContext(workerChunk)).toBe('shared-module-value');
-  });
+      expect(sharedChunk).toBeDefined();
+      expect(sharedChunk!.filename).toContain(
+        chunkingStrategy === 'granular' ? '__shared-' : '__common-'
+      );
+      expect(workerChunk.source).not.toContain('__expo_chunk_completion__');
+      if (chunkingStrategy === 'granular') {
+        expect(workerChunk.metadata.entryPaths).toEqual([]);
+        expect(workerChunk.metadata.requires).toEqual([]);
+      }
+      expect(runWorkerChunkInIsolatedContext(workerChunk)).toBe('shared-module-value');
+    }
+  );
 });

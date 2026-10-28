@@ -9,7 +9,11 @@ import org.hamcrest.Matchers
 
 object ExponentMatchers {
   fun getTestId(view: View): String? {
-    return if (view.tag is String) view.tag as String else null
+    return if (view.tag is String) {
+      view.tag as String
+    } else {
+      null
+    }
   }
 
   fun withTestId(text: String): Matcher<View> {

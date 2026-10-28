@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 5.1.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Added a preview `--swiftpm` flag that enables `experiments.swiftPackageManager` in app.json and sets up iOS with Swift Package Manager instead of CocoaPods. ([#51038](https://github.com/expo/expo/pull/51038) by [@chrfalch](https://github.com/chrfalch))
+
+## 5.1.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 5.1.3 — 2026-09-25
+
+### 💡 Others
+
+- Stop generating `CLAUDE.md` for new projects. Claude Code now reads `AGENTS.md` directly. ([#50400](https://github.com/expo/expo/pull/50400) by [@davidmokos](https://github.com/davidmokos))
+
+## 5.1.2 — 2026-09-15
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Derive project names from the app name the same way as `@expo/config-plugins`, keeping accented characters ('Árbók' now becomes 'Arbok', not 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 
 ## 5.1.1 — 2026-09-14
 

@@ -35,6 +35,10 @@ class FailedToResolveNameError extends Error {
     super('Failed to resolve name');
   }
 }
+
+class FailedToResolveUnsupportedError extends Error {
+  readonly name = 'FailedToResolveUnsupportedError';
+}
 jest.mock('@expo/metro/metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
@@ -128,7 +132,7 @@ describe(withExtendedResolver, () => {
   function mockMinFs() {
     vol.fromJSON(
       {
-        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/react-native/asset-registry.js': '',
       },
       '/root/'
     );
@@ -454,6 +458,28 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it(`resolves a node.js built-in as a shim on web when its URI scheme is unsupported`, async () => {
+    mockMinFs();
+
+    // Metro rejects a `node:` specifier with no registered scheme resolver
+    jest.mocked(getResolveFunc()).mockImplementationOnce(() => {
+      throw new FailedToResolveUnsupportedError(
+        "No resolver is registered for the 'node:' URI scheme."
+      );
+    });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    expect(
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'node:async_hooks', 'web')
+    ).toEqual({
+      type: 'empty',
+    });
+  });
+
   it(`resolves a node.js built-in as a an installed module on web`, async () => {
     mockMinFs();
 
@@ -702,64 +728,77 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it('aliases assets registry to virtual shim on all platforms', async () => {
+  // TODO(@bycedric): drop in Expo SDK 59
+  it('aliases legacy assets registry to public asset registry API on native platforms', async () => {
     vol.fromJSON({ mock: '' }, '/');
 
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      getMetroBundler: getMetroBundlerGetter(),
-    });
-
-    for (const platform of ['ios', 'web']) {
-      for (const moduleName of [
-        'react-native/asset-registry',
-        '@react-native/assets-registry/registry',
-      ]) {
-        const result = modified.resolver.resolveRequest!(
-          getDefaultRequestContext(),
-          moduleName,
-          platform
-        );
-
-        expect(result).toEqual({
-          filePath: '\0polyfill:assets-registry',
+    function mockResolver(_context: any, moduleName: string, platform: string | null): Resolution {
+      if (platform === 'ios' && moduleName === 'react-native/asset-registry') {
+        return {
           type: 'sourceFile',
-        });
+          filePath: '/root/node_modules/react-native/asset-registry.js',
+        };
       }
+      if (platform === 'web' && moduleName === 'react-native-web/asset-registry') {
+        return {
+          type: 'sourceFile',
+          filePath: '/root/node_modules/react-native-web/asset-registry.js',
+        };
+      }
+      throw new FailedToResolveNameError();
     }
-  });
-
-  it("aliases react-native's internal asset registry imports to the virtual shim", async () => {
-    vol.fromJSON({ mock: '' }, '/');
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       getMetroBundler: getMetroBundlerGetter(),
     });
 
-    const result = modified.resolver.resolveRequest!(
-      getResolverContext({
-        originModulePath: '/root/node_modules/react-native/Libraries/Image/resolveAssetSource.js',
-      }),
-      '../../src/private/assets/AssetRegistry',
-      'ios'
-    );
+    const assetRegistryPaths = [
+      'react-native/asset-registry',
+      // legacy
+      '@react-native/assets-registry/registry',
+      '@react-native/assets-registry/registry.js',
+      'react-native/Libraries/Image/AssetRegistry',
+      'react-native/Libraries/Image/AssetRegistry.js',
+    ];
 
-    expect(result).toEqual({
-      filePath: '\0polyfill:assets-registry',
-      type: 'sourceFile',
-    });
+    // Resolves ios to React Native
+    for (const moduleName of assetRegistryPaths) {
+      jest.mocked(getResolveFunc()).mockImplementationOnce(mockResolver);
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        moduleName,
+        'ios'
+      );
+
+      expect(result).toEqual({
+        filePath: '/root/node_modules/react-native/asset-registry.js',
+        type: 'sourceFile',
+      });
+    }
+
+    // Resolves web to React Native Web
+    for (const moduleName of assetRegistryPaths) {
+      jest.mocked(getResolveFunc()).mockImplementationOnce(mockResolver);
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        moduleName,
+        'web'
+      );
+
+      expect(result).toEqual({
+        filePath: '/root/node_modules/react-native-web/asset-registry.js',
+        type: 'sourceFile',
+      });
+    }
   });
 
   it('aliases async require module to resolved path', async () => {
     // Mock path we're expecting `asyncRequireModulePath` requests to have been replaced with
     const expectedPath = 'node_modules/expo/internal/async-require-module.js';
 
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        mock: '',
-      },
-      '/'
-    );
+    vol.fromJSON({ mock: '' }, '/');
 
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : null;
@@ -1159,87 +1198,6 @@ describe(withExtendedResolver, () => {
         3,
         expect.objectContaining({ originModulePath: '/root/package.json' }),
         'expo-router/package.json',
-        platform
-      );
-    });
-
-    it('resolves self-referencing module when getPackageForModule returns matching package name', () => {
-      const platform = 'ios';
-      const modified = getModifiedConfig();
-
-      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
-        if (
-          context.originModulePath === '/root/node_modules/my-package/src/index.js' &&
-          moduleName === 'my-package/utils' &&
-          !context.extraNodeModules?.['my-package']
-        ) {
-          throw new FailedToResolveNameError();
-        } else if (moduleName === 'expo/package.json') {
-          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
-        } else if (moduleName === 'expo-router/package.json') {
-          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
-        } else {
-          return { type: 'empty' };
-        }
-      });
-
-      modified.resolver.resolveRequest!(
-        getResolverContext({
-          originModulePath: '/root/node_modules/my-package/src/index.js',
-          getPackage: () => null,
-          getPackageForModule: (modulePath: string) => {
-            if (modulePath === '/root/node_modules/my-package/src/index.js') {
-              return {
-                rootPath: '/root/node_modules/my-package',
-                packageJson: { name: 'my-package' },
-                packageRelativePath: 'src/index.js',
-              };
-            }
-            return null;
-          },
-        }),
-        'my-package/utils',
-        platform
-      );
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(4);
-
-      // 1: Fails to resolve the module normally
-      expect(getResolveFunc()).toHaveBeenNthCalledWith(
-        1,
-        expect.objectContaining({
-          originModulePath: '/root/node_modules/my-package/src/index.js',
-        }),
-        'my-package/utils',
-        platform
-      );
-
-      // 2: Resolves the origin root module path for `expo`
-      expect(getResolveFunc()).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({ originModulePath: '/root/package.json' }),
-        'expo/package.json',
-        platform
-      );
-
-      // 3: Resolves the origin root module path for `expo-router`
-      expect(getResolveFunc()).toHaveBeenNthCalledWith(
-        3,
-        expect.objectContaining({ originModulePath: '/root/package.json' }),
-        'expo-router/package.json',
-        platform
-      );
-
-      // 4: Self-resolution resolves the module via extraNodeModules
-      expect(getResolveFunc()).toHaveBeenNthCalledWith(
-        4,
-        expect.objectContaining({
-          nodeModulesPaths: [],
-          extraNodeModules: {
-            'my-package': '/root/node_modules/my-package',
-          },
-        }),
-        'my-package/utils',
         platform
       );
     });

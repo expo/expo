@@ -67,13 +67,17 @@ These metadata items include:
 - `title`: Title of the page shown as the heading and in search results.
 - `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
-- `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
+- `hidden`: Whether to hide the page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `sidebar_order`: A number that weights the page within its sidebar group. Defaults to `0`. A negative value sorts the page above the alphabetical run, a positive value below it.
+- `inExpoGo`: Whether to list an SDK reference page under Third-party libraries instead of Expo SDK in the sidebar. Defaults to `false`.
 - `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 - `isNew`: Whether to display the new badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `isDeprecated`: Whether to display the deprecated badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `isAlpha`: Whether to display the alpha badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
+- `isBeta`: Whether to display the beta badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
+- `isPreview`: Whether to display the preview badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `searchRank`: A number between 0 and 100 that represents the relevance of a page. This value is mapped to Algolia's `record.weight.pageRank` property. Higher values indicate higher priority. We set this value to `5` by default, otherwise specified in the frontmatter.
 - `searchPosition`: The position of a page in the search results. This value is mapped to Algolia's `record.weight.position` property. Algolia sets this value to `0` by default. Pages with lower values appear higher in the results. We set this value to `50` by default, otherwise specified in the frontmatter.
 - `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.

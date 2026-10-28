@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
       recipients: ['evan', 'bacon'],
       body: 'Hello world!',
     });
-    expect(window.open).toHaveBeenLastCalledWith('mailto:evan,bacon?body=Hello+world%21');
+    expect(window.open).toHaveBeenLastCalledWith('mailto:evan,bacon?body=Hello%20world%21');
     ExpoMailComposer.composeAsync({
       recipients: 'bacon@expo.io',
     });

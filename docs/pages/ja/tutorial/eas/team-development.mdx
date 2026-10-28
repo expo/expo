@@ -45,19 +45,11 @@ OTA（Over-The-Air）アップデートは通常、アプリストアのリリ�
 
 ## EAS Update を設定する
 
-EAS Update でプロジェクトを初期化するには、次の手順に従います。
-
-- アプリの設定に動的な **app.config.js** を使っているため、プロジェクトを EAS Update に対応させるには [`updates`](/versions/latest/config/app/#updates) と [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) のプロパティを追加する必要があります。次のコマンドを実行して EAS からこれらのプロパティと値を取得し、手動で **app.config.js** にコピーします。
+EAS Update でプロジェクトを初期化するには、次のコマンドを実行します。
 
 <Terminal cmd={['$ eas update:configure']} />
 
-<Collapsible summary="app.json を使う（動的でない）プロジェクトの場合は？">
-
-プロジェクトが動的な app config を使っていない場合（**app.config.js** ではなく **app.json** を使っている場合）、上のコマンドはアプリを EAS Update に対応させ、**app.json** と **eas.json** に適切なプロパティを追加してくれます。
-
-</Collapsible>
-
-- セットアップを続けるため、`eas update:configure` をもう一度実行します。**eas.json** のすべてのビルドプロファイルに [`channel`](/eas/json/#channel) が追加されるはずです。
+このコマンドは [`updates`](/versions/latest/config/app/#updates) と [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) のプロパティを **app.json** に追加します。**app.config.js** は、これらを `config` を通して読み込みます。また、**eas.json** のすべてのビルドプロファイルに [`channel`](/eas/json/#channel) も追加します。
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -89,7 +81,13 @@ EAS Update でプロジェクトを初期化するには、次の手順に従い
 }
 ```
 
-> **info** `eas update:configure` コマンドは **eas.json** のすべてのビルドプロファイルに `channel` を追加します。ただし `ios-simulator` プロファイルは `development` プロファイルを継承しているので、別の `channel` を持たせる意味はありません。上の設定から `ios-simulator.channel` は安全に削除できます。
+> **info** `ios-simulator` プロファイルは `development` プロファイルを継承しているので、別の `channel` を持たせる意味はありません。**eas.json** から `ios-simulator.channel` は安全に削除できます。
+
+<Collapsible summary="app.config.js が app.json から値を読み込まない場合は？">
+
+**app.config.js** が **app.json** の `config` の値を使っていない場合、EAS CLI は `updates` と `runtimeVersion` のプロパティを自動で追加できません。代わりに、**app.config.js** に手動で追加するための値を表示します。値を追加したら、`eas update:configure` をもう一度実行してセットアップを完了します。
+
+</Collapsible>
 
 <Collapsible summary="channel とは？">
 
@@ -137,20 +135,20 @@ EAS Update でプロジェクトを初期化するには、次の手順に従い
 
 上のコマンドでは `development` チャンネルを使いました。すべてのアップデートは [チャンネル名](/eas-update/how-it-works/#publishing-an-update) に紐づきます。git のコミットが必ず git ブランチに紐づくのと似ています。
 
-つまり、ビルドプロファイルで `development` チャンネルを使い、そのうえでアップデートを公開することで、`development` チャンネルを持つビルドにこのアップデートを届けるよう EAS に依頼していることになります。EAS Update のチャンネルを作ると、同じ名前のブランチに自動的にマッピングされます。
+つまり、ビルドプロファイルで `development` チャンネルを使い、そのチャンネルにアップデートを公開します。これにより、`development` チャンネルを持つビルドにアップデートを届けるよう EAS に指示します。EAS Update のチャンネルを作ると、EAS は同じ名前のブランチにそのチャンネルを自動的にマッピングします。
 
-アップデートが公開されると、CLI がその情報を表示します。
+アップデートを公開すると、CLI がその情報を出力します。
 
 <ContentSpotlight
-  alt="EAS Update published successfully with CLI prompt"
-  src="/static/images/tutorial/eas/update-01.png"
+  alt="EAS Update published successfully with CLI output"
+  src="/static/images/tutorial/eas/team-development-update-cli.webp"
 />
 
-**Website link** をクリックすると、EAS ダッシュボードの **Over-the-air updates** > **Update groups** でアップデートを確認できます。
+**EAS Dashboard** のリンクをクリックすると、**Over-the-air updates** > **Update groups** でアップデートを確認できます。
 
 <ContentSpotlight
   alt="EAS dashboard shows the latest published update for the development build"
-  src="/static/images/tutorial/eas/update-02.png"
+  src="/static/images/tutorial/eas/team-development-update-group.webp"
   className="max-w-[800px]"
 />
 
@@ -163,9 +161,8 @@ EAS Update でプロジェクトを初期化するには、次の手順に従い
 開発ビルドでアップデートをその場でプレビューするには、次のようにします。
 
 - 開発ビルド内で Expo アカウントにログインします。
-- **Extensions** タブを開きます。
-- **EAS Update** の下にある **Branch: development** を探します。
-- **Open** をタップしてアップデートを開きます。
+- **Updates** タブを開きます。
+- Android では、**Branch: development** のカードをタップしてから、アップデートをタップします。iOS では、**Branch: development** のアップデートの横にある **Open** をタップします。
 
 </Step>
 

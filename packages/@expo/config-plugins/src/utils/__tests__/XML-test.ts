@@ -104,6 +104,8 @@ describe(escapeAndroidString, () => {
     expect(escapeAndroidString(`@`)).toBe(`\\@`);
     expect(escapeAndroidString(`'''`)).toBe(`\\'\\'\\'`);
     expect(escapeAndroidString('"E&x<p>o"@\n\r\t')).toBe(`\\"E&x<p>o\\"\\@\\n\\r\\t`);
+    expect(escapeAndroidString('?attr/foo')).toBe('\\?attr/foo');
+    expect(escapeAndroidString('C:\\Temp')).toBe('C:\\\\Temp');
   });
 });
 

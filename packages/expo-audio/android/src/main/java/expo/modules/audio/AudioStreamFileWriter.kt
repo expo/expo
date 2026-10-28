@@ -18,7 +18,11 @@ internal class AudioStreamFileWriter(
   private val channels: Int,
   private val encoding: AudioStreamEncoding
 ) {
-  private val bitsPerSample = if (encoding == AudioStreamEncoding.INT16) 16 else 32
+  private val bitsPerSample = if (encoding == AudioStreamEncoding.INT16) {
+    16
+  } else {
+    32
+  }
   private val bytesPerFrame = channels * (bitsPerSample / 8)
 
   // Initialised in the init block so the file-existence check runs before any handle is opened.
@@ -90,12 +94,20 @@ internal class AudioStreamFileWriter(
       out.fd.sync()
       out.close()
     }
-    val totalSize = if (format == AudioStreamFileFormat.WAV) pcmBytesWritten + 44 else pcmBytesWritten
+    val totalSize = if (format == AudioStreamFileFormat.WAV) {
+      pcmBytesWritten + 44
+    } else {
+      pcmBytesWritten
+    }
     return Pair(totalSize, framesWritten)
   }
 
   private fun writeWavHeader(dataSize: Int) {
-    val audioFormat = if (encoding == AudioStreamEncoding.INT16) 1 else 3 // 1=PCM, 3=IEEE float
+    val audioFormat = if (encoding == AudioStreamEncoding.INT16) {
+      1
+    } else {
+      3 // 1=PCM, 3=IEEE float
+    }
     val byteRate = sampleRate * channels * (bitsPerSample / 8)
     val blockAlign = channels * (bitsPerSample / 8)
 

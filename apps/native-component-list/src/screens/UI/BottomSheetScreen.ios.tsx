@@ -5,6 +5,7 @@ import {
   Host,
   List,
   Picker,
+  Rectangle,
   RNHostView,
   Section,
   Text,
@@ -20,6 +21,7 @@ import {
   presentationDragIndicator,
   presentationBackground,
   presentationBackgroundInteraction,
+  presentationCornerRadius,
   interactiveDismissDisabled,
   tag,
   foregroundStyle,
@@ -53,6 +55,7 @@ export default function BottomSheetScreen() {
   const [dragIndicator, setDragIndicator] = React.useState<DragIndicatorOption>('automatic');
   const [backgroundInteractionEnabled, setBackgroundInteractionEnabled] = React.useState(false);
   const [dismissDisabled, setDismissDisabled] = React.useState(false);
+  const [customCornerRadius, setCustomCornerRadius] = React.useState(false);
 
   const [showSelectionTracking, setShowSelectionTracking] = React.useState(false);
   const selectionDetents: PresentationDetent[] = [
@@ -85,6 +88,10 @@ export default function BottomSheetScreen() {
 
     if (dismissDisabled) {
       mods.push(interactiveDismissDisabled());
+    }
+
+    if (customCornerRadius) {
+      mods.push(presentationCornerRadius(12));
     }
 
     return mods;
@@ -177,6 +184,11 @@ export default function BottomSheetScreen() {
             onIsOnChange={setDismissDisabled}
             label="Dismiss Disabled"
           />
+          <Toggle
+            isOn={customCornerRadius}
+            onIsOnChange={setCustomCornerRadius}
+            label="Corner Radius 12"
+          />
         </Section>
 
         <Section title="Selection Tracking">
@@ -239,17 +251,15 @@ export default function BottomSheetScreen() {
       {/* Material Background Sheet */}
       <BottomSheet
         isPresented={showBackgroundMaterial}
-        onIsPresentedChange={setShowBackgroundMaterial}>
-        <Group
-          modifiers={[
-            presentationDetents(['medium', 'large']),
-            presentationBackground({ type: 'material', material: 'ultraThin' }),
-          ]}>
+        onIsPresentedChange={setShowBackgroundMaterial}
+        presentationBackground={
+          <Rectangle modifiers={[foregroundStyle({ type: 'material', material: 'ultraThin' })]} />
+        }>
+        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Ultra thin material sheet background</Text>
             <Text modifiers={[foregroundStyle('secondaryLabel')]}>
-              The material follows the color scheme. iOS 26 renders it as a flat color rather than a
-              translucent blur
+              A material in the presentationBackground view stays a translucent blur on iOS 26
             </Text>
             <Button label="Close" onPress={() => setShowBackgroundMaterial(false)} />
           </VStack>

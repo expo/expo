@@ -59,6 +59,13 @@ const SERVER_EXAMPLE_PROMPTS = {
   workflow_run: 'run the build-and-deploy workflow',
   workflow_cancel: 'cancel the running workflow',
   workflow_validate: 'validate my workflow file',
+  observe_versions: 'list the app versions Observe has seen in the last 30 days',
+  observe_metrics_summary: 'did startup get slower in the latest iOS release',
+  observe_metrics: 'find the slowest cold launches this week',
+  observe_routes: 'which routes have the worst time to interactive on Android',
+  observe_event_names: 'which custom events is the app emitting',
+  observe_events: 'show the latest onboarding.completed events',
+  observe_session: 'show the timeline for session <session-id>',
 };
 
 /**

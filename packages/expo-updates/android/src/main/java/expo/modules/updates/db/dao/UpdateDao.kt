@@ -58,7 +58,11 @@ abstract class UpdateDao {
 
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
     val updateEntities = loadUpdatesWithId(id)
-    return if (updateEntities.isNotEmpty()) updateEntities[0] else null
+    return if (updateEntities.isNotEmpty()) {
+      updateEntities[0]
+    } else {
+      null
+    }
   }
 
   fun loadLaunchAssetForUpdate(updateId: UUID): AssetEntity? {

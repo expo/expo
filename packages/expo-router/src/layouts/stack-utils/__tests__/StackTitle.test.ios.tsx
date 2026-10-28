@@ -27,7 +27,7 @@ describe(appendStackTitlePropsToOptions, () => {
   });
 
   describe('asChild', () => {
-    it('sets headerTitle as function when asChild is true', () => {
+    it('sets headerTitle as function when asChild is true', async () => {
       const CustomTitle = <Text>Custom Title</Text>;
       const result = appendStackTitlePropsToOptions({}, { asChild: true, children: CustomTitle });
       expect(result.headerTitle).toBeDefined();
@@ -37,7 +37,7 @@ describe(appendStackTitlePropsToOptions, () => {
         throw new Error('headerTitle is not a function');
 
       expect(
-        render(<>{result.headerTitle({ children: '' })}</>).getByText('Custom Title')
+        await (await render(<>{result.headerTitle({ children: '' })}</>)).getByText('Custom Title')
       ).toBeDefined();
     });
   });

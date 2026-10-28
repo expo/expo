@@ -1,6 +1,60 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
+
+### Patch Changes
+
+- On web, loading several fonts no longer fails with a timeout after 12 seconds in WebKit (Safari). Each `@font-face` rule now goes into the same `<style>` element through `insertRule`, so the browser does not parse the style sheet again for every font. ([#52093](https://github.com/expo/expo/pull/52093) by [@fixfon](https://github.com/fixfon))
+
+## 58.0.9
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- [iOS] Keep the previously registered font when a font loaded from a new path has the same PostScript name, instead of unregistering it and crashing on render. ([#50561](https://github.com/expo/expo/pull/50561) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.2 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-15
 
 ### 🛠 Breaking changes
 
@@ -11,8 +65,6 @@
 - [android][ios] Select a face of a multi-face font family with the `fontWeight` and `fontStyle` style props. ([#49486](https://github.com/expo/expo/pull/49486) by [@vonovak](https://github.com/vonovak))
 - Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync` on Android, iOS, and web. Use `fontWeight` and `fontStyle` style props to select the correct face. ([#47939](https://github.com/expo/expo/pull/47939) by [@bryanmylee](https://github.com/bryanmylee))
 - [web] Accept a variable-font weight range, for example `weight: '100 900'`, on a font face. Android and iOS ignore a range and read the weight from the font file. ([#49487](https://github.com/expo/expo/pull/49487) by [@vonovak](https://github.com/vonovak))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

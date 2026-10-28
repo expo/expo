@@ -59,6 +59,29 @@ To determine the actual compressed size of your Hermes bundle, which is how larg
 
 This will generate **Brotli- and Gzip-compressed** versions of your Hermes bundle (**bundle.hbc.br** and **bundle.hbc.gz**) and display their sizes. You can use this to refine bandwidth calculations based on your app's real-world update sizes.
 
+## Estimating bundle diff patch size
+
+If your project uses [bundle diffing](/eas-update/bundle-diffing), most users download a patch rather than the full bundle. A patch contains only the differences between the bundle already on the device and the new bundle, so it is usually much smaller than the full update. Incorporating the impact of bundle diffing can give you a more realistic estimate for bandwidth usage.
+
+EAS Update generates patches with the [bsdiff algorithm](https://en.wikipedia.org/wiki/Bsdiff). You can run the same algorithm locally to compare two of your own bundles. First, install bsdiff:
+
+<Terminal cmd={['$ brew install bsdiff']} />
+
+Next, export your app twice: once at the version your users currently run, and once with your new changes. For each export, run `npx expo export` to generate the bundle inside the **dist** folder. Rename the two **.hbc** files to **old.hbc** and **new.hbc**.
+
+Then generate the patch and check its size:
+
+<Terminal
+  cmd={['$ bsdiff old.hbc new.hbc patch.bin', '$ ls -lh patch.bin']}
+  cmdCopy="bsdiff old.hbc new.hbc patch.bin && ls -lh patch.bin"
+/>
+
+The size of **patch.bin** is the approximate download size for a user who moves from the old bundle to the new one. The patch is already compressed, so you do not need to factor in the compression algorithm.
+
+Every patch is different. Try a range of smaller and larger code changes to see the impact of bundle diffing on your own app.
+
+Under normal circumstances, most users download patches instead of full bundles, but EAS Update may fall back to serving the full bundle in some cases (see [current limitations](/eas-update/bundle-diffing/#current-limitations)). The actual impact of bundle diffing also varies based on whether diffing is enabled for the embedded bundle.
+
 ## Factors that affect bandwidth consumption
 
 Actual bandwidth usage varies due to:

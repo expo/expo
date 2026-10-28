@@ -284,12 +284,15 @@ export const general = [
       makePage('router/advanced/web-modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/protected.mdx'),
+      makePage('router/advanced/prevent-screen-removal.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/navigation-transitions.mdx'),
+      makePage('router/advanced/react-activity.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
       makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
@@ -313,6 +316,7 @@ export const general = [
       makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/focus-handling.mdx'),
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
@@ -322,6 +326,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(
@@ -399,6 +404,10 @@ export const general = [
     makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
     makeGroup('In-app purchases', [makePage('guides/in-app-purchases.mdx')]),
     makeGroup('Push notifications', [makePage('guides/using-push-notifications-services.mdx')]),
+    makeGroup('Testing', [
+      makePage('guides/using-e2e.mdx'),
+      makePage('guides/using-testerarmy.mdx'),
+    ]),
     makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
     makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
     makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),
@@ -425,17 +434,14 @@ export const general = [
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/controlled-components.mdx'),
       ]),
-      makeSection('Expo UI', [
-        makePage('guides/expo-ui-swift-ui/index.mdx'),
-        makePage('guides/expo-ui-swift-ui/extending.mdx'),
-        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
-      ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/windows-long-paths.mdx'),
         makePage('troubleshooting/expo-go-version-mismatch.mdx'),
+        makePage('troubleshooting/expo-go-sign-in-required.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
         makePage('troubleshooting/proxies.mdx'),
       ]),
@@ -542,6 +548,7 @@ export const eas = [
         makePage('build-reference/caching.mdx'),
         makePage('build-reference/android-builds.mdx'),
         makePage('build-reference/ios-builds.mdx'),
+        makePage('build-reference/project-upload.mdx'),
         makePage('build-reference/build-configuration.mdx'),
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
@@ -619,6 +626,7 @@ export const eas = [
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
     makePage('eas/observe/eas-cli.mdx'),
+    makePage('eas/observe/ai-agents.mdx'),
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
     makePage('eas/observe/errors.mdx'),
@@ -627,6 +635,7 @@ export const eas = [
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
       makePage('eas/observe/integrations/expo-image.mdx'),
+      makePage('eas/observe/integrations/react-native-reanimated.mdx'),
       makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
@@ -659,6 +668,7 @@ export const eas = [
   ]),
   makeSection('Reference', [
     makePage('eas/webhooks.mdx'),
+    makePage('eas/protected-resources.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),
       makePage('accounts/two-factor.mdx'),
@@ -690,7 +700,6 @@ export const learn = [
       makePage('tutorial/create-a-modal.mdx'),
       makePage('tutorial/gestures.mdx'),
       makePage('tutorial/screenshot.mdx'),
-      makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
     ],
@@ -750,19 +759,71 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makeGroup(
-      'EAS Simulator',
+      'Expo Simulators',
       [
-        makePage('preview/eas-simulator/introduction.mdx'),
-        makePage('preview/eas-simulator/get-started.mdx'),
-        makePage('preview/eas-simulator/run-and-control.mdx'),
-        makePage('preview/eas-simulator/create-session-links.mdx'),
-        makePage('preview/eas-simulator/cli-reference.mdx'),
-        makePage('preview/eas-simulator/rest-api.mdx'),
-        makePage('preview/eas-simulator/troubleshooting.mdx'),
+        makePage('preview/simulators/introduction.mdx'),
+        makePage('preview/simulators/get-started.mdx'),
+        makeGroup(
+          'How-to',
+          [
+            makePage('preview/simulators/how-to/start-a-session.mdx'),
+            makePage('preview/simulators/how-to/install-your-app.mdx'),
+            makePage('preview/simulators/how-to/drive-the-device.mdx'),
+            makePage('preview/simulators/how-to/iterate-on-your-code.mdx'),
+            makePage('preview/simulators/how-to/capture-evidence.mdx'),
+            makePage('preview/simulators/how-to/organize-sessions.mdx'),
+            makePage('preview/simulators/how-to/verify-a-change-with-an-agent.mdx'),
+            makePage('preview/simulators/how-to/work-without-a-mac.mdx'),
+            makePage('preview/simulators/how-to/review-a-pull-request.mdx'),
+            makePage('preview/simulators/how-to/run-in-ci.mdx'),
+            makePage('preview/simulators/how-to/hand-off-a-session.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'Works with',
+          [
+            makePage('preview/simulators/works-with/overview.mdx'),
+            makePage('preview/simulators/works-with/expo-and-react-native.mdx'),
+            makePage('preview/simulators/works-with/expo-go.mdx'),
+            makePage('preview/simulators/works-with/native-ios-and-android.mdx'),
+            makePage('preview/simulators/works-with/flutter.mdx'),
+            makePage('preview/simulators/works-with/unity-and-hybrid.mdx'),
+            makePage('preview/simulators/works-with/appium.mdx'),
+            makePage('preview/simulators/works-with/maestro.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'Reference',
+          [
+            makePage('preview/simulators/reference/session-types.mdx'),
+            makePage('preview/simulators/reference/cli.mdx'),
+            makePage('preview/simulators/reference/rest-api.mdx'),
+            makePage('preview/simulators/reference/devices.mdx'),
+            makePage('preview/simulators/reference/usage-and-billing.mdx'),
+            makePage('preview/simulators/reference/security-and-data.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'How it works',
+          [
+            makePage('preview/simulators/how-it-works/sessions.mdx'),
+            makePage('preview/simulators/how-it-works/security-model.mdx'),
+            makePage('preview/simulators/how-it-works/network-inspection.mdx'),
+            makePage('preview/simulators/how-it-works/builds-and-bundles.mdx'),
+            makePage('preview/simulators/how-it-works/agent-targeting.mdx'),
+            makePage('preview/simulators/how-it-works/devices-compared.mdx'),
+            makePage('preview/simulators/how-it-works/session-lifetime.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makePage('preview/simulators/troubleshooting.mdx'),
+        makePage('preview/simulators/limitations.mdx'),
       ],
       { expanded: true }
     ),
-    makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
   ]),
 ];
 
@@ -919,6 +980,7 @@ function makePage(file) {
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
+    sidebarOrder: data.sidebar_order ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
@@ -948,18 +1010,7 @@ function pagesFromDir(dir) {
     .filter(entity => entity.isDirectory())
     .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
-      const sortedFolderPages = folderPages.sort((a, b) => {
-        // prioritize index files first
-        if (a.isIndex && !b.isIndex) {
-          return -1;
-        }
-        if (!a.isIndex && b.isIndex) {
-          return 1;
-        }
-
-        // otherwise sort by name (title)
-        return a.name.localeCompare(b.name);
-      });
+      const sortedFolderPages = folderPages.sort(compareSidebarEntries);
 
       if (folderPages.length === 0) {
         return null;
@@ -993,25 +1044,29 @@ function pagesFromDir(dir) {
     })
     .filter(Boolean);
 
-  return [...files, ...folders].sort((a, b) => {
-    // prioritize index files first
-    if (a.isIndex && !b.isIndex) {
-      return -1;
-    }
-    if (!a.isIndex && b.isIndex) {
-      return 1;
-    }
+  return [...files, ...folders].sort(compareSidebarEntries);
+}
 
-    // an explicit `order` in metadata.json wins; anything without one stays alphabetical
-    if (a.sidebarOrder !== undefined || b.sidebarOrder !== undefined) {
-      return (
-        (a.sidebarOrder ?? Number.MAX_SAFE_INTEGER) - (b.sidebarOrder ?? Number.MAX_SAFE_INTEGER)
-      );
-    }
+/**
+ * Orders one level of the sidebar: the index page first, then by explicit order, then
+ * alphabetically by sidebar title.
+ *
+ * The order is a weight, from a folder's `metadata.json` or a page's `sidebar_order`
+ * frontmatter, and defaults to 0. A negative weight sorts above the alphabetical run and
+ * a positive one below it, so a page can be pinned to either end of its group.
+ */
+function compareSidebarEntries(a, b) {
+  if (a.isIndex !== b.isIndex) {
+    return a.isIndex ? -1 : 1;
+  }
 
-    // otherwise sort by name (title)
-    return a.name.localeCompare(b.name);
-  });
+  const aOrder = a.sidebarOrder ?? 0;
+  const bOrder = b.sidebarOrder ?? 0;
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder;
+  }
+
+  return a.name.localeCompare(b.name);
 }
 
 /**

@@ -95,7 +95,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
   }
 
   @JavaScriptActor
-  internal func set(jsValue: JavaScriptValue, appContext: AppContext) throws {
+  internal func set(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws {
     if jsValue.isNull() && isRequired {
       throw FieldRequiredException(key!)
     }
@@ -109,7 +109,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
       if jsValue.isNull() {
         throw FieldRequiredException(key!)
       }
-      throw FieldInvalidTypeException((fieldKey: key!, value: jsValue, desiredType: Type.self)).causedBy(error)
+      throw FieldInvalidTypeException((fieldKey: key!, value: jsValue.kind, desiredType: Type.self)).causedBy(error)
     }
   }
 
@@ -118,7 +118,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
   }
 
   @JavaScriptActor
-  internal func castValue(jsValue: JavaScriptValue, appContext: AppContext) throws -> Type? {
+  internal func castValue(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Type? {
     return try fieldType.cast(jsValue: jsValue, appContext: appContext) as? Type
   }
 }

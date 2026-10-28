@@ -39,14 +39,11 @@ export function createMetroEsmGlobalsPlugin(
       nox.defineVisitor(
         'Identifier',
         {
-          fields: ['name', 'global'],
-          where: { name: { oneOf: ['global', 'module', 'exports'] } },
+          fields: ['name'],
+          where: { name: { oneOf: ['global', 'module', 'exports'] }, global: { equals: true } },
         },
         (identifier, state) => {
-          if (
-            identifier.node.global !== true ||
-            !metroPluginData(identifier.context).normalizePseudoGlobals
-          ) {
+          if (!metroPluginData(identifier.context).normalizePseudoGlobals) {
             return;
           }
           const replacement = state.names[String(identifier.node.name) as keyof typeof state.names];

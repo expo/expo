@@ -1,6 +1,41 @@
 # Changelog
 
-## Unpublished
+## 0.21.6
+
+### Patch Changes
+
+- Include the ES modules that an ES module config or config plugin imports in the fingerprint on Node.js 22.15 and later. Older Node versions still omit them, so the fingerprint of such a project differs between Node versions. On Node.js 22.15 and later, it changes once on upgrade. ([#51504](https://github.com/expo/expo/pull/51504) by [@YevheniiKotyrlo](https://github.com/YevheniiKotyrlo))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+
+## 0.21.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+
+## 0.21.4
+
+### Patch Changes
+
+- Fix the Expo config being silently left out of the fingerprint on Node 22.18+ when `app.config.ts` imports a `.ts` file. The module capture hook now forwards every `Module._compile` argument, so Node can still strip types from the imported file. ([#51168](https://github.com/expo/expo/pull/51168) by [@oikalyptus](https://github.com/oikalyptus))
+
+## 0.21.3
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 0.21.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/env@2.5.1
+
+## 0.21.1 — 2026-09-15
 
 ### 🛠 Breaking changes
 
@@ -10,10 +45,6 @@
 ### 🎉 New features
 
 - Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` and path overrides from the project's **react-native.config.js**, such as `sourceDir`, are omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 0.21.0 — 2026-09-10
 

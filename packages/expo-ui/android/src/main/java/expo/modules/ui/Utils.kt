@@ -32,7 +32,9 @@ val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
  * Gets the ImageVector for a given icon name using reflection.
  */
 fun getImageVector(icon: String?): ImageVector? {
-  if (icon.isNullOrEmpty()) return null
+  if (icon.isNullOrEmpty()) {
+    return null
+  }
   return try {
     val (theme, name) = icon.split(".")
     val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")

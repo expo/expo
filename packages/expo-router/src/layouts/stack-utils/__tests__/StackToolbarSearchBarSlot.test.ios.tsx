@@ -24,8 +24,8 @@ beforeEach(() => {
 
 describe('StackToolbarSearchBarSlot component', () => {
   describe('placement checks', () => {
-    it('renders RouterToolbarItem in bottom placement', () => {
-      render(
+    it('renders RouterToolbarItem in bottom placement', async () => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSearchBarSlot />
         </ToolbarPlacementContext.Provider>
@@ -42,23 +42,23 @@ describe('StackToolbarSearchBarSlot component', () => {
 
     it.each(['left', 'right', undefined, 'xyz'] as const)(
       'throws error when not in bottom placement (placement=%s)',
-      (placement) => {
+      async (placement) => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
-        expect(() => {
-          render(
+        await expect(async () => {
+          await render(
             <ToolbarPlacementContext.Provider value={placement as any}>
               <StackToolbarSearchBarSlot />
             </ToolbarPlacementContext.Provider>
           );
-        }).toThrow('Stack.Toolbar.SearchBarSlot must be used inside a Stack.Toolbar');
+        }).rejects.toThrow('Stack.Toolbar.SearchBarSlot must be used inside a Stack.Toolbar');
         jest.restoreAllMocks();
       }
     );
   });
 
   describe('hidden prop', () => {
-    it('returns null when hidden is true', () => {
-      const { toJSON } = render(
+    it('returns null when hidden is true', async () => {
+      const { toJSON } = await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSearchBarSlot hidden />
         </ToolbarPlacementContext.Provider>
@@ -67,8 +67,8 @@ describe('StackToolbarSearchBarSlot component', () => {
       expect(toJSON()).toBeNull();
     });
 
-    it('renders when hidden is false', () => {
-      render(
+    it('renders when hidden is false', async () => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSearchBarSlot hidden={false} />
         </ToolbarPlacementContext.Provider>
@@ -81,8 +81,8 @@ describe('StackToolbarSearchBarSlot component', () => {
   describe('props passthrough', () => {
     it.each([true, false, undefined])(
       'passes hidesSharedBackground=%s prop',
-      (hidesSharedBackground) => {
-        render(
+      async (hidesSharedBackground) => {
+        await render(
           <ToolbarPlacementContext.Provider value="bottom">
             <StackToolbarSearchBarSlot hidesSharedBackground={hidesSharedBackground} />
           </ToolbarPlacementContext.Provider>
@@ -99,8 +99,8 @@ describe('StackToolbarSearchBarSlot component', () => {
 
     it.each([true, false, undefined])(
       'passes sharesBackground as inverted separateBackground=%s',
-      (separateBackground) => {
-        render(
+      async (separateBackground) => {
+        await render(
           <ToolbarPlacementContext.Provider value="bottom">
             <StackToolbarSearchBarSlot separateBackground={separateBackground} />
           </ToolbarPlacementContext.Provider>
@@ -115,8 +115,8 @@ describe('StackToolbarSearchBarSlot component', () => {
       }
     );
 
-    it('renders with searchBar type', () => {
-      render(
+    it('renders with searchBar type', async () => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSearchBarSlot />
         </ToolbarPlacementContext.Provider>
@@ -130,8 +130,8 @@ describe('StackToolbarSearchBarSlot component', () => {
       );
     });
 
-    it('passes unique identifier', () => {
-      render(
+    it('passes unique identifier', async () => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSearchBarSlot />
         </ToolbarPlacementContext.Provider>

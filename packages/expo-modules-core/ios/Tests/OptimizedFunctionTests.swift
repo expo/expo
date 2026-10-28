@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -11,7 +12,7 @@ struct OptimizedFunctionTests {
   let appContext: AppContext
 
   init() {
-    self.appContext = AppContext.create()
+    self.appContext = TestAppContext()
 
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
@@ -254,7 +255,7 @@ struct OptimizedFunctionTests {
   @Test
   func `throws when fewer arguments than declared are passed`() async throws {
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
     }
     #expect(error.message == "Received 1 arguments, but 2 was expected")
   }
@@ -262,7 +263,7 @@ struct OptimizedFunctionTests {
   @Test
   func `throws when more arguments than declared are passed`() async throws {
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1, 2, 3)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1, 2, 3)")
     }
     #expect(error.message == "Received 3 arguments, but 2 was expected")
   }
@@ -272,7 +273,7 @@ struct OptimizedFunctionTests {
     // Argument count is validated synchronously, so the host function throws
     // before a promise is ever returned.
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbersAsync(1)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbersAsync(1)")
     }
     #expect(error.message == "Received 1 arguments, but 2 was expected")
   }

@@ -67,6 +67,27 @@ test.describe(inputDir, () => {
     expect(pageErrors.all).toEqual([]);
   });
 
+  test('in-page anchor links create a history entry the router can traverse', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(new URL('/hash-support', expoStart.url).href);
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('');
+
+    await page.locator('[data-testid="anchor-link"]').click();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('anchor');
+    await expect(page).toHaveURL(new URL('/hash-support#anchor', expoStart.url).href);
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('');
+    await expect(page).toHaveURL(new URL('/hash-support', expoStart.url).href);
+
+    await page.goForward();
+    await expect(page.locator('[data-testid="hash"]')).toHaveText('anchor');
+    await expect(page).toHaveURL(new URL('/hash-support#anchor', expoStart.url).href);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('url hash stays when setting other params', async ({ page }) => {
     console.log('Server running:', expoStart.url);
     await expoStart.fetchAsync('/');

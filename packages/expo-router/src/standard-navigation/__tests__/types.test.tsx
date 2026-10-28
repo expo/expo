@@ -152,6 +152,43 @@ export type _TabScreenActivityIsBoolean = Expect<
   Equal<ComponentProps<typeof Nav.Screen>['activityEnabled'], boolean | undefined>
 >;
 
+type ApplicationOptions = { customOption?: number };
+type ExtendedOptions = Opts & ApplicationOptions;
+
+const ExtendedNav = unstable_createStandardRouterNavigator<
+  ExtendedOptions,
+  TabNavigationState<ParamListBase>,
+  EventMap,
+  { initialRouteName?: string },
+  TabRouterOptions
+>(
+  (args) => {
+    args.descriptors.index?.options.customOption satisfies number | undefined;
+    return null;
+  },
+  TabRouter,
+  {
+    processDescriptors: (descriptors) => {
+      descriptors.index?.options.customOption satisfies number | undefined;
+      return descriptors;
+    },
+    processState: (state, descriptors) => {
+      descriptors.index?.options.customOption satisfies number | undefined;
+      return state;
+    },
+  }
+);
+
+<ExtendedNav.Screen name="index" options={{ title: 'Home', customOption: 123 }} />;
+<ExtendedNav.Screen
+  name="index"
+  options={({ route }) => ({ title: route.name, customOption: 123 })}
+/>;
+// @ts-expect-error Application-defined options retain their declared value type.
+<ExtendedNav.Screen name="index" options={{ customOption: '123' }} />;
+// @ts-expect-error Undeclared options are rejected.
+<ExtendedNav.Screen name="index" options={{ unknownOption: true }} />;
+
 type TypelessNavigationState = Readonly<{
   key: string;
   routeKeySeq: number;

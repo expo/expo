@@ -146,14 +146,16 @@ final class DeviceLoginViewModel: ObservableObject {
   }
 
   private func finish(secret: String, expiresAt: Date?) async {
-    await authService.completeLogin(with: secret, expiresAt: expiresAt)
+    let outcome = await authService.completeLogin(with: secret, expiresAt: expiresAt)
     // Re-checked after the await so a cancelled sign-in cannot still call onSignedIn.
     guard !Task.isCancelled else {
       return
     }
-    guard authService.user != nil else {
+    guard outcome != .failed, authService.user != nil else {
       // No actor means no username, which the manifest check needs, so this is not a usable session.
-      authService.signOut()
+      if outcome != .failed {
+        await authService.signOut()
+      }
       phase = .failed(.invalid)
       return
     }

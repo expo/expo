@@ -39,7 +39,6 @@ function options(overrides: Partial<JsTransformOptions> = {}): JsTransformOption
 function fullConfig() {
   return {
     allowOptionalDependencies: false,
-    unstable_renameRequire: false,
     asyncRequireModulePath: 'metro-runtime',
     globalPrefix: '',
     unstable_compactOutput: false,
@@ -662,7 +661,6 @@ it('collects a Flow side-effect import in the complete Metro dependency graph', 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -699,7 +697,6 @@ it('collects native lowering helpers in the complete Metro path', async () => {
     enableBabelRuntime: '7.24.0',
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -727,7 +724,6 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -746,6 +742,26 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
   ]);
   expect(result.result.metadata.hasCjsExports).toBe(true);
   expect(result.result.map.mappings.length).toBeGreaterThan(0);
+});
+
+it.each([
+  ['(Object).assign(exports, { value: 1 });', true],
+  ["((Object))['assign'](module.exports, { value: 1 });", true],
+  ['(function () { (Object).assign(exports, { value: 1 }); })();', true],
+  ['(function (Object) { (Object).assign(exports, { value: 1 }); })({});', false],
+  ['(Object.assign)(exports, { value: 1 });', false],
+])('preserves CommonJS detection for %s', async (source, hasCjsExports) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.hasCjsExports).toBe(hasCjsExports);
 });
 
 it('inlines stable top-level require aliases before native dependency collection', async () => {
@@ -973,7 +989,6 @@ it('completes production constant folding and DCE in native code', async () => {
     isDefaultExpoTransformer: true,
     enableBabelRuntime: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -990,6 +1005,42 @@ it('completes production constant folding and DCE in native code', async () => {
   expect(result.result.code).toContain('require(_dependencyMap[0])');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
+
+it.each([
+  ['minify is off', false],
+  ['minify is on', true],
+])(
+  'drops a production __DEV__ require when %s and the source has a comment',
+  async (_label, minify) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `// A normal source comment.
+if (__DEV__) {
+  require("./dev-only");
+}
+console.log("production entry");
+`,
+      options: options({ dev: false, minify }),
+      isDefaultExpoTransformer: true,
+      config: {
+        ...fullConfig(),
+        minifierConfig: { output: { comments: true } },
+      },
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.dependencies).toEqual([]);
+    expect(result.result.code).toContain('production entry');
+    expect(result.result.code).not.toContain('dev-only');
+    if (minify) {
+      expect(result.result.code).not.toContain('A normal source comment');
+    } else {
+      expect(result.result.code).toContain('// A normal source comment.');
+    }
+  }
+);
 
 it.each([
   ['nested arithmetic', `const value = 1 + 2 * 3; module.exports = value;`],
@@ -1027,6 +1078,7 @@ it.each([
             optimize: {
               constantFolding: true,
               deadCodeElimination: true,
+              moduleContext: true,
             },
           },
         },
@@ -1065,7 +1117,6 @@ it('collects optional dependencies and lets required uses dominate duplicates', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1118,7 +1169,6 @@ it('collects and rewrites weak dependencies without conflating them with sync re
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1147,7 +1197,6 @@ it('does not treat a shadowed require.resolveWeak call as a dependency', async (
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1169,7 +1218,6 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1198,7 +1246,6 @@ it('collects and rewrites Worker URL constructors through the Metro async runtim
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1226,7 +1273,6 @@ it('collects require.context parameters and keeps distinct contexts separate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1261,7 +1307,6 @@ it('leaves require.context untouched when the Metro feature is disabled', async 
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1295,7 +1340,6 @@ it.each([
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
-        unstable_renameRequire: false,
         allowOptionalDependencies: false,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1324,7 +1368,6 @@ it('deduplicates the generated async runtime dependency across import kinds', as
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1351,7 +1394,6 @@ it('collects optional dynamic imports and lets a required duplicate dominate', a
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1400,7 +1442,6 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1426,7 +1467,6 @@ it('collects optional worker dependencies without making the runtime optional', 
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1458,7 +1498,6 @@ it('honors optional dependency exclusions for dynamic imports and workers', asyn
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: { exclude: ['excluded', 'excluded-worker'] },
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1486,7 +1525,6 @@ it('collects optional weak and context dependencies', async () => {
     options: options({ dev: false }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1506,6 +1544,22 @@ it('collects optional weak and context dependencies', async () => {
   expect(result.result.code).toContain(`require(_dependencyMap[1], "./routes")`);
 });
 
+it('keeps an ignored dynamic import uncollected after minified comment stripping', async () => {
+  const source = `module.exports = import(/* webpackIgnore: true */ 'one');`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: false, minify: true }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.dependencies).toEqual([]);
+  expect(result.result.code).not.toContain('webpackIgnore');
+});
+
 it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 'one')`])(
   'leaves ignored dynamic imports uncollected in %s',
   async (source) => {
@@ -1516,7 +1570,6 @@ it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 
       options: options({ dev: true }),
       isDefaultExpoTransformer: true,
       config: {
-        unstable_renameRequire: false,
         allowOptionalDependencies: true,
         asyncRequireModulePath: 'metro-runtime',
         globalPrefix: '',
@@ -1545,7 +1598,6 @@ it.each([
     options: options({ dev: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: true,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -1580,7 +1632,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     source: `
       var values = [process.env.EXPO_OS, process['env']['EXPO_OS'], process.env.EXPO_SERVER, process.env.NODE_ENV, __DEV__, Platform.OS];
       var registry = import.meta.url;
-      var router = [process.env.EXPO_PROJECT_ROOT, process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
+      var router = [process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
       var selected = Platform.select({ web: 'web', native: 'native', ios: 'ios' });
       function shadow(process, Platform, __DEV__) {
         return [process.env.EXPO_OS, Platform.OS, __DEV__];
@@ -1606,7 +1658,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     `var values = ["ios", "ios", false, "production", false, "ios"]`
   );
   expect(result.result.code).toContain('globalThis.__ExpoImportMetaRegistry.url');
-  expect(result.result.code).toContain(`var router = ["/app", "../../app", "sync"]`);
+  expect(result.result.code).toContain(`var router = ["../../app", "sync"]`);
   expect(result.result.code).toContain(`var selected = 'ios'`);
   expect(result.result.code).toContain('return [process.env.EXPO_OS, Platform.OS, __DEV__]');
   expect(result.result.code).toContain(`process.env.NODE_ENV = 'test'`);
@@ -1658,6 +1710,49 @@ it('uses the last duplicate Platform.select entry while preserving fallback prec
   expect(result.result.code).toContain(`var spread = Platform.select`);
 });
 
+it.each([
+  ['parenthesized receiver', '(Platform).select', "{ ios: 'selected' }"],
+  ['nested parenthesized receiver', '((Platform)).select', "{ ios: 'selected' }"],
+  ['computed member', "Platform['select']", "{ ios: 'selected' }"],
+  ['optional call', 'Platform.select?.', "{ ios: 'selected' }"],
+  ['optional member', 'Platform?.select', "{ ios: 'selected' }"],
+])('folds Platform.select with a %s', async (_name, callee, args) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `var selected = ${callee}(${args});`,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`var selected = 'selected'`);
+});
+
+it('preserves shadowed Platform.select calls and calls without object arguments', async () => {
+  const source = `
+    var selected = Platform.select(value);
+    var later = Platform.select(other, { ios: 'later' });
+    function shadow(Platform) {
+      return Platform.select({ ios: 'shadowed' });
+    }
+  `;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`Platform.select(value)`);
+  expect(result.result.code).toContain(`Platform.select(other, { ios: 'later' })`);
+  expect(result.result.code).toContain(`Platform.select({ ios: 'shadowed' })`);
+});
+
 it('inlines EXPO_PUBLIC environment variables in production and preserves assignments', async () => {
   const previous = process.env.EXPO_PUBLIC_NOXCTURNAL_TEST;
   process.env.EXPO_PUBLIC_NOXCTURNAL_TEST = 'native-value';
@@ -1700,7 +1795,6 @@ it('resolves only encountered public and Router environment properties', async (
           process.env[key],
           (() => { const process = { env: { EXPO_PUBLIC_NOXCTURNAL_I19: 'shadow' } }; return process.env.EXPO_PUBLIC_NOXCTURNAL_I19; })(),
           process.env.EXPO_ROUTER_APP_ROOT,
-          process['env'].EXPO_ROUTER_ABS_APP_ROOT
         ];
       `,
       options: options({
@@ -1717,7 +1811,6 @@ it('resolves only encountered public and Router environment properties', async (
     expect(result.result.code).toContain('process.env[key]');
     expect(result.result.code).toContain('EXPO_PUBLIC_NOXCTURNAL_I19: "shadow"');
     expect(result.result.code).toContain('"../../../routes"');
-    expect(result.result.code).toContain('"/app/routes"');
   } finally {
     if (previous === undefined) delete process.env.EXPO_PUBLIC_NOXCTURNAL_I19;
     else process.env.EXPO_PUBLIC_NOXCTURNAL_I19 = previous;
@@ -2184,7 +2277,6 @@ it('lowers static ESM imports and exports through the full native path', async (
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2405,7 +2497,6 @@ it('preserves live imported references, direct-call semantics, and live local ex
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',
@@ -2491,26 +2582,60 @@ it('preserves constructor semantics for a member of a default import', async () 
   expect(result.result.code).toContain(`new Animated.default.Value(1)`);
 });
 
-it("loads Babel runtime helpers through Metro's default-import ABI", async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived();`,
-    options: options({
-      dev: true,
-      experimentalImportSupport: true,
-      unstable_transformProfile: 'default',
-    }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
-  });
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
-  expect(result.result.code).toMatch(
-    /construct: _\$\$_IMPORT_DEFAULT\(_dependencyMap\[\d+\], "@babel\/runtime\/helpers\/construct"\)/
-  );
-});
+it.each(['CommonJS', 'ES module'])(
+  'loads %s Babel runtime helpers through Metro',
+  async (format) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived('value');`,
+      options: options({
+        dev: true,
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'default',
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
+    const construct = requireFromMetroConfig('@babel/runtime/helpers/construct');
+    class Base {
+      constructor(readonly value: string) {}
+    }
+    const load = (name: string) => {
+      if (name === './Base') return Base;
+      if (name === '@babel/runtime/helpers/construct') {
+        return format === 'ES module' ? { __esModule: true, default: construct } : construct;
+      }
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    expect(factory).toBeDefined();
+    const module = { exports: {} };
+    factory!(
+      globalThis,
+      load,
+      (name: string) => {
+        const value = load(name);
+        return value.__esModule ? value.default : value;
+      },
+      () => {
+        throw new Error('Unexpected namespace import');
+      },
+      module,
+      module.exports,
+      result.dependencies.map(({ name }) => name)
+    );
+    expect(module.exports).toBeInstanceOf(Base);
+    expect(module.exports).toMatchObject({ value: 'value' });
+    expect(module.exports.constructor.name).toBe('Derived');
+  }
+);
 
 it('lowers named, namespace, and export-all re-exports with live getters', async () => {
   const result = await transformFileFullyWithNoxcturnal({
@@ -2520,7 +2645,6 @@ it('lowers named, namespace, and export-all re-exports with live getters', async
     options: options({ dev: true, experimentalImportSupport: true }),
     isDefaultExpoTransformer: true,
     config: {
-      unstable_renameRequire: false,
       allowOptionalDependencies: false,
       asyncRequireModulePath: 'metro-runtime',
       globalPrefix: '',

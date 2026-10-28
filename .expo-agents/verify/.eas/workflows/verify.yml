@@ -78,7 +78,7 @@ jobs:
           mkdir -p "$HOME/bin" && mv "$HOME/gh_${GH_V}_linux_amd64/bin/gh" "$HOME/bin/gh"
           echo "$HOME/bin" >> "$GITHUB_PATH" 2>/dev/null || export PATH="$HOME/bin:$PATH"
           "$HOME/bin/gh" --version
-          npm install -g @anthropic-ai/claude-code@2.1.229
+          npm install -g @anthropic-ai/claude-code@2.1.280
       - name: Guard profile and credential env
         run: npx --yes -p "@expo/verify@${VERIFY_VERSION:?pin missing}" verify verify-config
       # Token custody across steps: the environment's variables (including

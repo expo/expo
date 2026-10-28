@@ -1,11 +1,7 @@
-fragment CurrentUserActorData on UserActor {
+fragment CurrentUserActorData on Actor {
   __typename
   id
-  username
-  firstName
-  lastName
-  primaryAccountProfileImageUrl
-  bestContactEmail
+  displayName
   accounts {
     id
     name
@@ -17,5 +13,15 @@ fragment CurrentUserActorData on UserActor {
       fullName
       lastName
     }
+  }
+  ... on UserActor {
+    username
+    firstName
+    lastName
+    primaryAccountProfileImageUrl
+    bestContactEmail
+  }
+  ... on PartnerActor {
+    username
   }
 }

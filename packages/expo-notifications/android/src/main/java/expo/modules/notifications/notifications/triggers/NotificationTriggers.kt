@@ -32,7 +32,11 @@ interface AlarmClockAwareTrigger {
   val alarmClock: Boolean
 
   val delivery: String
-    get() = if (alarmClock) DELIVERY_ALARM_CLOCK else DELIVERY_BEST_EFFORT
+    get() = if (alarmClock) {
+      DELIVERY_ALARM_CLOCK
+    } else {
+      DELIVERY_BEST_EFFORT
+    }
 
   companion object {
     const val DELIVERY_BEST_EFFORT = "bestEffort"

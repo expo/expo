@@ -5,26 +5,27 @@ import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.utils.BarCodeScannerResult
+import java.io.Closeable
 
 @OptIn(ExperimentalGetImage::class)
-class BarcodeAnalyzer(formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
-  private val barcodeFormats = if (formats.isEmpty()) {
-    0
-  } else {
-    formats.map { it.mapToBarcode() }.reduce { acc, it ->
-      acc or it
-    }
-  }
-  private var barcodeScannerOptions =
-    BarcodeScannerOptions.Builder()
-      .setBarcodeFormats(barcodeFormats)
-      .build()
-  private var barcodeScanner = BarcodeScanning.getClient(barcodeScannerOptions)
+class BarcodeAnalyzer(
+  private val barcodeScanner: BarcodeScanner,
+  val onComplete: (BarCodeScannerResult) -> Unit
+) : ImageAnalysis.Analyzer, Closeable {
+  constructor(formats: List<BarcodeType>, onComplete: (BarCodeScannerResult) -> Unit) : this(
+    BarcodeScanning.getClient(
+      BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(barcodeFormats(formats))
+        .build()
+    ),
+    onComplete
+  )
 
   override fun analyze(imageProxy: ImageProxy) {
     val mediaImage = imageProxy.image
@@ -36,8 +37,16 @@ class BarcodeAnalyzer(formats: List<BarcodeType>, val onComplete: (BarCodeScanne
       // MLKit returns coordinates in the upright (rotated) coordinate space,
       // so we need the post-rotation dimensions for correct scaling.
       val isRotated = rotationDegrees == 90 || rotationDegrees == 270
-      val effectiveWidth = if (isRotated) imageProxy.height else imageProxy.width
-      val effectiveHeight = if (isRotated) imageProxy.width else imageProxy.height
+      val effectiveWidth = if (isRotated) {
+        imageProxy.height
+      } else {
+        imageProxy.width
+      }
+      val effectiveHeight = if (isRotated) {
+        imageProxy.width
+      } else {
+        imageProxy.height
+      }
 
       barcodeScanner.process(image)
         .addOnSuccessListener { barcodes ->
@@ -76,7 +85,13 @@ class BarcodeAnalyzer(formats: List<BarcodeType>, val onComplete: (BarCodeScanne
         .addOnCompleteListener {
           imageProxy.close()
         }
+    } else {
+      imageProxy.close()
     }
+  }
+
+  override fun close() {
+    barcodeScanner.close()
   }
 }
 
@@ -94,3 +109,12 @@ fun Array<ImageProxy.PlaneProxy>.toByteArray(): ByteArray {
 
   return result
 }
+
+private fun barcodeFormats(formats: List<BarcodeType>): Int =
+  if (formats.isEmpty()) {
+    0
+  } else {
+    formats.map { it.mapToBarcode() }.reduce { acc, it ->
+      acc or it
+    }
+  }

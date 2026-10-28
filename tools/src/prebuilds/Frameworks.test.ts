@@ -1,6 +1,8 @@
 /**
- * Tests for resource bundle placement in composed xcframeworks:
- *  - copyResourceBundlesIntoXCFrameworkAsync
+ * Tests for xcframework composition:
+ *  - copyResourceBundlesIntoXCFrameworkAsync (resource bundle placement)
+ *  - rewriteInternalTargetModuleReferences (.swiftinterface module rewriting)
+ *  - Frameworks.findFrameworkAtAnyVersion (locating a built product on disk)
  */
 import fs from 'fs-extra';
 import assert from 'node:assert/strict';
@@ -9,7 +11,11 @@ import os from 'os';
 import path from 'path';
 
 import type { SPMPackageSource } from './ExternalPackage';
-import { copyResourceBundlesIntoXCFrameworkAsync } from './Frameworks';
+import {
+  copyResourceBundlesIntoXCFrameworkAsync,
+  Frameworks,
+  rewriteInternalTargetModuleReferences,
+} from './Frameworks';
 import { SPMBuild } from './SPMBuild';
 import type { SPMConfig, SPMProduct } from './SPMConfig.types';
 import { setForceNonInteractive } from './Utils';
@@ -186,5 +192,227 @@ describe('copyResourceBundlesIntoXCFrameworkAsync', () => {
       await fs.readdir(path.join(xcframeworkPath, 'ios-arm64', `${PRODUCT_NAME}.framework`)),
       []
     );
+  });
+});
+
+const VERSION_PREFIX = path.join('2.2.0', '0.87.1', '250829098.0.17');
+
+interface BuiltArtifact {
+  flavor: 'debug' | 'release';
+  versionPrefix?: string;
+  productName?: string;
+}
+
+function artifactPath(
+  buildPath: string,
+  { flavor, versionPrefix, productName = PRODUCT_NAME }: BuiltArtifact
+): string {
+  return path.join(
+    buildPath,
+    'output',
+    ...(versionPrefix ? [versionPrefix] : []),
+    flavor,
+    'xcframeworks',
+    `${productName}.xcframework`
+  );
+}
+
+async function createBuildPathAsync(artifacts: BuiltArtifact[]): Promise<string> {
+  const buildPath = await fs.mkdtemp(path.join(os.tmpdir(), 'prebuild-find-framework-'));
+  tempRoots.push(buildPath);
+  for (const artifact of artifacts) {
+    await fs.mkdirp(artifactPath(buildPath, artifact));
+  }
+  return buildPath;
+}
+
+describe('findFrameworkAtAnyVersion', () => {
+  it('returns the non-versioned xcframework when the package has one', async () => {
+    const buildPath = await createBuildPathAsync([{ flavor: 'debug' }]);
+
+    assert.equal(
+      Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'),
+      artifactPath(buildPath, { flavor: 'debug' })
+    );
+  });
+
+  it('falls back to a versioned xcframework when only that one was built', async () => {
+    const artifact: BuiltArtifact = { flavor: 'release', versionPrefix: VERSION_PREFIX };
+    const buildPath = await createBuildPathAsync([artifact]);
+
+    assert.equal(
+      Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Release'),
+      artifactPath(buildPath, artifact)
+    );
+  });
+
+  it('prefers the non-versioned xcframework when a versioned one also exists', async () => {
+    const versioned: BuiltArtifact = { flavor: 'debug', versionPrefix: VERSION_PREFIX };
+    const buildPath = await createBuildPathAsync([versioned, { flavor: 'debug' }]);
+
+    assert.equal(
+      Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'),
+      artifactPath(buildPath, { flavor: 'debug' })
+    );
+  });
+
+  it('returns null when the product has not been built', async () => {
+    const buildPath = await createBuildPathAsync([]);
+
+    assert.equal(Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'), null);
+  });
+
+  it('chooses the lexicographically first version when several are built', async () => {
+    const earlier: BuiltArtifact = { flavor: 'debug', versionPrefix: VERSION_PREFIX };
+    const later: BuiltArtifact = {
+      flavor: 'debug',
+      versionPrefix: path.join('2.3.0', '0.87.1', '250829098.0.17'),
+    };
+    // Created newest-first so the expected answer is not simply the one created first. Glob does
+    // not promise enumeration order either way, so the real guard is the sort itself.
+    const buildPath = await createBuildPathAsync([later, earlier]);
+
+    assert.equal(
+      Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'),
+      artifactPath(buildPath, earlier)
+    );
+  });
+
+  it('ignores an xcframework whose version prefix has the wrong number of segments', async () => {
+    const buildPath = await createBuildPathAsync([{ flavor: 'debug', versionPrefix: '1.0.0' }]);
+
+    assert.equal(Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'), null);
+  });
+
+  it('returns the requested product, not another one built beside it', async () => {
+    const requested: BuiltArtifact = { flavor: 'debug', versionPrefix: VERSION_PREFIX };
+    const buildPath = await createBuildPathAsync([
+      { ...requested, productName: 'ExpoImage' },
+      requested,
+    ]);
+
+    assert.equal(
+      Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Debug'),
+      artifactPath(buildPath, requested)
+    );
+  });
+
+  it('never returns an artifact built for the other flavor', async () => {
+    const buildPath = await createBuildPathAsync([
+      { flavor: 'debug' },
+      { flavor: 'debug', versionPrefix: VERSION_PREFIX },
+    ]);
+
+    assert.equal(Frameworks.findFrameworkAtAnyVersion(buildPath, PRODUCT_NAME, 'Release'), null);
+  });
+});
+
+describe('rewriteInternalTargetModuleReferences', () => {
+  const CORE_CONFIG: SPMConfig = {
+    products: [
+      {
+        name: 'ExpoModulesCore',
+        podName: 'ExpoModulesCore',
+        platforms: ['iOS(.v15)'],
+        targets: [
+          { type: 'swift', name: 'ExpoModulesCore', path: 'ios' },
+          { type: 'objc', name: 'ExpoModulesCore_ios_objc', path: 'ios/ObjC' },
+        ],
+      },
+    ],
+  };
+
+  it('rewrites module selector references, keeping the `::` separator', () => {
+    assert.equal(
+      rewriteInternalTargetModuleReferences(
+        'public func register(_ registry: ExpoModulesCore_ios_objc::EXModuleRegistry)',
+        CORE_CONFIG
+      ),
+      'public func register(_ registry: ExpoModulesCore::EXModuleRegistry)'
+    );
+  });
+
+  it('rewrites dot-qualified references, keeping the `.` separator', () => {
+    assert.equal(
+      rewriteInternalTargetModuleReferences(
+        'public func register(_ registry: ExpoModulesCore_ios_objc.EXModuleRegistry)',
+        CORE_CONFIG
+      ),
+      'public func register(_ registry: ExpoModulesCore.EXModuleRegistry)'
+    );
+  });
+
+  it('rewrites both separators in the same interface, each keeping its own', () => {
+    const contents = [
+      'public var registry: ExpoModulesCore_ios_objc::EXModuleRegistry',
+      'public var legacyRegistry: ExpoModulesCore_ios_objc.EXModuleRegistry',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, CORE_CONFIG),
+      [
+        'public var registry: ExpoModulesCore::EXModuleRegistry',
+        'public var legacyRegistry: ExpoModulesCore.EXModuleRegistry',
+      ].join('\n')
+    );
+  });
+
+  it('rewrites imports of the internal target to the product module', () => {
+    const contents = [
+      '@_exported import ExpoModulesCore_ios_objc',
+      'import ExpoModulesCore_ios_objc',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, CORE_CONFIG),
+      ['@_exported import ExpoModulesCore', 'import ExpoModulesCore'].join('\n')
+    );
+  });
+
+  it('leaves references to the target named after the product untouched', () => {
+    const contents = [
+      '@_exported import ExpoModulesCore',
+      'public var view: ExpoModulesCore::ExpoView',
+    ].join('\n');
+
+    assert.equal(rewriteInternalTargetModuleReferences(contents, CORE_CONFIG), contents);
+  });
+
+  it('does not let a target corrupt the sibling target whose name it prefixes', () => {
+    const siblingConfig: SPMConfig = {
+      products: [
+        {
+          name: 'ExpoModulesCore',
+          podName: 'ExpoModulesCore',
+          platforms: ['iOS(.v15)'],
+          targets: [
+            { type: 'swift', name: 'ExpoModulesCore_ios', path: 'ios' },
+            { type: 'objc', name: 'ExpoModulesCore_ios_objc', path: 'ios/ObjC' },
+          ],
+        },
+      ],
+    };
+    const contents = [
+      'public var registry: ExpoModulesCore_ios_objc::EXModuleRegistry',
+      'public var view: ExpoModulesCore_ios::ExpoView',
+    ].join('\n');
+
+    assert.equal(
+      rewriteInternalTargetModuleReferences(contents, siblingConfig),
+      [
+        'public var registry: ExpoModulesCore::EXModuleRegistry',
+        'public var view: ExpoModulesCore::ExpoView',
+      ].join('\n')
+    );
+  });
+
+  it('leaves qualified references to other modules untouched', () => {
+    const contents = [
+      'public var name: Swift::String',
+      '/// Wraps expo::createReactSchedulerHandle from the C++ runtime.',
+      'public var jsi: ExpoModulesJSI::JavaScriptRuntime',
+    ].join('\n');
+
+    assert.equal(rewriteInternalTargetModuleReferences(contents, CORE_CONFIG), contents);
   });
 });

@@ -121,7 +121,7 @@ export function createHeadingManager(slugger: GithubSlugger, meta: Metadata): He
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType, tags } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
-    const slug = id ?? Utilities.generateSlug(slugger, title);
+    const slug = id ? Utilities.reserveSlug(slugger, id) : Utilities.generateSlug(slugger, title);
     const realTitle = Utilities.toString(title);
     const metaEntry = findMetaForTitle(realTitle);
     const level = levelOverride ?? nestingLevel ?? metaEntry?.depth ?? BASE_HEADING_LEVEL;

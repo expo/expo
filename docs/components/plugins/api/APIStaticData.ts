@@ -3,6 +3,7 @@ export const nonLinkableTypes = [
   '_ImmutableHeaders',
   '_ImmutableRequest',
   'Action',
+  'ActionCreators',
   'ActivityFamily',
   'AndroidBarcode',
   'AndroidSplashConfig',
@@ -19,7 +20,10 @@ export const nonLinkableTypes = [
   'B',
   'BackButtonDisplayMode',
   'BackgroundNotificationResult',
+  'BaseAction',
+  'BaseOptions',
   'BasePageEvent',
+  'BaseState',
   'BaseTextFieldProps',
   'BasicTextStyle',
   'BlurEffectTypes',
@@ -31,6 +35,7 @@ export const nonLinkableTypes = [
   'Buffer',
   'BufferEncoding',
   'BufferSource',
+  'C',
   'Calendar',
   'CalendarDialogOpenParamsNext',
   'CalendarDialogParamsNext',
@@ -53,6 +58,7 @@ export const nonLinkableTypes = [
   'DescribePlaceholderRoute',
   'Descriptor',
   'DescriptorRouteProp',
+  'Detail',
   'DisappearSymbolEffect',
   'DownloadProgressData',
   'DrawOffSymbolEffect',
@@ -137,9 +143,11 @@ export const nonLinkableTypes = [
   'NativeStackHeaderItemProps',
   'NativeStackHeaderProps',
   'NativeStackNativeProps',
+  'NativeStackNavigatorCreateProps',
   'NativeStackScreenProps',
   'NativeSyntheticEvent',
   'NativeTabNavigationEventMap',
+  'NativeTabsNavigatorCreateProps',
   'NativeTheme',
   'NavigationAction',
   'NavigationContainerRefWithCurrent',
@@ -152,6 +160,8 @@ export const nonLinkableTypes = [
   'NavigatorContentProps',
   'NavigatorOptions',
   'NavigatorProps',
+  'NetworkRequestFilter',
+  'NonNullable',
   'NotificationTimeoutError',
   'NumericFontWeight',
   'ObservableState',
@@ -206,8 +216,11 @@ export const nonLinkableTypes = [
   'RouteParams',
   'RouterFactory',
   'RouterOptions',
+  'RouterType',
   'RouteSegments',
+  'RouteState',
   'ScaleSymbolEffect',
+  'Schemas',
   'ScreenListeners',
   'ScreenTrigger',
   'ScrollableWrapper',
@@ -237,6 +250,7 @@ export const nonLinkableTypes = [
   'StandardNavigatorCreatePropsFactoryDeps',
   'StandardRouterNavigatorProps',
   'State',
+  'StateAction',
   'StyleProp',
   'SubmenuElement',
   'SubmenuProps',
@@ -260,6 +274,7 @@ export const nonLinkableTypes = [
   'TParams',
   'TrailingProps',
   'Transaction',
+  'TransitionOptions',
   'TriggerProps',
   'TRoute',
   'TSegments',
@@ -272,6 +287,7 @@ export const nonLinkableTypes = [
   'UploadProgressData',
   'UrlObject',
   'UseFontHook',
+  'V',
   'VariableColorSymbolEffect',
   'VerticalAlignment',
   'VerticalArrangement',
@@ -303,6 +319,11 @@ export const replaceableTypes: Partial<Record<string, string>> = {
   ManifestsEASConfig: 'EASConfig',
   ManifestsExpoGoConfig: 'ExpoGoConfig',
 };
+
+/**
+ * Packages whose pages render type names as they are declared, skipping `replaceableTypes`.
+ */
+export const packagesWithoutReplaceableTypes = ['expo-location-next'];
 
 /**
  * Map of entity/type names that should be linked to user specified source, internal or external.
@@ -369,6 +390,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   KeyboardTypeOptions: 'https://reactnative.dev/docs/textinput#keyboardtype',
   LayoutChangeEvent: 'https://reactnative.dev/docs/layoutevent',
   LiveActivityComponent: '/versions/latest/sdk/widgets/#liveactivitycomponentprops-environment',
+  CustomNotificationComponent:
+    '/versions/latest/sdk/widgets/#customnotificationcomponentprops-environment',
   LiveActivityEnvironment: '/versions/latest/sdk/widgets/#liveactivityenvironment',
   LoaderFunction: '/versions/latest/sdk/server/#loaderfunctionrequest-params',
   Location: '/versions/latest/sdk/media-library/#location',
@@ -396,6 +419,9 @@ export const hardcodedTypeLinks: Record<string, string> = {
   PagedInfo: '/versions/latest/sdk/media-library-legacy/#pagedinfo',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   PedometerUpdateCallback: '/versions/latest/sdk/pedometer/#pedometerupdatecallbackresult',
+  Performance: 'https://developer.mozilla.org/en-US/docs/Web/API/Performance',
+  PerformanceMark: 'https://developer.mozilla.org/en-US/docs/Web/API/PerformanceMark',
+  PerformanceObserver: 'https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver',
   PermissionStatus: '/versions/latest/sdk/expo/#permissionstatus',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Platform: 'https://reactnative.dev/docs/platform',
@@ -426,6 +452,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
   SharedRefType: '/versions/latest/sdk/expo/#sharedreftype',
+  SharedValue: 'https://docs.swmansion.com/react-native-reanimated/docs/core/useSharedValue/',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SingularOptions: '/versions/latest/sdk/router/#singularoptions',
   SpeechEventCallback: '/versions/latest/sdk/speech/#speecheventcallbackthis-ev',
@@ -447,6 +474,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   TabNavigationState:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
   TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  TaskManagerError: '/versions/latest/sdk/task-manager/#taskmanagererror',
   TaskManagerTaskExecutor: '/versions/latest/sdk/task-manager/#taskmanagertaskexecutorbody',
   TemplateStringsArray:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TemplateStringsArray',
@@ -475,23 +503,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v54.0.0': {
-    AlbumRef: '/versions/v54.0.0/sdk/media-library/#albumref',
-    AssetRef: '/versions/v54.0.0/sdk/media-library/#assetref',
-    AVMetadata: '/versions/v54.0.0/sdk/av/#avmetadata',
-    AVPlaybackSource: '/versions/v54.0.0/sdk/av/#avplaybacksource',
-    AVPlaybackStatus: '/versions/v54.0.0/sdk/av/#avplaybackstatus',
-    AVPlaybackStatusToSet: '/versions/v54.0.0/sdk/av/#avplaybackstatustoset',
-    BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
-    CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
-    EventEmitter: '/versions/v54.0.0/sdk/expo/#eventemittertype',
-    Href: '/versions/v54.0.0/sdk/router/#hreft',
-    NativeModule: '/versions/v54.0.0/sdk/expo/#nativemoduletype',
-    Playback: '/versions/v54.0.0/sdk/av/#playback',
-    SharedObject: '/versions/v54.0.0/sdk/expo/#sharedobjecttype',
-    SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
-    SQLiteProviderProps: '/versions/v54.0.0/sdk/sqlite/#sqliteproviderprops',
-  },
   'v55.0.0': {
     AlbumRef: '/versions/v55.0.0/sdk/media-library/#albumref',
     AssetRef: '/versions/v55.0.0/sdk/media-library/#assetref',
@@ -589,16 +600,61 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     TabTriggerProps: '/versions/v57.0.0/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/v57.0.0/sdk/router/#vectoriconprops',
   },
+  'v58.0.0': {
+    BufferOptions: '/versions/v58.0.0/sdk/video/#bufferoptions-1',
+    ButtonColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/button/#buttoncolors',
+    CameraPosition: '/versions/v58.0.0/sdk/maps/#cameraposition-2',
+    CheckboxColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/checkbox/#checkboxcolors',
+    CornerRadii: '/versions/v58.0.0/sdk/ui/jetpack-compose/shape/#cornerradii',
+    ErrorBoundaryProps: '/versions/v58.0.0/sdk/router/#errorboundaryprops',
+    EventEmitter: '/versions/v58.0.0/sdk/expo/#eventemittertype',
+    ExpoModifier: '/versions/v58.0.0/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/v58.0.0/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
+    Href: '/versions/v58.0.0/sdk/router/#hreft',
+    HrefObject: '/versions/v58.0.0/sdk/router/#hrefobject',
+    MaterialColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/colors/#materialcolors',
+    NativeModule: '/versions/v58.0.0/sdk/expo/#nativemoduletype',
+    NativeTabsTriggerBadgeProps:
+      '/versions/v58.0.0/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
+    NativeTabsTriggerIconProps:
+      '/versions/v58.0.0/sdk/router/native-tabs/#nativetabstriggericonprops',
+    NativeTabsTriggerLabelProps:
+      '/versions/v58.0.0/sdk/router/native-tabs/#nativetabstriggerlabelprops',
+    RouterActionReducer: '/versions/v58.0.0/sdk/router/#routeractionreducerstate-action-context',
+    RouterExtension: '/versions/v58.0.0/sdk/router/#routerextensioncontext',
+    ScrubbingModeOptions: '/versions/v58.0.0/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/v58.0.0/sdk/video/#scrubbingmodeoptions-1',
+    ShapeJSXElement: '/versions/v58.0.0/sdk/ui/jetpack-compose/shape/#shapejsxelement',
+    SharedObject: '/versions/v58.0.0/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/v58.0.0/sdk/expo/#sharedreftype',
+    SharedRefType: '/versions/v58.0.0/sdk/expo/#sharedreftype',
+    SingularOptions: '/versions/v58.0.0/sdk/router/#singularoptions',
+    StackToolbarBadgeProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbarbadgeprops',
+    StackToolbarIconProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbariconprops',
+    StackToolbarLabelProps: '/versions/v58.0.0/sdk/router/stack/#stacktoolbarlabelprops',
+    StandardUseNavigationBuilderOptions:
+      '/versions/v58.0.0/sdk/router/#standardusenavigationbuilderoptions',
+    SwitchColors: '/versions/v58.0.0/sdk/ui/jetpack-compose/switch/#switchcolors',
+    TabsProps: '/versions/v58.0.0/sdk/router/ui/#tabsprops',
+    TabTriggerProps: '/versions/v58.0.0/sdk/router/ui/#tabtriggerprops',
+    VectorIconProps: '/versions/v58.0.0/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/v58.0.0/sdk/ui/swift-ui/usenativestate/#workletcallback',
+  },
   latest: {
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     ButtonColors: '/versions/latest/sdk/ui/jetpack-compose/button/#buttoncolors',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
     CheckboxColors: '/versions/latest/sdk/ui/jetpack-compose/checkbox/#checkboxcolors',
     CornerRadii: '/versions/latest/sdk/ui/jetpack-compose/shape/#cornerradii',
+    ErrorBoundaryProps: '/versions/latest/sdk/router/#errorboundaryprops',
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/latest/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/latest/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/latest/sdk/router/#hreft',
     HrefObject: '/versions/latest/sdk/router/#hrefobject',
+    MaterialColors: '/versions/latest/sdk/ui/jetpack-compose/colors/#materialcolors',
     NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
@@ -606,6 +662,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggericonprops',
     NativeTabsTriggerLabelProps:
       '/versions/latest/sdk/router/native-tabs/#nativetabstriggerlabelprops',
+    RouterActionReducer: '/versions/latest/sdk/router/#routeractionreducerstate-action-context',
+    RouterExtension: '/versions/latest/sdk/router/#routerextensioncontext',
     ScrubbingModeOptions: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     ShapeJSXElement: '/versions/latest/sdk/ui/jetpack-compose/shape/#shapejsxelement',
@@ -616,10 +674,13 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     StackToolbarBadgeProps: '/versions/latest/sdk/router/stack/#stacktoolbarbadgeprops',
     StackToolbarIconProps: '/versions/latest/sdk/router/stack/#stacktoolbariconprops',
     StackToolbarLabelProps: '/versions/latest/sdk/router/stack/#stacktoolbarlabelprops',
+    StandardUseNavigationBuilderOptions:
+      '/versions/latest/sdk/router/#standardusenavigationbuilderoptions',
     SwitchColors: '/versions/latest/sdk/ui/jetpack-compose/switch/#switchcolors',
     TabsProps: '/versions/latest/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/latest/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/latest/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/latest/sdk/ui/swift-ui/usenativestate/#workletcallback',
   },
   unversioned: {
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
@@ -630,8 +691,11 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     ErrorBoundaryProps: '/versions/unversioned/sdk/router/#errorboundaryprops',
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/unversioned/sdk/ui/jetpack-compose/modifiers/#expomodifier',
+    HingeChangeHandler:
+      '/versions/unversioned/sdk/ui/swift-ui/modifiers/#hingechangehandleroldcontext-newcontext',
     Href: '/versions/unversioned/sdk/router/#hreft',
     HrefObject: '/versions/unversioned/sdk/router/#hrefobject',
+    MaterialColors: '/versions/unversioned/sdk/ui/jetpack-compose/colors/#materialcolors',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
@@ -639,6 +703,9 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggericonprops',
     NativeTabsTriggerLabelProps:
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerlabelprops',
+    RouterActionReducer:
+      '/versions/unversioned/sdk/router/#routeractionreducerstate-action-context',
+    RouterExtension: '/versions/unversioned/sdk/router/#routerextensioncontext',
     ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
     ShapeJSXElement: '/versions/unversioned/sdk/ui/jetpack-compose/shape/#shapejsxelement',
@@ -655,6 +722,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     TabsProps: '/versions/unversioned/sdk/router/ui/#tabsprops',
     TabTriggerProps: '/versions/unversioned/sdk/router/ui/#tabtriggerprops',
     VectorIconProps: '/versions/unversioned/sdk/router/#vectoriconprops',
+    WorkletCallback: '/versions/unversioned/sdk/ui/swift-ui/usenativestate/#workletcallback',
   },
 };
 

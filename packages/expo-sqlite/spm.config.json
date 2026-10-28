@@ -39,6 +39,7 @@
           "name": "ExpoSQLite",
           "path": "ios",
           "pattern": "**/*.swift",
+          "exclude": ["Benchmarks/**"],
           "dependencies": [
             "ReactNativeDependencies",
             "React",

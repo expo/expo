@@ -30,6 +30,11 @@ class DevelopmentServerService: ObservableObject {
   private let probeServiceName = "expo-go-permission-probe"
   private var pingTask: Task<Void, Never>?
   private var isFetchingRemote = false
+  private let urlSession: URLSession
+
+  init(urlSession: URLSession = .shared) {
+    self.urlSession = urlSession
+  }
 
   var hasGrantedNetworkPermission: Bool {
     UserDefaults.standard.bool(forKey: Self.networkPermissionGrantedKey)
@@ -154,7 +159,7 @@ class DevelopmentServerService: ObservableObject {
     request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
-      let (data, response) = try await URLSession.shared.data(for: request)
+      let (data, response) = try await urlSession.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
         return nil
@@ -233,7 +238,7 @@ class DevelopmentServerService: ObservableObject {
     request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
-      let (data, response) = try await URLSession.shared.data(for: request)
+      let (data, response) = try await urlSession.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
         applyRemoteFailureBackoff()
@@ -266,7 +271,12 @@ class DevelopmentServerService: ObservableObject {
       cacheRemoteSessions(sessions)
       remoteFailureCount = 0
       nextRemoteFetchAllowedAt = .distantPast
-    } catch {}
+    } catch is CancellationError {
+    } catch let error as URLError where error.code == .cancelled {
+    } catch {
+      print("[DevelopmentServerService] Failed to fetch remote development sessions: \(error)")
+      applyRemoteFailureBackoff()
+    }
   }
 
   private func updateDevelopmentServers() {

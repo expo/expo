@@ -8,6 +8,10 @@ import type { LocaleJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
 import * as Paths from './Paths';
 
+// Android looks up resources for these languages under their legacy ISO 639 codes.
+// See `adjustLanguageTag` in `android.content.res.ResourcesImpl`.
+const LEGACY_LANGUAGE_CODES: Record<string, string> = { he: 'iw', id: 'in', yi: 'ji' };
+
 export const withLocales: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
@@ -26,6 +30,14 @@ export function getLocales(
   return config.locales ?? null;
 }
 
+function getResourceQualifier(locale: string): string {
+  const tag = locale.replace(
+    /^[a-z]+/i,
+    (language) => LEGACY_LANGUAGE_CODES[language.toLowerCase()] ?? language
+  );
+  return `b+${tag.replaceAll('-', '+')}`;
+}
+
 export async function setLocalesAsync(
   config: Pick<ExpoConfig, 'locales'>,
   { projectRoot }: { projectRoot: string }
@@ -38,7 +50,7 @@ export async function setLocalesAsync(
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = path.join(
       await Paths.getResourceFolderAsync(projectRoot),
-      `values-b+${lang.replaceAll('-', '+')}`,
+      `values-${getResourceQualifier(lang)}`,
       'strings.xml'
     );
     await writeXMLAsync({

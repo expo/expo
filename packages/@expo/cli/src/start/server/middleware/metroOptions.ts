@@ -33,6 +33,8 @@ export type ExpoMetroOptions = {
   bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
+  /** The chunking strategy to use when `splitChunks` is enabled. */
+  chunkingStrategy?: 'granular' | 'legacy';
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot?: string;
   /** Enable React compiler support in Babel. */
@@ -69,6 +71,7 @@ export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  chunkingStrategy?: 'granular' | 'legacy';
   usedExports?: boolean;
   exporting?: boolean;
 };
@@ -150,7 +153,21 @@ export function getMetroDirectBundleOptionsForExpoConfig(
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
+    chunkingStrategy: getChunkingStrategyFromExpoConfig(exp),
   });
+}
+
+export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'granular' | 'legacy' {
+  const experiments = exp.experiments as
+    | (NonNullable<ExpoConfig['experiments']> & {
+        chunking?: { mode: 'granular' | 'legacy' };
+      })
+    | undefined;
+  return experiments?.chunking?.mode === 'granular' &&
+    !exp.experiments?.reactServerComponentRoutes &&
+    !exp.experiments?.reactServerFunctions
+    ? 'granular'
+    : 'legacy';
 }
 
 export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
@@ -172,6 +189,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     isExporting,
     inlineSourceMap,
     splitChunks,
+    chunkingStrategy,
     usedExports,
     reactCompiler,
     optimize,
@@ -255,6 +273,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      chunkingStrategy,
       usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
@@ -324,6 +343,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -379,6 +399,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (hosted) {
     queryParams.append('transform.hosted', '1');
+  }
+  if (isLoaderBundle) {
+    queryParams.append('transform.isLoaderBundle', 'true');
   }
 
   if (environment) {

@@ -142,7 +142,9 @@ data class CrashReport(
     }
 
     private const val MAX_CAUSE_DEPTH = 5
-    private const val MAX_LOG_STACK_FRAMES = 25
+
+    /** Kept in step with the iOS limit so the same crash isn't cut at a different depth. */
+    private const val MAX_LOG_STACK_FRAMES = 50
     private const val MAX_LOG_STACKTRACE_LENGTH = 65_536
 
     private fun signalName(signal: Int): String =

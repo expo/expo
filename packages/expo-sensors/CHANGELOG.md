@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fixed `DeviceMotion` emitting a stale reading from the previous subscription when re-subscribing, and sensors restarting after the last listener was removed when the app returned to the foreground. ([#51364](https://github.com/expo/expo/pull/51364) by [@tomjvk](https://github.com/tomjvk))
 
-### 🐛 Bug fixes
+## 58.0.3
 
-### 💡 Others
+### Patch Changes
+
+- [iOS] Rewrote the motion permission requester in Swift, so expo-sensors no longer needs a separate Objective-C target when built with Swift Package Manager. Fixed a crash when `NSMotionUsageDescription` is missing from Info.plist: the permission is now reported as denied and an error is logged. ([#51161](https://github.com/expo/expo/pull/51161) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.2
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.0 — 2026-09-10
 

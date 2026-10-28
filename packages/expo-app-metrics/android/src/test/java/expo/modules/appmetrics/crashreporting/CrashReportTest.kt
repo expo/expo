@@ -140,14 +140,14 @@ class CrashReportTest {
   }
 
   @Test
-  fun `renders at most twenty-five attributed stack frames and reports the omitted count`() {
+  fun `renders at most fifty attributed stack frames and reports the omitted count`() {
     val report = CrashReport(
       exceptionReason = "boom",
       callStackTree = CrashReport.CallStackTree(
         callStacks = listOf(
           CrashReport.CallStackTree.CallStack(
             threadAttributed = true,
-            callStackRootFrames = (0 until 28).map { CrashReport.CallStackTree.Frame("frame$it") }
+            callStackRootFrames = (0 until 53).map { CrashReport.CallStackTree.Frame("frame$it") }
           ),
           CrashReport.CallStackTree.CallStack(
             threadAttributed = false,
@@ -171,9 +171,9 @@ class CrashReportTest {
       )
     )
     val lines = requireNotNull(attributes["exception.stacktrace"] as? String).lines()
-    assertEquals(26, lines.size)
+    assertEquals(51, lines.size)
     assertEquals("frame0", lines.first())
-    assertEquals("frame24", lines[24])
+    assertEquals("frame49", lines[49])
     assertEquals("… +3 more frames", lines.last())
     assertFalse(lines.contains("unattributed"))
   }

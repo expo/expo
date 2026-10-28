@@ -253,7 +253,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       val latitudeDelta = bounds.northeast.latitude - bounds.southwest.latitude
       val rawLongitudeDelta = bounds.northeast.longitude - bounds.southwest.longitude
       // We need to subtract 360 from longitude delta when crossing the antimeridian to get the correct value
-      val longitudeDelta = if (rawLongitudeDelta < 0) rawLongitudeDelta + 360.0 else rawLongitudeDelta
+      val longitudeDelta = if (rawLongitudeDelta < 0) {
+        rawLongitudeDelta + 360.0
+      } else {
+        rawLongitudeDelta
+      }
 
       onCameraMove(
         CameraMoveEvent(
@@ -362,6 +366,9 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
+    val duration = config?.duration ?: Int.MAX_VALUE
+    require(duration >= 0) { "duration must be nonnegative" }
+
     // Stop updating the camera position based on user location.
     manualCameraControl = true
     // If no coordinates are provided, the camera will be centered on the user's location.
@@ -373,7 +380,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       ?: CameraUpdateFactory.newLatLng(coordinates)
 
     // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
-    cameraState.animate(cameraUpdate, config?.duration ?: Int.MAX_VALUE)
+    if (duration == 0) {
+      cameraState.move(cameraUpdate)
+    } else {
+      cameraState.animate(cameraUpdate, duration)
+    }
 
     // If centering on the user's location, stop manual camera control.
     if (config?.coordinates == null) {

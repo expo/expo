@@ -7,13 +7,13 @@ packageName: 'expo-router'
 platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import APISection from '~/components/plugins/APISection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 
-`expo-router/ui` is a submodule of `expo-router` library and exports components and hooks to build custom tab layouts, rather than using the default [React Navigation](https://reactnavigation.org/) navigators provided by `expo-router`.
+`expo-router/ui` is a submodule of `expo-router` that exports headless components and hooks to build [custom tab layouts](/router/advanced/custom-tabs/). You can use it instead of the built-in navigators bundled with Expo Router, such as [JavaScript tabs](/router/advanced/tabs/) and [native tabs](/router/advanced/native-tabs/).
 
 > See the [Expo Router](./index) reference for more information about the file-based routing library for native and web app.
 
@@ -25,7 +25,7 @@ To use `expo-router/ui` in your project, you need to install `expo-router` in yo
   title="Install Expo Router"
   description="Learn how to install Expo Router in your project."
   href="/router/installation/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Configuration in app config
@@ -48,7 +48,7 @@ If you are using the [default](/more/create-expo/#--template) template to create
 
 For information about using `expo-router/ui` in Custom tab layouts guide:
 
-<BoxLink title="Custom tab layouts" Icon={BookOpen02Icon} href="/router/advanced/custom-tabs/" />
+<BoxLink title="Custom tab layouts" Icon={RouterLogo} href="/router/advanced/custom-tabs/" />
 
 ## API
 

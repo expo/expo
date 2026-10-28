@@ -1,14 +1,16 @@
 import { ensureStateType } from './ensureStateType';
 import { createRouteKeyMinter } from './stateKeys';
-import type {
-  DefaultRouterOptions,
-  NavigationAction,
-  NavigationState,
-  Router,
-  RouterActionResult,
-  RouterConfigOptions,
-  RouterFactory,
+import {
+  type DefaultRouterOptions,
+  type NavigationAction,
+  type NavigationState,
+  type Router,
+  RouterActionHandling,
+  type RouterActionResult,
+  type RouterConfigOptions,
+  type RouterFactory,
 } from './types';
+import { isActionHandled } from './utils';
 
 export type RouterExtensionContext<
   State extends NavigationState,
@@ -16,8 +18,10 @@ export type RouterExtensionContext<
   Options extends DefaultRouterOptions,
 > = {
   /**
-   * The router being extended. Delegate to it for everything the extension does not handle.
-   * It is typed for the extended state and actions; actions it does not recognize return `null`.
+   * The router being extended. Delegate to it or return `RouterActionHandling.Delegate` for
+   * everything the extension does not handle. It is typed for the extended state and actions;
+   * actions it does not recognize return `RouterActionHandling.Unhandled`. Use `isActionHandled`
+   * to detect whether the router handled the action.
    */
   baseRouter: Router<State, Action> & {
     /**
@@ -27,7 +31,7 @@ export type RouterExtensionContext<
       state: State,
       action: Action,
       config?: RouterConfigOptions
-    ): RouterActionResult<State> | null;
+    ): RouterActionResult<State> | RouterActionHandling.Unhandled;
   };
   /**
    * The options the navigator passed to the router factory.
@@ -49,6 +53,21 @@ export type RouterExtensionOptions<State extends NavigationState> = {
 };
 
 /**
+ * The router members an `extendRouter` extension returns. Its `getStateForAction` may also return
+ * `RouterActionHandling.Delegate` to let the base router handle the action.
+ */
+export type RouterExtensionMembers<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = Omit<Router<State, Action>, 'getStateForAction'> & {
+  getStateForAction(
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ): RouterActionResult<State> | RouterActionHandling | null;
+};
+
+/**
  * Returns the router members to merge over the base router. Members that are left out are
  * inherited from the base router, including `actionCreators`: return a merged object to add
  * action creators instead of replacing them. An inherited `normalizeState` runs on the extended
@@ -58,7 +77,27 @@ export type RouterExtension<
   State extends NavigationState,
   Action extends NavigationAction,
   Options extends DefaultRouterOptions,
-> = (context: RouterExtensionContext<State, Action, Options>) => Partial<Router<State, Action>>;
+> = (
+  context: RouterExtensionContext<State, Action, Options>
+) => Partial<RouterExtensionMembers<State, Action>>;
+
+// `Omit` replaces the method. A plain intersection keeps `Router`'s signature as the first
+// overload, so callers would still see `null` in the return type.
+/**
+ * The router that a factory from `extendRouter` or `extendRouterActions` creates. Its
+ * `getStateForAction` returns `RouterActionHandling.Unhandled`, never `null`, for an action that
+ * it does not handle.
+ */
+export type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
+  Router<State, Action>,
+  'getStateForAction'
+> & {
+  getStateForAction(
+    state: State,
+    action: Action,
+    options: RouterConfigOptions
+  ): RouterActionResult<State> | RouterActionHandling.Unhandled;
+};
 
 /**
  * Creates a router factory that merges the members returned by `extension` over the router
@@ -88,7 +127,9 @@ export function extendRouter<
   // and `Router`'s conditional `type` requirement makes `State` measure as invariant. `typeof
   // StackRouter` then fails constraints such as `RouterFactory<NavigationState, NavigationAction,
   // DefaultRouterOptions>` (TS2344 in `views/Navigator.tsx`). A function type is compared structurally.
-): (options: Options) => Router<State, Action> {
+): (options: Options) => ExtendedRouter<State, Action> {
+  // Warns once per router factory, so a deprecated result does not log on every action.
+  let warnedNull = false;
   return (options) => {
     // The extension owns the state and action types of the router it produces. The base router
     // is created for the base types and the extension decides which of its members still apply.
@@ -130,9 +171,11 @@ export function extendRouter<
           );
         }
         const result = baseRouter.getStateForAction(stamp(state), action, config);
-        if (result !== null) {
-          current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
+        // A custom base router may still return the deprecated `null`.
+        if (!isActionHandled(result)) {
+          return RouterActionHandling.Unhandled;
         }
+        current.routeKeySeq = Math.max(current.routeKeySeq, result.state.routeKeySeq);
         return result;
       },
     };
@@ -143,8 +186,8 @@ export function extendRouter<
       return key;
     };
 
-    const router: Router<State, Action> = {
-      ...baseRouter,
+    const router: RouterExtensionMembers<State, Action> = {
+      ...delegate,
       ...extension({ baseRouter: delegate, options, nextKey }),
       type,
     };
@@ -163,13 +206,33 @@ export function extendRouter<
       getStateForAction(state, action, config) {
         const typedState = ensureType(start(state, config));
         const result = router.getStateForAction(typedState, action, config);
+        if (result === null && process.env.NODE_ENV !== 'production' && !warnedNull) {
+          warnedNull = true;
+          console.warn(
+            `An \`extendRouter\` extension or \`extendRouterActions\` reducer returned \`null\` for the "${action.type}" action. Returning \`null\` is deprecated. Return \`RouterActionHandling.Unhandled\` to leave the action unhandled, and use \`isActionHandled\` to check whether a router handled an action.`
+          );
+        }
+        const resolved =
+          result === RouterActionHandling.Delegate
+            ? delegate.getStateForAction(typedState, action, config)
+            : result;
 
-        if (result === null) {
-          return null;
+        if (!isActionHandled(resolved)) {
+          return RouterActionHandling.Unhandled;
         }
 
-        const finishedState = finish(result.state, typedState.type);
-        return finishedState === result.state ? result : { ...result, state: finishedState };
+        const finishedState = finish(resolved.state, typedState.type);
+        if (router.getBrowserHistoryForAction) {
+          const browserHistory = router.getBrowserHistoryForAction(
+            typedState,
+            finishedState,
+            action
+          );
+          if (browserHistory !== resolved.browserHistory) {
+            return { ...resolved, state: finishedState, browserHistory };
+          }
+        }
+        return finishedState === resolved.state ? resolved : { ...resolved, state: finishedState };
       },
     };
   };
@@ -183,8 +246,8 @@ export type RouterActionContext<
   Pick<RouterExtensionContext<State, Action, Options>, 'baseRouter' | 'options' | 'nextKey'>;
 
 /**
- * Reduces one action. Return a result to handle the action, `null` to reject it, or `undefined`
- * to let the base router handle it.
+ * Reduces one action. Return a result to handle the action, `RouterActionHandling.Delegate` to
+ * let the base router handle it, or `RouterActionHandling.Unhandled` to leave it unhandled.
  */
 export type RouterActionReducer<
   State extends NavigationState,
@@ -194,7 +257,7 @@ export type RouterActionReducer<
   state: State,
   action: Action,
   context: RouterActionContext<State, Action, Options>
-) => RouterActionResult<State> | null | undefined;
+) => RouterActionResult<State> | RouterActionHandling | null | undefined;
 
 /**
  * Creates a router factory whose `getStateForAction` runs `reducer` before the base router.
@@ -208,7 +271,7 @@ export type RouterActionReducer<
  * ```ts
  * const Router = extendRouterActions(StackRouter, (state, action: StackAction | ClearAction, { nextKey }) => {
  *   if (action.type !== 'CLEAR') {
- *     return undefined;
+ *     return RouterActionHandling.Delegate;
  *   }
  *   const route = { key: nextKey('index'), name: 'index' };
  *   return { state: { ...state, index: 0, routes: [route] }, affectedRouteKey: route.key };
@@ -224,7 +287,9 @@ export function extendRouterActions<
 >(
   base: RouterFactory<State, BaseAction, BaseOptions>,
   reducer: RouterActionReducer<State, Action, Options>
-): (options: Options) => Router<State, Action> {
+): (options: Options) => ExtendedRouter<State, Action> {
+  // Warns once per router factory, so a deprecated result does not log on every action.
+  let warnedUndefined = false;
   return extendRouter<State, BaseAction, BaseOptions, State, Action, Options>(
     base,
     ({ baseRouter, options, nextKey }) => {
@@ -233,11 +298,18 @@ export function extendRouterActions<
       const overrides = {
         getStateForAction(state: State, action: Action, config: RouterConfigOptions) {
           const result = reducer(state, action, { ...config, baseRouter, options, nextKey });
-          return result === undefined
-            ? baseRouter.getStateForAction(state, action, config)
-            : result;
+          if (result !== undefined) {
+            return result;
+          }
+          if (process.env.NODE_ENV !== 'production' && !warnedUndefined) {
+            warnedUndefined = true;
+            console.warn(
+              `An \`extendRouterActions\` reducer returned \`undefined\` for the "${action.type}" action. Returning \`undefined\` is deprecated. Return \`RouterActionHandling.Delegate\` to let the base router handle the action.`
+            );
+          }
+          return RouterActionHandling.Delegate;
         },
-      } as Partial<Router<State, Action>>;
+      } as Partial<RouterExtensionMembers<State, Action>>;
       return overrides;
     }
   );

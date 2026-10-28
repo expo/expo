@@ -31,19 +31,18 @@ import {
 import assert from 'node:assert';
 
 import type { ExpoBabelTransformer as ExpoBabelTransformerWithCacheKey } from '../babel-transformer';
+import { embedCurrentFingerprints, type CacheVaryDim } from '../cache-vary/ambient';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  emptySourceMap,
-  packDecodedMappings,
-  packRawMappings,
-  type SerializableSourceMap,
-} from '../serializer/packedMap';
 import {
   composeSourceMaps,
   rawMappingsToEncodedMap,
+  vlqMapFromDecodedMap,
+  vlqMapFromEncodedMap,
+  type BabelDecodedMap,
   type BabelSourceMapSegment,
+  type EncodedMappings,
   type EncodedTransformerSourceMap,
+  type VlqMap,
 } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import * as assetTransformer from './asset-transformer';
@@ -64,7 +63,10 @@ import {
   isNoxcturnalTransformWorkerEnabled,
   tryTransformJSWithNoxcturnal,
 } from './noxcturnal/metro-transform-worker';
-import { type NoxcturnalMetroTransformAttempt } from './noxcturnal/noxcturnal-transformer';
+import {
+  transformAssetWithNoxcturnalSync,
+  type NoxcturnalMetroTransformAttempt,
+} from './noxcturnal/noxcturnal-transformer';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoBabelFileMetadata, ExpoJsTransformerConfig } from './types';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
@@ -99,6 +101,7 @@ interface JSFile extends BaseFile {
     readonly names: string[];
     readonly originalCode: string;
   };
+  readonly cacheVary?: readonly CacheVaryDim[];
 }
 
 interface JSONFile extends BaseFile {
@@ -184,7 +187,7 @@ export const minifyCode = async (
   inputSourceMap?: EncodedTransformerSourceMap
 ): Promise<{
   code: string;
-  sourceMap: SerializableSourceMap;
+  map: EncodedMappings;
 }> => {
   const sourceMap = inputSourceMap ?? rawMappingsToEncodedMap({ filename, source, rawMappings });
 
@@ -203,12 +206,7 @@ export const minifyCode = async (
     done('minify', { file: debugEvent.path(filename) });
     return {
       code: minified.code,
-      sourceMap: minified.map
-        ? packDecodedMappings({
-            mappings: minified.map.mappings,
-            names: minified.map.names,
-          })
-        : emptySourceMap(),
+      map: minified.map ?? { mappings: '', names: [] },
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -424,7 +422,9 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
-  const unstable_renameRequire = config.unstable_renameRequire;
+  const unstable_useStaticHermesModuleFactory = Boolean(
+    options.customTransformOptions?.unstable_staticHermesOptimizedRequire
+  );
 
   // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
   // production builds, or files that have specifically seen a change in their exports
@@ -520,10 +520,7 @@ async function transformJS(
         importAll,
         dependencyMapName,
         config.globalPrefix,
-        // TODO: This config is optional to allow its introduction in a minor
-        // release. It should be made non-optional in ConfigT or removed in
-        // future.
-        unstable_renameRequire === false
+        { unstable_useStaticHermesModuleFactory }
       ));
     }
   }
@@ -588,11 +585,13 @@ async function transformJS(
       ])
     : null;
   let code = result.code;
-  let sourceMap: SerializableSourceMap;
+  let lineCount: number;
+  let map: VlqMap;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ sourceMap, code } = await minifyCode(
+    let minifiedMap: EncodedMappings;
+    ({ map: minifiedMap, code } = await minifyCode(
       config,
       file.filename,
       result.code,
@@ -607,13 +606,14 @@ async function transformJS(
           }
         : undefined
     ));
+    ({ lineCount, map } = vlqMapFromEncodedMap(minifiedMap, code));
+  } else if (generatedSourceMap) {
+    ({ lineCount, map } = vlqMapFromEncodedMap(generatedSourceMap, code));
   } else {
-    sourceMap = generatedSourceMap
-      ? packDecodedMappings({
-          mappings: generatedSourceMap.mappings,
-          names: generatedSourceMap.names,
-        })
-      : packRawMappings(rawMappings);
+    ({ lineCount, map } = vlqMapFromDecodedMap(
+      (result as { decodedMap?: BabelDecodedMap } | null)?.decodedMap,
+      code
+    ));
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -635,12 +635,9 @@ async function transformJS(
           unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
           optimizationSizeLimit: config.optimizationSizeLimit,
           unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
-          unstable_renameRequire,
+          unstable_useStaticHermesModuleFactory,
         }
       : undefined;
-
-  let lineCount;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
   // that React Compiler and other Babel plugins may add.
@@ -649,17 +646,15 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        // Reconcile re-runs Babel codegen and replaces `data.map` via
-        // `installPackedMap` before any reader sees it, so the sourceMap emitted
-        // here would be discarded — short-circuit to an empty Array to skip
-        // the work and avoid GC pressure on optimize builds.
-        map: possibleReconcile ? [] : sourceMap,
+        // Reconcile re-runs Babel codegen and replaces `data.map` before any reader sees it.
+        map: possibleReconcile ? { mappings: '', names: [] } : map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         loaderReference: file.loaderReference,
+        expoCacheVary: await embedCurrentFingerprints(file.cacheVary),
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -705,13 +700,46 @@ async function transformAsset(
   context: TransformationContext
 ): Promise<TransformResponse> {
   const { assetRegistryPath, assetPlugins } = context.config;
+  const assetArgs = {
+    filename: file.filename,
+    options: {
+      platform: context.options.platform,
+      customTransformOptions: context.options.customTransformOptions,
+      projectRoot: context.projectRoot,
+      publicPath: context.config.publicPath,
+    },
+  };
 
-  // TODO: Add web asset hashing in production.
-  const result = await assetTransformer.transform(
-    getBabelTransformArgs(file, context),
-    assetRegistryPath,
-    assetPlugins
-  );
+  if (isNoxcturnalTransformWorkerEnabled(context.config)) {
+    const result = await assetTransformer.transformToSource(
+      assetArgs,
+      assetRegistryPath,
+      assetPlugins
+    );
+    const jsFile: JSFile = {
+      ...file,
+      code: result.code,
+      type: 'js/module/asset',
+      functionMap: null,
+      hasCjsExports: true,
+      reactClientReference: result.reactClientReference,
+    };
+    const done = debugEvent.span();
+    const native = transformAssetWithNoxcturnalSync({
+      filename: file.filename,
+      source: result.code,
+      projectRoot: context.projectRoot,
+      options: context.options,
+      config: context.config,
+    });
+    done('noxcturnal:full', {
+      file: debugEvent.path(file.filename),
+      status: native.status,
+    });
+    return completeFullNoxcturnalTransform(jsFile, context, native);
+  }
+
+  const result = await assetTransformer.transform(assetArgs, assetRegistryPath, assetPlugins);
 
   const jsFile: JSFile = {
     ...file,
@@ -762,7 +790,7 @@ async function transformJSWithBabel(
       isDefaultExpoTransformer,
     },
     {
-      completeFullTransform: completeFullNoxcturnalTransform,
+      completeFullTransform: completeNoxcturnalSourceTransform,
     }
   );
   if (noxcturnal.status === 'complete') {
@@ -789,11 +817,13 @@ function enableExperimentalImportSupportForReactCompiler(context: Transformation
   }
 }
 
-async function completeFullNoxcturnalTransform(
+async function completeNoxcturnalSourceTransform(
   file: JSFile,
   context: TransformationContext,
   fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
 ): Promise<TransformResponse> {
+  const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
+  // Graph optimization still needs the Babel AST and import metadata from transformJS.
   if (String(context.options.customTransformOptions?.optimize) === 'true') {
     return transformJS(
       {
@@ -825,19 +855,31 @@ async function completeFullNoxcturnalTransform(
             ? fullNoxcturnal.result.metadata.loaderReference
             : file.loaderReference,
         functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
+        cacheVary,
       },
       context
     );
   }
 
+  return completeFullNoxcturnalTransform(file, context, fullNoxcturnal);
+}
+
+async function completeFullNoxcturnalTransform(
+  file: JSFile,
+  context: TransformationContext,
+  fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
+): Promise<TransformResponse> {
+  const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
   let code = fullNoxcturnal.result.code;
-  let sourceMap: SerializableSourceMap;
+  let lineCount: number;
+  let map: VlqMap;
   if (shouldMinify(context.options)) {
     const reserved =
       context.config.unstable_dependencyMapReservedName == null
         ? []
         : [context.config.unstable_dependencyMapReservedName];
-    ({ code, sourceMap } = await minifyCode(
+    let minifiedMap: EncodedMappings;
+    ({ code, map: minifiedMap } = await minifyCode(
       context.config,
       file.filename,
       code,
@@ -852,14 +894,10 @@ async function completeFullNoxcturnalTransform(
         mappings: fullNoxcturnal.result.map.mappings,
       }
     ));
+    ({ lineCount, map } = vlqMapFromEncodedMap(minifiedMap, code));
   } else {
-    sourceMap = packDecodedMappings({
-      mappings: fullNoxcturnal.result.map.mappings,
-      names: fullNoxcturnal.result.map.names,
-    });
+    ({ lineCount, map } = vlqMapFromEncodedMap(fullNoxcturnal.result.map, code));
   }
-  let lineCount: number;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   return {
     dependencies: fullNoxcturnal.dependencies,
@@ -869,7 +907,7 @@ async function completeFullNoxcturnalTransform(
         data: {
           code,
           lineCount,
-          map: sourceMap,
+          map,
           functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
           hasCjsExports:
             typeof fullNoxcturnal.result.metadata.hasCjsExports === 'boolean'
@@ -891,6 +929,7 @@ async function completeFullNoxcturnalTransform(
             typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
               ? fullNoxcturnal.result.metadata.loaderReference
               : file.loaderReference,
+          expoCacheVary: await embedCurrentFingerprints(cacheVary),
         },
       },
     ],
@@ -929,6 +968,7 @@ async function transformJSWithBabelFallback(
     expoDomComponentReference: metadata?.expoDomComponentReference,
     loaderReference: metadata?.loaderReference,
     performConstantFolding: metadata?.performConstantFolding,
+    cacheVary: metadata?.cacheVary,
   };
 
   return await transformJS(jsFile, context);
@@ -942,12 +982,12 @@ async function transformJSON(
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-  let sourceMap: SerializableSourceMap = emptySourceMap();
+  let encodedMap: EncodedMappings = { mappings: '', names: [] };
 
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ sourceMap, code } = await minifyCode(config, file.filename, code, file.code, []));
+    ({ map: encodedMap, code } = await minifyCode(config, file.filename, code, file.code, []));
   }
 
   let jsType: JSFileType;
@@ -960,12 +1000,11 @@ async function transformJSON(
     jsType = 'js/module';
   }
 
-  let lineCount;
-  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
+  const { lineCount, map } = vlqMapFromEncodedMap(encodedMap, code);
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map: sourceMap, functionMap: null },
+      data: { code, lineCount, map, functionMap: null },
       type: jsType,
     },
   ];
@@ -1066,7 +1105,9 @@ export async function transform(
 
 // NOTE: Increment if cache becomes incompatible (original value would be '')
 // 1. Added new packed source map format
-const CACHE_VERSION = '2';
+// 3. Replaced the packed source map format with Metro's compact `VlqMap`
+// 4. `expoCacheVary` is embedded in cached transform results
+const CACHE_VERSION = '4';
 
 export function getCacheKey(
   config: ExpoJsTransformerConfig,

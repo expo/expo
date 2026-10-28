@@ -106,12 +106,31 @@ function NativeStackNavigatorContent({
     [finalDescriptors, computedState, registry]
   );
 
+  // Native can push a preloaded screen on its own (link preview commit), so it must not animate.
+  // The screen gets its animation back when JS pushes it, which also keeps the pop animated.
+  const stackDescriptors = React.useMemo(() => {
+    const preloadedKeys = computedState.routes
+      .map((route) => route.key)
+      .filter(isComputedRoutePreloaded);
+    if (preloadedKeys.length === 0) {
+      return mergedDescriptors;
+    }
+    const result = { ...mergedDescriptors };
+    for (const key of preloadedKeys) {
+      const descriptor = result[key];
+      if (descriptor) {
+        result[key] = { ...descriptor, options: { ...descriptor.options, animation: 'none' } };
+      }
+    }
+    return result;
+  }, [mergedDescriptors, computedState, isComputedRoutePreloaded]);
+
   return (
     <DescriptorsContext value={fullDescriptors}>
       <CompositionContext value={contextValue}>
         <NativeStackView
           state={computedState}
-          descriptors={mergedDescriptors}
+          descriptors={stackDescriptors}
           emit={emit}
           isPreloaded={isComputedRoutePreloaded}
           isRemovalPrevented={isRemovalPrevented}

@@ -2,6 +2,7 @@ import { LazyColumn, PullToRefreshBox } from '@expo/ui/jetpack-compose';
 import { testID as testIDModifier, type ModifierConfig } from '@expo/ui/jetpack-compose/modifiers';
 import { useCallback, useState } from 'react';
 
+import { ListForEach } from './ListForEach';
 import type { ListProps } from './types';
 
 /**
@@ -40,5 +41,9 @@ export function List({ children, onRefresh, testID }: ListProps) {
     </PullToRefreshBox>
   );
 }
+
+List.ForEach = ListForEach;
+
+export { ListForEach } from './ListForEach';
 
 export * from './types';

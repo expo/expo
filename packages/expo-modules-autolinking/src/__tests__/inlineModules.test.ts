@@ -117,6 +117,28 @@ describe('inlineModules.ts', () => {
       ).resolves.toBe(true);
     });
 
+    it('detects an inline module declared with the @ExpoModule macro', async () => {
+      vol.fromJSON({
+        '/example-project/GreeterModule.swift':
+          'import ExpoModulesCore\n@ExpoModule\npublic final class GreeterModule: Module {\n  @JS\n  func greet(name: String) -> String { "Hi, \\(name)" }\n}',
+      });
+
+      await expect(hasSwiftModuleDefinition('/example-project/GreeterModule.swift')).resolves.toBe(
+        true
+      );
+    });
+
+    it('detects an inline module declared with the @ExpoModule macro and arguments', async () => {
+      vol.fromJSON({
+        '/example-project/GreeterModule.swift':
+          'import ExpoModulesCore\n@ExpoModule("Greeter", classes: [Greeting.self])\npublic final class GreeterModule: Module {}',
+      });
+
+      await expect(hasSwiftModuleDefinition('/example-project/GreeterModule.swift')).resolves.toBe(
+        true
+      );
+    });
+
     it('does not treat supporting swift files as modules', async () => {
       vol.fromJSON({
         '/example-project/TrailEntity.compile.swift': 'import AppIntents\nstruct TrailEntity {}',

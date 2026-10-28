@@ -1,12 +1,22 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import {
+  buildVersionPrefix,
+  getArtifactBase,
+  getArtifactDirSuffix,
+  getArtifactSuffixes,
+  getSharedSpmDepSuffix,
+  type PrebuiltFlavor,
+} from 'expo-modules-autolinking/internal/prebuiltArtifactPaths';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
+import { resolveCheckedInHeaderDirectoriesAsync } from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
+import { getSharedSpmDepsRoot } from './MonorepoLayout';
 import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import {
@@ -55,6 +65,11 @@ const signXCFramework = async (
     const err = error instanceof Error ? error : new Error(String(error));
     throw new Error(`Failed to sign XCFramework: ${err.message}`);
   }
+};
+
+const PREBUILT_FLAVOR: Record<BuildFlavor, PrebuiltFlavor> = {
+  Debug: 'debug',
+  Release: 'release',
 };
 
 export const Frameworks = {
@@ -169,12 +184,10 @@ export const Frameworks = {
     buildType: BuildFlavor,
     versionPrefix?: string
   ): string => {
-    const parts = [buildPath, 'output'];
-    if (versionPrefix) {
-      parts.push(versionPrefix);
-    }
-    parts.push(buildType.toLowerCase(), 'xcframeworks');
-    return path.join(...parts);
+    return path.join(
+      getArtifactBase(buildPath, versionPrefix),
+      getArtifactDirSuffix(PREBUILT_FLAVOR[buildType])
+    );
   },
 
   /**
@@ -192,8 +205,8 @@ export const Frameworks = {
     versionPrefix?: string
   ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
-      `${productName}.xcframework`
+      getArtifactBase(buildPath, versionPrefix),
+      getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
     );
   },
 
@@ -223,6 +236,10 @@ export const Frameworks = {
    * Finds an xcframework at either a non-versioned or versioned output path.
    * Versioned paths have the format:
    * output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
+   *
+   * When several versions are built, the choice between them is stable, not newest-first: the
+   * match is picked lexicographically, and a version prefix does not sort by version ("10.0.0"
+   * comes before "9.0.0").
    */
   findFrameworkAtAnyVersion: (
     buildPath: string,
@@ -234,11 +251,17 @@ export const Frameworks = {
       return nonVersioned;
     }
 
+    // Kept relative to buildPath, which glob takes as its cwd, so a glob metacharacter in the
+    // build path cannot widen the match. Glob patterns are POSIX on every platform.
+    const anyVersionBase = getArtifactBase('.', buildVersionPrefix('*', '*', '*'));
     const matches = glob.sync(
-      `output/*/*/*/${buildType.toLowerCase()}/xcframeworks/${productName}.xcframework`,
+      path.posix.join(
+        ...anyVersionBase.split(path.sep),
+        getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
+      ),
       { cwd: buildPath, absolute: true }
     );
-    return matches[0] ?? null;
+    return matches.sort()[0] ?? null;
   },
 
   /**
@@ -256,8 +279,8 @@ export const Frameworks = {
     versionPrefix?: string
   ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
-      `${productName}.tar.gz`
+      getArtifactBase(buildPath, versionPrefix),
+      getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).tarball
     );
   },
 
@@ -266,7 +289,7 @@ export const Frameworks = {
    * Shared deps are stored under: packages/precompile/.build/.spm-deps/
    */
   getSharedSPMDepsRoot: (): string => {
-    return path.join(getPrecompileDir(), '.build', '.spm-deps');
+    return getSharedSpmDepsRoot(getExpoRepositoryRootDir());
   },
 
   /**
@@ -280,8 +303,7 @@ export const Frameworks = {
     return path.join(
       Frameworks.getSharedSPMDepsRoot(),
       productName,
-      buildType.toLowerCase(),
-      `${productName}.xcframework`
+      getSharedSpmDepSuffix(productName, PREBUILT_FLAVOR[buildType])
     );
   },
 
@@ -1048,7 +1070,7 @@ const composeFrameworkWithXCodeAsync = async (
  * @param product SPM product information
  * @returns Collected header file paths, target module names map, and set of modules needing textual headers
  */
-const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
+export const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
   frameworkOutputPath: string
@@ -1067,13 +1089,17 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   const targetModuleNames = new Map<string, string[]>(); // moduleName -> header files (with relative paths)
   const textualHeaderModules = new Set<string>(); // modules that need textual headers
 
+  const checkedInHeaderPaths = await resolveCheckedInHeaderDirectoriesAsync(pkg, product);
+
   for (const target of product.targets) {
     if (target.type === 'swift' || target.type === 'framework') {
       continue;
     }
     spinner.info(`Processing target ${target.name}...`);
 
-    const targetHeaderFilesPath = SPMGenerator.getHeaderFilesPath(pkg, product, target);
+    const targetHeaderFilesPath =
+      checkedInHeaderPaths.get(target.name) ??
+      SPMGenerator.getHeaderFilesPath(pkg, product, target);
 
     // Recursively collect all header files including from subdirectories
     const collectHeadersRecursively = async (
@@ -1341,23 +1367,20 @@ const copySwiftModuleInterfacesAsync = async (
 };
 
 /**
- * Post-processes a .swiftinterface file to:
- * 1. Remap internal SPM target names to their product names
- *    (e.g., ExpoModulesCore_ios_objc -> ExpoModulesCore)
+ * Rewrites references to internal SPM target modules in a `.swiftinterface` so they name the
+ * product module instead (e.g., ExpoModulesCore_ios_objc -> ExpoModulesCore). Internal targets
+ * only exist while the product is built; consumers can only see the product module.
  *
- * @param swiftInterfaceFilePath Path to the .swiftinterface file
+ * @param content Contents of the .swiftinterface file
  * @param spmConfig SPM configuration containing product/target mappings
+ * @returns The rewritten contents, or `content` unchanged when nothing matched
  */
-const fixSwiftInterfaceModuleReferencesAsync = async (
-  swiftInterfaceFilePath: string,
+export function rewriteInternalTargetModuleReferences(
+  content: string,
   spmConfig: SPMConfig
-): Promise<void> => {
-  // Read the swiftinterface file
-  let content = await fs.readFile(swiftInterfaceFilePath, 'utf8');
-  let modified = false;
+): string {
+  let rewritten = content;
 
-  // Remap internal SPM target imports to product names
-  // e.g., @_exported import ExpoModulesCore_ios_objc -> @_exported import ExpoModulesCore
   for (const product of spmConfig.products) {
     for (const target of product.targets) {
       if (target.name === product.name) {
@@ -1366,37 +1389,38 @@ const fixSwiftInterfaceModuleReferencesAsync = async (
 
       // Replace @_exported import statements
       const exportedImportPattern = new RegExp(`^@_exported import ${target.name}\\s*$`, 'gm');
-      const exportedReplaced = content.replace(
-        exportedImportPattern,
-        `@_exported import ${product.name}`
-      );
-      if (exportedReplaced !== content) {
-        content = exportedReplaced;
-        modified = true;
-      }
+      rewritten = rewritten.replace(exportedImportPattern, `@_exported import ${product.name}`);
 
       // Replace regular import statements
       const importPattern = new RegExp(`^import ${target.name}\\s*$`, 'gm');
-      const importReplaced = content.replace(importPattern, `import ${product.name}`);
-      if (importReplaced !== content) {
-        content = importReplaced;
-        modified = true;
-      }
+      rewritten = rewritten.replace(importPattern, `import ${product.name}`);
 
-      // Replace module-qualified type references
-      // e.g., ExpoModulesCore_ios_objc.TypeName -> ExpoModulesCore.TypeName
-      const qualifiedPattern = new RegExp(`\\b${target.name}\\.`, 'g');
-      const qualifiedReplaced = content.replace(qualifiedPattern, `${product.name}.`);
-      if (qualifiedReplaced !== content) {
-        content = qualifiedReplaced;
-        modified = true;
-      }
+      // Replace module-qualified type references, in both the `Target.TypeName` form and the
+      // `Target::TypeName` module selector Swift 6.4 prints. The matched separator is echoed
+      // back so the rewritten reference keeps the form the rest of the interface uses.
+      const qualifiedPattern = new RegExp(`\\b${target.name}(::|\\.)`, 'g');
+      rewritten = rewritten.replace(qualifiedPattern, `${product.name}$1`);
     }
   }
 
-  // Write back if modified
-  if (modified) {
-    await fs.writeFile(swiftInterfaceFilePath, content, 'utf8');
+  return rewritten;
+}
+
+/**
+ * Rewrites a .swiftinterface file in place, writing it back only when something changed.
+ *
+ * @param swiftInterfaceFilePath Path to the .swiftinterface file
+ * @param spmConfig SPM configuration containing product/target mappings
+ */
+const fixSwiftInterfaceModuleReferencesAsync = async (
+  swiftInterfaceFilePath: string,
+  spmConfig: SPMConfig
+): Promise<void> => {
+  const content = await fs.readFile(swiftInterfaceFilePath, 'utf8');
+  const rewritten = rewriteInternalTargetModuleReferences(content, spmConfig);
+
+  if (rewritten !== content) {
+    await fs.writeFile(swiftInterfaceFilePath, rewritten, 'utf8');
   }
 };
 

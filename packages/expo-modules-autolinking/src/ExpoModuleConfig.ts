@@ -1,3 +1,4 @@
+import { isAppleTargetPlatform } from '@expo/platforms';
 import fs from 'fs';
 import path from 'path';
 
@@ -30,7 +31,6 @@ export class ExpoAndroidProjectConfig {
     public name: string,
     public path: string,
     public modules?: ExpoAndroidModuleConfig[],
-    public modulesV2?: string[],
     public services?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
@@ -60,18 +60,14 @@ export class ExpoModuleConfig {
     } else if (platform === 'apple') {
       // Apple platform is supported when any of iOS, macOS and tvOS is supported.
       return supportedPlatforms.some((supportedPlatform) => {
-        return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
+        return supportedPlatform === 'apple' || isAppleTargetPlatform(supportedPlatform);
       });
     }
-    switch (platform) {
-      case 'ios':
-      case 'macos':
-      case 'tvos':
-        // ios|macos|tvos are supported when the module supports "apple" as a platform in general
-        return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
-      default:
-        return supportedPlatforms.includes(platform);
+    if (isAppleTargetPlatform(platform)) {
+      // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+      return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
     }
+    return supportedPlatforms.includes(platform);
   }
 
   /**
@@ -87,6 +83,11 @@ export class ExpoModuleConfig {
   appleModules() {
     const appleConfig = this.getAppleConfig();
     return appleConfig?.modules ?? [];
+  }
+
+  /** Whether the config declares the Apple modules list. Even an empty list disables scanning. */
+  declaresAppleModules(): boolean {
+    return this.getAppleConfig()?.modules != null;
   }
 
   /**
@@ -140,7 +141,6 @@ export class ExpoModuleConfig {
             ? new ExpoAndroidModuleConfig(module, null)
             : new ExpoAndroidModuleConfig(module.class, module.name)
         ),
-        this.rawConfig.android?.modulesV2,
         this.rawConfig.android?.services,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
@@ -159,7 +159,6 @@ export class ExpoModuleConfig {
               ? new ExpoAndroidModuleConfig(module, null)
               : new ExpoAndroidModuleConfig(module.class, module.name)
           ),
-          project.modulesV2,
           project.services,
           project.publication,
           project.gradleAarProjects,

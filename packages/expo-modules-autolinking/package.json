@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "58.0.1",
+  "version": "58.0.15",
   "description": "Scripts that autolink Expo modules.",
   "keywords": [
     "autolinking",
@@ -43,6 +43,15 @@
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },
+    "./internal/prebuiltArtifactPaths": {
+      "types": {
+        "expo-source": "./src/prebuiltArtifactPaths.ts",
+        "default": "./build/prebuiltArtifactPaths.d.ts"
+      },
+      "expo-source": "./src/prebuiltArtifactPaths.ts",
+      "require": "./build/prebuiltArtifactPaths.js",
+      "default": "./build/prebuiltArtifactPaths.js"
+    },
     "./package.json": "./package.json",
     "./*": "./*.js",
     "./*.js": "./*.js"
@@ -59,13 +68,14 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@expo/platforms": "workspace:^",
     "@expo/require-utils": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.0",
     "commander": "^7.2.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "@expo/internal-scripts": "workspace:*",
+    "memfs": "^3.6.0"
   }
 }

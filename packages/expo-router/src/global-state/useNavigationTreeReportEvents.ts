@@ -2,9 +2,11 @@
 
 import * as React from 'react';
 
-import { unstable_navigationEvents } from '../navigationEvents';
+import { mark } from '../performance';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { NavigationAction } from '../react-navigation/routers';
+import type { BrowserHistoryAdapter } from './browserHistory.types';
+import { internalNavigationEvents } from './internalNavigationEvents';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
@@ -52,7 +54,8 @@ function warnUnhandledAction(action: NavigationAction) {
 
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
-  consumeReportEvents: (eventIds: readonly number[]) => void
+  consumeReportEvents: (eventIds: readonly number[]) => void,
+  browserHistory: BrowserHistoryAdapter
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -92,10 +95,23 @@ export function useNavigationTreeReportEvents(
             }
             break;
           case 'action-dispatched':
-            // TODO(@ubax): emit an event when the action is enqueued.
-            unstable_navigationEvents.emit('actionDispatched', {
+            // `mark` does not throw, so it runs first and a throwing listener cannot skip it.
+            mark('expo-router:action-dispatched', {
+              actionType: event.action.type,
+              actionId: event.actionId,
+            });
+            internalNavigationEvents.emit('actionDispatched', {
               actionType: event.action.type,
               payload: event.action.payload,
+              state: event.state,
+            });
+            break;
+          case 'browser-history':
+            browserHistory.apply(event);
+            break;
+          case 'route-preloaded':
+            internalNavigationEvents.emit('routePreloaded', {
+              routeKey: event.routeKey,
               state: event.state,
             });
             break;
@@ -111,5 +127,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [consumeReportEvents, emitterRegistry, report]);
+  }, [browserHistory, consumeReportEvents, emitterRegistry, report]);
 }

@@ -1,0 +1,51 @@
+---
+title: '"You need to be signed in to Expo Go and Expo CLI" error'
+sidebar_title: Expo Go sign-in required
+description: Learn why Expo Go on a physical iOS device requires Expo CLI and Expo Go to be signed in to the same Expo account.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo Go displays the following error on a physical iOS device when neither Expo CLI nor Expo Go is signed in:
+
+```text
+You need to be signed in to Expo Go and Expo CLI to open your project. Run "npx expo login" on your computer to sign in with Expo CLI.
+```
+
+When one side is signed in and the other is not, or the two accounts differ, you see one of these instead:
+
+```text
+You're signed in to Expo Go as "your-account", but not signed in to Expo CLI. Run "npx expo login" on your computer to sign in to Expo CLI as "your-account" so you can open this project.
+
+You're signed in to Expo CLI as "your-account", but not signed in to Expo Go. Sign in to Expo Go as "your-account" to open this project.
+
+You're signed in to Expo CLI as "your-account" and to Expo Go as "another-account" — these accounts need to match to open this project.
+```
+
+Expo CLI does not report any of this. The development server keeps running with no warning in the terminal, so the error appears only on your device.
+
+## Why this happens
+
+On a physical iOS device, Expo Go checks for the Expo account before it opens a project. Expo CLI and Expo Go must be signed in to the same Expo account.
+
+The check applies to physical iOS devices only and only to a project served from a development server. Android devices, the Android Emulator, the iOS Simulator, and published updates are unaffected.
+
+## Sign in to the same account
+
+If you do not have an Expo account, create a free one at [expo.dev/signup](https://expo.dev/signup).
+
+Sign in to Expo CLI on your computer:
+
+<Terminal cmd={['$ npx expo login']} />
+
+Then, open Expo Go on your device, tap the account icon in the top-right corner, and sign in with the same account.
+
+To check which account Expo CLI is using, run:
+
+<Terminal cmd={['$ npx expo whoami']} />
+
+## Reload the project
+
+Press **Try Again** on the Expo Go error screen. Expo CLI reads your credentials each time Expo Go requests the project, so signing in while the development server runs is enough.
+
+Restart the development server if you sign in to a different account. Expo CLI caches the resolved account for the lifetime of the process.
