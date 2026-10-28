@@ -1,12 +1,12 @@
 package expo.modules.securestore.encryptors
 
-import android.annotation.TargetApi
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import expo.modules.securestore.AuthenticationHelper
+import expo.modules.securestore.AuthenticationMethod
 import expo.modules.securestore.DecryptException
-import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
 import expo.modules.securestore.toAuthenticationPromptOptions
 import org.json.JSONException
@@ -33,36 +33,25 @@ import javax.crypto.spec.GCMParameterSpec
  */
 class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
-    val baseAlias = options.keychainService
-    return "$AES_CIPHER:$baseAlias"
+    return "$AES_CIPHER:${options.keychainService}"
   }
 
-  /**
-   * Two key store entries exist for every `keychainService` passed from the JS side. This is
-   * because it's not possible to store unauthenticated data in authenticated key stores.
-   */
-  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String {
-    // We aren't using requiresAuthentication from the options, because it's not a necessary option for read requests
-    val suffix = if (requireAuthentication) {
-      SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
-    } else {
-      SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
-    }
-    return "${getKeyStoreAlias(options)}:$suffix"
-  }
-
-  @TargetApi(23)
   @Throws(GeneralSecurityException::class)
-  override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
-    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication)
+  override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions, authenticationMethod: AuthenticationMethod): KeyStore.SecretKeyEntry {
+    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, authenticationMethod)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
-    val algorithmSpec: AlgorithmParameterSpec = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
+    val builder = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
       .setKeySize(AES_KEY_SIZE_BITS)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-      .setUserAuthenticationRequired(options.requireAuthentication)
-      .build()
+      .setUserAuthenticationRequired(authenticationMethod.isAuthenticationRequired)
+
+    if (authenticationMethod.isAuthenticationRequired && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      builder.setUserAuthenticationParameters(0, authenticationMethod.keyAuthenticationType)
+    }
+
+    val algorithmSpec: AlgorithmParameterSpec = builder.build()
 
     val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.provider)
     keyGenerator.init(algorithmSpec)
@@ -125,7 +114,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val ivBytes = Base64.decode(ivString, Base64.DEFAULT)
     val gcmSpec = GCMParameterSpec(authenticationTagLength, ivBytes)
     val cipher = Cipher.getInstance(AES_CIPHER)
-    val requiresAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
+    val authenticationMethod = AuthenticationMethod.fromStoredItem(encryptedItem, key, options.keychainService)
 
     if (authenticationTagLength < MIN_GCM_AUTHENTICATION_TAG_LENGTH) {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
@@ -133,7 +122,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
     val unlockedCipher = authenticationHelper.authenticateCipher(
       cipher,
-      options.toAuthenticationPromptOptions(requireAuthentication = requiresAuthentication)
+      options.toAuthenticationPromptOptions(authenticationMethod)
     )
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
   }
