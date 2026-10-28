@@ -34,9 +34,6 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
       return
     }
     DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras)
-    // The launch intent stays on the activity, so recreating it in the same process (a locale or
-    // font size change, `Activity.recreate()`) runs onCreate on the same response again. Mark it
-    // with our own extra instead of removing Firebase's key, which other modules still read.
     markConsumed(intent, extras)
     NotificationManager.onNotificationResponseFromExtras(extras)
   }
@@ -61,8 +58,6 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
         return false
       }
       DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onNewIntent:", extras)
-      // `ReactActivity` doesn't call `setIntent(intent)`, but an app's own activity may. Then this
-      // intent becomes the current one and onCreate would see it again after a recreation.
       markConsumed(intent, extras)
       NotificationManager.onNotificationResponseFromExtras(extras)
     }
@@ -78,16 +73,12 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
     return extras.containsKey(GOOGLE_MESSAGE_ID_KEY)
   }
 
-  /**
-   * The marker holds the message id it was set for, so it only matches that same message.
-   */
   private fun isConsumed(extras: Bundle): Boolean {
     val messageId = extras.getString(GOOGLE_MESSAGE_ID_KEY) ?: return false
     return extras.getString(CONSUMED_MESSAGE_ID_KEY) == messageId
   }
 
   private fun markConsumed(intent: Intent, extras: Bundle) {
-    // `getExtras()` returned a copy, so the bundle that is delivered doesn't carry the marker.
     intent.putExtra(CONSUMED_MESSAGE_ID_KEY, extras.getString(GOOGLE_MESSAGE_ID_KEY))
   }
 
