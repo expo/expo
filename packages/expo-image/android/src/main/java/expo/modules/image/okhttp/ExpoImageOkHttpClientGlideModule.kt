@@ -1,6 +1,7 @@
 package expo.modules.image.okhttp
 
 import android.content.Context
+import android.webkit.CookieManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
@@ -8,8 +9,12 @@ import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.module.LibraryGlideModule
+import com.facebook.react.modules.network.CookieJarContainer
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.image.events.OkHttpProgressListener
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
 import java.io.InputStream
 
 /**
@@ -74,10 +79,37 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
   }
 }
 
+private object SharedCookieJar : CookieJar {
+  override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+    val cookieManager = getCookieManager() ?: return
+    val urlString = url.toString()
+    for (cookie in cookies) {
+      cookieManager.setCookie(urlString, cookie.toString())
+    }
+    cookieManager.flush()
+  }
+
+  override fun loadForRequest(url: HttpUrl): List<Cookie> {
+    val cookieManager = getCookieManager() ?: return emptyList()
+    val cookieString = cookieManager.getCookie(url.toString()) ?: return emptyList()
+    return cookieString.split(";").mapNotNull { Cookie.parse(url, it.trim()) }
+  }
+
+  private fun getCookieManager(): CookieManager? = runCatching {
+    CookieManager.getInstance()
+  }.getOrNull()
+}
+
 @GlideModule
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-    val client = OkHttpClientProvider.createClient()
+    val client = OkHttpClientProvider.createClient().let { client ->
+      if (client.cookieJar is CookieJarContainer) {
+        client.newBuilder().cookieJar(SharedCookieJar).build()
+      } else {
+        client
+      }
+    }
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.
     registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
