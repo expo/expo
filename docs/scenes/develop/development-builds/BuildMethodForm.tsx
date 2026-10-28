@@ -58,8 +58,8 @@ export function BuildMethodForm() {
       />
       <MethodSelectCard
         Icon={PlanEnterpriseIcon}
-        title="Build with EAS"
-        description="Compile in the cloud on EAS servers. No native build tools needed and you can also create iOS builds from any operating system."
+        title="Build in the cloud with Expo Build"
+        description="Compile in the cloud on Expo servers. No native build tools needed and you can also create iOS builds from any operating system."
         isSelected={method === 'build-with-eas'}
         onClick={() => {
           onRadioChange('build-with-eas');
@@ -68,7 +68,7 @@ export function BuildMethodForm() {
       <MethodSelectCard
         Icon={EasCliLogo}
         title="Build locally with EAS CLI"
-        description='Run the same EAS Build on your own machine with the "--local" flag. EAS still manages signing and profiles.'
+        description='Run the same Expo Build on your own machine with the "--local" flag. Expo Build still manages signing and profiles.'
         isSelected={method === 'eas-cli-local'}
         onClick={() => {
           onRadioChange('eas-cli-local');

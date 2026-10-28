@@ -107,7 +107,7 @@ These are a few examples of workflows to help your team get the most out of your
 
 ### PR previews
 
-You can set up your CI process to publish an EAS Update whenever a pull request is updated and add a QR code that is used to view the change in a compatible development build.
+You can set up your CI process to publish an Expo Update whenever a pull request is updated and add a QR code that is used to view the change in a compatible development build.
 
 See [instructions for publishing app previews on pull requests](/eas-update/github-actions/#publish-previews-on-pull-requests) to implement this workflow in your project using GitHub Actions or serve as a template in your CI of choice.
 
@@ -142,15 +142,15 @@ This will create a new section in the dev menu that includes the buttons you hav
 
 > Subsequent calls of `registerDevMenuItems` will override all previous entries.
 
-### EAS Update
+### Expo Update
 
 <ContentSpotlight
-  alt="An example list of EAS Update that can be loaded in the expo-dev-client."
+  alt="An example list of Expo Update that can be loaded in the expo-dev-client."
   src="/static/images/dev-client/eas-updates-screen.png"
   className="max-w-[400px]"
 />
 
-The EAS Update extension provides the ability to view and load published updates in your development client. To install it, you'll need the most recent publish of `expo-updates`:
+The Expo Update extension provides the ability to view and load published updates in your development client. To install it, you'll need the most recent publish of `expo-updates`:
 
 <Terminal
   cmd={{
@@ -161,11 +161,11 @@ The EAS Update extension provides the ability to view and load published updates
   }}
 />
 
-#### Configure EAS Update
+#### Configure Expo Update
 
-If you have not yet configured EAS Updates in your project, you can find [additional instructions on how to do so here.](/eas-update/getting-started/)
+If you have not yet configured Expo Update in your project, you can find [additional instructions on how to do so here.](/eas-update/getting-started/)
 
-You can now view and load EAS Updates in your development build via the `Extensions` panel.
+You can now view and load updates from Expo Update in your development build via the `Extensions` panel.
 
 ## Set runtimeVersion in app config
 

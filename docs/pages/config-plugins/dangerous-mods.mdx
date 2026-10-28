@@ -28,7 +28,7 @@ Consider using a dangerous mod when:
 
 In a real-world scenario, you can use the example config plugin described in this section directly in your project by following the standard config plugin usage pattern from the [Creating a config plugin section](/config-plugins/plugins/#creating-a-config-plugin). However, with the existing mod plugin called [`withPodfile`](/config-plugins/mods/#ios), you don't have to use the dangerous mod. The example below is just for demonstration of how a dangerous mod can be created and used.
 
-Let's take a look at an example config plugin to modify a file inside a native directory (**ios**). This is useful when you are using Continuous Native Generation in your Expo project. With the help of this config plugin, the native file (**ios/Podfile**) will update anytime the `npx expo prebuild` command runs, whether you run it manually or using EAS Build). This example is an ideal use case when an existing mod plugin cannot edit and update a file inside a native directory.
+Let's take a look at an example config plugin to modify a file inside a native directory (**ios**). This is useful when you are using Continuous Native Generation in your Expo project. With the help of this config plugin, the native file (**ios/Podfile**) will update anytime the `npx expo prebuild` command runs, whether you run it manually or using Expo Build). This example is an ideal use case when an existing mod plugin cannot edit and update a file inside a native directory.
 
 Following the directory structure and steps to create a config plugin (steps 3, 4, and 5) from [Creating a config plugin section](/config-plugins/plugins/#creating-a-config-plugin), let's assume this config plugin is created inside the **plugins** directory of your Expo project:
 
