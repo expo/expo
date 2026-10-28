@@ -151,7 +151,7 @@ export default function Layout() {
             </ScrollView>
           </SplitView.Column>
         )}
-        <SplitView.Stack
+        <SplitView.Content
           header={
             showHeaders
               ? {
