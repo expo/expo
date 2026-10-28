@@ -1,6 +1,15 @@
 require File.join(File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
+# Ruby's File.realdirpath on macOS can return a path with NUL bytes, which crashes `pod install`
+# (https://github.com/CocoaPods/CocoaPods/issues/12866). File.realpath does not have this bug.
+class Pathname
+  alias_method :__expo_realdirpath, :realdirpath
+  def realdirpath(*args)
+    exist? ? realpath(*args) : __expo_realdirpath(*args)
+  end
+end
+
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 
 prepare_react_native_project!
