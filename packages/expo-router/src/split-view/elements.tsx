@@ -53,7 +53,7 @@ export function SplitViewColumn(props: SplitViewColumnProps) {
   return <Split.Column>{getSplitColumnChildren(props)}</Split.Column>;
 }
 
-export interface SplitViewStackProps {
+export interface SplitViewContentProps {
   /**
    * Navigation bar of the content column, which renders the current route.
    * @platform ios
@@ -64,7 +64,7 @@ export interface SplitViewStackProps {
 /**
  * Configures the content column of the SplitView. The column renders the current route.
  */
-export function SplitViewStack(_props: SplitViewStackProps) {
+export function SplitViewContent(_props: SplitViewContentProps) {
   return null;
 }
 

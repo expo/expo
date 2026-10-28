@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 import { renderRouter } from '../../testing-library';
 import { SplitView } from '../split-view';
 
-// The missing SplitView.Stack warning shows once per module instance, so these tests use their own test file.
+// The missing SplitView.Content warning shows once per module instance, so these tests use their own test file.
 
 jest.mock('../../optional-libraries/react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -22,17 +22,17 @@ jest.mock('../../optional-libraries/react-native-screens', () => {
   };
 });
 
-const MISSING_STACK_WARNING =
-  'SplitView.Stack is missing. Add <SplitView.Stack /> to SplitView to configure the content column.';
+const MISSING_CONTENT_WARNING =
+  'SplitView.Content is missing. Add <SplitView.Content /> to SplitView to configure the content column.';
 
-it('does not warn when SplitView.Stack is present', async () => {
+it('does not warn when SplitView.Content is present', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   await renderRouter(
     {
       _layout: () => (
         <SplitView>
           <SplitView.Column />
-          <SplitView.Stack />
+          <SplitView.Content />
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -44,7 +44,7 @@ it('does not warn when SplitView.Stack is present', async () => {
   warn.mockRestore();
 });
 
-it('warns once when SplitView.Stack is missing', async () => {
+it('warns once when SplitView.Content is missing', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const routes = {
     _layout: () => (
@@ -58,6 +58,6 @@ it('warns once when SplitView.Stack is missing', async () => {
   await renderRouter(routes, { initialUrl: '/' });
 
   expect(warn).toHaveBeenCalledTimes(1);
-  expect(warn).toHaveBeenCalledWith(MISSING_STACK_WARNING);
+  expect(warn).toHaveBeenCalledWith(MISSING_CONTENT_WARNING);
   warn.mockRestore();
 });
