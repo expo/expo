@@ -83,6 +83,15 @@ function SecureStoreView() {
     }
   }
 
+  async function hasValueAsync(key: string) {
+    try {
+      const exists = await SecureStore.hasItemAsync(key, storeOptions);
+      Alert.alert('Success!', 'Key exists: ' + exists, [{ text: 'OK', onPress: () => {} }]);
+    } catch (e: any) {
+      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+    }
+  }
+
   function getValue(key: string) {
     try {
       const fetchedValue = SecureStore.getItem(key, storeOptions);
@@ -187,6 +196,7 @@ function SecureStoreView() {
         <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />
       )}
       {key && <ListButton onPress={() => getValueAsync(key)} title="Get value with key" />}
+      {key && <ListButton onPress={() => hasValueAsync(key)} title="Check if key exists" />}
       {value && key && (
         <ListButton
           onPress={() => storeValue(value, key)}
