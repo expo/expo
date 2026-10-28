@@ -14,7 +14,8 @@ import { Terminal } from '~/ui/components/Snippet';
 <Prerequisites>
   <Requirement title="Expo SDK 58 or later">
     The integration is available in `expo-observe` version 58.0.17 and later. Use `expo-updates`
-    version 58.1.0 or later. An earlier version logs entries without a key, so the integration
+    version 58.1.0 or later. With an earlier version, the integration reports new log entries only
+    on the next launch. An earlier version also logs entries without a key, so the integration
     reports a JS error that error recovery handled as `updates.error`, not as
     `updates.error_recovery`.
   </Requirement>
