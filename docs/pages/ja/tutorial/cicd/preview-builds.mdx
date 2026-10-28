@@ -158,7 +158,7 @@ Expo Workflows から Slack のチャンネルにメッセージを送るには�
 2. **Features** の下にある **Incoming Webhooks** を選択し、有効に切り替えます。
 3. **Add New Webhook** をクリックし、通知を投稿するチャンネルを選択します。
 4. Webhook URL をコピーします。`https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX` のような形式です。
-5. この Webhook URL を `SLACK_WEBHOOK_URL` という名前の Expo Services 環境変数として追加します。Expo ダッシュボードでプロジェクトの [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) ページを開き、`preview` 環境用の変数を作成して、[可視性](/eas/environment-variables/#visibility-settings-for-environment-variables)を **secret** に設定します。この値を読み取る必要があるのは EAS のサーバーだけだからです。[EAS CLI](/eas/environment-variables/manage/) で作成することもできます。
+5. この Webhook URL を `SLACK_WEBHOOK_URL` という名前の Expo Services 環境変数として追加します。Expo ダッシュボードでプロジェクトの [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) ページを開き、`preview` 環境用の変数を作成して、[可視性](/eas/environment-variables/#visibility-settings-for-environment-variables)を **secret** に設定します。この値を読み取る必要があるのは Expo のサーバーだけだからです。[EAS CLI](/eas/environment-variables/manage/) で作成することもできます。
 
 <Terminal
   cmd={[
