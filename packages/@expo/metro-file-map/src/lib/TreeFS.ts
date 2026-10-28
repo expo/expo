@@ -377,7 +377,10 @@ export default class TreeFS implements MutableFileSystem {
     // If a subpath is specified, start iteration from that node
     let rootNode: DirectoryNode = this.#rootNode;
     let prefix: string = '';
-    if (subpath != null && subpath !== '') {
+    if (subpath === '') {
+      // '..' holds files outside rootDir, which are not under this subpath
+      rootNode = new Map([...this.#rootNode].filter(([name]) => name !== '..'));
+    } else if (subpath != null) {
       const lookupResult = this.#lookupByNormalPath(subpath, {
         followLeaf: false,
         skipFallback: true,
