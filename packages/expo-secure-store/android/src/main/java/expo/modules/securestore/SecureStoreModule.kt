@@ -180,9 +180,7 @@ open class SecureStoreModule : Module() {
     val prefs: SharedPreferences = getSharedPreferences()
 
     if (value == null) {
-      val success = prefs.commitOrRestore(listOf(keychainAwareKey)) {
-        putString(keychainAwareKey, null)
-      }
+      val success = prefs.commitOrRestore(mapOf(keychainAwareKey to null))
       if (!success) {
         throw WriteException("Could not write a null value to SecureStore", key, options.keychainService)
       }
@@ -210,12 +208,7 @@ open class SecureStoreModule : Module() {
         authenticationHelper
       )
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
-      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
-
-      // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
-      if (prefs.contains(key)) {
-        prefs.applyLocked { remove(key) }
-      }
+      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, key, options.requireAuthentication, options.keychainService)
     } catch (e: KeyPermanentlyInvalidatedException) {
       if (!keyIsInvalidated) {
         Log.w(TAG, "Key has been invalidated, retrying with the key deleted")
@@ -254,6 +247,7 @@ open class SecureStoreModule : Module() {
     val allEntries: Map<String, *> = sharedPreferences.all
 
     // In order to avoid decryption failures we need to remove all entries that are using the deleted encryption key
+    val staleKeys = mutableListOf<String>()
     for ((key: String, value) in allEntries) {
       val valueString = value as? String ?: continue
       val jsonEntry = try {
@@ -268,9 +262,13 @@ open class SecureStoreModule : Module() {
       // Entries which don't require authentication use separate keychains which can't be invalidated,
       // so we shouldn't delete them.
       if (requireAuthentication && keychainService == entryKeychainService) {
-        sharedPreferences.applyLocked { remove(key) }
+        staleKeys.add(key)
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }
+    }
+
+    if (staleKeys.isNotEmpty()) {
+      sharedPreferences.commitOrRestore(staleKeys.associateWith { null })
     }
   }
 
@@ -375,19 +373,16 @@ internal fun removeItem(
   key: String,
   keychainAwareKey: String
 ): Boolean {
-  val removedFromPrefs = prefs.commitOrRestore(listOf(keychainAwareKey, key)) {
-    remove(keychainAwareKey).remove(key)
-  }
-  val removedFromLegacyPrefs = legacyPrefs.commitOrRestore(listOf(key)) {
-    remove(key)
-  }
+  val removedFromPrefs = prefs.commitOrRestore(mapOf(keychainAwareKey to null, key to null))
+  val removedFromLegacyPrefs = legacyPrefs.commitOrRestore(mapOf(key to null))
   return removedFromPrefs && removedFromLegacyPrefs
 }
 
 internal fun saveEncryptedItem(
   encryptedItem: JSONObject,
   prefs: SharedPreferences,
-  key: String,
+  keychainAwareKey: String,
+  legacyKey: String,
   requireAuthentication: Boolean,
   keychainService: String
 ) {
@@ -400,11 +395,12 @@ internal fun saveEncryptedItem(
 
   val encryptedItemString = encryptedItem.toString()
   if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
-    throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
+    throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", keychainAwareKey, keychainService)
   }
 
-  val success = prefs.commitOrRestore(listOf(key)) { putString(key, encryptedItemString) }
+  // A legacy value under this key is removed in the same commit to avoid unexpected errors in the future
+  val success = prefs.commitOrRestore(mapOf(keychainAwareKey to encryptedItemString, legacyKey to null))
   if (!success) {
-    throw WriteException("Could not save the encrypted item to disk. The device may be out of storage or the app data directory may not be writable", key, keychainService)
+    throw WriteException("Could not save the encrypted item to disk. The device may be out of storage or the app data directory may not be writable", keychainAwareKey, keychainService)
   }
 }

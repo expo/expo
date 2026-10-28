@@ -24,7 +24,7 @@ class SecureStoreWriteTest {
     get() = context.getSharedPreferences("SecureStore", Context.MODE_PRIVATE)
 
   @Test
-  fun `throws when the encrypted item is not written to disk`() {
+  fun `throws and keeps the previous value when the encrypted item is not written to disk`() {
     prefs.edit().putString("keychain-key", "v1").commit()
 
     // Without write permission on the directory `SharedPreferencesImpl` cannot rename the file to
@@ -32,26 +32,17 @@ class SecureStoreWriteTest {
     assertTrue(sharedPreferencesDir.setWritable(false))
     try {
       assertThrows(WriteException::class.java) {
-        saveEncryptedItem(JSONObject().put("ciphertext", "v2"), prefs, "keychain-key", false, "keychain")
-      }
-      assertFalse(File(sharedPreferencesDir, "SecureStore.xml").readText().contains("v2"))
-    } finally {
-      sharedPreferencesDir.setWritable(true)
-    }
-  }
-
-  @Test
-  fun `keeps the previous value readable when the encrypted item is not written to disk`() {
-    prefs.edit().putString("keychain-key", "v1").commit()
-
-    assertTrue(sharedPreferencesDir.setWritable(false))
-    try {
-      assertThrows(WriteException::class.java) {
-        saveEncryptedItem(JSONObject().put("ciphertext", "v2"), prefs, "keychain-key", false, "keychain")
+        saveEncryptedItem(JSONObject().put("ciphertext", "v2"), prefs, "keychain-key", "key", false, "keychain")
       }
       assertEquals("v1", prefs.getString("keychain-key", null))
     } finally {
       sharedPreferencesDir.setWritable(true)
     }
+
+    // A later successful write persists the whole in-memory map, so it must not carry the failed change.
+    assertTrue(prefs.edit().putString("unrelated", "value").commit())
+    val onDisk = File(sharedPreferencesDir, "SecureStore.xml").readText()
+    assertTrue(onDisk.contains("v1"))
+    assertFalse(onDisk.contains("v2"))
   }
 }

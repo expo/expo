@@ -44,8 +44,7 @@ class SecureStoreDeleteTest {
     legacyPrefs.edit().putString("unrelated", "value").commit()
 
     // Without write permission on the directory `SharedPreferencesImpl` cannot rename the file to
-    // its backup, so `commit` returns false and leaves the entry on the disk. It still removes the
-    // key from its in-memory map, which is what defeats a `contains` check on the retry.
+    // its backup, so `commit` returns false and leaves the entry on the disk.
     assertTrue(sharedPreferencesDir.setWritable(false))
     try {
       assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
