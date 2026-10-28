@@ -7,7 +7,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 The agent controls the remote device with a controller: [agent-device](/agents/agent-device/) or [Argent](/agents/argent/). This script starts an Expo Simulators session for the controller. Then it writes the device details and the commands of the controller to **agent-output/device.md**, and the job adds this file to the prompt of the agent. Use the version for your controller.
 
-The jobs run the script as `. .eas/agents/start-session.sh <platform> <build ID> <session name> <tag>`. The `.` runs the script in the shell of the job, so the job keeps the session details and stops the session when it ends.
+The jobs run the script as `source .eas/agents/start-session.sh <platform> <build ID> <session name> <tag>`. The `source` command runs the script in the shell of the job, so the job keeps the session details and stops the session when it ends.
 
 <Tabs>
 
@@ -77,7 +77,7 @@ npx --yes eas-cli@latest simulator:start --platform "$1" --type argent \
 trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
 set -a
-. ./.env.eas-simulator
+source ./.env.eas-simulator
 set +a
 
 UDID=""

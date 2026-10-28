@@ -139,7 +139,7 @@ FLOW_FILE=".eas/qa-flows/$FLOW.$PLATFORM.md"
 [ -f "$FLOW_FILE" ] || FLOW_FILE=".eas/qa-flows/$FLOW.md"
 [ -f "$FLOW_FILE" ] || { echo "No flow file for $FLOW. Add .eas/qa-flows/$FLOW.md." >&2; exit 1; }
 
-. .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "QA Swarm: $PLATFORM $FLOW" qa-swarm
+source .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "QA Swarm: $PLATFORM $FLOW" qa-swarm
 
 {
   cat .eas/agents/qa-lane.md

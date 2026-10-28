@@ -196,7 +196,7 @@ set -euo pipefail
 : "${PLATFORM:?No platform. Set PLATFORM to android or ios in the reproduce job.}"
 
 node .eas/agents/github.mjs issue "$ISSUE_NUMBER" > /tmp/issue.json
-. .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "Issue #$ISSUE_NUMBER triage" bug-triage
+source .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "Issue #$ISSUE_NUMBER triage" bug-triage
 
 {
   cat .eas/agents/reproduce.md
