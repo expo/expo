@@ -109,6 +109,9 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   public func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error {
+      if let requestId {
+        Self.delegate.didFailLoading(requestId: requestId, task: task, error: error)
+      }
       client?.urlProtocol(self, didFailWithError: error)
     } else {
       if let response = task.response as? HTTPURLResponse,
@@ -220,6 +223,9 @@ protocol ExpoRequestInterceptorProtocolDelegate: Sendable {
 
   @objc
   func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
+
+  @objc
+  func didFailLoading(requestId: String, task: URLSessionTask, error: Error)
 }
 
 /**
