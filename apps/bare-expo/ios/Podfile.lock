@@ -4161,7 +4161,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 41c9493da93ace34714079457745229de389b871
   ExpoModulesJSI: 744bbba28465e6fff44f48debe964b81b3ebebb1
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
-  ExpoModulesWorklets: 8d57ed49bb7495c8fe1ac639f5920725531dca4e
+  ExpoModulesWorklets: 1ffcd69fa7269a878dbc5ee7acd4e32af85c0406
   ExpoModulesWorkletsAdapter: 63ff5107381731840c3c8a59a7d12decac5f493f
   ExpoNetwork: a42e5fe6c3c70f517b0aad167f5a3eeec2fee7a4
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
