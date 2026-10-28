@@ -154,6 +154,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
           procedureContext.onComplete()
           return
         } errorBlock: { error in
+          self.logger.error(cause: UpdatesError.checkForUpdateProcedureFailed(cause: error), code: .updateFailedToLoad)
           procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
           self.successBlock(CheckForUpdateResult.error(error: error))
           procedureContext.onComplete()
