@@ -7,6 +7,8 @@ public class AudioModule: Module {
   private let sessionQueue = DispatchQueue(label: "expo.modules.audio.session", qos: .userInitiated)
   private var sessionIsActive = false
   private var audioSessionActivityKeepers = Set<String>()
+  // Set while another module, such as expo-video, uses the shared session that this module's registry can't see.
+  private var hasExternalSessionOwner = false
   private let audioEnabled = OSAllocatedUnfairLock(initialState: true)
 
   // MARK: Properties
@@ -39,6 +41,18 @@ public class AudioModule: Module {
 
     AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
       try setIsAudioActive(isActive)
+    }
+
+    Function("setAudioSessionOwner") { (owned: Bool) in
+      sessionQueue.async { [weak self] in
+        guard let self else {
+          return
+        }
+        self.hasExternalSessionOwner = owned
+        if !owned {
+          self.deactivateSession()
+        }
+      }
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
@@ -259,9 +273,9 @@ public class AudioModule: Module {
         }
       }
 
-      Function("pause") { player in
+      Function("pause") { (player: AudioPlayer, deactivateSession: Bool?) in
         player.ref.pause()
-        if !player.keepAudioSessionActive {
+        if deactivateSession != false && !player.keepAudioSessionActive {
           self.deactivateSession()
         }
       }
@@ -957,6 +971,7 @@ public class AudioModule: Module {
     sessionQueue.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
       guard let self,
         self.sessionIsActive,
+        !self.hasExternalSessionOwner,
         self.audioSessionActivityKeepers.isEmpty,
         !self.isSessionInUse else {
         return
