@@ -415,6 +415,10 @@ export async function installAndLaunchAppAsync(props: {
         }
       }
     );
+    // devicectl prints no progress when stdout is not a TTY, so `isComplete` may never be set.
+    if (indicator.isSpinning) {
+      indicator.succeed(`Installed on ${deviceName}`);
+    }
   } catch (error: any) {
     if (indicator) {
       indicator.fail();
