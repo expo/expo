@@ -118,6 +118,8 @@ class ImageLoaderService(val context: Context) : ImageLoaderInterface {
         }
         hasResult = true
         resultListener.onFailure(Exception("Loading bitmap failed"))
+        // Glide restarts failed requests when connectivity returns, which would report a second result.
+        // Clearing from inside a target callback is not allowed, so post it to the main thread.
         Handler(Looper.getMainLooper()).post { requestManager.clear(this) }
       }
     }
