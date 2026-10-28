@@ -2,6 +2,7 @@ import AppMetrics from 'expo-app-metrics';
 
 import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
+import { createReportLimiter } from '../reportLimiter';
 import { loadUpdates, type LoadedUpdates, type UpdatesLogEntry } from './updates';
 
 const ERROR_TYPE = 'updates.error';
@@ -24,13 +25,6 @@ const MAX_LOOKBACK_MS = 86_400_000;
 // Before expo-updates wrote millisecond timestamps, iOS truncated them to whole seconds, so the
 // read starts one second before the cursor and the keys of that second remove the overlap.
 const CURSOR_OVERLAP_MS = 1000;
-
-// The same limits as the react-native-reanimated integration: each distinct message is reported at
-// most once per window, at most 20 distinct messages per level per window, and messages are
-// deduplicated by their first 500 characters. Errors and warnings have separate windows.
-const REPORT_WINDOW_MS = 15 * 60_000;
-const MAX_DISTINCT_MESSAGES_PER_WINDOW = 20;
-const MAX_MESSAGE_LENGTH = 500;
 
 // The levels that the integration can report. The cursor stores keys only for these entries,
 // because an entry at a lower level that is read again is never reported.
@@ -56,11 +50,8 @@ type Settings = {
   shouldReport: ((entry: UpdatesLogEntry) => boolean) | undefined;
 };
 
-// Maps the capped text of each message reported in the current window to the time it was
-// reported, from the monotonic `performance.now()`. A `Map` keeps insertion order, so the oldest
-// report is always first.
-const reportedErrors = new Map<string, number>();
-const reportedWarnings = new Map<string, number>();
+const errorLimiter = createReportLimiter();
+const warningLimiter = createReportLimiter();
 
 let isEnabled = false;
 let settings: Settings = { reportWarnings: false, ignoredCodes: [], shouldReport: undefined };
@@ -77,25 +68,6 @@ class ExpoUpdatesLogError extends Error {
     this.name = type;
     this.stack = undefined;
   }
-}
-
-function removeExpiredReports(reported: Map<string, number>, now: number): void {
-  for (const [message, reportedAt] of reported) {
-    if (now - reportedAt < REPORT_WINDOW_MS) {
-      return;
-    }
-    reported.delete(message);
-  }
-}
-
-function isWithinLimits(reported: Map<string, number>, key: string): boolean {
-  const now = performance.now();
-  removeExpiredReports(reported, now);
-  if (reported.has(key) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
-    return false;
-  }
-  reported.set(key, now);
-  return true;
 }
 
 function isErrorRecoveryEntry(entry: UpdatesLogEntry): boolean {
@@ -142,8 +114,8 @@ function reportEntry(entry: UpdatesLogEntry): void {
   if (!isErrorRecovery && !passesFilters(entry)) {
     return;
   }
-  const cappedMessage = entry.message.slice(0, MAX_MESSAGE_LENGTH);
-  if (!isWithinLimits(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
+  const cappedMessage = (isError ? errorLimiter : warningLimiter).allow(entry.message);
+  if (cappedMessage === null) {
     return;
   }
   if (isError) {
