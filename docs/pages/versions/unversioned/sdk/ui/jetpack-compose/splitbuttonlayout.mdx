@@ -1,0 +1,123 @@
+---
+title: SplitButtonLayout
+description: A Jetpack Compose SplitButtonLayout component for a primary action next to a button that opens related actions.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI SplitButtonLayout matches the official Jetpack Compose [`SplitButtonLayout`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-split-button-layout.html) API. It places a leading button for the primary action next to a trailing button, which usually opens a menu of related actions. Both buttons take the same height.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Split button with a menu
+
+Put a `SplitButtonLayout.LeadingButton` and a `SplitButtonLayout.TrailingButton` in the layout. Put a [`DropdownMenu`](./dropdownmenu) inside the trailing button so the menu opens below it. Set `checked` on the trailing button while the menu is expanded: Material 3 then changes its shape to show that the menu is open.
+
+```tsx SplitButtonWithMenu.tsx
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  Host,
+  Icon,
+  SplitButtonLayout,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { rotate } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+const DROP_DOWN_ICON = require('./assets/arrow_drop_down.xml');
+
+export default function SplitButtonWithMenu() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Host matchContents>
+      <SplitButtonLayout>
+        <SplitButtonLayout.LeadingButton
+          onClick={() => console.log('Send')}>
+          <Text>Send</Text>
+        </SplitButtonLayout.LeadingButton>
+        <SplitButtonLayout.TrailingButton
+          checked={expanded}
+          onCheckedChange={setExpanded}>
+          <DropdownMenu
+            expanded={expanded}
+            onDismissRequest={() => setExpanded(false)}>
+            <DropdownMenu.Trigger>
+              <Icon
+                source={DROP_DOWN_ICON}
+                contentDescription="Send options"
+                modifiers={[rotate(expanded ? 180 : 0)]}
+              />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuItem onClick={() => setExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <Text>Schedule send</Text>
+                </DropdownMenuItem.Text>
+              </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </SplitButtonLayout.TrailingButton>
+      </SplitButtonLayout>
+    </Host>
+  );
+}
+```
+
+### Full-width split button
+
+The layout measures the trailing button first and gives the leading button the remaining width. Apply `fillMaxWidth()` to both the layout and the leading button to make the split button span its container.
+
+```tsx FullWidthSplitButton.tsx
+import {
+  Host,
+  Icon,
+  SplitButtonLayout,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+const DROP_DOWN_ICON = require('./assets/arrow_drop_down.xml');
+
+export default function FullWidthSplitButton() {
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <SplitButtonLayout modifiers={[fillMaxWidth()]}>
+        <SplitButtonLayout.LeadingButton
+          onClick={() => console.log('Merge')}
+          modifiers={[fillMaxWidth()]}>
+          <Text>Squash and merge</Text>
+        </SplitButtonLayout.LeadingButton>
+        <SplitButtonLayout.TrailingButton checked={false}>
+          <Icon
+            source={DROP_DOWN_ICON}
+            contentDescription="Merge options"
+          />
+        </SplitButtonLayout.TrailingButton>
+      </SplitButtonLayout>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { SplitButtonLayout } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/splitbuttonlayout"
+  apiName="SplitButtonLayout"
+/>

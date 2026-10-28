@@ -541,6 +541,28 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<SplitButtonLayoutProps>("SplitButtonLayoutView") {
+      Content { props ->
+        SplitButtonLayoutContent(props)
+      }
+    }
+
+    ExpoUIView<SplitButtonLeadingButtonProps>("SplitButtonLeadingButtonView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        SplitButtonLeadingButtonContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SplitButtonTrailingButtonProps>("SplitButtonTrailingButtonView") {
+      val onCheckedChange by Event<SplitButtonCheckedChangeEvent>()
+
+      Content { props ->
+        SplitButtonTrailingButtonContent(props) { onCheckedChange(it) }
+      }
+    }
+
     ExpoUIView<TopAppBarProps>("TopAppBarView") {
       Content { props ->
         TopAppBarContent(props)
