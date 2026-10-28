@@ -29,7 +29,8 @@ struct AudioRecorderFinishTests {
       })
       """,
       "status = null",
-      "recorder.addListener('recordingStatusUpdate', (payload) => { status = payload })",
+      "statusCount = 0",
+      "recorder.addListener('recordingStatusUpdate', (payload) => { status = payload; statusCount++ })",
       "recorder"
     )
     return try SharedObject.native(from: recorder.asObject(), as: AudioRecorder.self)
@@ -46,6 +47,19 @@ struct AudioRecorderFinishTests {
     #expect(try status.getProperty("hasError").asBool() == true)
     #expect(status.getProperty("error").isString() == true)
     #expect(status.getProperty("url").isNull() == true)
+  }
+
+  @Test
+  func `keeps the encode error when the unsuccessful finish follows it`() throws {
+    let recorder = try makeRecorder()
+    let encodeError = NSError(domain: "AudioRecorderFinishTests", code: 1, userInfo: [NSLocalizedDescriptionKey: "Encoder failed"])
+
+    recorder.encodeErrorDidOccur(recorder.ref, error: encodeError)
+    recorder.didFinish(recorder.ref, successfully: false)
+
+    let status = try runtime.eval("status").asObject()
+    #expect(try runtime.eval("statusCount").asInt() == 1)
+    #expect(try status.getProperty("error").asString() == "Encoder failed")
   }
 }
 #endif

@@ -285,6 +285,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+    // An encode error already reported the failure with its specific description.
+    if !flag && currentState == .error {
+      return
+    }
     // Update internal state when recording finishes automatically (e.g., from recordForDuration)
     currentState = flag ? .stopped : .error
     resetDurationTracking()
