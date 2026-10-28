@@ -121,7 +121,7 @@ In the above code snippet, the `POST` [request function](/router/web/api-routes/
 To make the API route accessible from your Expo app, you need to add the base URL as an environment variable in your Expo project. Add the following code to your **.env.local** file:
 
 ```shell .env.local
-EXPO_PUBLIC_BASE_URL=https://example-resend.expo.app # Deployed URL via EAS Hosting
+EXPO_PUBLIC_BASE_URL=https://example-resend.expo.app # Deployed URL via Expo Hosting
 EXPO_PUBLIC_BASE_URL_LOCAL=http://localhost:8081 # Only required for testing locally
 ```
 
@@ -157,7 +157,7 @@ export default function Index() {
 
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BASE_URL_LOCAL}/api/audience`, // Switch to `EXPO_PUBLIC_BASE_URL` after deploying to EAS Hosting
+        `${process.env.EXPO_PUBLIC_BASE_URL_LOCAL}/api/audience`, // Switch to `EXPO_PUBLIC_BASE_URL` after deploying to Expo Hosting
         {
           method: 'POST',
           body: JSON.stringify({ email }),
