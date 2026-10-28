@@ -221,6 +221,7 @@ describe('getWatchHandler with Windows paths', () => {
   beforeEach(() => {
     const ctx = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
       './index.ts': true,
+      './fruit/banana.ts': true,
     });
     jest.isolateModules(() => {
       jest.doMock('node:path', () => jest.requireActual('node:path').win32);
@@ -254,6 +255,13 @@ describe('getWatchHandler with Windows paths', () => {
     const { href } = getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '');
     expect(href).toContain('`/sessions/${Router.SingleRoutePart<T>}`');
     expect(href).not.toContain('/sessions/[id]/index');
+  });
+
+  it('deletes nested routes', () => {
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}\\fruit\\banana.ts`, 'delete');
+
+    const { href } = getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '');
+    expect(href).not.toContain('/fruit/banana');
   });
 });
 
