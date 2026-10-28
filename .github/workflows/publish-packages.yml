@@ -93,6 +93,29 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      # Records when .git/index.lock appears and disappears for the rest of the job, with the
+      # processes that run when it appears. Trace2 records only git processes.
+      - name: Trace git and watch the Git index lock
+        continue-on-error: true
+        run: |
+          # The system config also reaches git processes that run with a filtered environment.
+          sudo git config --system trace2.eventTarget /tmp/git-trace2.json
+          # shellcheck disable=SC2016
+          nohup bash -c '
+            held=0
+            while :; do
+              if [ -e "$1" ]; then
+                if [ "$held" = 0 ]; then
+                  held=1
+                  { echo "$(date -u +%T.%N) created"; ps -ef --forest; } >> /tmp/index-lock-watch.log
+                fi
+              elif [ "$held" = 1 ]; then
+                held=0
+                echo "$(date -u +%T.%N) removed" >> /tmp/index-lock-watch.log
+              fi
+              sleep 0.05
+            done
+          ' _ "$GITHUB_WORKSPACE/.git/index.lock" > /dev/null 2>&1 < /dev/null &
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # NOTE: Changesets automatically deepens the clone for older changeset entries.
@@ -106,10 +129,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Prerequisites
-        run: |
-          pnpm turbo run build --filter=expotools...
-          rm -f .git/index.lock
+        run: pnpm turbo run build --filter=expotools...
+      # changesets/action fails while .git/index.lock exists.
+      - name: Wait for the Git index lock
+        continue-on-error: true
+        run: bash .github/scripts/wait-for-git-index-lock.sh
       - name: Create release PR
+        id: release
+        continue-on-error: true
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
         with:
           github-token: ${{ github.token }}
@@ -117,6 +144,52 @@ jobs:
           commit-message: Version packages (${{ github.ref_name }})
           pr-title: Version packages (${{ github.ref_name }})
           pr-base-branch: ${{ github.ref_name }}
+      - name: Wait for the Git index lock before retrying
+        if: steps.release.outcome == 'failure'
+        continue-on-error: true
+        run: bash .github/scripts/wait-for-git-index-lock.sh
+      # changesets/action runs `git checkout -b` when `git checkout` does not print
+      # "Switched to a new branch". The first attempt may have created the branch already.
+      - name: Reset the checkout before retrying
+        if: steps.release.outcome == 'failure'
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git checkout --force "$BRANCH"
+          git clean -fd
+          if git show-ref --verify --quiet "refs/heads/changeset-release/$BRANCH"; then
+            git branch -D "changeset-release/$BRANCH"
+          fi
+      - name: Create release PR (retry)
+        if: steps.release.outcome == 'failure'
+        uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
+        with:
+          github-token: ${{ github.token }}
+          version-script: pnpm expotools version-packages
+          commit-message: Version packages (${{ github.ref_name }})
+          pr-title: Version packages (${{ github.ref_name }})
+          pr-base-branch: ${{ github.ref_name }}
+      - name: Print Git index lock diagnostics
+        if: ${{ !cancelled() && (failure() || steps.release.outcome == 'failure') }}
+        run: |
+          echo "::warning::A step in this job failed. The 'Print Git index lock diagnostics' step prints when .git/index.lock appeared and which processes ran."
+          echo "::group::Index lock watcher"
+          cat /tmp/index-lock-watch.log || true
+          echo "::endgroup::"
+          echo "::group::Git processes (trace2)"
+          # A git process that stops in the middle of a write leaves an incomplete line.
+          jq -c -n -R '
+            [inputs | fromjson?]
+            | (map(select(.event == "start" and .argv[1] == "config") | .sid)) as $skip
+            | .[]
+            | select(
+                (.event | IN("start", "cmd_ancestry", "exit", "signal", "error")) or .label == "do_write_index"
+              )
+            | select(.sid as $sid | $skip | index($sid) | not)
+            | {time, sid, event, argv, ancestry, code, signo, label, msg}
+            | with_entries(select(.value != null))
+          ' /tmp/git-trace2.json || true
+          echo "::endgroup::"
 
   stable-publish:
     name: Publish stable packages
