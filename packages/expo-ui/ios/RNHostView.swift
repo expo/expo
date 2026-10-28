@@ -316,12 +316,15 @@ private struct AnimatedSizeReporter: ViewModifier, Animatable {
     }
   }
 
+  // SwiftUI sets `animatableData` only while it animates a change. The first layout and a change
+  // that is not animated reach Yoga from here instead.
   func body(content: Content) -> some View {
     content
+      .onAppear { report(size) }
+      .onChange(of: size) { newValue in report(newValue) }
   }
 
-  // SwiftUI sets `animatableData` once per frame while animating and once per change otherwise,
-  // repeating a value it already set; Yoga only needs to hear each size once.
+  // Both paths repeat a size they already sent; Yoga only needs to hear each size once.
   private func report(_ size: CGSize) {
     if lastReported.value == size {
       return
