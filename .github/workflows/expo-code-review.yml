@@ -21,10 +21,26 @@ permissions:
   contents: read
 
 concurrency:
-  # A label event for any other label (such as `contributor: external`, or the
-  # `ready for human` label the reviewer adds itself) gets its own group, so it never
-  # cancels a running review.
-  group: "ai-code-review-${{ github.event.pull_request.number }}-${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && !startsWith(github.event.label.name, 'ai-review') && github.run_id || 'review' }}"
+  # Only an event that can start or stop a review shares the PR's group; every other
+  # event gets its own group (`run_id`), so it never cancels a running review:
+  # - On a PR from this repository: a label event for a label other than `ai-review*`,
+  #   such as `contributor: external` or the `ready for human` label the reviewer adds.
+  # - On a PR from a fork: everything except adding or removing `ai-review`, adding
+  #   `ai-review:skip`, and, while AI_REVIEW_FORK_PRS is on, the non-label events. A
+  #   push to a fork PR cannot start a review (see the job `if`), so it must not cancel
+  #   the review a maintainer started with the label.
+  group: >-
+    ai-code-review-${{ github.event.pull_request.number }}-${{
+    ((github.event.pull_request.head.repo.full_name == github.repository
+    && (github.event.action == 'labeled' || github.event.action == 'unlabeled')
+    && !startsWith(github.event.label.name, 'ai-review'))
+    || (github.event.pull_request.head.repo.full_name != github.repository
+    && !(((github.event.action == 'labeled' || github.event.action == 'unlabeled')
+    && github.event.label.name == 'ai-review')
+    || (github.event.action == 'labeled' && github.event.label.name == 'ai-review:skip')
+    || (vars.AI_REVIEW_FORK_PRS == 'true'
+    && github.event.action != 'labeled' && github.event.action != 'unlabeled'))))
+    && github.run_id || 'review' }}
   cancel-in-progress: true
 
 jobs:

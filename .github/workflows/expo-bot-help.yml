@@ -62,7 +62,9 @@ jobs:
         # Comments still post if sync fails; cron/dispatch should surface a miss.
         continue-on-error: ${{ github.event_name == 'issue_comment' }}
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          # The broad token on purpose: the script writes to the expo-bot/expo-bot
+          # repository, which EXPO_BOT_REVIEW_TOKEN (expo/expo only) cannot reach.
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: bash .github/scripts/sync-expo-bot-manpage.sh
 
       - name: Post command list
