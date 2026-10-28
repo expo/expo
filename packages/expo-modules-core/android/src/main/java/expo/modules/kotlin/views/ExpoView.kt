@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
+import androidx.core.view.OneShotPreDrawListener
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.StateWrapper
 import expo.modules.kotlin.AppContext
@@ -47,12 +48,24 @@ abstract class ExpoView(
     layout(left, top, right, bottom)
   }
 
+  private var scheduledLayout: OneShotPreDrawListener? = null
+
   override fun requestLayout() {
     super.requestLayout()
-    if (shouldUseAndroidLayout) {
+    if (shouldUseAndroidLayout && scheduledLayout == null) {
       // We need to force measure and layout, because React Native doesn't do it for us.
-      post { measureAndLayout() }
+      // Lay out before the next frame draws, so children changed during a mount don't show
+      // unlaid-out for one frame. The post covers a request that no frame follows.
+      scheduledLayout = OneShotPreDrawListener.add(this) { runScheduledLayout() }
+      post { runScheduledLayout() }
     }
+  }
+
+  private fun runScheduledLayout() {
+    val listener = scheduledLayout ?: return
+    scheduledLayout = null
+    listener.removeListener()
+    measureAndLayout()
   }
 
   override fun forceLayout() {
