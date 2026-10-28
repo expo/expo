@@ -20,35 +20,7 @@ data class UpdatesLogEntry(
   val key: String? = null,
   val values: Map<String, String>? = null
 ) {
-  fun asString(): String {
-    return JSONObject(
-      mapOf(
-        "timestamp" to timestamp,
-        "message" to message,
-        "code" to code,
-        "level" to level
-      )
-    ).apply {
-      if (duration != null) {
-        put("duration", duration)
-      }
-      if (updateId != null) {
-        put("updateId", updateId)
-      }
-      if (assetId != null) {
-        put("assetId", assetId)
-      }
-      if (!stacktrace.isNullOrEmpty()) {
-        put("stacktrace", JSONArray(stacktrace))
-      }
-      if (key != null) {
-        put("key", key)
-      }
-      if (values != null) {
-        put("values", JSONObject(values))
-      }
-    }.toString()
-  }
+  fun asString(): String = JSONObject(asMap()).toString()
 
   /**
    * The entry as a map with the same keys as the JSON string.
@@ -65,6 +37,8 @@ data class UpdatesLogEntry(
       if (!stacktrace.isNullOrEmpty()) {
         put("stacktrace", stacktrace)
       }
+      key?.let { put("key", it) }
+      values?.let { put("values", it) }
     }
 
   companion object {
