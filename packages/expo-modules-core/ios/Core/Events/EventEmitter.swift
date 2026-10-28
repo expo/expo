@@ -100,9 +100,44 @@ public extension EventEmitter {
     }
   }
 
+  /// Schedules an event with the given name and payload to be emitted to the associated JavaScript object,
+  /// converting the payload with `encode`, which writes it into a slot like
+  /// `JavaScriptEncodable.encode(_:into:in:)`. The `@Event` macro uses it for payload types that can't
+  /// conform to `JavaScriptEncodable`, such as tuples.
+  @inlinable
+  func emit<P>(
+    event: String,
+    payload: sending P,
+    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
+      -> Void
+  ) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    runtime.schedule {
+      guard let emitter = emitter.value else {
+        return
+      }
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+          try encode(payload, slot, runtime)
+        }
+      } catch {
+        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+        return
+      }
+      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
+    }
+  }
+
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
-   Payloads that are `JavaScriptEncodable` use the overload above, which converts them statically.
+   Payloads that are `JavaScriptEncodable` use the `emit(event:payload:)` overload for them, which converts
+   them statically.
    */
   @_disfavoredOverload
   func emit<P: AnyArgument>(event: String, payload: sending P) {
