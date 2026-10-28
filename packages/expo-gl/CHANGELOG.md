@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix WebGL 2 contexts being `instanceof WebGLRenderingContext`, which made three.js r163 and later reject them as WebGL 1. ([#51572](https://github.com/expo/expo/pull/51572) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 57.0.2 — 2026-07-15
