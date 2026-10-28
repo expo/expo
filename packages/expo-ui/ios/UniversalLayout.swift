@@ -20,6 +20,13 @@ internal struct UniversalLayoutDimensionsKey: LayoutValueKey {
   static let defaultValue = UniversalLayoutDimensions()
 }
 
+/// A `Spacer` fills any proposal, so a universal stack measures its cross size with none.
+internal protocol UniversalLayoutSpacer {}
+
+internal struct UniversalLayoutSpacerKey: LayoutValueKey {
+  static let defaultValue = false
+}
+
 internal func universalLayoutDimensions(from modifiers: ModifierArray?) -> UniversalLayoutDimensions {
   guard let values = modifiers?.last(where: { $0["$type"] as? String == "universalLayout" }) else {
     return UniversalLayoutDimensions()
