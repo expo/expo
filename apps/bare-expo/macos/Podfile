@@ -3,7 +3,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 # Ruby's File.realdirpath on macOS can return a path with NUL bytes, which crashes `pod install`
 # (https://github.com/CocoaPods/CocoaPods/issues/12866). File.realpath does not have this bug.
-class Pathname
+class ::Pathname
   alias_method :__expo_realdirpath, :realdirpath
   def realdirpath(*args)
     exist? ? realpath(*args) : __expo_realdirpath(*args)
