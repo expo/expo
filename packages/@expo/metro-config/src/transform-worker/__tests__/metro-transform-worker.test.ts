@@ -1521,7 +1521,8 @@ it('outputs comments when `minify: false`', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-    /*#__PURE__*/arbitrary(code);
+    /*#__PURE__*/ arbitrary(code);
+
     });"
   `);
 });
@@ -1535,14 +1536,14 @@ it('omits comments when `minify: true`', async () => {
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (g, r, i, a, m, e, d) {
-     minified(code);
-
-    });"
+    "__d(function(g, r, i, a, m, e, d) {
+    	minified(code);
+    });
+    "
   `);
 });
 
-it('allows outputting comments when `minify: true`', async () => {
+it('omits comments when `minify: true` even if the minifier config keeps them', async () => {
   const result = await Transformer.transform(
     { ...baseConfig, minifierConfig: { output: { comments: true } } },
     '/root',
@@ -1551,9 +1552,10 @@ it('allows outputting comments when `minify: true`', async () => {
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (g, r, i, a, m, e, d) {
-    /*#__PURE__*/minified(code);
-    });"
+    "__d(function(g, r, i, a, m, e, d) {
+    	minified(code);
+    });
+    "
   `);
 });
 

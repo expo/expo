@@ -64,11 +64,27 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     }
   }
 
+  /// Makes the scheduler drain the runtime's microtask queue after each operation. Call on the
+  /// scheduler's thread.
+  fileprivate func drainMicrotasksAfterEachOperation(of runtime: JavaScriptRuntime) {
+    state.afterEachOperation = { [weak runtime] in
+      guard let runtime else {
+        return
+      }
+      JavaScriptActor.assumeIsolated {
+        // React Native reports these errors to its JavaScript error handler, which tests don't have.
+        try? runtime.drainMicrotasks()
+      }
+    }
+  }
+
   /// Creates a runtime on the scheduler's thread and wraps it in a non-owning runtime whose scheduled
   /// work dispatches back to that thread.
   func makeRuntime() async -> TestRuntime {
     let owningRuntime = await run {
-      JavaScriptRuntime()
+      let owningRuntime = JavaScriptRuntime()
+      self.drainMicrotasksAfterEachOperation(of: owningRuntime)
+      return owningRuntime
     }
     let runtime = await run {
       owningRuntime.withUnsafePointee { runtimePointer in
@@ -87,6 +103,10 @@ final class TestRuntimeScheduler: @unchecked Sendable {
     private let ready = DispatchSemaphore(value: 0)
     private var operations: [@convention(block) () -> Void] = []
     private var isStopped = false
+
+    /// Runs on the scheduler's thread after each operation, like the microtask checkpoint that React
+    /// Native's runtime scheduler performs after each task. Set and read only on that thread.
+    var afterEachOperation: (() -> Void)?
 
     func schedule(_ operation: @escaping @convention(block) () -> Void) {
       condition.lock()
@@ -134,6 +154,7 @@ final class TestRuntimeScheduler: @unchecked Sendable {
         condition.unlock()
 
         operation()
+        afterEachOperation?()
       }
     }
   }
@@ -145,6 +166,19 @@ struct TestRuntime: Sendable {
   let scheduler: TestRuntimeScheduler
   let owningRuntime: JavaScriptRuntime
   let runtime: JavaScriptRuntime
+}
+
+extension TestRuntime {
+  /// Starts an async test body on the runtime's JavaScript thread, as a task of the scheduler. The
+  /// scheduler drains the microtask queue after each task, like React Native does, so promise reactions
+  /// run once the body suspends. `JavaScriptPromise.await()` and the APIs built on it resume the body
+  /// off the JavaScript thread, so work that touches the runtime after them goes through `execute`.
+  func run(_ body: @escaping @Sendable @JavaScriptActor (JavaScriptRuntime) async throws -> Void) async throws {
+    let runtime = self.runtime
+    try await runtime.execute { () async throws in
+      try await body(runtime)
+    }
+  }
 }
 
 /// Carries a non-`Sendable`, possibly non-copyable value out of a ``TestRuntimeScheduler/runIsolated(_:)``
@@ -192,6 +226,7 @@ final class ReleasableTestRuntime: @unchecked Sendable {
   ) async {
     let runtimes = await scheduler.run { [scheduler] in
       let owningRuntime = JavaScriptRuntime()
+      scheduler.drainMicrotasksAfterEachOperation(of: owningRuntime)
       let runtime = owningRuntime.withUnsafePointee { runtimePointer in
         JavaScriptRuntime(
           unsafePointer: runtimePointer,
@@ -239,3 +274,79 @@ final class ReleasableTestRuntime: @unchecked Sendable {
     }
   }
 }
+
+/// Emulates the mutex of React Native's `RuntimeScheduler`, which `scheduleTask` takes and which is not
+/// reentrant. `RuntimeScheduler_Modern::clearQueues()` destroys the queued tasks while it holds that
+/// mutex, so work that the destruction of a task schedules from the same thread would deadlock the
+/// JavaScript thread. A dispatch from another thread only waits for the mutex. A test holds the lock
+/// around such a destruction, and ``scheduleOnTestRuntimeUnlessHostLocked`` counts the dispatches
+/// that would deadlock instead of blocking.
+final class TestHostSchedulerLock: @unchecked Sendable {
+  private let lock = NSLock()
+  private var holderThread: Thread?
+  private var blockedDispatches = 0
+
+  /// Number of dispatches that arrived on the holding thread while the lock was held.
+  var blockedDispatchCount: Int {
+    lock.withLock { blockedDispatches }
+  }
+
+  func acquire() {
+    lock.withLock { holderThread = Thread.current }
+  }
+
+  func release() {
+    lock.withLock { holderThread = nil }
+  }
+
+  /// Returns `true` and counts the dispatch when the calling thread holds the lock.
+  fileprivate func blocksDispatch() -> Bool {
+    lock.withLock {
+      let isReentrant = holderThread === Thread.current
+      if isReentrant {
+        blockedDispatches += 1
+      }
+      return isReentrant
+    }
+  }
+}
+
+let testHostSchedulerLock = TestHostSchedulerLock()
+
+/// A host dispatch function like ``scheduleOnTestRuntime`` that drops, and counts, the tasks that the
+/// thread holding ``testHostSchedulerLock`` dispatches, where React Native's scheduler would deadlock.
+let scheduleOnTestRuntimeUnlessHostLocked:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, priority, callback in
+    if testHostSchedulerLock.blocksDispatch() {
+      return
+    }
+    scheduleOnTestRuntime(schedulerPointer, priority, callback)
+  }
+
+/// Counts the tasks that a runtime dispatches through ``scheduleOnTestRuntimeCounting``.
+final class TestDispatchCounter: @unchecked Sendable {
+  private let lock = NSLock()
+  private var dispatches = 0
+
+  var count: Int {
+    lock.withLock { dispatches }
+  }
+
+  fileprivate func increment() {
+    lock.withLock { dispatches += 1 }
+  }
+}
+
+let testDispatchCounter = TestDispatchCounter()
+
+/// A host dispatch function like ``scheduleOnTestRuntime`` that counts each task in
+/// ``testDispatchCounter``.
+let scheduleOnTestRuntimeCounting:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, priority, callback in
+    testDispatchCounter.increment()
+    scheduleOnTestRuntime(schedulerPointer, priority, callback)
+  }

@@ -2,6 +2,18 @@
 
 Read only the sections needed for the requested feature. Core setup and invocation handling are in [SKILL.md](../SKILL.md).
 
+## Background task handlers
+
+Use `AppIntentDispatcher.shared.runBackgroundTask(name:params:timeout:)` when `perform()` needs a result from JavaScript without opening the app, for example to tell Siri what changed. It requires `expo-task-manager`; without it, the call throws an error that says to install it.
+
+- Define the handler with `TaskManager.defineTask<AppIntentInvocation>(name, executor)` in the global scope of a module the app imports at startup. A task defined in a component or a lazily loaded screen does not exist when the intent launches the app in the background, and the run fails with a "not defined" error.
+- The task receives the invocation (`id`, `name`, `params`, `createdAt`) as `data`. Its return value comes back to Swift as an `AppIntentValue`: integral numbers become `.int`, `null`, `undefined`, `NaN`, and infinity become `.null`. Functions and symbols also become `.null`, and an object such as a `Date` arrives as its enumerable properties (`{}` for a `Date`), so return plain JSON values, for example `date.toISOString()`.
+- A thrown JavaScript error, a task that is not defined, a timeout (30 seconds by default), and a cancelled `perform()` all throw in Swift. Map them to an honest result instead of a success dialog.
+- The run is not added to the pending queue, so do not also handle it in `useAppIntents`. Each call creates an invocation with a new `id` and delivers it at most once. A task that times out in Swift can still finish in JavaScript, so pass an idempotency key of your own in `params` when a retried intent must not apply twice.
+- The first run registers the task as an `onDemandTask`. Do not reuse the name of a task that is registered for another purpose, such as `BackgroundTask.registerTaskAsync()` or location updates; that run is rejected.
+- `expo-task-manager` runs these tasks on iOS and tvOS only. On macOS, `runBackgroundTask(name:params:timeout:)` throws, so use `dispatch(name:params:)` there.
+- In a development build, open the project in the app once before testing. When an intent starts the app in the background, the app loads the project that was open last.
+
 ## Donations
 
 Donate after the user successfully performs the corresponding action inside the app. A donation records an action for possible system suggestions; it does not execute the action or guarantee a suggestion. Keep donation failure separate from the already successful business operation.

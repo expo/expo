@@ -14,50 +14,27 @@ import expo.modules.notifications.notifications.model.RemoteNotificationContent
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
-import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
 import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
 
 open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
     // than by static properties.
-    /**
-     * We store this value to be able to inform new listeners of last known token.
-     */
-    protected var sLastToken: String? = null
+    private val sTokenListeners = CopyOnWriteArraySet<(String) -> Unit>()
 
     /**
-     * A Set of listeners. Used to check quickly whether given listener
-     * is already registered and to iterate over when notifying of new token.
-     * If you register a listener, make sure to also un-register it
-     */
-    protected val sTokenListenersReferences = HashSet<FirebaseTokenListener>()
-
-    /**
-     * Used only by [FirebaseTokenListener] instances. If you look for a place to register
-     * your listener, use [FirebaseTokenListener] singleton module.
-     *
-     * Purposefully the argument is expected to be a [FirebaseTokenListener] and just a listener.
-     *
-     * This class doesn't hold strong references to listeners, so you need to own your listeners.
-     *
-     * @param listener A listener instance to be informed of new push device tokens.
+     * Registers a listener to be informed of new device push tokens.
+     * Make sure to also unregister it with [removeTokenListener].
      */
     @JvmStatic
-    fun addTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
-      // Checks whether this listener has already been registered
-      if (!sTokenListenersReferences.contains(listener)) {
-        sTokenListenersReferences.add(listener)
-        // Since it's a new listener and we know of a last valid token, let's let them know.
-        sLastToken?.let {
-          listener.onNewToken(it)
-        }
-      }
+    fun addTokenListener(listener: (String) -> Unit) {
+      sTokenListeners.add(listener)
     }
 
     @JvmStatic
-    fun removeTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
-      sTokenListenersReferences.remove(listener)
+    fun removeTokenListener(listener: (String) -> Unit) {
+      sTokenListeners.remove(listener)
     }
 
     /**
@@ -93,15 +70,12 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   /**
-   * Called on new token, dispatches it to [NotificationsService.sTokenListenersReferences].
+   * Called on new token, dispatches it to the registered token listeners.
    *
    * @param token New device push token.
    */
   override fun onNewToken(token: String) {
-    for (listenerReference in sTokenListenersReferences) {
-      listenerReference.onNewToken(token)
-    }
-    sLastToken = token
+    sTokenListeners.forEach { it(token) }
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {

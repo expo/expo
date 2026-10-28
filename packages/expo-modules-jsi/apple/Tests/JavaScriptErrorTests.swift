@@ -92,23 +92,28 @@ struct JavaScriptErrorTests {
 
   @Test
   func `async function rejecting with a JavaScriptError throws that value to JavaScript`() async throws {
-    let fn = runtime.createAsyncFunction("failingAsync") { [self] _, _ in
-      // Throw a plain string, not an `Error` instance.
-      throw JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string"))
-    }
-    runtime.global().setProperty("failingAsync", value: fn)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let fn = runtime.createAsyncFunction("failingAsync") { _, _ in
+        // Throw a plain string, not an `Error` instance.
+        throw JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string"))
+      }
+      runtime.global().setProperty("failingAsync", value: fn)
 
-    let result = try await runtime.evalAsync(
-      """
-        failingAsync().then(
-          () => null,
-          (error) => [typeof error, error instanceof Error, error]
-        )
-      """
-    ).getArray()
-    #expect(result[0].getString() == "string")
-    #expect(result[1].getBool() == false)
-    #expect(result[2].getString() == "just a string")
+      let value = try await runtime.evalAsync(
+        """
+          failingAsync().then(
+            () => null,
+            (error) => [typeof error, error instanceof Error, error]
+          )
+        """
+      ).ref()
+      try await runtime.execute {
+        let result = try value.take().getArray()
+        #expect(result[0].getString() == "string")
+        #expect(result[1].getBool() == false)
+        #expect(result[2].getString() == "just a string")
+      }
+    }
   }
 
   @Test
@@ -156,29 +161,36 @@ struct JavaScriptErrorTests {
 
   @Test
   func `awaiting a value-rejected promise throws a JavaScriptError carrying that value`() async throws {
-    let promise = try JavaScriptPromise(runtime)
-    promise.reject(JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string")))
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
+      promise.reject(JavaScriptError(runtime, value: JavaScriptValue(runtime, "just a string")))
 
-    let error = await #expect(throws: JavaScriptError.self) {
-      _ = try await promise.await()
+      let error = await #expect(throws: JavaScriptError.self) {
+        _ = try await promise.await()
+      }
+      #expect(try await runtime.execute { error?.toValue().getString() } == "just a string")
     }
-    #expect(error?.toValue().getString() == "just a string")
   }
 
   @Test
   func `awaiting a promise rejected with a native error throws a generic Error`() async throws {
-    struct TestError: Error, CustomStringConvertible {
-      var description: String { "native failure" }
-    }
-    let promise = try JavaScriptPromise(runtime)
-    promise.reject(TestError())
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      struct TestError: Error, CustomStringConvertible {
+        var description: String { "native failure" }
+      }
+      let promise = try JavaScriptPromise(runtime)
+      promise.reject(TestError())
 
-    let error = await #expect(throws: JavaScriptError.self) {
-      _ = try await promise.await()
+      let error = await #expect(throws: JavaScriptError.self) {
+        _ = try await promise.await()
+      }
+      let thrown = try #require(error)
+      try await runtime.execute {
+        let caught = thrown.toValue()
+        #expect(caught.isObject() == true)
+        #expect(caught.getObject().getProperty("message").getString() == "native failure")
+      }
     }
-    let caught = try #require(error).toValue()
-    #expect(caught.isObject() == true)
-    #expect(caught.getObject().getProperty("message").getString() == "native failure")
   }
 
   // MARK: - JavaScriptError.from(_:in:) helper

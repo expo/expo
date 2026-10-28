@@ -73,6 +73,13 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return JavaScriptValue(runtime, copying: pointer.pointee)
   }
 
+  /// Moves the borrowed `jsi::Value` out into an owning ``JavaScriptValue``, without a clone. The slot it
+  /// points to is left moved-from, so it may be taken only once and only when its owner allows it: the
+  /// host function trampoline uses it for `this`, which the engine doesn't read after the call.
+  internal func takeValue(in runtime: borrowing JavaScriptRuntime) -> JavaScriptValue {
+    return JavaScriptValue(runtime, UnsafeMutablePointer(mutating: pointer).move())
+  }
+
   // MARK: - Type checks
 
   public func isUndefined() -> Bool {

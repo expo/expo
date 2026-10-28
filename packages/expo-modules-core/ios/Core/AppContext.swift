@@ -582,12 +582,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }) {
         instance = cachedInstance
       } else {
-        guard let classDefinition = self.findClassDefinition(for: typeId) else {
-          throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
-        }
-        let built = try classDefinition.buildPrototype(
+        let built = try self.buildWorkletPrototype(
+          for: type(of: nativeObject),
           in: runtime,
-          appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
         instance = runtime.createObject(prototype: built)
@@ -601,6 +598,25 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
   }
 
+  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
+  /// that defines it or from a module that registers it in `_classTypes`.
+  @JavaScriptActor
+  private func buildWorkletPrototype(
+    for nativeType: SharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    basePrototype: consuming JavaScriptObject
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(nativeType)
+
+    if let classDefinition = findClassDefinition(for: typeId) {
+      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+    }
+    if let classType = findClassType(for: typeId) {
+      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+    }
+    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+  }
+
   /**
    Finds the ClassDefinition for a given native type identifier by searching all modules.
    */
@@ -611,6 +627,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
            sharedObjectType.typeIdentifier == typeId {
           return classDefinition
         }
+      }
+    }
+    return nil
+  }
+
+  /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
+  /// register in `_classTypes`.
+  private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
+    for module in moduleRegistry {
+      if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
+        return classType
       }
     }
     return nil

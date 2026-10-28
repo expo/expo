@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      # - sdk-58
+      - sdk-58
   workflow_dispatch:
     inputs:
       operation:
@@ -32,26 +32,38 @@ env:
 jobs:
   stable-mode:
     name: Select stable release mode
-    if: >-
-      github.repository == 'expo/expo' &&
-      github.ref_name == 'main' &&
-      github.event_name == 'push'
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     outputs:
       mode: ${{ steps.mode.outputs.mode }}
+      sync: ${{ steps.policy.outputs.sync }}
+      canary: ${{ steps.policy.outputs.canary }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: policy
+        name: Read branch policy from expo.json
+        run: |
+          jq -r --arg branch "$GITHUB_REF_NAME" '
+            .branches[$branch] //
+              (if $branch | test("^sdk-[0-9]+$") then .sdkBranchDefaults else {} end) |
+            "stable=\((.publish // "") != "")",
+            "sync=\(.publish == "latest")",
+            "canary=\((.canary // "") != "")"
+          ' .changeset/expo.json >> "$GITHUB_OUTPUT"
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        if: github.event_name == 'push' && steps.policy.outputs.stable == 'true'
         with:
           install: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: github.event_name == 'push' && steps.policy.outputs.stable == 'true'
         with:
           node-version: 24
           package-manager-cache: false
       - id: mode
         name: Select version or publish
+        if: github.event_name == 'push' && steps.policy.outputs.stable == 'true'
         run: |
           if find .changeset -maxdepth 1 -type f -name '*.md' ! -name README.md -print -quit | grep -q .; then
             echo 'mode=version' >> "$GITHUB_OUTPUT"
@@ -105,6 +117,7 @@ jobs:
           commit-message: Version packages (${{ github.ref_name }})
           pr-title: Version packages (${{ github.ref_name }})
           pr-base-branch: ${{ github.ref_name }}
+          push-with-git-cli: true
 
   stable-publish:
     name: Publish stable packages
@@ -216,9 +229,9 @@ jobs:
 
   sync-published-packages:
     name: Sync published packages
-    needs: stable-publish
+    needs: [stable-mode, stable-publish]
     if: >-
-      !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
+      !cancelled() && needs.stable-mode.outputs.sync == 'true' &&
       (needs.stable-publish.result == 'success' ||
        (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
     # GitHub-hosted, not Blacksmith: `npm dist-tag add` authenticates with npm trusted publishing
@@ -248,7 +261,7 @@ jobs:
       - run: pnpm turbo run build --filter=expotools...
       # Both syncs retry every minute until they succeed or the job times out. Every write they make
       # (dist-tags, native modules, versions) is idempotent, so retrying after any failure is safe.
-      - name: Sync staging versions from this main commit
+      - name: Sync staging versions from this SDK commit
         run: |
           attempt=1
           until pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
@@ -259,7 +272,7 @@ jobs:
         env:
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
           EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
-      - name: Sync production versions from this main commit
+      - name: Sync production versions from this SDK commit
         run: |
           set -o pipefail
           log="$RUNNER_TEMP/sync-production.log"
@@ -281,8 +294,9 @@ jobs:
 
   canary-publish:
     name: Publish canary packages
+    needs: stable-mode
     if: >-
-      github.repository == 'expo/expo' &&
+      needs.stable-mode.outputs.canary == 'true' &&
       (github.event_name == 'schedule' ||
        (github.event_name == 'workflow_dispatch' && inputs.operation != 'sync-published-packages'))
     runs-on:

@@ -38,7 +38,7 @@ jobs:
     # Triage is advisory: a failure must never fail the repo's checks.
     continue-on-error: true
     env:
-      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.19' }}
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.21' }}
     steps:
       # The repository spend limit LLP 0004 requires before automatic
       # triggers: each run is capped at $1.50 by the engine's per-phase

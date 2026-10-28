@@ -203,4 +203,22 @@ describe(createBundleUrlPath, () => {
       })
     ).toEqual('/index.bundle?platform=ios&dev=true&hot=false&resolver.exporting=true');
   });
+  it(`distinguishes a loader bundle from the full bundle of the same entry`, () => {
+    const options = {
+      mainModuleName: 'app/index',
+      mode: 'development',
+      platform: 'web',
+      environment: 'node',
+      isExporting: false,
+    } as const;
+    const loaderUrl = createBundleUrlPath({ ...options, isLoaderBundle: true });
+    expect(loaderUrl).not.toEqual(createBundleUrlPath(options));
+    // Metro reads `transform.*` params back into the custom transform options it bundles with.
+    expect(
+      new URL(loaderUrl, 'http://localhost').searchParams.get('transform.isLoaderBundle')
+    ).toBe(
+      getMetroDirectBundleOptions({ ...options, isLoaderBundle: true }).customTransformOptions
+        ?.isLoaderBundle
+    );
+  });
 });

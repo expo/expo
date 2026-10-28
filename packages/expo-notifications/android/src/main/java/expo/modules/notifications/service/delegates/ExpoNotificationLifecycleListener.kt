@@ -20,7 +20,8 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
    * Notification data will be in activity.intent.extras
    */
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
-    val extras = activity.intent?.extras ?: return
+    val intent = activity.intent ?: return
+    val extras = intent.extras ?: return
     // only actions that have opensAppToForeground: true are handled here
     if (extras.containsKey(NOTIFICATION_RESPONSE_KEY) || extras.containsKey(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)) {
       Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshalled notification response. Skipping.")
@@ -29,7 +30,11 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
     if (!isFCMIntent(extras)) {
       return
     }
+    if (isConsumed(extras)) {
+      return
+    }
     DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras)
+    markConsumed(intent, extras)
     NotificationManager.onNotificationResponseFromExtras(extras)
   }
 
@@ -53,6 +58,7 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
         return false
       }
       DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onNewIntent:", extras)
+      markConsumed(intent, extras)
       NotificationManager.onNotificationResponseFromExtras(extras)
     }
     return false
@@ -65,5 +71,18 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
    */
   private fun isFCMIntent(extras: Bundle): Boolean {
     return extras.containsKey(GOOGLE_MESSAGE_ID_KEY)
+  }
+
+  private fun isConsumed(extras: Bundle): Boolean {
+    val messageId = extras.getString(GOOGLE_MESSAGE_ID_KEY) ?: return false
+    return extras.getString(CONSUMED_MESSAGE_ID_KEY) == messageId
+  }
+
+  private fun markConsumed(intent: Intent, extras: Bundle) {
+    intent.putExtra(CONSUMED_MESSAGE_ID_KEY, extras.getString(GOOGLE_MESSAGE_ID_KEY))
+  }
+
+  companion object {
+    private const val CONSUMED_MESSAGE_ID_KEY = "expo.modules.notifications.consumedMessageId"
   }
 }

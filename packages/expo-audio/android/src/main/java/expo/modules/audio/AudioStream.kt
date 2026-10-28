@@ -102,9 +102,16 @@ class AudioStream(
       isStreaming = false
       captureJob?.cancel()
       captureJob = null
-      audioRecord?.stop()
-      audioRecord?.release()
+      val recorder = audioRecord
       audioRecord = null
+      try {
+        recorder?.stop()
+      } catch (e: IllegalStateException) {
+        // The recorder is not initialized, so there is nothing to stop. It still has to be released.
+        appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
+      } finally {
+        recorder?.release()
+      }
       emitStatus()
     }
 

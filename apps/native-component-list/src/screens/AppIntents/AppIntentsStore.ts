@@ -325,6 +325,20 @@ async function recordCounterInvocations(invocations: AppIntentInvocationLike[]):
   });
 }
 
+/**
+ * Counts one invocation that a background task handles while its intent waits, and returns the new
+ * state so the intent can tell Siri the count. Every run has a new invocation id, so each run counts
+ * once; an app whose retried intents must not apply twice passes its own key in the params.
+ */
+export async function recordBackgroundCounterInvocation(
+  invocation: AppIntentInvocationLike
+): Promise<AppIntentCounterState> {
+  return withSerializedStateUpdate(async () => {
+    await recordCounterInvocations([invocation]);
+    return getCounterState();
+  });
+}
+
 export async function getLatestOrder(): Promise<AppIntentOrder | null> {
   return readJson<AppIntentOrder | null>(latestOrderKey, null);
 }

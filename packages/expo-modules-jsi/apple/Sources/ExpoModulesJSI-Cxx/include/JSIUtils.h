@@ -216,18 +216,6 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
   return object.isHostObject<jsi::HostObject>(runtime);
 }
 
-jsi::Runtime* createHermesRuntime();
-
-/**
- Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
- Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
- the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must
- not be called on a runtime owned elsewhere (e.g. the React Native-provided one).
- */
-inline void destroyRuntime(jsi::Runtime &runtime) {
-  delete &runtime;
-}
-
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
   return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
@@ -268,11 +256,36 @@ inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
 }
 
 /**
+ Creates a string from UTF-8 bytes straight in the slot. Placement new, like the helpers above: the slot must
+ hold a value that owns nothing. The `jsi::String` is moved into the value with the inline constructors, so
+ the only engine call is the one that creates the string.
+ */
+inline void emplaceStringFromUtf8(jsi::Value *_Nonnull slot, jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  ::new (slot) jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
  Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
  helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
  pointer, so destroying it afterwards releases nothing.
  */
 inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Moves the object at `source` into the slot as an object value. Placement new, like the helpers above: the slot
+ must hold a value that owns nothing. `source` is left holding a null pointer, so destroying it afterwards
+ releases nothing.
+ */
+inline void emplaceMovedObject(jsi::Value *_Nonnull slot, jsi::Object *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Same as `emplaceMovedObject`, for an array.
+ */
+inline void emplaceMovedArray(jsi::Value *_Nonnull slot, jsi::Array *_Nonnull source) noexcept {
   ::new (slot) jsi::Value(std::move(*source));
 }
 
@@ -304,16 +317,19 @@ inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_
   return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
 }
 
-/**
- Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
- */
-inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
-  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
-}
-
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
+  });
+}
+
+/**
+ Calls `function` and moves its result into `result`. Returns `false` when the call throws, so the caller reads
+ the error from `CppError::getCurrent()` only then.
+ */
+inline bool callFunctionInto(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count, jsi::Value *_Nonnull result) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    *result = function.call(runtime, args, count);
   });
 }
 

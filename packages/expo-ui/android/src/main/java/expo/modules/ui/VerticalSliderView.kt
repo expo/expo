@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.OptimizedComposeProps
@@ -33,9 +32,11 @@ data class VerticalSliderProps(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) {
-  val onValueChange by remember { this@VerticalSliderContent.EventDispatcher<SliderValueChangedEvent>() }
-  val onValueChangeFinished by remember { this@VerticalSliderContent.EventDispatcher<Unit>() }
+fun FunctionalComposableScope.VerticalSliderContent(
+  props: VerticalSliderProps,
+  onValueChange: (SliderValueChangedEvent) -> Unit,
+  onValueChangeFinished: (Unit) -> Unit
+) {
   val interactionSource = remember { MutableInteractionSource() }
 
   val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)

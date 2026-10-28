@@ -159,6 +159,48 @@
       "availability": "Server"
     },
     {
+      "name": "observe_versions",
+      "description": "List app versions seen by EAS Observe, with build numbers, EAS build/update IDs, event counts and unique-user counts. Use these versions and IDs to investigate releases.",
+      "examplePrompt": "list the app versions Observe has seen in the last 30 days",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_metrics_summary",
+      "description": "Compare EAS Observe performance metrics by app version and platform. Returns event counts, min, max, median, average, p80, p90 and p99; timing values are in seconds. Defaults to app-startup metrics.",
+      "examplePrompt": "did startup get slower in the latest iOS release",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_metrics",
+      "description": "Find individual EAS Observe performance samples, including the slowest startup/navigation events. Timing values are in seconds. Filter by release and platform; returned session IDs can identify sessions to investigate. Results are paginated.",
+      "examplePrompt": "find the slowest cold launches this week",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_routes",
+      "description": "Compare navigation routes by cold TTR, warm TTR and TTI. Returns counts, medians and p90 in seconds, separately per platform. Defaults to most navigations first. Each platform has its own pagination cursor.",
+      "examplePrompt": "which routes have the worst time to interactive on Android",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_event_names",
+      "description": "Discover custom events emitted with Observe.logEvent, with occurrence counts and first/last seen times. Returns isTruncated when the API caps the list; narrow the time range or filters in that case. Errors are excluded.",
+      "examplePrompt": "which custom events is the app emitting",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_events",
+      "description": "Read custom events emitted with Observe.logEvent, including properties, severity and session IDs. Omit eventName to list all custom events or use observe_event_names to discover names. Errors are excluded; observe_session includes session errors.",
+      "examplePrompt": "show the latest onboarding.completed events",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_session",
+      "description": "Read a session’s metric samples and logs (custom events and errors). Each stream is oldest first and independently paginated; entries are sorted within this response, not across pages. Pass nextCursor with the streams to continue; omit source to avoid repeating other streams. Metric timing values are seconds.",
+      "examplePrompt": "show the timeline for session <session-id>",
+      "availability": "Server"
+    },
+    {
       "name": "expo_router_sitemap",
       "description": "List all routes (the sitemap) of the current Expo Router project. Use this when you are working with Expo Router and need to know which routes or screens exist in the app.",
       "examplePrompt": "check the expo-router-sitemap output",

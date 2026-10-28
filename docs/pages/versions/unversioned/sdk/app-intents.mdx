@@ -153,6 +153,59 @@ Dispatching is one-way. It saves the invocation and returns without waiting for 
 
 The value type also supports Swift literals, so you can use values such as `"note"`, `1`, `true`, arrays, and dictionaries directly.
 
+### Run a background task and wait for its result
+
+When the answer to an intent comes from JavaScript, run a JavaScript task from `perform()` and wait for it. The intent can then answer Siri or Shortcuts without opening your app. This works only on iOS and tvOS, because `expo-task-manager` does not support macOS. Install [`expo-task-manager`](./task-manager.mdx), which runs the task:
+
+<Terminal cmd={['$ npx expo install expo-task-manager']} />
+
+Define the task with [`TaskManager.defineTask()`](./task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor) in the global scope of a module that your app imports at startup. When the intent launches your app in the background, no component is mounted, so a task defined inside a component does not exist yet. The task receives the invocation as its `data`, and the value it returns goes back to Swift:
+
+```ts
+import type { AppIntentInvocation } from 'expo-app-intents';
+import * as TaskManager from 'expo-task-manager';
+
+TaskManager.defineTask<AppIntentInvocation>('log-water', async ({ data: invocation }) => {
+  const amount = Number(invocation.params.amount);
+  await saveWaterIntake(amount);
+  return `Logged ${amount} ml of water.`;
+});
+```
+
+Call `runBackgroundTask(name:)` with the name of the task. It returns the value the task returned as an `AppIntentValue`:
+
+```swift
+import AppIntents
+internal import ExpoAppIntents
+
+struct LogWaterIntent: AppIntent {
+  static let title: LocalizedStringResource = "Log Water"
+  static let openAppWhenRun = false
+
+  @Parameter(title: "Amount (ml)")
+  var amount: Int
+
+  func perform() async throws -> some IntentResult & ProvidesDialog {
+    let result = try await AppIntentDispatcher.shared.runBackgroundTask(
+      name: "log-water",
+      params: ["amount": .int(amount)]
+    )
+    guard case .string(let message) = result else {
+      return .result(dialog: "Water logged.")
+    }
+    return .result(dialog: "\(message)")
+  }
+}
+```
+
+`runBackgroundTask(name:)` throws when `expo-task-manager` is not installed, or when the task throws or is not defined. It also throws when the name belongs to another kind of task, or when the task does not finish within the timeout. The default timeout is 30 seconds. Pass `timeout:` to change it. A task that times out in Swift can still finish in JavaScript.
+
+`runBackgroundTask(name:)` does not add the invocation to the pending queue, because the task is its handler. Every call creates an invocation with a new `id` and delivers it at most once. When a retried intent must not apply its action twice, pass an idempotency key of your own in `params`.
+
+The first run registers the task with the task type `onDemandTask`, so [`TaskManager.getRegisteredTasksAsync()`](./task-manager.mdx#taskmanagergetregisteredtasksasync) lists it. The system never runs it on a schedule. Use a name that no other task uses, because a task registered for another purpose, such as with `BackgroundTask.registerTaskAsync()`, cannot also run on demand.
+
+> **info** In a development build, open your project in the app once before you test an intent that does not open the app. When the intent starts the app in the background, the app loads the project that was open last.
+
 ### Read dynamic entities in Swift
 
 Publish current entity values from JavaScript with `setEntityCatalogAsync()`. Your Swift `EntityQuery` reads the same catalog through `AppIntentEntityStore.shared`:
