@@ -1,5 +1,18 @@
 # expo-template-tabs
 
+## 58.0.30
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404))
+  - expo@58.0.21
+  - expo-router@58.0.28
+  - expo-font@58.0.11
+  - expo-constants@58.0.14
+  - expo-linking@58.0.15
+  - expo-splash-screen@58.0.12
+
 ## 58.0.29
 
 ### Patch Changes

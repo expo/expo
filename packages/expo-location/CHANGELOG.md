@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- [Android] Fix background location tasks that stop delivering updates after an app update, and the `Context.startForegroundService() did not then call Service.startForeground()` ANR that goes with them. The foreground service now enters the foreground from `onStartCommand` instead of from the asynchronous service connection, and a service that could not be started while the app was in the background is started when the app is resumed. ([#52051](https://github.com/expo/expo/pull/52051) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Remove the stored parent `Context` from the legacy location foreground service. `LocationTaskService` extends `Service`, which is already a `Context`, so it now reads `packageManager`, `packageName` and `resources` from itself. This drops a `lateinit` field and the public `setParentContext` setter. ([#51989](https://github.com/expo/expo/pull/51989) by [@HubertBer](https://github.com/HubertBer))
+- Rebuild precompiled iOS binaries against React Native 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies.
+  - @expo/image-utils@0.12.6
+
 ## 58.0.19
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Fix the network inspector not showing requests after the dev launcher loads an app while another app is loaded. ([#52430](https://github.com/expo/expo/pull/52430) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.16
 
 ### Patch Changes

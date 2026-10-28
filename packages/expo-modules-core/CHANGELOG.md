@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.28
+
+### Patch Changes
+
+- [iOS] Add `EventEmitter.emit(event:payload:encode:)`, which emits a payload that a closure encodes into a slot. `expo-modules-macros` uses it for an `@Event` whose payload holds a tuple, which can't conform to `JavaScriptEncodable`. ([#52392](https://github.com/expo/expo/pull/52392) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Send `Network.loadingFailed` to the network inspector when a request fails, so failed requests no longer show as pending. ([#52431](https://github.com/expo/expo/pull/52431) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix missing upload progress for `URLSession` requests, such as `XMLHttpRequest` and foreground `File.upload`, when the network inspector is enabled. ([#52428](https://github.com/expo/expo/pull/52428) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Update `expo-modules-macros` to 0.27.0, which converts Swift tuples in `@JS` members, `@Record` properties, `@Union` payloads, `@Event` payloads and closure arguments, and resolves the tuple type aliases declared in `@ExpoModule` and `@SharedObject` classes. ([#52390](https://github.com/expo/expo/pull/52390) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.27.1, which binds sync `@JS` functions that return nothing through the `Void` host function overload. This reduces the overhead of calling them. ([#52435](https://github.com/expo/expo/pull/52435) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduce the overhead of passing an existing shared object to JavaScript, as a function result or an event payload, and of emitting events from shared objects. ([#52180](https://github.com/expo/expo/pull/52180) by [@tsapeta](https://github.com/tsapeta))
+- Rebuild precompiled iOS binaries against React Native 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#52210](https://github.com/expo/expo/pull/52210), [#52208](https://github.com/expo/expo/pull/52208), [#52293](https://github.com/expo/expo/pull/52293), [#52350](https://github.com/expo/expo/pull/52350), [#52286](https://github.com/expo/expo/pull/52286), [#52328](https://github.com/expo/expo/pull/52328), [#51880](https://github.com/expo/expo/pull/51880), [#52346](https://github.com/expo/expo/pull/52346), [#52254](https://github.com/expo/expo/pull/52254), [#52392](https://github.com/expo/expo/pull/52392), [#52404](https://github.com/expo/expo/pull/52404))
+  - expo-modules-jsi@58.0.21
+
 ## 58.0.27
 
 ### Patch Changes

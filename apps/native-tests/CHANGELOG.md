@@ -1,5 +1,23 @@
 # native-tests
 
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404), [#52182](https://github.com/expo/expo/pull/52182))
+  - expo@58.0.21
+  - expo-router@58.0.28
+  - expo-updates@58.0.19
+  - expo-notifications@58.1.7
+  - expo-image@58.0.18
+  - expo-image-manipulator@58.0.16
+  - expo-media-library@58.0.13
+  - expo-dev-client@58.0.17
+  - expo-background-task@58.0.11
+  - expo-clipboard@58.0.4
+  - expo-observe@58.0.16
+  - expo-splash-screen@58.0.12
+
 ## 1.0.14
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404), [#52102](https://github.com/expo/expo/pull/52102), [#52324](https://github.com/expo/expo/pull/52324), [#52413](https://github.com/expo/expo/pull/52413), [#52390](https://github.com/expo/expo/pull/52390), [#52392](https://github.com/expo/expo/pull/52392), [#52431](https://github.com/expo/expo/pull/52431), [#52428](https://github.com/expo/expo/pull/52428), [#52435](https://github.com/expo/expo/pull/52435), [#52180](https://github.com/expo/expo/pull/52180), [#52126](https://github.com/expo/expo/pull/52126), [#52406](https://github.com/expo/expo/pull/52406))
+  - @expo/cli@58.1.17
+  - @expo/metro-config@58.0.19
+  - babel-preset-expo@58.0.22
+  - expo-modules-cli@0.4.0
+  - expo-modules-core@58.0.28
+  - expo-file-system@58.0.13
+  - expo-font@58.0.11
+  - expo-constants@58.0.14
+  - @expo/config@58.0.9
+  - @expo/config-plugins@58.0.11
+  - expo-modules-autolinking@58.0.16
+  - @expo/local-build-cache-provider@58.0.9
+  - expo-asset@58.0.19
+
 ## 58.0.20
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # expo-modules-cli
 
+## 0.4.0
+
+### Minor Changes
+
+- Add the `swift:expand` and `swift:check` commands. `swift:expand` prints the code that the Expo Modules macros generate for Swift sources, without a build. `swift:check` prints only the macro errors and warnings, and exits with code 1 when there is an error. Both need `expo-modules-macros` 0.27.0. ([#52413](https://github.com/expo/expo/pull/52413) by [@tsapeta](https://github.com/tsapeta))
+
+### Patch Changes
+
+- `generate-types` now renders Swift tuples: an unlabeled tuple as a TypeScript tuple, such as `[number, string]`, and a labeled tuple as an object type, such as `{ x: number; y: number }`. It reads the `scan-exports` schema version 10 of `expo-modules-macros` 0.27.0. ([#52390](https://github.com/expo/expo/pull/52390) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.3.3
 
 ### Patch Changes

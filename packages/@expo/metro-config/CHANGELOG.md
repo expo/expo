@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Fix invalid CSS transformer output when (unstable) graph optimization is enabled. ([#52126](https://github.com/expo/expo/pull/52126) by [@kitten](https://github.com/kitten))
+- Update to `noxcturnal@^0.1.11` ([#52406](https://github.com/expo/expo/pull/52406) by [@kitten](https://github.com/kitten))
+- Reduce Noxcturnal visitor overhead by filtering matching nodes before they reach JavaScript. ([#52406](https://github.com/expo/expo/pull/52406) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52102](https://github.com/expo/expo/pull/52102))
+  - @expo/require-utils@58.0.5
+  - @expo/config@58.0.9
+
 ## 58.0.18
 
 ### Patch Changes

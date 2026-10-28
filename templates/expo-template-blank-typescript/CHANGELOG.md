@@ -1,5 +1,13 @@
 # expo-template-blank-typescript
 
+## 58.0.30
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.1. ([#52404](https://github.com/expo/expo/pull/52404) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#52404](https://github.com/expo/expo/pull/52404))
+  - expo@58.0.21
+
 ## 58.0.29
 
 ### Patch Changes
