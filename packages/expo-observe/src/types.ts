@@ -270,6 +270,8 @@ export type ObserveExpoUpdatesIntegrationConfig = {
    * A function that decides whether the integration reports a log entry. Return `false` to skip
    * the entry, for example by its message. It runs after `ignoredCodes`, and it does not run for JS
    * errors that error recovery handled. If the function throws, the integration reports the entry.
+   * The function runs only in JS, so `getIntegrations()`, `registerIntegration` and the
+   * `configure` event do not include it.
    */
   shouldReport?: (entry: ObserveExpoUpdatesLogEntry) => boolean;
 };
