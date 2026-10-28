@@ -20,11 +20,11 @@ This guide covers three main aspects of integrating Sentry with your Expo projec
 
 - [Install and configure Sentry](#install-and-configure-sentry) in your React Native app
 
-- Using Sentry with EAS:
-  - [EAS Build](#usage-with-eas-build) for building your app
-  - [EAS Update](#usage-with-eas-update) for over-the-air updates
+- Using Sentry with Expo Services:
+  - [Expo Build](#usage-with-expo-build) for building your app
+  - [Expo Update](#usage-with-expo-update) for over-the-air updates
 
-- [Setting up the Sentry-Expo integration](#sentry-integration-with-eas-dashboard) to view crash reports and session replays directly in your EAS dashboard
+- [Setting up the Sentry-Expo integration](#sentry-integration-with-expo-dashboard) to view crash reports and session replays directly in your Expo dashboard
 
 ## Install and configure Sentry
 
@@ -100,13 +100,13 @@ import { Button } from 'react-native';
 
 </Step>
 
-## Usage with EAS Build
+## Usage with Expo Build
 
 Ensure that `SENTRY_AUTH_TOKEN` is set in your build environment with [sensitive visibility](/eas/environment-variables/#visibility-settings-for-environment-variables). Sentry will automatically upload source maps for you. If you use environment variables rather than properties in your app config, ensure that those are set as well.
 
-Using the above instructions, no additional work is needed to integrate Sentry into your project when using EAS Build.
+Using the above instructions, no additional work is needed to integrate Sentry into your project when using Expo Build.
 
-## Usage with EAS Update
+## Usage with Expo Update
 
 After running `eas update`, upload the source maps to Sentry:
 
@@ -131,7 +131,7 @@ After running `eas update`, upload the source maps to Sentry:
   }}
 />
 
-The upload script reads your organization slug and project name from the `organization` and `project` properties of the `@sentry/react-native/expo` plugin in your app config, or from the `SENTRY_ORG` and `SENTRY_PROJECT` environment variables. It also needs `SENTRY_AUTH_TOKEN`. When you run it in EAS Workflows or another CI, make sure these values are available there.
+The upload script reads your organization slug and project name from the `organization` and `project` properties of the `@sentry/react-native/expo` plugin in your app config, or from the `SENTRY_ORG` and `SENTRY_PROJECT` environment variables. It also needs `SENTRY_AUTH_TOKEN`. When you run it in Expo Workflows or another CI, make sure these values are available there.
 
 That's it! Errors for your updates will now be properly symbolicated in Sentry.
 
@@ -188,9 +188,9 @@ Once configured, information about the associated update will show up in an erro
 
 </Collapsible>
 
-## Sentry integration with EAS dashboard
+## Sentry integration with Expo dashboard
 
-The Sentry integration with Expo allows you to view crash reports and Session Replays for your Expo app deployments directly within your EAS dashboard. This integration provides a direct link to Sentry stack traces with full context, session replays, and debugging capabilities.
+The Sentry integration with Expo allows you to view crash reports and Session Replays for your Expo app deployments directly within your Expo dashboard. This integration provides a direct link to Sentry stack traces with full context, session replays, and debugging capabilities.
 
 ### Install
 
@@ -202,21 +202,21 @@ The Sentry integration with Expo allows you to view crash reports and Session Re
 
 ### Link your project
 
-After connecting your accounts, you need to link your EAS Project to your Sentry Project:
+After connecting your accounts, you need to link your Expo Services Project to your Sentry Project:
 
-1. Open **Projects > [Your Project] > Configuration > Project settings** in EAS.
+1. Open **Projects > [Your Project] > Configuration > Project settings** in the Expo dashboard.
 2. Click **Link** and select your Sentry Project from the dropdown.
 
 ### Usage
 
-To see your Sentry data in EAS dashboard, open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
+To see your Sentry data in Expo dashboard, open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
 
 With this integration, you can:
 
-- View crash reports directly in your EAS dashboard
+- View crash reports directly in your Expo dashboard
 - Access Session Replays to see exactly what happened before an error occurred
 - Get detailed stack traces with full context
-- Navigate seamlessly between EAS and Sentry for debugging
+- Navigate seamlessly between the Expo dashboard and Sentry for debugging
 
 ## Learn more about Sentry
 

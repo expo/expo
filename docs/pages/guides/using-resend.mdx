@@ -15,7 +15,7 @@ This guide demonstrates the **essential steps to integrate Resend with your Expo
 <VideoBoxLink
   videoId="8sPD8SNcUFA"
   title="How to send emails with Resend from your Expo app"
-  description="Integrate Resend with Expo Router API routes to send emails programmatically and deploy to EAS Hosting."
+  description="Integrate Resend with Expo Router API routes to send emails programmatically and deploy to Expo Hosting."
 />
 
 ---
@@ -25,7 +25,7 @@ This guide demonstrates the **essential steps to integrate Resend with your Expo
     See [Expo Router installation](/router/installation/) if you don't have one yet.
   </Requirement>
   <Requirement title="An Expo account">
-    An [Expo account](https://expo.dev/signup) is required to deploy the API route using EAS
+    An [Expo account](https://expo.dev/signup) is required to deploy the API route using Expo
     Hosting.
   </Requirement>
   <Requirement title="EAS CLI installed globally">
@@ -125,7 +125,7 @@ EXPO_PUBLIC_BASE_URL=https://example-resend.expo.app # Deployed URL via EAS Host
 EXPO_PUBLIC_BASE_URL_LOCAL=http://localhost:8081 # Only required for testing locally
 ```
 
-To test Resend integration locally, you can use `EXPO_PUBLIC_BASE_URL_LOCAL` to point to your local development server, whose URL is provided when you run `npx expo start`. Later in this guide, when you deploy your app to EAS Hosting, ensure to update the `EXPO_PUBLIC_BASE_URL` to the deployed URL.
+To test Resend integration locally, you can use `EXPO_PUBLIC_BASE_URL_LOCAL` to point to your local development server, whose URL is provided when you run `npx expo start`. Later in this guide, when you deploy your app to Expo Hosting, ensure to update the `EXPO_PUBLIC_BASE_URL` to the deployed URL.
 
 Note that only variables prefixed with `EXPO_PUBLIC_` can be used in the frontend code, so you can have the above as well as the Resend API key in the same **.env** file, but the `RESEND_API_KEY` will only be accessible from the server-side code (that is, files ending with **+api**).
 
@@ -229,9 +229,9 @@ const styles = StyleSheet.create({
 
 <Step label="6">
 
-## Deploy the API route to EAS Hosting
+## Deploy the API route to Expo Hosting
 
-To make the API route (`/api/audience`) accessible from a URL, you can deploy it to [EAS Hosting](/eas/hosting/get-started/).
+To make the API route (`/api/audience`) accessible from a URL, you can deploy it to [Expo Hosting](/eas/hosting/get-started/).
 
 1. Run the following command to export the web and API assets. The exported files are saved inside a **dist** directory and the API route file is part of this directory:
 
@@ -244,13 +244,13 @@ To make the API route (`/api/audience`) accessible from a URL, you can deploy it
   }}
 />
 
-2. Run the following to create a production deployment via EAS Hosting:
+2. Run the following to create a production deployment via Expo Hosting:
 
 <Terminal cmd={['$ eas deploy --prod']} />
 
 The `eas deploy --prod` command will:
 
-- Automatically create an EAS project if you haven't already
+- Automatically create an Expo Services project if you haven't already
 - Prompt you to choose the preview URL for your project. Ensure that this URL is the same as the value of `EXPO_PUBLIC_BASE_URL` in your **.env.local** file. This will make the API route accessible from your Expo app while deployed in production
 
 > **Note:** Before deployment, you need to use the `EXPO_PUBLIC_BASE_URL` as your hosted domain in your form screen (**src/app/index.tsx**).

@@ -299,7 +299,7 @@ If the loader returns a `Cache-Control` header, it takes precedence over these d
 
 In a static export, a loader's `Cache-Control` header applies to both the data file and the HTML page that embeds the data. Static exports keep only the `Cache-Control` header from loader responses.
 
-The `expo-server` package, EAS Hosting, and `npx expo serve` apply these rules when serving your export. Other static hosts need their own header configuration. HTTP caching does not rerun a static loader. Its data changes only when you export and deploy the app again.
+The `expo-server` package, Expo Hosting, and `npx expo serve` apply these rules when serving your export. Other static hosts need their own header configuration. HTTP caching does not rerun a static loader. Its data changes only when you export and deploy the app again.
 
 ## Environment variables
 

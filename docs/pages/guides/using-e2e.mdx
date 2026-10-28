@@ -25,7 +25,7 @@ This guide shows how to set up e2e in an Expo project and run it on your compute
 <VideoBoxLink
   videoId="2OFB4B7Vy10"
   title="Introduction to Verification Engineering"
-  description="Set up e2e on your computer, then run it on each pull request with EAS Workflows and Expo Simulators."
+  description="Set up e2e on your computer, then run it on each pull request with Expo Workflows and Expo Simulators."
 />
 
 ---
@@ -279,9 +279,9 @@ The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code
 
 </Collapsible>
 
-## Run e2e on EAS Workflows
+## Run e2e on Expo Workflows
 
-[EAS Workflows](/eas/workflows/introduction/) can run e2e on a macOS worker with an iOS Simulator. The following workflow builds your app, boots a simulator on the worker, installs the app, and runs the tests.
+[Expo Workflows](/eas/workflows/introduction/) can run e2e on a macOS worker with an iOS Simulator. The following workflow builds your app, boots a simulator on the worker, installs the app, and runs the tests.
 
 <Step label="1">
 
@@ -406,7 +406,7 @@ Tests with only exact steps need no model.
 For agent steps:
 
 - It is recommended to use an API key from your provider instead of a subscription login because the login expires on the worker. e2e can read a subscription login from the `E2E_OAUTH_CREDENTIALS` environment variable, which holds the contents of your local **~/.config/e2e/oauth.json** file. However, e2e does not save refreshed tokens back to the variable. Add an agent for the API key to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
-- The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
+- The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [Expo Services environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
 - `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.tester.army/docs/cache#commit-your-traces).
 - A replay needs the recorded elements on the screen. The simulator on the worker can report a different accessibility tree than your own simulator, and then the agent calls the model.
 
@@ -414,7 +414,7 @@ For agent steps:
 
 ## Run e2e on Expo Simulators
 
-Expo Simulators runs Android Emulators and iOS Simulators on EAS infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+Expo Simulators runs Android Emulators and iOS Simulators on Expo infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
 
 > **important** Expo Simulators is a limited-access preview. For more information, see the [Expo Simulators documentation](/preview/simulators/introduction/).
 
@@ -433,7 +433,7 @@ Install `@e2e-dev/eas` as a development dependency:
   }}
 />
 
-Link your project to EAS and check that your account can use Expo Simulators:
+Link your project to Expo Services and check that your account can use Expo Simulators:
 
 <Terminal cmd={['$ eas init', '$ eas simulator:availability --json']} />
 
@@ -447,7 +447,7 @@ The integration authenticates with an Expo access token from the `EXPO_TOKEN` en
 
 ### Create an iOS Simulator build
 
-EAS installs your app on the remote iOS Simulator from an EAS Build. Create a build with the `e2e-ios-simulator` profile from [Add an iOS Simulator build profile](#add-an-ios-simulator-build-profile):
+Expo Simulators installs your app on the remote iOS Simulator from an Expo Build. Create a build with the `e2e-ios-simulator` profile from [Add an iOS Simulator build profile](#add-an-ios-simulator-build-profile):
 
 <Terminal cmd={['$ eas build --platform ios --profile e2e-ios-simulator']} />
 
@@ -491,7 +491,7 @@ export default {
 } satisfies E2EConfig;
 ```
 
-Replace `<your-eas-project-id>` with the `extra.eas.projectId` value from your app config. EAS installs and launches the build from `buildId` before each session is ready.
+Replace `<your-eas-project-id>` with the `extra.eas.projectId` value from your app config. Expo Simulators installs and launches the build from `buildId` before each session is ready.
 
 `videoTouches: false` turns off the touch indicator in video recordings. On a remote iOS Simulator, the indicator takes minutes to draw, so e2e saves no video.
 
@@ -511,9 +511,9 @@ Replace `<your-access-token>` with your personal access token and `<build-id>` w
   ]}
 />
 
-The session is ready after EAS boots the remote iOS Simulator and installs your build. Boot time varies with device capacity. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+The session is ready after Expo Simulators boots the remote iOS Simulator and installs your build. Boot time varies with device capacity. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
 
-If the run exits before e2e stops the session, EAS stops it after 10 minutes without activity. A session also has a maximum duration that depends on your plan, so the run must finish before the session reaches it.
+If the run exits before e2e stops the session, Expo Simulators stops it after 10 minutes without activity. A session also has a maximum duration that depends on your plan, so the run must finish before the session reaches it.
 
 Agent steps that you recorded on your own simulator can replay on the remote iOS Simulator without a model call.
 
