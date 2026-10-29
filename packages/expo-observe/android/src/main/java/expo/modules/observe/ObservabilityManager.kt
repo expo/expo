@@ -136,6 +136,7 @@ class BaseObservabilityManager(
 
     repairMetricCursorIfStale(context, sessionManager)
     val config = ObservePreferences.getConfig(context)
+    val ignoredMetrics = config?.ignoredMetrics?.toSet() ?: emptySet()
     if (!shouldDispatch(config, config?.sampleRate)) {
       val maxId = sessionManager.getMaxMetricId() ?: -1
       if (ObservePreferences.getLastDispatchedMetricId(context) != maxId) {
@@ -154,7 +155,9 @@ class BaseObservabilityManager(
       }
 
       val highestId = metrics.last().id
-      val metricsBySessionId = metrics.groupBy { it.sessionId }
+      val metricsBySessionId = metrics
+        .filterNot { exportedMetricName(it.category, it.name) in ignoredMetrics }
+        .groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(metricsBySessionId.keys).associateBy { it.id }
       val events = metricsBySessionId.mapNotNull { (sessionId, sessionMetrics) ->
         sessions[sessionId]?.let { session ->
@@ -216,6 +219,7 @@ class BaseObservabilityManager(
 
     repairLogCursorIfStale(context, sessionManager)
     val config = ObservePreferences.getConfig(context)
+    val ignoredEvents = config?.ignoredEvents?.toSet() ?: emptySet()
     // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
     val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
     val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
@@ -241,7 +245,7 @@ class BaseObservabilityManager(
         logs
       } else {
         logs.filter { it.name in ERROR_LOG_NAMES }
-      }
+      }.filterNot { it.name in ignoredEvents }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
       val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->

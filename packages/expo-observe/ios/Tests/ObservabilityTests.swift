@@ -93,4 +93,47 @@ struct ObservabilitySampledLogsTests {
     let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: true)
     #expect(result.map(\.name) == ["info", "js.exception", "native.exception"])
   }
+
+  @Test
+  func `ignored events are removed after error sampling`() {
+    let result = ObservabilityManager.sampledLogs(
+      logs, shouldDispatch: false, ignoredEvents: ["js.exception"]
+    )
+    #expect(result.map(\.name) == ["native.exception"])
+  }
+
+  @Test
+  func `all ignored events leave no logs`() {
+    let result = ObservabilityManager.sampledLogs(
+      logs, shouldDispatch: true,
+      ignoredEvents: ["info", "js.exception", "native.exception"]
+    )
+    #expect(result.isEmpty)
+  }
+}
+
+@Suite("Observability.filteredMetrics")
+struct ObservabilityFilteredMetricsTests {
+  @Test
+  func `matches exported names and preserves other rows`() {
+    let metrics = [
+      MetricRow(
+        sessionId: "s", timestamp: "2025-01-01T00:00:00Z", category: "appStartup",
+        name: "timeToInteractive", value: 1
+      ),
+      MetricRow(
+        sessionId: "s", timestamp: "2025-01-01T00:00:00Z", category: "navigation",
+        name: "tti", value: 2
+      )
+    ]
+    let result = ObservabilityManager.filteredMetrics(
+      metrics, ignoredMetrics: ["expo.app_startup.tti"]
+    )
+    #expect(result.map(\.name) == ["tti"])
+    #expect(
+      ObservabilityManager.filteredMetrics(
+        metrics, ignoredMetrics: ["expo.app_startup.tti", "expo.navigation.tti"]
+      ).isEmpty
+    )
+  }
 }

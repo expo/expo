@@ -117,6 +117,19 @@ function loadReanimatedInit() {
 }
 
 describe('module Proxy', () => {
+  it('forwards ignored names and omitted lists reset them', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      ignoredMetrics: ['expo.app_startup.tti'],
+      ignoredEvents: ['js.exception', 'custom.checkout'],
+    });
+    expect(mockNative.configure).toHaveBeenLastCalledWith({
+      ignoredMetrics: ['expo.app_startup.tti'],
+      ignoredEvents: ['js.exception', 'custom.checkout'],
+    });
+    Observe.configure({});
+    expect(mockNative.configure).toHaveBeenLastCalledWith({});
+  });
   it.each([true, false, undefined])(
     "forwards a integrations object to native when 'expo-router' is %s",
     (router) => {

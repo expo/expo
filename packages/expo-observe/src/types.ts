@@ -19,6 +19,26 @@ export type ObserveAttribute = LogAttributeValue;
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
 
+export type ObserveMetricName =
+  | 'expo.app_startup.tti'
+  | 'expo.app_startup.ttr'
+  | 'expo.app_startup.cold_launch_time'
+  | 'expo.app_startup.warm_launch_time'
+  | 'expo.app_startup.bundle_load_time'
+  | 'expo.app_startup.load_time'
+  | 'expo.app_startup.launch_time'
+  | 'expo.updates.download_time'
+  | 'expo.navigation.cold_ttr'
+  | 'expo.navigation.warm_ttr'
+  | 'expo.navigation.tti';
+
+export type ObserveEventName =
+  | 'js.exception'
+  | 'native.exception'
+  | 'reanimated.warning'
+  | 'expo-image.oversized'
+  | (string & {});
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -85,6 +105,23 @@ export type ObserveConfig = {
    * @default undefined - errors follow `sampleRate`
    */
   errorSampleRate?: number;
+  /**
+   * Exported metric names to skip when dispatching. Already persisted rows with these names are
+   * consumed without being sent. Each `configure` call replaces the list; omitting it clears it.
+   * Has no effect on web or on spans recorded by `networkTraces`.
+   *
+   * @default []
+   */
+  ignoredMetrics?: ObserveMetricName[];
+  /**
+   * Persisted event names to skip when dispatching, including custom names passed to `logEvent`.
+   * Already persisted rows with these names are consumed without being sent. The filter runs after
+   * error sampling and applies to errors as well. Each `configure` call replaces the list;
+   * omitting it clears it. Has no effect on web or on spans recorded by `networkTraces`.
+   *
+   * @default []
+   */
+  ignoredEvents?: ObserveEventName[];
   /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *

@@ -236,6 +236,10 @@ let metricNameMap = [
   "navigation/tti": "expo.navigation.tti",
 ]
 
+func exportedMetricName(category: String?, name: String) -> String {
+  return metricNameMap["\(category ?? "unknown")/\(name)"] ?? "expo.unknown.\(name)"
+}
+
 private func nsFromISOString(_ dateString: String?) -> UInt64 {
   if let dateString,
     let date = try? Date.ISO8601FormatStyle().parse(dateString)
@@ -264,10 +268,9 @@ extension Event.Metric {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
     }
 
-    let lookupKey = "\(self.category ?? "unknown")/\(self.name)"
     return OTMetric(
       unit: "s",
-      name: metricNameMap[lookupKey] ?? "expo.unknown.\(self.name)",
+      name: exportedMetricName(category: category, name: name),
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),
