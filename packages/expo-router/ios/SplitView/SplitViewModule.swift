@@ -17,7 +17,10 @@ public class SplitViewModule: Module {
       Prop("rightToolbarItems") { (view: SplitViewHeaderView, items: [SplitViewToolbarItemRecord]?) in
         view.rightToolbarItems = items ?? []
       }
-      Events("onToolbarItemPress")
+      Prop("searchBar") { (view: SplitViewHeaderView, searchBar: SplitViewSearchBarRecord?) in
+        view.searchBar = searchBar
+      }
+      Events("onToolbarItemPress", "onSearchBarChangeText", "onSearchBarSearchButtonPress")
       OnViewDidUpdateProps { (view: SplitViewHeaderView) in
         view.apply()
       }
@@ -28,4 +31,8 @@ public class SplitViewModule: Module {
 struct SplitViewToolbarItemRecord: Record {
   @Field var title: String = ""
   @Field var icon: String?
+}
+
+struct SplitViewSearchBarRecord: Record {
+  @Field var placeholder: String?
 }
