@@ -96,6 +96,7 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
+ When the content has no pixels, it returns the container size, like `fill` does.
  */
 func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
   guard contentPixelSize.width > 0, contentPixelSize.height > 0 else {

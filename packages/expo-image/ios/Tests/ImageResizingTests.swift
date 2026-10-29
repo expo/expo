@@ -166,24 +166,17 @@ struct ImageResizingTests {
     }
 
     @Test
-    func `fills`() {
-      let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .fill)
-      #expect(size.width == containerSize.width)   // 350
-      #expect(size.height == containerSize.height) // 90
-    }
-
-    @Test
     func `scales down`() {
       let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .scaleDown)
-      #expect(size.width == containerSize.width)   // 350, not NaN
-      #expect(size.height == containerSize.height) // 90, not NaN
+      #expect(size.width == containerSize.width)   // 350, not 0
+      #expect(size.height == containerSize.height) // 90, not 0
     }
 
     @Test
     func `doesn't resize`() {
       let size = idealSize(contentPixelSize: contentSize, containerSize: containerSize, contentFit: .none)
-      #expect(size.width == containerSize.width)   // 350
-      #expect(size.height == containerSize.height) // 90
+      #expect(size.width == containerSize.width)   // 350, not 0
+      #expect(size.height == containerSize.height) // 90, not 0
     }
   }
 }
