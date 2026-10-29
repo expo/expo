@@ -1,8 +1,24 @@
 import { Children, isValidElement, type ReactNode } from 'react';
+import type { NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SafeAreaView, Split } from '../optional-libraries/react-native-screens';
 import { SplitViewColumnHeader } from './header';
+
+export interface SplitViewSearchBar {
+  /**
+   * Text shown in the search field when it is empty.
+   */
+  placeholder?: string;
+  /**
+   * Called when the text in the search field changes.
+   */
+  onChangeText?: (event: NativeSyntheticEvent<{ text: string }>) => void;
+  /**
+   * Called when the search button on the keyboard is pressed.
+   */
+  onSearchButtonPress?: (event: NativeSyntheticEvent<{ text: string }>) => void;
+}
 
 export interface SplitViewHeader {
   /**
@@ -14,6 +30,10 @@ export interface SplitViewHeader {
    * @default false
    */
   largeTitle?: boolean;
+  /**
+   * Search bar shown in the navigation bar.
+   */
+  searchBar?: SplitViewSearchBar;
 }
 
 export interface SplitViewColumnProps {
