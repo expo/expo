@@ -40,6 +40,7 @@ public final class ExpoHost: ObservableObject {
     }
     try await factoryTask!.value
     guard let factory else { throw CancellationError() }
+    #if DEBUG
     return factory.rootViewFactory.view(
       withModuleName: name,
       initialProperties: props,
@@ -47,6 +48,14 @@ public final class ExpoHost: ObservableObject {
       bundleConfiguration: factory.bundleConfiguration,
       devMenuConfiguration: factory.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
     )
+    #else
+    // React Native's Release runtime returns nil for the default dev-menu configuration.
+    return factory.rootViewFactory.view(
+      withModuleName: name,
+      initialProperties: props,
+      launchOptions: launchOptions
+    )
+    #endif
   }
 
   func reset() {
