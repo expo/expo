@@ -120,6 +120,7 @@ jobs:
       verdict: ${{ steps.check.outputs.verdict }}
       session_url: ${{ steps.check.outputs.session_url }}
       build_id: ${{ steps.check.outputs.build_id }}
+      commit: ${{ steps.check.outputs.commit }}
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
@@ -140,6 +141,7 @@ jobs:
           set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"
           set-output session_url "$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')"
           set-output build_id "$BUILD_ID"
+          set-output commit "$(git rev-parse --short HEAD)"
       - uses: eas/upload_artifact
         if: ${{ always() }}
         with:
@@ -155,6 +157,8 @@ jobs:
         ## Agentic CI (Android)
 
         **Verdict:** ${{ after.check.outputs.verdict || 'FAIL: The check job did not finish. See the workflow run.' }}
+
+        **Commit:** ${{ after.check.outputs.commit || 'unknown' }}
 
         - [Session recording](${{ after.check.outputs.session_url }})
         - [Agent report and screenshots](${{ workflow.url }})
@@ -227,6 +231,7 @@ jobs:
       verdict: ${{ steps.check.outputs.verdict }}
       session_url: ${{ steps.check.outputs.session_url }}
       build_id: ${{ steps.check.outputs.build_id }}
+      commit: ${{ steps.check.outputs.commit }}
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
@@ -247,6 +252,7 @@ jobs:
           set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"
           set-output session_url "$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')"
           set-output build_id "$BUILD_ID"
+          set-output commit "$(git rev-parse --short HEAD)"
       - uses: eas/upload_artifact
         if: ${{ always() }}
         with:
@@ -262,6 +268,8 @@ jobs:
         ## Agentic CI (iOS)
 
         **Verdict:** ${{ after.check.outputs.verdict || 'FAIL: The check job did not finish. See the workflow run.' }}
+
+        **Commit:** ${{ after.check.outputs.commit || 'unknown' }}
 
         - [Session recording](${{ after.check.outputs.session_url }})
         - [Agent report and screenshots](${{ workflow.url }})
@@ -307,10 +315,12 @@ You check a pull request in this project on a remote Android Emulator or iOS Sim
 3. Save a screenshot before and after each important action.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then write one section for each behavior. Tell what you did, what you saw, and the names of the screenshots.
 
+If the element list and a screenshot do not agree, report both. Then look closer at the element that the pull request describes.
+
 Write FAIL when you are not sure. Do not change the files of the project.
 ```
 
-You can add facts about your app to the prompt. For example, add a test account or the screens to check first.
+To give the agent facts about your app, such as how to pass the onboarding screens, add them to **.eas/agents/app-facts.md**. See [Add the device controller](/agentic-workflows/setup/#add-the-device-controller).
 
 </Step>
 
@@ -349,15 +359,16 @@ When the run finishes, the PR gets an **Agentic CI** comment:
 The comment has these parts:
 
 - **Verdict:** `PASS` or `FAIL`, with one sentence from the agent.
+- **Commit:** the short hash of the commit that the agent tested.
 - **Session recording:** the session page on expo.dev, with the screen recording of the session.
 - **Agent report and screenshots:** the workflow run on expo.dev. The report and the screenshots are in its artifacts.
 - **Try this build in your browser:** a link that starts a new session with the build and opens its browser preview. Each click starts a new session.
 
 To open these links, sign in to an Expo account that can view the project.
 
-When the verdict is not `PASS`, the `result` job fails, and the workflow run shows the failure. To test the PR again, push a new commit to its branch.
+When the verdict is not `PASS`, the `result` job fails, and the workflow run shows the failure. To test the PR again, push a new commit to its branch. Each run updates the same comment, so the comment shows only the result of the last run.
 
-> **warning** The verdict of the agent can be wrong. A `FAIL` can come from what the prompt tells the agent, or does not tell it, and not from the app. A false `FAIL` also fails the PR check. Before you make this check required, read the evidence of some runs. A person must read the evidence and decide, as with any other report. To fix a false `FAIL`, add facts about your app to the prompt in [Add the prompt](#add-the-prompt).
+> **warning** The verdict of the agent can be wrong. A `FAIL` can come from what the prompt tells the agent, or does not tell it, and not from the app. A false `FAIL` also fails the PR check. Before you make this check required, read the evidence of some runs. A person must read the evidence and decide, as with any other report. To fix a false `FAIL`, add facts about your app to **.eas/agents/app-facts.md**. See [Add the device controller](/agentic-workflows/setup/#add-the-device-controller).
 
 ## Next steps
 

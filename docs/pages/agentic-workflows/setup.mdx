@@ -229,9 +229,12 @@ case "$2" in
 esac
 
 mkdir -p agent-output/evidence
-exec npx --yes @anthropic-ai/claude-code@latest -p "Do the task that standard input describes." \
+npx --yes @anthropic-ai/claude-code@latest -p "Do the task that standard input describes." \
   --allowedTools "$tools" --permission-mode dontAsk --max-turns 80 \
-  --output-format stream-json --verbose < "$1" > agent-output/evidence/agent-log.jsonl
+  --output-format stream-json --verbose < "$1" > agent-output/evidence/agent-log.jsonl || {
+  tail -n 1 agent-output/evidence/agent-log.jsonl >&2
+  exit 1
+}
 ```
 
 </Tab>
@@ -322,7 +325,7 @@ The `change` mode allows only `npx tsc --noEmit`, so the agent cannot run the te
 
 The agent controls the remote device with a controller: [agent-device](/agents/agent-device/) or [Argent](/agents/argent/). This script starts an Expo Simulators session for the controller. Then it writes the device details and the commands of the controller to **agent-output/device.md**, and the job adds this file to the prompt of the agent. Use the version for your controller.
 
-The jobs run the script as `source .eas/agents/start-session.sh <platform> <build ID> <session name> <tag>`. The `source` command runs the script in the shell of the job, so the job keeps the session details and stops the session when it ends.
+The jobs run the script as `source .eas/agents/start-session.sh <platform> <build ID> <session name> <tag>`. The `source` command runs the script in the shell of the job, so the job keeps the session details and stops the session when it ends. The script reads the app ID with `npx expo config`, so the app ID can come from **app.json**, **app.config.js**, or **app.config.ts**.
 
 <Tabs>
 
@@ -332,13 +335,15 @@ The jobs run the script as `source .eas/agents/start-session.sh <platform> <buil
 #!/usr/bin/env bash
 
 case "$1" in
-  android) APP_ID=$(node -p 'require("./app.json").expo.android.package') ;;
-  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier') ;;
+  android) APP_ID_KEY=package ;;
+  ios) APP_ID_KEY=bundleIdentifier ;;
   *)
     echo "Unknown platform \"$1\". Use android or ios." >&2
     exit 1
     ;;
 esac
+APP_ID=$(npx expo config --json | node -e 'const config = JSON.parse(require("fs").readFileSync(0, "utf8")); console.log(config[process.argv[1]]?.[process.argv[2]] ?? "")' "$1" "$APP_ID_KEY")
+: "${APP_ID:?The app config has no app ID for $1. Add it to app.json or app.config.js.}"
 mkdir -p agent-output/evidence
 
 export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
@@ -346,6 +351,10 @@ npx --yes eas-cli@latest simulator:start --platform "$1" --type agent-device \
   --build-id "$2" --name "$3" --tag "$4" \
   --max-duration-minutes 30 --json > /tmp/session.json
 trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+
+if [ "$1" = ios ]; then
+  npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest open "$APP_ID" --platform ios > /dev/null
+fi
 
 cat > agent-output/device.md << EOF
 ## Device
@@ -357,15 +366,24 @@ Control the device only with this shell command:
 
     npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
 
+Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop.
+
 Use these agent-device commands:
 
-- snapshot -i lists the elements on the screen, with references such as @e2.
+- snapshot -i lists the elements on the screen, with references such as @e2. The references change on each screen, so run snapshot -i again after each action.
+- snapshot without -i also lists the plain text on the screen.
 - press @e2 taps an element.
 - fill @e4 "text" types text into a field.
+- keyboard enter presses the Enter key of the keyboard.
 - scroll down scrolls the screen.
 - screenshot agent-output/evidence/<number>-<name>.png saves a screenshot.
 - open $APP_ID --platform $1 opens the app again.
 EOF
+
+if [ -f .eas/agents/app-facts.md ]; then
+  printf '\n## App facts\n\n' >> agent-output/device.md
+  cat .eas/agents/app-facts.md >> agent-output/device.md
+fi
 ```
 
 </Tab>
@@ -376,13 +394,15 @@ EOF
 #!/usr/bin/env bash
 
 case "$1" in
-  android) APP_ID=$(node -p 'require("./app.json").expo.android.package'); SCALE=0.9 ;;
-  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier'); SCALE=1 ;;
+  android) APP_ID_KEY=package; SCALE=0.9 ;;
+  ios) APP_ID_KEY=bundleIdentifier; SCALE=1 ;;
   *)
     echo "Unknown platform \"$1\". Use android or ios." >&2
     exit 1
     ;;
 esac
+APP_ID=$(npx expo config --json | node -e 'const config = JSON.parse(require("fs").readFileSync(0, "utf8")); console.log(config[process.argv[1]]?.[process.argv[2]] ?? "")' "$1" "$APP_ID_KEY")
+: "${APP_ID:?The app config has no app ID for $1. Add it to app.json or app.config.js.}"
 mkdir -p agent-output/evidence
 
 export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
@@ -415,6 +435,8 @@ Control the device only with this shell command:
 
     npx --yes -p @swmansion/argent@latest argent run <tool> --udid $UDID <options>
 
+Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop.
+
 Use these Argent tools:
 
 - describe lists the elements on the screen. Each element has a frame in coordinates from 0 to 1.
@@ -424,6 +446,11 @@ Use these Argent tools:
 - screenshot --scale $SCALE --out agent-output/evidence/<number>-<name>.png saves a screenshot.
 - restart-app --bundleId $APP_ID opens the app again.
 EOF
+
+if [ -f .eas/agents/app-facts.md ]; then
+  printf '\n## App facts\n\n' >> agent-output/device.md
+  cat .eas/agents/app-facts.md >> agent-output/device.md
+fi
 ```
 
 The Argent version reads the session details from **.env.eas-simulator**, so the agent can reach the device. Then it waits until Argent lists the device. An Android Emulator can take a few minutes to start. Android screenshots use a scale of 0.9, because a scale of 1 can fail on an Android Emulator.
@@ -433,6 +460,14 @@ The Claude Code and Grok runners allow only the commands of each mode. Their `de
 </Tab>
 
 </Tabs>
+
+Each session starts on a new install of the app. If the agent needs facts about your app, add them to **.eas/agents/app-facts.md**. The script adds this file to **agent-output/device.md**, so each workflow gives the facts to the agent. For example, write how to pass the onboarding screens, the text of each main screen on each platform, and what the agent must not touch:
+
+```md .eas/agents/app-facts.md
+- The app opens on two onboarding screens. Select Next on each screen to reach the main screen.
+- The title of the main screen is "Tasks" on iOS and "My App" on Android.
+- Do not sign out, and do not delete the account.
+```
 
 </Step>
 
@@ -457,7 +492,7 @@ Then push the files:
   ]}
 />
 
-If you use Cursor, also add **.cursor/cli.json**.
+If you use Cursor, also add **.cursor/cli.json**. If you added app facts, also add **.eas/agents/app-facts.md**.
 
 </Step>
 
