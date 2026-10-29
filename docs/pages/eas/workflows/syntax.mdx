@@ -880,7 +880,7 @@ jobs:
 
 The colon (`:`) in a ternary is also YAML syntax. Put a value that has a ternary in a `|` block or in quotes, as in the `run` step above.
 
-EAS evaluates every part of an expression. `&&` and `||` do not skip the right side, and `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails.
+Operators are evaluated for every part of an expression. `&&` and `||` do not skip the right side, and `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails.
 
 ### Context availability
 
