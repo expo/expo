@@ -104,6 +104,10 @@ public final class ExpoHost: ObservableObject {
   private func makeFactory() async throws {
     let bundleURL = try await resolveBundleURL()
     try Task.checkCancellation()
+    #if DEBUG
+    // Avoid React Native's synchronous dev-menu probe after selecting the embedded bundle.
+    RCTBundleURLProviderAllowPackagerServerAccess(!bundleURL.isFileURL)
+    #endif
     let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses, bundleURL: bundleURL)
     delegate.dependencyProvider = RCTAppDependencyProvider()
     let factory = ExpoReactNativeFactory(delegate: delegate)
