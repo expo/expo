@@ -13,9 +13,10 @@ import * as logger from './logger';
 import {
   normalizeNativeProjectsAsync,
   revertNormalizeNativeProjectsAsync,
+  type BackupFileMappings,
 } from './normalizeNativeProjects';
 import { resolveFromExpoCli } from './resolveFromExpoCli';
-import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workingDirectories';
+import { createWorkingDirectoriesAsync } from './workingDirectories';
 
 declare namespace globalThis {
   let __DEV__: boolean | undefined;
@@ -58,55 +59,43 @@ export async function patchProjectAsync(
   for (const platform of options.platforms) {
     await platformSanityCheckAsync({ exp, projectRoot, platform });
 
-    const workingDirectories = await createWorkingDirectoriesAsync(projectRoot, platform);
-    try {
-      await removePatchFilesAsync(patchRoot, platform);
-      await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
+    await removePatchFilesAsync(patchRoot, platform);
+    await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
 
-      await patchProjectForPlatformAsync({
-        projectRoot,
-        platform,
-        workingDirectories,
-        patchRoot,
-        exp,
-        options,
-      });
-    } finally {
-      await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
-    }
+    await patchProjectForPlatformAsync({ projectRoot, platform, patchRoot, exp, options });
   }
 }
 
 async function patchProjectForPlatformAsync({
   projectRoot,
   platform,
-  workingDirectories,
   patchRoot,
   exp,
   options,
 }: {
   projectRoot: string;
   platform: ModPlatform;
-  workingDirectories: WorkingDirectories;
   patchRoot: string;
   exp: ExpoConfig;
   options: Omit<Parameters<typeof patchProjectAsync>[1], 'platforms'>;
 }): Promise<void> {
+  const workingDirectories = await createWorkingDirectoriesAsync(projectRoot, platform);
   const { diffDir, originDir } = workingDirectories;
-
-  debug(`Normalizing native project files for original project`);
-  const backupFileMappings = await normalizeNativeProjectsAsync({
-    projectRoot,
-    platform,
-    workingDirectories,
-    backup: true,
-  });
-
   const platformDir = path.join(projectRoot, platform);
   const platformDiffDir = path.join(diffDir, platform);
 
+  let backupFileMappings: BackupFileMappings = {};
   let originalProjectDir: string | null = null;
+  let shouldRemoveWorkingDirectories = true;
   try {
+    debug(`Normalizing native project files for original project`);
+    backupFileMappings = await normalizeNativeProjectsAsync({
+      projectRoot,
+      platform,
+      workingDirectories,
+      backup: true,
+    });
+
     debug(`Moving native projects to origin directory - originDir[${originDir}]`);
     await fs.rename(platformDir, originDir);
     originalProjectDir = originDir;
@@ -161,12 +150,49 @@ async function patchProjectForPlatformAsync({
       await revertNormalizeNativeProjectsAsync(backupFileMappings);
     }
   } catch (error) {
+    shouldRemoveWorkingDirectories = await restoreOriginalProjectAsync({
+      platformDir,
+      originalProjectDir,
+      backupFileMappings,
+      workingRootDir: workingDirectories.rootDir,
+    });
+    throw error;
+  } finally {
+    if (shouldRemoveWorkingDirectories) {
+      await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
+    }
+  }
+}
+
+/** Returns `false` when the original files could not be restored and are still in the working directory. */
+async function restoreOriginalProjectAsync({
+  platformDir,
+  originalProjectDir,
+  backupFileMappings,
+  workingRootDir,
+}: {
+  platformDir: string;
+  originalProjectDir: string | null;
+  backupFileMappings: BackupFileMappings;
+  workingRootDir: string;
+}): Promise<boolean> {
+  try {
     if (originalProjectDir) {
       debug(`Restoring the original native projects - originalProjectDir[${originalProjectDir}]`);
       await moveAsync(originalProjectDir, platformDir);
     }
     await revertNormalizeNativeProjectsAsync(backupFileMappings);
-    throw error;
+    return true;
+  } catch (restoreError) {
+    logger.error(
+      chalk.red(
+        `Could not restore the original native project to ${platformDir} after patch-project failed. ` +
+          `The original files are still in ${workingRootDir}. ` +
+          `Move them back manually before you run patch-project again, because the next run deletes that directory.`
+      )
+    );
+    logger.error(restoreError);
+    return false;
   }
 }
 
