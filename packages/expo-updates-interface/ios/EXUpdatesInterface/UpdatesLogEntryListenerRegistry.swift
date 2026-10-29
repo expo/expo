@@ -14,7 +14,7 @@ public protocol UpdatesLogEntryListener: AnyObject {
 /// them without reading the log file. It does not depend on whether updates are enabled. The
 /// registry keeps each listener alive until `remove` is called with it.
 public final class UpdatesLogEntryListenerRegistry: @unchecked Sendable {
-  public static let shared = UpdatesLogEntryListenerRegistry()
+  public static let sharedInstance = UpdatesLogEntryListenerRegistry()
 
   private let lock = NSLock()
   private var listeners: [ObjectIdentifier: UpdatesLogEntryListener] = [:]
