@@ -64,7 +64,7 @@ runs:
         disable-animations: false
         target: google_apis
         profile: pixel_7_pro
-        disk-size: 4G
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G. A smaller value breaks the boot snapshot.
         force-avd-creation: false
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         # `adb emu kill` returns while the emulator still writes the snapshot, so wait for the emulator to exit.
@@ -97,7 +97,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G. A smaller value breaks the boot snapshot.
         # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         # Boot from the clean snapshot, so every attempt starts fresh. If generating it failed, create a new AVD and cold-boot.
@@ -122,7 +122,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G. A smaller value breaks the boot snapshot.
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         # Boot from the clean snapshot, so every attempt starts fresh. If generating it failed, create a new AVD and cold-boot.
         force-avd-creation: ${{ steps.avd-snapshot.outcome == 'failure' }}
@@ -146,7 +146,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G. A smaller value breaks the boot snapshot.
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         # Boot from the clean snapshot, so every attempt starts fresh. If generating it failed, create a new AVD and cold-boot.
         force-avd-creation: ${{ steps.avd-snapshot.outcome == 'failure' }}
