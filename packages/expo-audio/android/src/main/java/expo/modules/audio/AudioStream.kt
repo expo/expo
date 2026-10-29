@@ -32,6 +32,11 @@ private data class ResolvedAudioConfig(
   val readSize: Int
 )
 
+internal fun trimToRecordedBytes(byteBuffer: ByteBuffer, bytesRead: Int): ByteBuffer {
+  byteBuffer.limit(bytesRead)
+  return byteBuffer.slice()
+}
+
 class AudioStream(
   appContext: AppContext,
   private val options: AudioStreamOptions
@@ -84,13 +89,22 @@ class AudioStream(
   }
 
   fun stop() {
-    if (!isStreaming) return
+    if (!isStreaming) {
+      return
+    }
     isStreaming = false
     captureJob?.cancel()
     captureJob = null
-    audioRecord?.stop()
-    audioRecord?.release()
+    val recorder = audioRecord
     audioRecord = null
+    try {
+      recorder?.stop()
+    } catch (e: IllegalStateException) {
+      // The recorder is not initialized, so there is nothing to stop. It still has to be released.
+      appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
+    } finally {
+      recorder?.release()
+    }
     emitStatus()
 
     // Auto-finalize any in-progress file recording.
@@ -134,7 +148,11 @@ class AudioStream(
     val currentChannels = channels
     AudioStreamFileRecordingResult().apply {
       uri = writer.file.toURI().toURL()
-      duration = if (currentSampleRate > 0) frames.toDouble() / currentSampleRate else 0.0
+      duration = if (currentSampleRate > 0) {
+        frames.toDouble() / currentSampleRate
+      } else {
+        0.0
+      }
       size = totalSize
       sampleRate = currentSampleRate
       channels = currentChannels
@@ -172,8 +190,16 @@ class AudioStream(
     }
 
     val resolvedMinBuffer = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding)
-    val bytesPerSample = if (isInt16) 2 else 4
-    val channelCount = if (options.channels == 2) 2 else 1
+    val bytesPerSample = if (isInt16) {
+      2
+    } else {
+      4
+    }
+    val channelCount = if (options.channels == 2) {
+      2
+    } else {
+      1
+    }
     val desiredBufferSize = sampleRate * channelCount * bytesPerSample * DEFAULT_BUFFER_DURATION_MS / 1000
     val bufferSize = maxOf(resolvedMinBuffer, desiredBufferSize)
 
@@ -229,11 +255,11 @@ class AudioStream(
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
     if (bytesRead > 0) {
-      byteBuffer.limit(bytesRead)
+      val recorded = trimToRecordedBytes(byteBuffer, bytesRead)
       // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
       // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
       val pcmBytes = ByteArray(bytesRead).also { buf ->
-        byteBuffer.duplicate().apply {
+        recorded.duplicate().apply {
           position(0)
           get(buf)
         }
@@ -241,7 +267,7 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(byteBuffer), channels, sampleRate)
+      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
     }
   }
 

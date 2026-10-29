@@ -433,6 +433,28 @@ describe('source-mapped frames', () => {
 `);
   });
 
+  it('falls back to V8 format when findSourceMap throws', () => {
+    // Node before v22.14.0 throws for a module whose source map failed to load
+    findSourceMap.mockImplementation((file: string) => {
+      if (file === '/bundle.js') {
+        throw new TypeError('The "payload" argument must be of type object. Received null');
+      }
+      return undefined;
+    });
+    const site = mockCallSite({
+      isToplevel: true,
+      fileName: '/bundle.js',
+      scriptNameOrSourceURL: '/bundle.js',
+      lineNumber: 1,
+      columnNumber: 1,
+      functionName: 'render',
+    });
+    expect(prepareStackTrace(new Error('e'), [site])).toMatchInlineSnapshot(`
+"Error: e
+    at render (/bundle.js:1:1)"
+`);
+  });
+
   it('falls back to V8 format when findEntry returns no originalSource', () => {
     findSourceMap.mockReturnValue({ findEntry: () => ({}) } as unknown as ReturnType<
       typeof nodeModule.findSourceMap

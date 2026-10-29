@@ -1,6 +1,7 @@
 package expo.modules.plugin
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
 import org.gradle.api.Plugin
@@ -18,9 +19,10 @@ class ExpoRootProjectPlugin : Plugin<Project> {
     val libs = versionCatalogs.find("expoLibs")
 
     with(rootProject) {
-      defineDefaultProperties(libs)
+      val defaultProperties = defineDefaultProperties(libs)
       maybeOverrideCmakeVersion()
       setDefaultCmakeObjectPathMax()
+      maybeOverrideNdkVersion(defaultProperties.ndkVersion)
       disableLinkedModulesLintWhenRequested()
     }
   }
@@ -118,6 +120,22 @@ private const val CMAKE_OBJECT_PATH_MAX_PROPERTY = "expo.android.cmakeObjectPath
 private const val DEFAULT_CMAKE_OBJECT_PATH_MAX = 1024
 
 /**
+ * Maybe override the `android.ndkVersion` of all Android library subprojects, so the app and the
+ * modules it links build with one NDK instead of AGP's default.
+ * A module that declares its own `ndkVersion` keeps it.
+ */
+private fun Project.maybeOverrideNdkVersion(ndkVersion: String) {
+  val applyNdkVersion = { subproject: Project ->
+    val android = subproject.extensions.getByType(LibraryExtension::class.java)
+    android.ndkVersion = ndkVersion
+  }
+
+  subprojects { subproject ->
+    subproject.plugins.withId("com.android.library") { applyNdkVersion(subproject) }
+  }
+}
+
+/**
  * Determines whether autolinked native modules should be linted when building the release version
  * of the app.
  */
@@ -168,49 +186,70 @@ private fun Project.disableLintVitalAnalysis() {
   }
 }
 
-fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
+/**
+ * The versions that the root project shares with the app and all of its modules.
+ */
+private data class DefaultProperties(
+  val buildToolsVersion: String,
+  val minSdkVersion: Int,
+  val compileSdkVersion: Int,
+  val targetSdkVersion: Int,
+  val ndkVersion: String,
+  val kotlinVersion: String,
+  val kspVersion: String
+)
+
+private fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>): DefaultProperties {
   // Android related
-  val buildTools = extra.setIfNotExist("buildToolsVersion") { versionCatalogs.getVersionOrDefault("buildTools", "35.0.0") }
+  val buildTools = extra.setIfNotExist("buildToolsVersion") { versionCatalogs.getVersionOrDefault("buildTools", "37.0.0") }
   val minSdk = extra.setIfNotExist("minSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("minSdk", "24")) }
-  val compileSdk = extra.setIfNotExist("compileSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("compileSdk", "35")) }
-  val targetSdk = extra.setIfNotExist("targetSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("targetSdk", "35")) }
+  val compileSdk = extra.setIfNotExist("compileSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("compileSdk", "37")) }
+  val targetSdk = extra.setIfNotExist("targetSdkVersion") { Integer.parseInt(versionCatalogs.getVersionOrDefault("targetSdk", "36")) }
   val ndk = extra.setIfNotExist("ndkVersion") { versionCatalogs.getVersionOrDefault("ndkVersion", "27.1.12297006") }
 
   // Kotlin related
-  val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.0.21") }
-  val ksp = extra.setIfNotExist("kspVersion") {
-    versionCatalogs.getVersionOrDefault("ksp") {
-      val kotlinVersion = extra.get("kotlinVersion") as String
-
-      KSPLookup[kotlinVersion]?.let { return@getVersionOrDefault it }
-      if (kotlinVersion >= "2.3.0") {
-        return@getVersionOrDefault latestKspVersion
-      }
-
-      val minSupported = KSPLookup.keys.min()
-      throw IllegalStateException(
-        """
-        Kotlin $kotlinVersion is not supported by Expo modules.
-        The minimum supported Kotlin version is $minSupported. 
-        Update 'kotlinVersion' in your project's build.gradle to a supported version. 
-        Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures.  
-        """.trimIndent()
+  val kotlin = extra.setIfNotExist("kotlinVersion") {
+    val kotlinGradlePluginVersion = kotlinGradlePluginVersionOrNull()
+    val catalogKotlinVersion = versionCatalogs.getVersionOrNull("kotlin")
+    if (kotlinGradlePluginVersion != null && catalogKotlinVersion != null && kotlinGradlePluginVersion != catalogKotlinVersion) {
+      project.logger.quiet(
+        "${"[ExpoRootProject]".withColor(Colors.GREEN)} The Kotlin Gradle plugin used by this build is " +
+          "${kotlinGradlePluginVersion.withColor(Colors.GREEN)}, but the version catalog declares " +
+          "${catalogKotlinVersion.withColor(Colors.YELLOW)}. Using the plugin version."
       )
     }
+    resolveKotlinVersion(kotlinGradlePluginVersion, catalogKotlinVersion)
   }
+  val ksp = extra.setIfNotExist("kspVersion") {
+    versionCatalogs.getVersionOrDefault("ksp") {
+      resolveKspVersion(kotlin.toString())
+    }
+  }
+
+  val defaultProperties = DefaultProperties(
+    buildToolsVersion = buildTools.toString(),
+    minSdkVersion = minSdk.toString().toInt(),
+    compileSdkVersion = compileSdk.toString().toInt(),
+    targetSdkVersion = targetSdk.toString().toInt(),
+    ndkVersion = ndk.toString(),
+    kotlinVersion = kotlin.toString(),
+    kspVersion = ksp.toString()
+  )
 
   project.logger.quiet(
     """
     ${"[ExpoRootProject]".withColor(Colors.GREEN)} Using the following versions:
-      - buildTools:  ${buildTools.withColor(Colors.GREEN)}
-      - minSdk:      ${minSdk.withColor(Colors.GREEN)}
-      - compileSdk:  ${compileSdk.withColor(Colors.GREEN)}
-      - targetSdk:   ${targetSdk.withColor(Colors.GREEN)}
-      - ndk:         ${ndk.withColor(Colors.GREEN)}
-      - kotlin:      ${kotlin.withColor(Colors.GREEN)}
-      - ksp:         ${ksp.withColor(Colors.GREEN)}
+      - buildTools:  ${defaultProperties.buildToolsVersion.withColor(Colors.GREEN)}
+      - minSdk:      ${defaultProperties.minSdkVersion.withColor(Colors.GREEN)}
+      - compileSdk:  ${defaultProperties.compileSdkVersion.withColor(Colors.GREEN)}
+      - targetSdk:   ${defaultProperties.targetSdkVersion.withColor(Colors.GREEN)}
+      - ndk:         ${defaultProperties.ndkVersion.withColor(Colors.GREEN)}
+      - kotlin:      ${defaultProperties.kotlinVersion.withColor(Colors.GREEN)}
+      - ksp:         ${defaultProperties.kspVersion.withColor(Colors.GREEN)}
   """.trimIndent()
   )
+
+  return defaultProperties
 }
 
 inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any): Any? {
@@ -221,10 +260,14 @@ inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any
   return get(name)
 }
 
+fun Optional<VersionCatalog>.getVersionOrNull(name: String): String? {
+  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion
+}
+
 fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: String): String {
-  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default
+  return getVersionOrNull(name) ?: default
 }
 
 fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: () -> String): String {
-  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default.invoke()
+  return getVersionOrNull(name) ?: default.invoke()
 }

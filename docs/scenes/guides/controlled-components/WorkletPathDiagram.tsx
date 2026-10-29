@@ -40,7 +40,7 @@ const DIAGRAM_ALT = [
 export function WorkletPathDiagram() {
   return (
     <div
-      className="my-5 rounded-lg border border-default bg-default p-4"
+      className="my-5 rounded-3xl border border-default bg-default p-4"
       data-md="diagram"
       data-md-alt={DIAGRAM_ALT}>
       <div className="flex items-center gap-3">

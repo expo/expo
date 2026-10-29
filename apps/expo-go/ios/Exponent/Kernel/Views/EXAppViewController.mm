@@ -7,7 +7,6 @@
 #import "EXAppLoadingProgressWindowController.h"
 #import "Expo_Go-Swift.h"
 #import "EXEnvironment.h"
-#import "EXErrorView.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXReactAppManager.h"
@@ -180,11 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
   if (isNetworkError) {
     // show a human-readable reachability error
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
+      [self _showErrorWithType:EXFatalErrorTypeLoading error:error];
     });
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self _showErrorWithType:kEXFatalErrorTypeException error:error];
+      [self _showErrorWithType:EXFatalErrorTypeException error:error];
     });
   }
 }
@@ -698,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
     // already showing, just update
     _errorView.type = type;
     _errorView.error = error;
-  } {
+  } else {
     [_contentView removeFromSuperview];
     if (!_errorView) {
       _errorView = [[EXErrorView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];

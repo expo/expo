@@ -78,3 +78,29 @@ describe('export-no-ssg', () => {
     ).toMatchSnapshot();
   });
 });
+
+it('exports only API routes with static output and apiRoutes enabled', async () => {
+  const projectRoot = getRouterE2ERoot();
+  const outputName = 'dist-static-api-routes-no-ssg';
+  await executeExpoAsync(
+    projectRoot,
+    ['export', '-p', 'web', '--output-dir', outputName, '--no-ssg'],
+    {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_API_ROUTES: 'true',
+        E2E_ROUTER_SRC: 'server',
+      },
+    }
+  );
+
+  const outputDir = path.join(projectRoot, outputName);
+  const files = findProjectFiles(outputDir);
+  expect(files).toContain('server/_expo/functions/methods+api.js');
+  expect(files).toContain('client/index.html');
+  expect(files).not.toContain('server/_expo/server/render.js');
+  const manifest = await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'));
+  expect(manifest.htmlRoutes).toEqual([]);
+  expect(manifest.notFoundRoutes).toEqual([]);
+});

@@ -1,6 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
-import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
 import { APIMethodParamRows } from '~/components/plugins/api/components/APIMethodParamRows';
@@ -19,9 +18,10 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { getMethodName, resolveTypeName, getTagData, getAllTagData } from './APISectionUtils';
+import { APIBoxReturns } from './components/APIBoxReturns';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
-import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -180,21 +180,14 @@ export const renderMethod = (
           afterContent={
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
-                <div
-                  data-md="api-returns"
-                  className={mergeClasses(
-                    'flex flex-row items-start gap-2',
-                    !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
-                  )}>
-                  <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon
-                      aria-hidden="true"
-                      className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
-                    />
-                    <span className={STYLES_SECONDARY}>Returns:</span>
-                  </div>
+                <APIBoxReturns
+                  className={
+                    !returnComment && getAllTagData('example', comment)
+                      ? ELEMENT_SPACING
+                      : undefined
+                  }>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
-                </div>
+                </APIBoxReturns>
                 {returnComment ? (
                   <div className="mt-1.5 mb-1 flex flex-col pl-6">
                     <APICommentTextBlock

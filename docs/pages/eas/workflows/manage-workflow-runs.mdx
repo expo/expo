@@ -11,6 +11,7 @@ Each time a workflow is triggered, EAS creates a workflow run. Use the EAS dashb
 A workflow run has one of the following statuses:
 
 - **New**: EAS created the run, but it has not started yet.
+- **Waiting**: Another run in the same concurrency group is active. This run has no jobs until it can start.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
 - **Success**: All jobs completed successfully.

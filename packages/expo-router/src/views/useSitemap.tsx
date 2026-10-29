@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
 import { sortRoutes } from '../Route';
-import { store } from '../global-state/router-store';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
 
@@ -43,7 +43,6 @@ export type SitemapType = {
   contextKey: string;
   filename: string;
   href: string | Href;
-  isInitial: boolean;
   isInternal: boolean;
   isGenerated: boolean;
   children: SitemapType[];
@@ -53,7 +52,6 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
-  isInitial: route.initialRouteName === route.route,
   isInternal: route.internal ?? false,
   isGenerated: route.generated ?? false,
   children: [...route.children]
@@ -62,9 +60,8 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
 });
 
 export function useSitemap(): SitemapType | null {
-  const sitemap = useMemo(
-    () => (store.routeNode ? mapForRoute(store.routeNode, []) : null),
-    [store.routeNode]
-  );
+  // TODO(@ubax): Extract `routeNode` into a separate context to avoid unrelated rerenders.
+  const routeNode = use(RouterConfigContext)?.routeNode;
+  const sitemap = useMemo(() => (routeNode ? mapForRoute(routeNode, []) : null), [routeNode]);
   return sitemap;
 }

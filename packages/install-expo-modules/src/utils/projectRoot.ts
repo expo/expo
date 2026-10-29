@@ -17,8 +17,8 @@ export async function normalizeProjectRootAsync(
 
 async function findUpPackageJson(root: string): Promise<string> {
   let packageJson: string | null = null;
-  for (let dir = root; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
-    const file = path.resolve(dir, 'package.json');
+  for (let dir = path.resolve(root); path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    const file = `${dir}${path.sep}package.json`;
     if (await pathExistsAsync(file)) {
       packageJson = file;
       break;

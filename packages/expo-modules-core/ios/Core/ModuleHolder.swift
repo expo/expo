@@ -53,18 +53,12 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    (module as? BaseModule)?.holder = self
     post(event: .moduleCreate)
   }
 
-  /// Combines the user-authored definition with the entries synthesized by the
-  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
-  /// `_synthesizedDefinition()` method returning an `[AnyDefinition]` array of the
-  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
-  /// members. Those entries are prepended to the user's definitions and the
-  /// whole list is fed back through `ModuleDefinition.init` so the merged
-  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
-  /// hand-written definition. Modules that don't use the macro fall through
-  /// the empty-synthesized fast path and return the user's definition unchanged.
+  /// Merges the entries from `_synthesizedDefinition()` into the user-authored definition. Only module
+  /// binaries built with earlier `@ExpoModule` macros return any, so other modules take the fast path.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
@@ -136,6 +130,11 @@ public final class ModuleHolder {
       log.info("Creating JS object for module '\(name)'")
       let object = try definition.build(appContext: appContext)
 
+      // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
+      for classType in type(of: module)._classTypes {
+        object.setProperty(classType._jsName, value: try JavaScriptBindings.buildSharedObjectClass(classType, appContext: appContext))
+      }
+
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
@@ -186,18 +185,18 @@ public final class ModuleHolder {
     let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
       [weak module = self.module] _, arguments in
       guard let module, arguments.count > 0 else {
-        return .undefined
+        return .undefined()
       }
       module.didStartListening(event: try arguments[0].asString())
-      return .undefined
+      return .undefined()
     }
     let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
       [weak module = self.module] _, arguments in
       guard let module, arguments.count > 0 else {
-        return .undefined
+        return .undefined()
       }
       module.didStopListening(event: try arguments[0].asString())
-      return .undefined
+      return .undefined()
     }
     object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
     object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])

@@ -26,6 +26,26 @@ describe('shouldHandleRequest', () => {
     expect(middleware.shouldHandleRequest(asReq({ url: '/' }))).toBe(true);
     expect(middleware.shouldHandleRequest(asReq({ url: '/index.html' }))).toBe(true);
   });
+
+  it('ignores the query and hash of the request url', () => {
+    expect(middleware.shouldHandleRequest(asReq({ url: '/?platform=ios' }))).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: '/index.html#hash' }))).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: '/foo?path=/index.html' }))).toBe(false);
+  });
+
+  it('matches the pathname of an absolute request url', () => {
+    expect(middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/' }))).toBe(true);
+    expect(
+      middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/index.html?a=1' }))
+    ).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/foo' }))).toBe(false);
+  });
+
+  it('does not throw for an invalid absolute request url', () => {
+    expect(() =>
+      middleware.shouldHandleRequest(asReq({ url: 'http://localhost:99999/' }))
+    ).not.toThrow();
+  });
 });
 
 describe('getHandler', () => {

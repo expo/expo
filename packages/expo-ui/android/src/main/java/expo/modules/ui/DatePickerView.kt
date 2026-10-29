@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -122,6 +123,8 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val clockDialSelectedContentColor: AndroidColor? = null
 
+  @Field val clockDialContentColor: AndroidColor? = null
+
   @Field val clockDialUnselectedContentColor: AndroidColor? = null
 
   @Field val selectorColor: AndroidColor? = null
@@ -130,17 +133,25 @@ class DateTimePickerColorOverrides : Record {
 
   @Field val periodSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val periodSelectorContainerColor: AndroidColor? = null
+
   @Field val periodSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val periodSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val periodSelectorContentColor: AndroidColor? = null
 
   @Field val periodSelectorUnselectedContentColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContainerColor: AndroidColor? = null
 
+  @Field val timeSelectorContainerColor: AndroidColor? = null
+
   @Field val timeSelectorUnselectedContainerColor: AndroidColor? = null
 
   @Field val timeSelectorSelectedContentColor: AndroidColor? = null
+
+  @Field val timeSelectorContentColor: AndroidColor? = null
 
   @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
 }
@@ -158,6 +169,8 @@ data class DateTimePickerProps(
   val variant: Variant = Variant.PICKER,
   val displayedComponents: DisplayedComponents = DisplayedComponents.DATE,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val is24Hour: Boolean = true,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
@@ -170,6 +183,8 @@ data class DatePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
@@ -219,14 +234,22 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
 
       object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-          if (startUtcDayMillis != null && utcTimeMillis < startUtcDayMillis) return false
-          if (endUtcDayMillis != null && utcTimeMillis > endUtcDayMillis) return false
+          if (startUtcDayMillis != null && utcTimeMillis < startUtcDayMillis) {
+            return false
+          }
+          if (endUtcDayMillis != null && utcTimeMillis > endUtcDayMillis) {
+            return false
+          }
           return true
         }
 
         override fun isSelectableYear(year: Int): Boolean {
-          if (startYear != null && year < startYear) return false
-          if (endYear != null && year > endYear) return false
+          if (startYear != null && year < startYear) {
+            return false
+          }
+          if (endYear != null && year > endYear) {
+            return false
+          }
           return true
         }
       }
@@ -242,10 +265,14 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
 // https://github.com/expo/expo/issues/47206
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, initialDateMillis: Long): IntRange {
+fun rememberDatePickerYearRange(
+  selectableDatesRecord: SelectableDatesRecord?,
+  initialDateMillis: Long,
+  initialEndDateMillis: Long? = null
+): IntRange {
   val start = selectableDatesRecord?.start
   val end = selectableDatesRecord?.end
-  return remember(start, end, initialDateMillis) {
+  return remember(start, end, initialDateMillis, initialEndDateMillis) {
     val defaults = DatePickerDefaults.YearRange
     val yearOf = { millis: Long ->
       Calendar.getInstance().apply { timeInMillis = millis }.get(Calendar.YEAR)
@@ -254,8 +281,9 @@ fun rememberDatePickerYearRange(selectableDatesRecord: SelectableDatesRecord?, i
     val endYear = end?.let(yearOf) ?: defaults.last
     // Keep the initially selected/displayed year inside the range so Material3 doesn't discard the
     // selection
-    val initialYear = yearOf(initialDateMillis)
-    minOf(startYear, initialYear)..maxOf(endYear, initialYear)
+    val initialStartYear = yearOf(initialDateMillis)
+    val initialEndYear = initialEndDateMillis?.let(yearOf) ?: initialStartYear
+    minOf(startYear, initialStartYear, initialEndYear)..maxOf(endYear, initialStartYear, initialEndYear)
   }
 }
 
@@ -305,18 +333,37 @@ fun buildTimePickerColors(
     containerColor = elementColors.containerColor.composeOrNull ?: defaults.containerColor,
     clockDialColor = elementColors.clockDialColor.composeOrNull ?: colorProp?.copy(alpha = 0.3f) ?: defaults.clockDialColor,
     clockDialSelectedContentColor = elementColors.clockDialSelectedContentColor.composeOrNull ?: defaults.clockDialSelectedContentColor,
-    clockDialUnselectedContentColor = elementColors.clockDialUnselectedContentColor.composeOrNull ?: defaults.clockDialUnselectedContentColor,
+    clockDialContentColor = (elementColors.clockDialContentColor ?: elementColors.clockDialUnselectedContentColor).composeOrNull ?: defaults.clockDialContentColor,
     selectorColor = elementColors.selectorColor.composeOrNull ?: colorProp ?: defaults.selectorColor,
     periodSelectorBorderColor = elementColors.periodSelectorBorderColor.composeOrNull ?: defaults.periodSelectorBorderColor,
     periodSelectorSelectedContainerColor = elementColors.periodSelectorSelectedContainerColor.composeOrNull ?: defaults.periodSelectorSelectedContainerColor,
-    periodSelectorUnselectedContainerColor = elementColors.periodSelectorUnselectedContainerColor.composeOrNull ?: defaults.periodSelectorUnselectedContainerColor,
+    periodSelectorContainerColor = (elementColors.periodSelectorContainerColor ?: elementColors.periodSelectorUnselectedContainerColor).composeOrNull ?: defaults.periodSelectorContainerColor,
     periodSelectorSelectedContentColor = elementColors.periodSelectorSelectedContentColor.composeOrNull ?: defaults.periodSelectorSelectedContentColor,
-    periodSelectorUnselectedContentColor = elementColors.periodSelectorUnselectedContentColor.composeOrNull ?: defaults.periodSelectorUnselectedContentColor,
+    periodSelectorContentColor = (elementColors.periodSelectorContentColor ?: elementColors.periodSelectorUnselectedContentColor).composeOrNull ?: defaults.periodSelectorContentColor,
     timeSelectorSelectedContainerColor = elementColors.timeSelectorSelectedContainerColor.composeOrNull ?: colorProp ?: defaults.timeSelectorSelectedContainerColor,
-    timeSelectorUnselectedContainerColor = elementColors.timeSelectorUnselectedContainerColor.composeOrNull ?: defaults.timeSelectorUnselectedContainerColor,
+    timeSelectorContainerColor = (elementColors.timeSelectorContainerColor ?: elementColors.timeSelectorUnselectedContainerColor).composeOrNull ?: defaults.timeSelectorContainerColor,
     timeSelectorSelectedContentColor = elementColors.timeSelectorSelectedContentColor.composeOrNull ?: defaults.timeSelectorSelectedContentColor,
-    timeSelectorUnselectedContentColor = elementColors.timeSelectorUnselectedContentColor.composeOrNull ?: defaults.timeSelectorUnselectedContentColor
+    timeSelectorContentColor = (elementColors.timeSelectorContentColor ?: elementColors.timeSelectorUnselectedContentColor).composeOrNull ?: defaults.timeSelectorContentColor
   )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ApplyDatePickerDialogKeyboardBehavior(displayMode: DisplayMode) {
+  val view = LocalView.current
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val originalSoftInputMode = remember(view) {
+    (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
+  }
+  SideEffect {
+    val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+    if (displayMode == DisplayMode.Picker) {
+      window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+      keyboardController?.hide()
+    } else if (originalSoftInputMode != null) {
+      window.setSoftInputMode(originalSoftInputMode)
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -333,7 +380,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate,
+      initialSelectedDateMillis = props.initialDate,
       initialDisplayedMonthMillis = initialDate,
       yearRange = yearRange,
       selectableDates = selectableDates
@@ -347,7 +394,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
   DatePickerDialog(
     onDismissRequest = { onDismissRequest() },
     confirmButton = {
-      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }, colors = buttonColors) {
+      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }, enabled = state.selectedDateMillis != null, colors = buttonColors) {
         Text(props.confirmButtonLabel ?: stringResource(android.R.string.ok))
       }
     },
@@ -358,26 +405,13 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
-    val view = LocalView.current
-    val keyboardController = LocalSoftwareKeyboardController.current
     val displayMode = state.displayMode
-    val originalSoftInputMode = remember(view) {
-      (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
-    }
-    SideEffect {
-      val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-      if (displayMode == DisplayMode.Picker) {
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        keyboardController?.hide()
-      } else if (originalSoftInputMode != null) {
-        window.setSoftInputMode(originalSoftInputMode)
-      }
-    }
+    ApplyDatePickerDialogKeyboardBehavior(displayMode)
 
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-      DatePicker(
+      MaterialDatePicker(
         modifier = if (displayMode == DisplayMode.Picker) {
           Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true)
         } else {
@@ -385,6 +419,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
         },
         state = state,
         showModeToggle = props.showVariantToggle,
+        showTitle = props.showTitle,
+        showHeadline = props.showHeadline,
         colors = colors
       )
     }
@@ -432,6 +468,7 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
+    containerColor = timePickerColors.containerColor,
     text = {
       TimePicker(
         state = state,
@@ -487,12 +524,38 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
   // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
   CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-    DatePicker(
+    MaterialDatePicker(
       modifier = modifier,
       state = state,
       showModeToggle = props.showVariantToggle,
+      showTitle = props.showTitle,
+      showHeadline = props.showHeadline,
       colors = colors
     )
+  }
+}
+
+// Material 3 hides the title or headline when its slot is `null`. Its default slots pad themselves
+// with private constants, so branch on the call instead of copying them, keeping the defaults exact.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialDatePicker(
+  modifier: Modifier = Modifier,
+  state: DatePickerState,
+  showModeToggle: Boolean,
+  showTitle: Boolean,
+  showHeadline: Boolean,
+  colors: DatePickerColors
+) {
+  when {
+    showTitle && showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, showModeToggle = showModeToggle)
+    showTitle ->
+      DatePicker(state = state, modifier = modifier, colors = colors, headline = null, showModeToggle = showModeToggle)
+    showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, showModeToggle = showModeToggle)
+    else ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, headline = null, showModeToggle = showModeToggle)
   }
 }
 

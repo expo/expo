@@ -238,7 +238,11 @@ data class ExpoReceivedResponseBodyParams(
   ) {
     val contentType = body.contentType()
     val isText = contentType?.type == "text" || (contentType?.type == "application" && contentType.subtype == "json")
-    val bodyString = if (isText) body.string() else body.source().readByteString().base64()
+    val bodyString = if (isText) {
+      body.string()
+    } else {
+      body.source().readByteString().base64()
+    }
 
     this.body = bodyString
     this.base64Encoded = !isText

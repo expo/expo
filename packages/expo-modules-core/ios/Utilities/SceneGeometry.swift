@@ -79,6 +79,20 @@ public extension SceneGeometry {
   static func interfaceOrientation(for view: UIView? = nil) -> UIInterfaceOrientation {
     return windowScene(for: view)?.effectiveGeometry.interfaceOrientation ?? .unknown
   }
+
+  /// Popovers are a regular-width behavior, not an iPad one, so never gate the call on idiom.
+  @discardableResult
+  static func anchorPopover(of controller: UIViewController, to view: UIView?, rect: CGRect? = nil) -> Bool {
+    guard let popover = controller.popoverPresentationController else {
+      return false
+    }
+    guard let sourceView = view ?? keyWindow(for: nil)?.rootViewController?.view else {
+      return false
+    }
+    popover.sourceView = sourceView
+    popover.sourceRect = rect ?? CGRect(x: sourceView.bounds.midX, y: sourceView.bounds.maxY, width: 0, height: 0)
+    return true
+  }
 }
 #endif
 

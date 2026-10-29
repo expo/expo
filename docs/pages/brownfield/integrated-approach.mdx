@@ -45,10 +45,10 @@ First, create an Expo project inside your existing native project's root directo
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app my-project --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-57'],
-    bun: ['$ bun create expo my-project --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-58'],
+    yarn: ['$ yarn create expo-app my-project --template default@sdk-58'],
+    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-58'],
+    bun: ['$ bun create expo my-project --template default@sdk-58'],
   }}
 />
 
@@ -438,7 +438,7 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
-class ReactNativeViewController: UIViewController {
+class ReactViewController: UIViewController {
   var reactNativeFactory: RCTReactNativeFactory?
   var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
 
@@ -447,7 +447,7 @@ class ReactNativeViewController: UIViewController {
     reactNativeFactoryDelegate = ReactNativeDelegate()
     reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
     reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
-    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "main")
 
   }
 }

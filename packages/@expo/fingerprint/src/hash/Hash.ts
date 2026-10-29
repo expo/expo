@@ -213,6 +213,10 @@ export async function createDirHashResultsAsync(
     await Promise.all(
       dirents.map(async (dirent) => {
         if (dirent.isDirectory()) {
+          // Skip nested node_modules inside a package.
+          if (dirent.name === 'node_modules') {
+            return null;
+          }
           const filePath = toPosixPath(path.join(dirPath, dirent.name));
           return await createDirHashResultsAsync(
             filePath,

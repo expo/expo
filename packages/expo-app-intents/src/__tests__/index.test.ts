@@ -1,0 +1,49 @@
+import * as AppIntents from '../index';
+
+// jest-expo mocks the native module, so null it out to exercise the unavailable path.
+jest.mock('../ExpoAppIntentsModule', () => ({ __esModule: true, default: null }));
+
+describe('expo-app-intents on unsupported platforms', () => {
+  it('reports unavailability', () => {
+    expect(AppIntents.isAvailable()).toBe(false);
+  });
+
+  it('returns empty pending invocations', async () => {
+    await expect(AppIntents.getPendingInvocationsAsync()).resolves.toEqual([]);
+  });
+
+  it('returns an empty entity catalog', async () => {
+    await expect(AppIntents.getEntityCatalogAsync('dish')).resolves.toEqual([]);
+  });
+
+  it('resolves no-op mutations', async () => {
+    await expect(AppIntents.removePendingInvocationAsync('x')).resolves.toBeUndefined();
+    await expect(AppIntents.clearPendingInvocationsAsync()).resolves.toBeUndefined();
+    await expect(
+      AppIntents.setEntityCatalogAsync('dish', [{ id: 'margherita', title: 'Margherita Pizza' }])
+    ).resolves.toBeUndefined();
+    await expect(AppIntents.reindexEntitiesAsync()).resolves.toBeUndefined();
+  });
+
+  it('donates nothing', async () => {
+    await expect(
+      AppIntents.donateIntentAsync('increaseCounter', { amount: 1 })
+    ).resolves.toBeNull();
+  });
+
+  it('deletes no donations', async () => {
+    await expect(AppIntents.deleteDonationsAsync({ intent: 'increaseCounter' })).resolves.toEqual(
+      []
+    );
+  });
+
+  it('rejects refreshShortcutsAsync with UnavailabilityError', async () => {
+    await expect(AppIntents.refreshShortcutsAsync()).rejects.toThrow(/not available/);
+  });
+
+  it('returns an inert subscription from addAppIntentListener', () => {
+    const subscription = AppIntents.addAppIntentListener(() => {});
+    expect(typeof subscription.remove).toBe('function');
+    subscription.remove();
+  });
+});

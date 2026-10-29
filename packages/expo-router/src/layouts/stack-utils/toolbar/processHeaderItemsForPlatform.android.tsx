@@ -1,8 +1,8 @@
 'use client';
-import { Host, Row } from '@expo/ui/jetpack-compose';
 import { type ReactNode, useMemo } from 'react';
 
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { requireExpoUI } from '../../../optional-libraries/expo-ui';
 import type {
   NativeStackHeaderItemProps,
   NativeStackNavigationOptions,
@@ -27,6 +27,9 @@ export function processHeaderItemsForPlatform(
   if (placement !== 'left' && placement !== 'right') {
     return null;
   }
+  requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   const headerContent = (props: NativeStackHeaderItemProps) => (
     <HeaderToolbarHostBase placement={placement} colors={colors} headerProps={props}>
@@ -58,13 +61,20 @@ function HeaderToolbarHostBase({
   colors?: ToolbarColors;
   headerProps?: NativeStackHeaderItemProps;
 }) {
+  const {
+    expoUI: { Host, Row },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const stableColors = useMemo(
     () => ({
       tintColor: colors?.tintColor ?? headerProps?.tintColor,
       backgroundColor: colors?.backgroundColor ?? headerProps?.backgroundColor,
+      buttonContainerColor: colors?.buttonContainerColor,
     }),
     [
       colors?.backgroundColor,
+      colors?.buttonContainerColor,
       colors?.tintColor,
       headerProps?.tintColor,
       headerProps?.backgroundColor,

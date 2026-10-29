@@ -1,5 +1,11 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
-import type { AssetInfo, Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import {
+  type AssetInfo,
+  type Manifest,
+  type MiddlewareInfo,
+  type RawManifest,
+  type Route,
+} from '../../manifest';
 import {
   isStreamingRenderer,
   type LoaderModule,
@@ -108,22 +114,26 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
     ssrRenderer = async (request, options) => {
       const url = new URL(request.url);
       const location = new URL(url.pathname + url.search, url.origin);
-      const assets = mergeAssets(topLevelAssets, options?.assets);
+      const assets = mergeAssets(topLevelAssets, options.assets);
 
       // NOTE(@hassankhan): We still need to support SDK 55 deployments which
       // use the "legacy" server export
       if (!isStreamingRenderer(ssrModule)) {
         return ssrModule.getStaticContent(location, {
-          loader: options?.loader,
+          loader: options.loader,
           request,
+          route: options.route,
+          params: options.params,
           assets,
         });
       }
 
       return ssrModule.getStreamingContent(location, {
-        loader: options?.loader,
-        metadata: options?.metadata,
+        loader: options.loader,
+        metadata: options.metadata,
         request,
+        route: options.route,
+        params: options.params,
         assets,
       });
     };
@@ -157,8 +167,16 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
       // SSR path: Render at runtime if SSR module is available
       const { renderer, module: ssrModule } = await getServerRenderer();
       if (renderer) {
-        let renderOptions: RenderOptions = { assets: route.assets };
         const params = parseParams(request, route);
+        let renderOptions: RenderOptions = {
+          assets: route.assets,
+          route: {
+            file: route.file,
+            page: route.page,
+            ...(route.generated ? { generated: true } : {}),
+          },
+          params,
+        };
 
         try {
           if (ssrModule && isStreamingRenderer(ssrModule) && ssrModule.resolveMetadata) {
@@ -253,9 +271,15 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
  * Merges top-level assets with per-route async chunk assets. Top-level assets come first
  */
 function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
+  const externalCss = [
+    ...(topLevel?.externalCss ?? []),
+    ...(routeLevel?.externalCss ?? []),
+  ];
+
   return {
     css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
-    externalCss: [...(topLevel?.externalCss ?? []), ...(routeLevel?.externalCss ?? [])],
+    // NOTE(@hassankhan): We still need to support SDK 55-57 deployments
+    ...(externalCss.length > 0 ? { externalCss } : {}),
     js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
     favicon: topLevel?.favicon,
   };

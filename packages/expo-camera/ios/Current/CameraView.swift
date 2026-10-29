@@ -155,6 +155,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
   let onAvailableLensesChanged = EventDispatcher()
+  let onRecordingProgress = EventDispatcher()
 
   internal var deviceOrientation: UIInterfaceOrientation {
     SceneGeometry.interfaceOrientation(for: self)
@@ -296,6 +297,15 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
       throw CameraOutputNotReadyException()
     }
     return try await photoCapture.takePicturePromise(options: options, photoOutput: photoOutput)
+  }
+
+  func playShutterAnimation() {
+    Task { @MainActor in
+      self.previewLayer.opacity = 0
+      UIView.animate(withDuration: 0.25) {
+        self.previewLayer.opacity = 1
+      }
+    }
   }
 
   func record(options: CameraRecordingOptions, promise: Promise) async {

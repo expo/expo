@@ -2,6 +2,7 @@ import type { ReactNode, Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import { useHostedTextInput } from '../../keyboard';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -180,6 +181,7 @@ export type CommonTextFieldProperties = {
  * else on the props passes through untouched.
  */
 type TransformedKeys =
+  | 'ref'
   | 'value'
   | 'selection'
   | 'modifiers'
@@ -195,6 +197,7 @@ type TransformedKeys =
  * callbacks become `nativeEvent`-wrapped listeners.
  */
 export type CommonNativeTextFieldProps = {
+  ref?: Ref<any>;
   modifiers?: ModifierConfig[];
   children?: ReactNode;
   value?: number | null;
@@ -209,6 +212,7 @@ export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
   props: T
 ): CommonNativeTextFieldProps & Omit<T, TransformedKeys> {
   const {
+    ref,
     value,
     selection,
     modifiers,
@@ -222,9 +226,11 @@ export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
 
   const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
   const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
+  const hosted = useHostedTextInput<TextFieldRef>(ref, onFocusChanged);
 
   return {
     ...rest,
+    ref: hosted.ref,
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     children,
@@ -233,7 +239,7 @@ export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
       !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
-    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onFocusChanged: (event) => hosted.onFocusChange(event.nativeEvent.value),
     onSelectionChange: onSelectionChange
       ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
       : undefined,

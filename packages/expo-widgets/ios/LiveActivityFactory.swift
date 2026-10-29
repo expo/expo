@@ -3,6 +3,7 @@ import ActivityKit
 
 final class LiveActivityFactory: SharedObject {
   let name: String
+  private var instances: [String: LiveActivity] = [:]
 
   static var pushNotificationsEnabled: Bool {
     Bundle.main.object(forInfoDictionaryKey: pushNotificationsEnabledKey) as? Bool ?? false
@@ -14,7 +15,6 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()
     }
@@ -29,6 +29,7 @@ final class LiveActivityFactory: SharedObject {
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: LiveActivityFactory.pushNotificationsEnabled)
+      instances[activity.id] = instance
       return instance
     } catch {
       throw StartLiveActivityException(error.localizedDescription)
@@ -36,12 +37,29 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func getInstances() throws -> [LiveActivity] {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
-    return Activity<LiveActivityAttributes>.activities
+    let activities = Activity<LiveActivityAttributes>.activities
+      // Filter LiveActivity instances for activities that don't match the factory's name.
       .filter { $0.content.state.name == name }
       // A stale activity is still visible and updatable; only ended/dismissed ones are gone.
       .filter { $0.activityState == .active || $0.activityState == .stale }
-      .map { LiveActivity(id: $0.id, name: name) }
+      
+    let activeIDs = Set(activities.map(\.id))
+    instances = instances.filter { activeIDs.contains($0.key) }
+
+    return activities.map { activity in
+      if let instance = instances[activity.id] {
+        instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+        return instance
+      }
+
+      let instance = LiveActivity(id: activity.id, name: name)
+      instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+      instances[activity.id] = instance
+      return instance
+    }
+  }
+
+  override func sharedObjectWillRelease() {
+    instances.removeAll()
   }
 }

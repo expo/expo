@@ -32,6 +32,89 @@ struct JavaScriptObjectTests {
     #expect(object.getProperty("score").getInt() == 100)
   }
 
+  @Test
+  func `get property names preserves non-ASCII and empty keys`() throws {
+    let object = try runtime.eval("({ 'café': 1, '日本語': 2, '🎉': 3, '': 4 })").getObject()
+    #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
+  }
+
+  // MARK: - Non-ASCII property names
+
+  @Test
+  func `getProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '日本語': 'ok', '🎉': true, '': 'empty' })").getObject()
+    #expect(object.getProperty("café").isNumber() == true)
+    #expect(object.getProperty("日本語").isString() == true)
+    #expect(object.getProperty("🎉").isBool() == true)
+    #expect(object.getProperty("").isString() == true)
+    #expect(object.getProperty("cafe").isUndefined() == true)
+  }
+
+  @Test
+  func `hasProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '': 'empty' })").getObject()
+    #expect(object.hasProperty("café") == true)
+    #expect(object.hasProperty("") == true)
+    #expect(object.hasProperty("cafe") == false)
+    #expect(object.hasProperty("naïve") == false)
+  }
+
+  @Test
+  func `setProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.setProperty("café", value: 42.0)
+    object.setProperty("日本語", value: JavaScriptValue(runtime, "ok"))
+    object.setProperty("🎉", JavaScriptObject(runtime))
+    object.setProperty("", value: true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café'] === 42 && obj['日本語'] === 'ok' && obj[''] === true").getBool() == true)
+    #expect(try runtime.eval("typeof obj['🎉']").getString() == "object")
+    #expect(try runtime.eval("Object.keys(obj).join(',')").getString() == "café,日本語,🎉,")
+  }
+
+  @Test
+  func `deleteProperty removes a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'café': 42, 'cafe': 1 })").getObject()
+    object.deleteProperty("café")
+    #expect(object.hasProperty("café") == false)
+    #expect(object.hasProperty("cafe") == true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("'café' in obj").getBool() == false)
+  }
+
+  @Test
+  func `defineProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("café", value: 42.0, options: [.enumerable])
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café']").getInt() == 42)
+  }
+
+  @Test
+  func `defineProperty leaves a frozen object unchanged`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    object.defineProperty("value", value: 1, options: [.enumerable])
+    object.defineProperty("descriptor", descriptor: .init(value: JavaScriptValue(runtime, 2)))
+    object.defineProperty("object", descriptor: runtime.createObject())
+    #expect(object.getPropertyNames().isEmpty)
+    #expect(object.hasProperty("descriptor") == false)
+  }
+
+  @Test
+  func `defineProperty keeps a non-configurable property`() {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1)
+    object.defineProperty("test", value: 2)
+    #expect(object.getProperty("test").getInt() == 1)
+  }
+
+  @Test
+  func `getPropertyAsFunction finds a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
+    let function = try object.getPropertyAsFunction("zażółć")
+    #expect(try function.call().getString() == "gęślą jaźń")
+  }
+
   // MARK: - Property Access Tests
 
   @Suite("Property Access")
@@ -128,24 +211,21 @@ struct JavaScriptObjectTests {
     func `subscript with single key`() throws {
       let obj = try runtime.eval("({ name: 'Alice' })")
       let jsObject = obj.getObject()
-      let value = jsObject["name"]
-      #expect(value.getString() == "Alice")
+      #expect(jsObject["name"].getString() == "Alice")
     }
 
     @Test
     func `subscript with two nested keys`() throws {
       let obj = try runtime.eval("({ user: { name: 'Bob' } })")
       let jsObject = obj.getObject()
-      let value = jsObject["user", "name"]
-      #expect(value.getString() == "Bob")
+      #expect(jsObject["user", "name"].getString() == "Bob")
     }
 
     @Test
     func `subscript with three nested keys`() throws {
       let obj = try runtime.eval("({ data: { user: { age: 25 } } })")
       let jsObject = obj.getObject()
-      let value = jsObject["data", "user", "age"]
-      #expect(value.getInt() == 25)
+      #expect(jsObject["data", "user", "age"].getInt() == 25)
     }
 
     @Test
@@ -154,26 +234,22 @@ struct JavaScriptObjectTests {
       let nested = runtime.createObject()
       nested.setProperty("value", value: 42.0)
       root.setProperty("nested", nested)
-      let value = root["nested", "value"]
-      #expect(value.getInt() == 42)
+      #expect(root["nested", "value"].getInt() == 42)
     }
 
     @Test
     func `subscript returns undefined for non-existent property`() throws {
       let obj = try runtime.eval("({ a: 1 })")
       let jsObject = obj.getObject()
-      let value = jsObject["nonexistent"]
-      #expect(value.isUndefined() == true)
+      #expect(jsObject["nonexistent"].isUndefined() == true)
     }
 
     @Test
     func `nested subscript with mixed types`() throws {
       let obj = try runtime.eval("({ settings: { enabled: true, count: 10 } })")
       let jsObject = obj.getObject()
-      let enabled = jsObject["settings", "enabled"]
-      let count = jsObject["settings", "count"]
-      #expect(enabled.getBool() == true)
-      #expect(count.getInt() == 10)
+      #expect(jsObject["settings", "enabled"].getBool() == true)
+      #expect(jsObject["settings", "count"].getInt() == 10)
     }
   }
 
@@ -200,11 +276,35 @@ struct JavaScriptObjectTests {
     }
 
     @Test
+    func `set property with non-ASCII string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("greeting", value: "żółć 世界 🎉")
+      #expect(object.getProperty("greeting").getString() == "żółć 世界 🎉")
+    }
+
+    @Test
+    func `set property with empty string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("empty", value: "")
+      #expect(object.getProperty("empty").getString() == "")
+    }
+
+    @Test
     func `set property with JavaScriptValue`() {
       let object = JavaScriptObject(runtime)
       let value = JavaScriptValue(runtime, "hello")
       object.setProperty("message", value: value)
       #expect(object.getProperty("message").getString() == "hello")
+    }
+
+    @Test
+    func `set property by PropNameID with JavaScriptValue`() {
+      let object = JavaScriptObject(runtime)
+      let propName = JavaScriptPropNameID(runtime, string: "café")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "hello"))
+      #expect(object.getProperty("café").getString() == "hello")
+      object.setProperty(propName, value: JavaScriptValue(runtime, "again"))
+      #expect(object.getProperty(propName).getString() == "again")
     }
 
     @Test
@@ -237,16 +337,18 @@ struct JavaScriptObjectTests {
     @Test
     @JavaScriptActor
     func `set property with async function closure`() async throws {
-      let object = JavaScriptObject(runtime)
-      object.setProperty("addAsync") { this, arguments in
-        let sum = arguments[0].getInt() + arguments[1].getInt()
-        return {
-          return JavaScriptValue(self.runtime, sum)
+      try await TestRuntimeScheduler().makeRuntime().run { runtime in
+        let object = JavaScriptObject(runtime)
+        object.setProperty("addAsync") { this, arguments in
+          let sum = arguments[0].getInt() + arguments[1].getInt()
+          return {
+            return JavaScriptValue(runtime, sum)
+          }
         }
+        let fn = try object.getPropertyAsFunction("addAsync")
+        let result = try await fn.call(arguments: 20, 22).getPromise().await()
+        #expect(result.getInt() == 42)
       }
-      let fn = try object.getPropertyAsFunction("addAsync")
-      let result = try await fn.call(arguments: 20, 22).getPromise().await()
-      #expect(result.getInt() == 42)
     }
 
     @Test
@@ -557,5 +659,133 @@ struct JavaScriptObjectTests {
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)
     }
+  }
+
+  // MARK: - Memory pressure
+
+  @Test
+  func `set external memory pressure ignores an amount that the runtime rejects`() {
+    let object = runtime.createObject()
+    object.setExternalMemoryPressure(Int(UInt32.max) + 1)
+  }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let value = try runtime.eval("({ answer: 42 })")
+    let object = try JavaScriptObject.decode(value, in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    let encoded = try JavaScriptObject.encode(object, in: runtime)
+    #expect(encoded.getObject().getProperty("answer").getInt() == 42)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("({ answer: 42 })").ref(), 42)
+    let object = try JavaScriptObject.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(object.getProperty("answer").getInt() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not an object`() throws {
+    let value = try runtime.eval("42")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptObject.decode(value, in: runtime)
+    }
+  }
+
+  // MARK: - Setting properties through a slot
+
+  @Test
+  func `setProperty encodes primitives straight into the property`() throws {
+    let object = runtime.createObject()
+    let name = JavaScriptPropNameID(runtime, string: "count")
+    try object.setProperty(name, encoding: 42)
+    try object.setProperty("label", encoding: "café")
+    try object.setProperty("enabled", encoding: true)
+    try object.setProperty("missing", encoding: Int?.none)
+    #expect(object.getProperty("count").getInt() == 42)
+    #expect(object.getProperty("label").getString() == "café")
+    #expect(object.getProperty("enabled").getBool() == true)
+    #expect(object.getProperty("missing").isNull() == true)
+  }
+
+  @Test
+  func `setProperty encodes a type without a slot override`() throws {
+    let object = runtime.createObject()
+    try object.setProperty("values", encoding: ["a": 1])
+    #expect(object.getProperty("values").getObject().getProperty("a").getInt() == 1)
+  }
+
+  @Test
+  func `setProperty leaves the property unset when the encode throws`() throws {
+    let object = runtime.createObject()
+    #expect(throws: UnsafeIntegerException.self) {
+      try object.setProperty("big", encoding: Int.max)
+    }
+    #expect(object.hasProperty("big") == false)
+  }
+
+  @Test
+  func `slot takes an array without a clone`() throws {
+    let object = runtime.createObject()
+    try object.setProperty("pair", encoding: ArrayEncodedPair(first: 3, second: 4))
+    let pair = object.getProperty("pair").getArray()
+    #expect(pair.length == 2)
+    #expect(try pair.getValue(at: 1).getInt() == 4)
+  }
+
+  @Test
+  func `slot takes an object without a clone`() throws {
+    let array = try [ObjectEncodedPoint].encode([ObjectEncodedPoint(x: 1), ObjectEncodedPoint(x: 2)], in: runtime)
+      .getArray()
+    #expect(array.length == 2)
+    #expect(try array.getValue(at: 1).getObject().getProperty("x").getInt() == 2)
+  }
+}
+
+/// Encodes as an array, moving it into the slot with `emplace(_:)`.
+private struct ArrayEncodedPair: JavaScriptEncodable {
+  let first: Int
+  let second: Int
+
+  static func encode(_ value: ArrayEncodedPair, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    return try [Int].encode([value.first, value.second], in: runtime)
+  }
+
+  static func encode(
+    _ value: ArrayEncodedPair,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let array = runtime.createArray(length: 2)
+    try array.set(value: value.first, at: 0)
+    try array.set(value: value.second, at: 1)
+    slot.emplace(array)
+  }
+}
+
+/// Encodes as an object, moving it into the slot with `emplace(_:)`.
+private struct ObjectEncodedPoint: JavaScriptEncodable {
+  let x: Int
+
+  static func encode(_ value: ObjectEncodedPoint, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    let object = runtime.createObject()
+    try object.setProperty("x", encoding: value.x)
+    return object.takeValue()
+  }
+
+  static func encode(
+    _ value: ObjectEncodedPoint,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let object = runtime.createObject()
+    try object.setProperty("x", encoding: value.x)
+    slot.emplace(object)
   }
 }

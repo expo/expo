@@ -1,10 +1,16 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
+import { Text } from 'react-native';
 
 import type { ParamListBase } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
-import { useIsFocused } from '../useIsFocused';
+import {
+  FocusedRouteKeyContext,
+  IsFocusedContext,
+  useIsFocused,
+  useIsRouteFocused,
+} from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
@@ -14,7 +20,94 @@ beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('renders correct focus state', () => {
+test('uses the focus context without a navigation object', async () => {
+  const Test = () => {
+    const isFocused = useIsFocused();
+
+    return <Text>{isFocused ? 'focused' : 'unfocused'}</Text>;
+  };
+
+  const root = await render(
+    <IsFocusedContext.Provider value>
+      <Test />
+    </IsFocusedContext.Provider>
+  );
+
+  expect(root).toMatchInlineSnapshot(`
+    <Text>
+      focused
+    </Text>
+  `);
+});
+
+test('throws without a focus context', async () => {
+  const Test = () => {
+    useIsFocused();
+    return null;
+  };
+
+  await expect(async () => await render(<Test />)).rejects.toThrow(
+    "Couldn't find a focus context. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+  );
+});
+
+test.each([
+  {
+    routeKey: undefined,
+    parentIsFocused: undefined,
+    focusedRouteKey: 'route',
+    expected: true,
+  },
+  {
+    routeKey: undefined,
+    parentIsFocused: false,
+    focusedRouteKey: 'route',
+    expected: false,
+  },
+  {
+    routeKey: undefined,
+    parentIsFocused: true,
+    focusedRouteKey: 'route',
+    expected: true,
+  },
+  {
+    routeKey: 'route',
+    parentIsFocused: undefined,
+    focusedRouteKey: 'route',
+    expected: true,
+  },
+  {
+    routeKey: 'route',
+    parentIsFocused: true,
+    focusedRouteKey: 'other',
+    expected: false,
+  },
+  {
+    routeKey: 'route',
+    parentIsFocused: false,
+    focusedRouteKey: 'route',
+    expected: false,
+  },
+])(
+  'returns $expected for route $routeKey with parent focus $parentIsFocused and focused route $focusedRouteKey',
+  async ({ routeKey, parentIsFocused, focusedRouteKey, expected }) => {
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <IsFocusedContext.Provider value={parentIsFocused}>
+        <FocusedRouteKeyContext.Provider value={focusedRouteKey}>
+          {children}
+        </FocusedRouteKeyContext.Provider>
+      </IsFocusedContext.Provider>
+    );
+
+    const { result } = await renderHook(() => useIsRouteFocused(routeKey), {
+      wrapper,
+    });
+
+    expect(result.current).toBe(expected);
+  }
+);
+
+test('renders correct focus state', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -28,12 +121,12 @@ test('renders correct focus state', () => {
   const Test = () => {
     const isFocused = useIsFocused();
 
-    return <>{isFocused ? 'focused' : 'unfocused'}</>;
+    return <Text>{isFocused ? 'focused' : 'unfocused'}</Text>;
   };
 
   const navigation = React.createRef<any>();
 
-  const root = render(
+  const root = await render(
     <BaseNavigationContainer
       ref={navigation}
       initialState={{
@@ -48,22 +141,38 @@ test('renders correct focus state', () => {
     </BaseNavigationContainer>
   );
 
-  expect(root).toMatchInlineSnapshot(`"unfocused"`);
+  expect(root).toMatchInlineSnapshot(`
+    <Text>
+      unfocused
+    </Text>
+  `);
 
-  act(() => navigation.current.navigate('second'));
+  await act(() => navigation.current.navigate('second'));
 
-  expect(root).toMatchInlineSnapshot(`"focused"`);
+  expect(root).toMatchInlineSnapshot(`
+    <Text>
+      focused
+    </Text>
+  `);
 
-  act(() => navigation.current.navigate('third'));
+  await act(() => navigation.current.navigate('third'));
 
-  expect(root).toMatchInlineSnapshot(`"unfocused"`);
+  expect(root).toMatchInlineSnapshot(`
+    <Text>
+      unfocused
+    </Text>
+  `);
 
-  act(() => navigation.current.navigate('second'));
+  await act(() => navigation.current.navigate('second'));
 
-  expect(root).toMatchInlineSnapshot(`"focused"`);
+  expect(root).toMatchInlineSnapshot(`
+    <Text>
+      focused
+    </Text>
+  `);
 });
 
-test('returns correct focus state after conditional rendering', () => {
+test('returns correct focus state after conditional rendering', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
     const focusedRouteKey = state.routes[state.index]?.key;
@@ -82,7 +191,7 @@ test('returns correct focus state after conditional rendering', () => {
     // Ensure that there is no tearing
     expect(isFocused).toBe(true);
 
-    return `${route.name}, ${isFocused ? 'focused' : 'not-focused'}`;
+    return <Text>{`${route.name}, ${isFocused ? 'focused' : 'not-focused'}`}</Text>;
   };
 
   const navigation = createNavigationContainerRef<ParamListBase>();
@@ -107,11 +216,19 @@ test('returns correct focus state after conditional rendering', () => {
     );
   };
 
-  const element = render(<Test />);
+  const element = await render(<Test />);
 
-  expect(element).toMatchInlineSnapshot(`"foo, focused"`);
+  expect(element).toMatchInlineSnapshot(`
+    <Text>
+      foo, focused
+    </Text>
+  `);
 
-  act(() => update(true));
+  await act(() => update(true));
 
-  expect(element).toMatchInlineSnapshot(`"bar, focused"`);
+  expect(element).toMatchInlineSnapshot(`
+    <Text>
+      bar, focused
+    </Text>
+  `);
 });

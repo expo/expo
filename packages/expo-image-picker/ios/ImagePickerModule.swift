@@ -175,16 +175,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     picker.modalPresentationStyle = context.options.presentationStyle.toPresentationStyle()
 
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      let viewFrame = currentViewController.view.frame
-      picker.popoverPresentationController?.sourceRect = CGRect(
-        x: viewFrame.midX,
-        y: viewFrame.maxY,
-        width: 0,
-        height: 0
-      )
-      picker.popoverPresentationController?.sourceView = currentViewController.view
-    }
+    SceneGeometry.anchorPopover(of: picker, to: currentViewController.view)
 
     picker.setResultHandler(context.imagePickerHandler)
 

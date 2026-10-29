@@ -16,19 +16,21 @@
  * the default distributed set (e.g. `@expo/ui`). With explicit names it prunes just those.
  *
  * `--bundled` additionally removes each package's `prebuilds/` directory. Those are publish
- * staging output, written by `bundleIOSPrebuilds` so `npm pack` ships them to consumers who
+ * staging output, written by the package prepack lifecycle so `npm pack` ships them to consumers who
  * have no `.build/`. In a monorepo checkout they are leftovers, and because the CocoaPods
  * integration falls back to them whenever `.build/` is missing — without any staleness check
  * — a stale one silently links month-old binaries against current source.
  */
+
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPackagesDir, getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
 import logger from '../Logger';
+import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
 
 export type PruneOptions = {
@@ -50,7 +52,7 @@ export type PruneResult = {
 
 /** Root of the centralized prebuild cache: `packages/precompile/.build/`. */
 function getBuildCacheRoot(): string {
-  return path.join(getPrecompileDir(), '.build');
+  return getMonorepoBuildDir(getExpoRepositoryRootDir());
 }
 
 /**

@@ -1,19 +1,15 @@
-import {
-  getValidInitialRoute,
-  type DynamicConvention,
-  type MiddlewareNode,
-  type RouteNode,
-} from './Route';
+import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
-  matchGroupName,
   matchLastGroupName,
+  getPlatformFromFilePath,
   removeFileSystemDots,
   removeFileSystemExtensions,
   removeSupportedExtensions,
   stripInvisibleSegmentsFromPath,
 } from './matchers';
+import { getValidInitialRoute } from './routeNode';
 import type { RequireContext } from './types';
 import { shouldLinkExternally } from './utils/url';
 
@@ -30,8 +26,6 @@ export type Options = {
   skipStaticParams?: boolean;
   /* Skip the generated not found route  */
   notFound?: boolean;
-  /* Enable experimental server middleware support */
-  unstable_useServerMiddleware?: boolean;
   importMode?: string;
   platformRoutes?: boolean;
   sitemap?: boolean;
@@ -84,8 +78,6 @@ export type PageHeadersConfig = {
   headers: Record<string, string | string[]>;
 };
 
-const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
-
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -134,25 +126,6 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
  */
 function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
   const allMiddlewareFiles = contextModule.keys().filter((key) => key.includes('+middleware'));
-
-  // Check if middleware is enabled via plugin config
-  if (!options.unstable_useServerMiddleware) {
-    if (allMiddlewareFiles.length > 0) {
-      console.warn(
-        'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.\n\n' +
-          JSON.stringify(
-            {
-              expo: {
-                plugins: [['expo-router', { unstable_useServerMiddleware: true }]],
-              },
-            },
-            null,
-            2
-          )
-      );
-    }
-    return null;
-  }
 
   const isValidMiddleware = (key: string) => /^\.\/\+middleware\.[tj]sx?$/.test(key);
 
@@ -527,7 +500,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             );
           }
         } else {
-          node = getLayoutNode(node, options);
+          node = getLayoutNode(node);
           directory.layout[meta.specificity] = node;
         }
       } else if (meta.isApi) {
@@ -729,14 +702,17 @@ function getFileMeta(
   rewrites: Record<string, RewriteConfig>
 ) {
   // Remove the leading `./`
+  // NOTE(@hassankhan): Why not use `getNameFromFilePath()` here?
   const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
   let route = key;
 
   const parts = removeFileSystemDots(originalKey).split('/');
   const filename = parts[parts.length - 1]!;
-  const filenameParts = removeSupportedExtensions(filename).split('.');
-  const filenameWithoutExtensions = filenameParts[0]!;
-  const platformExtension = filenameParts[1];
+  const filenameWithoutFileExtension = removeSupportedExtensions(filename);
+  const platformExtension = getPlatformFromFilePath(filename);
+  const filenameWithoutExtensions = platformExtension
+    ? filenameWithoutFileExtension.slice(0, -(platformExtension.length + 1))
+    : filenameWithoutFileExtension;
 
   const isLayout = filenameWithoutExtensions === '_layout';
   const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
@@ -754,7 +730,7 @@ function getFileMeta(
   }
   let specificity = 0;
 
-  const hasPlatformExtension = validPlatforms.has(platformExtension!);
+  const hasPlatformExtension = platformExtension != null;
   const usePlatformRoutes = options.platformRoutes ?? true;
 
   if (hasPlatformExtension) {
@@ -783,7 +759,7 @@ function getFileMeta(
       );
     }
 
-    route = route.replace(new RegExp(`.${platformExtension}$`), '');
+    route = route.slice(0, -(platformExtension.length + 1));
   }
 
   return {
@@ -867,46 +843,13 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
   }
 }
 
-function getLayoutNode(node: RouteNode, options: Options) {
-  /**
-   * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-   * Each of these layouts will have a different anchor based upon the first group name.
-   */
-  // We may strip loadRoute during testing
-  const groupName = matchLastGroupName(node.route);
-  const childMatchingGroup = node.children.find((child) => {
-    return child.route.replace(/\/index$/, '') === groupName;
-  });
-  let anchor = childMatchingGroup?.route;
-  const loaded = node.loadRoute();
-  if (loaded?.unstable_settings) {
-    try {
-      // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-      anchor =
-        loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
-    } catch (error: any) {
-      if (error instanceof Error) {
-        if (!error.message.match(/You cannot dot into a client module/)) {
-          throw error;
-        }
-      }
-    }
-
-    if (groupName) {
-      // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
-      const groupSpecificInitialRouteName =
-        loaded.unstable_settings?.[groupName]?.anchor ??
-        loaded.unstable_settings?.[groupName]?.initialRouteName;
-
-      anchor = groupSpecificInitialRouteName ?? anchor;
-    }
-  }
-
+function getLayoutNode(node: RouteNode) {
   return {
     ...node,
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
-    initialRouteName: anchor,
+    // `(a,b)/(c)/_layout` generates `(a)/(c)/_layout` and `(b)/(c)/_layout`, each with its own group.
+    groupName: matchLastGroupName(node.route),
   };
 }
 
@@ -927,51 +870,13 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
     // Every node below this layout will have it as an entryPoint
     entryPoints = [...entryPoints, node.contextKey];
 
-    /**
-     * Calculate the initialRouteNode
-     *
-     * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
-     * Each of these layouts will have a different anchor based upon the first group.
-     */
-    const groupName = matchGroupName(node.route);
-    const childMatchingGroup = node.children.find((child) => {
-      return child.route.replace(/\/index$/, '') === groupName;
-    });
-    let anchor = childMatchingGroup?.route;
-    let anchorGroupName: string | undefined;
+    // Navigators can add anchor routes into the history, so they need to be included in the entryPoints.
+    // An anchor can be a layout with its own anchor.
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
-      const loaded = node.loadRoute();
-      if (loaded?.unstable_settings) {
-        try {
-          // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-          anchor =
-            loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
-        } catch (error: any) {
-          if (error instanceof Error) {
-            if (!error.message.match(/You cannot dot into a client module/)) {
-              throw error;
-            }
-          }
-        }
-
-        if (groupName) {
-          // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
-          const groupSpecificInitialRouteName =
-            loaded.unstable_settings?.[groupName]?.anchor ??
-            loaded.unstable_settings?.[groupName]?.initialRouteName;
-
-          anchor = groupSpecificInitialRouteName ?? anchor;
-          anchorGroupName = groupSpecificInitialRouteName ? groupName : undefined;
-        }
+      for (let anchor = getValidInitialRoute(node); anchor; anchor = getValidInitialRoute(anchor)) {
+        entryPoints.push(anchor.contextKey);
       }
-    }
-
-    if (anchor) {
-      // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
-      const anchorRoute = getValidInitialRoute(node, anchor, anchorGroupName)!;
-      node.initialRouteName = anchorRoute.route;
-      entryPoints.push(anchorRoute.contextKey);
     }
 
     for (const child of node.children) {

@@ -20,7 +20,7 @@ export function StateOfRNBanner() {
   return (
     <div
       className={mergeClasses(
-        'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
+        'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-3xl px-6 py-4',
         'border-[#001a72] border-2 bg-[#b1dfd0]',
         'dark:border-[#b1dfd0] dark:bg-[#001a72]',
         'max-md:flex-wrap'

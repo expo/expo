@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.facebook.react.common.assets.ReactFontManager
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -32,24 +33,57 @@ open class FontLoaderModule : Module() {
       return@Function getLoadedFonts()
     }
 
-    AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-      // TODO(nikki): make sure path is in experience's scope
-      val source = FontSource.resolve(localUri, fontFamilyName, context)
-
-      val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        buildVariableWeightTypeface(fontFamilyName, source)
-      } else {
-        // This needs `android.graphics.fonts`, which API 29 added. Before API 29, every weight
-        // comes from the one weight that Android loads, and Android synthesizes bold from it.
-        null
-      }
-      val typeface = instanced ?: source.load()
-
+    fun registerTypeface(fontFamilyName: String, typeface: Typeface) {
       ReactFontManager.getInstance().addCustomFont(fontFamilyName, typeface)
       loadedFonts = getLoadedFonts().toMutableSet().apply { add(fontFamilyName) }.toList()
     }
+
+    AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
+      registerTypeface(fontFamilyName, loadSingleFaceTypeface(fontFamilyName, localUri))
+    }
+
+    AsyncFunction("loadFontFamilyAsync") { fontFamilyName: String, faces: List<FontFaceRecord> ->
+      if (faces.isEmpty()) {
+        throw CodedException(
+          "Could not load font family '$fontFamilyName' because 'faces' is empty. Pass at " +
+            "least one face with a 'localUri' pointing to a font file."
+        )
+      }
+      FontFamilyFaces.assertWeightsInRange(fontFamilyName, faces)
+
+      registerTypeface(fontFamilyName, familyTypeface(fontFamilyName, faces))
+    }
+  }
+
+  // Below API 29, `android.graphics.fonts.FontFamily` doesn't exist, so only the default face
+  // loads and Android synthesizes bold/italic from it.
+  private fun familyTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
+    val face = faces.first()
+    if (faces.size == 1 && face.weight == null && face.style == null) {
+      return loadSingleFaceTypeface(fontFamilyName, face.localUri)
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      val defaultFace = faces[FontFamilyFaces.defaultFaceIndex(faces)]
+      return loadSingleFaceTypeface(fontFamilyName, defaultFace.localUri)
+    }
+    return buildMultiFaceTypeface(fontFamilyName, faces)
+  }
+
+  private fun loadSingleFaceTypeface(fontFamilyName: String, localUri: String): Typeface {
+    val source = FontSource.resolve(localUri, fontFamilyName, context)
+
+    val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      buildVariableWeightTypeface(fontFamilyName, source)
+    } else {
+      null
+    }
+    return instanced ?: source.load()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private fun buildMultiFaceTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
+    val sources = faces.map { FontSource.resolve(it.localUri, fontFamilyName, context) }
+    return MultiFaceTypeface.build(fontFamilyName, faces, sources)
   }
 
   /**

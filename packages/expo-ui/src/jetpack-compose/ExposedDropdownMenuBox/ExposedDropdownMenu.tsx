@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -48,7 +49,8 @@ export function ExposedDropdownMenu(props: ExposedDropdownMenuProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {children}
+      {/* The menu is a popup in its own window. The anchor stays in `ExposedDropdownMenuBox`. */}
+      <PresentedContent>{children}</PresentedContent>
     </NativeView>
   );
 }

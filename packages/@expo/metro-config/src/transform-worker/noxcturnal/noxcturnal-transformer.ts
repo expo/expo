@@ -12,6 +12,7 @@ import type {
   TransformResult,
 } from 'noxcturnal';
 
+import type { CacheVaryDim } from '../../cache-vary/ambient';
 import type { Dependency } from '../collect-dependencies';
 import { mayContainReactNativeCodegen } from './codegen';
 import { getHermesV0PreflightConfig } from './configs/hermes-v0';
@@ -19,6 +20,7 @@ import { getHermesV1PreflightConfig } from './configs/hermes-v1';
 import type { ProfilePreflightFacts } from './configs/types';
 import { getWebPreflightConfig } from './configs/web';
 import { getWebViewPreflightConfig } from './configs/webview';
+import { createCacheVaryMetadataPlugin } from './plugins/cache-vary';
 import { createCjsDetectionPlugin } from './plugins/cjs-detection';
 import { createClientServerDirectiveBoundaryPlugin } from './plugins/client-server-directive-boundary';
 import { createClientServerReferenceProxyPlugin } from './plugins/client-server-reference-proxy';
@@ -32,9 +34,6 @@ import { createExpoInlineManifestPlugin } from './plugins/expo-inline-manifest';
 import { createExpoRouterServerExportsPlugin } from './plugins/expo-router-server-exports';
 import { createExpoUiPlugin } from './plugins/expo-ui';
 import { createExpoWidgetsPlugin, hasExpoWidgets } from './plugins/expo-widgets';
-import { createFixHermesV1AsyncArrowNonSimpleParamsPlugin } from './plugins/fix-hermes-v1-async-arrow-non-simple-params';
-import { createFixHermesV1ClassInFinallyPlugin } from './plugins/fix-hermes-v1-class-in-finally';
-import { createFixHermesV1SuperInObjectAccessorPlugin } from './plugins/fix-hermes-v1-super-in-object-accessor';
 import { createImportMetaPlugin } from './plugins/import-meta';
 import { createInlineRequiresPlugin } from './plugins/inline-requires';
 import { createMetroDependencyPlugin } from './plugins/metro-dependency';
@@ -53,6 +52,11 @@ import { createReactServerDirectiveBoundaryPlugin } from './plugins/react-server
 import { createReactServerModuleActionsPlugin } from './plugins/react-server-module-actions';
 
 export type Noxcturnal = typeof import('noxcturnal');
+
+// Published Noxcturnal types predate the projectRoot diagnostic option.
+type NoxcturnalTransformOptions = NonNullable<Parameters<Noxcturnal['transform']>[3]> & {
+  projectRoot: string;
+};
 
 export interface MetroDependencyShared {
   state?: MetroDependencyState;
@@ -77,6 +81,7 @@ export interface ExpoTransformPluginData {
   input: NoxcturnalTransformInput;
   sourceFacts: NoxcturnalSourceFacts;
   serverBoundary: ServerBoundaryShared;
+  cacheVary: CacheVaryDim[];
 }
 
 export function sortedUniqueCaptureNames(captures: readonly NodeView[]): string[] {
@@ -116,6 +121,7 @@ function createExpoTransformPluginData(
   return {
     input,
     sourceFacts,
+    cacheVary: [],
     serverBoundary: {
       clientProxy: false,
       moduleServerActions: false,
@@ -131,7 +137,8 @@ export function metroPluginData(context: { pluginData: unknown }): MetroTransfor
 
 function createMetroTransformPluginData(
   input: NoxcturnalMetroTransformInput,
-  sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source)
+  sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source),
+  collectOnly = false
 ): MetroTransformPluginData {
   const hermesBytecode =
     getBaseProfile(input) === 'hermes-v1' && input.options.customTransformOptions?.bytecode === '1';
@@ -139,7 +146,7 @@ function createMetroTransformPluginData(
     ...createExpoTransformPluginData(input, sourceFacts),
     input,
     shared: {},
-    collectOnly: String(input.options.customTransformOptions?.optimize) === 'true',
+    collectOnly,
     normalizePseudoGlobals:
       input.options.minify &&
       !hermesBytecode &&
@@ -225,6 +232,13 @@ export interface NoxcturnalTransformInput {
   source: string;
   projectRoot: string;
   options: JsTransformOptions;
+  /** Exact semver exposed to Babel as its caller's `babelRuntimeVersion`. */
+  enableBabelRuntime?: boolean | string;
+  /** Optional precomputed source classification. */
+  sourceFacts?: NoxcturnalSourceFacts;
+}
+
+export interface NoxcturnalBabelConfig {
   /** False when Metro is invoking a custom Babel transformer. */
   isDefaultExpoTransformer: boolean;
   /**
@@ -232,10 +246,6 @@ export interface NoxcturnalTransformInput {
    * preset recipe. Config filenames and source text are deliberately irrelevant.
    */
   hasNonDefaultBabelConfig?: boolean;
-  /** Exact semver exposed to Babel as its caller's `babelRuntimeVersion`. */
-  enableBabelRuntime?: boolean | string;
-  /** Optional precomputed source classification. */
-  sourceFacts?: NoxcturnalSourceFacts;
 }
 
 export interface NoxcturnalSourceFacts {
@@ -251,13 +261,7 @@ export interface NoxcturnalSourceFacts {
   hasPlatform: boolean;
   hasSelect: boolean;
   hasClass: boolean;
-  hasFinally: boolean;
-  hasSuper: boolean;
   hasAsync: boolean;
-  hasArrow: boolean;
-  hasAsyncArrowNonSimpleParamsCandidate: boolean;
-  hasClassInFinallyCandidate: boolean;
-  hasSuperInObjectAccessorCandidate: boolean;
   hasLetOrConst: boolean;
   hasStaticBlock: boolean;
   hasAsyncGenerator: boolean;
@@ -267,11 +271,10 @@ export interface NoxcturnalSourceFacts {
   hasSpread: boolean;
   hasSlash: boolean;
   hasJsxCandidate: boolean;
-  hasComments: boolean;
 }
 
 const SOURCE_SIGNAL =
-  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\bfinally\b|\bsuper\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
+  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
 
 export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFacts {
   const facts: NoxcturnalSourceFacts = {
@@ -289,17 +292,7 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     hasPlatform: false,
     hasSelect: false,
     hasClass: false,
-    hasFinally: false,
-    hasSuper: false,
     hasAsync: false,
-    hasArrow: source.includes('=>'),
-    hasAsyncArrowNonSimpleParamsCandidate: hasAsyncArrowNonSimpleParamsCandidate(source),
-    hasClassInFinallyCandidate: hasOrderedSignals(source, /\bfinally\b/g, /\bclass\b/g),
-    hasSuperInObjectAccessorCandidate: hasOrderedSignals(
-      source,
-      /\b(?:get|set)\b/g,
-      /\bsuper\s*(?:\.|\[)/g
-    ),
     hasLetOrConst: /\b(?:let|const)\b/.test(source),
     hasStaticBlock: false,
     hasAsyncGenerator: false,
@@ -309,7 +302,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     hasSpread: source.includes('...'),
     hasSlash: source.includes('/'),
     hasJsxCandidate: source.includes('<'),
-    hasComments: source.includes('/*') || source.includes('//'),
   };
   for (const match of source.matchAll(SOURCE_SIGNAL)) {
     const signal = match[0];
@@ -331,8 +323,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     else if (signal === 'EXPO_PUBLIC_') facts.hasPublicEnv = true;
     else if (signal === 'select') facts.hasSelect = true;
     else if (signal === 'class') facts.hasClass = true;
-    else if (signal === 'finally') facts.hasFinally = true;
-    else if (signal === 'super') facts.hasSuper = true;
     else if (signal.startsWith('async')) {
       facts.hasAsync = true;
       if (signal.includes('*')) facts.hasAsyncGenerator = true;
@@ -340,50 +330,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     else if (signal.startsWith('#')) facts.hasPrivateSyntax = true;
   }
   return facts;
-}
-
-/**
- * Whether a left-hand signal occurs before a right-hand signal.
- *
- * Expressing this as `left[\s\S]*right` makes V8 retry the greedy middle from
- * every left-hand match when the right-hand signal is absent or near EOF. Large
- * generated bundles contain thousands of words such as `get`, so that shape is
- * quadratic. Two forward searches preserve the deliberately broad prerequisite
- * while making its worst case linear.
- */
-function hasOrderedSignals(source: string, left: RegExp, right: RegExp): boolean {
-  const leftMatch = left.exec(source);
-  if (leftMatch == null) return false;
-  right.lastIndex = leftMatch.index + leftMatch[0].length;
-  return right.test(source);
-}
-
-function hasAsyncArrowNonSimpleParamsCandidate(source: string): boolean {
-  let arrow = source.indexOf('=>');
-  let asyncSearchFrom = 0;
-  let asyncStart = -1;
-  while (arrow !== -1) {
-    for (let next = source.indexOf('async', asyncSearchFrom); next !== -1 && next < arrow; ) {
-      asyncStart = next;
-      asyncSearchFrom = next + 5;
-      next = source.indexOf('async', asyncSearchFrom);
-    }
-    if (
-      asyncStart !== -1 &&
-      !/[$\w]/.test(source[asyncStart - 1] ?? '') &&
-      !/[$\w]/.test(source[asyncStart + 5] ?? '')
-    ) {
-      const parameters = source.slice(asyncStart + 5, arrow).trim();
-      if (
-        !/^[$A-Z_a-z][$\w]*$/.test(parameters) &&
-        !/^\(\s*(?:[$A-Z_a-z][$\w]*\s*(?:,\s*[$A-Z_a-z][$\w]*\s*)*)?\)$/.test(parameters)
-      ) {
-        return true;
-      }
-    }
-    arrow = source.indexOf('=>', arrow + 2);
-  }
-  return false;
 }
 
 export interface NoxcturnalMetroTransformInput extends NoxcturnalTransformInput {
@@ -398,7 +344,6 @@ export interface NoxcturnalMetroTransformInput extends NoxcturnalTransformInput 
     minifierConfig?: { output?: { comments?: boolean } };
     unstable_disableModuleWrapping?: boolean;
     unstable_allowRequireContext?: boolean;
-    unstable_renameRequire?: boolean;
   };
 }
 
@@ -466,6 +411,12 @@ export function usesPublicEnvPlugin(input: NoxcturnalTransformInput): boolean {
   return !isNodeModule(input.filename) && environment !== 'node' && environment !== 'react-server';
 }
 
+export function resolveInputFilename(
+  input: Pick<NoxcturnalTransformInput, 'projectRoot' | 'filename'>
+): string {
+  return path.resolve(input.projectRoot, input.filename);
+}
+
 export function isPathInsideRoot(
   root: string,
   candidate: string,
@@ -486,7 +437,7 @@ function isInExpoRouterAppDirectory(input: NoxcturnalTransformInput): boolean {
   const absoluteRouterRoot = path.isAbsolute(routerRoot)
     ? routerRoot
     : path.join(input.projectRoot, routerRoot);
-  return isPathInsideRoot(absoluteRouterRoot, input.filename);
+  return isPathInsideRoot(absoluteRouterRoot, resolveInputFilename(input));
 }
 
 function isSupportedJavaScriptSource(filename: string): boolean {
@@ -498,7 +449,7 @@ function isSupportedJavaScriptSource(filename: string): boolean {
 }
 
 function getEarlyFallbackReason(
-  input: NoxcturnalTransformInput,
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig,
   allowProductionAppSource = false,
   sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source)
 ): string | null {
@@ -523,7 +474,11 @@ function getEarlyFallbackReason(
       !(
         directive === 'dom' ||
         directive === 'server' ||
-        (directive === 'client' && options.customTransformOptions?.environment === 'react-server')
+        (directive === 'client' &&
+          (options.customTransformOptions?.environment === 'react-server' ||
+            ((options.customTransformOptions?.environment == null ||
+              options.customTransformOptions?.environment === 'node') &&
+              !sourceFacts.hasActionableClientDirective)))
       )
     ) {
       return 'expo-directive';
@@ -539,6 +494,8 @@ function getEarlyFallbackReason(
     !(
       (directive === 'client' &&
         (options.customTransformOptions?.environment == null ||
+          (options.customTransformOptions?.environment === 'node' &&
+            !sourceFacts.hasActionableClientDirective) ||
           options.customTransformOptions?.environment === 'react-server')) ||
       directive === 'dom' ||
       directive === 'server'
@@ -678,8 +635,6 @@ function createProfilePreflight(
   const hasAsyncCandidate = sourceFacts.hasAsync;
   const hasRegexpLiteralCandidate = sourceFacts.hasSlash;
   const hasDecoratorCandidate = /@\w/.test(input.source);
-  const nonHermes = options.customTransformOptions?.engine !== 'hermes';
-  const hasObjectRestSpread = nonHermes && hasSpreadCandidate;
   const profileTransforms = getProfilePreflightConfig(input, {
     hasAsync: hasAsyncCandidate,
     hasAsyncGenerator,
@@ -688,15 +643,12 @@ function createProfilePreflight(
     hasForOf: hasForOfCandidate,
     hasPrivateSyntax: sourceFacts.hasPrivateSyntax,
     hasRegexpLiteral: hasRegexpLiteralCandidate,
+    hasSpread: hasSpreadCandidate,
     hasStaticBlock,
   });
   const hasProfileWork = Object.values(profileTransforms).some(Boolean);
   const hasOtherLanguageWork =
-    isTypeScript ||
-    enableReactRefresh ||
-    hasProfileWork ||
-    hasDecoratorCandidate ||
-    hasObjectRestSpread;
+    isTypeScript || enableReactRefresh || hasProfileWork || hasDecoratorCandidate;
   // Avoid a parse/codegen boundary for the overwhelmingly common file that has
   // none of this recipe's language work. Flow without JSX is already rendered by
   // its focused native erasure and does not need a second print.
@@ -706,7 +658,6 @@ function createProfilePreflight(
     !mayContainJsx &&
     !hasProfileWork &&
     !hasDecoratorCandidate &&
-    !hasObjectRestSpread &&
     !enableReactRefresh
   ) {
     return null;
@@ -715,12 +666,6 @@ function createProfilePreflight(
     transforms: {
       ...profileTransforms,
       legacyDecorators: hasDecoratorCandidate,
-      objectRestSpread: hasObjectRestSpread
-        ? {
-            loose: true,
-            useBuiltIns: true,
-          }
-        : undefined,
     },
     // Expo owns this recipe. These choices mirror its Hermes-v1 and React configs
     // without exposing either config name through Noxcturnal's capability API.
@@ -763,9 +708,7 @@ function createReactCompilerPreflight(input: NoxcturnalTransformInput): Prefligh
   return {
     reactCompiler: {
       compilationMode: 'infer',
-      // babel-plugin-react-compiler defaults to critical errors in development;
-      // Babel preset Expo explicitly selects NONE in production.
-      panicThreshold: input.options.dev ? 'critical_errors' : 'none',
+      panicThreshold: 'none',
       target: '19',
       enableResetCacheOnSourceFileChanges: input.options.dev,
       // Noxcturnal adds the compiler's `use no memo` and `use no forget`
@@ -866,15 +809,6 @@ function createPipeline(
     }
     addPlugin('cjs-detection', () => createCjsDetectionPlugin(nox));
   }
-  if (isHermesV1 && sourceFacts.hasAsyncArrowNonSimpleParamsCandidate) {
-    addPlugin('async-arrow', () => createFixHermesV1AsyncArrowNonSimpleParamsPlugin(nox));
-  }
-  if (isHermesV1 && sourceFacts.hasClassInFinallyCandidate) {
-    addPlugin('class-finally', () => createFixHermesV1ClassInFinallyPlugin(nox));
-  }
-  if (isHermesV1 && sourceFacts.hasSuperInObjectAccessorCandidate) {
-    addPlugin('super-accessor', () => createFixHermesV1SuperInObjectAccessorPlugin(nox));
-  }
   if (baseProfile === 'hermes-v0' || baseProfile === 'webview') {
     addPlugin('display-name', () => createReactDisplayNamePlugin(nox));
   }
@@ -883,6 +817,9 @@ function createPipeline(
   }
   if (sourceFacts.hasProcess) {
     addPlugin('process-env', () => createProcessEnvPlugin(nox));
+  }
+  if (sourceFacts.hasDefineCandidate || sourceFacts.hasProcess) {
+    addPlugin('cache-vary-metadata', () => createCacheVaryMetadataPlugin(nox));
   }
   if (!options.dev && sourceFacts.hasPlatform && sourceFacts.hasSelect) {
     addPlugin(`platform-select:${options.platform ?? ''}`, () =>
@@ -1115,40 +1052,46 @@ function createFullMetroPipeline(
   input: NoxcturnalMetroTransformInput,
   pluginData: MetroTransformPluginData
 ): NativePipeline {
-  const preserveSourceComments =
-    pluginData.sourceFacts.hasComments &&
-    (!input.options.minify || input.config.minifierConfig?.output?.comments === true);
   const sourcePhases = [...createPipeline(nox, input, pluginData, false).phases];
-  if (!input.options.dev && !preserveSourceComments) {
+  if (!input.options.dev) {
     sourcePhases.push({
       name: 'metro-optimization',
       native: {
         optimize: {
           constantFolding: true,
           deadCodeElimination: true,
+          moduleContext: true,
         },
         comments: true,
       },
     });
   }
-  const compactPhases = input.config.unstable_compactOutput
-    ? [
-        {
-          name: 'metro-compact-output',
-          native: { compact: true },
-        } satisfies NativePipeline['phases'][number],
-      ]
-    : [];
+  return createMetroOutputPipeline(nox, input, [
+    ...sourcePhases,
+    ...(input.options.type === 'module' &&
+    input.options.experimentalImportSupport === true &&
+    !pluginData.collectOnly
+      ? [getMetroEsmGlobalsPhase(nox)]
+      : []),
+    input.options.type === 'script' ? getMetroScriptPhase(nox) : getMetroModulePhase(nox, input),
+  ]);
+}
+
+function createMetroOutputPipeline(
+  nox: Noxcturnal,
+  input: NoxcturnalMetroTransformInput,
+  phases: NativePipeline['phases']
+): NativePipeline {
   return nox.defineNativePipeline({
     phases: [
-      ...sourcePhases,
-      ...(input.options.type === 'module' &&
-      input.options.experimentalImportSupport === true &&
-      String(input.options.customTransformOptions?.optimize) !== 'true'
-        ? [getMetroEsmGlobalsPhase(nox)]
+      ...phases,
+      // `comments: false` strips. The default keeps them.
+      ...(input.options.minify
+        ? [{ name: 'metro-strip-comments', native: { comments: false } }]
         : []),
-      input.options.type === 'script' ? getMetroScriptPhase(nox) : getMetroModulePhase(nox, input),
-      ...compactPhases,
+      ...(input.config.unstable_compactOutput
+        ? [{ name: 'metro-compact-output', native: { compact: true } }]
+        : []),
     ],
   });
 }
@@ -1159,7 +1102,7 @@ function createFullMetroPipeline(
  * wrapper. A fallback never exposes partially edited source.
  */
 export function transformFileFullyWithNoxcturnalSync(
-  input: NoxcturnalMetroTransformInput
+  input: NoxcturnalMetroTransformInput & NoxcturnalBabelConfig
 ): NoxcturnalMetroTransformAttempt {
   const sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source);
   const earlyReason = getEarlyFallbackReason(input, true, sourceFacts);
@@ -1171,17 +1114,61 @@ export function transformFileFullyWithNoxcturnalSync(
     return { status: 'fallback', reason: 'script-hashbang' };
   }
   const nox = loadNoxcturnal();
-  const pluginData = createMetroTransformPluginData(input, sourceFacts);
+  const pluginData = createMetroTransformPluginData(
+    input,
+    sourceFacts,
+    String(input.options.customTransformOptions?.optimize) === 'true'
+  );
   const pipeline = createFullMetroPipeline(nox, input, pluginData);
-  const result = nox.transform(input.source, input.filename, pipeline, {
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
     parser: parserMode(input, sourceFacts),
     sourceMapMode: 'boundary',
     functionMap: true,
     pluginData,
-  });
+  };
+  const result = nox.transform(input.source, input.filename, pipeline, transformOptions);
   if (result.status !== 'complete') {
     return { status: 'fallback', reason: fallbackReason(result.reason) };
   }
+  return completeMetroTransform(nox, result);
+}
+
+export function transformAssetWithNoxcturnalSync(
+  input: NoxcturnalMetroTransformInput
+): Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }> {
+  const nox = loadNoxcturnal();
+  const pipeline = createMetroOutputPipeline(nox, input, [getMetroModulePhase(nox, input)]);
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
+    parser: 'jsx',
+    sourceMapMode: 'boundary',
+    functionMap: false,
+    pluginData: createMetroTransformPluginData(input),
+  };
+  const result = nox.transform(input.source, input.filename, pipeline, transformOptions);
+  if (result.status !== 'complete') {
+    throw new Error(
+      `Noxcturnal could not transform asset ${input.filename} because its generated module is unsupported (${result.reason}). Disable unstable_noxcturnalTransformWorker and report this error to Expo.`
+    );
+  }
+
+  // Generated JavaScript has no source locations in the original binary asset.
+  result.map = { ...result.map, mappings: '', names: [] };
+  const complete = completeMetroTransform(nox, result);
+  return {
+    ...complete,
+    dependencies: complete.dependencies.map((dependency) => ({
+      ...dependency,
+      data: { ...dependency.data, locs: [] },
+    })),
+  };
+}
+
+function completeMetroTransform(
+  nox: Noxcturnal,
+  result: NativeTransformResult
+): Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }> {
   const dependencies = result.metadata.dependencies;
   const dependencyMapName = result.metadata.dependencyMapName;
   if (!Array.isArray(dependencies) || typeof dependencyMapName !== 'string') {
@@ -1207,7 +1194,7 @@ export function transformFileFullyWithNoxcturnalSync(
 }
 
 export async function transformFileFullyWithNoxcturnal(
-  input: NoxcturnalMetroTransformInput
+  input: NoxcturnalMetroTransformInput & NoxcturnalBabelConfig
 ): Promise<NoxcturnalMetroTransformAttempt> {
   return transformFileFullyWithNoxcturnalSync(input);
 }
@@ -1217,7 +1204,7 @@ export async function transformFileFullyWithNoxcturnal(
  * The production worker only uses the complete Metro pipeline above.
  */
 export function transformNodeModuleWithNoxcturnalSync(
-  input: NoxcturnalTransformInput
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig
 ): NoxcturnalTransformAttempt {
   const sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source);
   const earlyReason = getEarlyFallbackReason(input, true, sourceFacts);
@@ -1225,16 +1212,18 @@ export function transformNodeModuleWithNoxcturnalSync(
 
   const nox = loadNoxcturnal();
   const pluginData = createExpoTransformPluginData(input, sourceFacts);
+  const transformOptions: NoxcturnalTransformOptions = {
+    projectRoot: input.projectRoot,
+    parser: parserMode(input, sourceFacts),
+    sourceMapMode: 'boundary',
+    functionMap: true,
+    pluginData,
+  };
   const result: TransformResult = nox.transform(
     input.source,
     input.filename,
     createPipeline(nox, input, pluginData),
-    {
-      parser: parserMode(input, sourceFacts),
-      sourceMapMode: 'boundary',
-      functionMap: true,
-      pluginData,
-    }
+    transformOptions
   );
   return result.status === 'complete'
     ? { status: 'complete', result }
@@ -1242,7 +1231,7 @@ export function transformNodeModuleWithNoxcturnalSync(
 }
 
 export async function transformNodeModuleWithNoxcturnal(
-  input: NoxcturnalTransformInput
+  input: NoxcturnalTransformInput & NoxcturnalBabelConfig
 ): Promise<NoxcturnalTransformAttempt> {
   return transformNodeModuleWithNoxcturnalSync(input);
 }

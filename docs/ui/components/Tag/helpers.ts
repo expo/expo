@@ -1,7 +1,7 @@
 import { capitalize } from '~/common/utilities';
 import { PlatformName } from '~/types/common';
 
-const CLIENT_PLATFORM_TAGS = new Set(['expo-go']);
+const CLIENT_PLATFORM_TAGS = new Set(['expo-go', 'expo-widgets']);
 
 export function getPlatformName(text: string): PlatformName {
   const lowerText = text.toLowerCase().trim();
@@ -26,6 +26,9 @@ export function getPlatformName(text: string): PlatformName {
   if (lowerText === 'expo-go') {
     return 'expo';
   }
+  if (lowerText === 'expo-widgets') {
+    return 'expo-widgets';
+  }
   return '';
 }
 
@@ -45,6 +48,8 @@ export function getTagClasses(type: string) {
       return 'bg-palette-pink3 text-palette-pink12 border-palette-pink4';
     case 'expo':
       return 'bg-palette-purple3 text-palette-purple12 border-palette-purple4';
+    case 'expo-widgets':
+      return 'bg-palette-gray3 text-palette-gray12 border-palette-gray4 dark:bg-palette-gray4 dark:border-palette-gray4';
     case 'deprecated':
       return 'bg-palette-yellow2 text-palette-yellow12 border-palette-yellow4';
     case 'experimental':
@@ -61,6 +66,8 @@ export const formatName = (name: PlatformName) => {
   const cleanName = name.toLowerCase().replace('\n', '').trim();
   if (cleanName.includes('expo-go')) {
     return 'Expo Go';
+  } else if (cleanName.includes('expo-widgets')) {
+    return 'Widgets';
   } else if (cleanName.includes('ios')) {
     return cleanName.replace('ios', 'iOS');
   } else if (cleanName.includes('macos')) {

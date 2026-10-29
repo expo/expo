@@ -46,7 +46,12 @@ class CrashReportProcessor(
   private val exitInfoProvider: ExitInfoProvider,
   private val lastProcessedExitStore: LastProcessedExitStore,
   private val appVersion: String?,
-  private val storeReport: suspend (sessionId: String?, origin: CrashOrigin, report: CrashReport) -> Unit
+  private val storeReport: suspend (
+    sessionId: String?,
+    origin: CrashOrigin,
+    report: CrashReport,
+    logDetails: CrashLogDetails
+  ) -> Unit
 ) {
   suspend fun process() {
     crashFileReader.deleteOrphanedTempFiles()
@@ -95,7 +100,8 @@ class CrashReportProcessor(
       storeReport(
         file.sessionId,
         CrashOrigin.JVM_FILE,
-        file.toCrashReport(ingestedAt, resolvedAppVersion)
+        file.toCrashReport(ingestedAt, resolvedAppVersion),
+        CrashLogDetails(exceptionType = file.exceptionClass, stackFrames = file.stackFrames)
       )
       crashFileReader.delete(file)
     }
@@ -111,7 +117,8 @@ class CrashReportProcessor(
       storeReport(
         null,
         CrashOrigin.EXIT_RECORD,
-        record.toCrashReport(ingestedAt, resolvedAppVersion)
+        record.toCrashReport(ingestedAt, resolvedAppVersion),
+        CrashLogDetails()
       )
     }
   }

@@ -1,0 +1,662 @@
+import { Column as UniversalColumn, Row as UniversalRow } from '@expo/ui';
+import PagerView from '@expo/ui/community/pager-view';
+import { Box, Column, Host, ModalBottomSheet, RNHostView, Row } from '@expo/ui/jetpack-compose';
+import {
+  height,
+  IntrinsicSize,
+  onSizeChanged,
+  padding,
+  paddingAll,
+  size,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
+import React from 'react';
+import { ScrollView, View } from 'react-native';
+
+// React Native types `View` as a function component, so the instance type is its ref type.
+type ViewRef = React.ComponentRef<typeof View>;
+type ScrollViewRef = React.ComponentRef<typeof ScrollView>;
+
+// Tests actual placement of UI matches return returned by RN's measure API.
+// UI is placed by Compose and not Yoga, so these tests test that correct placement is reported to RN so Pressability can work correctly.
+export const name = 'ExpoUIMeasurement';
+const PADDING = 24;
+const BOX = 40;
+const OFFSET_START = 64;
+const OFFSET_TOP = 48;
+const WIDE = 200;
+const SHORT = 30;
+const SPACER = 80;
+const SCROLL_LEAD = 80;
+const SCROLL_TAIL = 2000;
+const SCROLL_BY = 60;
+const PAGER_HEIGHT = 300;
+const ROW_WIDTH = 300;
+const GAP = 20;
+const NEARLY_FULL = 290;
+const NARROW_CELL = 30;
+const WIDE_CELL = 80;
+const FIXED = 200;
+
+type Size = { width: number; height: number };
+
+/** Keeps the latest size that Compose reports through `onSizeChanged`, in dp. */
+function sizeProbe() {
+  const probe: { size: Size | null; modifier: ReturnType<typeof onSizeChanged> } = {
+    size: null,
+    modifier: onSizeChanged((reported) => {
+      probe.size = reported;
+    }),
+  };
+  return probe;
+}
+
+/** Returns the sizes once every probe has reported and no size changed between two reads. */
+async function sizesWhenSettled<T extends Record<string, { size: Size | null }>>(
+  probes: T,
+  timeoutMs = 5000
+): Promise<Record<keyof T, Size>> {
+  const names = Object.keys(probes) as (keyof T)[];
+  const started = Date.now();
+  let previous: string | null = null;
+
+  while (Date.now() - started < timeoutMs) {
+    if (names.every((probeName) => probes[probeName].size != null)) {
+      const current = JSON.stringify(names.map((probeName) => probes[probeName].size));
+      if (current === previous) {
+        return Object.fromEntries(
+          names.map((probeName) => [probeName, probes[probeName].size])
+        ) as Record<keyof T, Size>;
+      }
+      previous = current;
+    }
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${names.join(', ')} to report a size`);
+}
+
+type Measurement = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Origin relative to the surface root — what `Pressability` builds its responder region from. */
+  pageX: number;
+  pageY: number;
+};
+
+function measureAsync(ref: React.RefObject<ViewRef | null>, label = 'view'): Promise<Measurement> {
+  return new Promise((resolve, reject) => {
+    const node = ref.current;
+    if (!node) {
+      reject(new Error(`Cannot measure ${label}: it is not mounted`));
+      return;
+    }
+    node.measure((x, y, width, height, pageX, pageY) =>
+      resolve({ x, y, width, height, pageX, pageY })
+    );
+  });
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Measures the given views together, returning once they all report the same positions twice in
+ * a row.
+ *
+ */
+async function measureWhenSettled<T extends Record<string, React.RefObject<ViewRef | null>>>(
+  refs: T,
+  timeoutMs = 5000
+): Promise<Record<keyof T, Measurement>> {
+  const started = Date.now();
+  const names = Object.keys(refs) as (keyof T)[];
+  let previous: Record<keyof T, Measurement> | null = null;
+
+  while (Date.now() - started < timeoutMs) {
+    const pass = {} as Record<keyof T, Measurement>;
+    let readEverything = true;
+
+    for (const measuredName of names) {
+      const ref = refs[measuredName];
+      // `measure` drops its callback entirely for a view that is not mounted yet, rather than
+      // reporting zeros, so an unguarded await here wedges the loop instead of retrying.
+      const measurement = ref.current
+        ? await Promise.race([
+            measureAsync(ref, String(measuredName)).catch(() => null),
+            delay(250).then(() => null),
+          ])
+        : null;
+      if (measurement == null || measurement.width === 0 || measurement.height === 0) {
+        readEverything = false;
+        break;
+      }
+      pass[measuredName] = measurement;
+    }
+
+    if (readEverything) {
+      const settled =
+        previous != null &&
+        names.every(
+          (measuredName) =>
+            previous![measuredName].pageX === pass[measuredName].pageX &&
+            previous![measuredName].pageY === pass[measuredName].pageY
+        );
+      if (settled) {
+        return pass;
+      }
+      previous = pass;
+    }
+
+    await delay(50);
+  }
+  throw new Error(`Timed out waiting for ${names.join(', ')} to settle`);
+}
+
+export async function test(
+  { it, describe, expect, afterEach }: any,
+  { setPortalChild, cleanupPortal }: any
+) {
+  afterEach(async () => {
+    await cleanupPortal();
+  });
+
+  describe(name, () => {
+    it('measures a hosted view where Compose placed it', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, hosted } = await measureWhenSettled({
+        host: hostWrapperRef,
+        hosted: hostedRef,
+      });
+
+      // `Column` is start-aligned, so the box sits exactly one padding in on both axes.
+      expect(hosted.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(hosted.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+      expect(hosted.width).toBeCloseTo(BOX, 0);
+      expect(hosted.height).toBeCloseTo(BOX, 0);
+    });
+
+    it('measures a hosted view offset by its own padding modifier', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+
+      // The padding sits on the `RNHostView` itself, which is what the universal `RNHostView`
+      // makes of `style={{ padding }}`. Compose applies a modifier chain outside-in, so the
+      // content origin has to be read inside this padding, not outside it.
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <RNHostView matchContents modifiers={[paddingAll(PADDING)]}>
+              <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+            </RNHostView>
+          </Host>
+        </View>
+      );
+
+      const { host, hosted } = await measureWhenSettled({
+        host: hostWrapperRef,
+        hosted: hostedRef,
+      });
+
+      expect(hosted.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(hosted.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+    });
+
+    it('measures a hosted view offset by a padded Compose column', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[padding(OFFSET_START, OFFSET_TOP, PADDING, PADDING)]}>
+              <RNHostView matchContents>
+                <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, hosted } = await measureWhenSettled({
+        host: hostWrapperRef,
+        hosted: hostedRef,
+      });
+
+      expect(hosted.pageX - host.pageX).toBeCloseTo(OFFSET_START, 0);
+      expect(hosted.pageY - host.pageY).toBeCloseTo(OFFSET_TOP, 0);
+    });
+
+    it('measures a hosted view stacked below another hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, first, second } = await measureWhenSettled({
+        host: hostWrapperRef,
+        first: firstRef,
+        second: secondRef,
+      });
+
+      expect(first.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(first.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+      // Both start-aligned, and the second sits exactly the first's height below it. Deriving the
+      // gap rather than the absolute position keeps the column's arrangement out of the expectation.
+      expect(second.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(second.pageY - first.pageY).toBeCloseTo(SHORT, 0);
+    });
+
+    it('measures hosted views in columns placed beside each other in a row', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Row modifiers={[paddingAll(PADDING)]}>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+                </RNHostView>
+              </Column>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </Column>
+            </Row>
+          </Host>
+        </View>
+      );
+
+      const { host, first, second } = await measureWhenSettled({
+        host: hostWrapperRef,
+        first: firstRef,
+        second: secondRef,
+      });
+
+      expect(first.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(first.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+      expect(second.pageX - first.pageX).toBeCloseTo(WIDE, 0);
+      expect(second.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+    });
+
+    it('measures a hosted view in a row, beside a Compose-only sibling', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Row modifiers={[paddingAll(PADDING)]}>
+              <Box modifiers={[size(SPACER, SPACER)]} />
+              <RNHostView matchContents>
+                <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+            </Row>
+          </Host>
+        </View>
+      );
+
+      const { host, hosted } = await measureWhenSettled({
+        host: hostWrapperRef,
+        hosted: hostedRef,
+      });
+
+      expect(hosted.pageX - host.pageX).toBeCloseTo(PADDING + SPACER, 0);
+      expect(hosted.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+    });
+
+    it('measures a hosted view in a row, beside another hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Row modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+              </RNHostView>
+            </Row>
+          </Host>
+        </View>
+      );
+
+      const { host, first, second } = await measureWhenSettled({
+        host: hostWrapperRef,
+        first: firstRef,
+        second: secondRef,
+      });
+
+      expect(first.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(first.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+      expect(second.pageX - first.pageX).toBeCloseTo(WIDE, 0);
+      expect(second.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+    });
+
+    // A `Host` inside Compose goes in an `RNHostView`, which reports where Compose placed it. The
+    // nested `Host` then measures from that position, including the outer column's padding.
+    it('measures a hosted view in a Host nested through an RNHostView below a hosted view', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ padding: PADDING }}>
+                  <Host matchContents>
+                    <RNHostView matchContents>
+                      <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                    </RNHostView>
+                  </Host>
+                </View>
+              </RNHostView>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, nested } = await measureWhenSettled({
+        host: hostWrapperRef,
+        nested: nestedRef,
+      });
+
+      expect(nested.pageX - host.pageX).toBeCloseTo(PADDING * 2, 0);
+      expect(nested.pageY - host.pageY).toBeCloseTo(PADDING * 2 + SHORT, 0);
+    });
+
+    // The inner column holds a hosted view and the `RNHostView` around the nested `Host`. Both report
+    // their own position, so the column's zero content origin is right for both.
+    it('measures a hosted view in a nested Host beside a hosted view in the same column', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const siblingRef = React.createRef<ViewRef>();
+      const nestedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <RNHostView matchContents>
+                <View style={{ width: WIDE, height: SHORT }} />
+              </RNHostView>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={siblingRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+                <RNHostView matchContents>
+                  <View collapsable={false} style={{ padding: PADDING }}>
+                    <Host matchContents>
+                      <RNHostView matchContents>
+                        <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                      </RNHostView>
+                    </Host>
+                  </View>
+                </RNHostView>
+              </Column>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, sibling, nested } = await measureWhenSettled({
+        host: hostWrapperRef,
+        sibling: siblingRef,
+        nested: nestedRef,
+      });
+
+      expect(sibling.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(sibling.pageY - host.pageY).toBeCloseTo(PADDING + SHORT, 0);
+      expect(nested.pageX - host.pageX).toBeCloseTo(PADDING * 2, 0);
+      expect(nested.pageY - host.pageY).toBeCloseTo(PADDING * 2 + SHORT + BOX, 0);
+    });
+
+    it('measures a hosted view when the Host is inside a React Native ScrollView', async () => {
+      const scrollRef = React.createRef<ScrollViewRef>();
+      // Anchored outside the `ScrollView` so it does not move with the content. A difference between
+      // two views that scroll together would cancel the scroll offset out and never notice it.
+      const viewportRef = React.createRef<ViewRef>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={viewportRef} collapsable={false} style={{ flex: 1 }}>
+          <ScrollView ref={scrollRef}>
+            <View style={{ height: SCROLL_LEAD }} />
+            <View ref={hostWrapperRef} collapsable={false}>
+              <Host matchContents>
+                <Column modifiers={[paddingAll(PADDING)]}>
+                  <RNHostView matchContents>
+                    <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+                  </RNHostView>
+                </Column>
+              </Host>
+            </View>
+            <View style={{ height: SCROLL_TAIL }} />
+          </ScrollView>
+        </View>
+      );
+
+      const views = { viewport: viewportRef, host: hostWrapperRef, hosted: hostedRef };
+      const before = await measureWhenSettled(views);
+
+      expect(before.hosted.pageX - before.host.pageX).toBeCloseTo(PADDING, 0);
+      expect(before.hosted.pageY - before.host.pageY).toBeCloseTo(PADDING, 0);
+      expect(before.hosted.pageY - before.viewport.pageY).toBeCloseTo(SCROLL_LEAD + PADDING, 0);
+
+      scrollRef.current?.scrollTo({ y: SCROLL_BY, animated: false });
+
+      for (let attempt = 0; attempt < 40; attempt++) {
+        const host = await measureAsync(hostWrapperRef, 'the Host wrapper');
+        if (Math.abs(before.host.pageY - host.pageY - SCROLL_BY) < 0.5) {
+          break;
+        }
+        await delay(50);
+      }
+      const after = await measureWhenSettled(views);
+
+      expect(before.host.pageY - after.host.pageY).toBeCloseTo(SCROLL_BY, 0);
+      expect(after.hosted.pageY - after.host.pageY).toBeCloseTo(PADDING, 0);
+      expect(after.hosted.pageY - after.viewport.pageY).toBeCloseTo(
+        SCROLL_LEAD + PADDING - SCROLL_BY,
+        0
+      );
+    });
+
+    it('measures a PagerView page where Compose drew it, after paging to it', async () => {
+      const pagerWrapperRef = React.createRef<ViewRef>();
+      const pagerRef = React.createRef<any>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      let onSelected: ((position: number) => void) | null = null;
+      const selected = new Promise<number>((resolve) => {
+        onSelected = resolve;
+      });
+
+      setPortalChild(
+        <View ref={pagerWrapperRef} collapsable={false} style={{ height: PAGER_HEIGHT }}>
+          <PagerView
+            ref={pagerRef}
+            style={{ flex: 1 }}
+            onPageSelected={(event: any) => onSelected?.(event.nativeEvent.position)}>
+            <View key="first">
+              <View ref={firstRef} style={{ width: BOX, height: BOX }} />
+            </View>
+            <View key="second">
+              <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+            </View>
+          </PagerView>
+        </View>
+      );
+
+      const before = await measureWhenSettled({ pager: pagerWrapperRef, first: firstRef });
+      expect(before.first.pageX - before.pager.pageX).toBeCloseTo(0, 0);
+      expect(before.first.pageY - before.pager.pageY).toBeCloseTo(0, 0);
+
+      pagerRef.current?.setPageWithoutAnimation(1);
+      await Promise.race([selected, delay(3000)]);
+
+      const after = await measureWhenSettled({ pager: pagerWrapperRef, second: secondRef });
+      expect(after.second.pageX - after.pager.pageX).toBeCloseTo(0, 0);
+      expect(after.second.pageY - after.pager.pageY).toBeCloseTo(0, 0);
+    });
+
+    it('measures a hosted view in a modal bottom sheet relative to itself', async () => {
+      const hostedRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <Host matchContents>
+          <Column modifiers={[paddingAll(PADDING)]}>
+            <ModalBottomSheet onDismissRequest={() => {}}>
+              <Column modifiers={[paddingAll(PADDING)]}>
+                <RNHostView matchContents>
+                  <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </Column>
+            </ModalBottomSheet>
+          </Column>
+        </Host>
+      );
+
+      const { hosted } = await measureWhenSettled({ hosted: hostedRef });
+
+      expect(hosted.pageX).toBe(0);
+      expect(hosted.pageY).toBe(0);
+      expect(hosted.width).toBeCloseTo(BOX, 0);
+      expect(hosted.height).toBeCloseTo(BOX, 0);
+    });
+
+    // Each case below renders the same children in a Compose `Row` and in a universal `Row`.
+    // With no percentage, the universal `Row` must size its children the same way.
+    it('gives a child before the last the same width in a universal Row with spacing', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // A Compose `Row` subtracts only the spacing it has used so far, so the first child can use
+      // the whole row width.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Row horizontalArrangement={{ spacedBy: GAP }} modifiers={[width(ROW_WIDTH)]}>
+              <Box modifiers={[width(NEARLY_FULL), height(BOX), compose.modifier]} />
+              <Box modifiers={[size(GAP, BOX)]} />
+            </Row>
+            <UniversalRow spacing={GAP} modifiers={[width(ROW_WIDTH)]}>
+              <Box modifiers={[width(NEARLY_FULL), height(BOX), universal.modifier]} />
+              <Box modifiers={[size(GAP, BOX)]} />
+            </UniversalRow>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(NEARLY_FULL, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
+    });
+
+    it('gives a universal Row with weighted children the same intrinsic width', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // A Compose `Row` reports `max(child width / weight) * total weight` as its intrinsic width,
+      // so two equal weights each get the width of the wider child.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Column modifiers={[width(IntrinsicSize.Max)]}>
+              <Row modifiers={[compose.modifier]}>
+                <Box modifiers={[weight(1), width(NARROW_CELL), height(BOX)]} />
+                <Box modifiers={[weight(1), width(WIDE_CELL), height(BOX)]} />
+              </Row>
+            </Column>
+            <Column modifiers={[width(IntrinsicSize.Max)]}>
+              <UniversalRow modifiers={[universal.modifier]}>
+                <Box modifiers={[weight(1), width(NARROW_CELL), height(BOX)]} />
+                <Box modifiers={[weight(1), width(WIDE_CELL), height(BOX)]} />
+              </UniversalRow>
+            </Column>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(WIDE_CELL * 2, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
+    });
+
+    it('shrinks a fixed-width child that does not fit in a universal Row', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // The two widths add up to more than the row. A Compose `Row` gives the second child only the
+      // space that is left, and `width()` fits that space.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Row modifiers={[width(ROW_WIDTH)]}>
+              <UniversalColumn style={{ width: FIXED, height: BOX }} />
+              <UniversalColumn
+                style={{ width: FIXED, height: BOX }}
+                modifiers={[compose.modifier]}
+              />
+            </Row>
+            <UniversalRow modifiers={[width(ROW_WIDTH)]}>
+              <UniversalColumn style={{ width: FIXED, height: BOX }} />
+              <UniversalColumn
+                style={{ width: FIXED, height: BOX }}
+                modifiers={[universal.modifier]}
+              />
+            </UniversalRow>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(ROW_WIDTH - FIXED, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
+    });
+  });
+}

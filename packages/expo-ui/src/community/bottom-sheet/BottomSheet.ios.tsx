@@ -135,10 +135,14 @@ export function BottomSheet(props: BottomSheetProps) {
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsPresented(true);
-      const clampedIndex = Math.min(indexProp, detents.length - 1);
-      setCurrentIndex(clampedIndex);
-      currentIndexRef.current = clampedIndex;
     }
+  }, [indexProp]);
+
+  useEffect(() => {
+    const requestedIndex = indexProp >= 0 ? indexProp : currentIndexRef.current;
+    const clampedIndex = Math.min(requestedIndex, detents.length - 1);
+    setCurrentIndex(clampedIndex);
+    currentIndexRef.current = clampedIndex;
   }, [indexProp, detents.length]);
 
   const handlePresentedChange = useCallback((presented: boolean) => {
@@ -199,8 +203,9 @@ export function BottomSheet(props: BottomSheetProps) {
     const bg = extractBackgroundColor(backgroundStyle);
     return [
       ...(fitToContents
-        ? // Makes the iPad sheet size to that content instead of opening near full height.
-          [presentationSizing('fitted')]
+        ? // Fits the sheet height to the content (iPad opens near full height otherwise) and lets
+          // the system choose the width.
+          [presentationSizing('automatic', { fitted: { horizontal: false, vertical: true } })]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
@@ -231,11 +236,12 @@ export function BottomSheet(props: BottomSheetProps) {
             onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
-              <RNHostView matchContents={fitToContents}>
+              <RNHostView matchContents={fitToContents ? { vertical: true } : false}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
-                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
-                    so RNHostView can measure natural content height. */}
+                    height without inheriting the scrollable child's intrinsic content height. With matchContents,
+                    RNHostView takes the width from the sheet, which can be narrower than the window, and
+                    the height from the content. */}
                 <View
                   style={
                     fitToContents

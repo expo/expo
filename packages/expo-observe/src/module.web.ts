@@ -11,6 +11,10 @@ import type {
 } from './types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
+  get clientId(): string | null {
+    // The EAS client id is stored in native preferences, which web has no equivalent of.
+    return null;
+  }
   async dispatchEvents() {}
   configure(config: ObserveConfig): void {}
   getIntegrations(): ObserveIntegrationsConfig {

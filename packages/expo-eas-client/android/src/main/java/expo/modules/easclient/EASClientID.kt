@@ -9,11 +9,17 @@ private const val EAS_CLIENT_ID_SHARED_PREFERENCES_KEY = "eas-client-id"
 class EASClientID(private val context: Context) {
   companion object {
     /**
-     * Converts a UUID to a deterministic value in [0, 1] using the least significant
-     * 64 bits interpreted as an unsigned integer fraction of ULong.MAX_VALUE.
+     * Converts a UUID to a deterministic value in [0, 1).
      */
     fun deterministicUniformValue(uuid: UUID): Double {
-      return uuid.leastSignificantBits.toULong().toDouble() / ULong.MAX_VALUE.toDouble()
+      // Byte 8 is the RFC 4122 variant octet, pinned to `10`, and it is the high byte of
+      // leastSignificantBits, so that half alone only spans [0.5, 0.75]. splitmix64 over both
+      // halves moves the fixed bits off the high end; 2^53 is the widest exact Double range.
+      var z = (uuid.mostSignificantBits xor uuid.leastSignificantBits).toULong()
+      z = (z xor (z shr 30)) * 0xbf58476d1ce4e5b9UL
+      z = (z xor (z shr 27)) * 0x94d049bb133111ebUL
+      z = z xor (z shr 31)
+      return (z shr 11).toDouble() / (1L shl 53).toDouble()
     }
   }
 

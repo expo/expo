@@ -3,8 +3,11 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -14,8 +17,11 @@ import type {
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
   preload: (name: string) => void;
+  navigateToTabSync: (name: string, params: object | undefined) => void;
 }
 
 export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
@@ -24,7 +30,8 @@ export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig
 type ContentArgs = NavigatorContentProps<
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
-  MaterialTopTabNavigationConfig,
+  // Router options are forwarded to the content too.
+  MaterialTopTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior'>,
   MaterialTopTabNavigatorCreateProps
 >;
 
@@ -33,11 +40,17 @@ function MaterialTopTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
   preload,
+  navigateToTabSync,
+  backBehavior,
   ...rest
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  useNonStackAnchorWarning(backBehavior);
+  useReconcileTabHistory();
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
@@ -65,6 +78,10 @@ function MaterialTopTabNavigatorContent({
     lazyByDefault: false,
   });
 
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
+
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;
   }
@@ -80,6 +97,12 @@ function MaterialTopTabNavigatorContent({
       descriptors={topTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
+      navigateToTabSync={(routeKey) => {
+        const route = state.routes.find((route) => route.key === routeKey);
+        if (route) {
+          navigateToTabSync(route.name, route.params);
+        }
+      }}
     />
   );
 }

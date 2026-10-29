@@ -26,20 +26,15 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
     }
 
     // TODO: Optimize by adding a native method that can write into a TypedArray at a given offset.
-    const bytes = await this.handle.readBytes(theView.byteLength - theView.byteOffset);
+    // `byteLength` is already the size of the region to fill, so `byteOffset` must not be
+    // subtracted from it, and `set` takes an offset relative to the view it is called on.
+    const bytes = await this.handle.readBytes(theView.byteLength);
     if (bytes.length === 0) {
       controller.close();
       controller.byobRequest.respond(0);
       return;
     }
-    if (theView instanceof Uint8Array) {
-      theView.set(bytes, theView.byteOffset);
-    } else {
-      const array = new Uint8Array(theView.buffer);
-      for (let i = 0; i < bytes.length; i++) {
-        array[i + (theView.byteOffset ?? 0)] = bytes[i]!;
-      }
-    }
+    new Uint8Array(theView.buffer, theView.byteOffset, theView.byteLength).set(bytes);
     controller.byobRequest.respond(bytes.length);
   }
 }

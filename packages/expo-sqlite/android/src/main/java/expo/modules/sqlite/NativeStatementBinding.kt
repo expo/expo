@@ -34,6 +34,7 @@ internal class NativeStatementBinding : Closeable {
   external fun sqlite3_step(): Int
 
   external fun bindStatementParam(index: Int, param: Any?): Int
+  external fun getLastErrorMessage(): String
   external fun getColumnNames(): SQLiteColumnNames
   external fun getColumnValues(): SQLiteColumnValues
 

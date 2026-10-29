@@ -2,6 +2,7 @@ import { screen, act } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
 
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -10,10 +11,11 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../navigationParams';
-import type { StackNavigationState } from '../react-navigation/native';
+import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { renderRouter } from '../testing-library';
 import { useNavigation } from '../useNavigation';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 type HeaderTitleFunction = Extract<
   NativeStackNavigationOptions['headerTitle'],
@@ -24,8 +26,8 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-it('prefetch a sibling route', () => {
-  renderRouter({
+it('prefetch a sibling route', async () => {
+  await renderRouter({
     index: function Index() {
       return null;
     },
@@ -34,27 +36,7 @@ it('prefetch a sibling route', () => {
     },
   });
 
-  expect(screen).toHaveRouterState({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: 'index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  act(() => {
-    router.prefetch('/test');
-  });
-
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -62,7 +44,6 @@ it('prefetch a sibling route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -71,54 +52,23 @@ it('prefetch a sibling route', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
-            },
-            {
-              key: expect.any(String),
-              name: 'test',
-              params: {},
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
-  });
-});
-
-it('will prefetch the correct route within a group', () => {
-  renderRouter({
-    '(a)/index': () => null,
-    '(a)/test': () => null,
-    '(b)/index': () => null,
-    '(b)/test': () => null,
+    routeKeySeq: expect.any(Number),
   });
 
-  expect(screen).toHaveRouterState({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: '(a)/index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  act(() => {
+  await act(() => {
     router.prefetch('/test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -126,7 +76,76 @@ it('will prefetch the correct route within a group', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'test'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: 'test',
+              params: {},
+              isPreloaded: true,
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+});
+
+it('orders the most recently prefetched route first', async () => {
+  await renderRouter({
+    index: () => null,
+    a: () => null,
+    b: () => null,
+  });
+
+  await act(() => {
+    router.prefetch('/a');
+    router.prefetch('/b');
+  });
+
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
+  const stackState = state?.routes[0]?.state;
+  if (!stackState) {
+    throw new Error('Expected a stack navigator');
+  }
+  const index = stackState.index;
+  if (index === undefined) {
+    throw new Error('Expected the stack navigator to have an index');
+  }
+
+  expect(stackState.routes[index + 1]?.name).toBe('b');
+  expect(stackState.routes[index + 2]?.name).toBe('a');
+});
+
+it('will prefetch the correct route within a group', async () => {
+  await renderRouter({
+    '(a)/index': () => null,
+    '(a)/test': () => null,
+    '(b)/index': () => null,
+    '(b)/test': () => null,
+  });
+
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
         state: {
           index: 0,
           key: expect.any(String),
@@ -135,54 +154,23 @@ it('will prefetch the correct route within a group', () => {
             {
               key: expect.any(String),
               name: '(a)/index',
-              params: undefined,
               path: '/',
-            },
-            {
-              key: expect.any(String),
-              name: '(a)/test',
-              params: {},
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
-  });
-});
-
-it('will prefetch the correct route within nested groups', () => {
-  renderRouter({
-    '(a)/index': () => null,
-    '(a)/(c)/test': () => null,
-    '(b)/index': () => null,
-    '(b)/test': () => null,
+    routeKeySeq: expect.any(Number),
   });
 
-  expect(screen).toHaveRouterState({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: '(a)/index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  act(() => {
+  await act(() => {
     router.prefetch('/test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -190,7 +178,50 @@ it('will prefetch the correct route within nested groups', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '(a)/index',
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: '(a)/test',
+              params: {},
+              isPreloaded: true,
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+});
+
+it('will prefetch the correct route within nested groups', async () => {
+  await renderRouter({
+    '(a)/index': () => null,
+    '(a)/(c)/test': () => null,
+    '(b)/index': () => null,
+    '(b)/test': () => null,
+  });
+
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
         state: {
           index: 0,
           key: expect.any(String),
@@ -199,52 +230,23 @@ it('will prefetch the correct route within nested groups', () => {
             {
               key: expect.any(String),
               name: '(a)/index',
-              params: undefined,
               path: '/',
-            },
-            {
-              key: expect.any(String),
-              name: '(a)/(c)/test',
-              params: {},
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
-  });
-});
-
-it('works with relative Href', () => {
-  renderRouter({
-    index: () => null,
-    test: () => null,
+    routeKeySeq: expect.any(Number),
   });
 
-  expect(screen).toHaveRouterState({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: 'index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
+  await act(() => {
+    router.prefetch('/test');
   });
 
-  act(() => {
-    router.prefetch('./test');
-  });
-
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -252,7 +254,48 @@ it('works with relative Href', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: '(a)/index',
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: '(a)/(c)/test',
+              params: {},
+              isPreloaded: true,
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+});
+
+it('works with relative Href', async () => {
+  await renderRouter({
+    index: () => null,
+    test: () => null,
+  });
+
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
         state: {
           index: 0,
           key: expect.any(String),
@@ -261,48 +304,93 @@ it('works with relative Href', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+
+  await act(() => {
+    router.prefetch('./test');
+  });
+
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'test'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
               path: '/',
             },
             {
               key: expect.any(String),
               name: 'test',
               params: {},
+              isPreloaded: true,
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 
-it('works with params', () => {
-  renderRouter({
+it('works with params', async () => {
+  await renderRouter({
     index: () => null,
     test: () => null,
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'test'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
               path: '/',
             },
           ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('./test?foo=bar');
   });
 
@@ -314,7 +402,6 @@ it('works with params', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -323,7 +410,6 @@ it('works with params', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -332,20 +418,22 @@ it('works with params', () => {
               params: {
                 foo: 'bar',
               },
+              isPreloaded: true,
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 
-it('ignores the current route', () => {
-  renderRouter(
+it('ignores the current route', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -357,30 +445,48 @@ it('ignores the current route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'directory'],
           routes: [
             {
+              key: expect.any(String),
               name: 'directory',
               state: {
+                index: 0,
+                key: expect.any(String),
+                routeNames: ['index'],
                 routes: [
                   {
+                    key: expect.any(String),
                     name: 'index',
                     path: '/directory',
                   },
                 ],
+                stale: false,
+                routeKeySeq: expect.any(Number),
               },
             },
           ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory');
   });
 
@@ -392,7 +498,6 @@ it('ignores the current route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -401,7 +506,6 @@ it('ignores the current route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -410,34 +514,35 @@ it('ignores the current route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    isPreloaded: true,
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 
-it('can prefetch a deeply nested route', () => {
+it('can prefetch a deeply nested route', async () => {
   const jestFn = jest.fn();
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -461,30 +566,48 @@ it('can prefetch a deeply nested route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'directory'],
           routes: [
             {
+              key: expect.any(String),
               name: 'directory',
               state: {
+                index: 0,
+                key: expect.any(String),
+                routeNames: ['index', 'apple'],
                 routes: [
                   {
+                    key: expect.any(String),
                     name: 'index',
                     path: '/directory',
                   },
                 ],
+                stale: false,
+                routeKeySeq: expect.any(Number),
               },
             },
           ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory/apple/banana');
   });
 
@@ -499,7 +622,6 @@ it('can prefetch a deeply nested route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -508,7 +630,6 @@ it('can prefetch a deeply nested route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -517,19 +638,13 @@ it('can prefetch a deeply nested route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: {
-                      params: {
-                        params: {},
-                        screen: 'index',
-                      },
-                      screen: 'banana',
-                    },
+                    params: {},
+                    isPreloaded: true,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -538,8 +653,7 @@ it('can prefetch a deeply nested route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: { params: {}, screen: 'index' },
-                          path: undefined,
+                          params: {},
                           state: {
                             index: 0,
                             key: expect.any(String),
@@ -549,34 +663,37 @@ it('can prefetch a deeply nested route', () => {
                                 key: expect.any(String),
                                 name: 'index',
                                 params: {},
-                                path: undefined,
+                                path: '/directory/apple/banana',
                               },
                             ],
                             stale: false,
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
+                      routeKeySeq: expect.any(Number),
                     },
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 
-it('can prefetch a parent route', () => {
-  renderRouter(
+it('can prefetch a parent route', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -597,44 +714,74 @@ it('can prefetch a parent route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'directory'],
           routes: [
             {
+              key: expect.any(String),
               name: 'directory',
               state: {
+                index: 0,
+                key: expect.any(String),
+                routeNames: ['test', 'apple'],
                 routes: [
                   {
+                    key: expect.any(String),
                     name: 'apple',
                     state: {
+                      index: 0,
+                      key: expect.any(String),
+                      routeNames: ['banana'],
                       routes: [
                         {
+                          key: expect.any(String),
                           name: 'banana',
                           state: {
+                            index: 0,
+                            key: expect.any(String),
+                            routeNames: ['index'],
                             routes: [
                               {
+                                key: expect.any(String),
                                 name: 'index',
                                 path: '/directory/apple/banana',
                               },
                             ],
+                            stale: false,
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
+                      stale: false,
+                      routeKeySeq: expect.any(Number),
                     },
                   },
                 ],
+                stale: false,
+                routeKeySeq: expect.any(Number),
               },
             },
           ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory/test');
   });
 
@@ -648,7 +795,6 @@ it('can prefetch a parent route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -657,7 +803,6 @@ it('can prefetch a parent route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -666,7 +811,6 @@ it('can prefetch a parent route', () => {
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -675,7 +819,6 @@ it('can prefetch a parent route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: undefined,
                           state: {
                             index: 0,
                             key: expect.any(String),
@@ -684,43 +827,44 @@ it('can prefetch a parent route', () => {
                               {
                                 key: expect.any(String),
                                 name: 'index',
-                                params: undefined,
                                 path: '/directory/apple/banana',
                               },
                             ],
                             stale: false,
-                            type: 'stack',
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
-                      type: 'stack',
+                      routeKeySeq: expect.any(Number),
                     },
                   },
                   {
                     key: expect.any(String),
                     name: 'test',
                     params: {},
+                    isPreloaded: true,
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
-    type: 'stack',
+    routeKeySeq: expect.any(Number),
   });
 });
 
-it('can update <Screen /> options while prefetching in stack', () => {
+it('can update <Screen /> options while prefetching in stack', async () => {
   const headerTitle = jest.fn(() => null);
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack screenOptions={{ headerTitle }}>
         <Stack.Screen name="index" options={{ title: 'index' }} />
@@ -748,10 +892,12 @@ it('can update <Screen /> options while prefetching in stack', () => {
   ]);
 
   // Check that it actually prefetched the screen
-  expect(screen.UNSAFE_getByProps({ title: 'Updated while preloaded' })).toBeDefined();
+  expect(
+    screen.container.queryAll((node) => node.props.title === 'Updated while preloaded')
+  ).not.toHaveLength(0);
 
   headerTitle.mockClear();
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
     // Call after navigation
@@ -768,10 +914,10 @@ it('can update <Screen /> options while prefetching in stack', () => {
   ]);
 });
 
-it('ignores navigation actions dispatched while prefetching in stack', () => {
+it('ignores navigation actions dispatched while prefetching in stack', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: function Second() {
@@ -782,16 +928,16 @@ it('ignores navigation actions dispatched while prefetching in stack', () => {
     },
   });
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
 
   expect(warn).toHaveBeenCalledWith(expect.stringContaining("preloaded screen 'second'"));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 });
 
-it('can still use <Screen /> while prefetching in tabs', () => {
+it('can still use <Screen /> while prefetching in tabs', async () => {
   const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs screenOptions={{ headerTitle }}>
         <Tabs.Screen name="index" options={{ title: 'index' }} />
@@ -818,25 +964,24 @@ it('can still use <Screen /> while prefetching in tabs', () => {
   ]);
 
   headerTitle.mockClear();
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
     'index',
     'Should only change after focus',
     'index',
     'Should only change after focus',
-    'index',
   ]);
 });
 
-it('stamps zoom transition screen ID on preloaded route', () => {
-  renderRouter({
+it('stamps zoom transition screen ID on preloaded route', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => null,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch({
       pathname: '/target',
       params: {
@@ -845,13 +990,13 @@ it('stamps zoom transition screen ID on preloaded route', () => {
     });
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const stackState = innerState as StackNavigationState<{}>;
+  // The complete initial state stays typeless until this navigator dispatches an action.
+  const stackState = innerState as StackNavigationState<ParamListBase>;
   const preloadedRoute = stackState.routes[stackState.index + 1]!;
 
   expect(preloadedRoute.name).toBe('target');
@@ -861,24 +1006,24 @@ it('stamps zoom transition screen ID on preloaded route', () => {
   );
 });
 
-it('does not stamp zoom transition screen ID without zoom source param', () => {
-  renderRouter({
+it('does not stamp zoom transition screen ID without zoom source param', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => null,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/target');
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const stackState = innerState as StackNavigationState<{}>;
+  // The complete initial state stays typeless until this navigator dispatches an action.
+  const stackState = innerState as StackNavigationState<ParamListBase>;
   const preloadedRoute = stackState.routes[stackState.index + 1]!;
 
   expect(preloadedRoute.name).toBe('target');
@@ -887,14 +1032,14 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
   );
 });
 
-it('stamps zoom transition screen ID on preloaded route that is navigated to', () => {
-  renderRouter({
+it('stamps zoom transition screen ID on preloaded route that is navigated to', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => <Text testID="target">Target</Text>,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch({
       pathname: '/target',
       params: {
@@ -904,7 +1049,7 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
   });
 
   // Navigate to the preloaded route (with zoom params so it goes through the NAVIGATE/PUSH stamping)
-  act(() => {
+  await act(() => {
     router.push({
       pathname: '/target',
       params: {
@@ -913,9 +1058,9 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
     });
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
   const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;

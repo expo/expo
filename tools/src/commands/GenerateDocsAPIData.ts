@@ -37,6 +37,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'swift-ui/AccessoryWidgetBackground/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/swift-ui/arrangementview': ['swift-ui/ArrangementView/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/background': ['swift-ui/Background/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -62,6 +64,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationdestination': ['swift-ui/NavigationDestination/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationlink': ['swift-ui/NavigationLink/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationsplitview': ['swift-ui/NavigationSplitView/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationstack': ['swift-ui/NavigationStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
@@ -77,7 +83,11 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/swift-ui/toolbar': ['swift-ui/Toolbar/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/usenativestate': [
+    ['State/useNativeState.ts', 'State/useWorkletCallback.ts'],
+    'expo-ui',
+  ],
   'expo-ui/swift-ui/vstack': ['swift-ui/VStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
@@ -125,6 +135,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/box': ['jetpack-compose/Box/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/row': ['jetpack-compose/Row/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/compositionlocalprovider': [
+    'jetpack-compose/CompositionLocalProvider/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazyrow': ['jetpack-compose/LazyRow/index.tsx', 'expo-ui'],
@@ -154,7 +168,11 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+  'expo-ui/jetpack-compose/topappbar': ['jetpack-compose/TopAppBar/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/usenativestate': [
+    ['State/useNativeState.ts', 'State/useWorkletCallback.ts'],
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/loadingindicator': [
     'jetpack-compose/LoadingIndicator/index.tsx',
     'expo-ui',
@@ -185,7 +203,9 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
 export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
+  'expo-ai': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
+  'expo-app-intents': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': ['index.ts'],
   'expo-auth-session': ['index.ts'],
@@ -235,6 +255,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
   'expo-location': ['index.ts'],
+  'expo-location-next': ['next/index.ts', 'expo-location'],
   'expo-maps': [
     [
       'index.ts',
@@ -287,6 +308,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-hinge': [['index.ts', 'reanimated.ts']],
   'expo-observe': ['index.ts'],
   'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
@@ -366,7 +388,12 @@ const executeCommand = async (
     output.name = jsonFileName;
 
     if (Array.isArray(entryPoint)) {
-      const filterEntries = entryPoint.map((entry) => entry.substring(0, entry.lastIndexOf('.')));
+      // TypeDoc names each module relative to the entries' common directory, so
+      // `State/useNativeState.ts` becomes `useNativeState` when every entry sits in `State/`.
+      const filterEntries = entryPoint.flatMap((entry) => {
+        const name = entry.substring(0, entry.lastIndexOf('.'));
+        return [name, path.basename(name)];
+      });
       output.children = output.children
         .filter((entry) => filterEntries.includes(entry.name))
         .map((entry) => entry.children)
@@ -374,9 +401,13 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    // Config plugin types belong on the package's main reference page only. Sub-page
+    // entries (e.g. `expo-router/stack`) share the package directory and would otherwise
+    // repeat them on every page.
+    const isMainPackageEntry = jsonFileName === packageName;
     const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
     const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
-    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+    if (isMainPackageEntry && fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
       const pluginApp = await Application.bootstrapWithPlugins(
         {
           ...typedocOptions,

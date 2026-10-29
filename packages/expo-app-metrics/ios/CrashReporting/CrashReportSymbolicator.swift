@@ -25,6 +25,30 @@ import MachO
 /// Where `currentLoadAddress` is the slide-adjusted address of the binary's first segment
 /// (typically `__TEXT`) in this process. We grab it from the dyld image table.
 enum CrashReportSymbolicator {
+  /// How far past a symbol's start a frame can land and still be attributed to it.
+  ///
+  /// `dladdr` tells us the nearest symbol at or below an address, but not how far away it was, so
+  /// this is all we have to go on. A stripped binary can leave gaps megabytes wide between the
+  /// symbols it keeps, and every frame in one gets named after whichever symbol precedes it.
+  ///
+  /// 8 KB is a compromise. It clears the largest real function bodies we see, so a correct name
+  /// survives, while rejecting the gaps that produced wrong ones (the smallest we measured was
+  /// around 19 KB). A function bigger than this loses a name it should have kept, which is the
+  /// deliberate trade: a frame that says `binaryName + offset` can still be symbolicated from the
+  /// archive, but a frame named after unrelated code sends you somewhere that never ran.
+  static let maxSymbolMatchDistance: UInt64 = 8 * 1024
+
+  /// Whether `dladdr`'s answer is close enough to trust.
+  ///
+  /// `symbolStart` is `Dl_info.dli_saddr`, the start of the symbol it matched. A match below the
+  /// address we asked about means the two aren't related at all.
+  static func isSymbolMatchPlausible(address: UInt64, symbolStart: UInt64) -> Bool {
+    guard address >= symbolStart else {
+      return false
+    }
+    return address - symbolStart <= maxSymbolMatchDistance
+  }
+
   /// Annotates each frame in the tree with its resolved symbol, when one is available.
   static func symbolicate(_ tree: CrashReport.CallStackTree) -> CrashReport.CallStackTree {
     // Threads in a crash tree share many leaf frames (RunLoop guts, pthread entry points,
@@ -45,7 +69,9 @@ enum CrashReportSymbolicator {
     _ frame: CrashReport.CallStackTree.Frame,
     cache: inout [String: String]
   ) -> CrashReport.CallStackTree.Frame {
-    let symbol = resolveSymbol(for: frame, cache: &cache)
+    // We resolve very little of a stripped binary, so keep whatever MetricKit gave us instead.
+    // Even its `<redacted>` marker says more than an empty field.
+    let symbol = resolveSymbol(for: frame, cache: &cache) ?? frame.symbol
     let subFrames = frame.subFrames?.map { symbolicateFrame($0, cache: &cache) }
     return CrashReport.CallStackTree.Frame(
       binaryName: frame.binaryName,
@@ -72,6 +98,14 @@ enum CrashReportSymbolicator {
     var info = Dl_info()
     guard dladdr(UnsafeRawPointer(bitPattern: UInt(currentAddress)), &info) != 0,
       let symbolPtr = info.dli_sname
+    else {
+      return nil
+    }
+    guard let symbolStart = info.dli_saddr,
+      isSymbolMatchPlausible(
+        address: currentAddress,
+        symbolStart: UInt64(UInt(bitPattern: symbolStart))
+      )
     else {
       return nil
     }

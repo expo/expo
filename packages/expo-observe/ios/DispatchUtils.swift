@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-/// Outcome of a single dispatch attempt to the OTLP endpoint. Four cases, modeled after the
+/// Outcome of a single dispatch attempt to the OTLP endpoint, modeled after the
 /// OTLP retry guidance (see https://opentelemetry.io/docs/specs/otlp/#otlphttp-response):
 ///
 /// - `.success` — server accepted the batch without rejections.
@@ -13,6 +13,7 @@ import ExpoModulesCore
 ///   a drop.
 /// - `.retryableFailure` — transient failure (408/429/502/503/504 or transport error); retry the
 ///   same batch after `retryAfter` seconds or a client-computed backoff.
+/// - `.payloadTooLarge` — HTTP 413; retry a smaller batch.
 /// - `.nonRetryableFailure` — permanent failure (4xx/5xx outside the retryable set, encoding error);
 ///   drop the batch so it can't wedge the loop.
 ///
@@ -23,6 +24,7 @@ internal enum DispatchResult: Equatable, Sendable {
   case success
   case partialSuccess(OTPartialSuccess)
   case retryableFailure(retryAfter: TimeInterval?)
+  case payloadTooLarge
   case nonRetryableFailure(reason: String)
 }
 
@@ -117,6 +119,10 @@ internal enum DispatchUtils {
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (retryable) and data: "
           + "\(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
+    case .payloadTooLarge:
+      observeLogger.warn(
+        "[EAS Observe] Server responded with 413 (payload too large); retrying a smaller batch"
+      )
     case .nonRetryableFailure(let reason):
       observeLogger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (non-retryable, "
@@ -126,7 +132,7 @@ internal enum DispatchUtils {
     return result
   }
 
-  /// Pure classifier that maps an HTTP response into one of three retry outcomes. Extracted
+  /// Pure classifier that maps an HTTP response into a dispatch outcome. Extracted
   /// from `sendRequest` so the OTLP-spec rules can be unit-tested without a real network call.
   ///
   /// `bodyExcerpt` is invoked lazily, only when the result is `.nonRetryableFailure` and the reason
@@ -151,6 +157,10 @@ internal enum DispatchUtils {
         return .partialSuccess(partial)
       }
       return .success
+    }
+
+    if statusCode == 413 {
+      return .payloadTooLarge
     }
 
     // Retryable per OTLP.
@@ -226,8 +236,9 @@ internal enum DispatchUtils {
   ///   permanently, so retrying would just produce the same answer; advancing the cursor
   ///   drops the batch so it can't wedge subsequent rounds. This is the acceptance-criterion
   ///   behavior: a 400/403 must not be re-sent on the next cycle.
-  /// - `.retryableFailure` leaves the cursor at its current value so the next dispatch attempt picks
-  ///   the same rows up again.
+  /// - `.retryableFailure` and `.payloadTooLarge` leave the cursor at its current value so the same
+  ///   rows can be retried. The dispatch loop makes the one exception for a single-row 413, which it
+  ///   drops directly so that record cannot wedge subsequent dispatches.
   internal static func nextCursor(
     for result: DispatchResult,
     currentCursor: Int64,
@@ -236,7 +247,7 @@ internal enum DispatchUtils {
     switch result {
     case .success, .partialSuccess, .nonRetryableFailure:
       return highestId
-    case .retryableFailure:
+    case .retryableFailure, .payloadTooLarge:
       return currentCursor
     }
   }
@@ -286,8 +297,8 @@ internal enum DispatchUtils {
   ///   gate either already expired (we wouldn't have dispatched otherwise) or was never set
   ///   — either way, a server response that ACCEPTED the bytes (even if it rejected a subset
   ///   server-side) doesn't introduce a new pause.
-  /// - `.nonRetryableFailure` also resets the counter. A permanent drop isn't a sign that the
-  ///   server is unhealthy and shouldn't pause subsequent rounds.
+  /// - `.nonRetryableFailure` and `.payloadTooLarge` also reset the counter. Neither indicates a
+  ///   transient server failure that should pause subsequent rounds.
   /// - `.retryableFailure` increments the counter and sets the gate to `now + delay`, where `delay`
   ///   is the server-supplied `Retry-After` if present, otherwise `backoff(nextCount)`.
   ///
@@ -300,7 +311,7 @@ internal enum DispatchUtils {
     backoff: (Int) -> TimeInterval
   ) -> RetryGateState {
     switch result {
-    case .success, .partialSuccess, .nonRetryableFailure:
+    case .success, .partialSuccess, .nonRetryableFailure, .payloadTooLarge:
       return RetryGateState(
         dispatchAfterDate: currentState.dispatchAfterDate,
         consecutiveRetryableFailures: 0

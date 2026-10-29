@@ -1,18 +1,113 @@
 # Changelog
 
-## Unpublished
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Register the `NativeStatement` and `NativeSession` classes through `@ExpoModule(classes:)`. ([#52136](https://github.com/expo/expo/pull/52136) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.13
+
+### Patch Changes
+
+- Fixed `getFirstSync()` and sync `for...of` so they mark the cursor as moved. A later `getFirstSync()` or `getAllSync()` throws until `resetSync()`, matching the async APIs. ([#47989](https://github.com/expo/expo/pull/47989) by [@tsushanth](https://github.com/tsushanth))
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+- [Web] Fix statement finalization and failed-close recovery, same as #50121 on Android and iOS. ([#51293](https://github.com/expo/expo/pull/51293) by [@Kudo](https://github.com/Kudo))
+- [Web] Add `configureWeb()` with a `wasmURL` option to load a custom SQLite WebAssembly build, for example one built with FTS enabled. ([#51294](https://github.com/expo/expo/pull/51294) by [@Kudo](https://github.com/Kudo))
+- [Web] Fix `isInTransactionAsync()` returning `undefined` instead of `false` outside a transaction. ([#51356](https://github.com/expo/expo/pull/51356) by [@Kudo](https://github.com/Kudo))
+- [Web] Fix synchronous calls that lost the SQLite error message or failed on results longer than 255 bytes. ([#51330](https://github.com/expo/expo/pull/51330) by [@Kudo](https://github.com/Kudo))
+- [iOS] Fixed database paths with whitespace, non-ASCII characters, `#` or `?`, both as plain paths and as `file://` URIs such as App Group containers. `importDatabaseFromAssetAsync` with `forceOverwrite` now also removes the `-journal`, `-wal` and `-shm` files so a stale write-ahead log is not replayed over the imported copy, and a database that an earlier release created under a percent-encoded name on iOS 17, tvOS 17 or macOS 14 and later is moved to the decoded path on first open. ([#43939](https://github.com/expo/expo/pull/43939) by [@nickrugge](https://github.com/nickrugge))
+
+## 58.0.11
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Preserve statement error codes and messages when queries run concurrently on Android and iOS, and format Android SQLite error codes as numbers. ([#51082](https://github.com/expo/expo/pull/51082) by [@savv](https://github.com/savv))
+- [Android] Migrate to the Expo Modules API 2.0. Reloading the app now closes the databases that are still open, and `lastInsertRowId` is no longer truncated to 32 bits. ([#51208](https://github.com/expo/expo/pull/51208) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Speed up binding parameters and reading rows by converting them through typed values instead of `Any`. Reading rows is up to about 3.3 times faster and inserts up to about 2.8 times faster in the native benchmarks.
+
+  A `bigint` bind parameter now binds as a 64-bit integer instead of `NULL`. It still reads back as a number, with the same precision loss above 2^53 as other integer columns.
+
+  `onDatabaseChange` no longer drops the event for a row id above 2^53.
+
+  ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Android][iOS] Fixed database closing failure with FTS ([#38168](https://github.com/expo/expo/issues/38168)). ([#50121](https://github.com/expo/expo/pull/50121) by [@savv](https://github.com/savv))
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.6 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-23
+
+### 🎉 New features
+
+- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
+
+## 58.0.4 — 2026-09-21
+
+### 💡 Others
+
+- [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add native benchmarks for the statement API, run with `et native-unit-tests -p ios --packages expo-sqlite --benchmarks`. ([#50303](https://github.com/expo/expo/pull/50303) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - [Android][iOS] Fix `deleteDatabaseAsync` and `deleteDatabaseSync` leaving `-journal`, `-wal` and `-shm` sidecar files behind. ([#49125](https://github.com/expo/expo/pull/49125) by [@sbaiahmed1](https://github.com/sbaiahmed1))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 - Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
+- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

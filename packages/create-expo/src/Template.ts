@@ -10,6 +10,7 @@ import path from 'path';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
+import { SwiftPMUnsupportedError } from './error';
 import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
@@ -126,7 +127,7 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage }: { npmPackage?: string | null }
+  { npmPackage, swiftpm }: { npmPackage?: string | null; swiftpm?: boolean }
 ): Promise<string> {
   const projectName = path.basename(projectRoot);
 
@@ -146,6 +147,10 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
+  if (swiftpm) {
+    await assertSwiftPMSupportedAsync(projectRoot, 'template');
+  }
+
   const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
 
   try {
@@ -163,17 +168,47 @@ export async function extractAndPrepareTemplateAppAsync(
     throw error;
   }
 
-  await sanitizeTemplateAsync(projectRoot);
+  await sanitizeTemplateAsync(projectRoot, { swiftpm });
 
   return projectRoot;
 }
 
+// Android resource XML (strings.xml): aapt2 resolves XML entities before its
+// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
+// whitespace) needs Android's backslash escapes. The backslash escaping is a
+// copy of `XML.escapeAndroidString` from `@expo/config-plugins`, which this
+// package does not depend on.
+function escapeAndroidResourceValue(original: string): string {
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const escaped = noGt.replace(/[\n\r\t'"@?\\]/g, (m) => {
+    switch (m) {
+      case '"':
+      case "'":
+      case '@':
+      case '?':
+      case '\\':
+        return '\\' + m;
+      case '\n':
+        return '\\n';
+      case '\r':
+        return '\\r';
+      case '\t':
+        return '\\t';
+      default:
+        throw new Error(`Cannot escape unhandled XML character: ${m}`);
+    }
+  });
+  return escaped.match(/(^\s|\s$)/) ? `"${escaped}"` : escaped;
+}
+
 function escapeXMLCharacters(original: string): string {
-  const noAmps = original.replace('&', '&amp;');
-  const noLt = noAmps.replace('<', '&lt;');
-  const noGt = noLt.replace('>', '&gt;');
-  const noApos = noGt.replace('"', '\\"');
-  return noApos.replace("'", "\\'");
+  const noAmps = original.replace(/&/g, '&amp;');
+  const noLt = noAmps.replace(/</g, '&lt;');
+  const noGt = noLt.replace(/>/g, '&gt;');
+  const noQuots = noGt.replace(/"/g, '&quot;');
+  return noQuots.replace(/'/g, '&apos;');
 }
 
 /**
@@ -273,6 +308,17 @@ export async function getTemplateFilesToRenameAsync({
   });
 }
 
+/**
+ * Substitutes the template's placeholder app name inside the given files. Only file
+ * contents are rewritten, and only three tokens: `Hello App Display Name`, `HelloWorld`
+ * and `helloworld`.
+ *
+ * File and directory names are renamed separately during template extraction, from the
+ * same `sanitizedName` call.
+ *
+ * What this writes is final: unlike `expo prebuild`, `create-expo` runs no config mods
+ * that would rewrite `app_name` afterwards.
+ */
 export async function renameTemplateAppNameAsync({
   cwd,
   name,
@@ -307,15 +353,20 @@ export async function renameTemplateAppNameAsync({
 
       debug(`Renaming app name in file: ${absoluteFilePath}`);
 
-      const safeName = ['.xml', '.plist'].includes(path.extname(file))
-        ? escapeXMLCharacters(name)
-        : name;
+      const extension = path.extname(file);
+      // `.xml` files in the rename config are Android resources; `.plist` is generic XML.
+      const escapedDisplayName =
+        extension === '.xml'
+          ? escapeAndroidResourceValue(name)
+          : extension === '.plist'
+            ? escapeXMLCharacters(name)
+            : name;
 
       try {
         const replacement = contents
-          .replace(/Hello App Display Name/g, safeName)
-          .replace(/HelloWorld/g, sanitizedName(safeName))
-          .replace(/helloworld/g, sanitizedName(safeName.toLowerCase()));
+          .replace(/Hello App Display Name/g, () => escapedDisplayName)
+          .replace(/HelloWorld/g, sanitizedName(name))
+          .replace(/helloworld/g, sanitizedName(name).toLowerCase());
 
         if (replacement === contents) {
           return;
@@ -339,9 +390,36 @@ function templateHasNativeCode(root: string): boolean {
 }
 
 /**
+ * Throw a `SwiftPMUnsupportedError` when the extracted project depends on a React Native version
+ * older than 0.88. Versions that cannot be read here are left for `expo prebuild` to reject.
+ */
+export async function assertSwiftPMSupportedAsync(
+  projectRoot: string,
+  source: 'template' | 'example'
+): Promise<void> {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return;
+  }
+  const { dependencies } = await JsonFile.readAsync<{ dependencies?: Record<string, string> }>(
+    packageJsonPath
+  );
+  const reactNativeVersion = dependencies?.['react-native'];
+  const [, major, minor] = reactNativeVersion?.match(/(\d+)\.(\d+)/) ?? [];
+  // Nightlies are versioned `0.0.0-<date>-<sha>`, so a minor of 0 is not an old release.
+  if (reactNativeVersion && Number(major) === 0 && Number(minor) >= 1 && Number(minor) < 88) {
+    const projectDir = path.relative(process.cwd(), projectRoot) || path.basename(projectRoot);
+    throw new SwiftPMUnsupportedError(source, reactNativeVersion, projectDir);
+  }
+}
+
+/**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
-export async function sanitizeTemplateAsync(projectRoot: string) {
+export async function sanitizeTemplateAsync(
+  projectRoot: string,
+  { swiftpm = false }: { swiftpm?: boolean } = {}
+) {
   const projectName = path.basename(projectRoot);
 
   debug(`Sanitizing template or example app (projectName: ${projectName})`);
@@ -365,9 +443,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     }
   }
 
-  const defaultConfig: ExpoConfig = {
+  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema yet.
+  const defaultConfig: ExpoConfig & { experiments?: { swiftPackageManager?: boolean } } = {
     name: projectName,
     slug: projectName,
+    ...(swiftpm && { experiments: { swiftPackageManager: true } }),
   };
 
   const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {

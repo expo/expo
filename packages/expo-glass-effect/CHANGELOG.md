@@ -1,14 +1,42 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Fix `GlassView` drawing no glass when it fades in after React Native recycles the parent of an earlier `GlassView` into its content. ([#52000](https://github.com/expo/expo/pull/52000) by [@expo-tuft](https://github.com/apps/expo-tuft))
+
+## 58.0.4
+
+### Patch Changes
+
+- Type the `ref` prop of `GlassView` and `GlassContainer` as the `View` instance type. With the strict React Native types, a ref from `useRef<ComponentRef<typeof View>>()` now type-checks. ([#51639](https://github.com/expo/expo/pull/51639) by [@juliusmarminge](https://github.com/juliusmarminge))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-22
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the glass effect not rendering when the view fades in from low opacity ([#48994](https://github.com/expo/expo/pull/48994) by [@Nezz](https://github.com/Nezz))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Report `isLiquidGlassAvailable` as `true` in apps built with the iOS 27 SDK, which ignores `UIDesignRequiresCompatibility`. ([#49850](https://github.com/expo/expo/pull/49850) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+- Changed the type of the `GlassView` `tintColor` prop from `string` to `ColorValue`, which the native implementation already accepted, so `PlatformColor` and `DynamicColorIOS` values now type-check. ([#49893](https://github.com/expo/expo/pull/49893) by [@johankasperi](https://github.com/johankasperi))
 
 ## 57.0.1 - 2026-07-15
 

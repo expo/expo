@@ -1,4 +1,5 @@
 import { createForProject } from '@expo/package-manager';
+import { resolveFrom, loadModuleSync } from '@expo/require-utils';
 import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
@@ -11,6 +12,15 @@ import { event } from './events';
 import type { Options } from './resolveOptions';
 
 const DEFAULT_INPUTS = ['src', 'app', 'components'];
+
+function loadEslint(projectRoot: string): typeof import('eslint') | null {
+  const resolvedPath = resolveFrom(projectRoot, 'eslint', { skipNodePath: false });
+  if (!resolvedPath) {
+    return null;
+  } else {
+    return loadModuleSync(resolvedPath);
+  }
+}
 
 export const lintAsync = async (
   inputs: string[],
@@ -29,22 +39,15 @@ export const lintAsync = async (
     await prerequisite.bootstrapAsync();
   }
 
-  // TODO(@kitten): The direct require is fine, since we assume `expo > @expo/cli` does not depend on eslint
-  // However, it'd be safer to replace this with resolve-from, or another way of requiring via the project root
-  const { loadESLint } = require('eslint');
-
-  const mod = await import('eslint');
-
-  let ESLint: typeof import('eslint').ESLint;
+  const mod = loadEslint(projectRoot);
   // loadESLint is >= 8.57.0 (https://github.com/eslint/eslint/releases/tag/v8.57.0) https://github.com/eslint/eslint/pull/18098
-  if ('loadESLint' in mod) {
-    ESLint = await loadESLint({ cwd: options.projectRoot });
-  } else {
+  if (mod == null || !('loadESLint' in mod)) {
     throw new CommandError(
       'npx expo lint requires ESLint version 8.57.0 or greater. Upgrade eslint or use npx eslint directly.'
     );
   }
 
+  const ESLint = await mod.loadESLint({ cwd: options.projectRoot } as any);
   const version = ESLint?.version;
 
   if (!version || semver.lt(version, '8.57.0')) {

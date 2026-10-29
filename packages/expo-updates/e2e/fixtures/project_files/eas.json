@@ -4,7 +4,8 @@
   },
   "build": {
     "base": {
-      "node": "20.14.0",
+      "node": "22.23.4",
+      "pnpm": "12.2.1",
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "resourceClass": "large"

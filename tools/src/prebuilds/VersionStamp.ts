@@ -5,8 +5,8 @@
  * callers check whether the stored entries match the current expected values.
  * If any value differs (or the stamp is missing), the cache is considered stale.
  *
- * Used by VFS overlay generation, codegen, and any other step that caches
- * artifacts derived from versioned sources.
+ * Used by codegen and any other step that caches artifacts derived from
+ * versioned sources.
  */
 import fs from 'fs-extra';
 import path from 'path';

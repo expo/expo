@@ -7,10 +7,14 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     return "audioRecording"
   }
 
+  static var microphoneUsageDescription: Any? {
+    Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"]
+  }
+
   public func getPermissions() -> [AnyHashable: Any] {
     return Self.permissions(
       systemStatus: AVAudioSession.sharedInstance().recordPermission,
-      usageDescription: Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
+      usageDescription: Self.microphoneUsageDescription
     )
   }
 
@@ -45,7 +49,22 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     ]
   }
 
+  static func requireUsageDescription(_ usageDescription: Any? = AudioRecordingRequester.microphoneUsageDescription) throws {
+    guard usageDescription != nil else {
+      throw MicrophoneUsageDescriptionException()
+    }
+  }
+
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+    requestPermissions(usageDescription: Self.microphoneUsageDescription, resolver: resolve, rejecter: reject)
+  }
+
+  func requestPermissions(usageDescription: Any?, resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+    guard usageDescription != nil else {
+      resolve(Self.permissions(systemStatus: AVAudioSession.sharedInstance().recordPermission, usageDescription: nil))
+      return
+    }
+
     typealias PermissionRequestFunction = @convention(c) (AnyObject, Selector, @escaping (Bool) -> Void) -> Void
     let recordPermissionSelector = NSSelectorFromString(selector.joined())
 

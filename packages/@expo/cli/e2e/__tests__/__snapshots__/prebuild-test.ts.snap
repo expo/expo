@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`runs \`npx expo prebuild\` 1`] = `
 [
@@ -62,5 +62,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "metro.config.js",
   "package.json",
   "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
 ]
 `;

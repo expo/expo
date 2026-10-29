@@ -1,6 +1,10 @@
+import { Cache } from '@expo/metro/metro-cache';
 import { vol } from 'memfs';
+import os from 'os';
+import path from 'path';
 
 import { getDefaultConfig, createStableModuleIdFactory } from '../ExpoMetroConfig';
+import { FileStore } from '../binary-file-store';
 
 const projectRoot = '/';
 const consoleError = console.error;
@@ -22,13 +26,102 @@ function mockProject() {
 }
 describe(getDefaultConfig, () => {
   beforeEach(() => {
+    delete process.env.EXPO_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_OUTPUT_DIR;
     mockProject();
   });
   afterEach(() => {
+    delete process.env.EXPO_METRO_CACHE_RESTORE_DIR;
+    delete process.env.EXPO_METRO_CACHE_OUTPUT_DIR;
     vol.reset();
   });
   afterAll(() => {
     console.error = consoleError;
+  });
+
+  it.each([undefined, ''])('keeps the default store with cache root=%s', (root) => {
+    if (root !== undefined) {
+      process.env.EXPO_METRO_CACHE_RESTORE_DIR = root;
+      process.env.EXPO_METRO_CACHE_OUTPUT_DIR = root;
+    }
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    expect(stores).toHaveLength(1);
+    expect(Array.isArray(stores) && stores[0]).toBeInstanceOf(FileStore);
+  });
+
+  it.each([undefined, '/cache/restored'])(
+    'uses the default directory without output, with restored=%s',
+    async (restoredRoot) => {
+      if (restoredRoot) {
+        process.env.EXPO_METRO_CACHE_RESTORE_DIR = restoredRoot;
+      }
+      const stores = getDefaultConfig(projectRoot).cacheStores;
+      if (!Array.isArray(stores) || !stores[0]) {
+        throw new Error('Expected a non-empty array of cache stores');
+      }
+      expect(stores).toHaveLength(1);
+      expect(stores[0]).toBeInstanceOf(FileStore);
+      const key = Buffer.from('aabb', 'hex');
+      const value = Buffer.from('module');
+      await stores[0].set(key, value);
+      const defaultStore = new FileStore({ root: path.join(os.tmpdir(), 'metro-cache') });
+      expect(await defaultStore.get(key)).toEqual(value);
+    }
+  );
+
+  it('uses output alone for regular file store reads and writes', async () => {
+    process.env.EXPO_METRO_CACHE_OUTPUT_DIR = '/cache/custom';
+    const fileStore = new FileStore({ root: '/cache/custom' });
+    const key = Buffer.from('aabb', 'hex');
+    const value = Buffer.from('module');
+    await fileStore.set(key, value);
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    if (!Array.isArray(stores) || !stores[0]) {
+      throw new Error('Expected a non-empty array of cache stores');
+    }
+    expect(stores).toHaveLength(1);
+    expect(stores[0]).toBeInstanceOf(FileStore);
+    expect(await stores[0].get(key)).toEqual(value);
+    const updated = Buffer.from('updated module');
+    await stores[0].set(key, updated);
+    expect(await fileStore.get(key)).toEqual(updated);
+  });
+
+  it('collects restored hits and new transforms without unused restored entries', async () => {
+    process.env.EXPO_METRO_CACHE_RESTORE_DIR = '/cache/restored';
+    process.env.EXPO_METRO_CACHE_OUTPUT_DIR = '/cache/output';
+    const restored = new FileStore<Buffer>({ root: '/cache/restored' });
+    const output = new FileStore<Buffer>({ root: '/cache/output' });
+    const reusedKey = Buffer.from('aabb', 'hex');
+    const unusedKey = Buffer.from('aacc', 'hex');
+    const newKey = Buffer.from('aadd', 'hex');
+    const reusedValue = Buffer.from('unchanged module');
+    const newValue = Buffer.from('changed module');
+    await restored.set(reusedKey, reusedValue);
+    await restored.set(unusedKey, Buffer.from('unused module'));
+
+    const stores = getDefaultConfig(projectRoot).cacheStores;
+    if (!Array.isArray(stores)) {
+      throw new Error('Expected an array of cache stores');
+    }
+    expect(stores).toHaveLength(1);
+    const cache = new Cache<Buffer>(stores);
+    expect(await cache.get(reusedKey)).toEqual(reusedValue);
+    // A read alone must collect the restored entry.
+    expect(await output.get(reusedKey)).toEqual(reusedValue);
+    expect(await cache.get(newKey)).toBeNull();
+    await cache.set(newKey, newValue);
+
+    expect(await output.get(reusedKey)).toEqual(reusedValue);
+    expect(await output.get(newKey)).toEqual(newValue);
+    expect(await output.get(unusedKey)).toBeNull();
+    expect(await restored.get(unusedKey)).toEqual(Buffer.from('unused module'));
+
+    for (const store of stores) {
+      await store.clear();
+    }
+    expect(await output.get(reusedKey)).toBeNull();
+    expect(await restored.get(reusedKey)).toBeNull();
   });
 
   it('loads default configuration', () => {

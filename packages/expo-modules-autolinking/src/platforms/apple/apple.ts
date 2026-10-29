@@ -14,8 +14,16 @@ import type {
   ModuleIosConfig,
   ModuleIosPodspecInfo,
   PackageRevision,
+  SearchResults,
+  SupportedPlatform,
 } from '../../types';
 import { listFilesInDirectories, fileExistsAsync } from '../../utils';
+import {
+  collectPackageRoots,
+  groupScannedModules,
+  loadModulesScanner,
+  scanExpoModulesAsync,
+} from './moduleScanner';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
@@ -53,11 +61,58 @@ export function getSwiftModuleNames(
   return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
 
+/**
+ * Scans all packages for `@ExpoModule` classes that compile for the given platform, in one scanner
+ * run. Returns the classes by package name, or null when the scan is unavailable or fails.
+ */
+export async function scanNativeModulesAsync(
+  searchResults: SearchResults,
+  platform: SupportedPlatform
+): Promise<Record<string, ModuleIosConfig[]> | null> {
+  // The scanner is a macOS binary.
+  if (process.platform !== 'darwin') {
+    return null;
+  }
+  // Without expo-modules-core nothing can use the macro.
+  const coreRevision = searchResults['expo-modules-core'];
+  if (!coreRevision) {
+    return null;
+  }
+  const scanner = loadModulesScanner(coreRevision.path);
+  if (!scanner) {
+    console.warn(
+      `warning: Couldn't load expo-modules-macros from ${coreRevision.path}, so only modules declared in expo-module.config.json will be linked. Reinstall your JavaScript dependencies to restore it.`
+    );
+    return null;
+  }
+
+  const packageRoots = collectPackageRoots(searchResults);
+  const output = await scanExpoModulesAsync(scanner, packageRoots);
+  return output ? groupScannedModules(output, packageRoots, platform) : null;
+}
+
+/**
+ * The declared modules when the config declares the list (even an empty one), otherwise the scanned
+ * classes sorted by code unit.
+ */
+function pickModules(
+  declaredModules: ModuleIosConfig[] | null,
+  scannedModules: ModuleIosConfig[]
+): ModuleIosConfig[] {
+  if (declaredModules) {
+    return declaredModules;
+  }
+  return [...scannedModules].sort((a, b) => (a.class < b.class ? -1 : a.class > b.class ? 1 : 0));
+}
+
 /** Resolves module search result with additional details required for iOS platform. */
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  extraOutput: {
+    flags?: Record<string, any>;
+    scannedModules?: Record<string, ModuleIosConfig[]> | null;
+  }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
   if (!podspecFiles.length) {
@@ -72,16 +127,20 @@ export async function resolveModuleAsync(
   const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.appleSwiftModuleNames());
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 
+  const configModules =
+    revision.config
+      ?.appleModules()
+      .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
+
   return {
     packageName,
     pods,
     swiftModuleNames,
     flags: extraOutput.flags,
-    modules:
-      revision.config
-        ?.appleModules()
-        .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
-      [],
+    modules: pickModules(
+      revision.config?.declaresAppleModules() ? configModules : null,
+      extraOutput.scannedModules?.[packageName] ?? []
+    ),
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,

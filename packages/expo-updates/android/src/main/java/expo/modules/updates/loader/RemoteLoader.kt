@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import java.io.File
+import java.io.IOException
 
 data class ProcessSuccessLoaderResult(
   val availableUpdate: UpdateEntity?,
@@ -66,9 +67,28 @@ class RemoteLoader internal constructor(
     embeddedUpdate: UpdateEntity?
   ): FileDownloader.AssetDownloadResult {
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate, requestedUpdate)
-    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, launchedUpdate, requestedUpdate) { progress ->
-      assetLoadProgressListener(assetEntity, progress)
-    }
+    return mFileDownloader.downloadAsset(
+      asset = assetEntity,
+      destinationDirectory = updatesDirectory,
+      extraHeaders = extraHeaders,
+      launchedUpdate = launchedUpdate,
+      requestedUpdate = requestedUpdate,
+      embeddedAssetExtractor = { launchAsset, destination ->
+        // The stored path is not the APK asset name; resolve it through the embedded manifest by key.
+        val embeddedLaunchAsset = loaderFiles.readEmbeddedUpdate(context, configuration)
+          ?.assetEntityList
+          ?.find { it.key == launchAsset.key }
+          ?: throw IOException("No embedded asset matches launch asset ${launchAsset.key}")
+        val assetName = embeddedLaunchAsset.embeddedAssetFilename
+          ?: throw IOException("Embedded launch asset ${launchAsset.key} has no APK asset filename")
+        context.assets.open(assetName).use { input ->
+          destination.outputStream().use { output -> input.copyTo(output) }
+        }
+      },
+      assetLoadProgressListener = { progress ->
+        assetLoadProgressListener(assetEntity, progress)
+      }
+    )
   }
 
   companion object {

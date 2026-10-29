@@ -136,6 +136,15 @@ export type CameraPictureOptions = {
   exif?: boolean;
   /**
    * Additional EXIF data to be included for the image. Only useful when `exif` option is set to `true`.
+   *
+   * Keys are standard EXIF tag names, for example `UserComment`, `ImageDescription`, or
+   * `GPSLatitude`. The native writers ignore any other key without an error. Android writes only
+   * the tags that `ExifInterface` knows. iOS merges the values into the image's EXIF dictionary,
+   * and ImageIO writes only the tags it recognizes. A custom key such as `Address` never reaches
+   * the file.
+   *
+   * `GPSLatitude` and `GPSLongitude` accept signed decimal degrees. Both platforms convert them
+   * to the EXIF GPS format and set the hemisphere reference tags.
    * @platform android
    * @platform ios
    */
@@ -213,6 +222,12 @@ export type CameraRecordingOptions = {
    */
   maxFileSize?: number;
   /**
+   * How often the `onRecordingProgress` event is delivered, in seconds.
+   * Values below `0.1` are clamped to `0.1`.
+   * @default 0.5
+   */
+  progressUpdateInterval?: number;
+  /**
    * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
    * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
    * @deprecated Use `mirror` prop on `CameraView` instead.
@@ -255,6 +270,26 @@ export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLen
 
 // @docsMissing
 export type AvailableLenses = { lenses: LensInfo[] };
+
+/**
+ * @hidden
+ */
+export type RecordingProgressListener = (event: { nativeEvent: RecordingProgress }) => void;
+
+export type RecordingProgress = {
+  /**
+   * The duration of the media recorded so far, in seconds.
+   */
+  duration: number;
+  /**
+   * The size of the video file recorded so far, in bytes.
+   */
+  fileSize: number;
+  /**
+   * The `maxDuration` passed to `recordAsync`, in seconds. Only present when a limit was set.
+   */
+  maxDuration?: number;
+};
 
 /**
  * @hidden
@@ -525,6 +560,18 @@ export type CameraViewProps = ViewProps & {
    * @platform ios
    */
   onAvailableLensesChanged?: (event: AvailableLenses) => void;
+  /**
+   * Callback invoked repeatedly while a video recording is in progress.
+   * The values are read from the native recorder, so they track the media actually written to disk.
+   * Progress events are not delivered while the recording is paused.
+   * The callback fires about every 500 milliseconds by default; configure the rate with
+   * `progressUpdateInterval` in the `recordAsync` options.
+   * @param event Result object that contains the recorded `duration` and `fileSize`, plus the
+   * `maxDuration` passed to `recordAsync` when a limit was set.
+   * @platform android
+   * @platform ios
+   */
+  onRecordingProgress?: (event: RecordingProgress) => void;
 };
 
 /**
@@ -556,6 +603,7 @@ export type CameraNativeProps = {
   onPictureSaved?: PictureSavedListener;
   onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
   onAvailableLensesChanged?: AvailableLensesChangedListener;
+  onRecordingProgress?: RecordingProgressListener;
   facing?: string;
   flashMode?: string;
   enableTorch?: boolean;

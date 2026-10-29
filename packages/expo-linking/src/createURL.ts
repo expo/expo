@@ -176,7 +176,7 @@ export function parse(url: string): ParsedURL {
     const parsed = new URL(url);
 
     parsed.searchParams.forEach((value, key) => {
-      queryParams[key] = decodeURIComponent(value);
+      queryParams[key] = value;
     });
     path = parsed.pathname || null;
     hostname = parsed.hostname || null;

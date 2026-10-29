@@ -23,7 +23,7 @@ class ExpoModulesPackage : ReactPackage {
         val expoModules = Class.forName("expo.modules.ExpoModulesPackageList")
         val getPackageList = expoModules.getMethod("getPackageList")
         (getPackageList.invoke(null) as List<Package>)
-          .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+          .sortedByDescending { ModulePriorities.get(it.javaClass.canonicalName) }
       } catch (e: Exception) {
         Log.e("ExpoModulesPackage", "Couldn't get expo package list.", e)
         emptyList()

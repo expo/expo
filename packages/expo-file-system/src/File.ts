@@ -1,4 +1,5 @@
-import { uuid, type EventSubscription } from 'expo-modules-core';
+import { UnavailabilityError, uuid, type EventSubscription } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
@@ -6,6 +7,7 @@ import {
   FileMode,
   type FileCanPreviewOptions,
   type FilePreviewOptions,
+  type FilePreviewCollectionOptions,
   type PickFileOptions,
   type PickMultipleFilesOptions,
   type PickMultipleFilesResult,
@@ -41,6 +43,73 @@ import { FileSystemReadableStreamSource, FileSystemWritableSink } from './intern
  * ```
  */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
+  /**
+   * Checks whether every supplied local file can be previewed.
+   * Android resolves to `false` for more than one file. Only iOS previews multiple files.
+   * An array with one file behaves like a single `File`.
+   * Rejects empty arrays and invalid arguments.
+   * @platform ios
+   * @platform android
+   *
+   * @example
+   * ```ts
+   * const files = [new File(Paths.cache, 'report.pdf'), new File(Paths.cache, 'notes.txt')];
+   * const canPreviewAll = await File.canPreview(files);
+   * ```
+   */
+  static async canPreview(input: File | File[], options?: FileCanPreviewOptions): Promise<boolean> {
+    const files = normalizePreviewFiles(input);
+    validateCollectionPreviewOptions(files, options);
+    if (files.length === 1) {
+      return files[0]!.canPreview(options);
+    }
+    if (Platform.OS !== 'ios' || Platform.isTV) {
+      return false;
+    }
+    if (!ExpoFileSystem.canPreview) {
+      throw new UnavailabilityError('expo-file-system', 'File.canPreview');
+    }
+    return ExpoFileSystem.canPreview(files);
+  }
+
+  /**
+   * Previews local files in the supplied order, starting at `initialIndex` (default `0`).
+   * Android rejects more than one file. Only iOS previews multiple files.
+   * An array with one file behaves like a single `File`.
+   * Rejects if you pass `title` or `mimeType` with more than one file.
+   * Also rejects empty arrays, an invalid `initialIndex`, and files that cannot be previewed.
+   * Resolves at presentation or handoff to another app, not when the viewer closes.
+   * @platform ios
+   * @platform android
+   *
+   * @example
+   * ```ts
+   * // The files must exist before previewing.
+   * const files = [new File(Paths.cache, 'report.pdf'), new File(Paths.cache, 'notes.txt')];
+   * if (await File.canPreview(files)) {
+   *   await File.preview(files, { initialIndex: 1 });
+   * }
+   * ```
+   */
+  static async preview(
+    input: File | File[],
+    options?: FilePreviewOptions & FilePreviewCollectionOptions
+  ): Promise<void> {
+    const files = normalizePreviewFiles(input);
+    const initialIndex = options?.initialIndex ?? 0;
+    if (!Number.isInteger(initialIndex) || initialIndex < 0 || initialIndex >= files.length) {
+      throw new RangeError('initialIndex must be an integer within the preview collection.');
+    }
+    validateCollectionPreviewOptions(files, options);
+    if (files.length === 1) {
+      return files[0]!.preview({ title: options?.title, mimeType: options?.mimeType });
+    }
+    if (Platform.OS !== 'ios' || Platform.isTV || !ExpoFileSystem.preview) {
+      throw new UnavailabilityError('expo-file-system', 'File.preview (multiple files)');
+    }
+    return ExpoFileSystem.preview(files, initialIndex);
+  }
+
   /**
    * A static method that downloads a file from the network.
    *
@@ -361,8 +430,8 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 }
 
-function createAbortError(reason?: string): Error {
-  const error = new Error(reason ?? 'The operation was aborted.');
+function createAbortError(reason?: unknown): Error {
+  const error = new Error(typeof reason === 'string' ? reason : 'The operation was aborted.');
   error.name = 'AbortError';
   return error;
 }
@@ -444,4 +513,23 @@ function parsePickFileOptions(
     },
     usingOldAPI: mimeType !== undefined || typeof initialUriOrOptions === 'string',
   };
+}
+
+function normalizePreviewFiles(input: File | File[]): File[] {
+  const files = Array.isArray(input) ? [...input] : [input];
+  if (files.length === 0) {
+    throw new RangeError('At least one file is required for a preview.');
+  }
+  for (const file of files) {
+    if (!(file instanceof ExpoFileSystem.FileSystemFile)) {
+      throw new TypeError('Preview input must contain File instances.');
+    }
+  }
+  return files;
+}
+
+function validateCollectionPreviewOptions(files: File[], options?: FilePreviewOptions): void {
+  if (files.length > 1 && (options?.title !== undefined || options?.mimeType !== undefined)) {
+    throw new TypeError('title and mimeType are only supported for single-file previews.');
+  }
 }

@@ -114,7 +114,11 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
       mapOf(
         "isDirectory" to isDir,
         "uri" to if (isDir) {
-          if (uriString.endsWith("/")) uriString else "$uriString/"
+          if (uriString.endsWith("/")) {
+            uriString
+          } else {
+            "$uriString/"
+          }
         } else {
           uriString
         }
@@ -124,7 +128,11 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
 
   fun asString(): String {
     val uriString = file.uri.toString()
-    return if (uriString.endsWith("/")) uriString else "$uriString/"
+    return if (uriString.endsWith("/")) {
+      uriString
+    } else {
+      "$uriString/"
+    }
   }
 
   fun needsCreation(options: CreateOptions): Boolean {

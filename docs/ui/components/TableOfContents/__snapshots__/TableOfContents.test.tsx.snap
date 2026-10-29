@@ -75,7 +75,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#base-level-heading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
             data-text="true"
           >
             Base level heading
@@ -92,7 +92,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#level-3-subheading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-secondary! hocus:text-link!"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
             data-text="true"
           >
             Level 3 subheading
@@ -109,7 +109,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-inherit w-full text-secondary! hocus:text-link! truncate text-xs!"
+            class="leading-[1.6154] text-inherit w-full text-default! hocus:text-link! truncate text-xs!"
             data-text="true"
           >
             Code heading depth 1

@@ -48,6 +48,14 @@ describe(setNodeEnv, () => {
     expect(process.env.NODE_ENV).toBe('production');
   });
 
+  it('removes an inherited BABEL_ENV value', () => {
+    process.env.BABEL_ENV = 'development';
+
+    setNodeEnv('production');
+
+    expect(process.env.BABEL_ENV).toBeUndefined();
+  });
+
   it('updates a custom environment without changing process.env', () => {
     process.env.NODE_ENV = 'development';
     const systemEnv = { NODE_ENV: 'test', EXAMPLE: 'value' };
@@ -341,6 +349,12 @@ describe(parseProjectEnv, () => {
 
     expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
   });
+
+  it('ignores BABEL_ENV in env files', () => {
+    vol.fromJSON({ '.env': ['BABEL_ENV=production', 'FOO=default'].join('\n') }, '/');
+
+    expect(parseProjectEnv('/').env).toEqual({ FOO: 'default' });
+  });
 });
 
 describe(loadProjectEnv, () => {
@@ -525,6 +539,27 @@ describe(getOriginalEnv, () => {
     };
 
     expect(getOriginalEnv(inheritedEnv)).toEqual({ PRE_EXISTING: 'original' });
+  });
+
+  it('keeps inherited dotenv values listed in EXPO_UNSAFE_DOTENV_KEYS', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'DOTENV_VALUE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        const inheritedEnv = {
+          DOTENV_VALUE: 'from-parent-dotenv',
+          [LOADED_ENV_NAME]: JSON.stringify(['DOTENV_VALUE']),
+        };
+
+        expect(mod.getOriginalEnv(inheritedEnv)).toEqual({
+          DOTENV_VALUE: 'from-parent-dotenv',
+        });
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
   });
 
   it('removes inherited dotenv values after a forced local load', () => {
@@ -817,6 +852,22 @@ describe('isLocalEnvKey policy', () => {
     vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
 
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+  });
+
+  it('keeps __EXPO_CONFIG_MODE blocked when the unsafe list includes it', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = '__EXPO_CONFIG_MODE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+        expect(() => mod.parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
   });
 
   it('combines both violation classes into a single thrown error', () => {

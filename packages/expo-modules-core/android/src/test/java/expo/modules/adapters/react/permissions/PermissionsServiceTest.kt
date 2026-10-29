@@ -42,7 +42,13 @@ private class FakePermissionsService(context: Context) : PermissionsService(cont
       .edit().apply { permissions.forEach { putBoolean(it, true) } }.commit()
     val granted = requestOutcome == PackageManager.PERMISSION_GRANTED
     val result = permissions.associateWith {
-      PermissionsResponse(if (granted) PermissionsStatus.GRANTED else PermissionsStatus.DENIED)
+      PermissionsResponse(
+        if (granted) {
+          PermissionsStatus.GRANTED
+        } else {
+          PermissionsStatus.DENIED
+        }
+      )
     }
     listener.onResult(result)
   }

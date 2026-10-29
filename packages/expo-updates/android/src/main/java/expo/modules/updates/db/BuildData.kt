@@ -75,7 +75,11 @@ object BuildData {
 
   fun getBuildDataFromDatabase(database: UpdatesDatabase, scopeKey: String): JSONObject? {
     val buildJSONString = database.jsonDataDao()?.loadJSONStringForKey(JSONDataDao.JSONDataKey.STATIC_BUILD_DATA, scopeKey)
-    return if (buildJSONString == null) null else JSONObject(buildJSONString)
+    return if (buildJSONString == null) {
+      null
+    } else {
+      JSONObject(buildJSONString)
+    }
   }
 
   private fun getBuildDataFromConfig(updatesConfiguration: UpdatesConfiguration): JSONObject {

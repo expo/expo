@@ -1,5 +1,10 @@
 import type { NativeModule } from 'expo';
-import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+import type {
+  LogAttributeValue,
+  LogEventOptions,
+  MetricAttributes,
+  NetworkRequestFilter,
+} from 'expo-app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -81,6 +86,33 @@ export type ObserveConfig = {
    * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * Whether network requests are recorded as trace spans. Pass `true` to record every request,
+   * or an object to record only the ones matching a filter.
+   *
+   * Off by default, because each recorded span counts toward your event quota. This controls
+   * recording, not just export: a request that's turned off or filtered out never reaches the
+   * local database. It applies to future requests only, so anything recorded earlier in the
+   * launch still gets sent. The setting persists across launches.
+   *
+   * @default false
+   */
+  networkTraces?: boolean | ObserveNetworkTracesConfig;
+};
+
+export type ObserveNetworkTracesConfig = {
+  /**
+   * Whether network requests are recorded at all. Set it to `false` to keep a filter configured
+   * while recording nothing.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted field matches every request; an
+   * empty array matches none.
+   */
+  filter?: NetworkRequestFilter | null;
 };
 
 export type ObserveNavigationIntegrationConfig = {
@@ -118,7 +150,48 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+  /**
+   * Enables the `react-native-reanimated` integration, which reports Reanimated errors to Observe
+   * as errors named `reanimated.error`. To also report Reanimated warnings as events named
+   * `reanimated.warning`, set `reportWarnings`. Reanimated still prints errors and warnings to the
+   * console. The integration reports each distinct message at most once every 15 minutes. It
+   * reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period.
+   *
+   * Requires `react-native-reanimated` 4.7.0 or later to be installed.
+   *
+   * The integration configures Reanimated's logger with `configureReanimatedLogger`. To set the
+   * logger's `level` and `strict` options, pass an object here. Don't call
+   * `configureReanimatedLogger` in your app. A later call removes the integration's callback, and
+   * the integration replaces the `level` and `strict` options of an earlier call.
+   *
+   * @default false
+   */
+  'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
 }
+
+export type ObserveReanimatedIntegrationConfig = {
+  /**
+   * The minimum log level that Reanimated prints and reports. Pass a `ReanimatedLogLevel` value
+   * from `react-native-reanimated`: `ReanimatedLogLevel.warn` (`1`) or `ReanimatedLogLevel.error`
+   * (`2`).
+   *
+   * @default ReanimatedLogLevel.warn
+   */
+  level?: 1 | 2;
+  /**
+   * Whether Reanimated also prints and reports its strict-mode warnings.
+   *
+   * @default true
+   */
+  strict?: boolean;
+  /**
+   * Whether the integration also reports Reanimated warnings to Observe, as events named
+   * `reanimated.warning`. Reanimated prints warnings to the console either way.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
+};
 
 /**
  * Events emitted by the native `ExpoObserve` module.
@@ -133,6 +206,32 @@ export type ObserveModuleEvents = {
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   /**
+   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
+   * EAS client libraries. Observe records it on every metric and log event as the
+   * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
+   *
+   * The id is stored in native preferences and is stable across app launches and app updates. It
+   * changes when the app's data is cleared or the app is reinstalled, although a backup restore
+   * can carry the previous id over. It identifies an installation, not a user or a device.
+   *
+   * `null` on web, where there is no EAS client id.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * // Attach the same id to data you send elsewhere to line it up with Observe.
+   * await fetch('https://example.com/events', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ easClientId: Observe.clientId }),
+   * });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly clientId: string | null;
+  /**
    * Dispatches pending events to the server immediately.
    *
    * Events are dispatched automatically when the app moves to the background. On Android,
@@ -141,7 +240,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
-   * @returns A promise that resolves when the pending events have been dispatched.
+   * @returns A promise that resolves once the events have been dispatched. A call made while
+   * another dispatch is running waits for it to finish first.
    *
    * @example
    * ```ts

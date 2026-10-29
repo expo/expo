@@ -1,0 +1,145 @@
+appId: dev.expo.payments
+---
+# Start from a fresh screen, so the counts start at 0.
+- openLink: bareexpo://components/ui
+- openLink: bareexpo://components/ui/rnhostview-in-clickable
+
+# Plain hosted content passes the tap to the parent `clickable`. Hosted content that handles the
+# press keeps it, including gesture handler buttons and a `Pressable`'s `hitSlop`.
+- scrollUntilVisible:
+    element:
+      id: view-hosted
+    direction: UP
+- tapOn:
+    id: view-hosted
+- assertVisible: 'view: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: pointer-events-none-hosted
+    direction: DOWN
+- tapOn:
+    id: pointer-events-none-hosted
+- assertVisible: 'pointer-events-none: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: text-hosted
+    direction: DOWN
+- tapOn:
+    id: text-hosted
+- assertVisible: 'text: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: accessible-view-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: accessible-view-hosted
+- assertVisible: 'accessible-view: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: image-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: image-hosted
+- assertVisible: 'image: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: gradient-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: gradient-hosted
+- assertVisible: 'gradient: row 1, inner 0'
+# The row's press cancels the JavaScript touch, so `onTouchEnd` doesn't run.
+- scrollUntilVisible:
+    element:
+      id: touch-handlers-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: touch-handlers-hosted
+- assertVisible: 'touch-handlers: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: text-link-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: text-link-hosted
+- assertVisible: 'text-link: row 1, inner 0'
+- scrollUntilVisible:
+    element:
+      id: hit-slop-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: hit-slop-hosted
+- assertVisible: 'hit-slop: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: pressable-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: pressable-hosted
+- assertVisible: 'pressable: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: text-on-press-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: text-on-press-hosted
+- assertVisible: 'text-on-press: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: switch-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: switch-hosted
+- assertVisible: 'switch: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: text-input-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: text-input-hosted
+- hideKeyboard
+- assertVisible: 'text-input: row 0, inner 0'
+- scrollUntilVisible:
+    element:
+      id: gh-rect-button-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: gh-rect-button-hosted
+- assertVisible: 'gh-rect-button: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: gh-pressable-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: gh-pressable-hosted
+- assertVisible: 'gh-pressable: row 0, inner 1'
+- scrollUntilVisible:
+    element:
+      id: gh-tap-hosted
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: gh-tap-hosted
+- assertVisible: 'gh-tap: row 0, inner 1'
+
+# Inside a React Native Pressable, a tap on hosted text with no Compose handler presses it.
+- scrollUntilVisible:
+    element:
+      id: outer-pressable-counts
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: outer-item-1
+- assertVisible: 'outer: 1'

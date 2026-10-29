@@ -192,7 +192,17 @@ class GeofencingTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtil
     val latitude = getParamAsDouble(region["latitude"], "Region: latitude `${region["latitude"]}` can't be cast to Double")
     val notifyOnEnter = region["notifyOnEnter"] as? Boolean ?: true
     val notifyOnExit = region["notifyOnExit"] as? Boolean ?: true
-    val transitionTypes = (if (notifyOnEnter) Geofence.GEOFENCE_TRANSITION_ENTER else 0) or if (notifyOnExit) Geofence.GEOFENCE_TRANSITION_EXIT else 0
+    val transitionTypes = (
+      if (notifyOnEnter) {
+        Geofence.GEOFENCE_TRANSITION_ENTER
+      } else {
+        0
+      }
+      ) or if (notifyOnExit) {
+      Geofence.GEOFENCE_TRANSITION_EXIT
+    } else {
+      0
+    }
     return Geofence.Builder()
       .setRequestId(identifier)
       .setCircularRegion(latitude, longitude, radius.toFloat())

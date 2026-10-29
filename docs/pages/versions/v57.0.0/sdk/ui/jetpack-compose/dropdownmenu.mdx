@@ -211,6 +211,54 @@ export default function LongPressDropdownMenuExample() {
 
 </ComponentExample>
 
+### Rounded corners
+
+Use `cornerRadius` to override the default Material3 menu shape with a custom corner radius (in dp).
+
+<ComponentExample
+  title="RoundedDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-rounded-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-rounded-android-dark.webp"
+  alt="A menu with rounded corners opened below a Show menu button">
+
+```tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  OutlinedButton,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function RoundedDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}
+        cornerRadius={16}>
+        <DropdownMenu.Trigger>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>
+            <Text>Show menu</Text>
+          </OutlinedButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Item 1</Text>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
 ## API
 
 ```tsx

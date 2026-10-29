@@ -30,24 +30,25 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   }
 
   func open() {
-    var currentViewController = UIApplication.shared.keyWindow?.rootViewController
+    var currentViewController = SceneGeometry.keyWindow()?.rootViewController
     while currentViewController?.presentedViewController != nil {
       currentViewController = currentViewController?.presentedViewController
     }
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      let viewFrame = currentViewController?.view.frame
-      viewController.popoverPresentationController?.sourceRect = CGRect(
-        x: viewFrame?.midX ?? 0,
-        y: viewFrame?.maxY ?? 0,
-        width: 0,
-        height: 0
-      )
-      viewController.popoverPresentationController?.sourceView = currentViewController?.view
+
+    guard let currentViewController else {
+      onDismiss("cancel")
+      return
     }
 
-    currentViewController?.present(viewController, animated: true) {
+    SceneGeometry.anchorPopover(of: viewController, to: currentViewController.view)
+
+    currentViewController.present(viewController, animated: true) {
       self.didPresent()
     }
+  }
+
+  var isPresented: Bool {
+    return viewController.presentingViewController != nil
   }
 
   func dismiss(completion: ((String) -> Void)? = nil) {
@@ -130,6 +131,10 @@ internal class WebBrowserSession: NSObject, WKNavigationDelegate, WKUIDelegate, 
     let type = "dismiss"
     finish(type: type)
     completion?(type)
+  }
+
+  var isPresented: Bool {
+    return window?.isVisible == true
   }
 
   // MARK: - WKNavigationDelegate

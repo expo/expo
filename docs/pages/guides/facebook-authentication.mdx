@@ -3,6 +3,9 @@ title: Using Facebook authentication
 description: A guide on using react-native-fbsdk-next library to integrate Facebook authentication in your Expo project.
 ---
 
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -39,9 +42,17 @@ Adding Android as a platform in your Facebook project requires you to have your 
 
 See the following guides for more information on how to build your project for app stores:
 
-<BoxLink title="Build your project for app stores" href="/deploy/build-project/" />
+<BoxLink
+  title="Build your project for app stores"
+  href="/deploy/build-project/"
+  Icon={Rocket01Icon}
+/>
 
-<BoxLink title="Submit to the Google Play Store with EAS Submit" href="/submit/android/" />
+<BoxLink
+  title="Submit to the Google Play Store with EAS Submit"
+  href="/submit/android/"
+  Icon={EasSubmitIcon}
+/>
 
 Once you have uploaded the app to the Play Store you can submit your app review. When it is approved the Facebook project will be able to access it at a Play Store URL.
 

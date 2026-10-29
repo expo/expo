@@ -3,8 +3,8 @@ package expo.modules.updates.procedures
 import android.app.Activity
 import android.content.Context
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -26,7 +26,7 @@ class RelaunchProcedure(
   private val weakActivity: WeakReference<Activity>?,
   private val updatesConfiguration: UpdatesConfiguration,
   private val logger: UpdatesLogger,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -89,7 +89,7 @@ class RelaunchProcedure(
       try {
         Reaper.reapUnusedUpdates(
           updatesConfiguration,
-          databaseHolder.database,
+          database,
           updatesDirectory,
           getCurrentLauncher().launchedUpdate,
           selectionPolicy
@@ -103,6 +103,6 @@ class RelaunchProcedure(
   }
 
   private suspend fun launchWith(newLauncher: DatabaseLauncher) {
-    newLauncher.launch(databaseHolder.database)
+    newLauncher.launch(database)
   }
 }

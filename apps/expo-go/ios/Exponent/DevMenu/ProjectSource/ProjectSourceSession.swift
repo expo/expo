@@ -31,22 +31,23 @@ final class ProjectSourceSession: ObservableObject {
   @Published private(set) var publishedEditError: String?
 
   private var loadTask: Task<SourceTree, Error>?
+  private var isTreeStale = false
   private var cancellables: Set<AnyCancellable> = []
 
   init() {
-    // Snack code can change under us (web editor peers); drop the cached
-    // tree so the next explorer open rebuilds from current files.
+    // Snack code can change under us (web editor peers); rebuild on the next
+    // load, but keep serving the old tree so open file views keep their contents.
     NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
-        self?.tree = nil
+        self?.isTreeStale = true
         self?.loadTask = nil
       }
       .store(in: &cancellables)
   }
 
   func loadSource() async throws -> SourceTree {
-    if let tree {
+    if let tree, !isTreeStale {
       return tree
     }
     if let loadTask {
@@ -65,6 +66,7 @@ final class ProjectSourceSession: ObservableObject {
     do {
       let result = try await task.value
       tree = result
+      isTreeStale = false
       return result
     } catch {
       loadTask = nil

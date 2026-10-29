@@ -53,8 +53,9 @@ class LauncherActivity : AppCompatActivity() {
           // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
           RecentTaskInfo::class.java.getDeclaredField("numActivities")
           for (task in kernel.tasks) {
-            if (task.taskInfo.id == taskId) {
-              if (task.taskInfo.numActivities == 1) {
+            val taskInfo = task.taskInfo ?: continue
+            if (taskInfo.id == taskId) {
+              if (taskInfo.numActivities == 1) {
                 finishAndRemoveTask()
                 return@Runnable
               } else {

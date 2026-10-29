@@ -195,7 +195,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     try {
       while (true) {
         val data = withContext(Dispatchers.IO) {
-          if (stream.exhausted()) null else stream.buffer.readByteArray()
+          if (stream.exhausted()) {
+            null
+          } else {
+            stream.buffer.readByteArray()
+          }
         } ?: break
 
         if (isInvalidState(

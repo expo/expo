@@ -1,6 +1,9 @@
 import React from 'react';
+
 import { IOSWebViewProps } from './WebViewTypes';
-declare const WebView: React.ForwardRefExoticComponent<IOSWebViewProps & React.RefAttributes<{}>> & {
-    isFileUploadSupported: () => Promise<boolean>;
+declare const WebView: React.ForwardRefExoticComponent<
+  IOSWebViewProps & React.RefAttributes<unknown>
+> & {
+  isFileUploadSupported: () => Promise<boolean>;
 };
 export default WebView;

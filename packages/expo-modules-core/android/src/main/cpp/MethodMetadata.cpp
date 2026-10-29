@@ -20,7 +20,8 @@ namespace expo {
 jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
   jsi::Function &&resolveFunction,
   jsi::Function &&rejectFunction,
-  jsi::Runtime &rt
+  jsi::Runtime &rt,
+  std::vector<jsi::Value> &&retainedValues
 ) {
   JSIContext *jsiContext = getJSIContext(rt);
   std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
@@ -29,7 +30,8 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
     rt,
     std::move(jsInvoker),
     std::move(resolveFunction),
-    std::move(rejectFunction)
+    std::move(rejectFunction),
+    std::move(retainedValues)
   );
 
   facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
@@ -105,6 +107,11 @@ MethodMetadata::MethodMetadata(
   jni::global_ref<jobject> &&jBodyReference
 ) : info(std::move(info)),
     jBodyReference(std::move(jBodyReference)) {
+  for (size_t index = 0; index < this->info.argTypes.size(); index++) {
+    if (this->info.argTypes[index]->converter->retainsJSValue()) {
+      retainedArgIndices.push_back(index);
+    }
+  }
 }
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
@@ -230,12 +237,18 @@ jsi::Function MethodMetadata::toAsyncFunction(
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 
+        std::shared_ptr<std::vector<jsi::Value>> retainedValues = nullptr;
+        if (!thisPtr->retainedArgIndices.empty()) {
+          retainedValues = std::make_shared<std::vector<jsi::Value>>(
+            thisPtr->retainArguments(rt, thisValue, args, count)
+          );
+        }
+
         // Creates a JSI promise
-        jsi::Value promise = Promise.callAsConstructor(
+        return Promise.callAsConstructor(
           rt,
-          thisPtr->createPromiseBody(rt, globalConvertedArgs)
+          thisPtr->createPromiseBody(rt, globalConvertedArgs, std::move(retainedValues))
         );
-        return promise;
       } catch (jni::JniException &jniException) {
         jni::local_ref<jni::JThrowable> unboxedThrowable = jniException.getThrowable();
         if (!unboxedThrowable->isInstanceOf(CodedException::javaClassLocal())) {
@@ -246,7 +259,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
         auto code = codedException->getCode();
         auto message = codedException->getLocalizedMessage().value_or("");
 
-        jsi::Value promise = Promise.callAsConstructor(
+        return Promise.callAsConstructor(
           rt,
           jsi::Function::createFromHostFunction(
             rt,
@@ -275,22 +288,49 @@ jsi::Function MethodMetadata::toAsyncFunction(
             }
           )
         );
-
-        return promise;
       }
     }
   );
 }
 
+std::vector<jsi::Value> MethodMetadata::retainArguments(
+  jsi::Runtime &rt,
+  const jsi::Value &thisValue,
+  const jsi::Value *args,
+  size_t count
+) const {
+  std::vector<jsi::Value> retained;
+  retained.reserve(retainedArgIndices.size());
+
+  // With an owner, `info.argTypes[0]` describes the receiver and the JS arguments start at index 1.
+  const size_t argsOffset = info.takesOwner ? 1 : 0;
+  for (size_t index : retainedArgIndices) {
+    if (info.takesOwner && index == 0) {
+      if (thisValue.isObject()) {
+        retained.emplace_back(rt, thisValue);
+      }
+      continue;
+    }
+
+    const size_t argIndex = index - argsOffset;
+    if (argIndex < count && args[argIndex].isObject()) {
+      retained.emplace_back(rt, args[argIndex]);
+    }
+  }
+
+  return retained;
+}
+
 jsi::Function MethodMetadata::createPromiseBody(
   jsi::Runtime &runtime,
-  jobjectArray globalArgs
+  jobjectArray globalArgs,
+  std::shared_ptr<std::vector<jsi::Value>> retainedValues
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
     getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, "promiseFn"),
     2,
-    [this, globalArgs](
+    [this, globalArgs, retainedValues = std::move(retainedValues)](
       jsi::Runtime &rt,
       const jsi::Value &thisVal,
       const jsi::Value *promiseConstructorArgs,
@@ -303,10 +343,12 @@ jsi::Function MethodMetadata::createPromiseBody(
       jsi::Function resolveJSIFn = promiseConstructorArgs[0].getObject(rt).getFunction(rt);
       jsi::Function rejectJSIFn = promiseConstructorArgs[1].getObject(rt).getFunction(rt);
 
+      // The promise constructor calls this body synchronously, so the retained values are moved out once.
       jobject javaCallback = createJavaCallback(
         std::move(resolveJSIFn),
         std::move(rejectJSIFn),
-        rt
+        rt,
+        retainedValues != nullptr ? std::move(*retainedValues) : std::vector<jsi::Value>()
       ).release();
 
       JNIEnv *env = jni::Environment::current();

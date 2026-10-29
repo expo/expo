@@ -22,7 +22,7 @@ export const BottomAccessoryPlacementContext = createContext<'regular' | 'inline
  * @example
  *
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * // This component will have two copies rendered, one for `inline` and one for `regular` environment
  * function AccessoryContent(props) {

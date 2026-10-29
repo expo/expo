@@ -60,6 +60,14 @@ const removeEventListener = (type: 'popstate', listener: () => void) => {
   }
 };
 
+export function reset() {
+  location = new URL('', 'http://example.com');
+  listeners = [];
+  entries = [{ state: null, href: location.href }];
+  index = 0;
+  currentState = null;
+}
+
 export const window = {
   document: { title: '' },
   get location() {

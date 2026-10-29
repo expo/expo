@@ -42,12 +42,27 @@ struct DispatchUtilsNextCursorTests {
     #expect(next == 10)
   }
 
+  @Test
+  func `payloadTooLarge retains current cursor`() {
+    let next = DispatchUtils.nextCursor(
+      for: .payloadTooLarge,
+      currentCursor: 10,
+      highestId: 20
+    )
+    #expect(next == 10)
+  }
+
   /// `.partialSuccess` advances the cursor like `.success` does: the bytes landed on the
   /// server (a subset was rejected server-side, but the batch as a whole was accepted), so
   /// re-sending the same rows would just trip the same rejection.
   @Test
   func `partialSuccess advances cursor to highestId`() {
-    let partial = OTPartialSuccess(rejectedDataPoints: 1, rejectedLogRecords: nil, errorMessage: "x")
+    let partial = OTPartialSuccess(
+      rejectedDataPoints: 1,
+      rejectedLogRecords: nil,
+      rejectedSpans: nil,
+      errorMessage: "x"
+    )
     let next = DispatchUtils.nextCursor(
       for: .partialSuccess(partial),
       currentCursor: 10,

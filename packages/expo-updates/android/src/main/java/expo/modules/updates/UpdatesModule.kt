@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -69,7 +70,11 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     AsyncFunction("checkForUpdateAsync") Coroutine { ->
       when (val result = UpdatesController.instance.checkForUpdate()) {
         is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-          throw CodedException("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
+          throw CodedException(
+            "ERR_UPDATES_CHECK",
+            "Failed to check for update: ${result.error.localizedMessageWithCauseLocalizedMessage()}",
+            result.error
+          )
         }
 
         is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
@@ -103,7 +108,11 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     AsyncFunction("fetchUpdateAsync") Coroutine { ->
       when (val result = UpdatesController.instance.fetchUpdate()) {
         is IUpdatesController.FetchUpdateResult.ErrorResult -> {
-          throw CodedException("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+          throw CodedException(
+            "ERR_UPDATES_FETCH",
+            "Failed to download new update: ${result.error.localizedMessageWithCauseLocalizedMessage()}",
+            result.error
+          )
         }
 
         is IUpdatesController.FetchUpdateResult.Failure -> {

@@ -70,6 +70,17 @@ public final class RecordPropertyRequiredException: GenericException<String>, @u
 }
 
 /**
+ Thrown by a synthesized record's `from(dictionary:appContext:)`. A `@Record` type converts only from
+ and to JavaScript values, through its `decode` and `encode`, so it can't be created from a native
+ dictionary. The parameter is the name of the record type.
+ */
+public final class RecordDictionaryConversionException: GenericException<String>, @unchecked Sendable {
+  override public var reason: String {
+    return "Cannot create '\(param)' from a native dictionary, because a @Record type converts only from JavaScript values. Receive the value as a JavaScript argument, or create it with its memberwise initializer"
+  }
+}
+
+/**
  Provides the default implementation of `Record` protocol.
  */
 public extension Record {
@@ -230,10 +241,7 @@ internal func recordFieldValueToJSValue(
 
   convertedValue = Conversions.convertFunctionResult(value, appContext: appContext)
   if Optional.isNil(convertedValue) {
-    return .null
-  }
-  if let jsValue = convertedValue as? JavaScriptValue {
-    return jsValue
+    return .null()
   }
   return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
 }

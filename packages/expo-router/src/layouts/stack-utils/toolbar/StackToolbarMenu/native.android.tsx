@@ -1,15 +1,7 @@
 'use client';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  HorizontalDivider,
-  Icon,
-  IconButton,
-  Text as ComposeText,
-} from '@expo/ui/jetpack-compose';
-import { background } from '@expo/ui/jetpack-compose/modifiers';
 import { createContext, use, useCallback, useState } from 'react';
 
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
@@ -20,6 +12,7 @@ import {
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
   DEFAULT_TOOLBAR_TINT_COLOR,
 } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
 import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
@@ -37,6 +30,19 @@ const ToolbarMenuCloseContext = createContext<(() => void) | null>(null);
  * Renders as a DropdownMenu with IconButton trigger (root) or DropdownMenuItem trigger (nested).
  */
 export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
+  const {
+    expoUI: {
+      DropdownMenu,
+      DropdownMenuItem,
+      HorizontalDivider,
+      Icon,
+      IconButton,
+      Text: ComposeText,
+    },
+    modifiers: { background },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const [expanded, setExpanded] = useState(false);
   const parentClose = use(ToolbarMenuCloseContext);
   const isNested = parentClose !== null;
@@ -55,7 +61,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   const closeMenu = useCallback(() => {
     setExpanded(false);
     parentClose?.();
-  }, [parentClose]);
+  }, [parentClose, setExpanded]);
 
   if (process.env.NODE_ENV !== 'production' && isNested && props.badge) {
     console.warn(
@@ -89,7 +95,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        color={backgroundColor}>
+        color={backgroundColor}
+        cornerRadius={props.cornerRadius}>
         <DropdownMenu.Trigger>
           <DropdownMenuItem
             onClick={() => {
@@ -132,7 +139,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     <IconButton
       onClick={() => setExpanded(true)}
       enabled={!props.disabled}
-      modifiers={[background(backgroundColor)]}>
+      colors={getIconButtonContainerColors(toolbarColors.buttonContainerColor)}
+      // The background modifier would paint a square behind the round container
+      modifiers={toolbarColors.buttonContainerColor ? [] : [background(backgroundColor)]}>
       <Icon
         source={props.source}
         tint={sourceTint}
@@ -147,7 +156,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        color={backgroundColor}>
+        color={backgroundColor}
+        cornerRadius={props.cornerRadius}>
         <DropdownMenu.Trigger>
           <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
             {iconButton}
@@ -166,6 +176,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
  * Renders as a DropdownMenuItem.
  */
 export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (props) => {
+  const {
+    expoUI: { DropdownMenuItem, Icon, Text: ComposeText },
+    modifiers: { background },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const closeMenu = use(ToolbarMenuCloseContext);
   const toolbarColors = useToolbarColors();
   const tintColor = props.destructive

@@ -2,7 +2,6 @@ package expo.modules.appmetrics.storage
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -23,11 +22,9 @@ class SessionMappersTest {
   )
 
   private fun makeMetric(
-    metricId: String = "metric-1",
     sessionId: String = "session-1",
     params: String? = null
   ): Metric = Metric(
-    metricId = metricId,
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:01.000Z",
     category = "appStartup",
@@ -37,12 +34,10 @@ class SessionMappersTest {
   )
 
   private fun makeLog(
-    logId: String = "log-1",
     sessionId: String = "session-1",
     name: String = "auth.login_failed",
     attributes: String? = null
   ): LogRecord = LogRecord(
-    logId = logId,
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:02.000Z",
     name = name,
@@ -107,9 +102,8 @@ class SessionMappersTest {
 
   @Test
   fun `JsMetric_fromMetric copies scalar fields verbatim`() {
-    val js = JsMetric.fromMetric(makeMetric(metricId = "m-42", sessionId = "session-1"))
+    val js = JsMetric.fromMetric(makeMetric(sessionId = "session-1"))
 
-    assertEquals("m-42", js.metricId)
     assertEquals("session-1", js.sessionId)
     assertEquals("appStartup", js.category)
     assertEquals("timeToInteractive", js.name)
@@ -123,8 +117,8 @@ class SessionMappersTest {
       session = makeSession(),
       metrics = emptyList(),
       logs = listOf(
-        makeLog(logId = "l-1", name = "first.event"),
-        makeLog(logId = "l-2", name = "second.event")
+        makeLog(name = "first.event"),
+        makeLog(name = "second.event")
       )
     )
 
@@ -213,7 +207,7 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `SessionMetricInput_toMetric maps scalar fields verbatim and generates its own metricId`() {
+  fun `SessionMetricInput_toMetric maps scalar fields verbatim`() {
     val input = SessionMetricInput(
       category = "custom",
       name = "purchase",
@@ -229,9 +223,6 @@ class SessionMappersTest {
     assertEquals(9.99, metric.value, 0.0)
     assertEquals("2025-03-01T12:00:00.000Z", metric.timestamp)
     assertEquals("Checkout", metric.routeName)
-    // `metricId` is generated natively and `updateId` isn't part of the
-    // JS-facing `MetricInput` contract — neither is caller-settable.
-    assertTrue(metric.metricId.isNotEmpty())
     assertNull(metric.updateId)
   }
 

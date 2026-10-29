@@ -1,13 +1,12 @@
 ---
 title: 'チュートリアル：React Native と Expo を使う'
 sidebar_title: はじめに
-description: Expo を使って Android、iOS、web で動作するユニバーサルアプリを作るための React Native チュートリアル入門。
+description: Expo、Expo Router、Expo UI を使って Android、iOS、web で動作するユニバーサルアプリを作るための React Native チュートリアル入門。
 ---
-
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 
 これからユニバーサルアプリを作る旅に出発しましょう。このチュートリアルでは、Android、iOS、web で動作する Expo アプリを、ひとつのコードベースで作成します。さっそく始めましょう！
 
@@ -18,18 +17,20 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 このチュートリアルの目的は、Expo を始めて Expo SDK に慣れることです。以下のトピックを扱います。
 
 - TypeScript を有効にしたデフォルトテンプレートでアプリを作成する
-- Expo Router で 2 画面のボトムタブレイアウトを実装する
+- Expo Router のネイティブタブで 2 画面のレイアウトを実装する
 - アプリのレイアウトを分解して flexbox で実装する
+- Expo UI でネイティブボタンを作成し、Android、iOS、web 向けにプラットフォーム固有のファイルを使う
 - 各プラットフォームのシステム UI を使ってメディアライブラリから画像を選択する
-- React Native の `<Modal>` と `<FlatList>` コンポーネントを使ってステッカーモーダルを作成する
+- Expo UI のボトムシートと React Native の `<FlatList>` コンポーネントを使って絵文字ピッカーを作成する
 - ステッカーを操作するためのタッチジェスチャーを追加する
-- サードパーティライブラリを使ってスクリーンショットを撮影し、ディスクに保存する
-- Android、iOS、web のプラットフォーム差異に対応する
+- サードパーティライブラリを使ってスクリーンショットを撮影し、Android と iOS ではメディアライブラリに保存し、web ではダウンロードする
 - 最後に、ステータスバー、スプラッシュスクリーン、アイコンを設定してアプリを完成させる
 
 これらのトピックは、Expo アプリ作成の基礎を学ぶための土台になります。このチュートリアルは自分のペースで進められ、完了までに最大 2 時間ほどかかります。
 
-初心者にも取り組みやすいように、チュートリアルは 9 章に分けています。続けて進めることも、いったん中断して後で戻ってくることもできます。各章にはステップを完了するために必要なコードスニペットが含まれているため、ゼロからコードを書きながら進めても、スニペットをコピー＆ペーストして進めても構いません。
+このアプリは、各プラットフォームのネイティブ UI を使用します。[Expo UI](/versions/latest/sdk/ui/) は Jetpack Compose と SwiftUI のコンポーネントを React Native にもたらし、Expo Go で動作します。Android では、タブバー、ボタン、ボトムシートが Material 3 を使用します。iOS 26 以降では、タブバーが Liquid Glass を使用します。web では、アプリは React Native のコンポーネントを使用します。
+
+初心者にも取り組みやすいように、チュートリアルは 8 章に分けています。続けて進めることも、いったん中断して後で戻ってくることもできます。各章にはステップを完了するために必要なコードスニペットが含まれているため、ゼロからコードを書きながら進めても、スニペットをコピー＆ペーストして進めても構いません。
 
 始める前に、これから作るものを見てみましょう。Android、iOS、web で動作する **StickerSmash** という名前のアプリです。
 
@@ -50,7 +51,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo 以前は "Edit app/index.tsx to edit this screen." と表示されていましたが、現在は "Hello world!" と表示されます。 */<Text>Hello world!</Text>/* @end */
+      /* @tutinfo 以前は "Edit src/app/index.tsx to edit this screen." と表示されていましたが、現在は "Hello world!" と表示されます。 */<Text>Hello world!</Text>/* @end */
     </View>
   );
 }
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
 
 <BoxLink
   title="始める"
-  Icon={BookOpen02Icon}
+  Icon={HandWaveIcon}
   description="まずは新しい Expo アプリを作成しましょう。"
   href="/ja/tutorial/create-your-first-app"
 />

@@ -2,6 +2,7 @@
 export {};
 
 const mockNativeTarget = {
+  clientId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
@@ -19,6 +20,7 @@ const mockAppMetrics = {
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
+  setNetworkTracesConfig: jest.fn(),
 };
 
 const mockSetErrorHandlerEnabled = jest.fn();
@@ -56,6 +58,11 @@ jest.mock('../integrations/react-navigation/init', () => ({
   getReactNavigationIntegrationConfig: jest.fn(() => undefined),
 }));
 
+jest.mock('../integrations/react-native-reanimated/init', () => ({
+  initReanimatedIntegration: jest.fn(),
+  disableReanimatedIntegration: jest.fn(),
+}));
+
 let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
@@ -87,6 +94,10 @@ beforeEach(() => {
     isInitialized: jest.fn(() => false),
     getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   }));
+  jest.doMock('../integrations/react-native-reanimated/init', () => ({
+    initReanimatedIntegration: jest.fn(),
+    disableReanimatedIntegration: jest.fn(),
+  }));
 });
 
 function loadModule() {
@@ -99,6 +110,10 @@ function loadInit() {
 
 function loadReactNavigationInit() {
   return require('../integrations/react-navigation/init') as typeof import('../integrations/react-navigation/init');
+}
+
+function loadReanimatedInit() {
+  return require('../integrations/react-native-reanimated/init') as typeof import('../integrations/react-native-reanimated/init');
 }
 
 describe('module Proxy', () => {
@@ -153,6 +168,115 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("calls initReanimatedIntegration when integrations['react-native-reanimated'] is true", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledTimes(1);
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(true);
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+  });
+
+  it("passes integrations['react-native-reanimated'] object config to initReanimatedIntegration", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    const reanimatedConfig = { level: 2 as const, strict: false };
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': reanimatedConfig },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(reanimatedConfig);
+  });
+
+  it.each([false, undefined])(
+    "disables the Reanimated integration when integrations['react-native-reanimated'] is %s",
+    (value) => {
+      const Observe = loadModule();
+      const { initReanimatedIntegration, disableReanimatedIntegration } = loadReanimatedInit();
+      Observe.configure({
+        environment: 'test',
+        integrations: { 'react-native-reanimated': value },
+      });
+      expect(initReanimatedIntegration).not.toHaveBeenCalled();
+      expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('disables the Reanimated integration when configure has no integrations', () => {
+    const Observe = loadModule();
+    const { disableReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({ environment: 'test' });
+    expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+  });
+
+  it('records no network traces when configure omits networkTraces', () => {
+    // Opt-in: recording is off unless asked for, so upgrading can't silently add to an app's
+    // event bill. `configure` is a full replacement, so an absent `networkTraces` resets to it.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledTimes(1);
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled: false });
+  });
+
+  it('records by default once the object form is used', () => {
+    // Passing a filter means "record these", so `enabled` only has to be spelled out to turn
+    // recording off while keeping a filter configured.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: {} });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled: true });
+  });
+
+  it('honors an explicit enabled: false alongside a filter', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      environment: 'test',
+      networkTraces: { enabled: false, filter: { hosts: ['api.myapp.com'] } },
+    });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: false,
+      filter: { hosts: ['api.myapp.com'] },
+    });
+  });
+
+  it.each([true, false])('maps networkTraces: %s to the native config', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: enabled });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled });
+  });
+
+  it('passes a capture filter down with the enabled flag', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      environment: 'test',
+      networkTraces: { filter: { hosts: ['api.myapp.com'], methods: ['GET'] } },
+    });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: true,
+      filter: { hosts: ['api.myapp.com'], methods: ['GET'] },
+    });
+  });
+
+  it.each([
+    ['https://api.myapp.com', true],
+    ['api.myapp.com:8080', true],
+    ['api.myapp.com', false],
+  ])('warns in dev when a filter host is %s', (host, shouldWarn) => {
+    // A full URL or host:port matches no request, so the filter silently records nothing.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: { filter: { hosts: [host] } } });
+    expect(warnSpy).toHaveBeenCalledTimes(shouldWarn ? 1 : 0);
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: true,
+      filter: { hosts: [host] },
+    });
   });
 
   it('leaves unhandled-error reporting enabled when errorHandlingEnabled is unset', () => {
@@ -485,6 +609,12 @@ describe('module Proxy', () => {
     };
     expect(() => Observe.reportError(hostile)).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('exposes the native EAS client id as clientId', () => {
+    const Observe = loadModule();
+    expect(Observe.clientId).toBe('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee');
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('never throws when the native reportError call throws', () => {

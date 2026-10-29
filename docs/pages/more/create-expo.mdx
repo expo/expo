@@ -15,14 +15,14 @@ To create a new project, run the following command:
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-    bun: ['$ bun create expo --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-58'],
+    yarn: ['$ yarn create expo-app --template default@sdk-58'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-58'],
+    bun: ['$ bun create expo --template default@sdk-58'],
   }}
 />
 
-> **Note:** Without `--template`, `create-expo-app` prompts which Expo SDK version to use. Select **Latest (SDK 57)** for most projects, or **for learning with Expo Go (SDK 54)**, which matches the Google Play Store and Apple App Store versions of Expo Go.
+> **info** During the SDK 58 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 57 project. If you plan to use Expo Go on a physical device, use an SDK 57 project. Otherwise, use `--template default@sdk-58` to create an SDK 58 project.
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -42,7 +42,7 @@ Skips installing npm dependencies or CocoaPods.
 
 ### `--no-agents-md`
 
-Skips generating **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. By default, `create-expo-app` generates these files so AI coding agents (such as Claude Code) have Expo-specific context and the [`expo` skills plugin](https://expo.dev/expo-skills) configured automatically. The generated **AGENTS.md** points to the versioned Expo docs matching your project's SDK version.
+Skips generating **AGENTS.md** and **.claude/settings.json**. By default, `create-expo-app` generates **AGENTS.md** so AI coding agents have Expo-specific context. When Claude Code is installed, it also generates **.claude/settings.json** to configure the [`expo` skills plugin](https://expo.dev/expo-skills) automatically. The generated **AGENTS.md** points to the versioned Expo docs matching your project's SDK version.
 
 ### `--template`
 
