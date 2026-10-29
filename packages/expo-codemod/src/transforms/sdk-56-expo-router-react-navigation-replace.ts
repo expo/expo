@@ -201,18 +201,7 @@ const transform: Transform = (fileInfo, api) => {
     printErrorBlock('Unsupported import style — manual change needed', errors);
   }
 
-  // We intentionally do not bail out of the entire file when there are
-  // unsupported packages (e.g. native-stack/drawer) or unsupported import
-  // styles. Those are reported above for the user to migrate manually, but any
-  // clean named imports in the same file must still be rewritten — otherwise
-  // they are silently left on `@react-navigation/*` with nothing reported about
-  // them, which is the failure mode this codemod exists to prevent.
-  //
-  // A file that still holds a reported import is not usable until that manual
-  // migration happens either way: Metro rejects any `@react-navigation/*`
-  // import from app code once expo-router is installed (see
-  // `withMetroMultiPlatform.ts`). Migrating what we can shrinks the manual step
-  // instead of hiding it.
+  // Rewrite supported imports even when other imports need manual migration.
   let didRewrite = false;
   for (const path of mappablePaths) {
     const specifiers = (path.node.specifiers ?? []) as ImportSpecifierWithKind[];
