@@ -164,17 +164,20 @@ The first Android iteration supports an existing Gradle project with a standard 
 Create an Empty Activity Compose project in Android Studio. From its Gradle root, run:
 
 ```sh
-npm install --save-dev /path/to/expo/packages/expo-embedding
 npx expo-embedding init --platform android
+# Or with Bun:
+bunx expo-embedding init --platform android
 ```
 
-The built CLI can also be invoked directly by absolute path for local testing. Installing it as a devDependency is optional. Android is detected automatically when the root has Gradle settings and no Xcode project.
+For local CLI development, use `node /path/to/expo/packages/expo-embedding/bin/expo-embedding.js init --platform android` after building the package. Installing it as a devDependency is optional. Android is detected automatically when the root has Gradle settings and no Xcode project.
 
 Before installing dependencies, `init` inspects the launch Activity in `app/src/main/AndroidManifest.xml`. The current embedding delegate requires `AppCompatActivity`. For a standard Kotlin Compose Activity that directly extends `ComponentActivity`, setup previews the superclass/import and XML theme changes and asks before applying them. AppCompat is already exposed by the generated library. Your Compose content, callbacks and `MaterialTheme` remain intact. An Activity that already derives from AppCompat is preserved.
 
 If the manifest has no Application name, setup also previews creation of an app-owned `MainApplication.kt` and adds its fully qualified name to the manifest. It uses `Application(), ReactApplication by expo` and forwards the two Application lifecycle callbacks to `ExpoApplicationDelegate`. An explicit `android.app.Application` declaration is handled the same way. Existing manifest attributes are retained, and an unregistered class with the same name is never overwritten.
 
 For an existing Kotlin Application, setup can add composition to a simple class declaration while keeping its superclass and other interfaces. It forwards lifecycle callbacks immediately after their direct `super` calls and preserves the surrounding code. Custom constructors, conditional `super` calls, member/import collisions, Java Applications, unresolved manifest placeholders and existing React Native integrations require manual wiring. An Application already wired with the documented composition pattern is preserved.
+
+For an agent, first run `npx expo-embedding skill --platform android` to inspect the proposed host changes and complete integration guide. `--json` includes exact before/after contents and relative paths. It shares the same planner as setup and does not prompt or write files. Its text preview is for review, not an apply-ready patch; generated Gradle changes and manual Activity delegate/scene wiring are described in the guide.
 
 For an agent or CI run, explicitly authorize the combined Application and Activity changes:
 

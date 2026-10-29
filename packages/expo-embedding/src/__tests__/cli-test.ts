@@ -63,4 +63,61 @@ describe('Running the packed CLI outside the Expo checkout', () => {
     });
     expect(await readdir(host)).toEqual([]);
   });
+
+  it('should preview a Compose host migration in CI without installing or applying it', async () => {
+    const fixture: Record<string, string> = {
+      'settings.gradle.kts': 'pluginManagement { repositories { google() } }\ninclude(":app")\n',
+      'build.gradle.kts': 'plugins {}\n',
+      'app/build.gradle.kts': 'plugins {}\nandroid { namespace = "example" }\n',
+      'app/src/main/java/example/MainActivity.kt':
+        'package example\nimport androidx.activity.ComponentActivity\nclass MainActivity : ComponentActivity() {}\n',
+      'app/src/main/AndroidManifest.xml': `<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application android:theme="@style/Theme.Host">
+    <activity android:name=".MainActivity"><intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter></activity>
+  </application>
+</manifest>`,
+      'app/src/main/res/values/themes.xml':
+        '<resources><style name="Theme.Host" parent="android:Theme.Material.Light.NoActionBar" /></resources>',
+    };
+    for (const [path, content] of Object.entries(fixture)) {
+      await mkdir(join(host, path, '..'), { recursive: true });
+      await writeFile(join(host, path), content);
+    }
+    const report = JSON.parse((await run('skill', '--json')).stdout);
+    expect(report).toMatchObject({
+      platform: 'android',
+      selection: { activity: 'example.MainActivity' },
+    });
+    expect(report.guide).toContain('PermissionAwareActivity');
+    expect(report.changes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: 'app/src/main/java/example/MainApplication.kt',
+          after: expect.stringContaining('ReactApplication by expo'),
+        }),
+        expect.objectContaining({
+          path: 'app/src/main/java/example/MainActivity.kt',
+          after: expect.stringContaining('AppCompatActivity'),
+        }),
+        expect.objectContaining({
+          path: 'app/src/main/AndroidManifest.xml',
+          after: expect.stringContaining('android:name="example.MainApplication"'),
+        }),
+        expect.objectContaining({
+          path: 'app/src/main/res/values/themes.xml',
+          after: expect.stringContaining('Theme.AppCompat'),
+        }),
+      ])
+    );
+    expect(await contents(host)).toEqual(fixture);
+    await expect(run('init')).rejects.toMatchObject({
+      code: 1,
+      stderr: expect.stringContaining('--configure-host'),
+      stdout: expect.stringContaining(report.preview),
+    });
+    expect(await contents(host)).toEqual(fixture);
+  });
 });

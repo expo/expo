@@ -6,11 +6,7 @@ import {
   prepareAndroidProject,
   androidDependenciesAreHoisted,
 } from './android';
-import {
-  activityMigrationPreview,
-  hostChangesPreview,
-  planActivityMigration,
-} from './android-activity';
+import { hostChangesPreview, planActivityMigration } from './android-activity';
 import { approveHostConfiguration, planApplicationConfiguration } from './android-application';
 import type { HostFileChange } from './android-host';
 import { exists, writeGenerated } from './files';
@@ -23,10 +19,7 @@ type HostOptions = {
   'migrate-activity'?: string;
 };
 
-export async function prepareAndroid(
-  root: string,
-  options: HostOptions
-): Promise<HostFileChange[]> {
+export async function planAndroidHost(root: string, options: HostOptions) {
   if (options.project || options.target)
     throw new Error(
       'Android currently supports the standard :app module. Omit --project and --target.'
@@ -37,12 +30,20 @@ export async function prepareAndroid(
   const changes = new Map<string, HostFileChange>();
   for (const change of [...activity.changes, ...application.changes])
     changes.set(change.path, change);
-  if (activity.changes.length) process.stdout.write(activityMigrationPreview(activity));
-  if (application.changes.length)
-    process.stdout.write(
-      `Configure ${application.applicationName} with ExpoApplicationDelegate composition:\n` +
-        hostChangesPreview(root, application.changes)
-    );
+  return {
+    activity,
+    application,
+    changes: [...changes.values()],
+    preview: hostChangesPreview(root, [...changes.values()]),
+  };
+}
+
+export async function prepareAndroid(
+  root: string,
+  options: HostOptions
+): Promise<HostFileChange[]> {
+  const { activity, application, changes, preview } = await planAndroidHost(root, options);
+  if (changes.length) process.stdout.write(`Proposed Android host changes:\n${preview}`);
   await approveHostConfiguration(activity, application, {
     configureHost: options['configure-host'],
     migrate: options['migrate-activity'],
@@ -60,7 +61,7 @@ export async function prepareAndroid(
       }
     },
   });
-  return [...changes.values()];
+  return changes;
 }
 
 export async function hoistAndroidDependencies(root: string, frozen: boolean): Promise<void> {
