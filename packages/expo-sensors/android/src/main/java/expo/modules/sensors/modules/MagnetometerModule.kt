@@ -2,29 +2,44 @@
 package expo.modules.sensors.modules
 
 import android.hardware.Sensor
-import android.os.Bundle
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.sensors.UseSensorProxy
-import expo.modules.sensors.createSensorProxy
+import expo.modules.sensors.ThreeAxisSensorEvent
+import expo.modules.sensors.SensorProxy
+import expo.modules.sensors.startObserving
+import expo.modules.sensors.stopObserving
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
 
-private const val EventName = "magnetometerDidUpdate"
-
+@ExpoModule("ExponentMagnetometer")
 class MagnetometerModule : Module() {
-  private val sensorProxy by lazy {
-    createSensorProxy(EventName, Sensor.TYPE_MAGNETIC_FIELD, appContext) { sensorEvent ->
-      Bundle().apply {
-        putDouble("x", sensorEvent.values[0].toDouble())
-        putDouble("y", sensorEvent.values[1].toDouble())
-        putDouble("z", sensorEvent.values[2].toDouble())
-        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
-      }
-    }
+  private val sensorProxy: SensorProxy = SensorProxy(Sensor.TYPE_MAGNETIC_FIELD, { androidContext }) { sensorEvent ->
+    onUpdate(
+      ThreeAxisSensorEvent(
+        x = sensorEvent.values[0].toDouble(),
+        y = sensorEvent.values[1].toDouble(),
+        z = sensorEvent.values[2].toDouble(),
+        timestamp = sensorEvent.timestamp / 1_000_000_000.0
+      )
+    )
   }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExponentMagnetometer")
+  @Event(name = "magnetometerDidUpdate")
+  private val onUpdate = event<ThreeAxisSensorEvent>(
+    onStartObserving = { startObserving(sensorProxy) },
+    onStopObserving = { stopObserving(sensorProxy) }
+  )
 
-    UseSensorProxy(this@MagnetometerModule, Sensor.TYPE_MAGNETIC_FIELD, EventName) { sensorProxy }
+  override fun onDestroy() {
+    stopObserving(sensorProxy)
   }
+
+  @JS
+  suspend fun setUpdateInterval(updateInterval: Int) {
+    sensorProxy.setUpdateInterval(updateInterval)
+  }
+
+  @JS
+  suspend fun isAvailableAsync(): Boolean = sensorProxy.isAvailable
 }

@@ -63,13 +63,7 @@ import expo.modules.print.PrintModule
 import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.sensors.modules.AccelerometerModule
-import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
-import expo.modules.sensors.modules.GyroscopeModule
-import expo.modules.sensors.modules.LightSensorModule
-import expo.modules.sensors.modules.MagnetometerModule
-import expo.modules.sensors.modules.MagnetometerUncalibratedModule
 import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
@@ -118,14 +112,8 @@ object ExperiencePackagePicker : ModulesProvider {
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
     // Sensors
-    AccelerometerModule::class.java to null,
     AssetModule::class.java to null,
-    BarometerModule::class.java to null,
-    GyroscopeModule::class.java to null,
-    LightSensorModule::class.java to null,
     DeviceMotionModule::class.java to null,
-    MagnetometerModule::class.java to null,
-    MagnetometerUncalibratedModule::class.java to null,
     PedometerModule::class.java to null,
     // End of Sensors
     // Notifications
