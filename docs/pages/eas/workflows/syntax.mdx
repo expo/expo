@@ -947,9 +947,9 @@ For pull request comment webhooks, `event.issue` and `event.comment` contain the
 | ------------------------------------------- | ------------------- | --------------------------------------------------------- |
 | Schedule                                    | `schedule`          | Generated fields: `schedule`, `inputs`, and `head_commit` |
 | Manual run from an uploaded project archive | `workflow_dispatch` | Contains `inputs`                                         |
-| Manual run from a GitHub ref                | `push`              | Not available                                             |
+| Manual run from a GitHub ref                | `workflow_dispatch` | Not available                                             |
 
-Manual runs from an uploaded project archive report `event_name: workflow_dispatch` and have empty Git fields. Manual runs from a GitHub ref report `event_name: push` and include the commit, ref, and linked repository, but no `github.event` object. Repository fields are available when the run has Git context and a linked GitHub repository. `triggering_actor` identifies the Expo user or robot who started the run. Use the top-level `inputs` context to read inputs for either type of manual run.
+Manual runs from an uploaded project archive report `event_name: workflow_dispatch` and have empty Git fields. Manual runs from a GitHub ref report `event_name: workflow_dispatch` and include the commit, ref, and linked repository, but no `github.event` object. Repository fields are available when the run has Git context and a linked GitHub repository. `triggering_actor` identifies the Expo user or robot who started the run. Use the top-level `inputs` context to read inputs for either type of manual run.
 
 Example:
 
