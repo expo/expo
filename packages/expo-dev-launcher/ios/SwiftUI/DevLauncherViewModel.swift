@@ -26,8 +26,6 @@ enum LocalNetworkPermissionStatus: Equatable, Sendable {
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
-  /// Safe area inset for when VC hierarchy doesn't propagate it (e.g., SwiftUI/brownfield apps)
-  @Published var topSafeAreaInset: CGFloat = 0
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var updatesConfig: [AnyHashable: Any] = [:]

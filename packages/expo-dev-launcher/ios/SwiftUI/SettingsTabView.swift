@@ -32,8 +32,6 @@ struct SettingsTabView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24) {
-        SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
-        titleSection
         launchBehaviour
         gestures
 
@@ -59,9 +57,6 @@ struct SettingsTabView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if os(tvOS)
     .background()
-    #endif
-    #if !os(macOS)
-    .navigationBarHidden(true)
     #endif
     #if os(iOS) && !targetEnvironment(simulator)
     .task {
@@ -107,13 +102,6 @@ struct SettingsTabView: View {
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
     }
-  }
-
-  private var titleSection: some View {
-    Text("Settings")
-      .font(.largeTitle)
-      .fontWeight(.bold)
-      .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   private var gestures: some View {
