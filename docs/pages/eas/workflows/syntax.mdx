@@ -857,6 +857,29 @@ You can customize the behavior of a workflow — commands to execute, control fl
 
 Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
 
+### Operators
+
+An expression can use these operators:
+
+- Compare two values: `==`, `!=`, `===`, `!==`, `<`, `>`, `<=`, and `>=`.
+- Combine conditions: `&&`, `||`, and `!`.
+- Choose a value: `condition ? value_if_true : value_if_false`.
+
+```yaml
+jobs:
+  deploy:
+    # @info #
+    if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+    # @end #
+    steps:
+      - run: |
+          echo "Deploy to ${{ github.ref_name == 'main' ? 'production' : 'preview' }}"
+```
+
+The colon (`:`) in a ternary is also YAML syntax. Put a value that has a ternary in a `|` block or in quotes, as in the `run` step above.
+
+EAS evaluates every part of an expression. `&&` and `||` do not skip the right side, and `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails.
+
 ### Context availability
 
 EAS evaluates `${{ }}` expressions at three points. Each point has its own set of contexts and functions.
