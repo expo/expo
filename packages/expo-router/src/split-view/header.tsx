@@ -14,6 +14,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     searchBar,
     backTitle,
     backVisible,
+    hidden,
   } = header;
   return (
     <SplitViewNativeHeader
@@ -38,6 +39,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       onSearchBarSearchButtonPress={searchBar?.onSearchButtonPress}
       backTitle={backTitle}
       backVisible={backVisible}
+      hidden={hidden}
     />
   );
 }

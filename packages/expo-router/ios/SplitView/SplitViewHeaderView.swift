@@ -21,6 +21,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   var searchBar: SplitViewSearchBarRecord?
   var backTitle: String?
   var backVisible = true
+  var navigationBarHidden = false
   let onToolbarItemPress = EventDispatcher()
   let onSearchBarChangeText = EventDispatcher()
   let onSearchBarSearchButtonPress = EventDispatcher()
@@ -33,6 +34,13 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
     apply()
+  }
+
+  override func willMove(toSuperview newSuperview: UIView?) {
+    super.willMove(toSuperview: newSuperview)
+    if newSuperview == nil, navigationBarHidden {
+      navigationController?.setNavigationBarHidden(false, animated: false)
+    }
   }
 
   override func didMoveToSuperview() {
@@ -57,11 +65,12 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     }
   }
 
-  // The previous column is known only after this column is pushed onto the collapsed split view.
+  // The previous column and the navigation controller are known only after this column is in a window.
   override func didMoveToWindow() {
     super.didMoveToWindow()
     if window != nil {
       applyBackButton()
+      applyNavigationBarHidden()
     }
   }
 
@@ -78,9 +87,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     if navigationItem.largeTitleDisplayMode != largeTitleDisplayMode {
       navigationItem.largeTitleDisplayMode = largeTitleDisplayMode
       // A visible bar does not grow by itself when its item starts to show a large title.
-      // The column view is the view of its controller, so the controller is its next responder.
-      (superview?.next as? UIViewController)?.navigationController?.navigationBar.sizeToFit()
+      navigationController?.navigationBar.sizeToFit()
     }
+    applyNavigationBarHidden()
     // Keeps the back button next to the left items when the split view is collapsed.
     navigationItem.leftItemsSupplementBackButton = true
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
@@ -102,6 +111,18 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     onSearchBarSearchButtonPress(["text": searchBar.text ?? ""])
+  }
+
+  // The column view is the view of its controller, so the controller is its next responder.
+  private var navigationController: UINavigationController? {
+    (superview?.next as? UIViewController)?.navigationController
+  }
+
+  private func applyNavigationBarHidden() {
+    guard let navigationController, navigationController.isNavigationBarHidden != navigationBarHidden else {
+      return
+    }
+    navigationController.setNavigationBarHidden(navigationBarHidden, animated: false)
   }
 
   // UIKit reads the title of a back button from the item below it in the navigation stack.
