@@ -26,13 +26,13 @@ struct CrashReportView: View {
       Button(action: onDismiss) {
         Text("Close")
           .font(.headline)
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
           .frame(maxWidth: .infinity)
           .padding()
 #if !os(tvOS) && !os(macOS)
           .background(Color(.systemGray5))
 #endif
-          .cornerRadius(8)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
       }
       .padding()
     }
@@ -40,7 +40,7 @@ struct CrashReportView: View {
     .background(Color(.systemBackground))
     #endif
     #if !os(macOS)
-    .navigationBarHidden(true)
+    .toolbar(.hidden, for: .navigationBar)
     #endif
   }
 
@@ -60,11 +60,11 @@ struct CrashReportView: View {
     Button(action: copyToClipboard) {
       Text(showCopiedMessage ? "Copied!" : "Tap to Copy Report")
         .font(.headline)
-        .foregroundColor(Color.expoSystemBackground)
+        .foregroundStyle(Color.expoSystemBackground)
         .frame(maxWidth: .infinity)
         .padding()
         .background(showCopiedMessage ? Color.green : Color.primary)
-        .cornerRadius(8)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(showCopiedMessage)
   }
@@ -79,7 +79,7 @@ struct CrashReportView: View {
       }
       Text(formatTimestamp(getCrashDate()))
         .font(.body)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -94,7 +94,7 @@ struct CrashReportView: View {
       }
       Text(error.message)
         .font(.system(.caption, design: .monospaced))
-        .foregroundColor(.primary)
+        .foregroundStyle(Color.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,7 +111,7 @@ struct CrashReportView: View {
           if let errorInstance, !errorInstance.stack.isEmpty {
             Text(errorInstance.stack)
               .font(.system(.caption, design: .monospaced))
-              .foregroundColor(.primary)
+              .foregroundStyle(Color.primary)
               .fixedSize(horizontal: true, vertical: false)
               #if !os(tvOS)
               .textSelection(.enabled)
@@ -124,7 +124,7 @@ struct CrashReportView: View {
           } else {
             Text("No stack trace available")
               .font(.system(.caption, design: .monospaced))
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
               .fixedSize(horizontal: true, vertical: false)
           }
         }
@@ -136,7 +136,7 @@ struct CrashReportView: View {
       #if !os(tvOS) && !os(macOS)
       .background(Color(.secondarySystemGroupedBackground))
       #endif
-      .cornerRadius(8)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }

@@ -137,17 +137,17 @@ struct RecentlyOpenedAppRow: View {
         VStack(alignment: .leading) {
           Text(app.name)
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
           Text(app.url)
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundStyle(Color.secondary)
             .lineLimit(1)
         }
 
         Spacer()
         Image(systemName: "chevron.right")
           .font(.caption)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

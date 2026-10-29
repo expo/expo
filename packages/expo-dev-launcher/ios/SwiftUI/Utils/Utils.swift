@@ -39,13 +39,13 @@ extension Text {
   func monospacedCaption() -> some View {
     self
       .font(.system(.caption, design: .monospaced))
-      .foregroundColor(.primary)
+      .foregroundStyle(Color.primary)
   }
 
   func monospacedCaptionSecondary() -> some View {
     self
       .font(.system(.caption, design: .monospaced))
-      .foregroundColor(.secondary)
+      .foregroundStyle(Color.secondary)
   }
 }
 
