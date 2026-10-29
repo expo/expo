@@ -180,10 +180,11 @@ export interface ObserveIntegrationsConfig {
    * current session and time, not the time of the log entry.
    *
    * The integration reports each distinct message at most once every 15 minutes. It reports at most
-   * 20 distinct errors and 20 distinct warnings in any 15-minute period. The limits reset when the
-   * app restarts.
+   * 20 distinct errors and 20 distinct warnings in any 15-minute period. JS errors that error
+   * recovery handled skip `ignoredCodes` and `shouldReport`, and have their own limit of 20
+   * distinct messages. The limits reset when the app restarts.
    *
-   * Requires `expo-updates` to be installed.
+   * Requires `expo-updates` 58.0.19 or later to be installed.
    *
    * @default false
    */

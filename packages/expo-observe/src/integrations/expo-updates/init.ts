@@ -51,6 +51,9 @@ type Settings = {
 };
 
 const errorLimiter = createReportLimiter();
+// Error recovery entries skip the filters, so they also get their own limit, and many distinct
+// errors cannot stop them from being reported.
+const errorRecoveryLimiter = createReportLimiter();
 const warningLimiter = createReportLimiter();
 
 let isEnabled = false;
@@ -114,7 +117,8 @@ function reportEntry(entry: UpdatesLogEntry): void {
   if (!isErrorRecovery && !passesFilters(entry)) {
     return;
   }
-  const cappedMessage = (isError ? errorLimiter : warningLimiter).allow(entry.message);
+  const limiter = isErrorRecovery ? errorRecoveryLimiter : isError ? errorLimiter : warningLimiter;
+  const cappedMessage = limiter.allow(entry.message);
   if (cappedMessage === null) {
     return;
   }

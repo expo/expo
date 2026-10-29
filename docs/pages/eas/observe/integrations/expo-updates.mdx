@@ -13,10 +13,12 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <Prerequisites>
   <Requirement title="Expo SDK 58 or later">
-    The integration is available in `expo-observe` version 58.0.17 and later. On Android, use
-    `expo-updates` version 58.0.19 or later. With an earlier version, the integration reports a JS
-    error that error recovery handled as `updates.error` with the `Unknown` code, not as
-    `updates.error_recovery`.
+    The integration is available in `expo-observe` version 58.0.17 and later. Use `expo-updates`
+    version 58.0.19 or later on Android and iOS. With an earlier version on Android, the
+    integration reports a JS error that error recovery handled as `updates.error` with the
+    `Unknown` code, not as `updates.error_recovery`. With an earlier version on iOS, the
+    integration reports emergency launch and initialization errors as `updates.error_recovery`,
+    and `ignoredCodes` and `shouldReport` cannot skip them.
   </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -54,7 +56,7 @@ The integration reports the entries as follows:
 
 A reported error gets the current session and time, not the time of the log entry. Warning events keep the log entry time in the `logTimestamp` attribute.
 
-To limit the number of reports, the integration reports each distinct message at most once every 15 minutes. It reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period. The limits reset when the app restarts.
+To limit the number of reports, the integration reports each distinct message at most once every 15 minutes. It reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period. JS errors that error recovery handled skip the filters and have their own limit of 20 distinct messages, so other errors cannot stop them from being reported. The limits reset when the app restarts.
 
 **Warning event attributes:**
 

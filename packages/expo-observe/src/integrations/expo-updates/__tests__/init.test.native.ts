@@ -404,6 +404,19 @@ describe('initExpoUpdatesIntegration', () => {
       expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
     });
 
+    it('limits error recovery entries separately from errors', async () => {
+      const errors = Array.from({ length: 20 }, (_, i) =>
+        entry({ timestamp: NOW - 30_000 + i, message: `e${i}` })
+      );
+      await runIntegration([
+        ...errors,
+        entry({ message: 'ErrorRecovery: exception encountered: boom', code: 'JSRuntimeError' }),
+      ]);
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(21);
+      expect(reportedErrorTypes().at(-1)).toBe('updates.error_recovery');
+    });
+
     it('caps the deduplicated text and the warning attribute at 500 characters', async () => {
       const prefix = 'x'.repeat(500);
       await runIntegration(
