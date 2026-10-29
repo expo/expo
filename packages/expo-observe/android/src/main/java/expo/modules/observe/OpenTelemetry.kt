@@ -291,6 +291,9 @@ private val metricNameMap = mapOf(
   (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
 )
 
+internal fun exportedMetricName(category: String, name: String): String =
+  metricNameMap[category to name] ?: "expo.unknown.$name"
+
 fun EASMetric.toOTMetric(): OTMetric {
   val attributes = mutableListOf(
     OTAttribute.of(key = "session.id", rawValue = sessionId)
@@ -307,7 +310,7 @@ fun EASMetric.toOTMetric(): OTMetric {
 
   return OTMetric(
     unit = "s",
-    name = metricNameMap[category to name] ?: "expo.unknown.$name",
+    name = exportedMetricName(category, name),
     gauge = OTGauge(
       dataPoints = listOf(
         OTDataPoint(

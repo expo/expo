@@ -8,6 +8,24 @@ internal struct PersistedConfig: Codable {
   var dispatchInDebug: Bool?
   var sampleRate: Double?
   var errorSampleRate: Double?
+  var ignoredMetrics: [String] = []
+  var ignoredEvents: [String] = []
+}
+
+extension PersistedConfig {
+  private enum CodingKeys: String, CodingKey {
+    case dispatchingEnabled, dispatchInDebug, sampleRate, errorSampleRate, ignoredMetrics, ignoredEvents
+  }
+
+  init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    dispatchingEnabled = try values.decodeIfPresent(Bool.self, forKey: .dispatchingEnabled)
+    dispatchInDebug = try values.decodeIfPresent(Bool.self, forKey: .dispatchInDebug)
+    sampleRate = try values.decodeIfPresent(Double.self, forKey: .sampleRate)
+    errorSampleRate = try values.decodeIfPresent(Double.self, forKey: .errorSampleRate)
+    ignoredMetrics = try values.decodeIfPresent([String].self, forKey: .ignoredMetrics) ?? []
+    ignoredEvents = try values.decodeIfPresent([String].self, forKey: .ignoredEvents) ?? []
+  }
 }
 
 /// Bundle-derived facts pushed from the JS layer at package import time.

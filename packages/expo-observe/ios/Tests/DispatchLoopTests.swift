@@ -119,6 +119,70 @@ struct DispatchLoopTests {
   }
 
   @Test
+  func `mixed and all ignored metric batches advance past every row`() async {
+    let metrics = [
+      MetricRow(
+        id: 1, sessionId: "s", timestamp: "t", category: "appStartup",
+        name: "timeToInteractive", value: 1
+      ),
+      MetricRow(
+        id: 2, sessionId: "s", timestamp: "t", category: "navigation", name: "tti", value: 2
+      ),
+      MetricRow(
+        id: 3, sessionId: "s", timestamp: "t", category: "appStartup",
+        name: "timeToInteractive", value: 3
+      )
+    ]
+    var cursors: [Int64] = []
+    var sent: [String] = []
+
+    await DispatchLoop.drain(
+      startCursor: 0,
+      chunkSize: 2,
+      fetchBatch: { cursor, limit in Array(metrics.filter { ($0.id ?? 0) > cursor }.prefix(limit)) },
+      rowId: { $0.id },
+      send: { batch in
+        let remaining = ObservabilityManager.filteredMetrics(
+          batch, ignoredMetrics: ["expo.app_startup.tti"]
+        )
+        sent += remaining.map(\.name)
+        return remaining.isEmpty ? nil : .success
+      },
+      onResult: { _, _, _ in },
+      persistCursor: { cursors.append($0) }
+    )
+
+    #expect(sent == ["tti"])
+    #expect(cursors == [2, 3])
+  }
+
+  @Test
+  func `retryable mixed log batch keeps its ignored rows for retry`() async {
+    let logs = ["hidden", "visible"].enumerated().map { index, name in
+      LogRow(id: Int64(index + 1), sessionId: "s", timestamp: "t", severity: "info", name: name)
+    }
+    var cursors: [Int64] = []
+    var sent: [String] = []
+
+    await DispatchLoop.drain(
+      startCursor: 0,
+      fetchBatch: { cursor, limit in Array(logs.filter { ($0.id ?? 0) > cursor }.prefix(limit)) },
+      rowId: { $0.id },
+      send: { batch in
+        sent = ObservabilityManager.sampledLogs(
+          batch, shouldDispatch: true, ignoredEvents: ["hidden"]
+        ).map(\.name)
+        return .retryableFailure(retryAfter: nil)
+      },
+      onResult: { _, _, _ in },
+      persistCursor: { cursors.append($0) }
+    )
+
+    #expect(sent == ["visible"])
+    #expect(cursors.isEmpty)
+  }
+
+  @Test
   func `payload too large halves the batch then resumes full chunks`() async {
     let state = State(
       rows: rows(1...250),

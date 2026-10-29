@@ -78,6 +78,18 @@ class ObservePreferencesTest {
     assertNull(ObservePreferences.getConfig(context)?.sampleRate)
   }
 
+  @Test
+  fun `ignored names persist and omitted lists reset them`() {
+    ObservePreferences.setConfig(context, PersistedConfig(
+      ignoredMetrics = listOf("expo.app_startup.tti"), ignoredEvents = listOf("custom.event")
+    ))
+    assertEquals(listOf("expo.app_startup.tti"), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(listOf("custom.event"), ObservePreferences.getConfig(context)?.ignoredEvents)
+    ObservePreferences.setConfig(context, PersistedConfig())
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredEvents)
+  }
+
   // region PersistedBundleDefaults
 
   @Test
