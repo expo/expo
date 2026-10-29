@@ -3,6 +3,7 @@ import {
   Checkbox,
   Column,
   DropdownMenu,
+  DropdownMenuGroup,
   HorizontalDivider,
   DropdownMenuItem,
   Host,
@@ -48,6 +49,10 @@ export default function DropdownMenuScreen() {
   const [shadowMenuExpanded, setShadowMenuExpanded] = React.useState(false);
   const [shadowElevation, setShadowElevation] = React.useState<number | undefined>(undefined);
   const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
+  const [groupedMenuExpanded, setGroupedMenuExpanded] = React.useState(false);
+  const [groupedSortOrder, setGroupedSortOrder] = React.useState<'Newest' | 'Oldest' | 'Popular'>(
+    'Newest'
+  );
 
   React.useEffect(() => {
     if (sectionsMenuExpanded === false) {
@@ -325,6 +330,59 @@ export default function DropdownMenuScreen() {
                   <Icon source={logoutIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="Grouped Dropdown Menu (Material 3 Expressive)">
+        <Host matchContents>
+          <DropdownMenu
+            expanded={groupedMenuExpanded}
+            onDismissRequest={() => setGroupedMenuExpanded(false)}>
+            <DropdownMenu.Trigger>
+              <OutlinedButton onClick={() => setGroupedMenuExpanded(true)}>
+                <ComposeText>{`Sort: ${groupedSortOrder}`}</ComposeText>
+              </OutlinedButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuGroup>
+                {(['Newest', 'Oldest', 'Popular'] as const).map((option) => (
+                  <DropdownMenuItem
+                    key={option}
+                    selected={groupedSortOrder === option}
+                    onClick={() => {
+                      setGroupedSortOrder(option);
+                      setGroupedMenuExpanded(false);
+                    }}>
+                    <DropdownMenuItem.Text>
+                      <ComposeText>{option}</ComposeText>
+                    </DropdownMenuItem.Text>
+                    <DropdownMenuItem.SelectedLeadingIcon>
+                      <Icon source={checkIcon} size={20} />
+                    </DropdownMenuItem.SelectedLeadingIcon>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setGroupedMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Settings</ComposeText>
+                  </DropdownMenuItem.Text>
+                  <DropdownMenuItem.TrailingIcon>
+                    <Icon source={settingsIcon} size={24} />
+                  </DropdownMenuItem.TrailingIcon>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  elementColors={{ textColor: '#B3261E', trailingIconColor: '#B3261E' }}
+                  onClick={() => setGroupedMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Log out</ComposeText>
+                  </DropdownMenuItem.Text>
+                  <DropdownMenuItem.TrailingIcon>
+                    <Icon source={logoutIcon} size={24} />
+                  </DropdownMenuItem.TrailingIcon>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </DropdownMenu.Items>
           </DropdownMenu>
         </Host>

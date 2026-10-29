@@ -38,6 +38,11 @@ export interface DropdownMenuItemProps {
    */
   enabled?: boolean;
   /**
+   * Makes the item selectable, e.g. for a choice of options. A selected item is highlighted and
+   * shows its `SelectedLeadingIcon`. Only applies to items in a `DropdownMenuGroup`.
+   */
+  selected?: boolean;
+  /**
    * Color overrides for the menu item.
    */
   elementColors?: DropdownMenuItemElementColors;
@@ -82,6 +87,16 @@ function TrailingIcon(props: { children: React.ReactNode }) {
 }
 
 /**
+ * A leading icon slot for a selected `DropdownMenuItem`, e.g. a checkmark. Replaces the
+ * `LeadingIcon` while the item is selected.
+ *
+ * @platform android
+ */
+function SelectedLeadingIcon(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="selectedLeadingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
  * A text slot for `DropdownMenuItem`.
  * Wrap text content to display as the menu item label.
  *
@@ -114,5 +129,6 @@ function DropdownMenuItemComponent(props: DropdownMenuItemProps) {
 DropdownMenuItemComponent.Text = TextSlot;
 DropdownMenuItemComponent.LeadingIcon = LeadingIcon;
 DropdownMenuItemComponent.TrailingIcon = TrailingIcon;
+DropdownMenuItemComponent.SelectedLeadingIcon = SelectedLeadingIcon;
 
 export { DropdownMenuItemComponent as DropdownMenuItem };

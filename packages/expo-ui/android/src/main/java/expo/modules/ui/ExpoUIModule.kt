@@ -33,6 +33,8 @@ import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuGroupContent
+import expo.modules.ui.menu.DropdownMenuGroupProps
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
@@ -450,6 +452,12 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<DropdownMenuGroupProps>("DropdownMenuGroupView") {
+      Content { props ->
+        DropdownMenuGroupContent(props)
       }
     }
 

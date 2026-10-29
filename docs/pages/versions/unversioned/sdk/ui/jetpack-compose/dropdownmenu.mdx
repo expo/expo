@@ -307,6 +307,74 @@ export default function ShadowDropdownMenuExample() {
 
 </ComponentExample>
 
+### Grouped menu
+
+Put `DropdownMenuGroup` components in `DropdownMenu.Items` to show a [Material 3 Expressive](https://m3.material.io/components/menus/overview) menu, as Compose's `DropdownMenuPopup` and `DropdownMenuGroup` do. Each group is a rounded container, and the first and last groups, and the first and last items in each group, get rounder outer corners. The `color`, `cornerRadius`, and `shadowElevation` props of `DropdownMenu` don't apply to a grouped menu. Use the `color` prop of each group instead.
+
+In a group, an item with a `selected` prop is selectable. A selected item is highlighted and shows its `DropdownMenuItem.SelectedLeadingIcon`.
+
+```tsx GroupedDropdownMenuExample.tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  OutlinedButton,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+const checkIcon = require('./assets/check.xml');
+
+export default function GroupedDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'Newest' | 'Oldest'>(
+    'Newest'
+  );
+  return (
+    <Host matchContents>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>
+            <Text>Show menu</Text>
+          </OutlinedButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuGroup>
+            {(['Newest', 'Oldest'] as const).map(option => (
+              <DropdownMenuItem
+                key={option}
+                selected={sortOrder === option}
+                onClick={() => {
+                  setSortOrder(option);
+                  setIsExpanded(false);
+                }}>
+                <DropdownMenuItem.Text>
+                  <Text>{option}</Text>
+                </DropdownMenuItem.Text>
+                <DropdownMenuItem.SelectedLeadingIcon>
+                  <Icon source={checkIcon} size={20} />
+                </DropdownMenuItem.SelectedLeadingIcon>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Settings</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

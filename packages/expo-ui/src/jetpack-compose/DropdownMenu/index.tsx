@@ -118,6 +118,52 @@ export function Preview(props: { children: ReactNode }) {
   return <></>;
 }
 
+/**
+ * Props of the `DropdownMenuGroup` component.
+ */
+export interface DropdownMenuGroupProps {
+  /**
+   * The contents of the group, typically `DropdownMenuItem` components.
+   */
+  children: ReactNode;
+
+  /**
+   * The container color of the group. Defaults to Material3's
+   * `MenuDefaults.groupStandardContainerColor`.
+   */
+  color?: ColorValue;
+
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+}
+
+const MenuGroupNativeView: React.ComponentType<DropdownMenuGroupProps> = requireNativeView(
+  'ExpoUI',
+  'DropdownMenuGroupView'
+);
+
+/**
+ * A Material 3 Expressive group of menu items. When `DropdownMenu.Items` contains groups, the
+ * dropdown menu renders as a Material 3 Expressive menu: each group is a rounded container, shaped
+ * by its position among the groups, and the `DropdownMenuItem`s in it are shaped by their position
+ * in the group and can be selectable. The menu's `color`, `cornerRadius` and `shadowElevation`
+ * don't apply to a grouped menu.
+ *
+ * @platform android
+ */
+export function DropdownMenuGroup(props: DropdownMenuGroupProps) {
+  const { modifiers, ...restProps } = props;
+  return (
+    <MenuGroupNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+    />
+  );
+}
+
 function DropdownMenu(props: DropdownMenuProps) {
   const { modifiers, ...restProps } = props;
   return (
