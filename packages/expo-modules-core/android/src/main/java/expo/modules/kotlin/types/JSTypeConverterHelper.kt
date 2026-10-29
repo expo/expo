@@ -14,6 +14,7 @@ import io.github.expo.pika.PIntrospectionData
 import io.github.expo.pika.PIntrospectionProvider
 import io.github.expo.pika.PProperty
 import java.io.File
+import java.lang.reflect.Modifier
 import java.net.URI
 import java.net.URL
 import kotlin.reflect.KProperty1
@@ -274,7 +275,18 @@ fun Enum<*>.toJSValue(): Any? {
 
     @Suppress("UNCHECKED_CAST")
     val parameterProperty = this::class.declaredMemberProperties
-      .find { it.name == parameterName } as KProperty1<Enum<*>, *>
+      .find { it.name == parameterName } as? KProperty1<Enum<*>, *>
+
+    // Minifiers can rename the parameter in the Kotlin metadata (for example, to `p0`) and keep the property name.
+    if (parameterProperty == null) {
+      val fields = declaringJavaClass.declaredFields
+        .filter { !Modifier.isStatic(it.modifiers) && !it.isSynthetic }
+      return when (fields.size) {
+        0 -> name
+        1 -> fields.first().apply { isAccessible = true }.get(this)
+        else -> throw IllegalStateException("Enum '$javaClass' cannot be used as return type (incompatible with JS)")
+      }
+    }
 
     return parameterProperty.get(this)
   }

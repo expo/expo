@@ -2,8 +2,6 @@ package expo.modules.localization
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.icu.util.LocaleData
-import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.text.TextUtils.getLayoutDirectionFromLocale
@@ -69,25 +67,6 @@ class LocalizationModule : Module() {
     val wasSetByConfig = getBoolean(key, true)
     edit { putBoolean(key, configValue != null) }
     return configValue ?: defaultValue.takeIf { wasSetByConfig }
-  }
-
-  private fun getMeasurementSystem(locale: Locale): String? {
-    return if (VERSION.SDK_INT >= VERSION_CODES.P) {
-      when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
-        LocaleData.MeasurementSystem.SI -> "metric"
-        LocaleData.MeasurementSystem.UK -> "uk"
-        LocaleData.MeasurementSystem.US -> "us"
-        else -> "metric"
-      }
-    } else {
-      if (getRegionCode(locale).equals("uk")) {
-        "uk"
-      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
-        "us"
-      } else {
-        "metric"
-      }
-    }
   }
 
   private fun getCurrencyProperties(locale: Locale): Map<String, Any?> {
