@@ -1,6 +1,16 @@
-import type { SplitViewSearchBar, SplitViewToolbarItem } from './elements';
+import type {
+  SplitViewMenu,
+  SplitViewMenuAction,
+  SplitViewSearchBar,
+  SplitViewToolbarItem,
+} from './elements';
 
-type SplitViewNativeToolbarItem = Omit<SplitViewToolbarItem, 'onPress'>;
+type SplitViewNativeMenuAction = Omit<SplitViewMenuAction, 'onPress'> & { id: string };
+
+type SplitViewNativeToolbarItem = Omit<SplitViewToolbarItem, 'onPress' | 'menu'> & {
+  id: string;
+  menu?: Omit<SplitViewMenu, 'items'> & { items: SplitViewNativeMenuAction[] };
+};
 
 // TODO(@ubax): Expose more header options, e.g. subtitle (ENG-28657)
 export interface SplitViewNativeHeaderProps {
@@ -8,7 +18,7 @@ export interface SplitViewNativeHeaderProps {
   largeTitle?: boolean;
   leftToolbarItems?: SplitViewNativeToolbarItem[];
   rightToolbarItems?: SplitViewNativeToolbarItem[];
-  onToolbarItemPress: (event: { nativeEvent: { side: 'left' | 'right'; index: number } }) => void;
+  onToolbarItemPress: (event: { nativeEvent: { id: string } }) => void;
   searchBar?: Pick<SplitViewSearchBar, 'placeholder'>;
   onSearchBarChangeText?: SplitViewSearchBar['onChangeText'];
   onSearchBarSearchButtonPress?: SplitViewSearchBar['onSearchButtonPress'];
