@@ -668,6 +668,7 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
+    makePage('eas-to-expo.mdx'),
     makePage('eas/webhooks.mdx'),
     makePage('eas/protected-resources.mdx'),
     makeSection('Expo accounts', [
