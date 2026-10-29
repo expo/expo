@@ -57,7 +57,7 @@ export declare class NativeBlob extends SharedObject {
   constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
 
   slice(start?: number, end?: number, contentType?: string): Blob;
-  bytes(): Promise<Uint8Array>;
+  bytes(): Promise<Uint8Array | ArrayBuffer>;
   text(): Promise<string>;
 }
 

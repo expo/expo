@@ -95,8 +95,12 @@ export class Blob extends NativeBlobModule.Blob {
     });
   }
 
+  async bytes(): Promise<Uint8Array> {
+    return toUint8Array(await super.bytes());
+  }
+
   async arrayBuffer(): Promise<ArrayBuffer> {
-    return super.bytes().then(
+    return this.bytes().then(
       (bytes: Uint8Array) =>
         // The Blob spec requires we always return a new ArrayBuffer even when its bounds match the TypedArray's
         bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
@@ -111,4 +115,11 @@ export class Blob extends NativeBlobModule.Blob {
   static get length() {
     return 0;
   }
+}
+
+/**
+ * The native blob hands its bytes over as a `Uint8Array` on iOS and as an `ArrayBuffer` on Android.
+ */
+function toUint8Array(data: Uint8Array | ArrayBuffer): Uint8Array {
+  return data instanceof Uint8Array ? data : new Uint8Array(data);
 }

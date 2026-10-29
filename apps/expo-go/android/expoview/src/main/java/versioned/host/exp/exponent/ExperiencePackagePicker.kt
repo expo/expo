@@ -5,7 +5,6 @@ import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
-import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
@@ -140,7 +139,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BatteryModule::class.java to null,
     BackgroundFetchModule::class.java to null,
     BackgroundTaskModule::class.java to null,
-    BlobModule::class.java to null,
     BlurModule::class.java to null,
     CalendarModule::class.java to null,
     CameraViewModule::class.java to null,

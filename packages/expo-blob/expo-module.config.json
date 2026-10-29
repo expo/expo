@@ -4,7 +4,6 @@
     "modules": ["ExpoBlob"]
   },
   "android": {
-    "modules": ["expo.modules.blob.BlobModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.blob",
