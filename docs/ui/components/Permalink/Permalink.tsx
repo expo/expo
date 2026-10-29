@@ -65,7 +65,8 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
           props.additionalProps?.className
         )}
         href={'#' + heading.slug}
-        ref={heading.ref}>
+        ref={heading.ref}
+        skipNextLink>
         <PermalinkIcon className={mergeClasses('icon-sm shrink-0', isDeepNested && 'icon-xs')} />
       </Button>
     </PermalinkBase>

@@ -21,6 +21,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,6 +68,7 @@ import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
@@ -78,6 +80,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposableScope
@@ -132,6 +135,21 @@ data class WidthParams(
   @Field val width: Int = 0
 ) : Record
 
+internal enum class IntrinsicSizeType(val value: String) : Enumerable {
+  MIN("min"),
+  MAX("max");
+
+  fun toComposeIntrinsicSize(): IntrinsicSize = when (this) {
+    MIN -> IntrinsicSize.Min
+    MAX -> IntrinsicSize.Max
+  }
+}
+
+@OptimizedRecord
+internal data class ComposeWidthParams(
+  @Field val width: Either<Double, IntrinsicSizeType>? = null
+) : Record
+
 @OptimizedRecord
 data class HeightParams(
   @Field val height: Int = 0
@@ -167,7 +185,9 @@ data class BackgroundParams(
 // Color animation specs reuse the JS `$type` shape from `@expo/ui/jetpack-compose/modifiers/animation` (spring / tween / snap).
 // Keyframes are float-only and aren't supported for colors.
 private fun parseColorAnimationSpec(raw: Any?): AnimationSpec<androidx.compose.ui.graphics.Color>? {
-  if (raw !is Map<*, *>) return null
+  if (raw !is Map<*, *>) {
+    return null
+  }
   return when (raw["\$type"]) {
     "spring" -> spring(
       dampingRatio = (raw["dampingRatio"] as? Number)?.toFloat() ?: Spring.DampingRatioNoBouncy,
@@ -213,6 +233,11 @@ internal data class AlphaParams(
 
 @OptimizedRecord
 internal data class BlurParams(
+  @Field val radius: Int = 0
+) : Record
+
+@OptimizedRecord
+data class CornerRadiusParams(
   @Field val radius: Int = 0
 ) : Record
 
@@ -298,7 +323,8 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 @OptimizedRecord
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
-  @Field val role: SemanticRoleType? = null
+  @Field val role: SemanticRoleType? = null,
+  @Field val enabled: Boolean = true
 ) : Record
 
 internal enum class MenuAnchorType(val value: String) : Enumerable {
@@ -403,7 +429,9 @@ object ModifierRegistry {
     scope: ComposableScope,
     eventDispatcher: ModifierEventDispatcher
   ): Modifier {
-    if (modifiers.isNullOrEmpty()) return Modifier
+    if (modifiers.isNullOrEmpty()) {
+      return Modifier
+    }
     return modifiers.fold(Modifier as Modifier) { acc, config ->
       val type = config["\$type"]?.asString() ?: return@fold acc
       val modifier = modifierFactories[type]?.invoke(config, scope, appContext, eventDispatcher)
@@ -465,13 +493,22 @@ object ModifierRegistry {
     }
 
     register("width") { map, _, appContext, _ ->
-      val params = recordFromMap<WidthParams>(map, appContext)
-      Modifier.width(params.width.dp)
+      val width = recordFromMap<ComposeWidthParams>(map, appContext).width
+      if (width?.`is`(IntrinsicSizeType::class) == true) {
+        Modifier.width(width.second().toComposeIntrinsicSize())
+      } else {
+        Modifier.width((width?.first() ?: 0.0).dp)
+      }
     }
 
     register("height") { map, _, appContext, _ ->
       val params = recordFromMap<HeightParams>(map, appContext)
       Modifier.height(params.height.dp)
+    }
+
+    register("universalLayout") { map, _, appContext, _ ->
+      val params = recordFromMap<UniversalLayoutParams>(map, appContext)
+      UniversalLayoutElement(params.toDimensions())
     }
 
     register("defaultMinSize") { map, _, appContext, _ ->
@@ -572,6 +609,12 @@ object ModifierRegistry {
       Modifier.blur(params.radius.dp)
     }
 
+    // Glance-only modifier: Jetpack Compose has no equivalent, so it is a no-op here.
+    // `expo-widgets` applies it to Android widgets.
+    register("cornerRadius") { _, _, _, _ ->
+      Modifier
+    }
+
     // Transform modifiers
     register("rotate") { map, _, appContext, _ ->
       val params = recordFromMap<RotateParams>(map, appContext)
@@ -636,22 +679,45 @@ object ModifierRegistry {
     // Scope-dependent modifiers
     register("weight") { map, scope, appContext, _ ->
       val params = recordFromMap<WeightParams>(map, appContext)
-      scope?.rowScope?.run {
-        Modifier.weight(params.weight)
-      } ?: scope?.columnScope?.run {
-        Modifier.weight(params.weight)
-      } ?: Modifier
+      val weight = params.weight.takeIf { it.isFinite() && it > 0f }
+      // Prefer row, column, or box scope.
+      // Those parents ignore universal parent data, and Box has no weight.
+      when {
+        scope?.rowScope != null || scope?.columnScope != null ->
+          scope?.rowScope?.run {
+            weight?.let { Modifier.weight(it) }
+          } ?: scope?.columnScope?.run {
+            weight?.let { Modifier.weight(it) }
+          } ?: Modifier
+        scope?.boxScope != null -> Modifier
+        LocalUniversalStackAxis.current == UniversalStackAxis.Horizontal ||
+          LocalUniversalStackAxis.current == UniversalStackAxis.Vertical ->
+          weight?.let { UniversalWeightElement(it) } ?: Modifier
+        else -> Modifier
+      }
     }
 
     register("align") { map, scope, appContext, _ ->
       val params = recordFromMap<AlignParams>(map, appContext)
-      scope?.boxScope?.run {
-        params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: scope?.rowScope?.run {
-        params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: scope?.columnScope?.run {
-        params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: Modifier
+      when {
+        scope?.boxScope != null ->
+          scope?.boxScope?.run {
+            params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        scope?.rowScope != null ->
+          scope?.rowScope?.run {
+            params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        scope?.columnScope != null ->
+          scope?.columnScope?.run {
+            params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        LocalUniversalStackAxis.current == UniversalStackAxis.Horizontal ->
+          UniversalAlignElement(vertical = params.alignment?.toVerticalAlignment())
+        LocalUniversalStackAxis.current == UniversalStackAxis.Vertical ->
+          UniversalAlignElement(horizontal = params.alignment?.toHorizontalAlignment())
+        else -> Modifier
+      }
     }
 
     register("matchParentSize") { _, scope, _, _ ->
@@ -670,9 +736,16 @@ object ModifierRegistry {
 
     register("semantics") { map, _, appContext, _ ->
       val params = recordFromMap<SemanticsParams>(map, appContext)
-      params.contentType.toContentType()?.let { ct ->
-        Modifier.semantics { contentType = ct }
-      } ?: Modifier
+      val type = params.contentType.toContentType()
+      val description = params.contentDescription
+      if (type == null && description == null) {
+        Modifier
+      } else {
+        Modifier.semantics {
+          type?.let { contentType = it }
+          description?.let { contentDescription = it }
+        }
+      }
     }
 
     register("clip") { map, _, appContext, _ ->
@@ -787,6 +860,7 @@ object ModifierRegistry {
       }
       Modifier.toggleable(
         value = params.value,
+        enabled = params.enabled,
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )

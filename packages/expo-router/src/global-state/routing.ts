@@ -16,5 +16,4 @@ export {
   reload,
   prefetch,
 } from './router';
-export { findDivergentState } from './stateUtils';
 export type { LinkToOptions, NavigationOptions } from './types';

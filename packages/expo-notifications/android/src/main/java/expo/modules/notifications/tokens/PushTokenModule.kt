@@ -6,21 +6,22 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.addTokenListener
 import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.removeTokenListener
-import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
 
 private const val NEW_TOKEN_EVENT_NAME = "onDevicePushToken"
 private const val NEW_TOKEN_EVENT_TOKEN_KEY = "devicePushToken"
 private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
-class PushTokenModule : Module(), FirebaseTokenListener {
+class PushTokenModule : Module() {
+  private val tokenListener: (String) -> Unit = { onNewToken(it) }
+
   /**
    * Callback called when [FirebaseMessagingDelegate] gets notified of a new token.
    * Emits a [NEW_TOKEN_EVENT_NAME] event.
    *
    * @param token New push token.
    */
-  override fun onNewToken(token: String) {
+  private fun onNewToken(token: String) {
     runCatching {
       // onNewToken is emitted asynchronously and the module may be destroyed by the time sendEvent is called
       // that would result in an exception
@@ -39,11 +40,11 @@ class PushTokenModule : Module(), FirebaseTokenListener {
     Events("onDevicePushToken")
 
     OnCreate {
-      addTokenListener(this@PushTokenModule)
+      addTokenListener(tokenListener)
     }
 
     OnDestroy {
-      removeTokenListener(this@PushTokenModule)
+      removeTokenListener(tokenListener)
     }
 
     /**

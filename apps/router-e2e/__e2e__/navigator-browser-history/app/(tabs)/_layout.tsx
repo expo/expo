@@ -6,6 +6,7 @@ export default function TabLayout() {
     <Tabs>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="explore" />
+      <Tabs.Screen name="anchored" />
     </Tabs>
   );
 }

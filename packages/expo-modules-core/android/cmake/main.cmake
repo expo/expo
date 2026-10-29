@@ -27,7 +27,7 @@ add_library(
 
 use_expo_common(expo-modules-core)
 
-target_precompile_headers(expo-modules-core REUSE_FROM expo-modules-pch)
+use_expo_pch(expo-modules-core)
 
 target_include_directories(
   expo-modules-core
@@ -48,7 +48,6 @@ target_link_libraries(
   PRIVATE
   ${LOG_LIB}
   android
-  ${JSEXECUTOR_LIB}
   ${NEW_ARCHITECTURE_DEPENDENCIES}
   expo-modules-jsi
 )

@@ -11,5 +11,9 @@
       android:name=".services.MotionActivityTaskService"
       android:exported="false"
       android:foregroundServiceType="health" />
+    <service
+      android:name=".next.locationForegroundService.LocationForegroundService"
+      android:exported="false"
+      android:foregroundServiceType="location" />
   </application>
 </manifest>

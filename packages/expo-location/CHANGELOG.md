@@ -1,16 +1,126 @@
 # Changelog
 
-## Unpublished
+## 58.0.19
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Use jsLogger for logging where possible, add more logs in silent failure spots. ([#51987](https://github.com/expo/expo/pull/51987) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.18
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.17
+
+### Patch Changes
+
+- [Android] Fix LocationTaskConsumer.didReceiveBroadcast crashing when the user revoked permissions and the task consumer tried getting the lastLocation. ([#51689](https://github.com/expo/expo/pull/51689) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.16
+
+### Patch Changes
+
+- [Android] Don't crash when the foreground service of a location task can't be started, for example when the location permission was revoked while the task stayed registered. The task now keeps running without the service instead of crashing the app on every launch. ([#51216](https://github.com/expo/expo/pull/51216) by [@krisoft20](https://github.com/krisoft20))
+- [Android] Add the TypeScript interface for the location foreground service: `ensureBackgroundSessionStarted`, `stopBackgroundSession` and `getBackgroundSessionStatus`.
+
+  Add `getNotificationPermissions`, `requestNotificationPermissions` and the `useNotificationPermissions` hook for the service's notification.
+
+  Add `LocationUpdatesHandle.status()`, and the `canDeliverUpdates` and `areUpdatesAllowed` fields on `PositionWatchStatus`.
+
+  ([#51320](https://github.com/expo/expo/pull/51320) by [@HubertBer](https://github.com/HubertBer))
+
+- Updated dependencies.
+  - @expo/image-utils@0.12.5
+
+## 58.0.15
+
+### Patch Changes
+
+- [Android] Stop the location foreground service when a background location task is unregistered while the service is still binding, so a `stopLocationUpdatesAsync` that follows `startLocationUpdatesAsync` within milliseconds no longer leaves the service and its notification running. ([#51236](https://github.com/expo/expo/pull/51236) by [@jrceranornelson](https://github.com/jrceranornelson))
+- [iOS] Fix `notifyOnEnter` being ignored for geofencing regions. The native side read a misspelled key, so every region reported enter events regardless of the flag. ([#51444](https://github.com/expo/expo/pull/51444) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix an infinite region restart loop when geofencing exceeds the maximum number of monitored regions. ([#51443](https://github.com/expo/expo/pull/51443) by [@Wenszel](https://github.com/Wenszel))
+- Add TSDoc to the `expo-location/next` API. ([#51231](https://github.com/expo/expo/pull/51231) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Add background location tracking. `LocationProvider` interface now has `getLocationTaskConsumerClass` and `getRegisteredTaskConsumerClass` methods, which return the `LocationTaskConsumer` class used to handle background location using TaskManager. Added `GmsLocationTaskConsumer` and `AndroidLocationTaskConsumer` implementations. Add `RECEIVE_BOOT_COMPLETED` to the manifest when the `isAndroidBackgroundLocationEnabled` is true. ([#50876](https://github.com/expo/expo/pull/50876) by [@HubertBer](https://github.com/HubertBer))
+- [iOS] Keep `watchPositionAsync` alive while the app is in the background. ([#51327](https://github.com/expo/expo/pull/51327) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Add `hasLocationServicesEnabled`. ([#51326](https://github.com/expo/expo/pull/51326) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Report `ERR_LOCATION_SERVICES_DISABLED_GLOBALLY` from `expo-location/next` watchers when Location Services are turned off. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Make `LocationUpdatesHandle.stop()` a no-op when the task is not registered. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Keep `expo-location/next` watchers alive while the app is in the background. ([#51325](https://github.com/expo/expo/pull/51325) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Add a `LocationForegroundService` and helper methods to `start`/`update`/`stop` it. Update the position watchers so that they are running in background while the foreground service is running. ([#49995](https://github.com/expo/expo/pull/49995) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Report `mocked` on `LocationObject` using `CLLocationSourceInformation.isSimulatedBySoftware`. ([#50683](https://github.com/expo/expo/pull/50683) by [@JagjeevanAK](https://github.com/JagjeevanAK))
+- [iOS] Add `getPosition` to `expo-location/next`. ([#50198](https://github.com/expo/expo/pull/50198) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `LocationUpdatesHandle` to `expo-location/next`. ([#50263](https://github.com/expo/expo/pull/50263) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add permissions to `expo-location/next`. ([#49972](https://github.com/expo/expo/pull/49972) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `PositionWatchHandle` to `expo-location/next`. ([#50262](https://github.com/expo/expo/pull/50262) by [@Wenszel](https://github.com/Wenszel))
+- Add the TypeScript API layer for `expo-location/next`. ([#49849](https://github.com/expo/expo/pull/49849) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Change the requestBackgroundPermissions and emitted errors to match the TypeScript API defined in PR https://github.com/expo/expo/pull/49849. ([#51067](https://github.com/expo/expo/pull/51067) by [@HubertBer](https://github.com/HubertBer))
+- Updated dependencies.
+  - @expo/image-utils@0.12.4
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/image-utils@0.12.3
+
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Add the core functionalities for the **next** version: permission getters and requesters, position getter, and `enableLocationServices` prompt. Introduce `LocationProvider` interface to allow for multiple implementations: for now `gms` and `android.location`. ([#49988](https://github.com/expo/expo/pull/49988) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Add the position watchers to the **next** implementation. Update the `LocationProvider` interface to also support watchers and implement it in both GMS and Android providers. ([#49992](https://github.com/expo/expo/pull/49992) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/image-utils@0.12.2
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
 
 - [Android, iOS] Add `startMotionActivityUpdatesAsync`, `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync` for receiving motion activity updates via a background task. ([#49653](https://github.com/expo/expo/pull/49653) by [@Guccio163](https://github.com/Guccio163))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Exclude the CoreMotion features from the build when `motionUsagePermission: false` is set in `app.json`. ([#49409](https://github.com/expo/expo/pull/49409) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Stop requiring the `location` background mode for geofencing. Region monitoring does not need it, and declaring it without a feature that uses persistent location gets apps rejected under App Store guideline 2.5.4. ([#50197](https://github.com/expo/expo/pull/50197) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-16
 
@@ -587,13 +697,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Allow location to work on Android with only coarse location permission. All apps do not require fine/precise location permission, but in past Expo was enforcing fine/precise even if you only needed coarse level location. ([#15760](https://github.com/expo/expo/pull/15760) by [@Noitidart](https://github.com/Noitidart))
-
-## Unpublished
-
-### 🛠 Breaking changes
-
-- Add an option to whether kill or keep the foreground service when app is killed on Android. ([#15633](https://github.com/expo/expo/pull/15633) by [@islamouzou](https://github.com/islamouzou))
-- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.0.2 — 2022-02-01
 

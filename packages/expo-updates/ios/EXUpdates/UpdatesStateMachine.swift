@@ -89,6 +89,23 @@ internal enum UpdatesStateEvent {
     }
   }
 
+  /**
+   The failure text carried by an error event. The state machine logs it when it drops an event,
+   so the message does not disappear with the event.
+   */
+  var errorMessage: String? {
+    switch self {
+    case let .checkError(errorMessage):
+      return errorMessage
+    case let .downloadError(errorMessage):
+      return errorMessage
+    case .startStartup, .endStartup, .check, .checkCompleteUnavailable, .checkCompleteWithUpdate,
+      .checkCompleteWithRollback, .download, .downloadCompleteUnavailable, .downloadCompleteWithUpdate,
+      .downloadCompleteWithRollback, .downloadProgress, .restart:
+      return nil
+    }
+  }
+
   var toMap: [String: Any] {
     switch self {
     case .checkCompleteWithUpdate(manifest: let manifest):
@@ -418,17 +435,40 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      reportDroppedEvent(event)
       return false
     }
     let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     if !validUpdatesStateValues.contains(newStateValue) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      reportDroppedEvent(event)
       return false
     }
     // Successful transition
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   traps, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private func reportDroppedEvent(_ event: UpdatesStateEvent) {
+    let message = droppedEventWarning(event)
+    logger.warn(message: message)
+    #if EX_UPDATES_ASSERT_INVALID_STATE
+    preconditionFailure(message)
+    #endif
+  }
+
+  /**
+   The warning written when an event is dropped. It carries the error text of an error event,
+   because some callers do not log the failure themselves before sending the event, which would
+   leave the updates log with no record of what was lost.
+   */
+  private func droppedEventWarning(_ event: UpdatesStateEvent) -> String {
+    let error = event.errorMessage.map { ", error = \($0)" } ?? ""
+    return "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)\(error)"
   }
 
   /**
@@ -547,8 +587,8 @@ internal class UpdatesStateMachine {
 
   /**
    For a particular machine state, only certain events may be processed.
-   If the machine receives an unexpected event, an assertion failure will occur
-   and the app will crash.
+   If the machine receives an unexpected event, the event is dropped and a warning
+   is written to the updates log.
    */
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],

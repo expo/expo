@@ -5,8 +5,8 @@ import * as Headings from '../Headings';
 
 const headingComponentNames = Object.keys(Headings);
 
-it.each(headingComponentNames)('renders %s', (name) => {
+it.each(headingComponentNames)('renders %s', async (name) => {
   const Heading = Headings[name as keyof typeof Headings];
-  const { toJSON } = render(<Heading />);
+  const { toJSON } = await render(<Heading />);
   expect(toJSON()).toMatchSnapshot();
 });

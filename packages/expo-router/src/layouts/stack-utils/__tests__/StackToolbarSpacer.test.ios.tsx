@@ -86,8 +86,8 @@ describe(convertStackToolbarSpacerPropsToRNHeaderItem, () => {
 });
 
 describe('StackToolbarSpacer component', () => {
-  it('renders RouterToolbarItem in bottom placement', () => {
-    render(
+  it('renders RouterToolbarItem in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarSpacer width={20} />
       </ToolbarPlacementContext.Provider>
@@ -99,21 +99,21 @@ describe('StackToolbarSpacer component', () => {
 
   it.each(['left', 'right', undefined, 'xyz'] as const)(
     'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
+    async (placement) => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           <ToolbarPlacementContext.Provider value={placement as any}>
             <StackToolbarSpacer width={20} />
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
+      }).rejects.toThrow('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
       jest.restoreAllMocks();
     }
   );
 
-  it('renders fixedSpacer type when width is provided', () => {
-    render(
+  it('renders fixedSpacer type when width is provided', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarSpacer width={30} />
       </ToolbarPlacementContext.Provider>
@@ -128,8 +128,8 @@ describe('StackToolbarSpacer component', () => {
     );
   });
 
-  it('renders fluidSpacer type when width is not provided', () => {
-    render(
+  it('renders fluidSpacer type when width is not provided', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarSpacer />
       </ToolbarPlacementContext.Provider>
@@ -143,8 +143,8 @@ describe('StackToolbarSpacer component', () => {
     );
   });
 
-  it.each([true, false, undefined])('passes hidden=%s prop', (hidden) => {
-    render(
+  it.each([true, false, undefined])('passes hidden=%s prop', async (hidden) => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarSpacer hidden={hidden} width={20} />
       </ToolbarPlacementContext.Provider>
@@ -160,8 +160,8 @@ describe('StackToolbarSpacer component', () => {
 
   it.each([true, false, undefined])(
     'passes hidesSharedBackground as inverted sharesBackground=%s (defaults to true)',
-    (sharesBackground) => {
-      render(
+    async (sharesBackground) => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarSpacer sharesBackground={sharesBackground} />
         </ToolbarPlacementContext.Provider>

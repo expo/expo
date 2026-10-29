@@ -170,7 +170,6 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
           override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mService = (service as? ServiceBinder)?.service
             mService?.let {
-              it.setParentContext(context)
               it.startForeground(serviceOptions)
             }
           }

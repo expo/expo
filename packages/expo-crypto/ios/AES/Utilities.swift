@@ -1,4 +1,5 @@
 import CryptoKit
+import Foundation
 
 extension Data {
   init?(hexEncoded: String) {

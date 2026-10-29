@@ -24,6 +24,8 @@ import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.devmenu.launch.ExpoLauncherUrl
+import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
@@ -39,8 +41,8 @@ import host.exp.exponent.RNObject
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
-import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
@@ -69,7 +71,6 @@ import host.exp.expoview.Exponent.BundleListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -191,7 +192,13 @@ class Kernel : KernelInterface() {
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     val bundleUrlToLoad =
-      bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
+      bundleUrl + (
+        if (ExpoViewBuildConfig.DEBUG) {
+          ""
+        } else {
+          "?versionName=" + ExpoViewKernel.instance.versionName
+        }
+        )
     if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
     } else {
@@ -462,6 +469,9 @@ class Kernel : KernelInterface() {
 
   // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
   private fun shouldOpenUrl(uri: Uri): Boolean {
+    if (ExponentUrls.isHomeUrl(uri.toString())) {
+      return false
+    }
     val host = uri.host ?: ""
     val path = uri.path ?: ""
     return !(((host == "expo.io") || (host == "expo.dev")) && (path == "/expo-go"))
@@ -499,8 +509,18 @@ class Kernel : KernelInterface() {
     openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
   }
 
+  @Suppress("DEPRECATION")
   override fun openExperience(options: ExperienceOptions) {
-    openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true)
+    val launch = ExpoLauncherUrl(Uri.parse(options.manifestUri))
+    launch.applyDevMenuLaunchParams(DevMenuSharedPreferencesAdapter(applicationContext, exponentSharedPreferences))
+    // A target is normalized to `exp(s)://` like on iOS, so it shares its task with a scanned `exp://` URL.
+    val projectUri = launch.targetUrl?.let { ExponentUrls.toExp(it.toString()) } ?: launch.strippedUrl.toString()
+    val resolved = if (projectUri == options.manifestUri) {
+      options
+    } else {
+      ExperienceOptions(projectUri, projectUri, options.notification, options.notificationObject)
+    }
+    openManifestUrl(getManifestUrlFromFullUri(resolved.manifestUri), resolved, true)
   }
 
   private fun getManifestUrlFromFullUri(uriString: String?): String? {
@@ -899,17 +919,6 @@ class Kernel : KernelInterface() {
       ExceptionUtils.exceptionToErrorHeader(exception),
       ExceptionUtils.exceptionToCanRetry(exception)
     )
-    if (exception is ManifestException) {
-      kernelScope.launch {
-        withContext(Dispatchers.IO) {
-          ExponentPackageLogger.send(
-            exception.manifestUrl,
-            ExceptionUtils.exceptionToPlainText(exception),
-            ExponentPackageLogger.LogLevel.ERROR
-          )
-        }
-      }
-    }
   }
 
   // TODO: probably need to call this from other places.

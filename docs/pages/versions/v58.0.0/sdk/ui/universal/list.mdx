@@ -13,7 +13,7 @@ import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTa
 
 `List` provides a virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. It provides the platform-native chrome (separators, inset styling, pull-to-refresh). `ListItem` is a tappable row with `leading`/`trailing`/`supportingText` slots.
 
-> **info** `List` does not lazily render rows yet: React creates every row up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+> **info** For large data sets, render rows with [`List.ForEach`](#large-data-sets). It mounts only the rows near the visible range, and reuses them while the list scrolls.
 
 ## Native implementations
 
@@ -188,6 +188,43 @@ export default function ListItemCompoundExample() {
 ```
 
 </ComponentExample>
+
+### Large data sets
+
+`List.ForEach` renders one row for each item of `data`. It mounts a small pool of rows around the visible range and reuses them while the list scrolls. Rows that are not ready yet show a placeholder of `estimatedItemSize`.
+
+Wrap the render function in `useCallback`. A recycled row keeps its local state (`useState`) when it shows another item. Keep row state outside the row, or reset it when the item changes. You can put static rows before and after `List.ForEach` in the same `List`.
+
+```tsx ListForEachExample.tsx
+import { useCallback } from 'react';
+import { Host, List, ListItem } from '@expo/ui';
+
+type Contact = { id: string; name: string };
+
+const CONTACTS: Contact[] = Array.from({ length: 10_000 }, (_, index) => ({
+  id: String(index),
+  name: `Contact ${index + 1}`,
+}));
+
+const keyExtractor = (contact: Contact) => contact.id;
+
+export default function ListForEachExample() {
+  const renderContact = useCallback(
+    ({ item }: { item: Contact }) => <ListItem onPress={() => {}}>{item.name}</ListItem>,
+    []
+  );
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <List.ForEach data={CONTACTS} keyExtractor={keyExtractor}>
+          {renderContact}
+        </List.ForEach>
+      </List>
+    </Host>
+  );
+}
+```
 
 ### Pull-to-refresh
 

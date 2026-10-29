@@ -230,13 +230,21 @@ object MediaLibraryUtils {
 
   fun getRelativePathForAssetType(mimeType: String?, useCameraDir: Boolean): String {
     if (mimeType?.contains("image") == true || mimeType?.contains("video") == true) {
-      return if (useCameraDir) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_PICTURES
+      return if (useCameraDir) {
+        Environment.DIRECTORY_DCIM
+      } else {
+        Environment.DIRECTORY_PICTURES
+      }
     } else if (mimeType?.contains("audio") == true) {
       return Environment.DIRECTORY_MUSIC
     }
 
     // For backward compatibility
-    return if (useCameraDir) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_PICTURES
+    return if (useCameraDir) {
+      Environment.DIRECTORY_DCIM
+    } else {
+      Environment.DIRECTORY_PICTURES
+    }
   }
 
   // It uses deprecated Android method under the hood. See implementation for details.

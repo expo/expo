@@ -9,7 +9,7 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const outputDir = 'dist-server-rendering-async-playwright';
+const outputDir = 'dist-server-rendering-playwright';
 
 test.describe('server rendering in production', () => {
   const expoServe = createExpoServe({
@@ -27,6 +27,7 @@ test.describe('server rendering in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'false',
       },
     });
     console.timeEnd('expo export');

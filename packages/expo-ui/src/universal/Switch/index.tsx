@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: colors.foreground,
+    flexGrow: 1,
     userSelect: 'none',
   },
   track: {

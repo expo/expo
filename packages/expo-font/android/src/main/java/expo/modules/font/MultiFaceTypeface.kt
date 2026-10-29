@@ -48,7 +48,11 @@ internal object MultiFaceTypeface {
       FontFaceRecord(
         localUri = face.localUri,
         weight = built.primary.style.weight,
-        style = if (built.primary.style.slant == FontStyle.FONT_SLANT_ITALIC) "italic" else "normal"
+        style = if (built.primary.style.slant == FontStyle.FONT_SLANT_ITALIC) {
+          "italic"
+        } else {
+          "normal"
+        }
       )
     }
     FontFamilyFaces.assertNoDuplicateFaces(fontFamilyName, resolvedFaces)
@@ -126,5 +130,9 @@ internal object MultiFaceTypeface {
   }
 
   private fun slantFor(style: String) =
-    if (style == "italic") FontStyle.FONT_SLANT_ITALIC else FontStyle.FONT_SLANT_UPRIGHT
+    if (style == "italic") {
+      FontStyle.FONT_SLANT_ITALIC
+    } else {
+      FontStyle.FONT_SLANT_UPRIGHT
+    }
 }

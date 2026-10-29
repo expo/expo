@@ -249,7 +249,11 @@ class ContactsModule : Module() {
     AsyncFunction("updateContactAsync") { contact: Map<String, Any> ->
       ensurePermissions()
 
-      val id = if (contact.containsKey("id")) contact["id"] as String? else null
+      val id = if (contact.containsKey("id")) {
+        contact["id"] as String?
+      } else {
+        null
+      }
       var targetContact = getContactById(id, defaultFields)
 
       if (targetContact != null) {
@@ -288,7 +292,11 @@ class ContactsModule : Module() {
 
     AsyncFunction("writeContactToFileAsync") { contact: Map<String, Any?> ->
       ensureReadPermission()
-      val id = if (contact.containsKey("id")) contact["id"] as String? else null
+      val id = if (contact.containsKey("id")) {
+        contact["id"] as String?
+      } else {
+        null
+      }
       val lookupKey = getLookupKeyForContactId(id) ?: throw LookupKeyNotFoundException()
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
       uri.toString()
@@ -612,13 +620,25 @@ class ContactsModule : Module() {
       selection += " OR " + ContactsContract.Data.MIMETYPE + "=?"
       selectionArgs.add(CommonDataKinds.Relation.CONTENT_ITEM_TYPE)
     }
-    if (keysToFetch.contains("phoneticFirstName")) projection.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)
-    if (keysToFetch.contains("phoneticLastName")) projection.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)
-    if (keysToFetch.contains("phoneticMiddleName")) projection.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)
-    if (keysToFetch.contains("namePrefix")) projection.add(CommonDataKinds.StructuredName.PREFIX)
-    if (keysToFetch.contains("nameSuffix")) projection.add(CommonDataKinds.StructuredName.SUFFIX)
+    if (keysToFetch.contains("phoneticFirstName")) {
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_GIVEN_NAME)
+    }
+    if (keysToFetch.contains("phoneticLastName")) {
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_FAMILY_NAME)
+    }
+    if (keysToFetch.contains("phoneticMiddleName")) {
+      projection.add(CommonDataKinds.StructuredName.PHONETIC_MIDDLE_NAME)
+    }
+    if (keysToFetch.contains("namePrefix")) {
+      projection.add(CommonDataKinds.StructuredName.PREFIX)
+    }
+    if (keysToFetch.contains("nameSuffix")) {
+      projection.add(CommonDataKinds.StructuredName.SUFFIX)
+    }
 
-    if (keysToFetch.contains("isFavorite")) projection.add(ContactsContract.Data.STARRED)
+    if (keysToFetch.contains("isFavorite")) {
+      projection.add(ContactsContract.Data.STARRED)
+    }
 
     return QueryArguments(
       projection.toTypedArray(),

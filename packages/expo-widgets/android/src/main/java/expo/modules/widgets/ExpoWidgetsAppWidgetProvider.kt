@@ -3,7 +3,7 @@ package expo.modules.widgets
 import android.content.Context
 import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import io.github.jakex7.peek.emittables.PeekEmittableAppWidget
+import io.github.expo.peek.emittables.PeekEmittableAppWidget
 
 open class ExpoWidgetsAppWidgetProvider(
   widgetName: String

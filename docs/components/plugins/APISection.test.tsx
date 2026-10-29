@@ -89,9 +89,9 @@ describe('APISection', () => {
       <APISection packageName="expo-asset" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(17);
-    expect(screen.getAllByRole('table')).toHaveLength(7);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
 
     expect(screen.queryByText('Classes'));
     expect(screen.queryByText('Asset Properties'));

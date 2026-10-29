@@ -19,7 +19,9 @@ internal fun isSdkVersionCompatible(
   sdkVersion: String?,
   expoGoSdkVersion: String = ExponentBuildConstants.TEMPORARY_SDK_VERSION
 ): Boolean {
-  if (sdkVersion == null) return false
+  if (sdkVersion == null) {
+    return false
+  }
   val expoGoMajorVersion = expoGoSdkVersion.split(".").firstOrNull()
   val updateMajorVersion = sdkVersion.split(".").firstOrNull()
   return expoGoMajorVersion != null && expoGoMajorVersion == updateMajorVersion

@@ -1,14 +1,33 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Keep runtime `I18nManager.allowRTL` / `forceRTL` values when the config plugin does not set `supportsRTL` / `forcesRTL`. ([#51800](https://github.com/expo/expo/pull/51800) by [@zoontek](https://github.com/zoontek))
 
-### 🐛 Bug fixes
+## 58.0.4
 
-### 💡 Others
+### Patch Changes
+
+- Fix Android resource qualifiers for Hebrew, Indonesian and Yiddish locales, which Android only resolves under their legacy codes (`iw`, `in`, `ji`), and keep the `zh-rCN`, `zh-rTW` and `zh-rHK` library translations when `supportedLocales` lists `zh-Hans` or `zh-Hant`. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fix `uses24hourClock` reporting a 24-hour clock for locales whose 12-hour time pattern marks the period with `B` instead of `a`, such as `zh-Hant-TW` and `hi-IN`. ([#51244](https://github.com/expo/expo/pull/51244) by [@MoogyG](https://github.com/MoogyG))
+
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

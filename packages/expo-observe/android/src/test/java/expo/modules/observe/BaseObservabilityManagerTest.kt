@@ -371,7 +371,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getMetrics(2, 4) } returns metrics.drop(2)
     coEvery { sessionManager.getMetrics(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -534,7 +538,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getLogs(2, 4) } returns logs.drop(2)
     coEvery { sessionManager.getLogs(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatchLogs(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -915,7 +923,11 @@ class BaseObservabilityManagerTest {
     coEvery { eventDispatcher.dispatchSpans(any()) } answers {
       val batches = firstArg<List<SpanBatch>>()
       sentSizes.add(batches.sumOf { it.spans.size })
-      if (sentSizes.size == 1) DispatchResult.PayloadTooLarge else DispatchResult.Success
+      if (sentSizes.size == 1) {
+        DispatchResult.PayloadTooLarge
+      } else {
+        DispatchResult.Success
+      }
     }
 
     createManager().dispatchUnsentSpans()

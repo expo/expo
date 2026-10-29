@@ -1,5 +1,6 @@
 package expo.modules.location.taskConsumers
 
+import android.Manifest
 import android.app.PendingIntent
 import android.app.job.JobParameters
 import android.app.job.JobService
@@ -7,12 +8,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.PersistableBundle
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -38,6 +41,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private var mTask: TaskInterface? = null
   private var mPendingIntent: PendingIntent? = null
   private var mService: BaseForegroundTaskService? = null
+  private var mServiceConnection: ServiceConnection? = null
   private var mLocationRequest: LocationRequest? = null
   private var mLastReportedLocation: Location? = null
   private var mDeferredDistance = 0.0
@@ -86,9 +90,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       handleLocationUpdate(result.locations)
     } else {
       try {
-        mLocationClient.lastLocation.addOnCompleteListener { task ->
-          task.result?.let { handleLocationUpdate(listOf(it)) }
-        }
+        mLocationClient.lastLocation
+          .addOnSuccessListener { location: Location? ->
+            location?.let { handleLocationUpdate(listOf(it)) }
+          }
+          .addOnFailureListener {
+            Log.e(TAG, "Cannot get last location: " + it.message)
+          }
       } catch (e: SecurityException) {
         Log.e(TAG, "Cannot get last location: " + e.message)
       }
@@ -100,7 +108,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
    * or deferring for battery optimization (background).
    */
   private fun handleLocationUpdate(locations: List<Location>) {
-    if (locations.isEmpty()) return
+    if (locations.isEmpty()) {
+      return
+    }
 
     // Foreground: report immediately for responsive UI (matches iOS behavior)
     if (!mIsHostPaused) {
@@ -203,6 +213,11 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
     // Foreground service is requested but not running.
     if (mService == null) {
+      // Android 14+ throws without a location permission, which can expire while the task stays registered.
+      if (!hasLocationPermission()) {
+        Log.w(TAG, "Foreground location task cannot be started without a location permission")
+        return
+      }
       val serviceIntent = Intent(context, LocationTaskService::class.java)
       val extras = Bundle()
       val serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle()
@@ -211,16 +226,26 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       extras.putString("appId", task.appScopeKey)
       extras.putString("taskName", task.name)
       extras.putBoolean("killService", serviceOptions.getBoolean("killServiceOnDestroy", false))
+      extras.putBundle("serviceOptions", serviceOptions)
       serviceIntent.putExtras(extras)
-      context.startForegroundService(serviceIntent)
+      try {
+        context.startForegroundService(serviceIntent)
+      } catch (e: RuntimeException) {
+        if (!BaseForegroundTaskService.isStartRejected(e)) {
+          throw e
+        }
+        Log.w(TAG, "Foreground location task could not be started", e)
+        return
+      }
       context.bindService(
         serviceIntent,
         object : ServiceConnection {
           override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mService = (service as? ServiceBinder)?.service
-            mService?.let {
-              it.setParentContext(context)
-              it.startForeground(serviceOptions)
+            // The task was unregistered while this bind was pending: didUnregister() found no
+            // service to stop. Stop it now.
+            if (mTask == null) {
+              stopForegroundService()
             }
           }
 
@@ -228,12 +253,33 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService?.stop()
             mService = null
           }
-        },
+        }.also { mServiceConnection = it },
         Context.BIND_AUTO_CREATE
       )
     } else {
       // Restart the service with new service options.
-      mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      try {
+        mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      } catch (e: RuntimeException) {
+        if (!BaseForegroundTaskService.isStartRejected(e)) {
+          throw e
+        }
+        Log.w(TAG, "Foreground location task could not be restarted", e)
+        releaseService()
+      }
+    }
+  }
+
+  private fun releaseService() {
+    mService?.stop()
+    mService = null
+    mServiceConnection?.let { context.unbindService(it) }
+    mServiceConnection = null
+  }
+
+  private fun hasLocationPermission(): Boolean {
+    return listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION).any {
+      ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
   }
 
@@ -246,7 +292,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
    * Used in foreground mode to provide responsive location updates (matches iOS behavior).
    */
   private fun reportLocationsImmediately(locations: List<Location>) {
-    if (locations.isEmpty()) return
+    if (locations.isEmpty()) {
+      return
+    }
     val context = context.applicationContext
     val data: MutableList<PersistableBundle> = ArrayList()
     var lastReported: Location? = null
@@ -269,7 +317,11 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   private fun deferLocations(locations: List<Location>) {
     val size = mDeferredLocations.size
-    var lastLocation = if (size > 0) mDeferredLocations[size - 1] else mLastReportedLocation
+    var lastLocation = if (size > 0) {
+      mDeferredLocations[size - 1]
+    } else {
+      mLastReportedLocation
+    }
     for (location in locations) {
       if (lastLocation != null) {
         mDeferredDistance += abs(location.distanceTo(lastLocation)).toDouble()
@@ -339,6 +391,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   override fun onHostResume() {
     mIsHostPaused = false
+    if (mTask != null && mService?.isPromoted != true) {
+      maybeStartForegroundService()
+    }
     maybeReportDeferredLocations()
   }
 

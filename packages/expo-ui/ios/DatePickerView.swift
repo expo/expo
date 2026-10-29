@@ -4,12 +4,7 @@ import SwiftUI
 internal struct DatePickerView: ExpoSwiftUI.View {
   @ObservedObject var props: DatePickerProps
   @State private var date = Date()
-  // `.graphical` has some AutoLayout bug (it uses UICalendarView under the hood)
-  // It shrinks height when user taps a date.
-  // https://github.com/expo/expo/issues/47062
-  // https://stackoverflow.com/a/74763440/7070640
-  // Current fix is to add a fixed min width of 320 when `.graphical` style is used.
-  // TODO: Remove if apple fixes the bug in newer versions
+
   private var isGraphicalStyle: Bool {
     props.modifiers?.contains {
       $0["$type"] as? String == "datePickerStyle" && $0["style"] as? String == "graphical"
@@ -20,8 +15,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
 #if os(tvOS)
     Text("DatePicker is not supported on tvOS")
 #else
-    createDatePicker()
-      .frame(minWidth: isGraphicalStyle ? 320 : nil)
+    datePicker
       .onChange(of: date) { newDate in
         if props.selection == newDate { return }
         props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
@@ -32,9 +26,50 @@ internal struct DatePickerView: ExpoSwiftUI.View {
       .onAppear {
         date = props.selection ?? Date()
       }
-      .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
 #endif
   }
+
+#if !os(tvOS)
+  @ViewBuilder
+  private var datePicker: some View {
+#if os(iOS)
+    if isGraphicalStyle {
+      graphicalDatePicker
+    } else {
+      swiftUIDatePicker
+    }
+#else
+    swiftUIDatePicker
+#endif
+  }
+
+  private var swiftUIDatePicker: some View {
+    createDatePicker()
+      // Graphical style on macOS: https://github.com/expo/expo/issues/47062
+      .frame(minWidth: isGraphicalStyle ? 320 : nil)
+      .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
+  }
+
+#if os(iOS)
+  // SwiftUI's graphical `DatePicker` can keep a wrong height when it appears after launch.
+  // https://github.com/expo/expo/issues/47765
+  @ViewBuilder
+  private var graphicalDatePicker: some View {
+    let picker = InlineDatePicker(
+      date: $date,
+      range: props.range,
+      components: props.displayedComponents,
+      accessibilityLabel: props.title
+    )
+    // Like SwiftUI's graphical style, the label is not drawn and is only read by VoiceOver.
+    if hasChildren, #available(iOS 18.0, *) {
+      picker.accessibilityLabel { _ in Children() }
+    } else {
+      picker
+    }
+  }
+#endif
+#endif
 
   private var hasChildren: Bool {
     props.children?.isEmpty == false
@@ -93,6 +128,96 @@ internal enum DatePickerComponent: String, Enumerable {
   case date
   case hourAndMinute
 }
+
+#if os(iOS)
+private struct InlineDatePicker: UIViewRepresentable {
+  @Binding var date: Date
+  let range: DateRange?
+  let components: [DatePickerComponent]
+  let accessibilityLabel: String?
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(date: $date)
+  }
+
+  func makeUIView(context: Context) -> UIDatePicker {
+    let picker = UIDatePicker()
+    picker.preferredDatePickerStyle = .inline
+    picker.addTarget(context.coordinator, action: #selector(Coordinator.valueChanged(_:)), for: .valueChanged)
+    return picker
+  }
+
+  func updateUIView(_ picker: UIDatePicker, context: Context) {
+    context.coordinator.date = $date
+    let environment = context.environment
+    let mode = components.toDatePickerMode()
+
+    // These change the picker's content, so SwiftUI has to measure it again.
+    var needsMeasure = false
+    if picker.datePickerMode != mode {
+      picker.datePickerMode = mode
+      needsMeasure = true
+    }
+    if picker.locale != environment.locale {
+      picker.locale = environment.locale
+      needsMeasure = true
+    }
+    if picker.calendar != environment.calendar {
+      picker.calendar = environment.calendar
+      needsMeasure = true
+    }
+    if picker.timeZone != environment.timeZone {
+      picker.timeZone = environment.timeZone
+    }
+    picker.minimumDate = range?.start
+    picker.maximumDate = range?.end
+    if picker.date != date {
+      picker.setDate(date, animated: false)
+    }
+    picker.isEnabled = environment.isEnabled
+    picker.accessibilityLabel = accessibilityLabel
+
+    if needsMeasure {
+      picker.invalidateIntrinsicContentSize()
+    }
+  }
+
+  func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIDatePicker, context: Context) -> CGSize? {
+    let width = proposal.width.flatMap { $0.isFinite ? $0 : nil }
+    let size = uiView.systemLayoutSizeFitting(
+      CGSize(width: width ?? 0, height: UIView.layoutFittingCompressedSize.height),
+      withHorizontalFittingPriority: width == nil ? .fittingSizeLevel : .required,
+      verticalFittingPriority: .fittingSizeLevel
+    )
+    return CGSize(width: width ?? size.width, height: size.height)
+  }
+
+  final class Coordinator: NSObject {
+    var date: Binding<Date>
+
+    init(date: Binding<Date>) {
+      self.date = date
+    }
+
+    @objc func valueChanged(_ picker: UIDatePicker) {
+      date.wrappedValue = picker.date
+    }
+  }
+}
+
+private extension [DatePickerComponent] {
+  func toDatePickerMode() -> UIDatePicker.Mode {
+    switch (contains(.date), contains(.hourAndMinute)) {
+    case (true, true):
+      return .dateAndTime
+    case (false, true):
+      return .time
+    default:
+      return .date
+    }
+  }
+}
+#endif
 
 #if !os(tvOS)
 internal extension [DatePickerComponent] {

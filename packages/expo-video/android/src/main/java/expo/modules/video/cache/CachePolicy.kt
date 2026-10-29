@@ -53,14 +53,18 @@ data class CachePolicy(
           }
           c == ',' && !inQuotes -> {
             val trimmed = current.toString().trim()
-            if (trimmed.isNotEmpty()) tokens.add(trimmed)
+            if (trimmed.isNotEmpty()) {
+              tokens.add(trimmed)
+            }
             current.setLength(0)
           }
           else -> current.append(c)
         }
       }
       val trimmed = current.toString().trim()
-      if (trimmed.isNotEmpty()) tokens.add(trimmed)
+      if (trimmed.isNotEmpty()) {
+        tokens.add(trimmed)
+      }
       return tokens
     }
 
@@ -72,8 +76,16 @@ data class CachePolicy(
       val names = mutableSetOf<String>()
       for (token in tokens) {
         val eq = token.indexOf('=')
-        val name = (if (eq >= 0) token.substring(0, eq) else token).trim().lowercase()
-        if (name.isNotEmpty()) names.add(name)
+        val name = (
+          if (eq >= 0) {
+            token.substring(0, eq)
+          } else {
+            token
+          }
+          ).trim().lowercase()
+        if (name.isNotEmpty()) {
+          names.add(name)
+        }
       }
       return names
     }

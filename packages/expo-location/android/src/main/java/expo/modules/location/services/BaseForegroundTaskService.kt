@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -27,7 +26,6 @@ import android.util.Log
 internal abstract class BaseForegroundTaskService : Service() {
   private var mChannelId: String? = null
   private var mKillService = false
-  private lateinit var mParentContext: Context
   private val mServiceId by lazy { nextServiceId() }
   private val mBinder: IBinder = ServiceBinder()
 
@@ -39,6 +37,9 @@ internal abstract class BaseForegroundTaskService : Service() {
 
   /** Shown as the notification channel's description in system settings. */
   protected abstract val channelDescription: String
+
+  var isPromoted = false
+    private set
 
   inner class ServiceBinder : Binder() {
     val service: BaseForegroundTaskService
@@ -55,19 +56,29 @@ internal abstract class BaseForegroundTaskService : Service() {
     if (extras != null) {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName")
       mKillService = extras.getBoolean("killService", false)
+      extras.getBundle("serviceOptions")?.let {
+        try {
+          startForeground(it)
+        } catch (e: RuntimeException) {
+          if (!isStartRejected(e)) {
+            throw e
+          }
+          Log.w(TAG, "Foreground service could not enter the foreground", e)
+          stop()
+        }
+      }
     }
     return START_REDELIVER_INTENT
-  }
-
-  fun setParentContext(context: Context) {
-    // Background task logic is still outside this service, so we have to save the parent
-    // context in order to make sure it won't be destroyed by the OS.
-    mParentContext = context
   }
 
   fun stop() {
     stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
+  }
+
+  override fun onDestroy() {
+    isPromoted = false
+    super.onDestroy()
   }
 
   override fun onTaskRemoved(rootIntent: Intent) {
@@ -80,6 +91,7 @@ internal abstract class BaseForegroundTaskService : Service() {
   fun startForeground(serviceOptions: Bundle) {
     val notification = buildServiceNotification(serviceOptions)
     startForeground(mServiceId, notification)
+    isPromoted = true
   }
 
   //region private
@@ -99,7 +111,7 @@ internal abstract class BaseForegroundTaskService : Service() {
       builder.setColorized(false)
     }
 
-    mParentContext.packageManager.getLaunchIntentForPackage(mParentContext.packageName)?.let {
+    packageManager.getLaunchIntentForPackage(packageName)?.let {
       it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
       val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
@@ -108,9 +120,8 @@ internal abstract class BaseForegroundTaskService : Service() {
     }
 
     val iconsResId = try {
-      val packageManager = mParentContext.packageManager
       val ai = packageManager.getApplicationInfo(
-        mParentContext.packageName,
+        packageName,
         PackageManager.GET_META_DATA
       )
       if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
@@ -119,7 +130,7 @@ internal abstract class BaseForegroundTaskService : Service() {
         getDefaultNotificationIcon()
       }
     } catch (e: Exception) {
-      Log.e("expo-location", "Could not fetch default notification icon.", e)
+      Log.e(TAG, "Could not fetch default notification icon.", e)
       getDefaultNotificationIcon()
     }
 
@@ -148,7 +159,7 @@ internal abstract class BaseForegroundTaskService : Service() {
    * requires small notification icons to be monochrome.
    */
   private fun getDefaultNotificationIcon(): Int {
-    return mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+    return resources.getIdentifier("notification_icon", "drawable", packageName)
       .takeIf { it != 0 } ?: applicationInfo.icon
   }
 
@@ -161,7 +172,13 @@ internal abstract class BaseForegroundTaskService : Service() {
   } //endregion
 
   companion object {
+    private const val TAG = "BaseForegroundTaskService"
     const val META_DATA_FOREGROUND_SERVICE_ICON_KEY: String =
       "expo.modules.location.foreground_service_icon"
+
+    // ForegroundServiceStartNotAllowedException and BackgroundServiceStartNotAllowedException are IllegalStateExceptions.
+    internal fun isStartRejected(e: RuntimeException): Boolean {
+      return e is SecurityException || e is IllegalStateException
+    }
   }
 }

@@ -1,12 +1,33 @@
 import ExpoModulesCore
 
 struct AudioMode: Record {
-  @Field var playsInSilentMode: Bool = false
+  @Field var playsInSilentMode: Bool = true
   @Field var interruptionMode: InterruptionMode = .mixWithOthers
   @Field var allowsRecording: Bool = false
   @Field var shouldPlayInBackground: Bool = false
   @Field var shouldRouteThroughEarpiece: Bool = false
   @Field var allowsBackgroundRecording: Bool = false
+}
+
+struct PartialAudioMode: Record {
+  @Field var playsInSilentMode: Bool?
+  @Field var interruptionMode: InterruptionMode?
+  @Field var allowsRecording: Bool?
+  @Field var shouldPlayInBackground: Bool?
+  @Field var shouldRouteThroughEarpiece: Bool?
+  @Field var allowsBackgroundRecording: Bool?
+
+  // `AudioMode` fields are reference types, so build a new mode instead of mutating `current`.
+  func merged(into current: AudioMode) -> AudioMode {
+    let mode = AudioMode()
+    mode.playsInSilentMode = playsInSilentMode ?? current.playsInSilentMode
+    mode.interruptionMode = interruptionMode ?? current.interruptionMode
+    mode.allowsRecording = allowsRecording ?? current.allowsRecording
+    mode.shouldPlayInBackground = shouldPlayInBackground ?? current.shouldPlayInBackground
+    mode.shouldRouteThroughEarpiece = shouldRouteThroughEarpiece ?? current.shouldRouteThroughEarpiece
+    mode.allowsBackgroundRecording = allowsBackgroundRecording ?? current.allowsBackgroundRecording
+    return mode
+  }
 }
 
 enum InterruptionMode: String, Enumerable {
@@ -82,6 +103,8 @@ struct LockScreenOptions: Record {
   @Field var showNextTrack: Bool = false
   @Field var showPreviousTrack: Bool = false
   @Field var isLiveStream: Bool? = false
+  @Field var seekForwardIntervalSeconds: Double = 10.0
+  @Field var seekBackwardIntervalSeconds: Double = 10.0
 }
 
 enum BitRateStrategy: String, Enumerable {

@@ -18,7 +18,7 @@ import { background, combinedClickable, paddingAll } from '@expo/ui/jetpack-comp
 import * as React from 'react';
 import { View, Text, Alert, Pressable } from 'react-native';
 
-import { Section } from '../../components/Page';
+import { ScrollPage, Section } from '../../components/Page';
 
 // This are random icons used for testing. Feel free to replace them with more fitting icons if needed.
 const faceIcon = require('../../../assets/icons/api/Camera.png');
@@ -58,7 +58,7 @@ export default function DropdownMenuScreen() {
   const themeBackgroundColor = selectedTheme === 'Dark' ? 'black' : 'white';
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <ScrollPage>
       <Section title="Theme Dropdown Menu">
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -467,7 +467,7 @@ export default function DropdownMenuScreen() {
           </DropdownMenu>
         </Host>
       </Section>
-    </View>
+    </ScrollPage>
   );
 }
 

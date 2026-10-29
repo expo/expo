@@ -9,16 +9,16 @@ struct JavaScriptValueTests {
 
   @Test
   func `create undefined`() {
-    #expect(JavaScriptValue.undefined.isUndefined() == true)
-    #expect(JavaScriptValue.undefined.isNull() == false)
-    #expect(JavaScriptValue.undefined.isNumber() == false)
+    #expect(JavaScriptValue.undefined().isUndefined() == true)
+    #expect(JavaScriptValue.undefined().isNull() == false)
+    #expect(JavaScriptValue.undefined().isNumber() == false)
   }
 
   @Test
   func `create null`() {
-    #expect(JavaScriptValue.null.isNull() == true)
-    #expect(JavaScriptValue.null.isUndefined() == false)
-    #expect(JavaScriptValue.null.isString() == false)
+    #expect(JavaScriptValue.null().isNull() == true)
+    #expect(JavaScriptValue.null().isUndefined() == false)
+    #expect(JavaScriptValue.null().isString() == false)
   }
 
   @Test
@@ -55,8 +55,8 @@ struct JavaScriptValueTests {
   func `equality`() {
     let number = JavaScriptValue(runtime, 21)
     let string = JavaScriptValue(runtime, "test")
-    let null = JavaScriptValue.null
-    let undefined = JavaScriptValue.undefined
+    let null = JavaScriptValue.null()
+    let undefined = JavaScriptValue.undefined()
     #expect((number == number) == true)
     #expect((string == string) == true)
     #expect((number == string) == false)
@@ -190,6 +190,17 @@ struct JavaScriptValueTests {
   }
 
   @Test
+  func `getString leaves the value's string intact`() throws {
+    let value = try runtime.eval("'żółć ' + 'hello'.repeat(2)")
+    for _ in 0..<1000 {
+      #expect(value.getString() == "żółć hellohello")
+    }
+    runtime.collectGarbage()
+    #expect(value.isString() == true)
+    #expect(value.getString() == "żółć hellohello")
+  }
+
+  @Test
   func `String(runtime, ...) round-trips an empty string`() {
     let value = JavaScriptValue(runtime, "")
     #expect(value.isString() == true)
@@ -272,7 +283,7 @@ struct JavaScriptValueTests {
   func `isSymbol for non-symbol values`() {
     #expect(JavaScriptValue(runtime, "string").isSymbol() == false)
     #expect(JavaScriptValue(runtime, 42).isSymbol() == false)
-    #expect(JavaScriptValue.undefined.isSymbol() == false)
+    #expect(JavaScriptValue.undefined().isSymbol() == false)
   }
 
   @Test
@@ -391,7 +402,7 @@ struct JavaScriptValueTests {
 
   @Test
   func `jsonStringify returns nil for undefined`() throws {
-    let undefined = JavaScriptValue.undefined
+    let undefined = JavaScriptValue.undefined()
     let json = try undefined.jsonStringify()
     #expect(json == nil)
   }
@@ -427,7 +438,7 @@ struct JavaScriptValueTests {
 
   @Test
   func `jsonStringify for null`() throws {
-    let null = JavaScriptValue.null
+    let null = JavaScriptValue.null()
     let json = try null.jsonStringify()
     #expect(json == "null")
   }
@@ -516,7 +527,7 @@ struct JavaScriptValueTests {
   @Test
   func `asDouble throws TypeError for non-number values`() throws {
     let stringValue = try runtime.eval("'3.14'")
-    let nullValue = JavaScriptValue.null
+    let nullValue = JavaScriptValue.null()
 
     #expect(throws: JavaScriptValue.TypeError.self) {
       try stringValue.asDouble()
@@ -592,7 +603,7 @@ struct JavaScriptValueTests {
   func `asFunction returns JavaScriptFunction for function values`() throws {
     let functionValue = try runtime.eval("(x) => x * 2")
     let function = try functionValue.asFunction()
-    let result = try function.call(arguments: JavaScriptValue.number(5))
+    let result = try function.call(arguments: 5)
     #expect(result.getDouble() == 10.0)
   }
 
@@ -631,10 +642,12 @@ struct JavaScriptValueTests {
 
   @Test
   func `asPromise returns JavaScriptPromise for promise values`() async throws {
-    let promiseValue = try runtime.eval("Promise.resolve(42)")
-    let promise = try promiseValue.asPromise()
-    let result = try await promise.await()
-    #expect(result.getDouble() == 42.0)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promiseValue = try runtime.eval("Promise.resolve(42)")
+      let promise = try promiseValue.asPromise()
+      let result = try await promise.await()
+      #expect(result.getDouble() == 42.0)
+    }
   }
 
   @Test
@@ -724,5 +737,39 @@ struct JavaScriptValueTests {
     let pointee1 = value.withUnsafePointee { return $0 }
     let pointee2 = value.withUnsafePointee { return $0 }
     #expect(pointee1 == pointee2)
+  }
+
+  @Test
+  func `isThenable is true for a promise or an object with a callable then`() throws {
+    #expect(try runtime.eval("Promise.resolve(1)").isThenable())
+    #expect(try runtime.eval("({ then() {} })").isThenable())
+  }
+
+  @Test
+  func `isThenable is false for other values`() throws {
+    #expect(try runtime.eval("({ then: 1 })").isThenable() == false)
+    #expect(try runtime.eval("({})").isThenable() == false)
+    #expect(try runtime.eval("() => {}").isThenable() == false)
+    #expect(try runtime.eval("42").isThenable() == false)
+    #expect(JavaScriptValue.null().isThenable() == false)
+    #expect(JavaScriptValue.undefined().isThenable() == false)
+  }
+}
+
+@Suite
+@JavaScriptActor
+struct JavaScriptValueRuntimeLifetimeTests {
+  @Test
+  func `runtime-free value kinds keep working after the runtime is gone`() throws {
+    var runtime: JavaScriptRuntime? = JavaScriptRuntime()
+    let bool = JavaScriptValue(runtime!, true)
+
+    // Values don't keep the runtime alive, so this deallocates it.
+    runtime = nil
+
+    // A boolean doesn't need the runtime, so these take the runtime-free paths instead of trapping.
+    #expect(try bool.jsonStringify() == "true")
+    #expect(bool.copy().getBool() == true)
+    #expect(bool.isEqual(to: .true()) == true)
   }
 }

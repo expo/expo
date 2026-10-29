@@ -121,6 +121,63 @@ export default function HostingRNViewsScreen() {
             </RNHostView>
           </VStack>
         </Section>
+        <Section title="matchContents: { vertical: true }">
+          <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
+            <SwiftUIText>
+              Width comes from the row, height from the text. The purple box must stay inside the
+              row and grow to fit every line.
+            </SwiftUIText>
+            <RNHostView matchContents={{ vertical: true }}>
+              <View style={{ padding: 12, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                <RNText style={{ color: 'white' }}>
+                  This long React Native text wraps at the parent width and grows vertically. Before
+                  per-axis matchContents it laid out on one line and overflowed its parent.
+                </RNText>
+              </View>
+            </RNHostView>
+          </VStack>
+        </Section>
+        <Section title="matchContents: { horizontal: true }">
+          <VStack alignment="leading" spacing={12} modifiers={[padding({ all: 12 })]}>
+            <SwiftUIText>
+              Height comes from the 60pt frame, width from the text. The purple box must be 60pt
+              tall and only as wide as its label.
+            </SwiftUIText>
+            <HStack modifiers={[frame({ height: 60 })]}>
+              <RNHostView matchContents={{ horizontal: true }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    paddingHorizontal: 12,
+                    backgroundColor: '#9B59B6',
+                    borderRadius: 10,
+                  }}>
+                  <RNText style={{ color: 'white' }}>Hugs its label</RNText>
+                </View>
+              </RNHostView>
+            </HStack>
+          </VStack>
+        </Section>
+        <Section title="Text wrapping without matchContents">
+          <VStack alignment="leading" spacing={12} modifiers={[padding({ all: 12 })]}>
+            <SwiftUIText>
+              The host fills the 100pt frame, and flex: 1 fills the host. The text wraps at the row
+              width, but the height comes from the frame, not from the text.
+            </SwiftUIText>
+            <VStack modifiers={[frame({ height: 100 })]}>
+              <RNHostView>
+                <View
+                  style={{ flex: 1, padding: 12, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                  <RNText style={{ color: 'white' }}>
+                    This text wraps at the parent width. The host has no matchContents, so its size
+                    comes from the parent.
+                  </RNText>
+                </View>
+              </RNHostView>
+            </VStack>
+          </VStack>
+        </Section>
         <Section title="RN Text inside SwiftUI">
           <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <RNHostView matchContents>

@@ -238,6 +238,21 @@ export async function loader() {
 
 If your loader returns `undefined` or `null`, the value is normalized to `null`.
 
+In SDK 58 and later, you can also return a `Response` with a JSON body to set response headers. The `useLoaderData` hook reads the JSON data from the response:
+
+```tsx src/app/posts.tsx
+export async function loader() {
+  const response = await fetch('https://api.example.com/posts');
+  const posts = await response.json();
+
+  return Response.json(posts, {
+    headers: { 'Cache-Control': 'public, max-age=60' },
+  });
+}
+```
+
+Use `public` only for data that can be shared between users. For personalized data, use `private` or `no-store` as appropriate. See [Caching and revalidation](#caching-and-revalidation) for how these headers affect navigation and static exports.
+
 ## Runtime API
 
 Data loaders have full access to the [Runtime API](/router/web/api-routes/#runtime-api) from [`expo-server`](/versions/latest/sdk/server/). This includes utilities for setting response headers, throwing HTTP errors, and running background tasks:
@@ -259,6 +274,32 @@ export async function loader(request) {
 ```
 
 See the [Runtime API documentation](/router/web/api-routes/#runtime-api) for a full list of available functions.
+
+## Caching and revalidation
+
+> **info** This section describes SDK 58 and later. In SDK 55–57, Expo Router caches loader data on the client during navigation.
+
+Expo Router uses loader data from the initial HTML response for hydration. When you revisit a route after it unmounts, `useLoaderData` fetches its data again. The platform HTTP cache uses `Cache-Control` to decide whether to reuse a cached response, revalidate it, or request fresh data. Expo Router does not keep a permanent in-memory data cache across route visits.
+
+A revisit can display a Suspense fallback while the fetch completes, even when the platform serves a cached response. Retrying a loader error through the route's `ErrorBoundary` also fetches again.
+
+### Cache defaults
+
+When a loader does not declare `Cache-Control`, these defaults apply:
+
+| Mode          | Default `Cache-Control`               | Applies to                                                 |
+| ------------- | ------------------------------------- | ---------------------------------------------------------- |
+| Development   | `no-store`                            | Loader responses                                           |
+| Server export | `no-store`                            | Loader responses                                           |
+| Static export | `private, must-revalidate, max-age=0` | Loader data files and the HTML pages that embed their data |
+
+If the loader returns a `Cache-Control` header, it takes precedence over these defaults.
+
+### Static exports
+
+In a static export, a loader's `Cache-Control` header applies to both the data file and the HTML page that embeds the data. Static exports keep only the `Cache-Control` header from loader responses.
+
+The `expo-server` package, EAS Hosting, and `npx expo serve` apply these rules when serving your export. Other static hosts need their own header configuration. HTTP caching does not rerun a static loader. Its data changes only when you export and deploy the app again.
 
 ## Environment variables
 
@@ -418,8 +459,8 @@ export default function Post() {
 
 ## Known limitations
 
-- Loaders **must** return JSON-serializable data. Returning streams or async iterable from a loader is not supported. This will be addressed in a future release.
-- Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
+- Loaders **must** return JSON-serializable data or a `Response` with a JSON body. Streaming loader data is not supported.
+- There is no public API to invalidate loader data for a route that remains mounted. Use `Cache-Control` to control HTTP caching when the route fetches again.
 
 ## Common questions
 

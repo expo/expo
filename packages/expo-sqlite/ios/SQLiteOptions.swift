@@ -2,21 +2,9 @@
 
 import ExpoModulesCore
 
-struct OpenDatabaseOptions: Record, Equatable {
-  @Field
+@Record
+struct OpenDatabaseOptions: Equatable {
   var enableChangeListener: Bool = false
-
-  @Field
   var useNewConnection: Bool = false
-
-  @Field
   var finalizeUnusedStatementsBeforeClosing: Bool = true
-
-  // MARK: - Equatable
-
-  static func == (lhs: OpenDatabaseOptions, rhs: OpenDatabaseOptions) -> Bool {
-    return lhs.enableChangeListener == rhs.enableChangeListener &&
-      lhs.useNewConnection == rhs.useNewConnection &&
-      lhs.finalizeUnusedStatementsBeforeClosing == rhs.finalizeUnusedStatementsBeforeClosing
-  }
 }

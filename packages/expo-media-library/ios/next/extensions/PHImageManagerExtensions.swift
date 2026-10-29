@@ -13,23 +13,17 @@ extension PHImageManager {
   }
 
   func requestLivePhoto(for asset: PHAsset, options: PHLivePhotoRequestOptions) async throws -> PHLivePhoto? {
+    // According to the Photos documentation, the requestLivePhoto callback may be called multiple times if this option is not set
+    options.deliveryMode = .highQualityFormat
     return try await withCheckedThrowingContinuation { continuation in
       requestLivePhoto(
         for: asset,
         targetSize: PHImageManagerMaximumSize,
         contentMode: .aspectFit,
         options: options
-      ) { livePhoto, info in
-        // According to the Photos documentation, this callback may be called multiple times and degraded results are temporary low-quality placeholders.
-        if Self.isDegradedResult(info) {
-          return
-        }
+      ) { livePhoto, _ in
         continuation.resume(returning: livePhoto)
       }
     }
-  }
-
-  private static func isDegradedResult(_ info: [AnyHashable: Any]?) -> Bool {
-    info?[PHImageResultIsDegradedKey] as? Bool ?? false
   }
 }

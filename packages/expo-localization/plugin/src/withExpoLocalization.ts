@@ -40,8 +40,25 @@ function assertLocale(value: unknown): asserts value is string {
   }
 }
 
+// Android looks up resources for these languages under their legacy ISO 639 codes.
+// See `adjustLanguageTag` in `android.content.res.ResourcesImpl`.
+const LEGACY_LANGUAGE_CODES: Record<string, string> = { he: 'iw', id: 'in', yi: 'ji' };
+
+// AndroidX, Material and React Native ship Chinese translations under region qualifiers only.
+const CHINESE_SCRIPT_REGIONS: Record<string, string[]> = { Hans: ['CN'], Hant: ['TW', 'HK'] };
+
 export function convertBcp47ToResourceQualifier(locale: string): string {
-  return `b+${locale.replaceAll('-', '+')}`;
+  const tag = locale.replace(
+    /^[a-z]+/i,
+    (language) => LEGACY_LANGUAGE_CODES[language.toLowerCase()] ?? language
+  );
+  return `b+${tag.replaceAll('-', '+')}`;
+}
+
+export function getResourceQualifiers(locale: string): string[] {
+  const { language, script } = new Intl.Locale(locale);
+  const regions = (language === 'zh' && script && CHINESE_SCRIPT_REGIONS[script]) || [];
+  return [convertBcp47ToResourceQualifier(locale), ...regions.map((region) => `zh-r${region}`)];
 }
 
 export function setResourceConfigurations(
@@ -173,9 +190,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
 
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
-        const resourceQualifiers = supportedLocales.map((locale) =>
-          convertBcp47ToResourceQualifier(locale)
-        );
+        const resourceQualifiers = [...new Set(supportedLocales.flatMap(getResourceQualifiers))];
 
         config.modResults.contents = setResourceConfigurations(
           config.modResults.contents,

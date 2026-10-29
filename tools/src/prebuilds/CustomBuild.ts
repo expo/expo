@@ -30,6 +30,9 @@ const PLATFORM_TO_SDK: Partial<Record<BuildPlatform, string>> = {
 
 // Pods that expose React Native source headers via `Pods/Headers/Public/<pod>/`.
 // Tuple is: [source dir relative to react-native package root, exposure path under <pod>/].
+// Also listed in packages/expo-modules-jsi/apple/scripts/build-swiftpm-app-phase.sh (stage_link) and
+// packages/expo-modules-jsi/apple/Package.swift (headerSearchPaths). A header root added to one must
+// be added to the others, or SwiftPM apps fail at build time with a missing header.
 const RN_HEADER_POD_LAYOUT: Record<string, [string, string]> = {
   'React-jsi': ['ReactCommon/jsi/jsi', 'jsi'],
   'React-runtimescheduler': [

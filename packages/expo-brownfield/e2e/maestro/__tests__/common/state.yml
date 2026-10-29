@@ -1,4 +1,4 @@
-appId: dev.expo.brownfieldintegratedtester
+appId: ${APP_ID}
 ---
 - runFlow: ./_nested-flows/launch-brownfield.yml
 

@@ -2,7 +2,10 @@ import { requireNativeView } from 'expo';
 
 import type { ExpoModifier } from '../../types';
 import { type ContentPadding } from '../LazyColumn';
+import { createLazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+export { LazyItems, type LazyItemsProps } from '../LazyItems';
 
 export interface LazyRowProps {
   /**
@@ -56,3 +59,5 @@ function transformProps(props: LazyRowProps): NativeLazyRowProps {
 export function LazyRow(props: LazyRowProps) {
   return <LazyRowNativeView {...transformProps(props)} />;
 }
+
+LazyRow.Items = createLazyItems('LazyRow.Items');

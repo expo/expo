@@ -1,9 +1,11 @@
+import { StackRouter as ExpoStackRouter } from '../../layouts/stack-router';
 import {
   TabRouter,
   StackRouter,
   type NavigationAction,
   type NavigationState,
 } from '../../react-navigation/routers';
+import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 import type { RouterRegistry } from '../routerRegistry';
 import { node } from './__fixtures__/routeNode';
@@ -186,7 +188,9 @@ test('builds nested state from a same-name child route node', () => {
       routes: [
         {
           name: 'foo',
-          state: { routes: [{ name: 'foo', state: { routes: [{ name: 'bar' }] } }] },
+          state: {
+            routes: [{ name: 'foo', state: { routes: [{ name: 'bar' }] } }],
+          },
         },
       ],
     },
@@ -227,7 +231,7 @@ test('preloads a parent without focusing it and resolves its child', () => {
     registry,
     action: { type: 'PRELOAD', payload: {} },
   });
-  const result = registry.get('root-stack')!.reduce(stack, action)!;
+  const result = expectHandled(registry.get('root-stack')!.reduce(stack, action));
 
   expect(result.state.index).toBe(0);
   expect(result.affectedRouteKey).not.toBe('home-key');
@@ -494,7 +498,13 @@ test('does not descend into a mounted dynamic route with a different param', () 
 
   const action = resolveNavigationDestination({
     targetState: {
-      routes: [{ name: '[id]', params: { id: 'two' }, state: { routes: [{ name: 'index' }] } }],
+      routes: [
+        {
+          name: '[id]',
+          params: { id: 'two' },
+          state: { routes: [{ name: 'index' }] },
+        },
+      ],
     },
     navigationState: stack,
     routeNode: node('root', [node('[id]', [node('index')])]),
@@ -505,4 +515,54 @@ test('does not descend into a mounted dynamic route with a different param', () 
   expect(action.target).toBe('root-stack');
   expect(action.payload.params).toEqual({ id: 'two' });
   expect(action.payload.state?.routes[0]?.name).toBe('index');
+});
+
+// The native screen is the inactive parent, while its nested destination is already active.
+test('committing a reopened nested preview promotes only its owning stack route', () => {
+  const child: NavigationState = {
+    stale: false,
+    type: 'stack',
+    key: 'navigator:child',
+    routeKeySeq: 1,
+    index: 0,
+    routeNames: ['l2'],
+    routes: [{ key: 'l2:0', name: 'l2' }],
+  };
+  const root: NavigationState = {
+    stale: false,
+    type: 'stack',
+    key: 'navigator:root',
+    routeKeySeq: 3,
+    index: 0,
+    routeNames: ['index', 'l1'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: 'l1:2', name: 'l1', state: child },
+    ],
+  };
+  const registry: RouterRegistry = new Map([
+    [root.key, entry(ExpoStackRouter({}), root.routeNames)],
+    [child.key, entry(ExpoStackRouter({}), child.routeNames)],
+  ]);
+  const action = resolveNavigationDestination({
+    navigationState: root,
+    targetState: {
+      routes: [{ name: 'l1', state: { routes: [{ name: 'l2' }] } }],
+    },
+    routeNode: node('root', [node('index'), node('l1', [node('l2')])]),
+    registry,
+    action: { type: 'NAVIGATE', payload: { __internal__PreviewKey: 'l1:2' } },
+  });
+  const result = expectHandled(registry.get(root.key)!.reduce(root, action));
+  expect(result.affectedRouteKey).toBe('l1:2');
+  expect(result.state.index).toBe(1);
+  const destination = result.state.routes[1]!;
+  expect(destination.state?.index).toBe(0);
+  expect(destination.state?.routes.map((route) => route.key)).toEqual(['l2:0']);
+  expect(destination.state?.routes[0]!.params ?? {}).not.toHaveProperty(
+    '__internal_expo_router_no_animation'
+  );
+  expect(destination.params).toHaveProperty('__internal__expo_router_is_preview_navigation', true);
+  expect(destination.params).not.toHaveProperty('__internal_expo_router_no_animation');
+  expect(destination.params).not.toHaveProperty('__internal__PreviewKey');
 });

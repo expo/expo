@@ -822,6 +822,10 @@ export class FileSystemDownloadTask extends SharedObject {
   release(): void {
     super.release();
   }
+  acknowledgeBackgroundCompletionAsync(): Promise<void> {
+    return Promise.resolve();
+  }
+
   cancel(): void {}
 }
 
@@ -918,4 +922,26 @@ export async function pickFileAsync(options?: any): Promise<any> {
     return [{ uri: 'file:///mock/picked/file1.txt' }, { uri: 'file:///mock/picked/file2.txt' }];
   }
   return { uri: 'file:///mock/picked/file.txt' };
+}
+
+// Simulates the iOS collection bridge; public JS handles unsupported platforms.
+export async function canPreview(files: FileSystemFile[]): Promise<boolean> {
+  if (files.length === 0) {
+    throw new RangeError('At least one file is required for a preview.');
+  }
+  for (const file of files) {
+    if (!(await file.canPreview())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export async function preview(files: FileSystemFile[], initialIndex: number): Promise<void> {
+  if (!Number.isInteger(initialIndex) || initialIndex < 0 || initialIndex >= files.length) {
+    throw new RangeError('initialIndex must be an integer within the preview collection.');
+  }
+  if (!(await canPreview(files))) {
+    throw new Error('The preview collection contains an unavailable file.');
+  }
 }

@@ -8,6 +8,7 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.Dispatchers
@@ -206,7 +207,11 @@ class FileSystemDownloadTask : SharedObject() {
 
     // 206 = server supports Range, 200 = server ignored it (sends full content)
     val isPartial = resp.code == 206
-    val effectiveOffset = if (isResume && isPartial) offset else 0L
+    val effectiveOffset = if (isResume && isPartial) {
+      offset
+    } else {
+      0L
+    }
 
     val contentLength = responseBody.contentLength()
     val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)
@@ -318,6 +323,7 @@ fun calculateDownloadTotalBytes(
 }
 
 fun resolveDownloadDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
+  to.validatePermission(FilePermissionService.Permission.WRITE)
   return when (to) {
     is FileSystemDirectory -> {
       val filename = url.filename

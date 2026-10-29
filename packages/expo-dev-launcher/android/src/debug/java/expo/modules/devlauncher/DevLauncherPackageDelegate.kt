@@ -100,7 +100,9 @@ object DevLauncherPackageDelegate {
                 container = containerHolder.get(),
                 moduleName = moduleName
               )
-              if (ok) currentModuleName = moduleName
+              if (ok) {
+                currentModuleName = moduleName
+              }
               ok
             },
             appInfoProvider = { application, reactHost ->

@@ -176,3 +176,4 @@ export function useLinkingURL(): string | null {
 export * from './Linking.types';
 export * from './Schemes';
 export { parse, createURL } from './createURL';
+export { unwrapDevLaunchURL } from './devLaunchURL';

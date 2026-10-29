@@ -402,6 +402,161 @@ describe(modifyConfigAsync, () => {
     });
   });
 
+  it('does not duplicate existing array entries when modifying static config', async () => {
+    const updates = {
+      assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'],
+      requestHeaders: { 'expo-channel-name': 'main' },
+    };
+    createProject('/static-arrays', {
+      'app.json': JSON.stringify({ expo: { ...appFile, updates } }),
+    });
+
+    await expect(
+      modifyConfigAsync('/static-arrays', {
+        updates: { ...updates, url: 'https://u.expo.dev/test-project' },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        updates: {
+          assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'],
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+
+    const written = JSON.parse(
+      vol.readFileSync('/static-arrays/app.json', { encoding: 'utf-8' }) as string
+    );
+    expect(written.expo.updates.assetPatternsToBeBundled).toEqual(['app/**/*.png', 'assets/**/*']);
+  });
+
+  it('appends only new updates array entries when modifying static config', async () => {
+    createProject('/static-updates-append', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
+      }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-updates-append', {
+      updates: { assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'] },
+    });
+
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['app/**/*.png', 'assets/**/*']);
+  });
+
+  it('removes duplicate updates array entries within the modification', async () => {
+    createProject('/static-updates-modification-duplicates', {
+      'app.json': JSON.stringify(appFile),
+    });
+
+    const { config } = await modifyConfigAsync('/static-updates-modification-duplicates', {
+      updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
+    });
+
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['assets/**/*']);
+  });
+
+  it('removes duplicate entries already in a modified updates array', async () => {
+    createProject('/static-updates-existing-duplicates', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
+      }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-updates-existing-duplicates', {
+      updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
+    });
+
+    expect(config?.updates?.assetPatternsToBeBundled).toEqual(['assets/**/*', 'app/**/*.png']);
+  });
+
+  it('appends arrays outside updates without removing duplicates', async () => {
+    createProject('/static-arrays-outside-updates', {
+      'app.json': JSON.stringify({ ...appFile, android: { permissions: ['CAMERA'] } }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-arrays-outside-updates', {
+      android: { permissions: ['CAMERA', 'RECORD_AUDIO'] },
+    });
+
+    expect(config?.android?.permissions).toEqual(['CAMERA', 'CAMERA', 'RECORD_AUDIO']);
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when the updates modification has duplicate array entries', async () => {
+    createProject('/static-dynamic-function-updates-duplicates', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates-duplicates', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*', 'assets/**/*'] },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: { updates: { assetPatternsToBeBundled: ['assets/**/*'] } },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when appending to an existing updates array', async () => {
+    createProject('/static-dynamic-function-updates-append', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { assetPatternsToBeBundled: ['app/**/*.png'] },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates-append', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*'] },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: { updates: { assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'] } },
+    });
+  });
+
+  it('warns and rolls back when the dynamic config drops a modified updates array entry', async () => {
+    createProject('/static-dynamic-function-updates-dropped', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config,
+        updates: { ...config.updates, assetPatternsToBeBundled: [] },
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates-dropped', {
+        updates: { assetPatternsToBeBundled: ['assets/**/*'] },
+      })
+    ).resolves.toMatchObject({ type: 'warn', config: null });
+
+    expect(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-updates-dropped/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    ).toEqual(appFile);
+  });
+
+  it('matches arrays outside updates by index when modifying static with function-like dynamic config', async () => {
+    createProject('/static-dynamic-function-arrays-outside-updates', {
+      'app.json': JSON.stringify({ ...appFile, android: { permissions: ['CAMERA'] } }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-arrays-outside-updates', {
+        android: { permissions: ['RECORD_AUDIO'] },
+      })
+    ).resolves.toMatchObject({ type: 'warn', config: null });
+  });
+
   it('warns when modifying dynamic config only', async () => {
     createProject('/dynamic-only', {
       'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,

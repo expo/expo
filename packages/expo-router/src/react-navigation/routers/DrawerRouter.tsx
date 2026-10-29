@@ -7,8 +7,14 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import {
+  extendRouter,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
+import { type CommonNavigationAction, type ParamListBase, RouterActionHandling } from './types';
+import { isActionHandled } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -75,7 +81,10 @@ function drawerRouterExtension({
   DrawerActionType | CommonNavigationAction,
   DrawerRouterOptions
 >): Partial<
-  Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction>
+  RouterExtensionMembers<
+    DrawerNavigationState<ParamListBase>,
+    DrawerActionType | CommonNavigationAction
+  >
 > {
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
@@ -142,6 +151,41 @@ function drawerRouterExtension({
   };
 
   return {
+    getBrowserHistoryForAction(previous, next, action) {
+      switch (action.type) {
+        case 'OPEN_DRAWER':
+        case 'CLOSE_DRAWER':
+        case 'TOGGLE_DRAWER':
+          return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+        case 'PUSH':
+        case 'NAVIGATE':
+        case 'JUMP_TO':
+          if (
+            isDrawerInHistory(previous) &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+            previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+          ) {
+            // Switching routes closes the drawer and reuses its browser entry.
+            return undefined;
+          }
+      }
+      return router.getBrowserHistoryForAction?.(previous, next, action);
+    },
+
+    getBrowserHistoryForRouteFocus(previous, next, childAction) {
+      if (
+        isDrawerInHistory(previous) &&
+        !isDrawerInHistory(next) &&
+        (childAction?.type === 'push' ||
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key)
+      ) {
+        // Pushing Details from an open drawer replaces the drawer entry with Details.
+        // Back then returns to the page with the drawer closed.
+        return { type: 'replace' };
+      }
+      return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+    },
+
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(ensureDrawerStateHistory(state), key);
 
@@ -179,7 +223,7 @@ function drawerRouterExtension({
         case 'NAVIGATE': {
           const actionResult = router.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             if (nextState.index === state.index) {
               return actionResult;
@@ -191,7 +235,7 @@ function drawerRouterExtension({
             };
           }
 
-          return null;
+          return RouterActionHandling.Unhandled;
         }
 
         case 'GO_BACK':

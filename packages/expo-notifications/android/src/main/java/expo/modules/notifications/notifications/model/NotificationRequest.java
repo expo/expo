@@ -13,6 +13,8 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
  * is triggered by some {@link #mTrigger} and is identifiable by {@link #mIdentifier}.
  */
 public class NotificationRequest implements Parcelable, Serializable {
+  private static final long serialVersionUID = 2436814163774274309L;
+
   private String mIdentifier;
   private INotificationContent mContent;
   private NotificationTrigger mTrigger;

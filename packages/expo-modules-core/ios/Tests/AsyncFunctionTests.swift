@@ -1,3 +1,4 @@
+import ExpoModulesTestCore
 import Testing
 import Foundation
 
@@ -9,7 +10,7 @@ struct AsyncFunctionTests {
   let appContext: AppContext
 
   init() {
-    self.appContext = AppContext.create()
+    self.appContext = TestAppContext()
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
 
@@ -34,6 +35,10 @@ struct AsyncFunctionTests {
       AsyncFunction("returnsOptionalString") { (returnNil: Bool) -> String? in
         return returnNil ? nil : "present"
       }
+
+      AsyncFunction("returnsOptionalRecordWithNilField") { () -> SynthesizedMixedRecord? in
+        return SynthesizedMixedRecord(name: "present", count: 7, note: nil)
+      }
     })
   }
 
@@ -45,26 +50,26 @@ struct AsyncFunctionTests {
 
   @Test("works with optional argument provided")
   func testOptionalArgPresent() async throws {
-    try runtime.eval("expo.modules.TestModule.optionalAndPromise('Hello JS').then((result) => { globalThis.result = result; })")
-    try await expect(equals: "Hello JS")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise('Hello JS')")
+    #expect(try result.asString() == "Hello JS")
   }
 
   @Test("works skipping trailing optional argument")
   func testOptionalArgMissing() async throws {
-    try runtime.eval("expo.modules.TestModule.optionalAndPromise().then((result) => { globalThis.result = result; })")
-    try await expect(equals: "nil")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise()")
+    #expect(try result.asString() == "nil")
   }
 
   @Test("works with mandatory arg but skipping optional")
   func testMandatoryArg() async throws {
-    try runtime.eval("expo.modules.TestModule.mandatoryOptionalPromise('mandatory').then((result) => { globalThis.result = result; })")
-    try await expect(equals: "mandatory + nil")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.mandatoryOptionalPromise('mandatory')")
+    #expect(try result.asString() == "mandatory + nil")
   }
 
   @Test("converts a Record resolved via the manual promise path")
   func testResolvesRecord() async throws {
-    try runtime.eval("expo.modules.TestModule.resolvesRecord().then((result) => { globalThis.result = result.message; })")
-    try await expect(equals: "resolved")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecord().then((result) => result.message)")
+    #expect(try result.asString() == "resolved")
   }
 
   @Test
@@ -91,16 +96,14 @@ struct AsyncFunctionTests {
     #expect(result.getString() == "present")
   }
 
-  nonisolated private func expect(equals expected: String) async throws {
-    try await expectEventually {
-      guard let resultValue = try? await self.runtime.eval("globalThis.result") else {
-        return false
-      }
-      if resultValue.isString() {
-        return try await resultValue.asString() == expected
-      }
-      return false
-    }
+  @Test
+  func `keeps a nil field as null when returning an optional record`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalRecordWithNilField()")
+    let object = try result.asObject()
+
+    #expect(try object.getProperty("name").asString() == "present")
+    #expect(object.hasProperty("note") == true)
+    #expect(object.getProperty("note").isNull() == true)
   }
 }
 

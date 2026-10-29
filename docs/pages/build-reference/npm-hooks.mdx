@@ -5,6 +5,7 @@ maxHeadingDepth: 4
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
 EAS Build lifecycle npm hooks allows you to customize your build process by running scripts before or after the build process.
@@ -81,6 +82,18 @@ elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
   echo "Run commands for iOS builds here"
 fi
 ```
+
+Because the hook calls `./pre-install` directly, the **pre-install** file needs execute permission. Set the permission and commit the change, so that Git records it with the file:
+
+<Terminal
+  cmd={[
+    '$ chmod +x pre-install',
+    '$ git add pre-install',
+    '$ git commit -m "Make pre-install executable"',
+  ]}
+/>
+
+Without execute permission, the hook fails with a `Permission denied` error. Another option is to call the script with `bash`, as in `"eas-build-pre-install": "bash ./pre-install"`. Then the file does not need execute permission.
 
 <Collapsible summary={<>Example: Pre-install script that installs <CODE>git-lfs</CODE> on macOS workers</>}>
 

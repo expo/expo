@@ -106,7 +106,11 @@ open class NotificationScheduler : Module() {
             promise.resolve(nextTriggerDate.time.toDouble())
           }
         } else {
-          val triggerDescription = if (trigger == null) "null" else trigger.javaClass.name
+          val triggerDescription = if (trigger == null) {
+            "null"
+          } else {
+            trigger.javaClass.name
+          }
           val message = String.format("It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %s trigger.", triggerDescription)
           promise.reject("ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, null)
         }

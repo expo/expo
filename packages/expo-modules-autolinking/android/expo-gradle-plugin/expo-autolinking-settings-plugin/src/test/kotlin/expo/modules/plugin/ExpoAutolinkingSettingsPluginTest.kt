@@ -2,6 +2,8 @@ package expo.modules.plugin
 
 import com.google.common.truth.Truth
 import expo.modules.plugin.configuration.ExpoAutolinkingConfig
+import expo.modules.plugin.configuration.GradleProject
+import expo.modules.plugin.configuration.Publication
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Before
@@ -55,6 +57,25 @@ class ExpoAutolinkingSettingsPluginTest {
     Truth.assertThat(configFromPlugin).isEqualTo(configFromAutolinking)
     Truth.assertThat(configFromPlugin.modules.map { it.packageName })
       .containsExactly("expo-fake-module", "expo-other-module")
+  }
+
+  @Test
+  fun `uses a package-local publication only when its repository exists`() {
+    val androidDirectory = testProjectDir.newFolder("module", "android")
+    val project = GradleProject(
+      name = "expo-module",
+      sourceDir = androidDirectory.absolutePath,
+      publication = Publication(
+        groupId = "expo.modules",
+        artifactId = "module",
+        version = "1.0.0",
+        repository = "local-maven-repo"
+      )
+    )
+
+    Truth.assertThat(hasPublicationRepository(project)).isFalse()
+    File(androidDirectory.parentFile, "local-maven-repo").mkdirs()
+    Truth.assertThat(hasPublicationRepository(project)).isTrue()
   }
 
   private fun executeGradleRun(task: String? = null): BuildResult =

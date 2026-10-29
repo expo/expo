@@ -52,6 +52,54 @@ describe('evalModule', () => {
     });
   });
 
+  it('preserves JavaScript default imports of marked CommonJS exports objects', () => {
+    const mod = evalModule(
+      `
+      import plugin from './esmodule-plugin.js';
+      const helpers = require('./example.js');
+      module.exports = plugin.default({ name: plugin.pluginName, value: helpers.test });
+      `,
+      path.join(basepath, 'eval.js')
+    );
+
+    expect(mod).toEqual({ name: 'test', value: 'test', pluginRan: true });
+  });
+
+  it.each(['available', 'missing', 'without transpilation'])(
+    'supports mixed imports and require when TypeScript is %s',
+    (typescript) => {
+      jest.isolateModules(() => {
+        const actualNodeModule = jest.requireActual('node:module');
+        const stripTypeScriptTypes = jest.fn((code: string) => code.replace(': Config', ''));
+        jest.doMock('node:module', () => ({ ...actualNodeModule, stripTypeScriptTypes }));
+        if (typescript === 'missing') {
+          jest.doMock('typescript', () => {
+            throw Object.assign(new Error("Cannot find module 'typescript'"), {
+              code: 'MODULE_NOT_FOUND',
+            });
+          });
+        } else if (typescript === 'without transpilation') {
+          jest.doMock('typescript', () => ({ version: '7.0.0' }));
+        }
+
+        const { evalModule } = require('../load') as typeof import('../load');
+        const mod = evalModule(
+          `
+          import withPlugin from './esmodule-plugin.js';
+          import plain from './example.js';
+          const { basename } = require('node:path');
+          const config: Config = { name: basename('/test'), value: plain.test };
+          module.exports = withPlugin(config);
+          `,
+          path.join(basepath, 'eval.ts')
+        );
+
+        expect(mod).toEqual({ name: 'test', value: 'test', pluginRan: true });
+        expect(stripTypeScriptTypes).toHaveBeenCalledTimes(typescript === 'available' ? 0 : 1);
+      });
+    }
+  );
+
   it('accepts .ts code and turns it to CommonJS with default imports', () => {
     const mod = evalModule(
       `

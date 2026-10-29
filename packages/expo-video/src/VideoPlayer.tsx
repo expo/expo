@@ -71,10 +71,11 @@ export function useVideoPlayer(
       update: (player, { previousDependencies, dependencies }) => {
         // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
         if (previousDependencies[0] !== dependencies[0]) {
-          player.replaceAsync(parsedSource).catch(() => {
+          return player.replaceAsync(parsedSource).catch(() => {
             setForceRecreateCount((c) => c + 1);
           });
         }
+        return undefined;
       },
     },
     [parsedSourceKey, playerBuilderOptionsKey, forceRecreateCount] // [0] source, [1] options, [2] recreate counter

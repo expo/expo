@@ -4,7 +4,7 @@ internal import ExpoAppIntents
 
 /// `EnumerableEntityQuery` lets the system enumerate every draft, which is what Spotlight needs in
 /// order to index them without being handed a list first.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension MailDraftEntityQuery: EnumerableEntityQuery {
   /// Every draft in the catalog, deliberately not `suggestedEntities()`. `hideInSuggestions` means
   /// "do not offer this in Siri suggestions", which says nothing about whether search may find it —
@@ -28,7 +28,7 @@ extension MailDraftEntityQuery: EnumerableEntityQuery {
 ///
 /// It requires the iOS 27 SDK, so it is compiler-gated separately from the conformances above.
 #if compiler(>=6.4)
-@available(iOS 27.0, *)
+@available(iOS 27.0, macOS 27.0, *)
 extension MailDraftEntityQuery: IndexedEntityQuery {
   func reindexEntities(
     for identifiers: [MailDraftEntity.ID],
