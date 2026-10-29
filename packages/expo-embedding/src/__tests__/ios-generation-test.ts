@@ -99,12 +99,22 @@ describe('Generating iOS host integration', () => {
   });
 
   it('should preserve target search paths and linker flags across repeat setup', async () => {
+    const original = await Project.open(join(options.project, 'project.pbxproj'));
+    const app = original.entries('PBXNativeTarget')[0][0];
+    original.configurations(app)[1].buildSettings.LD_RUNPATH_SEARCH_PATHS =
+      '$(inherited) "@executable_path/Custom Frameworks"';
+    await original.save(join(options.project, 'project.pbxproj'));
     await configureSourceProject(options, plan);
     const before = await readFile(join(options.project, 'project.pbxproj'), 'utf8');
     await configureSourceProject(options, plan);
     expect(await readFile(join(options.project, 'project.pbxproj'), 'utf8')).toBe(before);
     const host = await Project.open(join(options.project, 'project.pbxproj'));
     for (const config of host.configurations(host.entries('PBXNativeTarget')[0][0])) {
+      expect(config.buildSettings['LD_RUNPATH_SEARCH_PATHS[sdk=iphone*]']).toEqual(
+        config.name === 'Debug'
+          ? ['$(inherited)', '@executable_path/Frameworks']
+          : ['$(inherited)', '@executable_path/Custom Frameworks', '@executable_path/Frameworks']
+      );
       expect(config.buildSettings['OTHER_LDFLAGS[sdk=iphone*]']).toEqual(
         expect.arrayContaining(['-lz', '-framework', 'UserKit'])
       );

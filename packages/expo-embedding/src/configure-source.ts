@@ -352,6 +352,12 @@ export REACT_NATIVE_PATH=${shellQuote(rn)}
       );
       values[conditional] = [...new Set([...retained, ...common[key]])];
     }
+    const runpaths =
+      values['LD_RUNPATH_SEARCH_PATHS[sdk=iphone*]'] ?? values.LD_RUNPATH_SEARCH_PATHS;
+    const retainedRunpaths = typeof runpaths === 'string' ? splitFlags(runpaths) : array(runpaths);
+    values['LD_RUNPATH_SEARCH_PATHS[sdk=iphone*]'] = [
+      ...new Set([...retainedRunpaths, '$(inherited)', '@executable_path/Frameworks']),
+    ];
     const flags = array(values['OTHER_LDFLAGS[sdk=iphone*]'] ?? values.OTHER_LDFLAGS).flatMap(
       splitFlags
     );

@@ -120,7 +120,7 @@ After manual dependency edits or changes to native manifests, resources, or sour
 
 ## Xcode configurations and CI
 
-Init preserves the host target's initial `HEADER_SEARCH_PATHS`, `FRAMEWORK_SEARCH_PATHS`, and `OTHER_LDFLAGS` in their `[sdk=iphone*]` settings. After init, make further iOS changes in those conditional settings in Xcode, rather than only in the normal target value. Xcode gives the conditional value precedence; `$(inherited)` reads the project-level value. Rerunning init preserves your conditional settings instead of merging normal values that you may have intentionally overridden.
+Init preserves the host target's initial `HEADER_SEARCH_PATHS`, `FRAMEWORK_SEARCH_PATHS`, `LD_RUNPATH_SEARCH_PATHS`, and `OTHER_LDFLAGS` in their `[sdk=iphone*]` settings. After init, make further iOS changes in those conditional settings in Xcode, rather than only in the normal target value. Xcode gives the conditional value precedence; `$(inherited)` reads the project-level value. Setup adds `@executable_path/Frameworks` to the runtime search paths so the app can load its embedded frameworks. Rerunning init preserves your conditional settings instead of merging normal values that you may have intentionally overridden.
 
 Debug and Release work by default. Map custom configurations explicitly in a committed `expo-embedding.json` next to the host project:
 
