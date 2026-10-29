@@ -15,9 +15,9 @@ const DEVELOPMENT_BUILDS_PAGE = '/develop/development-builds/introduction/';
 const DESCRIPTION = 'Paste this into Claude, Cursor, Codex, or another agent.';
 
 const SINGLE_PROMPT =
-  'Set up EAS Update in my Expo project.\n\nRun `npx expo install expo-updates`, then run `eas update:configure`.';
+  'Set up Expo Update in my Expo project.\n\nRun `npx expo install expo-updates`, then run `eas update:configure`.';
 const LOCAL_PROMPT = 'Set up a development build and compile it on my machine.';
-const EAS_PROMPT = 'Set up a development build and build it on EAS.';
+const EXPO_BUILD_PROMPT = 'Set up a development build and build it with Expo Build.';
 
 function fence(text: string) {
   return (
@@ -33,7 +33,7 @@ function fence(text: string) {
 
 function singlePrompt() {
   return (
-    <AgentPrompt title="Set up EAS Update with an AI agent" description={DESCRIPTION}>
+    <AgentPrompt title="Set up Expo Update with an AI agent" description={DESCRIPTION}>
       {fence(SINGLE_PROMPT)}
     </AgentPrompt>
   );
@@ -51,7 +51,7 @@ function developmentBuildsPrompt() {
         {fence(LOCAL_PROMPT)}
       </AgentPromptOption>
       <AgentPromptOption id="build-with-expo-services" label="Build with Expo Build">
-        {fence(EAS_PROMPT)}
+        {fence(EXPO_BUILD_PROMPT)}
       </AgentPromptOption>
     </AgentPrompt>
   );
@@ -99,7 +99,7 @@ describe('AgentPrompt', () => {
     renderAt(SINGLE_PROMPT_PAGE, singlePrompt());
 
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Set up EAS Update with an AI agent' })
+      screen.getByRole('heading', { level: 2, name: 'Set up Expo Update with an AI agent' })
     ).toBeInTheDocument();
     expect(screen.getByText(DESCRIPTION)).toBeInTheDocument();
   });
@@ -200,7 +200,7 @@ describe('AgentPrompt with options', () => {
     fireEvent.click(screen.getByRole('button', { name: /show prompt/i }));
 
     expect(screen.getByText(LOCAL_PROMPT)).toBeVisible();
-    expect(screen.getByText(EAS_PROMPT)).not.toBeVisible();
+    expect(screen.getByText(EXPO_BUILD_PROMPT)).not.toBeVisible();
   });
 
   it('copies the default option when the URL names none', async () => {
@@ -219,7 +219,7 @@ describe('AgentPrompt with options', () => {
       developmentBuildsPrompt()
     );
 
-    expect(await copiedTextAsync(writeText)).toBe(EAS_PROMPT);
+    expect(await copiedTextAsync(writeText)).toBe(EXPO_BUILD_PROMPT);
   });
 
   it('falls back to the default for an unknown option', async () => {
