@@ -31,8 +31,8 @@ struct UpdatesLogEntryListenerTests {
   @Test
   func `a logged warning reaches a listener with its fields`() {
     let listener = RecordingListener()
-    UpdatesLogEntryListenerRegistry.shared.add(listener)
-    defer { UpdatesLogEntryListenerRegistry.shared.remove(listener) }
+    UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+    defer { UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener) }
     let before = UInt(Date().timeIntervalSince1970 * 1000)
 
     logger.warn(message: "Warning \(marker)", code: .assetsFailedToLoad, updateId: "update-1", assetId: "asset-1")
@@ -53,8 +53,8 @@ struct UpdatesLogEntryListenerTests {
   @Test
   func `errors reach a listener and entries below the warning level do not`() {
     let listener = RecordingListener()
-    UpdatesLogEntryListenerRegistry.shared.add(listener)
-    defer { UpdatesLogEntryListenerRegistry.shared.remove(listener) }
+    UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+    defer { UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener) }
 
     logger.info(message: "Info \(marker)")
     logger.debug(message: "Debug \(marker)")
@@ -66,8 +66,8 @@ struct UpdatesLogEntryListenerTests {
   @Test
   func `a removed listener gets no entries`() {
     let listener = RecordingListener()
-    UpdatesLogEntryListenerRegistry.shared.add(listener)
-    UpdatesLogEntryListenerRegistry.shared.remove(listener)
+    UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+    UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener)
 
     logger.warn(message: "Warning \(marker)", code: .none)
 
@@ -80,14 +80,14 @@ struct UpdatesLogEntryListenerTests {
     do {
       let listener = RecordingListener()
       weakListener = listener
-      UpdatesLogEntryListenerRegistry.shared.add(listener)
+      UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
     }
 
     logger.warn(message: "Warning \(marker)", code: .none)
     #expect(weakListener?.entries(containing: marker).count == 1)
 
     if let listener = weakListener {
-      UpdatesLogEntryListenerRegistry.shared.remove(listener)
+      UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener)
     }
     #expect(weakListener == nil)
   }
@@ -95,8 +95,8 @@ struct UpdatesLogEntryListenerTests {
   @Test
   func `entries logged from several threads all reach a listener`() {
     let listener = RecordingListener()
-    UpdatesLogEntryListenerRegistry.shared.add(listener)
-    defer { UpdatesLogEntryListenerRegistry.shared.remove(listener) }
+    UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+    defer { UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener) }
 
     DispatchQueue.concurrentPerform(iterations: 100) { index in
       logger.warn(message: "Warning \(marker) \(index)", code: .none)

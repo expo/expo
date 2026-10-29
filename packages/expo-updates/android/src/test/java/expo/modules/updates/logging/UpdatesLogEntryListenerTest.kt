@@ -78,7 +78,9 @@ class UpdatesLogEntryListenerTest {
   @Test
   fun `a listener that throws does not stop logging or other listeners`() {
     val throwingListener = UpdatesLogEntryListener { throw IllegalStateException("listener failed") }
+    UpdatesLogEntryListenerRegistry.remove(listener)
     UpdatesLogEntryListenerRegistry.add(throwingListener)
+    UpdatesLogEntryListenerRegistry.add(listener)
     try {
       logger.warn("Warning $marker", UpdatesErrorCode.None)
     } finally {

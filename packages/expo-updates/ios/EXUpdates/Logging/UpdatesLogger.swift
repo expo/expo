@@ -210,7 +210,7 @@ public final class UpdatesLogger: NSObject {
       duration: duration
     )
     if level == .warn || level == .error || level == .fatal {
-      UpdatesLogEntryListenerRegistry.shared.notify(logEntry.asDict())
+      UpdatesLogEntryListenerRegistry.sharedInstance.notify(logEntry.asDict())
     }
     return "\(logEntry.asString() ?? logEntry.message)"
   }
