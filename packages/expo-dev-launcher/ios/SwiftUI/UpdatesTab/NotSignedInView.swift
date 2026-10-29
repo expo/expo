@@ -30,9 +30,9 @@ struct NotSignedInView: View {
         Text("Log in")
           .padding(.horizontal, 16)
           .padding(.vertical, 8)
-          .background(Color.black)
+          .background(Color.primary)
           .cornerRadius(16)
-          .foregroundColor(.white)
+          .foregroundColor(Color.expoSystemBackground)
           .font(.system(size: 16, weight: .semibold))
       }
     }

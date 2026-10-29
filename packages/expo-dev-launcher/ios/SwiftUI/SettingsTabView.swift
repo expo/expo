@@ -9,7 +9,6 @@ private let selectedGesturesInfoMessage = "Selected gestures will toggle the dev
 struct SettingsTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var showCopiedMessage = false
-  @State private var defaultPageSize: Int = 10
   @State private var showCacheClearedMessage = false
 
   private func createBuildInfoJSON() -> String {
@@ -254,7 +253,7 @@ struct SettingsTabView: View {
       Text("Sets the number of items fetched for branches and updates")
         .foregroundStyle(.secondary)
         .font(.footnote)
-      Picker("", selection: $defaultPageSize) {
+      Picker("", selection: $viewModel.updatesPageSize) {
         Text("1").tag(1)
         Text("5").tag(5)
         Text("10").tag(10)

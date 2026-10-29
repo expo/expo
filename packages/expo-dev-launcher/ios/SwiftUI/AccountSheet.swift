@@ -140,12 +140,12 @@ struct AccountSheet: View {
           .font(.headline)
           .fontWeight(.semibold)
       }
-      .foregroundColor(.white)
+      .foregroundColor(Color.expoSystemBackground)
       .frame(maxWidth: .infinity)
       .padding(.vertical, 12)
       .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
     }
-    .background(Color.black)
+    .background(Color.primary)
     .cornerRadius(12)
     .disabled(viewModel.isAuthenticating)
   }

@@ -76,10 +76,10 @@ struct ErrorView: View {
       Button(action: onReload) {
         Text("Reload")
           .font(.headline)
-          .foregroundColor(.white)
+          .foregroundColor(Color.expoSystemBackground)
           .frame(maxWidth: .infinity)
           .padding()
-          .background(Color.black)
+          .background(Color.primary)
           .cornerRadius(8)
       }
 

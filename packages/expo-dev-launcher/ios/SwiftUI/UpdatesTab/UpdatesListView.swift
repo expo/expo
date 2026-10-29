@@ -1,6 +1,17 @@
 import SwiftUI
 // swiftlint:disable closure_body_length
 
+private let isoFormatterWithFractionalSeconds: ISO8601DateFormatter = {
+  let formatter = ISO8601DateFormatter()
+  formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+  return formatter
+}()
+private let isoFormatter = ISO8601DateFormatter()
+
+private func createdAtDate(_ value: String) -> Date {
+  isoFormatterWithFractionalSeconds.date(from: value) ?? isoFormatter.date(from: value) ?? .distantPast
+}
+
 struct UpdatesListView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var branches: [BranchWithUpdates] = []
@@ -78,7 +89,7 @@ struct UpdatesListView: View {
               appId: viewModel.structuredBuildInfo.appId,
               branchName: branch.name,
               page: 1,
-              pageSize: 10
+              pageSize: viewModel.updatesPageSize
             )
 
             let branchWithUpdates = BranchWithUpdates(
@@ -126,16 +137,13 @@ struct UpdatesListView: View {
     }
 
     filtered.sort {
-      let formatter = DateFormatter()
-      formatter.dateFormat = "MMMM d, yyyy, h:mma"
-
-      let date1 = formatter.date(from: $0.update.createdAt) ?? Date.distantPast
-      let date2 = formatter.date(from: $1.update.createdAt) ?? Date.distantPast
+      let date1 = createdAtDate($0.update.createdAt)
+      let date2 = createdAtDate($1.update.createdAt)
 
       return sortByRecency ? date1 > date2 : date1 < date2
     }
 
-    filteredUpdates = filtered
+    filteredUpdates = Array(filtered.prefix(viewModel.updatesPageSize))
   }
 
   private var loading: some View {
