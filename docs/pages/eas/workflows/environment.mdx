@@ -122,7 +122,7 @@ github {
 }
 ```
 
-For runs triggered by GitHub, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). Fields depend on the event: pull request webhooks provide the listed pull request details; pull request comment webhooks provide `event.issue` and `event.comment`, with only `number` added to `event.pull_request`. Scheduled and manual runs have no webhook payload. Repository fields are available when the run has Git context and a linked GitHub repository. For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
+For runs triggered by GitHub, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). Fields depend on the event: pull request webhooks provide the listed pull request details; pull request comment webhooks provide `event.issue` and `event.comment`, with only `number` added to `event.pull_request`. Scheduled and manual runs have no webhook payload. However, scheduled runs have a generated `github.event` object, and manual runs from an uploaded project archive have `github.event.inputs`. Manual runs from a GitHub ref have no `github.event` object. Repository fields are available when the run has Git context and a linked GitHub repository. For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
 
 ### `inputs`
 
