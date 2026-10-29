@@ -127,6 +127,12 @@ To pass launch arguments, use a JSON array of strings. Your app defines what the
 
 Use double quotes inside the JSON and single quotes around the shell argument. Every item must be a string, including values such as `"1"`. Omitting `launchArgs` or passing `'launchArgs=[]'` launches without custom arguments. It does not reuse or merge arguments from a previous launch or session startup.
 
+`app.launch` stops the app before it starts it. To start the app without stopping it first, pass `restart=false`. If the app is already running, it keeps running and does not get new launch arguments:
+
+<Terminal
+  cmd={['$ eas simulator:control app.launch com.example.app restart=false --id <session-id>']}
+/>
+
 Add `openUrl` to open a deep link after restarting. Quote the URL so your shell preserves query parameters such as `&`:
 
 <Terminal
@@ -209,6 +215,8 @@ The captures do not happen at the same instant. `display` selects a screen witho
 Use `media.add` to upload a photo or video from your computer into the simulator's Photos library:
 
 <Terminal cmd={['$ eas simulator:control media.add ./fixture.png --id <session-id>']} />
+
+`media.add` and `app.install` read the file from your computer. If the file does not exist, the command fails before it sends the action. To use a file that is already on the simulator host, prefix its absolute path with `host:`. The simulator host accepts only paths in the folders that it uses for simulators, uploads, and screenshots. `app.file.upload` accepts only a file from your computer.
 
 Use app data transfers to seed test fixtures or inspect files your app saves. The app must understand the file's path and format.
 
