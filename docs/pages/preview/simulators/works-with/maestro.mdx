@@ -1,7 +1,7 @@
 ---
 title: Use Maestro flows with Expo Simulators
 sidebar_title: Maestro
-description: Run supported Maestro YAML flows with agent-device, or use the EAS Workflows Maestro job, and learn which option uses an Expo Simulators session.
+description: Run supported Maestro YAML flows with agent-device, or use the Expo Workflows Maestro job, and learn which option uses an Expo Simulators session.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -10,14 +10,14 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-agent-device, the default Expo Simulators controller, can run supported Maestro YAML flows. It can also export its own recorded flows to Maestro YAML. EAS Workflows has a separate Maestro job. That job runs tests on its own Android Emulator or iOS Simulator, not on an Expo Simulators session.
+agent-device, the default Expo Simulators controller, can run supported Maestro YAML flows. It can also export its own recorded flows to Maestro YAML. Expo Workflows has a separate Maestro job. That job runs tests on its own Android Emulator or iOS Simulator, not on an Expo Simulators session.
 
 ## Choose an option
 
-| Option                             | Device                            | Use it when                                                                                          |
-| ---------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| agent-device with `test --maestro` | An Expo Simulators session        | You want to run Maestro flows on a session that an agent also uses.                                  |
-| EAS Workflows `maestro` job        | A device in the EAS Workflows job | You want Maestro tests in a CI workflow. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/). |
+| Option                             | Device                             | Use it when                                                                                          |
+| ---------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| agent-device with `test --maestro` | An Expo Simulators session         | You want to run Maestro flows on a session that an agent also uses.                                  |
+| Expo Workflows `maestro` job       | A device in the Expo Workflows job | You want Maestro tests in a CI workflow. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/). |
 
 ## Run Maestro YAML with agent-device
 
@@ -36,7 +36,7 @@ agent-device supports a subset of Maestro YAML. Unsupported commands fail with a
 
 ## Export agent-device flows to Maestro
 
-agent-device can record a working session as a deterministic **.ad** script. You can export compatible **.ad** flows to Maestro YAML, then run them with Maestro or the EAS Workflows `maestro` job. For more information, see [agent-device](/agents/agent-device/#what-agent-device-lets-your-agent-do).
+agent-device can record a working session as a deterministic **.ad** script. You can export compatible **.ad** flows to Maestro YAML, then run them with Maestro or the Expo Workflows `maestro` job. For more information, see [agent-device](/agents/agent-device/#what-agent-device-lets-your-agent-do).
 
 ## Common questions
 
@@ -48,9 +48,9 @@ No. Expo Simulators does not provision the Maestro CLI. Use agent-device to run 
 
 </Collapsible>
 
-<Collapsible summary="Is the EAS Workflows Maestro job the same as Expo Simulators?">
+<Collapsible summary="Is the Expo Workflows Maestro job the same as Expo Simulators?">
 
-No. The `maestro` job runs tests on a build in an EAS Workflows job. It does not create an Expo Simulators session, and it is in [alpha](/more/release-statuses/#alpha).
+No. The `maestro` job runs tests on a build in an Expo Workflows job. It does not create an Expo Simulators session, and it is in [alpha](/more/release-statuses/#alpha).
 
 </Collapsible>
 

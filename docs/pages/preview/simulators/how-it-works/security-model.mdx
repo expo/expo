@@ -28,7 +28,7 @@ This page explains the model. For the exact values and limits, see [Expo Simulat
 
 ## Account permissions
 
-EAS checks your role on the account that owns the project:
+Expo Simulators checks your role on the account that owns the project:
 
 - To create, stop, or delete a session, you need the Developer role or higher.
 - To read a session, you need access to view the project.
@@ -39,7 +39,7 @@ For CI and services, use a [robot user](/accounts/programmatic-access/#robot-use
 
 ## Controller tokens
 
-When a session starts, the controller creates a URL and a token. EAS stores them encrypted. The REST API returns them only while the session is in progress. The output of `eas simulator:get --json` can still include the stored values after the session stops. After the session stops, the remote device and its controller endpoints no longer exist.
+When a session starts, the controller creates a URL and a token. Expo Simulators stores them encrypted. The REST API returns them only while the session is in progress. The output of `eas simulator:get --json` can still include the stored values after the session stops. After the session stops, the remote device and its controller endpoints no longer exist.
 
 EAS CLI writes the URL and token to **.env.eas-simulator**. Keep the file out of Git and out of CI logs and artifacts. While the session runs, the expo.dev session page shows the connection details. It masks the token by default, but anyone who can view the session page can show or copy it.
 
@@ -52,7 +52,7 @@ A browser preview link can be private or public:
 | Private | `https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview` | A person who signs in to an Expo account that can view the project |
 | Public  | A preview URL that contains the preview token                                                    | Anyone who has the URL, without an Expo login                      |
 
-New sessions use private links by default. EAS CLI prints the private link, and the **Share** button in the preview copies it. To use public links, pass `--public-link` to `eas simulator:start`, or set `publicPreview` to `true` when you create a session with the REST API. EAS saves this setting with the session.
+New sessions use private links by default. EAS CLI prints the private link, and the **Share** button in the preview copies it. To use public links, pass `--public-link` to `eas simulator:start`, or set `publicPreview` to `true` when you create a session with the REST API. Expo Simulators saves this setting with the session.
 
 A session with private links still has a preview token. The REST API returns it as `webPreviewToken` to any member who can read the session. Keep the preview token secret, even when the session uses private links. Anyone who has the token can make a public link.
 
@@ -60,7 +60,7 @@ When a public link opens, the page moves the token out of the address bar. Share
 
 ## Artifact download URLs
 
-Each artifact has a download URL that contains a random key. The URL does not require an Expo login, so anyone who has the URL can download the file. The URL redirects to a signed storage URL that expires after one hour. If the account is disabled, EAS blocks the download.
+Each artifact has a download URL that contains a random key. The URL does not require an Expo login, so anyone who has the URL can download the file. The URL redirects to a signed storage URL that expires after one hour. If the account is disabled, Expo Simulators blocks the download.
 
 ## Metro tunnels
 
@@ -68,11 +68,11 @@ For live edits, you start Metro with a public tunnel. The tunnel URL is random, 
 
 ## Network traffic
 
-By default, all network traffic from the remote device exits from EAS infrastructure. With local egress, device traffic exits from your computer instead: all TCP traffic on Android, and traffic that honors the system proxy on iOS. The local egress client refuses connections to local, private, link-local, and multicast addresses on your network. To let the simulator reach a server on your computer or your network, list each destination as an exact `host:port` with `--egress-allow`. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/).
+By default, all network traffic from the remote device exits from Expo infrastructure. With local egress, device traffic exits from your computer instead: all TCP traffic on Android, and traffic that honors the system proxy on iOS. The local egress client refuses connections to local, private, link-local, and multicast addresses on your network. To let the simulator reach a server on your computer or your network, list each destination as an exact `host:port` with `--egress-allow`. See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/).
 
-## What EAS does when a user is deleted
+## What Expo Simulators does when a user is deleted
 
-If the user who started a session is deleted, EAS stops the session.
+If the user who started a session is deleted, Expo Simulators stops the session.
 
 ## Common questions
 
@@ -80,7 +80,7 @@ If the user who started a session is deleted, EAS stops the session.
 
 <Collapsible summary="Can another account see my session?">
 
-No, unless someone outside the account has one of the session's secret URLs or tokens. A session belongs to an EAS project, and EAS checks permissions on the account that owns the project.
+No, unless someone outside the account has one of the session's secret URLs or tokens. A session belongs to an Expo Services project, and Expo Simulators checks permissions on the account that owns the project.
 
 </Collapsible>
 

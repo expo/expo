@@ -1,7 +1,7 @@
 ---
 title: How Expo Simulators sessions work
 sidebar_title: Sessions
-description: An Expo Simulators session is a time-limited job on EAS that starts a remote Android Emulator or iOS Simulator with a controller. Learn its states, its startup sequence, and its session page.
+description: An Expo Simulators session is a time-limited job on Expo infrastructure that starts a remote Android Emulator or iOS Simulator with a controller. Learn its states, its startup sequence, and its session page.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -9,7 +9,7 @@ import { FAQ } from '~/ui/components/FAQ';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An Expo Simulators **session** is one remote device that runs for a limited time on EAS infrastructure. Each session belongs to an EAS project. It starts one Android Emulator or iOS Simulator, the controller that you selected, and a browser preview. EAS runs each session as a job, in the same way that it runs other EAS jobs.
+An Expo Simulators **session** is one remote device that runs for a limited time on Expo infrastructure. Each session belongs to an Expo Services project. It starts one Android Emulator or iOS Simulator, the controller that you selected, and a browser preview. Expo Simulators runs each session as a job, in the same way that Expo Services runs other jobs.
 
 ## What a session contains
 
@@ -28,14 +28,14 @@ For a list of the session types, see [Expo Simulators session types](/preview/si
 
 A session moves through these states:
 
-| State       | EAS CLI       | REST API      | expo.dev label | Meaning                                                           |
-| ----------- | ------------- | ------------- | -------------- | ----------------------------------------------------------------- |
-| New         | `NEW`         | `new`         | Starting       | EAS created the session and has not queued its job yet.           |
-| Queued      | `QUEUED`      | `queued`      | Starting       | The session's job waits in the queue for a worker.                |
-| Starting    | `STARTING`    | `starting`    | Starting       | A worker runs the job and prepares the device and the controller. |
-| In progress | `IN_PROGRESS` | `in-progress` | Live           | The session runs. Connection details are available.               |
-| Stopped     | `STOPPED`     | `stopped`     | Finished       | The session ended normally. This state is final.                  |
-| Errored     | `ERRORED`     | `errored`     | Failed         | The session ended with an error. This state is final.             |
+| State       | EAS CLI       | REST API      | expo.dev label | Meaning                                                             |
+| ----------- | ------------- | ------------- | -------------- | ------------------------------------------------------------------- |
+| New         | `NEW`         | `new`         | Starting       | Expo Simulators created the session and has not queued its job yet. |
+| Queued      | `QUEUED`      | `queued`      | Starting       | The session's job waits in the queue for a worker.                  |
+| Starting    | `STARTING`    | `starting`    | Starting       | A worker runs the job and prepares the device and the controller.   |
+| In progress | `IN_PROGRESS` | `in-progress` | Live           | The session runs. Connection details are available.                 |
+| Stopped     | `STOPPED`     | `stopped`     | Finished       | The session ended normally. This state is final.                    |
+| Errored     | `ERRORED`     | `errored`     | Failed         | The session ended with an error. This state is final.               |
 
 A session goes from starting to in progress when the device and the controller are ready. New, queued, and starting sessions are not final, so a stop request ends them. It goes to stopped when you stop it, when it reaches a limit, or when its job finishes or is canceled. It goes to errored when its job fails. An errored session stays errored, even if you send a stop request.
 
@@ -43,10 +43,10 @@ The REST API returns connection details, such as controller tokens, only while t
 
 ## What happens when a session starts
 
-1. EAS creates the session in the new state and returns its ID and session page URL.
+1. Expo Simulators creates the session in the new state and returns its ID and session page URL.
 2. The session waits in the queue. EAS CLI shows a queue message during this step.
-3. A machine on EAS starts the device and the controller.
-4. If you gave an application source, EAS downloads, installs, and launches the app. It also applies launch arguments and opens a URL if you gave them.
+3. A remote machine starts the device and the controller.
+4. If you gave an application source, Expo Simulators downloads, installs, and launches the app. It also applies launch arguments and opens a URL if you gave them.
 5. The controller reports its connection details, and the session goes to in progress.
 6. EAS CLI writes **.env.eas-simulator** and prints the connection instructions.
 
@@ -96,9 +96,9 @@ Android session pages also show a warning that Android Emulator support is still
 
 <FAQ>
 
-<Collapsible summary="Is a session the same as an EAS Build?">
+<Collapsible summary="Is a session the same as an Expo Build?">
 
-No. Both run as jobs on EAS, but a session runs a device for you to use. It does not create a build. Use [EAS Build](/build/introduction/) to create the build that a session installs.
+No. Both run as jobs on Expo infrastructure, but a session runs a device for you to use. It does not create a build. Use [Expo Build](/build/introduction/) to create the build that a session installs.
 
 </Collapsible>
 

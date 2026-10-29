@@ -41,7 +41,7 @@ The `--json` flag is optional. It prints a stable, machine-readable result for a
 
 ## `simulator:start`
 
-The session type determines which interface EAS provisions with the remote device. Every type includes a browser preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the browser preview only:
+The session type determines which interface Expo Simulators provisions with the remote device. Every type includes a browser preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the browser preview only:
 
 <Tabs>
 
@@ -104,8 +104,8 @@ Important flags:
 | `--tag`                     | Label that groups sessions, such as one tag for each app variant. Repeat the flag for multiple tags. Stored in lowercase                                                                                                                                                                                                                                      |
 | `--device`                  | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted                                                                                                                                                                                                                   |
 | `--system-image`            | Android SDK system image package, such as `system-images;android-35-ext15;google_apis_playstore;x86_64`. Android only. Quote the value because it contains semicolons. Omit it to use the runner default. See [Devices](/preview/simulators/reference/devices/).                                                                                              |
-| `--build-id`                | EAS Build to install and launch before the session is ready                                                                                                                                                                                                                                                                                                   |
-| `--build-fingerprint`       | Fingerprint hash of an EAS Build. Installs the most recent finished build with this fingerprint that the simulator can install                                                                                                                                                                                                                                |
+| `--build-id`                | Expo Build to install and launch before the session is ready                                                                                                                                                                                                                                                                                                  |
+| `--build-fingerprint`       | Fingerprint hash of an Expo Build. Installs the most recent finished build with this fingerprint that the simulator can install                                                                                                                                                                                                                               |
 | `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                                                                                                                                                                                                                                              |
 | `--expo-go`                 | Install and launch the Expo Go version that matches the current project's Expo SDK                                                                                                                                                                                                                                                                            |
 | `--sdk-version`             | Expo SDK used to select Expo Go. Only valid with `--expo-go`; defaults to the current project SDK                                                                                                                                                                                                                                                             |
@@ -160,7 +160,7 @@ With `--public-link`, EAS CLI prints a public link that contains the preview tok
 | `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
 | `remoteConfig.previewApiUrl`                              | Not included            | The preview API URL, with the preview token |
 
-EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
+Expo Simulators saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
 ### Interactive and non-interactive behavior
 
