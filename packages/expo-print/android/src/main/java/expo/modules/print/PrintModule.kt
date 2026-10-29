@@ -4,12 +4,15 @@ import android.content.Context
 import android.os.ParcelFileDescriptor
 import android.print.PrintAttributes
 import android.print.PrintManager
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import android.print.PrintDocumentAdapter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Coroutine
+import io.github.expo.modules.v2.Constant
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -23,37 +26,26 @@ import kotlin.coroutines.resumeWithException
 private const val ORIENTATION_PORTRAIT = "portrait"
 private const val ORIENTATION_LANDSCAPE = "landscape"
 
+@ExpoModule("ExpoPrint")
 class PrintModule : Module() {
   private val jobName = "Printing"
-  override fun definition() = ModuleDefinition {
-    Name("ExpoPrint")
 
-    Constant("Orientation") {
-      mapOf(
-        "portrait" to ORIENTATION_PORTRAIT,
-        "landscape" to ORIENTATION_LANDSCAPE
-      )
-    }
+  @JS("Orientation")
+  @Constant
+  val orientation: Map<String, String>
+    get() = mapOf(
+      "portrait" to ORIENTATION_PORTRAIT,
+      "landscape" to ORIENTATION_LANDSCAPE
+    )
 
-    AsyncFunction("print") Coroutine { options: PrintOptions ->
-      return@Coroutine print(options)
-    }
-
-    AsyncFunction("printToFileAsync") Coroutine { options: PrintOptions ->
-      return@Coroutine printToFile(options)
-    }
-  }
-
-  val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
+  @JS
   private suspend fun print(options: PrintOptions) {
     withContext(Dispatchers.Main) {
       suspendCancellableCoroutine { continuation ->
         if (options.html != null) {
           // Renders HTML to PDF and then prints
           try {
-            val renderTask = PrintPDFRenderTask(context, options)
+            val renderTask = PrintPDFRenderTask(androidContext, options)
             renderTask.render(
               null,
               null,
@@ -65,7 +57,7 @@ class PrintModule : Module() {
         } else {
           // Prints from given URI (file path or base64 data URI starting with `data:*;base64,`)
           try {
-            val pda = PrintDocumentAdapter(WeakReference(context), continuation, options.uri)
+            val pda = PrintDocumentAdapter(WeakReference(androidContext), continuation, options.uri)
             printDocumentToPrinter(pda, options)
             continuation.resume(null)
           } catch (e: Exception) {
@@ -76,6 +68,7 @@ class PrintModule : Module() {
     }
   }
 
+  @JS("printToFileAsync")
   private suspend fun printToFile(options: PrintOptions): FilePrintResult? {
     var filePath: String
     var fileDescriptor: ParcelFileDescriptor?
@@ -84,7 +77,7 @@ class PrintModule : Module() {
     // Create the files on IO thread
     withContext(Dispatchers.IO) {
       try {
-        filePath = FileUtils.generateFilePath(context)
+        filePath = FileUtils.generateFilePath(androidContext)
       } catch (e: IOException) {
         throw UnexpectedPrintException("An unknown I/O exception occurred ", e)
       }
@@ -99,7 +92,7 @@ class PrintModule : Module() {
 
     return withContext(Dispatchers.Main) {
       return@withContext suspendCancellableCoroutine { continuation ->
-        val renderTask = PrintPDFRenderTask(context, options)
+        val renderTask = PrintPDFRenderTask(androidContext, options)
         renderTask.render(
           outputFile,
           fileDescriptor,
@@ -146,7 +139,8 @@ class PrintModule : Module() {
   }
 
   private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: PrintOptions) {
-    (appContext.throwingActivity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
+    val activity = currentActivity ?: throw Exceptions.MissingActivity()
+    (activity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
       val attributes = getAttributesFromOptions(options)
       it.print(jobName, document, attributes.build())
     } ?: throw PrintManagerNotAvailableException()
