@@ -14,13 +14,13 @@ Each Expo Simulators command must know which session to use. By default, the com
 
 ## How a command selects its session
 
-| Command                                               | How it selects the session                                                                                                   |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `simulator:get`, `simulator:stop`, `simulator:events` | `--id <session-id>`, the ID in **.env.eas-simulator**, or `EAS_SIMULATOR_SESSION_ID` in the shell environment, in that order |
-| `simulator:control`                                   | Same ID lookup as `simulator:get`                                                                                            |
-| `simulator:exec`                                      | Only the connection details in the environment. It takes no ID.                                                              |
-| `simulator:egress`                                    | **.env.eas-simulator**, or the shell environment with `--config-type env`                                                    |
-| Controller commands, such as agent-device             | The variables that `simulator:exec` loads                                                                                    |
+| Command                                                                 | How it selects the session                                                                                                   |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `simulator:get`, `simulator:stop`, `simulator:events`, `simulator:logs` | `--id <session-id>`, the ID in **.env.eas-simulator**, or `EAS_SIMULATOR_SESSION_ID` in the shell environment, in that order |
+| `simulator:control`                                                     | Same ID lookup as `simulator:get`                                                                                            |
+| `simulator:exec`                                                        | Only the connection details in the environment. It takes no ID.                                                              |
+| `simulator:egress`                                                      | **.env.eas-simulator**, or the shell environment with `--config-type env`                                                    |
+| Controller commands, such as agent-device                               | The variables that `simulator:exec` loads                                                                                    |
 
 `simulator:exec` loads values in this order:
 
