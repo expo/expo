@@ -197,18 +197,8 @@ const mergeGroup = (j: JSCodeshift, groupPaths: ASTPath<ImportDeclaration>[]): v
   for (const declarationPath of declarationsToRemove) j(declarationPath).remove();
 };
 
-// Module names referenced by `jest.mock('...')` / `jest.requireActual('...')`
-// are reported for manual review, never rewritten.
-//
-// `jest.mock` keys the module registry on the *resolved* module, and
-// `expo-router/react-navigation` is expo-router's own bundled copy of React
-// Navigation (`expo-router/src/react-navigation/`), not a re-export of
-// `@react-navigation/*`. Rewriting the module name would therefore point the
-// mock at a different implementation than the one it was written against, and
-// the factory — which often mirrors the shape of the original package — may not
-// match. Whether the migrated file wants the expo-router copy mocked, the
-// original package left mocked for code that still imports it, or no mock at
-// all depends on the test, so we surface the call and let the author decide.
+// `expo-router/react-navigation` bundles its own implementation rather than
+// re-exporting `@react-navigation/*`, so jest module mocks need manual review.
 const JEST_MODULE_METHODS = new Set([
   'mock',
   'doMock',
@@ -281,10 +271,11 @@ const getTypeImportSite = (path: ASTPath<TSImportType>): ModuleSite => ({
 // otherwise be skipped silently. (The `jsx` parser instead reports
 // `export * as ns from` as an `ExportAllDeclaration`, which the `export *` loop
 // covers, and rejects `export v from` outright.) The third parses as an
-// ordinary `ExportSpecifier`, so it is recognised by the name it re-exports.
+// ordinary `ExportSpecifier`, so it is recognised by the name it re-exports,
+// either as an identifier or as a string literal (`export { "default" as X }`).
 const unsupportedReExportLabel = (spec: {
   type: string;
-  local?: { name?: unknown } | null;
+  local?: { name?: unknown; value?: unknown } | null;
 }): string | undefined => {
   if (spec.type === 'ExportNamespaceSpecifier') {
     return 'namespace re-export (export * as ns from ...)';
@@ -292,7 +283,10 @@ const unsupportedReExportLabel = (spec: {
   if (spec.type === 'ExportDefaultSpecifier') {
     return 'default re-export (export v from ...)';
   }
-  if (spec.type === 'ExportSpecifier' && spec.local?.name === 'default') {
+  if (
+    spec.type === 'ExportSpecifier' &&
+    (spec.local?.name === 'default' || spec.local?.value === 'default')
+  ) {
     return 'default re-export (export { default as X } from ...)';
   }
   return undefined;
@@ -402,11 +396,7 @@ const transform: Transform = (fileInfo, api) => {
     .filter((path) => ((path.node.arguments[0] as { value: string }).value as string) in IMPORT_MAP)
     .map((path) => {
       const sourceModule = (path.node.arguments[0] as { value: string }).value;
-      const method = (
-        (path.node.callee as { property: { name: string } }).property as {
-          name: string;
-        }
-      ).name;
+      const method = (path.node.callee as { property: { name: string } }).property.name;
       return [
         `${fileInfo.path}:${
           path.node.loc?.start.line ?? '?'

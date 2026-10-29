@@ -685,6 +685,23 @@ describe('re-exports', () => {
     );
   });
 
+  test.each(['babel', 'ts', 'tsx'] as const)(
+    'reports a string-literal default re-export (export { "default" as X }) with the %s parser',
+    (parser) => {
+      const input = [
+        `import { useNavigation } from '@react-navigation/native';`,
+        `export { "default" as Nav } from '@react-navigation/native';`,
+      ].join('\n');
+      const output = applyTransform(transform, {}, { source: input }, { parser });
+      expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
+      expect(output).toContain(`export { "default" as Nav } from '@react-navigation/native'`);
+      expect(errorSpy).toHaveBeenCalled();
+      expect(errorSpy.mock.calls[0]![0]).toContain(
+        'default re-export (export { default as X } from ...)'
+      );
+    }
+  );
+
   test('reports a default re-export mixed with a named one and leaves the declaration untouched', () => {
     const input = [
       `import { useRoute } from '@react-navigation/native';`,
