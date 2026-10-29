@@ -81,7 +81,7 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 ### `github`
 
-Git and trigger details for the workflow run. Available fields depend on how the run starts.
+Git and trigger details for the workflow run. Manual runs use `event_name: workflow_dispatch`. Runs from a GitHub ref include Git and repository fields; runs from an uploaded project archive have empty Git fields. Use the top-level `inputs` context for manual inputs.
 
 ```js
 github {
@@ -93,15 +93,36 @@ github {
   ref_type,           // 'branch', 'tag', 'other', or '' without Git context
   commit_message,     // Only for push and schedule events
   label,              // Label name, for pull_request_labeled events
-  repository,         // Linked repository, e.g. expo/expo
-  repository_owner,   // Linked repository owner, e.g. expo
-  event,              // Event-specific fields, when available
+  repository,         // e.g. expo/expo
+  repository_owner,   // e.g. expo
+  event {             // Event-specific fields, when available
+    action,
+    head_commit { message, id },   // Only for push and schedule events
+    pull_request {
+      number,
+      title,
+      body,
+      state,          // 'open' or 'closed'
+      draft,
+      merged,
+      html_url,
+      user { login },
+      labels,         // Array of { name }
+      head { ref, sha },   // Source branch
+      base { ref, sha },   // Target branch
+      created_at,
+      updated_at,
+      merged_at,
+      // ... and other fields from the GitHub Pull Request webhook payload
+    },
+    inputs,           // workflow_dispatch inputs
+    schedule,         // Cron expression, for scheduled runs
+    number,
+  }
 }
 ```
 
-Manual runs report `event_name: workflow_dispatch`. Runs from a GitHub ref include Git details; runs from an uploaded project archive have empty Git fields. Read manual inputs from the top-level `inputs` context.
-
-See [`github`](/eas/workflows/syntax/#github) in the Syntax guide for event fields and examples.
+For GitHub triggers, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
 
 ### `inputs`
 
