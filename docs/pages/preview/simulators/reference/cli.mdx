@@ -29,6 +29,7 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/preview/
 | [`simulator:control`](#simulatorcontrol)           | Run a supported device action on a running iOS session                   |
 | [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
 | [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
+| [`simulator:logs`](#simulatorlogs)                 | Show app logs from an iOS session, or download them after it stops       |
 | [`simulator:egress`](#simulatoregress)             | Run the local egress client for a session started with `--egress local`  |
 | [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
 | [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
@@ -227,7 +228,7 @@ Pass a session ID to inspect another session:
 
 <Terminal cmd={['$ eas simulator:events --id <session-id>']} />
 
-The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device, Argent, or Appium, not application runtime logs.
+The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device, Argent, or Appium, not application runtime logs. For app logs, use [`simulator:logs`](#simulatorlogs).
 
 Follow new activity while a session is running:
 
@@ -240,6 +241,32 @@ For agents and automation, request the raw event records as JSON:
 <Terminal cmd={['$ eas simulator:events --json']} />
 
 The JSON object contains `deviceRunSessionId` and an `events` array. Common event fields include `eventId`, `ts`, `producer`, `type`, and `summary`, with operation ID, outcome, duration, and controller-specific data when available. `--json` cannot be combined with `--follow`.
+
+## `simulator:logs`
+
+Show the latest app logs from the running iOS session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:logs']} />
+
+The command prints the latest buffered lines, 100 by default. Use `--limit` to change the number. By default, it shows only logs from installed apps. Use `--scope all` to include system logs. Add `--timestamp` to show the time of each line.
+
+To collect the logs of an action, start following before you run the action:
+
+<Terminal cmd={['$ eas simulator:logs --follow']} />
+
+The `-f` short flag is equivalent to `--follow`. To save the logs, redirect the output to a file:
+
+<Terminal cmd={['$ eas simulator:logs --follow > logs.txt']} />
+
+Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop following.
+
+Use `--json` to get the buffered lines as JSON. The `lines` array contains each line's sequence number in `seq`, its time in `at`, and the log record in `raw`. You cannot use `--json` together with `--follow`.
+
+After the session stops, download its saved app logs:
+
+<Terminal cmd={['$ eas simulator:logs --id <session-id> --output ./app-logs.ndjson']} />
+
+EAS saves the app logs of each iOS device as an **app-logs.ndjson** artifact. For each device, EAS keeps only the first 30 minutes of app logs, up to 20 MiB. When a session has more than one device, the command lists the files. Pass `--artifact <index>` with a number from that list, starting at 1. Android sessions do not provide logs through this command.
 
 ## `simulator:egress`
 

@@ -14,12 +14,12 @@ Evidence shows what the app did on the remote device. Use a **screenshot** for a
 
 ## Choose the evidence
 
-| Question                                           | Evidence                                     |
-| -------------------------------------------------- | -------------------------------------------- |
-| Does the screen look correct?                      | Screenshot                                   |
-| Does an animation, gesture, or transition work?    | Screen recording                             |
-| Which actions did the agent do, and in what order? | Session activity from `eas simulator:events` |
-| What did the app print?                            | App logs from the controller                 |
+| Question                                           | Evidence                                             |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| Does the screen look correct?                      | Screenshot                                           |
+| Does an animation, gesture, or transition work?    | Screen recording                                     |
+| Which actions did the agent do, and in what order? | Session activity from `eas simulator:events`         |
+| What did the app print?                            | App logs from `eas simulator:logs` or the controller |
 
 ## Take a screenshot
 
@@ -97,7 +97,13 @@ Use `--json` to get the raw event records for a script or an agent. You cannot u
 
 ## Read app logs
 
-agent-device has a `logs` command that collects the logs of the app that it opened. Logging is off by default. Open a log window for one reproduction instead of collecting all logs. Read the version-matched help for the syntax:
+For an iOS session, read the logs of the installed apps with EAS CLI. Start following before you reproduce the issue:
+
+<Terminal cmd={['$ eas simulator:logs --follow']} />
+
+After the session stops, download the saved app logs with `--output`. For each device, EAS keeps only the first 30 minutes of app logs. See [`simulator:logs`](/preview/simulators/reference/cli/#simulatorlogs).
+
+agent-device also has a `logs` command that collects the logs of the app that it opened. Logging is off by default. Open a log window for one reproduction instead of collecting all logs. Read the version-matched help for the syntax:
 
 <Terminal cmd={['$ eas simulator:exec npx agent-device@latest help debugging']} />
 
