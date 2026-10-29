@@ -407,13 +407,27 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// Transforms each element like `map(_:)`, but lends each element to `transform` as a
   /// `JavaScriptUnownedValue` instead of wrapping it in a new `JavaScriptValue`. An element is valid only
   /// for the duration of its `transform` call and must not be stored or escaped.
+  @inlinable
   public func mapUnowned<T>(_ transform: (borrowing JavaScriptUnownedValue) throws -> T) rethrows -> [T] {
+    // Inlinable, so the caller specializes the result array and `transform` for its `T`. The JSI calls
+    // stay in `forEachUnowned(count:_:)`, because the C++ types are not visible outside this module.
+    // The array initializer gets a nonisolated closure here, so it has no executor check.
+    let count = self.length
+    return try [T](unsafeUninitializedCapacity: count) { buffer, initializedCount in
+      try forEachUnowned(count: count) { element in
+        buffer.initializeElement(at: initializedCount, to: try transform(element))
+        initializedCount += 1
+      }
+    }
+  }
+
+  /// Lends the first `count` elements to `body` in order, each as a `JavaScriptUnownedValue` that is valid
+  /// only for the duration of its `body` call.
+  @usableFromInline
+  internal func forEachUnowned(count: Int, _ body: (borrowing JavaScriptUnownedValue) throws -> Void) rethrows {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    let count = self.length
-    var result: [T] = []
-    result.reserveCapacity(count)
     for index in 0..<count {
       let element = pointee.getValueAtIndex(jsiRuntime, index)
       // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
@@ -424,10 +438,9 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
           )
         }
         let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
-        result.append(try transform(JavaScriptUnownedValue(jsiRuntime, pointer)))
+        try body(JavaScriptUnownedValue(jsiRuntime, pointer))
       }
     }
-    return result
   }
 
   /// Converts the JavaScript array to a `JavaScriptValue`.
