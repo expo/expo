@@ -41,7 +41,7 @@ Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/agenti
 1. Check each step on https://docs.expo.dev/agentic-workflows/setup.md. Check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md and the Issue to PR workflow from https://docs.expo.dev/agentic-workflows/issue-to-pr.md are in the project. Do each step that is not done. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
 2. Create each file that the page shows, at the same path and with the same content.
 3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
-4. Run `eas workflow:validate .eas/workflows/bug-triage.yml`.
+4. Run `eas workflow:validate` on each workflow file that you added.
 5. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
 ```
 
@@ -193,11 +193,12 @@ env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
   timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
 
 VERDICT=$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || true)
+PLATFORM_NAME=$([ "$PLATFORM" = ios ] && echo iOS || echo Android)
 VERDICT=${VERDICT:-"INCONCLUSIVE: The agent did not write a verdict. See the logs of this run."}
 SESSION_URL=$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')
 
 {
-  printf '## Bug triage\n\n**Verdict:** %s\n\n' "$VERDICT"
+  printf '## Bug triage (%s)\n\n**Verdict:** %s\n\n' "$PLATFORM_NAME" "$VERDICT"
   printf -- '- [Session recording](%s)\n' "$SESSION_URL"
   printf -- '- [Agent report and screenshots](%s)\n\n' "$RUN_URL"
   printf '<details>\n<summary>Report</summary>\n\n'
@@ -462,6 +463,8 @@ jobs:
 
 </Tabs>
 
+To test both platforms, add both files with different names, such as **bug-triage-android.yml** and **bug-triage-ios.yml**. Each workflow posts its own comment. Use the same names in the commands on this page.
+
 The jobs do these tasks:
 
 - `intake` runs only in the iOS workflow, for TestFlight feedback. It creates the GitHub issue.
@@ -532,11 +535,11 @@ In the TestFlight app, take a screenshot of the bug, write a comment, and send t
 
 </Step>
 
-App Store Connect starts the **bug-triage.yml** workflow. The `intake` job creates the issue, and then the `reproduce` job runs. Each TestFlight report creates a new issue. The workflow does not look for duplicates.
+App Store Connect starts the iOS workflow. The `intake` job creates the issue, and then the `reproduce` job runs. Each TestFlight report creates a new issue. The workflow does not look for duplicates.
 
 ## Read the result
 
-When the agent finishes, the issue gets a **Bug triage** comment:
+When the agent finishes, the issue gets a **Bug triage (Android)** or **Bug triage (iOS)** comment:
 
 - **Verdict:** `REPLICATED`, `NOT-REPLICATED`, or `INCONCLUSIVE`, with one sentence from the agent. The verdict is `INCONCLUSIVE` when the agent writes no verdict.
 - **Session recording:** the session page on expo.dev, with the screen recording of the session.

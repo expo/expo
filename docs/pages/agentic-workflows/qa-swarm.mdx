@@ -86,7 +86,7 @@ Pass condition: each main screen opens and shows content without an error.
 Then write flows for the important parts of your app. Keep each flow short, and give it these parts:
 
 - **Steps:** what a user does, in order, with the text that the user sees on the screen.
-- **Out of scope:** what the agent must not touch. Lanes run at the same time, so a flow that changes shared data can break another flow.
+- **Out of scope:** what the agent must not touch. Each lane has its own simulator, so the lanes do not share the data on the device. If your app saves data on a server, a flow that changes that data can break another flow that runs at the same time.
 - **Pass condition:** the result that a `PASS` verdict needs.
 
 A file with the name **&lt;flow&gt;.android.md** or **&lt;flow&gt;.ios.md** replaces **&lt;flow&gt;.md** on that platform. Use it when a control works differently on Android and iOS.
