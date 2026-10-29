@@ -98,6 +98,7 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - Delete the template's HTML comments when you fill the body.
 - Do not open a pull request you cannot explain in a review reply. Answer questions on that pull request.
 - Format the commit subject as `[platform][api] Title`. See [Writing a Commit Message](./CONTRIBUTING.md#-writing-a-commit-message). The pull request title still uses `[package]`.
+- Do not add yourself as a commit author or co-author. Do not add a `Co-Authored-By` trailer for an agent or a tool. The person who opens the pull request is the author.
 
 ## Error messages
 
