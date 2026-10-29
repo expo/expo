@@ -13,6 +13,7 @@ struct UpdatesTabView: View {
             .padding()
         } else if !viewModel.structuredBuildInfo.usesEASUpdates {
           NotUsingUpdatesView()
+            .padding()
         } else {
           UpdatesListView()
         }

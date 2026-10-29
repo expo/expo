@@ -60,10 +60,10 @@ struct CrashReportView: View {
     Button(action: copyToClipboard) {
       Text(showCopiedMessage ? "Copied!" : "Tap to Copy Report")
         .font(.headline)
-        .foregroundColor(.white)
+        .foregroundColor(Color.expoSystemBackground)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(showCopiedMessage ? Color.green : Color.black)
+        .background(showCopiedMessage ? Color.green : Color.primary)
         .cornerRadius(8)
     }
     .disabled(showCopiedMessage)

@@ -42,9 +42,12 @@ struct BuildInfo {
 }
 
 struct RecentlyOpenedApp: Identifiable {
-  let id = UUID().uuidString
   let name: String
   let url: String
   let timestamp: Date
   let isEasUpdate: Bool?
+
+  var id: String {
+    "\(name)|\(url)"
+  }
 }
