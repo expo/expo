@@ -248,6 +248,22 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('redirects from / to the first visible group tab with a nested Stack', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="(feed)" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      '(feed)/_layout': () => <Stack />,
+      '(feed)/feed': () => <View testID="feed" />,
+    });
+
+    expect(screen).toHavePathname('/feed');
+    expect(screen.getByTestId('feed')).toBeVisible();
+  });
+
   it('removes a replaced route from tab history', async () => {
     await renderRouter({
       _layout: () => (
