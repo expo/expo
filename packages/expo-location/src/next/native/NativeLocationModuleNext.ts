@@ -8,3 +8,4 @@ export const NativeLocationProvider = NativeLocationModuleNext.LocationProvider;
 export const NativePositionWatchHandle = NativeLocationModuleNext.PositionWatchHandle;
 export const NativeLocationUpdatesHandle = NativeLocationModuleNext.LocationUpdatesHandle;
 export const NativeBackgroundSession = NativeLocationModuleNext.BackgroundSession;
+export const NativeGeofencingHandle = NativeLocationModuleNext.GeofencingHandle;

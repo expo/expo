@@ -9,6 +9,7 @@ import { AppIntentsNavigationHandler } from '../screens/AppIntents/AppIntentsNav
 import { getSearchScreenOptions } from '../screens/SearchScreen';
 import loadAssetsAsync from '../utilities/loadAssetsAsync';
 import '../screens/Location@Next/locationTask';
+import '../screens/Location@Next/geofencingTask';
 
 SplashScreen.preventAutoHideAsync();
 

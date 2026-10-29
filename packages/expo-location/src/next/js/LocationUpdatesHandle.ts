@@ -6,6 +6,7 @@ import type {
   LocationTaskOptions,
   Position,
 } from '../types';
+import { requireTaskManager } from './requireTaskManager';
 
 const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
 
@@ -97,21 +98,14 @@ export function defineLocationTask({
   onPosition,
   onError,
 }: LocationTaskOptions): void {
-  requireTaskManager().defineTask<Position>(taskName, async ({ data, error }) => {
-    if (error) {
-      onError?.(error);
-      return;
+  requireTaskManager('defineLocationTask').defineTask<Position>(
+    taskName,
+    async ({ data, error }) => {
+      if (error) {
+        onError?.(error);
+        return;
+      }
+      onPosition(data);
     }
-    onPosition(data);
-  });
-}
-
-function requireTaskManager(): typeof import('expo-task-manager') {
-  try {
-    return require('expo-task-manager');
-  } catch {
-    throw new Error(
-      "defineLocationTask couldn't define the background location task because the 'expo-task-manager' package isn't installed. Background location updates are delivered through it. Install it with `npx expo install expo-task-manager` and rebuild the app."
-    );
-  }
+  );
 }

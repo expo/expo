@@ -110,5 +110,23 @@ public final class LocationModuleNext: Module {
         try handle.hasStarted()
       }
     }
+
+    Class(GeofencingHandle.self) {
+      Constructor { (taskName: String) -> GeofencingHandle in
+        GeofencingHandle(taskName: taskName, accessGuard: accessGuard)
+      }
+
+      AsyncFunction("start") { (handle: GeofencingHandle, regions: [GeofencingRegion]) in
+        try handle.start(regions: regions)
+      }
+
+      AsyncFunction("stop") { (handle: GeofencingHandle) in
+        try handle.stop()
+      }
+
+      AsyncFunction("hasStarted") { (handle: GeofencingHandle) -> Bool in
+        try handle.hasStarted()
+      }
+    }
   }
 }

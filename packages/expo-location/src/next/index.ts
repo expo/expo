@@ -9,6 +9,8 @@ export {
   LocationProvider,
   LocationUpdatesHandle,
   defineLocationTask,
+  GeofencingHandle,
+  defineGeofencingTask,
 } from './js';
 
 export {
@@ -31,4 +33,8 @@ export {
   type BackgroundSessionOptions,
   type BackgroundSessionStatus,
   type BackgroundTaskStatus,
+  GeofencingEventState,
+  type GeofencingRegion,
+  type GeofencingEvent,
+  type GeofencingTaskOptions,
 } from './types';

@@ -108,3 +108,33 @@ final class MissingPlistKeyException: GenericException<String>, @unchecked Senda
     "granted. Add the key via the expo-location config plugin or by hand, then rebuild the app"
   }
 }
+
+final class GeofencingRegionUnmonitored: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "iOS stopped monitoring the region '\(param)'. Check the location permission and start the geofencing task again"
+  }
+}
+
+final class GeofencingMonitorEnded: Exception, @unchecked Sendable {
+  override var reason: String {
+    "iOS stopped delivering geofencing events to this app. Restart the app and start the geofencing task again"
+  }
+}
+
+final class GeofencingRegionLimitExceeded: Exception, @unchecked Sendable {
+  override var reason: String {
+    "iOS monitors at most 20 regions per app, so it suspended events for a region. Reduce the number of regions passed to start, including regions monitored elsewhere in the app, and start the geofencing task again"
+  }
+}
+
+final class GeofencingRegionInvalid: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "The region '\(param)' cannot be monitored. Its center must be a valid coordinate, its radius must be greater than 0 meters, and its identifier must be non-empty and unique within one call. Fix the region and call start again"
+  }
+}
+
+final class GeofencingTaskNameInvalid: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "The geofencing task name '\(param)' is not valid. iOS uses the task name as the CLMonitor name, which can contain only ASCII letters and digits"
+  }
+}
