@@ -34,6 +34,7 @@ export function BottomSheet({
   onDismiss,
   showDragIndicator = true,
   snapPoints,
+  onSnapPointChange,
   testID,
   contentPadding,
   containerColor,
@@ -86,7 +87,16 @@ export function BottomSheet({
       onDragEnd={
         snapHeights
           ? (nextHeight) => {
-              setSnapIndex(nearestSnapIndex(nextHeight, snapHeights));
+              const nextIndex = nearestSnapIndex(nextHeight, snapHeights);
+              setSnapIndex(nextIndex);
+              const nextSnapPoint = snapPoints?.[nextIndex];
+              if (
+                isPresented &&
+                nextSnapPoint !== undefined &&
+                nextIndex !== Math.min(snapIndex, snapHeights.length - 1)
+              ) {
+                onSnapPointChange?.(nextSnapPoint);
+              }
             }
           : undefined
       }

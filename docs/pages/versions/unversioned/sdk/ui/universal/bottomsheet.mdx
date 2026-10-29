@@ -178,6 +178,8 @@ export default function BottomSheetContentPaddingExample() {
 
 Pass [`snapPoints`](#snappoints) to let the user drag the sheet between multiple resting heights. You can use the semantic values `'half'` and `'full'` for cross-platform parity. The `{ fraction }` and `{ height }` forms are honored precisely on iOS and web.
 
+Use [`onSnapPointChange`](#onsnappointchange) to react to changes in the active snap point, for example to trigger haptic feedback in your app. It requires `snapPoints` and does not report opening or dismissal. Android reports `'half'` or `'full'`, including when you supply custom snap points. The callback follows each platform's selection change; on web, it reports the snap target chosen when you release the drag. It does not signal animation completion.
+
 When sheet content can be taller than the smallest snap point, wrap it in a `ScrollView` so the overflow scrolls correctly.
 
 <ComponentExample

@@ -29,6 +29,18 @@ Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API]
 
 ## Usage
 
+### Tracking the sheet state
+
+Use `onCurrentValueChange` to observe Compose's `SheetState.currentValue`. The callback receives `'hidden'`, `'partiallyExpanded'`, or `'expanded'`. It reports changes caused by gestures and imperative methods, including opening and hiding, but does not report the initial value or continuous drag progress.
+
+```tsx
+<ModalBottomSheet
+  onDismissRequest={() => setVisible(false)}
+  onCurrentValueChange={setCurrentValue}>
+  <Text>Drag to change the sheet state.</Text>
+</ModalBottomSheet>
+```
+
 ### Basic bottom sheet
 
 Use `ref.hide()` to programmatically dismiss the sheet with an animation before unmounting it.
