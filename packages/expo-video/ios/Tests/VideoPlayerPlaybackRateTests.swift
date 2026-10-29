@@ -4,6 +4,7 @@ import Testing
 @testable import ExpoVideo
 
 @Suite("VideoPlayer playback rate")
+@MainActor
 struct VideoPlayerPlaybackRateTests {
   @Test
   func `setting playback rate while paused does not request playback`() throws {
