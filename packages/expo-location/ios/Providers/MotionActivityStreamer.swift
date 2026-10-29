@@ -60,11 +60,11 @@ extension CMMotionActivity {
     return [
       "activities": [
         "automotive": entry(automotive),
-        "cycling":    entry(cycling),
-        "running":    entry(running),
-        "walking":    entry(walking),
+        "cycling": entry(cycling),
+        "running": entry(running),
+        "walking": entry(walking),
         "stationary": entry(stationary),
-        "unknown":    entry(unknown),
+        "unknown": entry(unknown),
       ],
       "timestamp": startDate.timeIntervalSince1970 * 1000
     ]
