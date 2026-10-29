@@ -57,8 +57,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     }
     // Keeps the back button next to the left items when the split view is collapsed.
     navigationItem.leftItemsSupplementBackButton = true
-    navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems, side: .left)
-    navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems, side: .right)
+    navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
+    navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems)
     applySearchBar(to: navigationItem)
   }
 
@@ -97,19 +97,35 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     return controller
   }
 
-  private func barButtonItems(_ items: [SplitViewToolbarItemRecord], side: ToolbarSide) -> [UIBarButtonItem] {
-    return items.enumerated().map { index, item in
+  private func barButtonItems(_ items: [SplitViewToolbarItemRecord]) -> [UIBarButtonItem] {
+    return items.map { item in
       // With an image, the button shows only the image and uses the title as its accessibility label.
       let image = item.icon.flatMap { UIImage(systemName: $0) }
-      let action = UIAction(title: item.title, image: image) { [weak self] _ in
-        self?.onToolbarItemPress(["side": side.rawValue, "index": index])
+      if let menu = item.menu {
+        return UIBarButtonItem(title: item.title, image: image, primaryAction: nil, menu: makeMenu(menu))
       }
-      return UIBarButtonItem(primaryAction: action)
+      return UIBarButtonItem(primaryAction: makeAction(id: item.id, title: item.title, image: image))
     }
   }
-}
 
-private enum ToolbarSide: String {
-  case left
-  case right
+  private func makeMenu(_ menu: SplitViewMenuRecord) -> UIMenu {
+    let actions = menu.items.map { item in
+      let action = makeAction(id: item.id, title: item.title, image: item.icon.flatMap { UIImage(systemName: $0) })
+      if item.destructive {
+        action.attributes.insert(.destructive)
+      }
+      if item.disabled {
+        action.attributes.insert(.disabled)
+      }
+      action.state = item.isOn ? .on : .off
+      return action
+    }
+    return UIMenu(title: menu.title ?? "", children: actions)
+  }
+
+  private func makeAction(id: String, title: String, image: UIImage?) -> UIAction {
+    return UIAction(title: title, image: image) { [weak self] _ in
+      self?.onToolbarItemPress(["id": id])
+    }
+  }
 }
