@@ -75,12 +75,21 @@ export default function DocumentationNestedScrollLayout({
   }, [layoutRef, getSidebarScrollTop, getContentScrollTop]);
 
   useEffect(() => {
-    // The layout is taller than the viewport on iOS. overflow: hidden on the root does not stop
-    // hash links and scrollIntoView from scrolling the document and hiding the header.
+    // Same condition as the iOS rules for this layout in global.css.
+    if (!window.CSS?.supports('-webkit-touch-callout', 'none')) {
+      return;
+    }
+    // overflow: hidden on the root does not stop hash links and scrollIntoView from scrolling
+    // the document and hiding the header. The keyboard and zoom need the document scroll.
     const resetDocumentScroll = () => {
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0);
+      if (
+        window.scrollY === 0 ||
+        (window.visualViewport?.scale ?? 1) > 1 ||
+        isEditableElement(document.activeElement)
+      ) {
+        return;
       }
+      window.scrollTo(0, 0);
     };
     resetDocumentScroll();
     window.addEventListener('scroll', resetDocumentScroll);
@@ -194,5 +203,12 @@ export default function DocumentationNestedScrollLayout({
         )}
       </div>
     </div>
+  );
+}
+
+function isEditableElement(element: Element | null) {
+  return (
+    element instanceof HTMLElement &&
+    (element.isContentEditable || element.matches('input, textarea, select'))
   );
 }

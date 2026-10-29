@@ -34,6 +34,22 @@ const BLOCKING_PACKAGE_MANAGER_SCRIPT = `
 })();
 `;
 
+// iOS Safari reports env(safe-area-inset-bottom) as 0, so the nested scroll layout in global.css
+// uses the screen height to reach below the floating toolbar. Set it before the first layout: on
+// iOS 18, a later layout height change breaks the scroll to a URL hash target.
+const BLOCKING_SCREEN_HEIGHT_SCRIPT = `
+(function() {
+  if (!window.CSS || !CSS.supports('-webkit-touch-callout', 'none')) {
+    return;
+  }
+  function update() {
+    document.documentElement.style.setProperty('--nested-scroll-layout-screen-height', window.outerHeight + 'px');
+  }
+  update();
+  window.addEventListener('resize', update);
+})();
+`;
+
 type DocsDocumentProps = {
   locale: SupportedLocale;
 };
@@ -56,6 +72,7 @@ export default class DocsDocument extends Document<DocsDocumentProps> {
         <Head>
           <script dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }} />
           <script dangerouslySetInnerHTML={{ __html: BLOCKING_PACKAGE_MANAGER_SCRIPT }} />
+          <script dangerouslySetInnerHTML={{ __html: BLOCKING_SCREEN_HEIGHT_SCRIPT }} />
         </Head>
         <body className="text-pretty">
           <Main />
