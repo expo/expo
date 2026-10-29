@@ -1,21 +1,17 @@
 import { requireContext } from 'expo-router/internal/testing';
-import path from 'node:path';
 
 import { getWatchHandler } from '../index';
+
+jest.mock('node:path', () => jest.requireActual('node:path').win32);
 
 describe('typed route watch events on Windows', () => {
   const originalAppRoot = process.env.EXPO_ROUTER_APP_ROOT;
 
   beforeEach(() => {
     process.env.EXPO_ROUTER_APP_ROOT = 'C:\\project\\src\\app';
-    jest.spyOn(path, 'relative').mockImplementation(path.win32.relative);
-    jest.spyOn(path, 'basename').mockImplementation(path.win32.basename);
-    jest.spyOn(path, 'isAbsolute').mockImplementation(path.win32.isAbsolute);
-    jest.replaceProperty(path, 'sep', '\\');
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     if (originalAppRoot === undefined) delete process.env.EXPO_ROUTER_APP_ROOT;
     else process.env.EXPO_ROUTER_APP_ROOT = originalAppRoot;
   });
