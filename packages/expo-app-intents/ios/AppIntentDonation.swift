@@ -86,6 +86,12 @@ public final class AppIntentDonationRegistry: Sendable {
     let makeIntent: @Sendable ([String: Any], AppContext) async throws -> any AppIntent
   }
 
+  /// Carries the decoded params from the JavaScript thread to the donation. Nothing keeps a reference to
+  /// the params on the JavaScript thread.
+  private struct DecodedDonationParams<Params>: @unchecked Sendable {
+    let value: Params
+  }
+
   /// Registration happens on the main actor from `OnCreate`, while lookups come from the module's
   /// async functions at the same time.
   private let registrations = Mutex<[String: Registration]>([:])
@@ -107,7 +113,11 @@ public final class AppIntentDonationRegistry: Sendable {
     let registration = Registration(intentType: intentType) { params, appContext in
       let donationParams: Intent.DonationParams
       do {
-        donationParams = try Intent.DonationParams.from(dictionary: params, appContext: appContext)
+        donationParams = try await Self.decodeDonationParams(
+          Intent.DonationParams.self,
+          from: params,
+          appContext: appContext
+        )
       } catch {
         throw InvalidDonationParamsException((intent: name, paramsType: "\(Intent.DonationParams.self)")).causedBy(
           error
@@ -166,6 +176,24 @@ public final class AppIntentDonationRegistry: Sendable {
       throw PartialDonationDeletionException((deleted: deletedIds, failed: failed)).causedBy(firstError)
     }
     return deletedIds
+  }
+
+  /// Converts `params` to the intent's `DonationParams` record the way an argument from JavaScript is
+  /// converted: on the JavaScript thread, the params become a JavaScript object again and the record
+  /// decodes it. A `@Record` type can't be created from a native dictionary.
+  private static func decodeDonationParams<Params: Record>(
+    _ type: Params.Type,
+    from params: [String: Any],
+    appContext: AppContext
+  ) async throws -> Params {
+    let runtime = try appContext.runtime
+    // The dictionary holds the values JavaScript passed, which nothing else changes.
+    nonisolated(unsafe) let params = params
+    let decoded = try await runtime.execute {
+      let object = try JavaScriptValue.encodeAnyDictionary(params, in: runtime)
+      return DecodedDonationParams(value: try Params.decode(object, in: runtime))
+    }
+    return decoded.value
   }
 
   private func registration(named name: String) throws -> Registration {
