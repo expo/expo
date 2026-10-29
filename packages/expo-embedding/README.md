@@ -25,9 +25,9 @@ An app-root npm package or devDependency is not required. Pin a CLI version for 
 
 ## Integrate with a coding agent
 
-Ask your agent to run `npx expo-embedding skill` (or `bunx expo-embedding skill`) in the host app. The command validates the selected project and prints usage, host context, migration instructions, and verification steps. `--json` provides a versioned structured report. It does not install dependencies, execute config plugins, or write files.
+Ask your agent to run `npx expo-embedding init` (or `bunx expo-embedding init`) in the host app and follow the printed integration guide. After every successful setup, the command prints usage, the selected project and target, native source wiring instructions, and verification steps. No separate agent command or detection is needed.
 
-The guide tells the agent to preserve the existing UI and delegate, run setup, apply the source wiring, inspect the resulting diff, and verify the app. The SwiftUI source edits depend on the existing app; the report does not fabricate a patch. Generated Xcode changes require installed dependencies and are inspected after `npx expo-embedding init`.
+The guide tells the agent to preserve the existing UI and delegate, complete the source wiring, inspect the resulting diff, and verify the app. Setup generates the Xcode integration; it does not rewrite SwiftUI source files. Failed setup reports the error without printing the completion guide.
 
 ## CLI setup behavior
 

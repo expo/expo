@@ -41,7 +41,7 @@ export async function scaffoldExpoProject(
       join(directory, 'package.json'),
       JSON.stringify(
         {
-          name: 'expo-embedded-app',
+          name: 'expo-embedding-app',
           version: '1.0.0',
           private: true,
           main: 'index.js',

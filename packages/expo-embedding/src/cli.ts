@@ -2,10 +2,10 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
+import { printIntegrationInstructions } from './integration';
 import { prepareIos, initializeIos } from './ios';
 import { findAppRoot } from './scaffold';
 import { prepareExpoProject, installDependencies, installPackages } from './setup';
-import { printSkill } from './skill';
 import { usage } from './usage';
 
 async function main(): Promise<void> {
@@ -15,7 +15,6 @@ async function main(): Promise<void> {
       project: { type: 'string' },
       target: { type: 'string' },
       platform: { type: 'string' },
-      json: { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
     },
     allowPositionals: true,
@@ -26,20 +25,14 @@ async function main(): Promise<void> {
   }
   const [command, ...packages] = positionals;
   if (
-    (command !== 'init' && command !== 'install' && command !== 'skill') ||
+    (command !== 'init' && command !== 'install') ||
     (command !== 'install' && packages.length !== 0) ||
     (command === 'install' && packages.length === 0)
   ) {
     throw new Error(
-      'Expected init, install <package...>, or skill. Run npx expo-embedding --help for usage.'
+      'Expected init or install <package...>. Run npx expo-embedding --help for usage.'
     );
   }
-  if (values.json && command !== 'skill')
-    throw new Error('--json is only supported by npx expo-embedding skill.');
-  if (command === 'skill' && values['frozen-lockfile'])
-    throw new Error(
-      'skill only accepts --json and host selection options. Run npx expo-embedding --help for usage.'
-    );
   const frozen = values['frozen-lockfile'] ?? false;
   if (command === 'install' && frozen) {
     throw new Error(
@@ -52,21 +45,7 @@ async function main(): Promise<void> {
   if (values.platform && values.platform !== 'ios')
     throw new Error('This integration supports --platform ios.');
   const ios = await prepareIos(root, packageRoot, values);
-  if (command === 'skill') {
-    await printSkill(packageRoot, values.json ?? false, {
-      root,
-      platform: 'ios',
-      selection: {
-        project: ios.project,
-        target: ios.target,
-      },
-      changes: [],
-      preview:
-        'SwiftUI source wiring is described below. Generated Xcode changes require running npx expo-embedding init with installed dependencies; no generated diff is available in this read-only report.',
-    });
-    return;
-  }
-  const isNewExpoProject = await prepareExpoProject(root, command, frozen);
+  await prepareExpoProject(root, command, frozen);
   const manager = await installDependencies(root, frozen);
   if (command === 'install') await installPackages(root, manager, packages);
   try {
@@ -80,11 +59,12 @@ async function main(): Promise<void> {
     }
     throw error;
   }
-  if (command === 'init' && isNewExpoProject) {
-    process.stdout.write(
-      'SwiftUI: import expoappbrownfield, own an ExpoHost, forward the app delegate with ExpoBrownfieldAppDelegate,\n' +
-        'attach .expoHost(host) to your root view, and display ExpoScene(name: "Main").frame(height: 240).\n'
-    );
+  if (command === 'init') {
+    await printIntegrationInstructions(packageRoot, {
+      root,
+      platform: 'ios',
+      selection: { project: ios.project, target: ios.target },
+    });
   }
 }
 
