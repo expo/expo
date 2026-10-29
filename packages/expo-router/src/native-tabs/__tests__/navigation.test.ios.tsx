@@ -248,6 +248,26 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('redirects to the nested route of a group tab when deep linking to a route without a visible tab', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="(feed)" />
+          </NativeTabs>
+        ),
+        '(feed)/_layout': () => <Stack />,
+        '(feed)/feed': () => <View testID="feed" />,
+        index: () => <View testID="index" />,
+      },
+      { initialUrl: '/' }
+    );
+
+    expect(screen.getByTestId('feed')).toBeVisible();
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen).toHavePathname('/feed');
+  });
+
   it('removes a replaced route from tab history', async () => {
     await renderRouter({
       _layout: () => (

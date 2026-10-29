@@ -8,7 +8,7 @@ import {
 } from '../react-navigation/core';
 import type { FocusedRouteState } from '../react-navigation/core/NavigationFocusedRouteStateContext';
 
-type HrefRoute = Pick<NavigationRoute<ParamListBase, string>, 'name' | 'params'>;
+type HrefRoute = Pick<NavigationRoute<ParamListBase, string>, 'name' | 'params' | 'state'>;
 
 // TODO(@ubax): move route info to state - https://linear.app/expo/issue/ENG-21483/refactor-state-to-include-all-route-info-information
 export function useBuildHref() {
@@ -26,6 +26,9 @@ export function useBuildHref() {
           {
             name: route.name,
             params: route.params,
+            // `getRouteInfoFromState` follows the focused route of a full navigator state at runtime,
+            // but `FocusedRouteState` only models single-route chains.
+            state: route.state as FocusedRouteState | undefined,
           },
         ],
       };
