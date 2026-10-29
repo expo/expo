@@ -22,6 +22,20 @@ The registry provides the active updates controller as a weak reference, in the 
 | **iOS**     | `UpdatesControllerRegistry.sharedInstance.controller` |
 | **Android** | `UpdatesControllerRegistry.controller?.get()`         |
 
+### UpdatesLogEntryListenerRegistry
+
+The registry delivers `expo-updates` log entries to listeners in the same process as they are logged, so other modules can report them without reading the log file. It works whether updates is enabled or not.
+
+- Only entries at the warning level or higher (`warn`, `error`, and `fatal`) reach listeners.
+- A listener is called on the thread that logged the entry. Keep the listener fast, or move the work to another thread.
+- The registry keeps a strong reference to each listener until you call `remove` with it.
+- An entry has the same fields as the entries that `readLogEntriesAsync` returns: `timestamp`, `message`, `code`, `level`, and optionally `updateId`, `assetId`, `stacktrace`, and `duration`.
+
+| Platform    | Access                                                   |
+| ----------- | -------------------------------------------------------- |
+| **iOS**     | `UpdatesLogEntryListenerRegistry.sharedInstance.add(_:)` |
+| **Android** | `UpdatesLogEntryListenerRegistry.add(listener)`          |
+
 ### UpdatesInterface
 
 All updates controllers implement this interface. It is available whether updates is enabled, disabled, or running under the dev client.
@@ -222,6 +236,43 @@ if let controller = UpdatesControllerRegistry.sharedInstance.controller {
   // Later, to unsubscribe:
   subscription.remove()
 }
+```
+
+### Receiving log entries (Kotlin)
+
+```kotlin
+import expo.modules.updatesinterface.UpdatesLogEntryListener
+import expo.modules.updatesinterface.UpdatesLogEntryListenerRegistry
+
+val listener = UpdatesLogEntryListener { entry ->
+  val message = entry["message"] as? String
+  val level = entry["level"] as? String
+  // ...
+}
+UpdatesLogEntryListenerRegistry.add(listener)
+
+// Later, to stop receiving entries:
+UpdatesLogEntryListenerRegistry.remove(listener)
+```
+
+### Receiving log entries (Swift)
+
+```swift
+import EXUpdatesInterface
+
+class MyLogEntryListener: UpdatesLogEntryListener {
+  func updatesLogEntryWasLogged(_ entry: [String: Any]) {
+    let message = entry["message"] as? String
+    let level = entry["level"] as? String
+    // ...
+  }
+}
+
+let listener = MyLogEntryListener()
+UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+
+// Later, to stop receiving entries:
+UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener)
 ```
 
 ## Installation in an Expo native module
