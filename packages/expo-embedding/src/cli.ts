@@ -1,7 +1,8 @@
-import { dirname, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
+import { readJSON } from './files';
 import { printIntegrationInstructions } from './integration';
 import { prepareIos, initializeIos } from './ios';
 import { findAppRoot } from './scaffold';
@@ -16,9 +17,16 @@ async function main(): Promise<void> {
       target: { type: 'string' },
       platform: { type: 'string' },
       help: { type: 'boolean', short: 'h' },
+      version: { type: 'boolean', short: 'v' },
     },
     allowPositionals: true,
   });
+  const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  if (values.version) {
+    const { version } = await readJSON(join(packageRoot, 'package.json'));
+    process.stdout.write(`${version}\n`);
+    return;
+  }
   if (values.help) {
     process.stdout.write(usage);
     return;
@@ -41,7 +49,6 @@ async function main(): Promise<void> {
   }
 
   const root = await findAppRoot(process.cwd());
-  const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
   if (values.platform && values.platform !== 'ios')
     throw new Error('This integration supports --platform ios.');
   const ios = await prepareIos(root, packageRoot, values);

@@ -10,6 +10,7 @@ Options:
   --project <App.xcodeproj> --target <App>  Select the iOS application target
   --frozen-lockfile      Reproduce installed dependencies (init only)
   --help, -h             Show this usage
+  --version, -v          Show the CLI version
 
 Run from the native app directory or a subdirectory.
 init installs dependencies and generates the native integration. It preserves existing app UI and prints the integration guide after successful setup.

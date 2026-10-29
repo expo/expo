@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdtemp, readdir, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -44,6 +44,17 @@ describe('Running the packed CLI outside the Expo checkout', () => {
     expect(stdout.indexOf('bunx expo-embedding')).toBeLessThan(stdout.indexOf('node /path/'));
     expect(await readdir(host)).toEqual([]);
   });
+
+  it.each(['--version', '-v'])(
+    'should print the packaged version with %s outside a host project',
+    async (flag) => {
+      const manifest = JSON.parse(await readFile(join(directory, 'package/package.json'), 'utf8'));
+      const { stdout, stderr } = await run(flag);
+      expect(stdout).toBe(`${manifest.version}\n`);
+      expect(stderr).toBe('');
+      expect(await readdir(host)).toEqual([]);
+    }
+  );
 
   it('should reject the removed skill command before changing files', async () => {
     await expect(run('skill')).rejects.toMatchObject({
