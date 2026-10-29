@@ -97,6 +97,7 @@ export const home = [
   ]),
   makeSection('Agentic workflows', [
     makePage('agentic-workflows/introduction.mdx'),
+    makePage('agentic-workflows/setup.mdx'),
     makePage('agentic-workflows/agentic-ci.mdx'),
     makePage('agentic-workflows/issue-to-pr.mdx'),
     makePage('agentic-workflows/bug-triage.mdx'),

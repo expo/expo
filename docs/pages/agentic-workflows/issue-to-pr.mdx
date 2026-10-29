@@ -9,14 +9,10 @@ import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 import { IssueToPrDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
-import AgenticWorkflowsSetup from '~/scenes/eas/agentic-workflows/_setup.mdx';
-import GitHubTokenStep from '~/scenes/eas/agentic-workflows/_github-token-step.mdx';
-import WhatTheAgentCanDo from '~/scenes/eas/agentic-workflows/_what-the-agent-can-do.mdx';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
@@ -42,8 +38,8 @@ Only people who can add labels to issues can start the agent. Read each issue be
 ```text wrap
 Add the Issue to PR workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/issue-to-pr.md as the source for each step and each file.
 
-1. Check each setup step on that page, and check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md is in the project. Do each step that is not done.
-2. Create each file that the page shows, at the same path and with the same content. Use the version of .eas/agents/run-agent.sh for the agent that I name.
+1. Check each step on https://docs.expo.dev/agentic-workflows/setup.md, and check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md is in the project. Do each step that is not done. Use the version of .eas/agents/run-agent.sh for the agent that I name.
+2. Create each file that the page shows, at the same path and with the same content.
 3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
 4. Run `eas workflow:validate .eas/workflows/issue-to-pr.yml`.
 5. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
@@ -53,18 +49,9 @@ Add the Issue to PR workflow to my Expo project. Use https://docs.expo.dev/agent
 
 ## Set up your project
 
-Do these steps one time for your project.
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
 
-<AgenticWorkflowsSetup githubCli>
-  <Requirement title="The Agentic CI workflow">
-    Issue to PR needs [Agentic CI](/agentic-workflows/agentic-ci/), because Agentic CI tests each PR
-    that the agent opens. Add Agentic CI first.
-  </Requirement>
-</AgenticWorkflowsSetup>
-
-<GitHubTokenStep />
-
-<WhatTheAgentCanDo />
+Issue to PR needs [Agentic CI](/agentic-workflows/agentic-ci/), because Agentic CI tests each PR that the agent opens. Add Agentic CI first.
 
 ## Add the Issue to PR workflow
 

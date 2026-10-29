@@ -1,0 +1,487 @@
+---
+title: Set up a project for agentic workflows
+sidebar_title: Project setup
+description: Set up an Expo project one time for the agentic workflow guides, with a build profile, tokens, an agent runner, and a device controller.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Each agentic workflow guide uses the same project setup. Do the steps on this page one time for your project. Then add the workflows from the guides.
+
+Agentic CI and QA Swarm need the steps from [Add a build profile for the remote device](#add-a-build-profile-for-the-remote-device) to [Push the files](#push-the-files). Issue to PR and Bug triage also need [Add a GitHub token to EAS](#add-a-github-token-to-eas).
+
+<Prerequisites>
+  <Requirement title="An Expo project in a GitHub repository">
+    The project must use [Continuous Native Generation
+    (CNG)](/workflow/continuous-native-generation/), so the repository does not include the
+    **android** and **ios** directories. The app config must set the app ID for the platform that you test. A new project does not set it. Add it to **app.json**:
+
+    <Tabs>
+
+    <Tab label="Android">
+
+    ```json app.json
+    {
+      "expo": {
+        "android": {
+          "package": "com.yourcompany.yourapp"
+        }
+      }
+    }
+    ```
+
+    </Tab>
+
+    <Tab label="iOS">
+
+    ```json app.json
+    {
+      "expo": {
+        "ios": {
+          "bundleIdentifier": "com.yourcompany.yourapp"
+        }
+      }
+    }
+    ```
+
+    </Tab>
+
+    </Tabs>
+
+  </Requirement>
+  <Requirement title="EAS CLI">
+    Install EAS CLI:
+
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli'],
+        yarn: ['$ yarn global add eas-cli'],
+        pnpm: ['$ pnpm add --global eas-cli'],
+        bun: ['$ bun add --global eas-cli'],
+      }}
+    />
+
+  </Requirement>
+  <Requirement title="GitHub CLI">
+    Issue to PR and Bug triage use [GitHub CLI](https://cli.github.com/) to add a repository secret,
+    a label, and an issue. Install it, then sign in:
+
+    <Terminal cmd={['$ gh auth login']} />
+
+  </Requirement>
+  <Requirement title="Expo Simulators access">
+    The account that owns the project needs Expo Simulators access. In your project directory, link
+    the project to EAS and check the access:
+
+    <Terminal cmd={['$ eas login', '$ eas init', '$ eas simulator:availability --json']} />
+
+    An account with access returns `"available": true`. If the value is `false`, [join the
+    waitlist](https://expo.dev/services/simulators) to request access.
+
+  </Requirement>
+  <Requirement title="A coding agent that can run in CI">
+    The workflows run the agent from the command line, without a person. You can use any coding agent
+    that has this mode and a key that works without a browser login. [Add the agent
+    runner](#add-the-agent-runner) has a ready-made runner for Claude Code, Codex, Cursor, and Grok.
+    Create the key for your agent:
+
+    | Agent       | How to get the key                                                                                                  |
+    | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+    | Claude Code | Run `claude setup-token`. The token requires a Pro, Max, Team, or Enterprise plan. An Anthropic API key also works. |
+    | Codex       | Create an OpenAI API key. The Codex docs recommend an API key for CI jobs.                                          |
+    | Cursor      | In the Cursor dashboard, open **API Keys**.                                                                         |
+    | Grok        | Create an xAI API key on [console.x.ai](https://console.x.ai).                                                      |
+
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Add a build profile for the remote device
+
+The workflows install a build from the `preview` profile on each session. Add this profile to **eas.json**:
+
+<Tabs>
+
+<Tab label="Android">
+
+An Android Emulator session runs an APK:
+
+```json eas.json
+{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+```
+
+EAS signs the APK with an Android keystore. Create the keystore one time before the first run. Run this command, select the `preview` profile, and let EAS generate a new keystore:
+
+<Terminal cmd={['$ eas credentials --platform android']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+An iOS Simulator session runs a simulator build. A simulator build is not signed, so it needs no credentials:
+
+```json eas.json
+{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+To test both platforms, add the `android` and the `ios` keys to the same profile. The fingerprint job in each workflow uses the same `preview` environment, so the fingerprints match the builds.
+
+</Step>
+
+<Step label="2">
+
+## Connect GitHub to the EAS project
+
+The workflows start on GitHub events and post comments on PRs. Connect your GitHub repository to the EAS project. See [Automate workflows with GitHub events](/eas/workflows/get-started/#automate-workflows-with-github-events).
+
+</Step>
+
+<Step label="3">
+
+## Create a robot token
+
+The jobs start sessions with the access token of a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens). A robot user cannot sign in to Expo, and it can do only what its role allows.
+
+In the account that owns the project, open [**Access tokens**](https://expo.dev/accounts/[account]/settings/access-tokens). Under **Robot users**, create a robot user with the [Developer role](/accounts/account-types/#manage-access). The Developer role is the lowest role that can start and stop sessions. Then create a token for the robot user. See [What the agent can do](#what-the-agent-can-do) for more information.
+
+Keep this token and the key of your agent out of files, logs, and chat.
+
+</Step>
+
+<Step label="4">
+
+## Add the tokens to EAS
+
+In the project dashboard, open **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables). Select **Add Variables**. Add these variables with the **Secret** visibility:
+
+| Name                                                                                                | Value                 |
+| --------------------------------------------------------------------------------------------------- | --------------------- |
+| `EXPO_TOKEN_SIMULATOR`                                                                              | The robot token       |
+| `CLAUDE_CODE_OAUTH_TOKEN`, `ANTHROPIC_API_KEY`, `CODEX_API_KEY`, `CURSOR_API_KEY`, or `XAI_API_KEY` | The key of your agent |
+
+Add the variables to the **preview** environment. The workflows use **preview** for the builds and for the agent, and the agent can read each variable of that environment. So keep no other secrets in **preview**. Values that are not secret, such as `EXPO_PUBLIC_` variables, can stay, because they are in the app already. If **preview** must have another secret, such as an `NPM_TOKEN` for private packages, the agent can read that secret too.
+
+Check that the list has the variables:
+
+<Terminal cmd={['$ eas env:list --environment preview']} />
+
+</Step>
+
+<Step label="5">
+
+## Add the agent runner
+
+This file runs your agent without a person. Use the version for your agent. The jobs run it as `bash .eas/agents/run-agent.sh <prompt-file> <mode>`. The mode is `device` when the agent tests the app, and `change` when the agent changes the code. For another agent, write a runner that takes the same two arguments and runs the agent without a person.
+
+<Tabs>
+
+<Tab label="Claude Code">
+
+```sh .eas/agents/run-agent.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "$2" in
+  device) tools='Read,Glob,Grep,Write,Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *),Bash(npx --yes -p @swmansion/argent@latest argent *)' ;;
+  change) tools='Read,Glob,Grep,Edit,Write,Bash(npx tsc --noEmit)' ;;
+  *)
+    echo "Unknown mode \"$2\". Use device or change." >&2
+    exit 1
+    ;;
+esac
+
+mkdir -p agent-output/evidence
+exec npx --yes @anthropic-ai/claude-code@latest -p "Do the task that standard input describes." \
+  --allowedTools "$tools" --permission-mode dontAsk --max-turns 80 \
+  --output-format stream-json --verbose < "$1" > agent-output/evidence/agent-log.jsonl
+```
+
+</Tab>
+
+<Tab label="Codex">
+
+```sh .eas/agents/run-agent.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec npx --yes @openai/codex@latest exec \
+  --sandbox danger-full-access \
+  --skip-git-repo-check \
+  - < "$1"
+```
+
+</Tab>
+
+<Tab label="Cursor">
+
+```sh .eas/agents/run-agent.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v agent > /dev/null 2>&1; then
+  curl https://cursor.com/install -fsS | bash
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
+exec agent -p --force --trust --output-format text "Read the file $1 and do the task that it describes."
+```
+
+Cursor also reads permissions from **.cursor/cli.json**. Add this file to the root of your project:
+
+```json .cursor/cli.json
+{
+  "permissions": {
+    "allow": ["Read(**/*)", "Write(**/*)", "Shell(npx)"],
+    "deny": [
+      "Shell(curl)",
+      "Shell(wget)",
+      "Shell(git)",
+      "Shell(gh)",
+      "Shell(rm)",
+      "Write(.eas/**)",
+      "Write(.github/**)"
+    ]
+  }
+}
+```
+
+</Tab>
+
+<Tab label="Grok">
+
+```sh .eas/agents/run-agent.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "$2" in
+  device) allow=(--allow 'Write(agent-output/**)' --allow 'Bash(npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest *)' --allow 'Bash(npx --yes -p @swmansion/argent@latest argent *)') ;;
+  change) allow=(--allow 'Edit(./**)' --allow 'Bash(npx tsc --noEmit)') ;;
+  *)
+    echo "Unknown mode \"$2\". Use device or change." >&2
+    exit 1
+    ;;
+esac
+
+if ! command -v grok > /dev/null 2>&1; then
+  curl -fsSL https://x.ai/cli/install.sh | bash
+  export PATH="$HOME/.grok/bin:$PATH"
+fi
+
+exec grok --prompt-file "$1" "${allow[@]}" --disable-web-search --max-turns 80
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="6">
+
+## Add the device controller
+
+The agent controls the remote device with a controller: [agent-device](/agents/agent-device/) or [Argent](/agents/argent/). This script starts an Expo Simulators session for the controller. Then it writes the device details and the commands of the controller to **agent-output/device.md**, and the job adds this file to the prompt of the agent. Use the version for your controller.
+
+The jobs run the script as `source .eas/agents/start-session.sh <platform> <build ID> <session name> <tag>`. The `source` command runs the script in the shell of the job, so the job keeps the session details and stops the session when it ends.
+
+<Tabs>
+
+<Tab label="agent-device">
+
+```sh .eas/agents/start-session.sh
+#!/usr/bin/env bash
+
+case "$1" in
+  android) APP_ID=$(node -p 'require("./app.json").expo.android.package') ;;
+  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier') ;;
+  *)
+    echo "Unknown platform \"$1\". Use android or ios." >&2
+    exit 1
+    ;;
+esac
+mkdir -p agent-output/evidence
+
+export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
+npx --yes eas-cli@latest simulator:start --platform "$1" --type agent-device \
+  --build-id "$2" --name "$3" --tag "$4" \
+  --max-duration-minutes 30 --json > /tmp/session.json
+trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+
+cat > agent-output/device.md << EOF
+## Device
+
+- Platform: $1
+- App ID: $APP_ID
+
+Control the device only with this shell command:
+
+    npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
+
+Use these agent-device commands:
+
+- snapshot -i lists the elements on the screen, with references such as @e2.
+- press @e2 taps an element.
+- fill @e4 "text" types text into a field.
+- scroll down scrolls the screen.
+- screenshot agent-output/evidence/<number>-<name>.png saves a screenshot.
+- open $APP_ID --platform $1 opens the app again.
+EOF
+```
+
+</Tab>
+
+<Tab label="Argent">
+
+```sh .eas/agents/start-session.sh
+#!/usr/bin/env bash
+
+case "$1" in
+  android) APP_ID=$(node -p 'require("./app.json").expo.android.package'); SCALE=0.9 ;;
+  ios) APP_ID=$(node -p 'require("./app.json").expo.ios.bundleIdentifier'); SCALE=1 ;;
+  *)
+    echo "Unknown platform \"$1\". Use android or ios." >&2
+    exit 1
+    ;;
+esac
+mkdir -p agent-output/evidence
+
+export EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR"
+npx --yes eas-cli@latest simulator:start --platform "$1" --type argent \
+  --build-id "$2" --name "$3" --tag "$4" \
+  --max-duration-minutes 30 --json > /tmp/session.json
+trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
+
+set -a
+source ./.env.eas-simulator
+set +a
+
+UDID=""
+for attempt in 1 2 3 4; do
+  UDID=$(npx --yes -p @swmansion/argent@latest argent run list-devices 2> /dev/null \
+    | grep -oE '"(udid|serial)" *: *"[^"]+"' | head -n 1 | sed -E 's/.*"([^"]+)"$/\1/' || true)
+  [ -n "$UDID" ] && break
+  sleep 15
+done
+: "${UDID:?Argent did not list a device. See the logs of this job.}"
+
+cat > agent-output/device.md << EOF
+## Device
+
+- Platform: $1
+- App ID: $APP_ID
+- Device ID: $UDID
+
+Control the device only with this shell command:
+
+    npx --yes -p @swmansion/argent@latest argent run <tool> --udid $UDID <options>
+
+Use these Argent tools:
+
+- describe lists the elements on the screen. Each element has a frame in coordinates from 0 to 1.
+- gesture-tap --x <x> --y <y> taps a point. Use the center of the frame of an element from describe. Never use pixels. Run describe again after each change on the screen.
+- keyboard --text "text" types text into the field that has focus.
+- gesture-swipe --fromX 0.5 --fromY 0.7 --toX 0.5 --toY 0.3 scrolls the screen down.
+- screenshot --scale $SCALE --out agent-output/evidence/<number>-<name>.png saves a screenshot.
+- restart-app --bundleId $APP_ID opens the app again.
+EOF
+```
+
+The Argent version reads the session details from **.env.eas-simulator**, so the agent can reach the device. Then it waits until Argent lists the device. An Android Emulator can take a few minutes to start. Android screenshots use a scale of 0.9, because a scale of 1 can fail on an Android Emulator.
+
+The Claude Code and Grok runners allow only the commands of each mode. Their `device` mode must allow the Argent CLI, as the runners in [Add the agent runner](#add-the-agent-runner) do. A runner that allows only agent-device denies each Argent command. If your **run-agent.sh** does not have the `argent` rule, replace it with the version in [Add the agent runner](#add-the-agent-runner).
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="7">
+
+## Push the files
+
+<Terminal
+  cmd={[
+    '$ git add app.json eas.json .eas/agents/run-agent.sh .eas/agents/start-session.sh',
+    '$ git commit -m "Add the agent runner and the device controller"',
+    '$ git push',
+  ]}
+/>
+
+If you use Cursor, also add **.cursor/cli.json**.
+
+</Step>
+
+<Step label="8">
+
+## Add a GitHub token to EAS
+
+Issue to PR and Bug triage need this step. Issue to PR pushes a branch, opens a PR, and adds comments to the issue. Bug triage creates issues for TestFlight feedback and posts its verdict on the issue. QA Swarm needs this step only to post its report on a PR. These tasks need a GitHub token.
+
+On GitHub, create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new). Under **Repository access**, select only your repository. Give it these permissions:
+
+- **Contents:** Read and write
+- **Issues:** Read and write
+- **Pull requests:** Read and write
+
+In the project dashboard, open **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables). Add these variables to the **preview** environment:
+
+| Name                | Value                                                        | Visibility |
+| ------------------- | ------------------------------------------------------------ | ---------- |
+| `GITHUB_TOKEN`      | The GitHub token                                             | Secret     |
+| `GITHUB_REPOSITORY` | The owner and the name of the repository, such as `acme/app` | Plain text |
+
+The job removes the GitHub token from the environment of the agent. An agent that can run shell commands can still read the variables of the job. So give the token access only to this repository. See [What the agent can do](#what-the-agent-can-do) for more information.
+
+</Step>
+
+## What the agent can do
+
+The agent reads text from PRs, issues, and TestFlight feedback. Another person can write instructions for the agent in that text. These workflows limit what the agent can do:
+
+- The agent can read each variable of the environment that the job uses, and the session file **.env.eas-simulator**. This file has a token for the current session. Keep no other secrets in that environment. See [Add the tokens to EAS](#add-the-tokens-to-eas).
+- EAS does not start `pull_request` workflows for PRs from forks.
+
+Each agent also has its own limits:
+
+| Agent            | Limit in these workflows                                                                                                                                                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude&nbsp;Code | `--allowedTools` allows the file tools and the commands of one mode. The `device` mode allows agent-device through `eas simulator:exec`, and the Argent CLI. The `change` mode allows `npx tsc --noEmit`.                                                                                       |
+| Codex            | The agent can run any command on the EAS worker. Each job runs on its own worker.                                                                                                                                                                                                               |
+| Cursor           | The agent can run each command that **.cursor/cli.json** does not deny.                                                                                                                                                                                                                         |
+| Grok             | `--allow` allows file changes and the commands of one mode. The `device` mode allows agent-device through `eas simulator:exec`, and the Argent CLI. The `change` mode allows `npx tsc --noEmit`. Grok also runs its read-only commands, such as `ls` and `cat`. It does not run other commands. |
+| Other&nbsp;agent | The limits depend on the permission settings of its command-line tool.                                                                                                                                                                                                                          |
+
+The code of a PR also runs in the workflow. The `check` job checks out the PR, so a PR can change **.eas/agents/run-agent.sh** and read `EXPO_TOKEN_SIMULATOR`, `GITHUB_TOKEN`, and the key of your agent. Each person who can push a branch to the repository can open such a PR.
+
+So use a robot token with the Developer role, not your personal access token. A PR that reads the robot token can do only what the Developer role allows.
