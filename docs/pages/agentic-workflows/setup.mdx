@@ -352,9 +352,7 @@ npx --yes eas-cli@latest simulator:start --platform "$1" --type agent-device \
   --max-duration-minutes 30 --json > /tmp/session.json
 trap 'npx --yes eas-cli@latest simulator:stop --non-interactive > /dev/null 2>&1 || true' EXIT
 
-if [ "$1" = ios ]; then
-  npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest open "$APP_ID" --platform ios > /dev/null
-fi
+npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest open "$APP_ID" --platform "$1" > /dev/null
 
 cat > agent-output/device.md << EOF
 ## Device
@@ -366,7 +364,7 @@ Control the device only with this shell command:
 
     npx --yes eas-cli@latest simulator:exec npx --yes agent-device@latest <command>
 
-Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop.
+Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop. Write files, such as the verdict, with your file tools, not with shell commands.
 
 Use these agent-device commands:
 
@@ -435,7 +433,7 @@ Control the device only with this shell command:
 
     npx --yes -p @swmansion/argent@latest argent run <tool> --udid $UDID <options>
 
-Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop.
+Run each command alone. Do not join commands with ;, &&, or |. The folder agent-output/evidence already exists. If a command is denied, run it again alone one time before you stop. Write files, such as the verdict, with your file tools, not with shell commands.
 
 Use these Argent tools:
 
