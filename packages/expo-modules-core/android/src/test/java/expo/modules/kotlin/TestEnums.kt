@@ -19,3 +19,9 @@ enum class EnumWithString(val value: String) : Enumerable {
   VALUE2("value2"),
   VALUE3("value3")
 }
+
+enum class EnumWithRenamedParameter(p0: String) : Enumerable {
+  VALUE1("value1");
+
+  val value = p0
+}
