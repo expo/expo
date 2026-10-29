@@ -67,8 +67,12 @@ runs:
         disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G. A smaller value breaks the boot snapshot.
         force-avd-creation: false
         emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        # The emulator enables the `pixel_7_pro` overlays, which add the display cutout, a few seconds after the boot completes,
+        # and it does not enable them again after it loads a snapshot. The status bar grows to the cutout height some seconds later.
+        # Wait until the status bar and the cutout have the same frame, as after a cold boot, before the snapshot is saved.
         # `adb emu kill` returns while the emulator still writes the snapshot, so wait for the emulator to exit.
         script: |
+          timeout 120 sh -c 'until w=$(adb shell dumpsys window) && echo "$w" | grep -q "type=displayCutout" && echo "$w" | grep -oE "type=(statusBars|displayCutout) frame=[^ ]+" | sed -E "s/type=[a-zA-Z]+ //" | sort -u | awk "END { exit NR != 1 }"; do sleep 1; done'
           adb emu kill
           timeout 150 sh -c 'while pgrep qemu-system > /dev/null; do sleep 1; done' || (pkill -9 qemu-system; exit 1)
           test -f ~/.android/avd/${{ inputs.avd-name }}.avd/snapshots/default_boot/snapshot.pb
