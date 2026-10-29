@@ -87,6 +87,8 @@ public:
 
 private:
   jni::global_ref<jni::JByteBuffer> _byteBuffer;
+  std::mutex _jsiMutableBufferMutex;
+  std::shared_ptr<jsi::MutableBuffer> _jsiMutableBuffer;
 };
 
 class MutableBufferViewArrayBufferStorage : public ArrayBufferStorage {

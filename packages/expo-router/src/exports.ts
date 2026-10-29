@@ -11,6 +11,7 @@ export {
   useSegments,
   useRootNavigation,
   useRootNavigationState,
+  useCanGoBack,
   useLoaderData,
   useCurrentRouteInfo,
 } from './hooks';
@@ -81,6 +82,7 @@ export {
   unstable_createStandardRouterNavigator,
   unstable_integrateWithRouter,
 } from './standard-navigation';
+export { useReconcileTabHistory as unstable_useReconcileTabHistory } from './standard-navigation/useReconcileTabHistory';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -101,10 +103,13 @@ export {
   attachRouteState,
   extendRouter,
   extendRouterActions,
+  isActionHandled,
+  RouterActionHandling,
   StackRouter,
   TabRouter,
 } from './react-navigation/routers';
 export { NativeStackView } from './react-navigation/native-stack';
+export { enableLegacyHeaderAppearance } from './react-navigation/native-stack/views/headerAppearance';
 export type {
   NativeStackDescriptorMap,
   NativeStackViewState,
@@ -112,6 +117,7 @@ export type {
 export type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  ExtendedRouter,
   NavigationAction,
   NavigationState,
   Router,
@@ -122,6 +128,7 @@ export type {
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionMembers,
   RouterExtensionOptions,
   RouterFactory,
   StackActionType,
@@ -132,16 +139,24 @@ export type {
   TabRouterOptions,
 } from './react-navigation/routers';
 
-export { unstable_navigationEvents } from './navigationEvents';
+export {
+  unstable_enablePerformanceIntegration,
+  unstable_performance,
+  unstable_PerformanceObserver,
+} from './performance';
 export type {
-  PagePreloadedEvent,
-  PageFocusedEvent,
-  PageBlurredEvent,
-  PageRemoved,
-  ActionDispatchedEvent,
-  RoutePreloadedEvent,
-  AnalyticsEvent,
-} from './navigationEvents';
+  RouterPageMarkDetail,
+  RouterActionMarkDetail,
+  RouterPagePreloadedMark,
+  RouterPageFocusedMark,
+  RouterPageBlurredMark,
+  RouterPageRemovedMark,
+  RouterActionEnqueuedMark,
+  RouterActionDispatchedMark,
+  RouterPerformanceMark,
+  RouterPerformanceMarkByName,
+  BaseRouterPerformanceMark,
+} from './performance';
 
 /**
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.

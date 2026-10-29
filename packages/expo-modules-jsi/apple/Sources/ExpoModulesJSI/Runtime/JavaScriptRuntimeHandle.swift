@@ -14,21 +14,20 @@ internal import jsi
 /// The runtime owns its handle and marks it dead in `deinit`, so values that outlive the runtime still
 /// detect it through ``runtime`` or ``pointee`` returning `nil`.
 ///
-/// Unlike a `weak` reference, the liveness check is not atomic and does not keep the runtime alive for
-/// the rest of the call. Values must not be used concurrently with the runtime's `deinit`, which holds
-/// as long as the last reference to the runtime is released on the JavaScript thread (as
-/// `AppContext.destroy()` does).
+/// ``runtime`` and ``pointee`` are not atomic, so they are only for the thread that uses the runtime:
+/// the JavaScript thread, or Hermes's finalizer thread while the runtime is destroyed. The runtime's
+/// `deinit` runs there too as long as the last reference is released there (as `AppContext.destroy()`
+/// does). Other threads go through ``JavaScriptRuntime/Scheduler``.
 ///
 /// Not to be confused with the engine's handles to JavaScript values (`jsi::PointerValue`).
 internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
   /// The runtime that owns this handle, cleared by the runtime's `deinit`. Read it through ``runtime``
-  /// instead.
-  private unowned(unsafe) var unsafeRuntime: JavaScriptRuntime?
+  /// instead. `Unmanaged`, so ``unretainedRuntime`` can read it without retaining the runtime.
+  private var unmanagedRuntime: Unmanaged<JavaScriptRuntime>?
 
-  /// The engine runtime, cleared by the runtime's `deinit`. Liveness is checked on this field rather
-  /// than on ``unsafeRuntime``: `IRuntime` is an immortal reference, so reading it and checking it for
-  /// `nil` costs no reference counting, whereas checking the runtime reference for `nil` retains the
-  /// runtime, which is the slow-path traffic this handle exists to avoid.
+  /// The engine runtime, cleared by the runtime's `deinit`. Liveness is checked on this field:
+  /// `IRuntime` is an immortal reference, so reading it and checking it for `nil` costs no reference
+  /// counting.
   nonisolated(unsafe) private var jsiRuntime: facebook.jsi.IRuntime?
 
   internal init(_ pointee: facebook.jsi.IRuntime) {
@@ -38,13 +37,13 @@ internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
   /// Links the handle to its runtime. Called at the end of the runtime's initializers, once `self`
   /// is available.
   internal func attach(_ runtime: JavaScriptRuntime) {
-    unsafeRuntime = runtime
+    unmanagedRuntime = Unmanaged.passUnretained(runtime)
   }
 
   /// Marks the runtime as gone. Called from the runtime's `deinit`.
   internal func detach() {
     jsiRuntime = nil
-    unsafeRuntime = nil
+    unmanagedRuntime = nil
   }
 
   /// Whether the runtime that owns this handle is still alive.
@@ -56,7 +55,14 @@ internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
   /// The runtime, or `nil` if it has been deallocated.
   @inline(__always)
   internal var runtime: JavaScriptRuntime? {
-    return isAlive ? unsafeRuntime : nil
+    return isAlive ? unmanagedRuntime?.takeUnretainedValue() : nil
+  }
+
+  /// The runtime without a retain, or `nil` if it has been deallocated. Only valid while the runtime
+  /// can't be deallocated, such as during a call on its JavaScript thread.
+  @inline(__always)
+  internal var unretainedRuntime: Unmanaged<JavaScriptRuntime>? {
+    return isAlive ? unmanagedRuntime : nil
   }
 
   /// The engine runtime, or `nil` if the runtime has been deallocated.

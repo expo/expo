@@ -39,11 +39,15 @@ The [`web.output`](/versions/latest/config/app/#output) target can be configured
 
 Expo Router supports three output targets for web apps.
 
-| Output             | Expo Router | API Routes         | Description                                                                                                                                                                      |
-| ------------------ | ----------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `single` (default) | <YesIcon /> | <NoIcon />         | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory and has no statically indexable HTML.                                               |
-| `server`           | <YesIcon /> | Enabled by default | Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server. |
-| `static`           | <YesIcon /> | Opt-in             | Outputs separate HTML files for every route in the **app** directory.                                                                                                            |
+The default and tabs templates configure `web.output: "server"` in SDK 58 and later. If you omit `web.output`, the fallback remains `single`. Choose `static` explicitly when deploying prerendered pages to a static host.
+
+| Output             | Expo Router | API Routes         | Description                                                                                                                                                    |
+| ------------------ | ----------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `single` (default) | <YesIcon /> | <NoIcon />         | Outputs a Single Page Application (SPA) with a single **index.html** in the output directory and has no statically indexable HTML.                             |
+| `server`           | <YesIcon /> | Enabled by default | Creates **client** and **server** directories. In SDK 58 and later, HTML is rendered on each request. Requires a deployed server for rendering and API routes. |
+| `static`           | <YesIcon /> | Opt-in             | Outputs separate HTML files for every route in the **app** directory.                                                                                          |
+
+For server output, deploy both the client assets and the server code to a provider that supports Expo Router server rendering, such as [EAS Hosting](/eas/hosting/introduction/). Uploading only the **client** directory to a static host does not provide server rendering.
 
 In SDK 58 and later, set `apiRoutes: true` in the `expo-router` config plugin to enable API routes with `static` output. API routes are enabled by default with `server` output. Set `apiRoutes: false` to disable them in either mode. See [API routes](/router/web/api-routes/#create-an-api-route) for configuration and deployment requirements.
 

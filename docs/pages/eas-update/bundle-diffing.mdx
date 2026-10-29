@@ -83,6 +83,10 @@ When the build completes, EAS Build uploads the embedded bundle. Updates publish
 
 </Tabs>
 
+[Custom builds](/custom-builds/get-started/) that use [`eas/build`](/custom-builds/schema/#easbuild) upload the embedded bundle the same way. If your custom build config uses separate steps instead, add the [`eas/upload_embedded_bundle`](/custom-builds/schema/#easupload_embedded_bundle) step.
+
+EAS Build uploads the bundle only when EAS Update is configured in your project and the build profile sets a `channel`. It skips the upload for development builds and iOS Simulator builds. To confirm the upload, look for the bundle with [`eas update:embedded:list`](#manage-uploaded-embedded-bundles).
+
 If you don't use EAS Build, you can upload an embedded bundle yourself. Point `--bundle` at the JavaScript bundle and `--manifest` at the **app.manifest** produced by the native build:
 
 <Terminal

@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Accept a callback ref in the `BlurTargetView` `ref` prop. ([#51659](https://github.com/expo/expo/pull/51659) by [@behenate](https://github.com/behenate))
+
+## 58.0.4
+
+### Patch Changes
+
+- Accept a `View` ref from React Native 0.87 and later in the `blurTarget` prop and the `BlurTargetView` `ref` prop. The prop types now use `ComponentRef<typeof View>`, so `useRef<ViewInstance>(null)` and `useRef<ComponentRef<typeof View>>(null)` type-check with the default React Native typings. With the default typings, a ref typed `useRef<View | null>(null)` no longer type-checks for these props. Type it as `useRef<ComponentRef<typeof View>>(null)` instead. ([#51640](https://github.com/expo/expo/pull/51640) by [@juliusmarminge](https://github.com/juliusmarminge))
+
 ## 58.0.3
 
 ### Patch Changes

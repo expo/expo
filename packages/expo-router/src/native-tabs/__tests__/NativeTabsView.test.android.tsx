@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
@@ -34,8 +34,9 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => React.ReactNode>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
 
 it('mounts deep-linked tabs in Trigger order without remounting', async () => {
   function TrackedScreen({ name }: { name: string }) {
@@ -77,7 +78,7 @@ it('mounts deep-linked tabs in Trigger order without remounting', async () => {
     'components',
   ]);
   expect(mockScreenUnmount).not.toHaveBeenCalled();
-  expect(TabsHost.mock.calls[0][0].navStateRequest?.selectedScreenKey).toBe('apis');
+  expect(TabsHost.mock.calls[0]![0].navStateRequest?.selectedScreenKey).toBe('apis');
 });
 
 it.each([
@@ -99,7 +100,7 @@ it.each([
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsHost).toHaveBeenCalledTimes(1);
-  expect(TabsHost.mock.calls[0][0].android?.tabBarRespectsIMEInsets).toBe(expected);
+  expect(TabsHost.mock.calls[0]![0].android?.tabBarRespectsIMEInsets).toBe(expected);
 });
 
 describe('unstable_nativeProps', () => {
@@ -115,8 +116,8 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].colorScheme).toBe('dark');
-    expect(TabsHost.mock.calls[0][0].direction).toBe('rtl');
+    expect(TabsHost.mock.calls[0]![0].colorScheme).toBe('dark');
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('rtl');
   });
 
   it('forwards android raw props to Tabs.Host', async () => {
@@ -131,7 +132,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].android).toMatchObject({
+    expect(TabsHost.mock.calls[0]![0].android).toMatchObject({
       tabBarRespectsIMEInsets: true,
     });
   });
@@ -148,7 +149,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(false);
+    expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(false);
   });
 
   it('does not let raw props override navStateRequest or onTabSelected', async () => {
@@ -168,12 +169,12 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].navStateRequest).toEqual({
+    expect(TabsHost.mock.calls[0]![0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
       baseProvenance: 0,
     });
-    expect(TabsHost.mock.calls[0][0].onTabSelected).not.toBe(userOnTabSelected);
-    expect(TabsHost.mock.calls[0][0].onTabSelected).toBeInstanceOf(Function);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).not.toBe(userOnTabSelected);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).toBeInstanceOf(Function);
   });
 
   it('wires onTabSelectionPrevented onto Tabs.Host', async () => {
@@ -188,7 +189,7 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].onTabSelectionPrevented).toBeInstanceOf(Function);
+    expect(TabsHost.mock.calls[0]![0].onTabSelectionPrevented).toBeInstanceOf(Function);
   });
 
   it('drops ios-only raw props on Android so they do not leak onto Tabs.Host', async () => {
@@ -204,8 +205,8 @@ describe('unstable_nativeProps', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     // iOS-only raw props should not be forwarded to the Android host.
-    expect(TabsHost.mock.calls[0][0].ios).toBeUndefined();
-    expect(TabsHost.mock.calls[0][0].direction).toBe('ltr');
+    expect(TabsHost.mock.calls[0]![0].ios).toBeUndefined();
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('ltr');
   });
 
   it('forwards updated raw props to Tabs.Host on re-render', async () => {
@@ -253,11 +254,11 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
@@ -279,13 +280,70 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'ic_home_filled',
     });
   });
+});
+
+it('keeps tab state mounted when the tab bar hides and shows', async () => {
+  function Layout() {
+    const [hidden, setHidden] = React.useState(false);
+    return (
+      <>
+        <Button title="Toggle" onPress={() => setHidden((value) => !value)} />
+        <NativeTabs hidden={hidden}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      </>
+    );
+  }
+  function Counter({ name }: { name: string }) {
+    const [count, setCount] = React.useState(0);
+    React.useEffect(() => {
+      mockScreenMount(name);
+      return () => mockScreenUnmount(name);
+    }, [name]);
+    return (
+      <>
+        <Text>
+          {name}: {count}
+        </Text>
+        <Button title={`Increment ${name}`} onPress={() => setCount((value) => value + 1)} />
+      </>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <Counter name="index" />,
+    second: () => <Counter name="second" />,
+  });
+  await fireEvent.press(screen.getByText('INCREMENT INDEX'));
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(true);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'system' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(false);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'all' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
 });

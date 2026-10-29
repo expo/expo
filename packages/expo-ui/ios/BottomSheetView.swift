@@ -70,7 +70,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private func contentChildren() -> some View {
-    ForEach(props.children?.withoutSlot("anchor") ?? [], id: \.id) { child in
+    ForEach(props.children?.withoutSlots() ?? [], id: \.id) { child in
       let view: any View = child.childView
       AnyView(view)
     }
@@ -94,6 +94,15 @@ struct BottomSheetView: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
+  private var presentedContent: some View {
+    if let background = props.children?.slot("presentationBackground") {
+      sheetContent.presentationBackground { background }
+    } else {
+      sheetContent
+    }
+  }
+
+  @ViewBuilder
   private var anchor: some View {
     if let anchorView = props.children?.slot("anchor") {
       anchorView
@@ -107,7 +116,7 @@ struct BottomSheetView: ExpoSwiftUI.View {
       .sheet(isPresented: $isPresented, onDismiss: {
         props.onDismiss()
       }) {
-        sheetContent
+        presentedContent
       }
       .onChange(of: isPresented, perform: { newIsPresented in
         if props.isPresented == newIsPresented {

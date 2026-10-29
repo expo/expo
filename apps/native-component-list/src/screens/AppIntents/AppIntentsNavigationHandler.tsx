@@ -2,6 +2,8 @@ import * as AppIntents from 'expo-app-intents';
 import { type ImperativeRouter, useRouter } from 'expo-router';
 import * as React from 'react';
 
+// Defines the background tasks that intents run, at startup.
+import './AppIntentBackgroundTasks';
 import {
   appIntentDishCatalog,
   type AppIntentRoute,

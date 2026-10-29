@@ -56,7 +56,9 @@ internal struct TabView: ExpoSwiftUI.View {
           systemImage: tab.props.systemImage ?? "",
           value: tab.props.value
         ) {
+          // The tab's own body does not run here, so publish its zero content origin on its content.
           Self.tabContent(for: tab.props.children ?? [])
+            .publishZeroContentOrigin(tab.props.shadowNodeProxy)
         }
 #if !os(tvOS)
         .badge(Self.badgeText(from: tab.props.modifiers))

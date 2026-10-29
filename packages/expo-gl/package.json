@@ -40,13 +40,13 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/invariant": "^2.2.33",
     "@types/offscreencanvas": "2019.6.4",
     "@types/react": "~19.3.0",
     "@types/react-test-renderer": "^19.1.0",
     "@types/webgl2": "^0.0.6",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "react-test-renderer": "19.3.0"
   },
   "peerDependencies": {
@@ -69,6 +69,6 @@
     }
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

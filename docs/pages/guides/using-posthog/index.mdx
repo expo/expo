@@ -262,6 +262,8 @@ Use these commands to manage the integration later:
 
 `connect` is a shortcut for the standard PostHog React Native setup. To do it manually, follow [PostHog's React Native installation guide](https://posthog.com/docs/libraries/react-native), then set `EXPO_PUBLIC_POSTHOG_API_KEY` and `EXPO_PUBLIC_POSTHOG_HOST` (plus the `POSTHOG_CLI_*` variables for source maps). Wrap your app in `<PostHogProvider>` as shown in [Step 2](#wrap-your-app-in-posthogprovider). For source maps, see [Source maps](#source-maps).
 
+Your project settings on expo.dev show PostHog as connected only for projects set up with `connect`. After a manual setup, they show **Not connected**. This does not affect your PostHog setup.
+
 ## Troubleshooting
 
 <Collapsible summary="No events arriving">

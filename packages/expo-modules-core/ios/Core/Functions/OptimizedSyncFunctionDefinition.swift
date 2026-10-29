@@ -7,6 +7,10 @@ import ExpoModulesJSI
  This is used by the `@OptimizedFunction` macro with specific type signatures.
  */
 public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unchecked Sendable {
+  public var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(kind: .function(self))
+  }
+
   public let name: String
   public let typeEncoding: String
   public let argsCount: Int
@@ -40,17 +44,17 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
 
   public var takesOwner: Bool = false
 
-  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (consuming FunctionCallResult) -> ()) {
     callback(.failure(GenericException("OptimizedSyncFunctionDefinition cannot be called from native code")))
   }
 
   // MARK: - AnySyncFunctionDefinition
 
-  public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
+  public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
     throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 
-  public func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
+  public func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 

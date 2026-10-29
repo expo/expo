@@ -26,7 +26,7 @@ struct JavaScriptCodableDataTests {
 
   @Test
   func `round-trips empty Data`() throws {
-    // Exercises the `byteLength == 0` decode guard and the `count > 0` encode guard.
+    // Exercises the `byteLength == 0` decode guard and encoding an empty `Data`.
     let decoded = try Data.decode(runtime.eval("new Uint8Array([])"), in: runtime)
     #expect(decoded.isEmpty)
     let encoded = try Data.encode(Data(), in: runtime)
@@ -35,13 +35,37 @@ struct JavaScriptCodableDataTests {
   }
 
   @Test
+  func `encoding Data reports its memory to the garbage collector`() throws {
+    let size = 1 << 20
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let encoded = try Data.encode(Data(count: size), in: runtime)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(encoded.isTypedArray() == true)
+    #expect(bytesAfter - bytesBefore >= Double(size))
+  }
+
+  @Test
   func `decodes Data through the borrowed-value overload`() throws {
-    // `Data` does not override the zero-copy overload, so this goes through the default that copies
-    // the borrowed value into an owning one and forwards. It should still decode correctly.
     let value = try runtime.eval("new Uint8Array([1, 2, 3])")
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
     let decoded = try Data.decode(buffer.unownedValue(at: 0), in: runtime)
     #expect(Array(decoded) == [1, 2, 3])
+  }
+
+  @Test
+  func `Data decode of a borrowed value throws on a non-Uint8Array`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("[1, 2, 3]").ref(),
+      try runtime.eval("new Int8Array([1, 2])").ref()
+    )
+    #expect(throws: DataNotUint8ArrayException.self) {
+      _ = try Data.decode(buffer.unownedValue(at: 0), in: runtime)
+    }
+    #expect(throws: DataNotUint8ArrayException.self) {
+      _ = try Data.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
   }
 
   // MARK: - Error paths

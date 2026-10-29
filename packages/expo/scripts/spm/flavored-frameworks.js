@@ -15,7 +15,8 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const { pluginError } = require('./diagnostics');
+const { spmUpdateCommand } = require('./commands');
+const { pluginError, rerunSpmUpdate } = require('./diagnostics');
 
 const FLAVORS = ['debug', 'release'];
 
@@ -31,8 +32,10 @@ function stableFrameworkId(frameworkName) {
   return kebab.startsWith('expo-') ? kebab : `expo-${kebab}`;
 }
 
+const artifactDir = (baseDir, flavor) => path.join(baseDir, flavor, 'xcframeworks');
+
 function artifactCandidates(baseDir, flavor, frameworkName) {
-  const dir = path.join(baseDir, flavor, 'xcframeworks');
+  const dir = artifactDir(baseDir, flavor);
   return {
     xcframework: path.join(dir, `${frameworkName}.xcframework`),
     tarball: path.join(dir, `${frameworkName}.tar.gz`),
@@ -51,23 +54,32 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
 }
 
 /**
- * Lookup order: EXPO_PRECOMPILED_MODULES_PATH, monorepo prebuild output, the npm package's
- * `prebuilds/` copy.
+ * The kinds of place every precompiled artifact lookup tries, in order:
+ * EXPO_PRECOMPILED_MODULES_PATH (`env`), monorepo prebuild output (`monorepo`), and the npm
+ * package's `prebuilds/` copy (`bundled`, skipped without a module root).
  */
-function precompiledBaseDirs(buildPath, moduleRoot, bundledPath) {
-  const bases = [];
-  if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath));
-  }
-  bases.push(
-    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
-    path.join(moduleRoot, 'prebuilds', ...bundledPath)
-  );
-  return Array.from(new Set(bases));
+const PRECOMPILED_SOURCE_KINDS = Object.freeze(['env', 'monorepo', 'bundled']);
+
+function precompiledBases(buildPath, moduleRoot, bundledPath) {
+  const envPath = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+  const dirs = {
+    env: envPath ? path.resolve(envPath, ...buildPath) : null,
+    monorepo: path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
+    bundled: moduleRoot != null ? path.join(moduleRoot, 'prebuilds', ...bundledPath) : null,
+  };
+  const bases = PRECOMPILED_SOURCE_KINDS.filter((kind) => dirs[kind] != null).map((kind) => ({
+    kind,
+    dir: dirs[kind],
+  }));
+  return bases.filter((base, index) => bases.findIndex((b) => b.dir === base.dir) === index);
+}
+
+function artifactBases(packageName, moduleRoot) {
+  return precompiledBases([packageName, 'output'], moduleRoot, ['output']);
 }
 
 function artifactBaseDirs(packageName, moduleRoot) {
-  return precompiledBaseDirs([packageName, 'output'], moduleRoot, ['output']);
+  return artifactBases(packageName, moduleRoot).map((base) => base.dir);
 }
 
 /**
@@ -117,7 +129,15 @@ function validateTarEntries(tarballPath, frameworkName) {
   }
 }
 
-function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
+function incompleteXCFrameworkError(what, packageName) {
+  return pluginError({
+    what,
+    why: 'The XCFramework is incomplete because its build or its extraction did not finish, or the file is damaged.',
+    how: `Reinstall ${packageName}, or from the Expo repository root run \`node tools/bin/expotools.js prebuild ${packageName}\`. ${rerunSpmUpdate()}`,
+  });
+}
+
+function extractTarball(sourcePath, packageName, frameworkName, cacheDir, flavor) {
   const stat = fs.statSync(sourcePath);
   const destination = path.join(cacheDir, stableFrameworkId(frameworkName), flavor);
   const xcframeworkPath = path.join(destination, `${frameworkName}.xcframework`);
@@ -142,9 +162,10 @@ function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
     execFileSync('tar', ['-xzf', sourcePath, '-C', temp], { stdio: 'pipe' });
     const extracted = path.join(temp, `${frameworkName}.xcframework`);
     if (!fs.existsSync(path.join(extracted, 'Info.plist'))) {
-      throw pluginError({
-        what: `${sourcePath} did not extract ${frameworkName}.xcframework/Info.plist`,
-      });
+      throw incompleteXCFrameworkError(
+        `${sourcePath} holds ${frameworkName}.xcframework with no Info.plist.`,
+        packageName
+      );
     }
     fs.writeFileSync(path.join(temp, '.source.json'), stamp, 'utf8');
   });
@@ -169,9 +190,9 @@ function replaceDirectory(destination, fill) {
   }
 }
 
-function prepareArtifactSource(source, frameworkName, cacheDir, flavor) {
+function prepareArtifactSource(source, packageName, frameworkName, cacheDir, flavor) {
   if (source.type === 'tarball') {
-    return extractTarball(source.path, frameworkName, cacheDir, flavor);
+    return extractTarball(source.path, packageName, frameworkName, cacheDir, flavor);
   }
   return path.resolve(source.path);
 }
@@ -221,14 +242,20 @@ function validateFlavoredFramework(framework) {
 }
 
 /**
+ * The declaration goes to React Native as is, so where it was resolved from is kept beside
+ * it rather than in it.
+ */
+const frameworkSources = new WeakMap();
+
+/**
  * Returns null when this module has no precompiled artifact at all. Once any
  * flavor is present, both are mandatory at the same source base; a partial
  * build must not silently degrade to a one-flavor declaration.
  */
 function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cacheDir }) {
-  for (const baseDir of artifactBaseDirs(packageName, moduleRoot)) {
+  for (const base of artifactBases(packageName, moduleRoot)) {
     const sources = Object.fromEntries(
-      FLAVORS.map((flavor) => [flavor, existingArtifactSource(baseDir, flavor, frameworkName)])
+      FLAVORS.map((flavor) => [flavor, existingArtifactSource(base.dir, flavor, frameworkName)])
     );
     if (sources.debug == null && sources.release == null) {
       continue;
@@ -236,22 +263,145 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
     for (const flavor of FLAVORS) {
       if (sources[flavor] == null) {
         throw pluginError({
-          what: `${frameworkName} has an incomplete precompiled pair in ${baseDir}: missing ${flavor}.`,
-          how: 'Run the Expo prebuild pipeline for both Debug and Release before react-native spm update.',
+          what: `${frameworkName} has an incomplete precompiled pair in ${base.dir}: missing ${flavor}.`,
+          how: `Run the Expo prebuild pipeline for both Debug and Release before \`${spmUpdateCommand()}\`.`,
         });
       }
     }
-    return validateFlavoredFramework({
+    const framework = validateFlavoredFramework({
       id: stableFrameworkId(frameworkName),
       frameworkName,
       linkage: 'dynamic',
       flavors: {
-        debug: prepareArtifactSource(sources.debug, frameworkName, cacheDir, 'debug'),
-        release: prepareArtifactSource(sources.release, frameworkName, cacheDir, 'release'),
+        debug: prepareArtifactSource(sources.debug, packageName, frameworkName, cacheDir, 'debug'),
+        release: prepareArtifactSource(
+          sources.release,
+          packageName,
+          frameworkName,
+          cacheDir,
+          'release'
+        ),
       },
     });
+    frameworkSources.set(framework, base);
+    return framework;
   }
   return null;
+}
+
+/**
+ * Whether `resolveFlavoredFramework` would find an artifact, without validating or
+ * extracting it: for a pod that is not linked precompiled.
+ */
+function hasPrecompiledArtifact({ packageName, moduleRoot, frameworkName }) {
+  return artifactBases(packageName, moduleRoot).some((base) =>
+    FLAVORS.some((flavor) => existingArtifactSource(base.dir, flavor, frameworkName) != null)
+  );
+}
+
+/** The `{ kind, dir }` base a `resolveFlavoredFramework` declaration came from. */
+function frameworkSource(framework) {
+  return frameworkSources.get(framework) ?? null;
+}
+
+const HEADERS_FLAVOR = 'headers';
+
+/** Every path `resolveHeadersXCFrameworkWithSource` tries, in its order. */
+function headersXCFrameworkSearchPaths({ packageName, moduleRoot, productName }) {
+  return artifactBases(packageName, moduleRoot).flatMap((base) =>
+    Object.values(artifactCandidates(base.dir, HEADERS_FLAVOR, `${productName}Headers`))
+  );
+}
+
+/**
+ * The interface-only `<Product>Headers` XCFramework a product publishes in place of its
+ * binaries, from the first of its flavored frameworks' bases that has one, as
+ * `{ xcframework, source }`. Null when no base has one.
+ *
+ * @param lastKind when set, the lookup ends after the base of this kind, so a base past it
+ *   is neither returned nor validated.
+ */
+function resolveHeadersXCFrameworkWithSource({
+  packageName,
+  moduleRoot,
+  productName,
+  cacheDir,
+  lastKind,
+}) {
+  const frameworkName = `${productName}Headers`;
+  const lastRank =
+    lastKind != null ? PRECOMPILED_SOURCE_KINDS.indexOf(lastKind) : PRECOMPILED_SOURCE_KINDS.length;
+  const bases = artifactBases(packageName, moduleRoot).filter(
+    (base) => PRECOMPILED_SOURCE_KINDS.indexOf(base.kind) <= lastRank
+  );
+  for (const base of bases) {
+    const artifact = existingArtifactSource(base.dir, HEADERS_FLAVOR, frameworkName);
+    if (artifact == null) continue;
+    const xcframework = prepareArtifactSource(
+      artifact,
+      packageName,
+      frameworkName,
+      cacheDir,
+      HEADERS_FLAVOR
+    );
+    if (!fs.existsSync(path.join(xcframework, 'Info.plist'))) {
+      throw incompleteXCFrameworkError(`${xcframework} has no Info.plist.`, packageName);
+    }
+    return { xcframework, source: base };
+  }
+  return null;
+}
+
+/**
+ * Throws when the headers XCFramework of `productName` was generated from another version of
+ * `packageName` than any of `sourceRoots`, the installed copies the app's build phase may build
+ * the framework from. Headers without the `expo-package.json` stamp predate it and pass.
+ */
+function assertHeadersMatchSources(headers, { packageName, productName, sourceRoots }) {
+  const stampPath = path.join(headers, 'expo-package.json');
+  if (!fs.existsSync(stampPath)) return;
+  const readVersion = (file) => readPackageVersion(file, { packageName, productName });
+  const headersVersion = readVersion(stampPath);
+  for (const root of sourceRoots) {
+    const version = readVersion(path.join(root, 'package.json'));
+    if (version === headersVersion) continue;
+    throw pluginError({
+      what: `${headers} was generated from ${packageName} ${headersVersion}, but ${packageName} at ${root} is ${version}.`,
+      why: `The app's "Build ${productName}" phase builds the framework from the installed sources, and Swift packages compile against the headers. Headers from another version make the link fail with an error that does not name this cause.`,
+      how: `Make the versions match: in the Expo repository, rebuild the headers with \`et prebuild ${packageName}\`; otherwise unset EXPO_PRECOMPILED_MODULES_PATH, or reinstall ${packageName}.`,
+    });
+  }
+}
+
+function readPackageVersion(file, { packageName, productName }) {
+  let version;
+  let cause;
+  try {
+    version = JSON.parse(fs.readFileSync(file, 'utf8')).version;
+  } catch (error) {
+    cause = error;
+  }
+  if (typeof version === 'string') return version;
+  throw pluginError(
+    {
+      what: `${file} could not be read as JSON with a string "version".`,
+      why: `The plugin compares that version to check that the ${productName} headers match the installed ${packageName} sources; this file is damaged or incomplete.`,
+      how: `Reinstall ${packageName}. In the Expo repository, rebuild the headers with \`et prebuild ${packageName}\`.`,
+    },
+    { cause }
+  );
+}
+
+/** `resolveHeadersXCFrameworkWithSource` without the source: the XCFramework path, or null. */
+function resolveHeadersXCFramework(lookup) {
+  return resolveHeadersXCFrameworkWithSource(lookup)?.xcframework ?? null;
+}
+
+/** The directories `resolveHeadersXCFramework` searches, in lookup order. */
+function headersXCFrameworkDirs(packageName, moduleRoot) {
+  return artifactBaseDirs(packageName, moduleRoot).map((baseDir) =>
+    artifactDir(baseDir, HEADERS_FLAVOR)
+  );
 }
 
 /**
@@ -260,7 +410,9 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
  * of the module that links it.
  */
 function spmDependencyBaseDirs(depName, ownerModuleRoot) {
-  return precompiledBaseDirs(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]);
+  return precompiledBases(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]).map(
+    (base) => base.dir
+  );
 }
 
 function readXcframeworkPlist(plistPath) {
@@ -320,7 +472,7 @@ function isDirectory(candidate) {
       {
         what: `${candidate} could not be read: ${error.message}.`,
         why: 'The plugin cannot tell whether a precompiled dependency is there, and it will not silently build an app without one.',
-        how: 'Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+        how: `Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run \`${spmUpdateCommand()}\` again.`,
       },
       { cause: error }
     );
@@ -472,11 +624,19 @@ function prepareCompileInterfaces(frameworks, destination) {
 
 module.exports = {
   FLAVORS,
+  PRECOMPILED_SOURCE_KINDS,
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
+  assertHeadersMatchSources,
   byteOrder,
+  frameworkSource,
+  hasPrecompiledArtifact,
+  headersXCFrameworkDirs,
+  headersXCFrameworkSearchPaths,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
   stableFrameworkId,
   validateFlavoredFramework,

@@ -390,6 +390,25 @@ function FilePreviewSection({
           }
         }}
       />
+      <SimpleActionDemo
+        title="Static preview capability (single file)"
+        action={withCurrentFile((file) => File.canPreview(file))}
+      />
+      <SimpleActionDemo
+        title="Preview collection at index 1 (iOS)"
+        action={async () => {
+          const files = await Promise.all([
+            writePreviewFixtureAsync('collection-first.txt', 'First item'),
+            writePreviewFixtureAsync('collection-second.pdf', previewPdfFixture),
+            writePreviewFixtureAsync('collection-third.txt', 'Third item'),
+          ]);
+          const available = await File.canPreview(files);
+          if (available) {
+            await File.preview(files, { initialIndex: 1 });
+          }
+          return { available, fileCount: files.length };
+        }}
+      />
     </>
   );
 }

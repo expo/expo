@@ -77,7 +77,7 @@ export function resolveFrom(
       const resolveType = resolveTypeSync(candidate);
       // (3.1) direct match
       if (resolveType === ResolveType.FILE) {
-        return candidate;
+        return followSymlinks ? maybeResolve(candidate) : candidate;
       } else if (resolveType === ResolveType.ENOENT) {
         // Optimization: If the directory itself doesn't exist, there's no point in us continuing
         // to check for more files in this directory

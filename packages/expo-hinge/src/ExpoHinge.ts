@@ -5,7 +5,9 @@ import type { ExpoHingeModuleEvents, Hinge } from './Hinge.types';
 declare class ExpoHingeModule extends NativeModule<ExpoHingeModuleEvents> {
   isAvailable: boolean;
   getHinge(): Hinge | null;
+  addWorkletListener(worklet: object): number;
+  removeWorkletListener(id: number): void;
 }
 
-// `null` on Android and web, where the package has no native module yet.
+// `null` on web, where the package has no native module.
 export default requireOptionalNativeModule<ExpoHingeModule>('ExpoHinge');

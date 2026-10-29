@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import { unstable_navigationEvents } from '../../../navigationEvents';
+import { internalNavigationEvents } from '../../../global-state/internalNavigationEvents';
 import type { NavigationState } from '../../../react-navigation/native';
 import { usePreviewActivationPath } from '../usePreviewActivationPath';
 
@@ -26,7 +26,7 @@ function report(previewId: string, key: string) {
       },
     ],
   };
-  unstable_navigationEvents.emit('routePreloaded', { state, routeKey: key });
+  internalNavigationEvents.emit('routePreloaded', { state, routeKey: key });
 }
 
 beforeEach(() => {

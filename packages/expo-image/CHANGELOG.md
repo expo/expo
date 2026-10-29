@@ -1,5 +1,36 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Fix bundled images not loading when the app compiles them into React Native's asset catalog with the `RCTUseAssetCatalog` Info.plist key. ([#50723](https://github.com/expo/expo/pull/50723) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.16
+
+### Patch Changes
+
+- Fix `useImage` releasing the previous image while it was still rendered. In development builds, this made React throw `ERR_NATIVE_SHARED_OBJECT_NOT_FOUND` and stop rendering after the source changed. ([#51742](https://github.com/expo/expo/pull/51742) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.15
+
+### Patch Changes
+
+- Use `AssetRegistry` from public API instead of Metro entry point. ([#51302](https://github.com/expo/expo/pull/51302) by [@byCedric](https://github.com/byCedric))
+
+## 58.0.14
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.13
+
+### Patch Changes
+
+- [Internal] Use `Image.resolveAssetSource` from `react-native` instead of the `Libraries/Image/resolveAssetSource` deep import. ([#51092](https://github.com/expo/expo/pull/51092) by [@huntie](https://github.com/huntie))
+- Fix blurry SVG images on Android 8.1 and older by drawing them in a software layer. ([#50916](https://github.com/expo/expo/pull/50916) by [@jackstudd](https://github.com/jackstudd))
+
 ## 58.0.12
 
 ### Patch Changes
@@ -91,6 +122,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] prevent `Canvas: trying to draw too large bitmap` crash by enforcing the hardware bitmap size limit in both `ContentFitDownsampleStrategy` and `loadAsync`. ([#47212](https://github.com/expo/expo/pull/47212) by [@roitium](https://github.com/roitium))
+- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ### 💡 Others
 
@@ -135,7 +167,6 @@ _This version does not introduce any user-facing changes._
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ## 56.0.7 — 2026-05-21
 

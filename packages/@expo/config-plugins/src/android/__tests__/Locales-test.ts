@@ -79,6 +79,8 @@ describe('e2e: Android locales', () => {
           xx: 'lang/xx.json',
           // partially support inlining the JSON so our Expo Config type doesn't conflict with the resolved manifest type.
           es: { CFBundleDisplayName: 'spanish-name' },
+          he: { app_name: 'hebrew-name' },
+          'id-ID': { app_name: 'indonesian-name' },
         },
       },
       { projectRoot }
@@ -102,6 +104,22 @@ describe('e2e: Android locales', () => {
       .toMatchInlineSnapshot(`
       "<resources>
         <string name="app_name">"us-name"</string>
+      </resources>"
+    `);
+
+    // Android resolves these languages under their legacy codes
+    expect(vol.existsSync('/app/android/app/src/main/res/values-b+he')).toBe(false);
+    expect(vol.readFileSync('/app/android/app/src/main/res/values-b+iw/strings.xml').toString())
+      .toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">"hebrew-name"</string>
+      </resources>"
+    `);
+    expect(vol.existsSync('/app/android/app/src/main/res/values-b+id+ID')).toBe(false);
+    expect(vol.readFileSync('/app/android/app/src/main/res/values-b+in+ID/strings.xml').toString())
+      .toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">"indonesian-name"</string>
       </resources>"
     `);
 

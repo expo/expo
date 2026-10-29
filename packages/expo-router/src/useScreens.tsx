@@ -1,10 +1,9 @@
 'use client';
 
-import React, { use, useEffect, useMemo } from 'react';
+import React, { use, useEffect, useLayoutEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  getValidInitialRouteName,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -21,12 +20,12 @@ import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
 import { resolveLoaderPath } from './loaders/resolveLoaderPath';
 import { getContextKey } from './matchers';
-import { unstable_navigationEvents } from './navigationEvents';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   removeParams,
 } from './navigationParams';
+import { isEnabled as isPerformanceEnabled, mark } from './performance';
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
@@ -42,7 +41,9 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
+import { getValidInitialRouteName } from './routeNode';
 import type { UnknownOutputParams } from './types';
+import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
 import { useActivityThreshold } from './views/NavigationActivityContext';
@@ -276,26 +277,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
-      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
-      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
-      // the route is synchronously available, if the `loadRoute` method returns a loaded route
-      // synchronously
-      if (!('then' in res)) {
-        return {
-          then(resolve) {
-            const ret = fromImport(value, res);
-            return Promise.resolve(resolve ? resolve(ret) : ret);
-          },
-        } as PromiseLike<{ default: React.ComponentType<any> }>;
-      } else {
-        return res.then(fromImport.bind(null, value));
-      }
-    });
-
-    if (__DEV__) {
-      ScreenComponent.displayName = `AsyncRoute(${value.route})`;
-    }
+    ScreenComponent = createAsyncScreenComponent(value);
   } else {
     const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
@@ -331,7 +313,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     };
   }) {
     const routeInfo = useCurrentRouteInfo();
-    const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const activityThreshold = useActivityThreshold();
@@ -372,14 +353,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
-    useEffect(() => {
-      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
-        console.warn(
-          'All routes in this navigator are protected. Ensure at least one route is accessible.'
-        );
-      }
-    }, [isFocused, isGuarded, redirectHref]);
-
     const hasRouteKey = !!route?.key;
 
     if (isGuarded) {
@@ -388,7 +361,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
+          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
         </Route>
       );
     }
@@ -415,7 +388,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
               retained route shell, which aborts pending work and causes a later visit to refetch.
               Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
           {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+          {isPerformanceEnabled() && isRouteType && hasRouteKey && (
             <AnalyticsListeners navigation={navigation} screenId={route.key} />
           )}
           <ZoomTransitionTargetContextProvider route={route}>
@@ -453,24 +426,85 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   return BaseRoute;
 }
 
+/** Loads the route with `React.lazy` when the screen renders, and again after a failed load. */
+export function createAsyncScreenComponent(value: RouteNode): React.ComponentType<any> {
+  const createLazyScreen = () => {
+    const Lazy: React.ComponentType<any> = React.lazy<React.ComponentType<any>>(() => {
+      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
+      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+      // the route is synchronously available, if the `loadRoute` method returns a loaded route
+      // synchronously
+      if (!('then' in res)) {
+        return {
+          then(resolve) {
+            const ret = fromImport(value, res);
+            return Promise.resolve(resolve ? resolve(ret) : ret);
+          },
+        } as PromiseLike<{ default: React.ComponentType<any> }>;
+      } else {
+        return res.then(fromImport.bind(null, value), (error: unknown) => ({
+          default: createFailedScreen(error, () => {
+            LazyScreen = createLazyScreen();
+          }),
+        }));
+      }
+    });
+
+    if (__DEV__) {
+      Lazy.displayName = `AsyncRoute(${value.route})`;
+    }
+    return Lazy;
+  };
+  let LazyScreen = createLazyScreen();
+
+  return function AsyncScreen(props: object) {
+    return <LazyScreen {...props} />;
+  };
+}
+
+/** Throws a failed route load to the nearest error boundary after commit, once `reset` has prepared the next load. */
+function createFailedScreen(error: unknown, reset: () => void) {
+  return function FailedAsyncRoute() {
+    useLayoutEffect(() => {
+      // A rejected `React.lazy` stays rejected, and a reset before commit makes React load the route again at once.
+      reset();
+      throw error;
+    }, []);
+    return null;
+  };
+}
+
+// A separate component, so reading focus does not rerender the screen on focus changes.
+function AllRoutesProtectedWarning() {
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (__DEV__ && isFocused) {
+      console.warn(
+        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      );
+    }
+  }, [isFocused]);
+  return null;
+}
+
 function AnalyticsListeners({
   navigation,
   screenId,
 }: {
-  navigation: EventConsumer<EventMapBase> & {
-    isFocused(): boolean;
-  };
+  navigation: EventConsumer<EventMapBase>;
   screenId: string;
 }) {
   const hasEmittedPagePreloadedRef = React.useRef(false);
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
-  const isFocused = navigation.isFocused();
+  // Read focus from render context. `navigation.isFocused()` can return the navigator's
+  // previous state during render, so a first push would look like a preload.
+  const isFocused = useIsFocused();
 
   const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {
-      unstable_navigationEvents.emit('pagePreloaded', {
+      mark('expo-router:page-preloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
@@ -490,7 +524,7 @@ function AnalyticsListeners({
   useEffect(() => {
     if (routeInfo) {
       return () => {
-        unstable_navigationEvents.emit('pageRemoved', {
+        mark('expo-router:page-removed', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,
@@ -505,7 +539,7 @@ function AnalyticsListeners({
   // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
   useEffect(() => {
     if (isFocused && routeInfo && hasBlurredRef.current) {
-      unstable_navigationEvents.emit('pageFocused', {
+      mark('expo-router:page-focused', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
@@ -521,7 +555,7 @@ function AnalyticsListeners({
         // If the screen was not blurred, don't emit focused again
         // hasBlurredRef will be false when the screen was initially focused
         if (hasBlurredRef.current) {
-          unstable_navigationEvents.emit('pageFocused', {
+          mark('expo-router:page-focused', {
             pathname: routeInfo.pathname,
             params: routeInfo.params,
             segments: routeInfo.segments,
@@ -531,7 +565,7 @@ function AnalyticsListeners({
         }
       });
       const cleanBlur = navigation.addListener('blur', () => {
-        unstable_navigationEvents.emit('pageBlurred', {
+        mark('expo-router:page-blurred', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,

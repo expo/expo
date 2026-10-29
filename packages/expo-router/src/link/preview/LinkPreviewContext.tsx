@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from 'react';
 import { createContext, use, useState, useCallback, useEffect, useSyncExternalStore } from 'react';
 
+import { internalNavigationEvents } from '../../global-state/internalNavigationEvents';
 import type { ReactNavigationState } from '../../global-state/types';
-import { unstable_navigationEvents } from '../../navigationEvents';
 
 function containsActiveRoute(state: ReactNavigationState, key: string): boolean {
   // Preloaded routes are deliberately excluded, including their active children.
@@ -58,7 +58,7 @@ export function LinkPreviewContextProvider({ children }: PropsWithChildren) {
   );
   useEffect(
     () =>
-      unstable_navigationEvents.addListener('actionDispatched', ({ payload, state }) => {
+      internalNavigationEvents.addListener('actionDispatched', ({ payload, state }) => {
         const key = store.getSnapshot();
         if (
           key !== undefined &&

@@ -21,6 +21,35 @@ function makeContext(refs: Record<string, string> = {}) {
 }
 
 describe(renderType, () => {
+  it('renders an unlabeled tuple as a TypeScript tuple', () => {
+    const { ctx, warnings } = makeContext();
+    const node: TypeNode = { kind: 'tuple', typeof: 'object', elements: [Int, Str] };
+    expect(renderType(node, ctx)).toBe('[number, string]');
+    expect(warnings).toEqual([]);
+  });
+
+  it('renders an object node as an object type', () => {
+    const { ctx, warnings } = makeContext();
+    const node: TypeNode = {
+      kind: 'object',
+      typeof: 'object',
+      properties: [
+        { name: 'x', type: Double },
+        { name: 'y', type: { kind: 'optional', typeof: 'number', wrapped: Double } },
+      ],
+    };
+    expect(renderType(node, ctx)).toBe('{ x: number; y: number | null }');
+    expect(warnings).toEqual([]);
+  });
+
+  it('renders an array of tuples without extra parentheses', () => {
+    const { ctx } = makeContext();
+    const tuple: TypeNode = { kind: 'tuple', typeof: 'object', elements: [Int, Int] };
+    expect(renderType({ kind: 'array', typeof: 'object', element: tuple }, ctx)).toBe(
+      '[number, number][]'
+    );
+  });
+
   it('maps primitives to their JS typeof', () => {
     const { ctx, warnings } = makeContext();
     expect(renderType(Bool, ctx)).toBe('boolean');
@@ -157,6 +186,13 @@ describe(renderType, () => {
       'unknown'
     );
     expect(warnings).toEqual(["unresolved type 'PlaybackStatus' rendered as unknown"]);
+  });
+
+  it('renders a shared ref as unknown and warns', () => {
+    const { ctx, warnings } = makeContext();
+    const native: TypeNode = { kind: 'ref', typeof: 'object', name: 'UIImage' };
+    expect(renderType({ kind: 'sharedRef', typeof: 'object', native }, ctx)).toBe('unknown');
+    expect(warnings).toEqual(["unsupported type 'SharedRef' rendered as unknown"]);
   });
 
   it('renders an unmodeled type as unknown and warns', () => {

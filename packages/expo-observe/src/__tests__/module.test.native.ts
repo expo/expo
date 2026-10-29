@@ -58,6 +58,11 @@ jest.mock('../integrations/react-navigation/init', () => ({
   getReactNavigationIntegrationConfig: jest.fn(() => undefined),
 }));
 
+jest.mock('../integrations/react-native-reanimated/init', () => ({
+  initReanimatedIntegration: jest.fn(),
+  disableReanimatedIntegration: jest.fn(),
+}));
+
 let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
@@ -89,6 +94,10 @@ beforeEach(() => {
     isInitialized: jest.fn(() => false),
     getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   }));
+  jest.doMock('../integrations/react-native-reanimated/init', () => ({
+    initReanimatedIntegration: jest.fn(),
+    disableReanimatedIntegration: jest.fn(),
+  }));
 });
 
 function loadModule() {
@@ -101,6 +110,10 @@ function loadInit() {
 
 function loadReactNavigationInit() {
   return require('../integrations/react-navigation/init') as typeof import('../integrations/react-navigation/init');
+}
+
+function loadReanimatedInit() {
+  return require('../integrations/react-native-reanimated/init') as typeof import('../integrations/react-native-reanimated/init');
 }
 
 describe('module Proxy', () => {
@@ -155,6 +168,53 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("calls initReanimatedIntegration when integrations['react-native-reanimated'] is true", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledTimes(1);
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(true);
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+  });
+
+  it("passes integrations['react-native-reanimated'] object config to initReanimatedIntegration", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    const reanimatedConfig = { level: 2 as const, strict: false };
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': reanimatedConfig },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(reanimatedConfig);
+  });
+
+  it.each([false, undefined])(
+    "disables the Reanimated integration when integrations['react-native-reanimated'] is %s",
+    (value) => {
+      const Observe = loadModule();
+      const { initReanimatedIntegration, disableReanimatedIntegration } = loadReanimatedInit();
+      Observe.configure({
+        environment: 'test',
+        integrations: { 'react-native-reanimated': value },
+      });
+      expect(initReanimatedIntegration).not.toHaveBeenCalled();
+      expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('disables the Reanimated integration when configure has no integrations', () => {
+    const Observe = loadModule();
+    const { disableReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({ environment: 'test' });
+    expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
   });
 
   it('records no network traces when configure omits networkTraces', () => {

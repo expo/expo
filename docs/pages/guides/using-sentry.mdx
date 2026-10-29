@@ -131,6 +131,8 @@ After running `eas update`, upload the source maps to Sentry:
   }}
 />
 
+The upload script reads your organization slug and project name from the `organization` and `project` properties of the `@sentry/react-native/expo` plugin in your app config, or from the `SENTRY_ORG` and `SENTRY_PROJECT` environment variables. It also needs `SENTRY_AUTH_TOKEN`. When you run it in EAS Workflows or another CI, make sure these values are available there.
+
 That's it! Errors for your updates will now be properly symbolicated in Sentry.
 
 <Collapsible summary="Do you want to publish an update and the sourcemaps in one command?">

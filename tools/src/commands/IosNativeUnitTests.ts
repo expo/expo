@@ -203,7 +203,7 @@ const INFRA_PATH_PATTERNS = [
   /^apps\/bare-expo\/ios\//,
   /^\.github\/workflows\/ios-unit-tests\.yml$/,
   /^packages\/expo-modules-autolinking\//,
-  /^packages\/expo-module-scripts\//,
+  /^packages\/@expo\/internal-scripts\//,
   /^packages\/expo-modules-test-core\//,
   /^pnpm-lock\.yaml$/,
   // CocoaPods and xcodeproj come from the bundle, so gem bumps change how pods install.
@@ -231,6 +231,11 @@ async function runTestsAsync(
     path.join(RESULTS_DIR, `${scheme}.xcresult`),
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
+    // After a full run, xcodebuild collects simulator diagnostics (a sysdiagnose and a log
+    // archive). On Blacksmith runners that collection stalls until a 600s timeout, which
+    // doubles the job time. The result bundle still keeps the test logs and failures.
+    '-collect-test-diagnostics',
+    'never',
   ];
   if (benchmarks) {
     args.push(

@@ -64,6 +64,7 @@ function _interopDefault(e) {
 exports.test = test;
 var _babelRuntimeHelpersAsyncToGenerator = require(_dependencyMap[0], "@babel/runtime/helpers/asyncToGenerator");
 var _asyncToGenerator = _interopDefault(_babelRuntimeHelpersAsyncToGenerator);
+;
 
 function test() {
 	return _test.apply(this, arguments);
@@ -95,6 +96,7 @@ function _interopDefault(e) {
 exports.test = test;
 var _babelRuntimeHelpersWrapAsyncGenerator = require(_dependencyMap[0], "@babel/runtime/helpers/wrapAsyncGenerator");
 var _wrapAsyncGenerator = _interopDefault(_babelRuntimeHelpersWrapAsyncGenerator);
+;
 
 function test() {
 	return _test.apply(this, arguments);

@@ -2,6 +2,7 @@ import { AndroidConfig } from 'expo/config-plugins';
 
 import {
   convertBcp47ToResourceQualifier,
+  getResourceQualifiers,
   setAndroidSupportsRtl,
   setResourceConfigurations,
 } from '../src/withExpoLocalization';
@@ -52,6 +53,28 @@ describe('converts locales to BCP-47 format', () => {
     expect(convertBcp47ToResourceQualifier('zh-Hant')).toBe('b+zh+Hant');
     expect(convertBcp47ToResourceQualifier('es-419')).toBe('b+es+419');
     expect(convertBcp47ToResourceQualifier('zh-Hant-TW')).toBe('b+zh+Hant+TW');
+  });
+
+  it('should use the legacy language codes Android resolves resources with', () => {
+    expect(convertBcp47ToResourceQualifier('he')).toBe('b+iw');
+    expect(convertBcp47ToResourceQualifier('he-IL')).toBe('b+iw+IL');
+    expect(convertBcp47ToResourceQualifier('id')).toBe('b+in');
+    expect(convertBcp47ToResourceQualifier('id-ID')).toBe('b+in+ID');
+    expect(convertBcp47ToResourceQualifier('yi')).toBe('b+ji');
+  });
+});
+
+describe('getResourceQualifiers', () => {
+  it('returns a single qualifier for non-Chinese locales', () => {
+    expect(getResourceQualifiers('fr')).toEqual(['b+fr']);
+    expect(getResourceQualifiers('he')).toEqual(['b+iw']);
+    expect(getResourceQualifiers('zh')).toEqual(['b+zh']);
+    expect(getResourceQualifiers('zh-TW')).toEqual(['b+zh+TW']);
+  });
+
+  it('keeps the region qualifiers libraries use for Chinese scripts', () => {
+    expect(getResourceQualifiers('zh-Hans')).toEqual(['b+zh+Hans', 'zh-rCN']);
+    expect(getResourceQualifiers('zh-Hant')).toEqual(['b+zh+Hant', 'zh-rTW', 'zh-rHK']);
   });
 });
 

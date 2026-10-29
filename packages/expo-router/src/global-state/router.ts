@@ -142,9 +142,8 @@ export function canDismiss(): boolean {
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
-    // TODO(ENG-22019): Detect typeless stacks, including anchor/initialRouteName states that start
-    // with multiple routes.
-    if (state.type === 'stack' && getHistoryLength(state) > 1) {
+    // Seeded states have no `type`; anchors are fully supported only in stacks.
+    if ((state.type ?? 'stack') === 'stack' && getHistoryLength(state) > 1) {
       return true;
     }
     if (state.index === undefined) return false;
