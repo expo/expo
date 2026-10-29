@@ -13,22 +13,23 @@ iOS requirements: Node 22+, npm (or the app's selected package manager), and Xco
 
 The CLI includes its starter files. You do not need to retain or copy an older example app.
 
-For local testing, run the built CLI directly from your new app directory. An app-root npm package or devDependency is not required:
+From the native app directory, run:
 
 ```sh
-cd /path/to/YourNewApp
-node /path/to/expo/packages/expo-embedding/bin/expo-embedding.js init
-```
-
-Alternatively, install the CLI in your app to use the shorter command:
-
-```sh
-npm install --save-dev /path/to/expo/packages/expo-embedding
 npx expo-embedding init
-npx expo-embedding install expo-sqlite
+# Or with Bun:
+bunx expo-embedding init
 ```
 
-If the CLI bundle is missing or you have changed its source, follow the repository setup in [CONTRIBUTING.md](../../CONTRIBUTING.md), then run `pnpm --filter expo-embedding build` from the repository root. Bun is not required.
+An app-root npm package or devDependency is not required. Pin a CLI version for reproducible setup. For local CLI development, follow [CONTRIBUTING.md](../../CONTRIBUTING.md), run `pnpm --filter expo-embedding build`, then use `node /path/to/expo/packages/expo-embedding/bin/expo-embedding.js init` from the app directory.
+
+## Integrate with a coding agent
+
+Ask your agent to run `npx expo-embedding skill` (or `bunx expo-embedding skill`) in the host app. The command validates the selected project and prints usage, host context, migration instructions, and verification steps. `--json` provides a versioned structured report. It does not install dependencies, execute config plugins, or write files.
+
+The guide tells the agent to preserve the existing UI and delegate, run setup, apply the source wiring, inspect the resulting diff, and verify the app. The SwiftUI source edits depend on the existing app; the report does not fabricate a patch. Generated Xcode changes require installed dependencies and are inspected after `npx expo-embedding init`.
+
+## CLI setup behavior
 
 Run commands from the directory containing the `.xcodeproj` or a subdirectory. A packed copy works the same way; `--expo-repo` is no longer needed or accepted.
 
@@ -59,17 +60,19 @@ You can attach `.expoHost(expo)` to `ContentView()` instead and put the scene in
 
 Open the app's `.xcodeproj` and press Run. The initial native build takes longer; subsequent builds are incremental. JavaScript is embedded, so Metro is optional. Native targets live in the generated `.expo-source/ExpoEmbedding.xcodeproj`. Xcode uses a generated local codegen helper, independent of the CLI's installation location. Bun is not required. Expo native code builds from the installed packages in `expo/node_modules`; React Native and Hermes use their prebuilt runtime artifacts.
 
-This package is private and has not been published to npm. Local installation makes `npx expo-embedding` available. `npm pack` bundles the TypeScript CLI, the `@bacons/xcode` project parser/serializer, and the native metadata reader into Node JavaScript. It also includes Swift templates and build helpers. Consumers do not need TypeScript, esbuild, Bun, Ruby, or the source checkout. The generator assigns stable identifiers to generated targets and retains the host project's unrelated objects.
+`npm pack` bundles the TypeScript CLI, the `@bacons/xcode` project parser/serializer, and the native metadata reader into Node JavaScript. It also includes Swift templates and build helpers. Consumers do not need TypeScript, esbuild, Bun, Ruby, or the source checkout. The generator assigns stable identifiers to generated targets and retains the host project's unrelated objects.
 
 ## Add dependencies or refresh setup
 
 From the app directory, use the same CLI entry point to install a library:
 
 ```sh
-node /path/to/expo/packages/expo-embedding/bin/expo-embedding.js install expo-sqlite
+npx expo-embedding install expo-sqlite
+# Or with Bun:
+bunx expo-embedding install expo-sqlite
 ```
 
-This runs Expo's installer and refreshes native setup after installation succeeds. With a local devDependency, use `npx expo-embedding install expo-sqlite` instead. Run `init` again after changing native source file lists or deleting `.expo-source`. Existing app files are preserved. After moving the app or changing Node installations, rerun `init` to regenerate machine-local paths. Remove obsolete checkout paths from Metro configs created by older prototypes.
+This runs Expo's installer and refreshes native setup after installation succeeds. Run `init` again after changing native source file lists or deleting `.expo-source`. Existing app files are preserved. After moving the app or changing Node installations, rerun `init` to regenerate machine-local paths. Remove obsolete checkout paths from Metro configs created by older prototypes.
 
 ## Dependency ownership
 
@@ -156,7 +159,7 @@ The bundle entry follows `expo/package.json` through Expo’s entry resolver. De
 - Run `npx expo-embedding install expo-audio` and verify native setup completes automatically. Add local Expo module fixtures for `Package.swift` and `.podspec`; verify target dependencies, language settings, resource loading, and registration.
 - Add and remove SQLite, Haptics, or a metadata module through the app manifest and setup. Test a transitive supported module and an unsupported Expo or React Native dependency. Rejected native graphs must not change either project.
 - Verify an unknown build configuration fails before installation; map `Staging` to `Release` and archive it with `xcodebuild`.
-- Run `init --frozen-lockfile` with a valid lockfile, then with manifest/lockfile drift. Verify the latter fails without rewriting the lockfile or Xcode projects.
+- Run `npx expo-embedding init --frozen-lockfile` with a valid lockfile, then with manifest/lockfile drift. Verify the latter fails without rewriting the lockfile or Xcode projects.
 - Change a native manifest after setup, including an unsupported build feature; verify stale setup or unsupported metadata errors preserve both projects. Remove a metadata dependency and rerun setup; verify its framework and resources disappear.
 - Change the native graph after setup and build directly in Xcode. Verify the build asks for `init` instead of using stale targets.
 - Build Debug for an iOS simulator. With Metro stopped, launch a SwiftUI scene, increment the counter, query SQLite, call Haptics, play a bundled Audio clip, read resources from both metadata fixtures, and resolve the bundled Font, KeepAwake, Fetch, and inline native modules.
