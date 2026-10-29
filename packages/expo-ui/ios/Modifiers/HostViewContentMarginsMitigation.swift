@@ -45,9 +45,8 @@ internal struct HostViewContentMarginsMitigation: ViewModifier {
       content
         .contentMargins(.leading, margins.leading, for: .scrollContent)
         .contentMargins(.trailing, margins.trailing, for: .scrollContent)
-        .onGeometryChange(for: CGRect.self, of: { proxy in proxy.frame(in: .global) }) { _ in
-          updateMargins()
-        }
+        // Do not observe `frame(in: .global)` here. When a `Host` mounts while its screen moves, as
+        // in a drawer slide, SwiftUI then keeps the hosted accessibility frames from mid-animation.
         .onGeometryChange(for: EdgeInsets.self, of: { proxy in proxy.safeAreaInsets }) { _ in
           updateMargins()
         }
