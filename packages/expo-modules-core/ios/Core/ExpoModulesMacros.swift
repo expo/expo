@@ -179,12 +179,14 @@ public macro SharedObject(_ name: String? = nil) =
 /// Member + extension macro applied to a record `struct` or `class`. Every non-`static`,
 /// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no
 /// `@Field` wrapper needed — and the macro synthesizes the whole conversion surface from each
-/// property's static type: a memberwise `init`, the `from(object:appContext:)` /
-/// `from(dictionary:appContext:)` factories, the `toDictionary(appContext:)` /
-/// `toObject(appContext:)` write side, and the `JavaScriptDecodable` / `JavaScriptEncodable`
-/// conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to `Record`; the
-/// synthesized methods override `Record`'s reflection-based defaults, so it stays usable anywhere a
-/// `Record` argument is expected.
+/// property's static type: a memberwise `init`, `from(object:appContext:)`,
+/// `toDictionary(appContext:)` / `toObject(appContext:)`, and the `JavaScriptDecodable` /
+/// `JavaScriptEncodable` conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to
+/// `Record`; the synthesized methods override `Record`'s reflection-based defaults, so it stays usable
+/// anywhere a `Record` argument is expected.
+///
+/// A record converts only from and to JavaScript values. The synthesized `from(dictionary:appContext:)`
+/// throws `RecordDictionaryConversionException`, so a record can't be created from a native dictionary.
 ///
 /// `decode(_:in:)` and `encode(_:in:)` use the runtime they receive and don't need an app context, so
 /// the record converts on any runtime. A class with an inheritance clause doesn't get them, so it

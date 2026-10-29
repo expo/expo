@@ -30,8 +30,9 @@ public protocol Record: Convertible, JavaScriptDecodable, JavaScriptEncodable {
 
   /**
    Reads the record's members from a `[String: Any]` dictionary. The `@Field`-based default goes
-   through reflection (`init()` + `update(withDict:)`); the `@Record` macro overrides it with a
-   direct, statically-typed factory.
+   through reflection (`init()` + `update(withDict:)`). The `@Record` macro overrides it with a
+   factory that throws `RecordDictionaryConversionException`, since a macro record converts only from
+   JavaScript values.
    */
   static func from(dictionary: Dict, appContext: AppContext) throws -> Self
 
@@ -86,8 +87,8 @@ public final class RecordDictionaryConversionException: GenericException<String>
 public extension Record {
   static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     if let value = value as? Dict {
-      // `from(dictionary:)` dispatches dynamically — reflection for `@Field` records, the
-      // synthesized factory for `@Record` ones — so both read correctly off a dictionary.
+      // `from(dictionary:)` dispatches dynamically: reflection for `@Field` records, and for `@Record`
+      // ones the synthesized factory, which throws `RecordDictionaryConversionException`.
       return try Self.from(dictionary: value, appContext: appContext)
     }
     // It's possible that the current implementation tries to convert a value that is already of the desired type.
@@ -113,8 +114,8 @@ public extension Record {
   }
 
   static func from(dictionary: Dict, appContext: AppContext) throws -> Self {
-    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes a direct,
-    // statically-typed override that takes precedence over this. Delegates to `init(from:appContext:)`
+    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes an override that
+    // throws, which takes precedence over this. Delegates to `init(from:appContext:)`
     // so any custom dictionary initializer a record provides still runs.
     return try Self(from: dictionary, appContext: appContext)
   }
