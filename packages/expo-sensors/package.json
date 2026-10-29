@@ -55,8 +55,5 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "@expo/internal-scripts"
   }
 }
