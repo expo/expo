@@ -6,6 +6,8 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     title,
     subtitle,
     largeTitle,
+    titleStyle,
+    largeTitleStyle,
     leftToolbar,
     rightToolbar,
     searchBar,
@@ -18,6 +20,8 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       title={title}
       subtitle={subtitle}
       largeTitle={largeTitle}
+      titleColor={titleStyle?.color}
+      largeTitleColor={largeTitleStyle?.color}
       leftToolbarItems={toNativeToolbarItems('left', leftToolbar)}
       rightToolbarItems={toNativeToolbarItems('right', rightToolbar)}
       onToolbarItemPress={({ nativeEvent: { id } }) => {

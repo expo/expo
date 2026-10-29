@@ -395,6 +395,32 @@ it('passes the SplitView.Column header subtitle to the native header', async () 
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].subtitle).toBe('3 unread');
 });
 
+it('passes the title colors of the SplitView.Column header to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              title: 'Inbox',
+              largeTitle: true,
+              titleStyle: { color: 'red' },
+              largeTitleStyle: { color: 'blue' },
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const props = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  expect(props.titleColor).toBe('red');
+  expect(props.largeTitleColor).toBe('blue');
+});
+
 it('passes the back button options of the SplitView.Column header to the native header', async () => {
   await renderRouter(
     {
