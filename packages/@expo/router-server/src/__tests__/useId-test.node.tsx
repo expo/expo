@@ -39,13 +39,35 @@ jest.mock('expo-router/_ctx', () => {
     }),
   };
 });
-jest.mock('expo-router/_ctx-html', () => ({
-  ctx: { keys: () => [] },
-}));
+jest.mock('expo-router/_ctx-html', () => {
+  const { useServerDocumentContext } = require('expo-router/html');
+
+  // A `+html` like the one in `expo-template-tabs`: `<body>` has one child, not `{children}` and
+  // `{bodyNodes}`, plus a `<noscript>` element.
+  function Html({ children }: PropsWithChildren) {
+    const { headNodes } = useServerDocumentContext();
+    return (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          {headNodes}
+        </head>
+        <body>
+          <noscript>Enable JavaScript</noscript>
+          {children}
+        </body>
+      </html>
+    );
+  }
+
+  return {
+    ctx: Object.assign(() => ({ default: Html }), { keys: () => ['./+html.tsx'] }),
+  };
+});
 // Metro replaces this module with the pass-through shim in
 // `@expo/cli/static/shims/react-native-web/dist/exports/AppRegistry/AppContainer.js`, so `<html>`
 // is the root element of the server output. Jest does not apply that shim.
-jest.mock('react-native-web/dist/cjs/exports/AppRegistry/AppContainer', () => ({
+jest.mock('react-native-web/dist/exports/AppRegistry/AppContainer', () => ({
   __esModule: true,
   default: ({ children }: PropsWithChildren) => children,
 }));
@@ -74,13 +96,23 @@ function hydrateLikeTheBrowser(html: string) {
   const { ExpoRoot } = require('expo-router') as typeof import('expo-router');
   const { ctx } = require('expo-router/_ctx') as typeof import('expo-router/_ctx');
   const { default: Head } = require('expo-router/head') as typeof import('expo-router/head');
+  // The same document shape as `HtmlDocument` on the server. The client `expo-router` entry
+  // renders this tree when the server sets `__EXPO_ROUTER_HYDRATE_DOCUMENT__`.
   const hydrate = () =>
     act(async () => {
       hydrateRoot(
-        rootTag,
-        <Head.Provider>
-          <ExpoRoot context={ctx} />
-        </Head.Provider>
+        dom.window.document,
+        <html suppressHydrationWarning>
+          <head />
+          <body suppressHydrationWarning>
+            <div id="root">
+              <Head.Provider>
+                <ExpoRoot context={ctx} />
+              </Head.Provider>
+            </div>
+            {null}
+          </body>
+        </html>
       );
     });
   return { serverId, hydrate };
