@@ -47,7 +47,8 @@ export async function prepareIos(
     templates: join(packageRoot, 'templates/ios'),
     node,
   };
-  await validateSourceProject(nativeOptions);
+  const selected = await validateSourceProject(nativeOptions);
+  nativeOptions.target = selected.host.object(selected.target).name;
   return nativeOptions;
 }
 

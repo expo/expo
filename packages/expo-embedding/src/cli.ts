@@ -43,7 +43,7 @@ async function main(): Promise<void> {
   const frozen = values['frozen-lockfile'] ?? false;
   if (command === 'install' && frozen) {
     throw new Error(
-      'install changes dependencies and cannot use --frozen-lockfile. Use init --frozen-lockfile to reproduce a committed dependency tree.'
+      'install changes dependencies and cannot use --frozen-lockfile. Use npx expo-embedding init --frozen-lockfile to reproduce a committed dependency tree.'
     );
   }
 
@@ -58,7 +58,7 @@ async function main(): Promise<void> {
       platform: 'ios',
       selection: {
         project: ios.project,
-        target: ios.target || '(auto-selected application target)',
+        target: ios.target,
       },
       changes: [],
       preview:
@@ -74,7 +74,7 @@ async function main(): Promise<void> {
   } catch (error) {
     if (command === 'install') {
       throw new Error(
-        `Dependency installation succeeded, but native setup did not finish. ${error instanceof Error ? error.message : error}\nFix the error above, then run init to retry native setup using the updated package manifest.`,
+        `Dependency installation succeeded, but native setup did not finish. ${error instanceof Error ? error.message : error}\nFix the error above, then run npx expo-embedding init to retry native setup using the updated package manifest.`,
         { cause: error }
       );
     }

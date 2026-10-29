@@ -65,7 +65,12 @@ describe('Running the packed CLI outside the Expo checkout', () => {
     const before = await contents(host);
     const { stdout } = await run('skill', '--json');
     const report = JSON.parse(stdout);
-    expect(report).toMatchObject({ schemaVersion: 1, platform: 'ios', root: host });
+    expect(report).toMatchObject({
+      schemaVersion: 1,
+      platform: 'ios',
+      root: host,
+      selection: { target: 'Example' },
+    });
     expect(report.guide).toContain('ExpoBrownfieldAppDelegate');
     expect(report.guide).toContain('ContentView()');
     expect(report.changes).toEqual([]);
