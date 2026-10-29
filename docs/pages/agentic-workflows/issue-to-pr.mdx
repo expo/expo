@@ -318,7 +318,12 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 ```
 
-The Action installs the dependencies with `npm ci`, because EAS CLI reads the app config. If your project uses another package manager, change this command.
+The Action installs the dependencies with `npm ci`, because EAS CLI reads the app config. If your project uses another package manager, change this command. For example, for Bun, replace the `npm ci` step with these steps:
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+- run: bun install --frozen-lockfile
+```
 
 With `--ref`, EAS runs the workflow from the last commit of your default branch on GitHub. EAS CLI does not upload the project.
 

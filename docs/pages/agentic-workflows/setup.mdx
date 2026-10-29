@@ -104,7 +104,7 @@ Agentic CI and QA Swarm need the steps from [Add a build profile for the remote 
 
 ## Add a build profile for the remote device
 
-The workflows install a build from the `preview` profile on each session. Add this profile to **eas.json**:
+The workflows install a build from the `preview` profile on each session. Merge these keys into the `preview` profile in **eas.json**, or add the profile if it does not exist:
 
 <Tabs>
 
@@ -126,7 +126,7 @@ An Android Emulator session runs an APK:
 }
 ```
 
-EAS signs the APK with an Android keystore. Create the keystore one time before the first run. Run this command, select the `preview` profile, and let EAS generate a new keystore:
+EAS signs the APK with an Android keystore. If the project has no Android keystore yet, create one before the first run. Run this command, select the `preview` profile, and let EAS generate a new keystore:
 
 <Terminal cmd={['$ eas credentials --platform android']} />
 
@@ -155,6 +155,8 @@ An iOS Simulator session runs a simulator build. A simulator build is not signed
 </Tabs>
 
 To test both platforms, add the `android` and the `ios` keys to the same profile. The fingerprint job in each workflow uses the same `preview` environment, so the fingerprints match the builds.
+
+If your `preview` profile already makes builds for physical devices, `ios.simulator: true` stops those builds. In that case, add a separate profile for the agent, such as `agent`. Then change `profile: preview` to the name of that profile in each workflow file.
 
 </Step>
 
@@ -190,6 +192,10 @@ In the project dashboard, open **Project settings** > [**Environment variables**
 | `CLAUDE_CODE_OAUTH_TOKEN`, `ANTHROPIC_API_KEY`, `CODEX_API_KEY`, `CURSOR_API_KEY`, or `XAI_API_KEY` | The key of your agent |
 
 Add the variables to the **preview** environment. The workflows use **preview** for the builds and for the agent, and the agent can read each variable of that environment. So keep no other secrets in **preview**. Values that are not secret, such as `EXPO_PUBLIC_` variables, can stay, because they are in the app already. If **preview** must have another secret, such as an `NPM_TOKEN` for private packages, the agent can read that secret too.
+
+If **preview** has a `SENTRY_AUTH_TOKEN`, remove it from **preview**, and add `SENTRY_DISABLE_AUTO_UPLOAD` with the value `true`. Then the builds do not upload source maps or debug files to Sentry.
+
+On the Enterprise and Production plans, you can [create a custom environment](/eas/environment-variables/manage/#custom-environments) for the agent. Then change `environment: preview` to the name of that environment in the build profile and in each workflow file.
 
 Check that the list has the variables:
 
@@ -303,6 +309,8 @@ exec grok --prompt-file "$1" "${allow[@]}" --disable-web-search --max-turns 80
 </Tab>
 
 </Tabs>
+
+The `change` mode allows only `npx tsc --noEmit`, so the agent cannot run the tests or the linter of your project. To allow them, add their commands to the `change` mode. For example, add `Bash(bun run test)` to the Claude Code runner, or `--allow 'Bash(bun run test)'` to the Grok runner.
 
 </Step>
 
@@ -430,9 +438,18 @@ The Claude Code and Grok runners allow only the commands of each mode. Their `de
 
 ## Push the files
 
+The sessions and the jobs write files to your project directory. The **.env.eas-simulator** file has a token for the session. Add these lines to **.gitignore**:
+
+```sh .gitignore
+.env.eas-simulator
+agent-output/
+```
+
+Then push the files:
+
 <Terminal
   cmd={[
-    '$ git add app.json eas.json .eas/agents/run-agent.sh .eas/agents/start-session.sh',
+    '$ git add .gitignore app.json eas.json .eas/agents/run-agent.sh .eas/agents/start-session.sh',
     '$ git commit -m "Add the agent runner and the device controller"',
     '$ git push',
   ]}
