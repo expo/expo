@@ -1,14 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transformCssModuleWeb = transformCssModuleWeb;
 exports.convertLightningCssToReactNativeWebStyleSheet = convertLightningCssToReactNativeWebStyleSheet;
 exports.matchCssModule = matchCssModule;
 exports.printCssWarnings = printCssWarnings;
 exports.collectCssImports = collectCssImports;
-const code_frame_1 = __importDefault(require("@babel/code-frame"));
+const code_frame_1 = require("@babel/code-frame");
 const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
@@ -83,7 +80,7 @@ function matchCssModule(filePath) {
 function printCssWarnings(filename, code, warnings) {
     if (warnings) {
         for (const warning of warnings) {
-            console.warn(`Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${(0, code_frame_1.default)(code, warning.loc.line, warning.loc.column)}`);
+            console.warn(`Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${(0, code_frame_1.codeFrameColumns)(code, { start: { line: warning.loc.line, column: warning.loc.column } })}`);
         }
     }
 }
@@ -148,7 +145,7 @@ function collectCssImports(filename, originalCode, code, cssResults) {
                     dep.url.match(/^(data:|[#/])/);
                 if (!isSupported) {
                     // Assert that syntax like `background: url('./img.png');` is not supported yet.
-                    console.warn(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.default)(originalCode, dep.loc.start.line, dep.loc.start.column)}`);
+                    console.warn(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.codeFrameColumns)(originalCode, { start: { line: dep.loc.start.line, column: dep.loc.start.column } })}`);
                 }
             }
         }
