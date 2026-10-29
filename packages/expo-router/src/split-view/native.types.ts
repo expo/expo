@@ -1,6 +1,7 @@
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type {
+  SplitViewHeader,
   SplitViewMenu,
   SplitViewMenuAction,
   SplitViewSearchBar,
@@ -36,4 +37,7 @@ export interface SplitViewNativeHeaderProps {
   searchBar?: Pick<SplitViewSearchBar, 'placeholder'>;
   onSearchBarChangeText?: SplitViewSearchBar['onChangeText'];
   onSearchBarSearchButtonPress?: SplitViewSearchBar['onSearchButtonPress'];
+  backButtonDisplayMode?: SplitViewHeader['backButtonDisplayMode'];
+  backTitle?: SplitViewHeader['backTitle'];
+  backVisible?: SplitViewHeader['backVisible'];
 }
